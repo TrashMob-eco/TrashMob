@@ -1,42 +1,28 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
+
 <ContentPage x:Class="TrashMobMobile.Pages.CreateLitterReportPage"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              Title="Submit Litter Report">
     <ScrollView>
         <Grid>
-            <VerticalStackLayout>
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
 
                 <!--  Litter Report Top  -->
                 <Grid RowDefinitions="Auto, *, Auto">
-                    <VerticalStackLayout Grid.Row="0"
-                                         Margin="10"
-                                         Spacing="5">
-                        <Label FontAttributes="Bold"
-                               FontSize="Micro"
-                               HorizontalOptions="Start"
-                               HorizontalTextAlignment="Center"
-                               Text="Name"
-                               VerticalOptions="Center" />
+                    <VerticalStackLayout Grid.Row="0">
+                        <Label Text="Name" Style="{StaticResource FieldLabel}" />
 
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Entry Text="{Binding Name}" />
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Row="1"
-                                         Margin="10"
-                                         Spacing="5">
-                        <Label FontAttributes="Bold"
-                               FontSize="Micro"
-                               HorizontalOptions="Start"
-                               HorizontalTextAlignment="Center"
-                               Text="Description"
-                               VerticalOptions="Center" />
+                    <VerticalStackLayout Grid.Row="1">
+                        <Label Text="Description" Style="{StaticResource FieldLabel}" />
 
-                        <Frame Style="{x:DynamicResource Frame}">
+                        <Border Style="{x:StaticResource RoundBorder}">
                             <Editor Text="{Binding Description}" />
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
 
                     <Button Grid.Row="2"
@@ -90,8 +76,10 @@
                         IsEnabled="{Binding ReportIsValid}"
                         Text="Save Litter Report" />
             </VerticalStackLayout>
-            <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill" VerticalOptions="Fill" IsVisible="{Binding IsBusy}"/>
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
+            <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
+                     VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center"
+                               HorizontalOptions="Center" />
         </Grid>
     </ScrollView>
 </ContentPage>

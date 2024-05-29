@@ -1,5 +1,4 @@
-﻿
-namespace TrashMob.Shared.Managers
+﻿namespace TrashMob.Shared.Managers
 {
     using System;
     using System.Threading;
@@ -12,12 +11,14 @@ namespace TrashMob.Shared.Managers
     {
         private readonly INotificationManager notificationManager;
 
-        public MessageRequestManager(IKeyedRepository<MessageRequest> messageRequestRepository, INotificationManager notificationManager) : base(messageRequestRepository)
+        public MessageRequestManager(IKeyedRepository<MessageRequest> messageRequestRepository,
+            INotificationManager notificationManager) : base(messageRequestRepository)
         {
             this.notificationManager = notificationManager;
-        }      
+        }
 
-        public async Task SendMessageRequest(MessageRequest messageRequest, Guid userId, CancellationToken cancellationToken = default)
+        public async Task SendMessageRequest(MessageRequest messageRequest, Guid userId,
+            CancellationToken cancellationToken = default)
         {
             await base.AddAsync(messageRequest, userId, cancellationToken);
             await notificationManager.SendMessageRequestAsync(messageRequest, cancellationToken);

@@ -1,11 +1,11 @@
 ﻿namespace TrashMob.Shared.Managers
 {
-    using SendGrid;
-    using SendGrid.Helpers.Mail;
     using System;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using SendGrid;
+    using SendGrid.Helpers.Mail;
     using TrashMob.Shared.Engine;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Poco;
@@ -34,7 +34,8 @@
             try
             {
                 var client = new SendGridClient(ApiKey);
-                var message = MailHelper.CreateSingleEmailToMultipleRecipients(from, tos, email.Subject, email.Message, email.HtmlMessage);
+                var message = MailHelper.CreateSingleEmailToMultipleRecipients(from, tos, email.Subject, email.Message,
+                    email.HtmlMessage);
                 var response = await client.SendEmailAsync(message, cancellationToken).ConfigureAwait(false);
                 Console.WriteLine(response);
             }
@@ -63,16 +64,18 @@
             try
             {
                 var client = new SendGridClient(ApiKey);
-                var message = MailHelper.CreateSingleTemplateEmailToMultipleRecipients(from, tos, email.TemplateId, email.DynamicTemplateData);
+                var message =
+                    MailHelper.CreateSingleTemplateEmailToMultipleRecipients(from, tos, email.TemplateId,
+                        email.DynamicTemplateData);
 
                 message.Asm = new ASM
                 {
                     GroupId = email.GroupId,
-                    GroupsToDisplay = new List<int>()
+                    GroupsToDisplay = new List<int>
                     {
                         SendGridEmailGroupId.EventRelated,
-                        SendGridEmailGroupId.General
-                    }
+                        SendGridEmailGroupId.General,
+                    },
                 };
 
                 var response = await client.SendEmailAsync(message, cancellationToken).ConfigureAwait(false);

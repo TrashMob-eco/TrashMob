@@ -8,6 +8,7 @@
 
     public interface INonEventUserNotificationManager : IKeyedManager<NonEventUserNotification>
     {
-        Task<IEnumerable<NonEventUserNotification>> GetByUserIdAsync(Guid userId, int userNotificationTypeId, CancellationToken cancellationToken = default);
+        Task<IEnumerable<NonEventUserNotification>> GetByUserIdAsync(Guid userId, int userNotificationTypeId,
+            CancellationToken cancellationToken = default);
     }
 }

@@ -1,37 +1,29 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
+
 <ContentPage x:Class="TrashMobMobile.MainPage"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
-             xmlns:sensors="clr-namespace:Microsoft.Maui.Devices.Sensors;assembly=Microsoft.Maui.Essentials"
              xmlns:vm="clr-namespace:TrashMobMobile.ViewModels"
              x:DataType="vm:MainViewModel">
 
     <Grid>
         <ScrollView>
-            <VerticalStackLayout Spacing="5">
-                <Image Source="bannerlogo.png" />
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
+                <Frame Style="{DynamicResource Frame}" Padding="1">
+                    <Image Source="bannerlogo.png" />
+                </Frame>
                 <Grid ColumnDefinitions="1*, 1*"
                       RowDefinitions="Auto">
                     <Button Grid.Column="0"
-                            Background="Transparent"
                             Command="{Binding SearchEventsCommand}"
-                            FontSize="Small"
-                            HeightRequest="40"
-                            HorizontalOptions="Center"
-                            Text="Search Events"
-                            TextColor="Purple" />
+                            Text="Search Events" />
                     <Button Grid.Column="1"
-                            Background="Transparent"
                             Command="{Binding SearchLitterReportsCommand}"
-                            FontSize="Small"
-                            HeightRequest="40"
-                            HorizontalOptions="Center"
-                            Text="Search Litter Reports"
-                            TextColor="Purple" />
+                            Text="Search Litter Reports" />
                 </Grid>
-                <Frame Margin="5,0"
-                       Style="{x:DynamicResource Frame}">
+                <Border Margin="5,0"
+                        Style="{x:StaticResource RoundBorder}">
                     <Grid ColumnDefinitions="1*, 1*, 1*, 1*"
                           RowDefinitions="Auto, Auto, Auto, Auto">
                         <Label Grid.Row="0"
@@ -97,23 +89,25 @@
                                HorizontalTextAlignment="Center"
                                Text="Hours Spent" />
                     </Grid>
-                </Frame>
+                </Border>
 
                 <Grid Margin="5"
                       ColumnDefinitions="1*, 1*"
                       RowDefinitions="Auto, Auto, Auto">
                     <Button Grid.Row="0"
                             Grid.Column="1"
-                            Background="Transparent"
+                            Style="{StaticResource LinkButton}"
                             Command="{Binding MyDashboardCommand}"
-                            FontSize="Micro"
-                            HorizontalOptions="End"
-                            Text="View My Dashboard"
-                            TextColor="Green" />
+                            Text="View My Dashboard" />
                     <Label Grid.Row="1"
                            Grid.Column="0"
                            FontAttributes="Bold"
                            Text="Find Nearby Events" />
+                    <Label Grid.Row="1"
+                           Grid.Column="1"
+                           FontSize="Micro"
+                           HorizontalOptions="Center"
+                           Text="Your Location" />
                     <HorizontalStackLayout Grid.Row="2">
                         <RadioButton x:Name="viewMap"
                                      Content="Map"
@@ -125,19 +119,12 @@
                     </HorizontalStackLayout>
                     <Button Grid.Row="2"
                             Grid.Column="1"
-                            Background="Transparent"
+                            Style="{StaticResource LinkButton}"
                             Command="{Binding SetLocationPreferenceCommand}"
-                            FontSize="Micro"
-                            HorizontalOptions="End"
-                            Text="{Binding UserLocationDisplay}"
-                            TextColor="Green" />
+                            Text="{Binding UserLocationDisplay}" />
                 </Grid>
 
                 <maps:Map x:Name="upcomingEventsMap"
-                          Margin="5"
-                          HeightRequest="300"
-                          IsScrollEnabled="True"
-                          IsShowingUser="True"
                           IsVisible="{Binding Source={x:Reference viewMap}, Path=IsChecked}"
                           ItemsSource="{Binding UpcomingEvents}">
                     <maps:Map.ItemTemplate>

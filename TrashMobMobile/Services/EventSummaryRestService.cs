@@ -34,7 +34,7 @@
                                 ActualNumberOfAttendees = 0,
                                 DurationInMinutes = 0,
                                 NumberOfBags = 0,
-                                Notes = string.Empty
+                                Notes = string.Empty,
                             };
 
                             return eventSummary;

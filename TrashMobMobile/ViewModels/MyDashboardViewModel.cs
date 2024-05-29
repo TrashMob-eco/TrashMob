@@ -118,7 +118,7 @@ public partial class MyDashboardViewModel : BaseViewModel
         {
             TotalBags = stats.TotalBags,
             TotalEvents = stats.TotalEvents,
-            TotalHours = stats.TotalHours
+            TotalHours = stats.TotalHours,
         };
     }
 

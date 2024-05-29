@@ -2,14 +2,8 @@
 
 namespace TrashMob.Models
 {
-    using System;
-
-    public partial class PartnerLocationService : BaseModel
+    public class PartnerLocationService : BaseModel
     {
-        public PartnerLocationService()
-        {
-        }
-
         public Guid PartnerLocationId { get; set; }
 
         public int ServiceTypeId { get; set; }

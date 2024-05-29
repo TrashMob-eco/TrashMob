@@ -2,9 +2,7 @@
 
 namespace TrashMob.Models
 {
-    using System;
-
-    public partial class PartnerSocialMediaAccount : KeyedModel
+    public class PartnerSocialMediaAccount : KeyedModel
     {
         public Guid PartnerId { get; set; }
 

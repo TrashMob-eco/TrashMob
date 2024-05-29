@@ -4,6 +4,6 @@
 
     public class ErrorResponse
     {
-        public List<Error> Errors { get; } = new List<Error>();
+        public List<Error> Errors { get; } = new();
     }
 }

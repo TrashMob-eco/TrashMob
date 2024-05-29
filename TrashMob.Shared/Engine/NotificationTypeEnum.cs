@@ -1,6 +1,6 @@
 ﻿namespace TrashMob.Shared.Engine
 {
-    public enum NotificationTypeEnum    
+    public enum NotificationTypeEnum
     {
         EventSummaryAttendee = 1,
         EventSummaryHostReminder = 2,

@@ -2,9 +2,7 @@
 
 namespace TrashMob.Models
 {
-    using System.Collections.Generic;
-
-    public partial class UserNotificationType : LookupModel
+    public class UserNotificationType : LookupModel
     {
         public UserNotificationType()
         {

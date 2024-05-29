@@ -1,28 +1,27 @@
 ﻿namespace TrashMob.Security
 {
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
-    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Logging;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
-    using TrashMob.Shared.Persistence.Interfaces;
 
-    public class UserIsPartnerUserOrIsAdminAuthHandler : AuthorizationHandler<UserIsPartnerUserOrIsAdminRequirement, Partner>
+    public class
+        UserIsPartnerUserOrIsAdminAuthHandler : AuthorizationHandler<UserIsPartnerUserOrIsAdminRequirement, Partner>
     {
         private readonly IHttpContextAccessor httpContext;
-        private readonly IUserManager userManager;
-        private readonly IBaseManager<PartnerAdmin> partnerUserManager;
         private readonly ILogger<UserIsValidUserAuthHandler> logger;
+        private readonly IBaseManager<PartnerAdmin> partnerUserManager;
+        private readonly IUserManager userManager;
 
-        public UserIsPartnerUserOrIsAdminAuthHandler(IHttpContextAccessor httpContext, IUserManager userManager, IBaseManager<PartnerAdmin> partnerUserManager, ILogger<UserIsValidUserAuthHandler> logger)
+        public UserIsPartnerUserOrIsAdminAuthHandler(IHttpContextAccessor httpContext, IUserManager userManager,
+            IBaseManager<PartnerAdmin> partnerUserManager, ILogger<UserIsValidUserAuthHandler> logger)
         {
             this.httpContext = httpContext;
             this.userManager = userManager;
@@ -30,20 +29,22 @@
             this.logger = logger;
         }
 
-        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, UserIsPartnerUserOrIsAdminRequirement requirement, Partner resource)
+        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context,
+            UserIsPartnerUserOrIsAdminRequirement requirement, Partner resource)
         {
             try
             {
                 var emailAddressClaim = context.User.FindFirst(ClaimTypes.Email);
                 var emailClaim = context.User.FindFirst("email");
 
-                string email = emailAddressClaim == null ? emailClaim.Value : emailAddressClaim.Value;
+                var email = emailAddressClaim == null ? emailClaim.Value : emailAddressClaim.Value;
 
                 var user = await userManager.GetUserByEmailAsync(email, CancellationToken.None);
 
                 if (user == null)
                 {
-                    AuthorizationFailure.Failed(new List<AuthorizationFailureReason>() { new AuthorizationFailureReason(this, $"User with email '{email}' not found.") });
+                    AuthorizationFailure.Failed(new List<AuthorizationFailureReason>
+                        { new(this, $"User with email '{email}' not found.") });
                     return;
                 }
 
@@ -58,7 +59,9 @@
                 }
                 else
                 {
-                    var currentUserPartner = (await partnerUserManager.GetAsync(pu => pu.PartnerId == resource.Id && pu.UserId == user.Id, CancellationToken.None)).FirstOrDefault();
+                    var currentUserPartner =
+                        (await partnerUserManager.GetAsync(pu => pu.PartnerId == resource.Id && pu.UserId == user.Id,
+                            CancellationToken.None)).FirstOrDefault();
 
                     if (currentUserPartner != null)
                     {
@@ -66,7 +69,8 @@
                     }
                     else
                     {
-                        AuthorizationFailure.Failed(new List<AuthorizationFailureReason>() { new AuthorizationFailureReason(this, "User is not a partner user and is not a site admin.") });
+                        AuthorizationFailure.Failed(new List<AuthorizationFailureReason>
+                            { new(this, "User is not a partner user and is not a site admin.") });
                     }
                 }
             }

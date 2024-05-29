@@ -2,7 +2,6 @@
 {
     using System.Diagnostics;
     using System.Net.Http.Json;
-    using Microsoft.Maui.Devices.Sensors;
     using Newtonsoft.Json;
     using TrashMob.Models;
     using TrashMobMobile.Models;
@@ -251,6 +250,25 @@
             }
         }
 
+        public async Task<IEnumerable<TrashMob.Models.Poco.Location>> GetLocationsByTimeRangeAsync(
+            DateTimeOffset startDate, DateTimeOffset endDate, CancellationToken cancellationToken = default)
+        {
+            var requestUri = Controller + "/locationsbytimerange?startTime=" + startDate + "&endTime=" + endDate;
+
+            using (var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken))
+            {
+                response.EnsureSuccessStatusCode();
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+
+                if (string.IsNullOrEmpty(content))
+                {
+                    return [];
+                }
+
+                return JsonConvert.DeserializeObject<IEnumerable<TrashMob.Models.Poco.Location>>(content);
+            }
+        }
+
         public async Task AddLitterImageAsync(Guid litterImageId, string localFileName,
             CancellationToken cancellationToken = default)
         {
@@ -269,7 +287,7 @@
                     {
                         { streamContent, "formFile", Path.GetFileName(localFileName) },
                         { new StringContent(litterImageId.ToString()), "parentId" },
-                        { new StringContent(ImageUploadType.LitterImage), "imageType" }
+                        { new StringContent(ImageUploadType.LitterImage), "imageType" },
                     };
 
                     request.Content = content;
@@ -325,7 +343,7 @@
                     {
                         { streamContent, "formFile", Path.GetFileName(localFileName) },
                         { new StringContent(litterImageId.ToString()), "parentId" },
-                        { new StringContent(ImageUploadType.Pickup), "imageType" }
+                        { new StringContent(ImageUploadType.Pickup), "imageType" },
                     };
 
                     request.Content = content;
@@ -340,24 +358,6 @@
             {
                 Debug.WriteLine(@"\tERROR {0}", ex.Message);
                 throw;
-            }
-        }
-
-        public async Task<IEnumerable<TrashMob.Models.Poco.Location>> GetLocationsByTimeRangeAsync(DateTimeOffset startDate, DateTimeOffset endDate, CancellationToken cancellationToken = default)
-        {
-            var requestUri = Controller + "/locationsbytimerange?startTime=" + startDate + "&endTime=" + endDate;
-
-            using (var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken))
-            {
-                response.EnsureSuccessStatusCode();
-                var content = await response.Content.ReadAsStringAsync(cancellationToken);
-
-                if (string.IsNullOrEmpty(content))
-                {
-                    return [];
-                }
-
-                return JsonConvert.DeserializeObject<IEnumerable<TrashMob.Models.Poco.Location>>(content);
             }
         }
     }

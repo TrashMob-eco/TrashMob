@@ -1,9 +1,8 @@
-
 namespace TrashMobJobs
 {
+    using System.Net;
     using System.Text.Json;
     using System.Threading.Tasks;
-    using System.Net;
     using Microsoft.Azure.Functions.Worker;
     using Microsoft.Azure.Functions.Worker.Http;
     using Microsoft.Extensions.Logging;
@@ -12,8 +11,8 @@ namespace TrashMobJobs
 
     public class SignUpUser
     {
-        private readonly ILogger logger;
         private readonly IActiveDirectoryManager activeDirectoryManager;
+        private readonly ILogger logger;
 
         public SignUpUser(ILoggerFactory loggerFactory, IActiveDirectoryManager activeDirectoryManager)
         {

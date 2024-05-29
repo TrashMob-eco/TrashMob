@@ -24,6 +24,10 @@ on:
             version:
                 required: false
                 type: string
+            define_constants:
+                required: true
+                type: string
+
         secrets:
             ios_signing_certificate:
                 required: true
@@ -73,6 +77,9 @@ jobs:
 
         - name: Update Bundle ID
           run: sed -i '' "s|<ApplicationId>.*</ApplicationId>|<ApplicationId>${{ inputs.bundle_id }}</ApplicationId>|g" TrashMobMobile/TrashMobMobile.csproj
+
+        - name: Update defined constants
+          run: sed -i '' "s|<DefineConstants>USETEST</DefineConstants>|<DefineConstants>${{ inputs.define_constants }}</DefineConstants>|g" TrashMobMobile/TrashMobMobile.csproj
 
         - name: Setup DotNet ${{ inputs.dotnet_version }} Environment
           uses: actions/setup-dotnet@v3

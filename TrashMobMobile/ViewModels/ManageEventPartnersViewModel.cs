@@ -67,7 +67,7 @@ public partial class ManageEventPartnersViewModel : BaseViewModel
                 PartnerLocationName = eventPartnerLocation.PartnerLocationName,
                 PartnerLocationNotes = eventPartnerLocation.PartnerLocationNotes,
                 PartnerServicesEngaged = eventPartnerLocation.PartnerServicesEngaged,
-                PartnerId = eventPartnerLocation.PartnerId
+                PartnerId = eventPartnerLocation.PartnerId,
             };
 
             AvailablePartners.Add(eventPartnerLocationViewModel);

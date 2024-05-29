@@ -2,9 +2,7 @@
 
 namespace TrashMob.Models
 {
-    using System.Collections.Generic;
-
-    public partial class EventPartnerLocationServiceStatus : LookupModel
+    public class EventPartnerLocationServiceStatus : LookupModel
     {
         public EventPartnerLocationServiceStatus()
         {

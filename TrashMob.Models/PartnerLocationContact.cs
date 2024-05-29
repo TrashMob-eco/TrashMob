@@ -2,9 +2,7 @@
 
 namespace TrashMob.Models
 {
-    using System;
-
-    public partial class PartnerLocationContact : KeyedModel
+    public class PartnerLocationContact : KeyedModel
     {
         public Guid PartnerLocationId { get; set; }
 

@@ -1,9 +1,8 @@
 ﻿namespace TrashMob.Controllers
 {
-    using Microsoft.ApplicationInsights;
+    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using System.Threading.Tasks;
     using TrashMob.Security;
     using TrashMob.Shared.Persistence.Interfaces;
 
@@ -12,7 +11,7 @@
     {
         private readonly ISecretRepository secretRepository;
 
-        public SecretsController(ISecretRepository secretRepository) : base()
+        public SecretsController(ISecretRepository secretRepository)
         {
             this.secretRepository = secretRepository;
         }

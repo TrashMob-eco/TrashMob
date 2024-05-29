@@ -1,27 +1,16 @@
 ﻿namespace TrashMob.Controllers
 {
+    using System;
     using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.DependencyInjection;
-    using System;
 
     [ApiController]
     public abstract class SecureController : BaseController
     {
         private IAuthorizationService authorizationService;
 
-        protected IAuthorizationService AuthorizationService
-        {
-            get
-            {
-                return authorizationService ?? (authorizationService = HttpContext.RequestServices.GetService<IAuthorizationService>());
-            }
-            private set
-            {
-                authorizationService = value;
-            }
-        }
         public SecureController()
         {
         }
@@ -30,14 +19,22 @@
         {
         }
 
-        public SecureController(IAuthorizationService authorizationService) : base()
+        public SecureController(IAuthorizationService authorizationService)
         {
             this.authorizationService = authorizationService;
         }
 
-        public SecureController(TelemetryClient telemetryClient, IAuthorizationService authorizationService) : base(telemetryClient)
+        public SecureController(TelemetryClient telemetryClient, IAuthorizationService authorizationService) : base(
+            telemetryClient)
         {
             this.authorizationService = authorizationService;
+        }
+
+        protected IAuthorizationService AuthorizationService
+        {
+            get => authorizationService ??
+                   (authorizationService = HttpContext.RequestServices.GetService<IAuthorizationService>());
+            private set => authorizationService = value;
         }
 
         protected Guid UserId => new(HttpContext.Items["UserId"].ToString());

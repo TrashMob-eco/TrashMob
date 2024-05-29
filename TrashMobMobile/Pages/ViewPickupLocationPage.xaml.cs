@@ -7,16 +7,16 @@ using Microsoft.Maui.Maps;
 [QueryProperty(nameof(PickupLocationId), nameof(PickupLocationId))]
 public partial class ViewPickupLocationPage : ContentPage
 {
-    private readonly ViewPickupLocationViewModel _viewModel;
+    private readonly ViewPickupLocationViewModel viewModel;
 
     public ViewPickupLocationPage(ViewPickupLocationViewModel viewModel)
     {
         InitializeComponent();
-        _viewModel = viewModel;
-        _viewModel.Notify = Notify;
-        _viewModel.NotifyError = NotifyError;
-        _viewModel.Navigation = Navigation;
-        BindingContext = _viewModel;
+        this.viewModel = viewModel;
+        this.viewModel.Notify = Notify;
+        this.viewModel.NotifyError = NotifyError;
+        this.viewModel.Navigation = Navigation;
+        BindingContext = this.viewModel;
     }
 
     public string PickupLocationId { get; set; }
@@ -24,11 +24,11 @@ public partial class ViewPickupLocationPage : ContentPage
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        await _viewModel.Init(new Guid(PickupLocationId));
+        await viewModel.Init(new Guid(PickupLocationId));
 
-        if (_viewModel?.PickupLocationViewModel?.Address?.Location != null)
+        if (viewModel?.PickupLocationViewModel?.Address?.Location != null)
         {
-            var mapSpan = new MapSpan(_viewModel.PickupLocationViewModel.Address.Location, 0.05, 0.05);
+            var mapSpan = new MapSpan(viewModel.PickupLocationViewModel.Address.Location, 0.05, 0.05);
             pickupLocationsMap.MoveToRegion(mapSpan);
         }
     }
@@ -53,7 +53,7 @@ public partial class ViewPickupLocationPage : ContentPage
             BackgroundColor = Colors.Red,
             TextColor = Colors.White,
             CornerRadius = new CornerRadius(10),
-            Font = Microsoft.Maui.Font.SystemFontOfSize(14)
+            Font = Microsoft.Maui.Font.SystemFontOfSize(14),
         };
 
         var text = message;

@@ -2,9 +2,7 @@
 
 namespace TrashMob.Models
 {
-    using System.Collections.Generic;
-
-    public partial class Partner : KeyedModel
+    public class Partner : KeyedModel
     {
         public Partner()
         {

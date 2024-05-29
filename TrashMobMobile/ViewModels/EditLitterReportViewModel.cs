@@ -194,7 +194,7 @@ public partial class EditLitterReportViewModel : BaseViewModel
                 LastUpdatedDate = litterImageViewModel.LastUpdatedDate,
 
                 // Use the Azure Blob Url as local file on create
-                AzureBlobURL = litterImageViewModel.FilePath
+                AzureBlobURL = litterImageViewModel.FilePath,
             };
 
             litterReport.LitterImages.Add(litterImage);

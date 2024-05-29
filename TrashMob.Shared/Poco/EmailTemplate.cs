@@ -1,6 +1,6 @@
 ﻿namespace TrashMob.Shared.Poco
 {
-    public partial class EmailTemplate
+    public class EmailTemplate
     {
         public string Name { get; set; }
 

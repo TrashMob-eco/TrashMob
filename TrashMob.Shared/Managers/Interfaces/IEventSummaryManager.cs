@@ -6,7 +6,6 @@
     using System.Threading.Tasks;
     using TrashMob.Models;
     using TrashMob.Models.Poco;
-    using TrashMob.Shared.Poco;
 
     public interface IEventSummaryManager : IBaseManager<EventSummary>
     {
@@ -14,6 +13,7 @@
 
         Task<Stats> GetStatsByUser(Guid userId, CancellationToken cancellationToken);
 
-        Task<IEnumerable<DisplayEventSummary>> GetFilteredAsync(LocationFilter locationFilter, CancellationToken cancellationToken);
+        Task<IEnumerable<DisplayEventSummary>> GetFilteredAsync(LocationFilter locationFilter,
+            CancellationToken cancellationToken);
     }
 }

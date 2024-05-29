@@ -10,12 +10,12 @@ public class AuthService : IAuthService
 {
     private readonly IUserManager userManager;
 
-    private string _accessToken = string.Empty;
+    private string accessToken = string.Empty;
 
-    private DateTimeOffset _expiresOn;
-    private IPublicClientApplication _pca;
+    private DateTimeOffset expiresOn;
+    private IPublicClientApplication pca;
 
-    private string _userEmail = string.Empty;
+    private string userEmail = string.Empty;
 
     public AuthService(IUserManager userManager)
     {
@@ -25,12 +25,12 @@ public class AuthService : IAuthService
 
     public async Task<SignInResult> SignInAsync()
     {
-        if (_pca == null)
+        if (pca == null)
         {
             InitializeClient();
         }
 
-        _ = await _pca.GetAccountsAsync();
+        _ = await pca.GetAccountsAsync();
 
         try
         {
@@ -42,25 +42,25 @@ public class AuthService : IAuthService
             Debug.WriteLine($"MSAL Silent Error: {ex.Message}");
             return new SignInResult
             {
-                Succeeded = false
+                Succeeded = false,
             };
         }
     }
 
     public async Task SignOutAsync()
     {
-        if (_pca == null)
+        if (pca == null)
         {
             InitializeClient();
         }
 
-        var accounts = await _pca.GetAccountsAsync();
+        var accounts = await pca.GetAccountsAsync();
 
         try
         {
             foreach (var account in accounts)
             {
-                await _pca.RemoveAsync(account);
+                await pca.RemoveAsync(account);
             }
 
             App.CurrentUser = null;
@@ -74,17 +74,17 @@ public class AuthService : IAuthService
 
     public async Task<SignInResult> SignInSilentAsync(bool AllowInteractive = true)
     {
-        if (_pca == null)
+        if (pca == null)
         {
             InitializeClient();
         }
 
-        var accounts = await _pca.GetAccountsAsync();
+        var accounts = await pca.GetAccountsAsync();
         AuthenticationResult result;
 
         try
         {
-            result = await _pca
+            result = await pca
                 .AcquireTokenSilent(AuthConstants.Scopes, accounts.FirstOrDefault())
                 .ExecuteAsync();
         }
@@ -97,7 +97,7 @@ public class AuthService : IAuthService
 
             return new SignInResult
             {
-                Succeeded = false
+                Succeeded = false,
             };
         }
 
@@ -107,28 +107,28 @@ public class AuthService : IAuthService
 
             return new SignInResult
             {
-                Succeeded = true
+                Succeeded = true,
             };
         }
 
         return new SignInResult
         {
-            Succeeded = false
+            Succeeded = false,
         };
     }
 
     public async Task<string> GetAccessTokenAsync()
     {
-        if (!string.IsNullOrWhiteSpace(_accessToken) && !IsTokenExpired())
+        if (!string.IsNullOrWhiteSpace(accessToken) && !IsTokenExpired())
         {
-            return _accessToken;
+            return accessToken;
         }
 
-        var accounts = await _pca.GetAccountsAsync();
+        var accounts = await pca.GetAccountsAsync();
 
         try
         {
-            var result = await _pca
+            var result = await pca
                 .AcquireTokenSilent(AuthConstants.Scopes, accounts.FirstOrDefault())
                 .ExecuteAsync();
 
@@ -145,12 +145,12 @@ public class AuthService : IAuthService
 
     public string GetUserEmail()
     {
-        if (string.IsNullOrWhiteSpace(_userEmail))
+        if (string.IsNullOrWhiteSpace(userEmail))
         {
             throw new Exception("User is not authenticated");
         }
 
-        return _userEmail;
+        return userEmail;
     }
 
     private void InitializeClient()
@@ -165,19 +165,19 @@ public class AuthService : IAuthService
 #endif
             .WithRedirectUri(AuthConstants.RedirectUri);
 
-        _pca = pcaBuilder.Build();
+        pca = pcaBuilder.Build();
     }
 
     private async Task<SignInResult> SignInInteractive()
     {
-        if (_pca == null)
+        if (pca == null)
         {
             InitializeClient();
         }
 
         try
         {
-            var result = await _pca
+            var result = await pca
                 .AcquireTokenInteractive(AuthConstants.Scopes)
                 .ExecuteAsync();
 
@@ -187,7 +187,7 @@ public class AuthService : IAuthService
 
                 return new SignInResult
                 {
-                    Succeeded = true
+                    Succeeded = true,
                 };
             }
         }
@@ -198,21 +198,21 @@ public class AuthService : IAuthService
 
         return new SignInResult
         {
-            Succeeded = false
+            Succeeded = false,
         };
     }
 
     private async Task SetAuthenticated(AuthenticationResult result)
     {
-        _accessToken = result.AccessToken;
-        _expiresOn = result.ExpiresOn;
+        accessToken = result.AccessToken;
+        expiresOn = result.ExpiresOn;
 
         var emailClaim = result.ClaimsPrincipal.Claims.FirstOrDefault(c => c.Type == "email");
         var context = GetUserContext(result);
 
         if (emailClaim != null)
         {
-            _userEmail = emailClaim.Value;
+            userEmail = emailClaim.Value;
             var user = await userManager.GetUserByEmailAsync(context.EmailAddress, context);
 
             App.CurrentUser = user;
@@ -224,14 +224,14 @@ public class AuthService : IAuthService
     private bool IsTokenExpired()
     {
         var bufferTime = TimeSpan.FromMinutes(5);
-        return DateTimeOffset.UtcNow > _expiresOn - bufferTime;
+        return DateTimeOffset.UtcNow > expiresOn - bufferTime;
     }
 
-    private UserContext GetUserContext(AuthenticationResult ar)
+    private static UserContext GetUserContext(AuthenticationResult ar)
     {
         var newContext = new UserContext
         {
-            IsLoggedOn = false
+            IsLoggedOn = false,
         };
 
         var user = ParseIdToken(ar.IdToken);
@@ -248,7 +248,7 @@ public class AuthService : IAuthService
         return newContext;
     }
 
-    private JObject ParseIdToken(string idToken)
+    private static JObject ParseIdToken(string idToken)
     {
         // Get the piece with actual user info
         idToken = idToken.Split('.')[1];
@@ -256,12 +256,12 @@ public class AuthService : IAuthService
         return JObject.Parse(idToken);
     }
 
-    private string Base64UrlDecode(string s)
+    private static string Base64UrlDecode(string s)
     {
         s = s.Replace('-', '+').Replace('_', '/');
         s = s.PadRight(s.Length + (4 - s.Length % 4) % 4, '=');
         var byteArray = Convert.FromBase64String(s);
-        var decoded = Encoding.UTF8.GetString(byteArray, 0, byteArray.Count());
+        var decoded = Encoding.UTF8.GetString(byteArray, 0, byteArray.Length);
         return decoded;
     }
 }

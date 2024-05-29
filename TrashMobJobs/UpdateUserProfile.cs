@@ -1,9 +1,8 @@
-
 namespace TrashMobJobs
 {
+    using System.Net;
     using System.Text.Json;
     using System.Threading.Tasks;
-    using System.Net;
     using Microsoft.Azure.Functions.Worker;
     using Microsoft.Azure.Functions.Worker.Http;
     using Microsoft.Extensions.Logging;
@@ -12,8 +11,8 @@ namespace TrashMobJobs
 
     public class UpdateUserProfile
     {
-        private readonly ILogger logger;
         private readonly IActiveDirectoryManager activeDirectoryManager;
+        private readonly ILogger logger;
 
         public UpdateUserProfile(ILoggerFactory loggerFactory, IActiveDirectoryManager activeDirectoryManager)
         {
@@ -30,35 +29,38 @@ namespace TrashMobJobs
 
             logger.LogInformation(json);
 
-            var activeDirectoryUpdateUserProfileRequest = JsonSerializer.Deserialize<ActiveDirectoryUpdateUserProfileRequest>(json);
-            var updateResponse = await activeDirectoryManager.UpdateUserProfileAsync(activeDirectoryUpdateUserProfileRequest);
+            var activeDirectoryUpdateUserProfileRequest =
+                JsonSerializer.Deserialize<ActiveDirectoryUpdateUserProfileRequest>(json);
+            var updateResponse =
+                await activeDirectoryManager.UpdateUserProfileAsync(activeDirectoryUpdateUserProfileRequest);
 
             HttpResponseData response;
             switch (updateResponse.action)
             {
                 case "UserNotFound":
-                    {
-                        response = req.CreateResponse(HttpStatusCode.NotFound);
-                        var validationResponse = updateResponse as ActiveDirectoryValidationFailedResponse;
-                        response.WriteString(JsonSerializer.Serialize(validationResponse));
-                        logger.LogError($"User with objectId {activeDirectoryUpdateUserProfileRequest.objectId} was not found.");
-                        break;
-                    }
+                {
+                    response = req.CreateResponse(HttpStatusCode.NotFound);
+                    var validationResponse = updateResponse as ActiveDirectoryValidationFailedResponse;
+                    response.WriteString(JsonSerializer.Serialize(validationResponse));
+                    logger.LogError(
+                        $"User with objectId {activeDirectoryUpdateUserProfileRequest.objectId} was not found.");
+                    break;
+                }
                 case "ValidationError":
-                    {
-                        response = req.CreateResponse(HttpStatusCode.Conflict);
-                        var validationResponse = updateResponse as ActiveDirectoryValidationFailedResponse;
-                        validationResponse.status = ((int)HttpStatusCode.Conflict).ToString();
-                        response.WriteString(JsonSerializer.Serialize(validationResponse));
-                        break;
-                    }
+                {
+                    response = req.CreateResponse(HttpStatusCode.Conflict);
+                    var validationResponse = updateResponse as ActiveDirectoryValidationFailedResponse;
+                    validationResponse.status = ((int)HttpStatusCode.Conflict).ToString();
+                    response.WriteString(JsonSerializer.Serialize(validationResponse));
+                    break;
+                }
                 case "Failed":
-                    {
-                        response = req.CreateResponse(HttpStatusCode.InternalServerError);
-                        var blockingResponse = updateResponse as ActiveDirectoryBlockingResponse;
-                        response.WriteString(JsonSerializer.Serialize(blockingResponse));
-                        break;
-                    }
+                {
+                    response = req.CreateResponse(HttpStatusCode.InternalServerError);
+                    var blockingResponse = updateResponse as ActiveDirectoryBlockingResponse;
+                    response.WriteString(JsonSerializer.Serialize(blockingResponse));
+                    break;
+                }
                 default:
                     response = req.CreateResponse(HttpStatusCode.OK);
                     break;

@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
+
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
@@ -6,49 +7,64 @@
              Title="Event Details">
     <ScrollView>
         <Grid>
-            <VerticalStackLayout>
-                <Image Source="bannerlogo.png" />
-
-                <Label 
-            Text="{Binding EventViewModel.Name}"
-            FontSize="Large"
-            VerticalOptions="Center" 
-            HorizontalOptions="Start"
-            HorizontalTextAlignment="Center"
-                TextColor="Purple"
-                Margin="5"/>
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
+                <Frame Style="{DynamicResource Frame}" Padding="1">
+                    <Image Source="bannerlogo.png" />
+                </Frame>
+                <Label
+                    Text="{Binding EventViewModel.Name}" Style="{StaticResource Headline}"
+                    VerticalOptions="Center"
+                    Margin="5" />
 
                 <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
-                <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" RowSpacing="3" ColumnDefinitions="1*, 2*">
-                    <Label Grid.Row="0" Grid.Column="0" Text="{Binding SelectedEventType}" FontSize="Small" Margin="10, 0, 10,0" Grid.ColumnSpan="2" />
-                    <Label Grid.Row="1" Grid.Column="0" Text="{Binding EventViewModel.DisplayDate}" FontAttributes="Bold" Margin="10,0,10,0" Grid.ColumnSpan="2" />
-                    <Label Grid.Row="2" Grid.Column="0" Text="{Binding EventViewModel.DisplayTime}" FontSize="Micro" Margin="10, 0, 10,0" />
-                    <Label Grid.Row="2" Grid.Column="1" Text="{Binding DisplayDuration}" FontSize="Micro" Margin="10, 0, 10,0" />
-                    <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding EventViewModel.Address.DisplayAddress }" FontAttributes="Bold" Margin="10,0,10,0" />
-                    <maps:Map Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" x:Name="eventLocationMap" ItemsSource="{Binding Events}" IsShowingUser="True" HeightRequest="300" IsScrollEnabled="True">
+                <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" RowSpacing="3"
+                      ColumnDefinitions="1*, 2*">
+                    <Label Grid.Row="0" Grid.Column="0" Text="{Binding SelectedEventType}" FontSize="Small"
+                           Margin="10, 0, 10,0" Grid.ColumnSpan="2" />
+                    <Label Grid.Row="1" Grid.Column="0" Text="{Binding EventViewModel.DisplayDate}"
+                           FontAttributes="Bold" Margin="10,0,10,0" Grid.ColumnSpan="2" />
+                    <Label Grid.Row="2" Grid.Column="0" Text="{Binding EventViewModel.DisplayTime}" FontSize="Micro"
+                           Margin="10, 0, 10,0" />
+                    <Label Grid.Row="2" Grid.Column="1" Text="{Binding DisplayDuration}" FontSize="Micro"
+                           Margin="10, 0, 10,0" />
+                    <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                           Text="{Binding EventViewModel.Address.DisplayAddress }" FontAttributes="Bold"
+                           Margin="10,0,10,0" />
+                    <maps:Map Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" x:Name="eventLocationMap"
+                              ItemsSource="{Binding Events}">
                         <maps:Map.ItemTemplate>
                             <DataTemplate>
                                 <maps:Pin Location="{Binding Address.Location}"
-                              Address="{Binding Address.StreetAddress}"
-                              Label="{Binding Name}" />
+                                          Address="{Binding Address.StreetAddress}"
+                                          Label="{Binding Name}" />
                             </DataTemplate>
                         </maps:Map.ItemTemplate>
                     </maps:Map>
-                    <Label Grid.Row="6" Grid.Column="0" Text="About this event" FontAttributes="Bold" Grid.ColumnSpan="2" />
-                    <Label Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding EventViewModel.Description}" FontSize="Micro" />
-                    <Label Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding WhatToExpect}" FontSize="Micro" />
+                    <Label Grid.Row="6" Grid.Column="0" Text="About this event" FontAttributes="Bold"
+                           Grid.ColumnSpan="2" />
+                    <Label Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding EventViewModel.Description}"
+                           FontSize="Micro" />
+                    <Label Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding WhatToExpect}"
+                           FontSize="Micro" />
                     <Label Grid.Row="9" Grid.Column="0" Text="Attendees" FontSize="Micro" />
                     <Label Grid.Row="9" Grid.Column="1" Text="{Binding AttendeeCount}" FontSize="Micro" />
-                    <Button Grid.Row="10" Grid.Column="1" Text="Register" Command="{Binding RegisterCommand}" IsVisible="{Binding EnableRegister}" Margin="10" />
-                    <Button Grid.Row="10" Grid.Column="1" Text="Unregister" Command="{Binding UnregisterCommand}" IsVisible="{Binding EnableUnregister}" Margin="10"/>
-                    <Button Grid.Row="10" Grid.Column="1" Text="Edit Event" Command="{Binding EditEventCommand}" IsVisible="{Binding EnableEditEvent}" Margin="10"/>
-                    <Button Grid.Row="10" Grid.Column="1" Text="View Event Summary" Command="{Binding ViewEventSummaryCommand}" IsVisible="{Binding EnableViewEventSummary}" Margin="10"/>
+                    <Button Grid.Row="10" Grid.Column="1" Text="Register" Command="{Binding RegisterCommand}"
+                            IsVisible="{Binding EnableRegister}" Margin="10" />
+                    <Button Grid.Row="10" Grid.Column="1" Text="Unregister" Command="{Binding UnregisterCommand}"
+                            IsVisible="{Binding EnableUnregister}" Margin="10" />
+                    <Button Grid.Row="10" Grid.Column="1" Text="Edit Event" Command="{Binding EditEventCommand}"
+                            IsVisible="{Binding EnableEditEvent}" Margin="10" />
+                    <Button Grid.Row="10" Grid.Column="1" Text="View Event Summary"
+                            Command="{Binding ViewEventSummaryCommand}" IsVisible="{Binding EnableViewEventSummary}"
+                            Margin="10" />
                 </Grid>
 
             </VerticalStackLayout>
-            <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill" VerticalOptions="Fill" IsVisible="{Binding IsBusy}"/>
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
+            <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
+                     VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center"
+                               HorizontalOptions="Center" />
         </Grid>
     </ScrollView>
 </ContentPage>

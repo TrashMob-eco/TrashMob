@@ -1,13 +1,12 @@
-﻿
-namespace TrashMob.Shared.Managers
+﻿namespace TrashMob.Shared.Managers
 {
-    using Microsoft.EntityFrameworkCore;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.EntityFrameworkCore;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
@@ -55,12 +54,14 @@ namespace TrashMob.Shared.Managers
             return await Repository.Get().ToListAsync(cancellationToken);
         }
 
-        public virtual async Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> expression, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> expression,
+            CancellationToken cancellationToken = default)
         {
             return await Repository.Get(expression).ToListAsync(cancellationToken);
         }
 
-        public virtual async Task<IEnumerable<T>> GetByCreatedUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<T>> GetByCreatedUserIdAsync(Guid userId,
+            CancellationToken cancellationToken = default)
         {
             var results = await Repository.Get()
                 .Where(t => t.CreatedByUserId == userId)
@@ -69,7 +70,8 @@ namespace TrashMob.Shared.Managers
             return results;
         }
 
-        public virtual Task<IEnumerable<T>> GetByParentIdAsync(Guid parentId, CancellationToken cancellationToken = default)
+        public virtual Task<IEnumerable<T>> GetByParentIdAsync(Guid parentId,
+            CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -99,7 +101,8 @@ namespace TrashMob.Shared.Managers
             throw new NotImplementedException();
         }
 
-        public virtual Task<IEnumerable<T>> GetCollectionAsync(Guid parentId, Guid secondId, CancellationToken cancellationToken = default)
+        public virtual Task<IEnumerable<T>> GetCollectionAsync(Guid parentId, Guid secondId,
+            CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

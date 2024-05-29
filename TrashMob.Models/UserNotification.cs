@@ -1,12 +1,8 @@
 ﻿#nullable disable
 
-using TrashMob;
-
 namespace TrashMob.Models
 {
-    using System;
-
-    public partial class UserNotification : KeyedModel
+    public class UserNotification : KeyedModel
     {
         public Guid UserId { get; set; }
 

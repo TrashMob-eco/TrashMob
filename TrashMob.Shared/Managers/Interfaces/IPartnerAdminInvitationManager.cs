@@ -11,12 +11,14 @@
     {
         Task<Partner> GetPartnerForInvitation(Guid partnerAdminInvitationId, CancellationToken cancellationToken);
 
-        Task<IEnumerable<DisplayPartnerAdminInvitation>> GetInvitationsForUser(Guid userId, CancellationToken cancellationToken);
+        Task<IEnumerable<DisplayPartnerAdminInvitation>> GetInvitationsForUser(Guid userId,
+            CancellationToken cancellationToken);
 
         Task AcceptInvitation(Guid partnerAdminInvitationId, Guid UserId, CancellationToken cancellationToken);
 
         Task DeclineInvitation(Guid partnerAdminInvitationId, Guid UserId, CancellationToken cancellationToken);
 
-        Task<PartnerAdminInvitation> ResendPartnerAdminInvitation(Guid partnerAdminInvitationId, Guid UserId, CancellationToken cancellationToken);
+        Task<PartnerAdminInvitation> ResendPartnerAdminInvitation(Guid partnerAdminInvitationId, Guid UserId,
+            CancellationToken cancellationToken);
     }
 }

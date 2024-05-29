@@ -7,16 +7,16 @@ using CommunityToolkit.Maui.Core;
 [QueryProperty(nameof(PickupLocationId), nameof(PickupLocationId))]
 public partial class EditPickupLocationPage : ContentPage
 {
-    private readonly EditPickupLocationViewModel _viewModel;
+    private readonly EditPickupLocationViewModel viewModel;
 
     public EditPickupLocationPage(EditPickupLocationViewModel viewModel)
     {
         InitializeComponent();
-        _viewModel = viewModel;
-        _viewModel.Notify = Notify;
-        _viewModel.NotifyError = NotifyError;
-        _viewModel.Navigation = Navigation;
-        BindingContext = _viewModel;
+        this.viewModel = viewModel;
+        this.viewModel.Notify = Notify;
+        this.viewModel.NotifyError = NotifyError;
+        this.viewModel.Navigation = Navigation;
+        BindingContext = this.viewModel;
     }
 
     public string EventId { get; set; }
@@ -26,7 +26,7 @@ public partial class EditPickupLocationPage : ContentPage
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        await _viewModel.Init(new Guid(EventId), new Guid(PickupLocationId));
+        await viewModel.Init(new Guid(EventId), new Guid(PickupLocationId));
     }
 
     private async Task Notify(string message)
@@ -49,7 +49,7 @@ public partial class EditPickupLocationPage : ContentPage
             BackgroundColor = Colors.Red,
             TextColor = Colors.White,
             CornerRadius = new CornerRadius(10),
-            Font = Microsoft.Maui.Font.SystemFontOfSize(14)
+            Font = Microsoft.Maui.Font.SystemFontOfSize(14),
         };
 
         var text = message;

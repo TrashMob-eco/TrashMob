@@ -1,16 +1,16 @@
 ﻿namespace TrashMob.Shared.Tests
 {
+    using System;
+    using System.Collections.Generic;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
-    using System;
-    using System.Collections.Generic;
     using TrashMob.Shared.Engine;
     using TrashMob.Shared.Managers;
     using TrashMob.Shared.Managers.Interfaces;
     using Xunit;
 
-    public class EmailManagerTest  
+    public class EmailManagerTest
     {
         private readonly IEmailManager emailManager;
 
@@ -42,4 +42,3 @@
         }
     }
 }
-

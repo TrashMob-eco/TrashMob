@@ -15,12 +15,14 @@
     {
         private readonly IKeyedRepository<Event> eventRepository;
 
-        public QueriesManager(IBaseRepository<IftttTrigger> repository, IKeyedRepository<Event> eventRepository) : base(repository)
+        public QueriesManager(IBaseRepository<IftttTrigger> repository, IKeyedRepository<Event> eventRepository) :
+            base(repository)
         {
             this.eventRepository = eventRepository;
         }
 
-        public async Task<List<IftttEventResponse>> GetEventsQueryDataAsync(QueriesRequest queryRequest, Guid userId, CancellationToken cancellationToken)
+        public async Task<List<IftttEventResponse>> GetEventsQueryDataAsync(QueriesRequest queryRequest, Guid userId,
+            CancellationToken cancellationToken)
         {
             if (queryRequest == null)
             {
@@ -31,9 +33,9 @@
             var trigger = Repository.Get(t => t.TriggerId == queryRequest.trigger_identity).FirstOrDefault();
 
             // Store Trigger in database if it does not exist
-            if (trigger == null)       
+            if (trigger == null)
             {
-                trigger = new IftttTrigger()
+                trigger = new IftttTrigger
                 {
                     TriggerId = queryRequest.trigger_identity,
                     CreatedByUserId = userId,
@@ -61,23 +63,25 @@
             }
             else
             {
-                events = eventRepository.Get(e => (e.City == eventFields.city || string.IsNullOrWhiteSpace(eventFields.city)) &&
-                                                      (e.Region == eventFields.region || string.IsNullOrWhiteSpace(eventFields.region)) &&
-                                                      (e.Country == eventFields.country || string.IsNullOrWhiteSpace(eventFields.country)) &&
-                                                      (e.PostalCode == eventFields.postal_code || string.IsNullOrWhiteSpace(eventFields.postal_code)));
+                events = eventRepository.Get(e =>
+                    (e.City == eventFields.city || string.IsNullOrWhiteSpace(eventFields.city)) &&
+                    (e.Region == eventFields.region || string.IsNullOrWhiteSpace(eventFields.region)) &&
+                    (e.Country == eventFields.country || string.IsNullOrWhiteSpace(eventFields.country)) &&
+                    (e.PostalCode == eventFields.postal_code || string.IsNullOrWhiteSpace(eventFields.postal_code)));
             }
 
-            
+
             var triggersResponses = new List<IftttEventResponse>();
 
             // Get all the public events in the future
-            foreach (var mobEvent in events.Where(e => e.IsEventPublic && e.EventDate >= DateTimeOffset.UtcNow).ToList())
+            foreach (var mobEvent in events.Where(e => e.IsEventPublic && e.EventDate >= DateTimeOffset.UtcNow)
+                         .ToList())
             {
                 var triggersResponse = new IftttEventResponse();
-                triggersResponse.meta = new MetaResponse()
+                triggersResponse.meta = new MetaResponse
                 {
                     id = mobEvent.Id.ToString(),
-                    timestamp = mobEvent.EventDate.Ticks
+                    timestamp = mobEvent.EventDate.Ticks,
                 };
 
                 triggersResponse.event_name = mobEvent.Name;

@@ -1,8 +1,5 @@
-﻿
-namespace TrashMob.Models.Poco
+﻿namespace TrashMob.Models.Poco
 {
-    using System;
-
     public class DisplayEventSummary
     {
         public Guid EventId { get; set; }

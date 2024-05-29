@@ -40,7 +40,7 @@ public partial class ViewPickupLocationViewModel : BaseViewModel
                 Longitude = pickupLocation.Longitude.Value,
                 PostalCode = pickupLocation.PostalCode,
                 Region = pickupLocation.Region,
-                StreetAddress = pickupLocation.StreetAddress
+                StreetAddress = pickupLocation.StreetAddress,
             },
             Id = pickupLocation.Id,
             Notes = pickupLocation.Notes,
@@ -49,7 +49,7 @@ public partial class ViewPickupLocationViewModel : BaseViewModel
             NotifyError = NotifyError,
             Navigation = Navigation,
             PickupLocation = pickupLocation,
-            ImageUrl = pickupLocation.ImageUrl
+            ImageUrl = pickupLocation.ImageUrl,
         };
 
         PickupLocationViewModel = pickupLocationViewModel;

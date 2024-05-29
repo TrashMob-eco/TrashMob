@@ -7,7 +7,7 @@ using TrashMobMobile.Extensions;
 
 public partial class EventViewModel : ObservableObject
 {
-    private DateTimeOffset _eventDate;
+    private DateTimeOffset eventDate;
 
     [ObservableProperty]
     private AddressViewModel address;
@@ -52,13 +52,13 @@ public partial class EventViewModel : ObservableObject
 
     public DateTimeOffset EventDate
     {
-        get => _eventDate;
+        get => eventDate;
 
         set
         {
-            if (_eventDate != value)
+            if (eventDate != value)
             {
-                _eventDate = value;
+                eventDate = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(DisplayDate));
                 OnPropertyChanged(nameof(DisplayTime));
@@ -155,7 +155,7 @@ public partial class EventViewModel : ObservableObject
             PostalCode = Address.PostalCode,
             Region = Address.Region,
             StreetAddress = Address.StreetAddress,
-            EventStatusId = EventStatusId
+            EventStatusId = EventStatusId,
         };
     }
 

@@ -8,7 +8,7 @@
     using TrashMob.Models;
 
     /// <summary>
-    /// Generic ILookupRepository to cut down on boilerplate code
+    ///     Generic ILookupRepository to cut down on boilerplate code
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public interface ILookupRepository<T> where T : LookupModel

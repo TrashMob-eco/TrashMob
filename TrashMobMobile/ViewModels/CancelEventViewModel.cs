@@ -37,7 +37,7 @@ public partial class CancelEventViewModel : BaseViewModel
         var cancellationRequest = new EventCancellationRequest
         {
             CancellationReason = EventViewModel.CancellationReason,
-            EventId = EventViewModel.Id
+            EventId = EventViewModel.Id,
         };
 
         await mobEventManager.DeleteEventAsync(cancellationRequest);

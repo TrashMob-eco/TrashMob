@@ -1,8 +1,8 @@
 ﻿namespace TrashMob.Shared.Persistence
 {
+    using System;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
-    using System;
     using TrashMob.Models;
     using TrashMob.Shared.Engine;
 
@@ -12,7 +12,7 @@
 
         public MobDbContext(IConfiguration configuration)
         {
-            this.configuration = configuration;            
+            this.configuration = configuration;
         }
 
         public virtual DbSet<ContactRequest> ContactRequests { get; set; }
@@ -48,7 +48,7 @@
         public virtual DbSet<PartnerDocument> PartnerDocuments { get; set; }
 
         public virtual DbSet<PartnerLocation> PartnerLocations { get; set; }
-        
+
         public virtual DbSet<PartnerLocationContact> PartnerLocationContacts { get; set; }
 
         public virtual DbSet<PartnerLocationService> PartnerLocationServices { get; set; }
@@ -80,13 +80,13 @@
         public virtual DbSet<UserNotificationType> UserNotificationTypes { get; set; }
 
         public virtual DbSet<Waiver> WaiverStatuses { get; set; }
-        
+
         public virtual DbSet<LitterReportStatus> LitterReportStatuses { get; set; }
 
         public virtual DbSet<EventLitterReport> EventLitterReports { get; set; }
 
         public virtual DbSet<LitterImage> LitterImages { get; set; }
-        
+
         public virtual DbSet<LitterReport> LitterReports { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -104,7 +104,7 @@
                 entity.Property(e => e.Name).HasMaxLength(64);
 
                 entity.Property(e => e.Email).HasMaxLength(64);
-                 
+
                 entity.Property(e => e.Message).HasMaxLength(2048);
 
                 entity.HasOne(d => d.CreatedByUser)
@@ -167,10 +167,10 @@
                     .HasMaxLength(64);
 
                 entity.Property(e => e.Phone)
-                   .HasMaxLength(30);
+                    .HasMaxLength(30);
 
                 entity.Property(e => e.Notes)
-                  .HasMaxLength(2000);
+                    .HasMaxLength(2000);
 
                 entity.Property(e => e.CreatedByUserId);
 
@@ -210,8 +210,8 @@
                 entity.HasOne(d => d.SocialMediaAccountType)
                     .WithMany(p => p.PartnerSocialMediaAccounts)
                     .HasForeignKey(d => d.SocialMediaAccountTypeId)
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK_PartnerSocialMediaAccounts_SocialMediaAccountType");
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PartnerSocialMediaAccounts_SocialMediaAccountType");
 
                 entity.HasOne(d => d.CreatedByUser)
                     .WithMany(p => p.PartnerSocialMediaAccountsCreated)
@@ -413,10 +413,26 @@
                     .HasMaxLength(50);
 
                 entity.HasData(
-                    new EventPartnerLocationServiceStatus { Id = (int)EventPartnerLocationServiceStatusEnum.None, Name = "None", Description = "Partner has not been contacted", DisplayOrder = 1, IsActive = true },
-                    new EventPartnerLocationServiceStatus { Id = (int)EventPartnerLocationServiceStatusEnum.Requested, Name = "Requested", Description = "Request is awaiting processing by partner", DisplayOrder = 2, IsActive = true },
-                    new EventPartnerLocationServiceStatus { Id = (int)EventPartnerLocationServiceStatusEnum.Accepted, Name = "Accepted", Description = "Request has been approved by partner", DisplayOrder = 3, IsActive = true },
-                    new EventPartnerLocationServiceStatus { Id = (int)EventPartnerLocationServiceStatusEnum.Declined, Name = "Declined", Description = "Request has been declined by partner", DisplayOrder = 4, IsActive = true });
+                    new EventPartnerLocationServiceStatus
+                    {
+                        Id = (int)EventPartnerLocationServiceStatusEnum.None, Name = "None",
+                        Description = "Partner has not been contacted", DisplayOrder = 1, IsActive = true,
+                    },
+                    new EventPartnerLocationServiceStatus
+                    {
+                        Id = (int)EventPartnerLocationServiceStatusEnum.Requested, Name = "Requested",
+                        Description = "Request is awaiting processing by partner", DisplayOrder = 2, IsActive = true,
+                    },
+                    new EventPartnerLocationServiceStatus
+                    {
+                        Id = (int)EventPartnerLocationServiceStatusEnum.Accepted, Name = "Accepted",
+                        Description = "Request has been approved by partner", DisplayOrder = 3, IsActive = true,
+                    },
+                    new EventPartnerLocationServiceStatus
+                    {
+                        Id = (int)EventPartnerLocationServiceStatusEnum.Declined, Name = "Declined",
+                        Description = "Request has been declined by partner", DisplayOrder = 4, IsActive = true,
+                    });
             });
 
             modelBuilder.Entity<EventStatus>(entity =>
@@ -430,10 +446,26 @@
                     .HasMaxLength(50);
 
                 entity.HasData(
-                    new EventStatus { Id = (int)EventStatusEnum.Active, Name = "Active", Description = "Event is actively recruiting new members", DisplayOrder = 1, IsActive = true },
-                    new EventStatus { Id = (int)EventStatusEnum.Full, Name = "Full", Description = "Event is full", DisplayOrder = 2, IsActive = true },
-                    new EventStatus { Id = (int)EventStatusEnum.Canceled, Name = "Canceled", Description = "Event has been canceled", DisplayOrder = 3, IsActive = true },
-                    new EventStatus { Id = (int)EventStatusEnum.Complete, Name = "Completed", Description = "Event has completed", DisplayOrder = 4, IsActive = true });
+                    new EventStatus
+                    {
+                        Id = (int)EventStatusEnum.Active, Name = "Active",
+                        Description = "Event is actively recruiting new members", DisplayOrder = 1, IsActive = true,
+                    },
+                    new EventStatus
+                    {
+                        Id = (int)EventStatusEnum.Full, Name = "Full", Description = "Event is full", DisplayOrder = 2,
+                        IsActive = true,
+                    },
+                    new EventStatus
+                    {
+                        Id = (int)EventStatusEnum.Canceled, Name = "Canceled", Description = "Event has been canceled",
+                        DisplayOrder = 3, IsActive = true,
+                    },
+                    new EventStatus
+                    {
+                        Id = (int)EventStatusEnum.Complete, Name = "Completed", Description = "Event has completed",
+                        DisplayOrder = 4, IsActive = true,
+                    });
             });
 
             modelBuilder.Entity<IftttTrigger>(entity =>
@@ -464,10 +496,26 @@
                     .HasMaxLength(50);
 
                 entity.HasData(
-                    new InvitationStatus { Id = (int)InvitationStatusEnum.New, Name = "New", Description = "Invitation has not yet been sent", DisplayOrder = 1, IsActive = true },
-                    new InvitationStatus { Id = (int)InvitationStatusEnum.Sent, Name = "Sent", Description = "Invitation has been sent", DisplayOrder = 2, IsActive = true },
-                    new InvitationStatus { Id = (int)InvitationStatusEnum.Accepted, Name = "Accepted", Description = "Invitation has been accepted", DisplayOrder = 3, IsActive = true },
-                    new InvitationStatus { Id = (int)InvitationStatusEnum.Canceled, Name = "Canceled", Description = "Invitation has been canceled", DisplayOrder = 4, IsActive = true });
+                    new InvitationStatus
+                    {
+                        Id = (int)InvitationStatusEnum.New, Name = "New",
+                        Description = "Invitation has not yet been sent", DisplayOrder = 1, IsActive = true,
+                    },
+                    new InvitationStatus
+                    {
+                        Id = (int)InvitationStatusEnum.Sent, Name = "Sent", Description = "Invitation has been sent",
+                        DisplayOrder = 2, IsActive = true,
+                    },
+                    new InvitationStatus
+                    {
+                        Id = (int)InvitationStatusEnum.Accepted, Name = "Accepted",
+                        Description = "Invitation has been accepted", DisplayOrder = 3, IsActive = true,
+                    },
+                    new InvitationStatus
+                    {
+                        Id = (int)InvitationStatusEnum.Canceled, Name = "Canceled",
+                        Description = "Invitation has been canceled", DisplayOrder = 4, IsActive = true,
+                    });
             });
 
             modelBuilder.Entity<EventSummary>(entity =>
@@ -509,24 +557,83 @@
                     .HasMaxLength(50);
 
                 entity.HasData(
-                    new EventType { Id = 1, Name = "Park Cleanup", Description = "Park Cleanup", DisplayOrder = 1, IsActive = true },
-                    new EventType { Id = 2, Name = "School Cleanup", Description = "School Cleanup", DisplayOrder = 3, IsActive = true },
-                    new EventType { Id = 3, Name = "Neighborhood Cleanup", Description = "Neighborhood Cleanup", DisplayOrder = 4, IsActive = true },
-                    new EventType { Id = 4, Name = "Beach Cleanup", Description = "Beach Cleanup", DisplayOrder = 5, IsActive = true },
-                    new EventType { Id = 5, Name = "Highway Cleanup", Description = "Highway Cleanup", DisplayOrder = 6, IsActive = true },
-                    new EventType { Id = 6, Name = "Natural Disaster Cleanup", Description = "Natural Disaster Cleanup", DisplayOrder = 14, IsActive = true },
-                    new EventType { Id = 7, Name = "Trail Cleanup", Description = "Trail Cleanup", DisplayOrder = 7, IsActive = true },
-                    new EventType { Id = 8, Name = "Reef Cleanup", Description = "Reef Cleanup", DisplayOrder = 8, IsActive = true },
-                    new EventType { Id = 9, Name = "Private Land Cleanup", Description = "Private Land Cleanup", DisplayOrder = 9, IsActive = true },
-                    new EventType { Id = 10, Name = "Dog Park Cleanup", Description = "Dog Park Cleanup", DisplayOrder = 10, IsActive = true },
-                    new EventType { Id = 11, Name = "Waterway Cleanup", Description = "Waterway Cleanup", DisplayOrder = 11, IsActive = true },
-                    new EventType { Id = 12, Name = "Vandalism Cleanup", Description = "Vandalism Cleanup", DisplayOrder = 12, IsActive = true },
-                    new EventType { Id = 13, Name = "Social Event", Description = "Social Event", DisplayOrder = 13, IsActive = true },
-                    new EventType { Id = 14, Name = "Other", Description = "Other", DisplayOrder = 16, IsActive = true },
-                    new EventType { Id = 15, Name = "Snow Removal", Description = "Snow Removal", DisplayOrder = 15, IsActive = true },
-                    new EventType { Id = 16, Name = "Streetside Cleanup", Description = "Streetside Cleanup", DisplayOrder = 2, IsActive = true },
-                    new EventType { Id = 17, Name = "Habitat Restoration", Description = "Habitat Restoration", DisplayOrder = 17, IsActive = true });
-        });
+                    new EventType
+                    {
+                        Id = 1, Name = "Park Cleanup", Description = "Park Cleanup", DisplayOrder = 1, IsActive = true,
+                    },
+                    new EventType
+                    {
+                        Id = 2, Name = "School Cleanup", Description = "School Cleanup", DisplayOrder = 3,
+                        IsActive = true,
+                    },
+                    new EventType
+                    {
+                        Id = 3, Name = "Neighborhood Cleanup", Description = "Neighborhood Cleanup", DisplayOrder = 4,
+                        IsActive = true,
+                    },
+                    new EventType
+                    {
+                        Id = 4, Name = "Beach Cleanup", Description = "Beach Cleanup", DisplayOrder = 5, IsActive = true,
+                    },
+                    new EventType
+                    {
+                        Id = 5, Name = "Highway Cleanup", Description = "Highway Cleanup", DisplayOrder = 6,
+                        IsActive = true,
+                    },
+                    new EventType
+                    {
+                        Id = 6, Name = "Natural Disaster Cleanup", Description = "Natural Disaster Cleanup",
+                        DisplayOrder = 14, IsActive = true,
+                    },
+                    new EventType
+                    {
+                        Id = 7, Name = "Trail Cleanup", Description = "Trail Cleanup", DisplayOrder = 7, IsActive = true,
+                    },
+                    new EventType
+                    {
+                        Id = 8, Name = "Reef Cleanup", Description = "Reef Cleanup", DisplayOrder = 8, IsActive = true,
+                    },
+                    new EventType
+                    {
+                        Id = 9, Name = "Private Land Cleanup", Description = "Private Land Cleanup", DisplayOrder = 9,
+                        IsActive = true,
+                    },
+                    new EventType
+                    {
+                        Id = 10, Name = "Dog Park Cleanup", Description = "Dog Park Cleanup", DisplayOrder = 10,
+                        IsActive = true,
+                    },
+                    new EventType
+                    {
+                        Id = 11, Name = "Waterway Cleanup", Description = "Waterway Cleanup", DisplayOrder = 11,
+                        IsActive = true,
+                    },
+                    new EventType
+                    {
+                        Id = 12, Name = "Vandalism Cleanup", Description = "Vandalism Cleanup", DisplayOrder = 12,
+                        IsActive = true,
+                    },
+                    new EventType
+                    {
+                        Id = 13, Name = "Social Event", Description = "Social Event", DisplayOrder = 13, IsActive = true,
+                    },
+                    new EventType
+                        { Id = 14, Name = "Other", Description = "Other", DisplayOrder = 16, IsActive = true },
+                    new EventType
+                    {
+                        Id = 15, Name = "Snow Removal", Description = "Snow Removal", DisplayOrder = 15, IsActive = true,
+                    },
+                    new EventType
+                    {
+                        Id = 16, Name = "Streetside Cleanup", Description = "Streetside Cleanup", DisplayOrder = 2,
+                        IsActive = true,
+                    },
+                    new EventType
+                    {
+                        Id = 17, Name = "Habitat Restoration", Description = "Habitat Restoration", DisplayOrder = 17,
+                        IsActive = true,
+                    });
+            });
 
             modelBuilder.Entity<MessageRequest>(entity =>
             {
@@ -677,10 +784,10 @@
                     .HasMaxLength(64);
 
                 entity.Property(e => e.Phone)
-                   .HasMaxLength(30);
+                    .HasMaxLength(30);
 
                 entity.Property(e => e.Notes)
-                  .HasMaxLength(2000);
+                    .HasMaxLength(2000);
 
                 entity.Property(e => e.CreatedByUserId);
 
@@ -707,7 +814,7 @@
 
             modelBuilder.Entity<PartnerLocationService>(entity =>
             {
-                entity.HasKey(e => new { e.PartnerLocationId, e.ServiceTypeId, });
+                entity.HasKey(e => new { e.PartnerLocationId, e.ServiceTypeId });
 
                 entity.Property(e => e.ServiceTypeId)
                     .IsRequired();
@@ -800,10 +907,29 @@
                     .HasMaxLength(50);
 
                 entity.HasData(
-                    new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Sent, Name = "Invitation Sent", Description = "Invitiation has been sent", DisplayOrder = 1, IsActive = true },
-                    new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Approved, Name = "Approved", Description = "Request has been approved by the Site Administrator", DisplayOrder = 2, IsActive = true },
-                    new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Denied, Name = "Denied", Description = "Request has been approved by the Site Administrator", DisplayOrder = 3, IsActive = true },
-                    new PartnerRequestStatus { Id = (int)PartnerRequestStatusEnum.Pending, Name = "Pending Approval", Description = "Invitiation is pending approval by TrshMob.eco admin", DisplayOrder = 4, IsActive = true });
+                    new PartnerRequestStatus
+                    {
+                        Id = (int)PartnerRequestStatusEnum.Sent, Name = "Invitation Sent",
+                        Description = "Invitiation has been sent", DisplayOrder = 1, IsActive = true,
+                    },
+                    new PartnerRequestStatus
+                    {
+                        Id = (int)PartnerRequestStatusEnum.Approved, Name = "Approved",
+                        Description = "Request has been approved by the Site Administrator", DisplayOrder = 2,
+                        IsActive = true,
+                    },
+                    new PartnerRequestStatus
+                    {
+                        Id = (int)PartnerRequestStatusEnum.Denied, Name = "Denied",
+                        Description = "Request has been approved by the Site Administrator", DisplayOrder = 3,
+                        IsActive = true,
+                    },
+                    new PartnerRequestStatus
+                    {
+                        Id = (int)PartnerRequestStatusEnum.Pending, Name = "Pending Approval",
+                        Description = "Invitiation is pending approval by TrshMob.eco admin", DisplayOrder = 4,
+                        IsActive = true,
+                    });
             });
 
             modelBuilder.Entity<PartnerStatus>(entity =>
@@ -817,8 +943,16 @@
                     .HasMaxLength(50);
 
                 entity.HasData(
-                    new PartnerStatus { Id = (int)PartnerStatusEnum.Active, Name = "Active", Description = "Partner is Active", DisplayOrder = 1, IsActive = true },
-                    new PartnerStatus { Id = (int)PartnerStatusEnum.Inactive, Name = "Inactive", Description = "Partner is Inactive", DisplayOrder = 2, IsActive = true });
+                    new PartnerStatus
+                    {
+                        Id = (int)PartnerStatusEnum.Active, Name = "Active", Description = "Partner is Active",
+                        DisplayOrder = 1, IsActive = true,
+                    },
+                    new PartnerStatus
+                    {
+                        Id = (int)PartnerStatusEnum.Inactive, Name = "Inactive", Description = "Partner is Inactive",
+                        DisplayOrder = 2, IsActive = true,
+                    });
             });
 
             modelBuilder.Entity<PartnerType>(entity =>
@@ -832,8 +966,16 @@
                     .HasMaxLength(50);
 
                 entity.HasData(
-                    new PartnerType { Id = (int)PartnerTypeEnum.Government, Name = "Government", Description = "Partner is a Government or Government Agency", DisplayOrder = 1, IsActive = true },
-                    new PartnerType { Id = (int)PartnerTypeEnum.Business, Name = "Business", Description = "Partner is Business", DisplayOrder = 2, IsActive = true });
+                    new PartnerType
+                    {
+                        Id = (int)PartnerTypeEnum.Government, Name = "Government",
+                        Description = "Partner is a Government or Government Agency", DisplayOrder = 1, IsActive = true,
+                    },
+                    new PartnerType
+                    {
+                        Id = (int)PartnerTypeEnum.Business, Name = "Business", Description = "Partner is Business",
+                        DisplayOrder = 2, IsActive = true,
+                    });
             });
 
             modelBuilder.Entity<PartnerAdmin>(entity =>
@@ -961,10 +1103,26 @@
                     .HasMaxLength(50);
 
                 entity.HasData(
-                    new ServiceType { Id = (int)ServiceTypeEnum.Hauling, Name = "Hauling", Description = "Partner will haul litter away", DisplayOrder = 1, IsActive = true },
-                    new ServiceType { Id = (int)ServiceTypeEnum.DisposalLocation, Name = "Disposal Location", Description = "Partner will dispose of litter", DisplayOrder = 2, IsActive = true },
-                    new ServiceType { Id = (int)ServiceTypeEnum.StartupKits, Name = "Startup Kits", Description = "Partner distributes starter kits", DisplayOrder = 3, IsActive = true },
-                    new ServiceType { Id = (int)ServiceTypeEnum.Supplies, Name = "Supplies", Description = "Partner distributes supplies", DisplayOrder = 4, IsActive = true });
+                    new ServiceType
+                    {
+                        Id = (int)ServiceTypeEnum.Hauling, Name = "Hauling",
+                        Description = "Partner will haul litter away", DisplayOrder = 1, IsActive = true,
+                    },
+                    new ServiceType
+                    {
+                        Id = (int)ServiceTypeEnum.DisposalLocation, Name = "Disposal Location",
+                        Description = "Partner will dispose of litter", DisplayOrder = 2, IsActive = true,
+                    },
+                    new ServiceType
+                    {
+                        Id = (int)ServiceTypeEnum.StartupKits, Name = "Startup Kits",
+                        Description = "Partner distributes starter kits", DisplayOrder = 3, IsActive = true,
+                    },
+                    new ServiceType
+                    {
+                        Id = (int)ServiceTypeEnum.Supplies, Name = "Supplies",
+                        Description = "Partner distributes supplies", DisplayOrder = 4, IsActive = true,
+                    });
             });
 
             modelBuilder.Entity<SocialMediaAccountType>(entity =>
@@ -978,10 +1136,26 @@
                     .HasMaxLength(50);
 
                 entity.HasData(
-                    new SocialMediaAccountType { Id = (int)SocialMediaAccountTypeEnum.Facebook, Name = "Facebook", Description = "Facebook", DisplayOrder = 1 },
-                    new SocialMediaAccountType { Id = (int)SocialMediaAccountTypeEnum.Twitter, Name = "Twitter", Description = "Twitter", DisplayOrder = 2 },
-                    new SocialMediaAccountType { Id = (int)SocialMediaAccountTypeEnum.Instagram, Name = "Instagram", Description = "Instagram", DisplayOrder = 3 },
-                    new SocialMediaAccountType { Id = (int)SocialMediaAccountTypeEnum.TikTok, Name = "TikTok", Description = "TikTok", DisplayOrder = 4 });
+                    new SocialMediaAccountType
+                    {
+                        Id = (int)SocialMediaAccountTypeEnum.Facebook, Name = "Facebook", Description = "Facebook",
+                        DisplayOrder = 1,
+                    },
+                    new SocialMediaAccountType
+                    {
+                        Id = (int)SocialMediaAccountTypeEnum.Twitter, Name = "Twitter", Description = "Twitter",
+                        DisplayOrder = 2,
+                    },
+                    new SocialMediaAccountType
+                    {
+                        Id = (int)SocialMediaAccountTypeEnum.Instagram, Name = "Instagram", Description = "Instagram",
+                        DisplayOrder = 3,
+                    },
+                    new SocialMediaAccountType
+                    {
+                        Id = (int)SocialMediaAccountTypeEnum.TikTok, Name = "TikTok", Description = "TikTok",
+                        DisplayOrder = 4,
+                    });
             });
 
             modelBuilder.Entity<SiteMetric>(entity =>
@@ -1009,7 +1183,6 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_SiteMetrics_LastUpdatedByUser_Id");
-
             });
 
             modelBuilder.Entity<User>(entity =>
@@ -1017,10 +1190,10 @@
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.HasIndex(e => e.UserName)
-                        .IsUnique();
+                    .IsUnique();
 
                 entity.HasIndex(e => e.Email)
-                        .IsUnique();
+                    .IsUnique();
 
                 entity.Property(e => e.UserName).HasMaxLength(32);
 
@@ -1035,7 +1208,11 @@
                 entity.Property(e => e.TrashMobWaiverVersion).HasMaxLength(50);
 
                 entity.HasData(
-                    new User { Id = Guid.Empty, City = "Anytown", Country = "AnyCountry", Email = "info@trashmob.eco", Region = "AnyState", UserName = "TrashMob" });
+                    new User
+                    {
+                        Id = Guid.Empty, City = "Anytown", Country = "AnyCountry", Email = "info@trashmob.eco",
+                        Region = "AnyState", UserName = "TrashMob",
+                    });
 
                 entity.HasOne(d => d.CreatedByUser)
                     .WithMany(p => p.UsersCreated)
@@ -1094,16 +1271,68 @@
                     .HasMaxLength(50);
 
                 entity.HasData(
-                    new UserNotificationType { Id = (int)NotificationTypeEnum.EventSummaryAttendee, Name = "EventSummaryAttendee", Description = "Opt out of Post Event Summary", DisplayOrder = 1 },
-                    new UserNotificationType { Id = (int)NotificationTypeEnum.EventSummaryHostReminder, Name = "EventSummaryHostReminder", Description = "Opt out of Event Summary Reminder for events you have lead", DisplayOrder = 2 },
-                    new UserNotificationType { Id = (int)NotificationTypeEnum.UpcomingEventAttendingThisWeek, Name = "UpcomingEventAttendingThisWeek", Description = "Opt out of notifications for events upcoming this week you are attending", DisplayOrder = 3 },
-                    new UserNotificationType { Id = (int)NotificationTypeEnum.UpcomingEventAttendingSoon, Name = "UpcomingEventAttendingSoon", Description = "Opt out of notifications for events happening soon you are attending", DisplayOrder = 4 },
-                    new UserNotificationType { Id = (int)NotificationTypeEnum.UpcomingEventHostingThisWeek, Name = "UpcomingEventHostingThisWeek", Description = "Opt out of notifications for events upcoming this week you are leading", DisplayOrder = 5 },
-                    new UserNotificationType { Id = (int)NotificationTypeEnum.UpcomingEventHostingSoon, Name = "UpcomingEventHostingSoon", Description = "Opt out of notifications for events happening soon you are leading", DisplayOrder = 6 },
-                    new UserNotificationType { Id = (int)NotificationTypeEnum.UpcomingEventsInYourAreaThisWeek, Name = "UpcomingEventsInYourAreaThisWeek", Description = "Opt out of notification for new events upcoming in your area this week", DisplayOrder = 7 },
-                    new UserNotificationType { Id = (int)NotificationTypeEnum.UpcomingEventsInYourAreaSoon, Name = "UpcomingEventsInYourAreaSoon", Description = "Opt out of notification for new events happening in your area soon", DisplayOrder = 8 },
-                    new UserNotificationType { Id = (int)NotificationTypeEnum.EventSummaryHostWeekReminder, Name = "EventSummaryHostWeekReminder", Description = "Opt out of Event Summary Week Reminder for events you have lead", DisplayOrder = 9 },
-                    new UserNotificationType { Id = (int)NotificationTypeEnum.UserProfileUpdateLocation, Name = "UserProfileUpdateLocation", Description = "Opt out of notifications for User Profile Location", DisplayOrder = 10 });
+                    new UserNotificationType
+                    {
+                        Id = (int)NotificationTypeEnum.EventSummaryAttendee, Name = "EventSummaryAttendee",
+                        Description = "Opt out of Post Event Summary", DisplayOrder = 1,
+                    },
+                    new UserNotificationType
+                    {
+                        Id = (int)NotificationTypeEnum.EventSummaryHostReminder, Name = "EventSummaryHostReminder",
+                        Description = "Opt out of Event Summary Reminder for events you have lead", DisplayOrder = 2,
+                    },
+                    new UserNotificationType
+                    {
+                        Id = (int)NotificationTypeEnum.UpcomingEventAttendingThisWeek,
+                        Name = "UpcomingEventAttendingThisWeek",
+                        Description = "Opt out of notifications for events upcoming this week you are attending",
+                        DisplayOrder = 3,
+                    },
+                    new UserNotificationType
+                    {
+                        Id = (int)NotificationTypeEnum.UpcomingEventAttendingSoon, Name = "UpcomingEventAttendingSoon",
+                        Description = "Opt out of notifications for events happening soon you are attending",
+                        DisplayOrder = 4,
+                    },
+                    new UserNotificationType
+                    {
+                        Id = (int)NotificationTypeEnum.UpcomingEventHostingThisWeek,
+                        Name = "UpcomingEventHostingThisWeek",
+                        Description = "Opt out of notifications for events upcoming this week you are leading",
+                        DisplayOrder = 5,
+                    },
+                    new UserNotificationType
+                    {
+                        Id = (int)NotificationTypeEnum.UpcomingEventHostingSoon, Name = "UpcomingEventHostingSoon",
+                        Description = "Opt out of notifications for events happening soon you are leading",
+                        DisplayOrder = 6,
+                    },
+                    new UserNotificationType
+                    {
+                        Id = (int)NotificationTypeEnum.UpcomingEventsInYourAreaThisWeek,
+                        Name = "UpcomingEventsInYourAreaThisWeek",
+                        Description = "Opt out of notification for new events upcoming in your area this week",
+                        DisplayOrder = 7,
+                    },
+                    new UserNotificationType
+                    {
+                        Id = (int)NotificationTypeEnum.UpcomingEventsInYourAreaSoon,
+                        Name = "UpcomingEventsInYourAreaSoon",
+                        Description = "Opt out of notification for new events happening in your area soon",
+                        DisplayOrder = 8,
+                    },
+                    new UserNotificationType
+                    {
+                        Id = (int)NotificationTypeEnum.EventSummaryHostWeekReminder,
+                        Name = "EventSummaryHostWeekReminder",
+                        Description = "Opt out of Event Summary Week Reminder for events you have lead",
+                        DisplayOrder = 9,
+                    },
+                    new UserNotificationType
+                    {
+                        Id = (int)NotificationTypeEnum.UserProfileUpdateLocation, Name = "UserProfileUpdateLocation",
+                        Description = "Opt out of notifications for User Profile Location", DisplayOrder = 10,
+                    });
             });
 
             modelBuilder.Entity<Waiver>(entity =>
@@ -1129,9 +1358,14 @@
 
                 // Stick in a default value for the Waiver
                 entity.HasData(
-                    new Waiver { Id = new Guid("4D222D04-AC1F-4A87-886D-FDB686F9F55C"), Name = "trashmob", IsWaiverEnabled = false, CreatedByUserId = Guid.Empty, LastUpdatedByUserId = Guid.Empty, CreatedDate = new DateTimeOffset(2022, 11, 24, 0, 0, 0, TimeSpan.Zero) });
+                    new Waiver
+                    {
+                        Id = new Guid("4D222D04-AC1F-4A87-886D-FDB686F9F55C"), Name = "trashmob",
+                        IsWaiverEnabled = false, CreatedByUserId = Guid.Empty, LastUpdatedByUserId = Guid.Empty,
+                        CreatedDate = new DateTimeOffset(2022, 11, 24, 0, 0, 0, TimeSpan.Zero),
+                    });
             });
-            
+
             modelBuilder.Entity<LitterReportStatus>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
@@ -1143,10 +1377,26 @@
                     .HasMaxLength(50);
 
                 entity.HasData(
-                    new LitterReportStatus { Id = (int)LitterReportStatusEnum.New, Name = "New", Description = "New created", DisplayOrder = 1, IsActive = true },
-                    new LitterReportStatus { Id = (int)LitterReportStatusEnum.Assigned, Name = "Assigned", Description = "Assigned To Event", DisplayOrder = 2, IsActive = true },
-                    new LitterReportStatus { Id = (int)LitterReportStatusEnum.Cleaned, Name = "Cleaned", Description = "Litter Cleaned", DisplayOrder = 3, IsActive = true },
-                    new LitterReportStatus { Id = (int)LitterReportStatusEnum.Cancelled, Name = "Cancelled", Description = "Report Cancelled", DisplayOrder = 4, IsActive = true });
+                    new LitterReportStatus
+                    {
+                        Id = (int)LitterReportStatusEnum.New, Name = "New", Description = "New created",
+                        DisplayOrder = 1, IsActive = true,
+                    },
+                    new LitterReportStatus
+                    {
+                        Id = (int)LitterReportStatusEnum.Assigned, Name = "Assigned", Description = "Assigned To Event",
+                        DisplayOrder = 2, IsActive = true,
+                    },
+                    new LitterReportStatus
+                    {
+                        Id = (int)LitterReportStatusEnum.Cleaned, Name = "Cleaned", Description = "Litter Cleaned",
+                        DisplayOrder = 3, IsActive = true,
+                    },
+                    new LitterReportStatus
+                    {
+                        Id = (int)LitterReportStatusEnum.Cancelled, Name = "Cancelled",
+                        Description = "Report Cancelled", DisplayOrder = 4, IsActive = true,
+                    });
             });
 
             modelBuilder.Entity<LitterImage>(entity =>
@@ -1163,7 +1413,7 @@
                     .HasForeignKey(d => d.LitterReportId)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_LitterImage_LitterReports");
-                    
+
                 entity.HasOne(d => d.CreatedByUser)
                     .WithMany(p => p.LitterImagesCreated)
                     .HasForeignKey(d => d.CreatedByUserId)
@@ -1176,7 +1426,7 @@
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_LitterImage_LastUpdatedBy");
             });
-            
+
             modelBuilder.Entity<LitterReport>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
@@ -1197,7 +1447,7 @@
                     .WithMany(p => p.LitterReports)
                     .HasForeignKey(d => d.LitterReportStatusId)
                     .HasConstraintName("FK_LitterReport_LitterReportStatuses");
-                    
+
                 entity.HasOne(d => d.CreatedByUser)
                     .WithMany(p => p.LitterReportsCreated)
                     .HasForeignKey(d => d.CreatedByUserId)
@@ -1220,7 +1470,7 @@
                     .HasForeignKey(d => d.EventId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_EventLitterReport_Event");
-                    
+
                 entity.HasOne(d => d.LitterReport)
                     .WithMany(p => p.EventLitterReports)
                     .HasForeignKey(d => d.LitterReportId)
@@ -1239,7 +1489,6 @@
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_EventLitterReport_LastUpdatedBy");
             });
-
         }
     }
 }

@@ -1,17 +1,9 @@
 ﻿#nullable disable
 
-using TrashMob;
-
 namespace TrashMob.Models
 {
-    using System;
-
-    public partial class PartnerDocument : KeyedModel
+    public class PartnerDocument : KeyedModel
     {
-        public PartnerDocument()
-        {
-        }
-
         public Guid PartnerId { get; set; }
 
         public string Name { get; set; }

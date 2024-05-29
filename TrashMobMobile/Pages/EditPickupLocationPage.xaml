@@ -1,46 +1,35 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
+
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:vm="clr-namespace:TrashMobMobile.ViewModels"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
              x:Class="TrashMobMobile.Pages.EditPickupLocationPage"
              Title="Edit Pickup Location">
     <ScrollView>
         <Grid>
-            <VerticalStackLayout Spacing="5">
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
                 <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="1*">
-                    <VerticalStackLayout Spacing="5" Grid.Row="0" Margin="10">
-                        <Label 
-                        Text="Name"
-                        FontSize="Micro"
-                        VerticalOptions="Center" 
-                        HorizontalOptions="Start"
-                        HorizontalTextAlignment="Center"
-                        FontAttributes="Bold" />
-                        <Frame Style="{x:DynamicResource Frame}">
-                            <Entry Text="{Binding PickupLocationViewModel.Name}" >
+                    <VerticalStackLayout Grid.Row="0">
+                        <Label Text="Name" Style="{StaticResource FieldLabel}" />
+                        <Border Style="{x:StaticResource RoundBorder}">
+                            <Entry Text="{Binding PickupLocationViewModel.Name}">
                                 <Entry.Behaviors>
-                                    <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5" x:Name="nameValidator" />
+                                    <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5"
+                                                                    x:Name="nameValidator" />
                                 </Entry.Behaviors>
                             </Entry>
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
-                    <VerticalStackLayout Spacing="5" Grid.Row="1" Margin="10">
-                        <Label 
-                        Text="Description"
-                        FontSize="Micro"
-                        VerticalOptions="Center" 
-                        HorizontalOptions="Start"
-                        HorizontalTextAlignment="Center"
-                        FontAttributes="Bold" />
-                        <Frame Style="{x:DynamicResource Frame}">
-                            <Editor Text="{Binding PickupLocationViewModel.Notes}" >
+                    <VerticalStackLayout Grid.Row="1">
+                        <Label Text="Description" Style="{StaticResource FieldLabel}" />
+                        <Border Style="{x:StaticResource RoundBorder}">
+                            <Editor Text="{Binding PickupLocationViewModel.Notes}">
                                 <Editor.Behaviors>
-                                    <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="10" x:Name="notesValidator" />
+                                    <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="10"
+                                                                    x:Name="notesValidator" />
                                 </Editor.Behaviors>
                             </Editor>
-                        </Frame>
+                        </Border>
                     </VerticalStackLayout>
                 </Grid>
 
@@ -48,40 +37,49 @@
                     <Button.Triggers>
                         <MultiTrigger TargetType="Button">
                             <MultiTrigger.Conditions>
-                                <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" Value="True" />
-                                <BindingCondition Binding="{Binding Source={x:Reference notesValidator}, Path=IsValid}" Value="True" />
+                                <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}"
+                                                  Value="True" />
+                                <BindingCondition Binding="{Binding Source={x:Reference notesValidator}, Path=IsValid}"
+                                                  Value="True" />
                             </MultiTrigger.Conditions>
                             <Setter Property="IsEnabled" Value="True" />
                         </MultiTrigger>
                     </Button.Triggers>
                 </Button>
 
-                <Label 
-            FontSize="Micro"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center"
-            HorizontalTextAlignment="Center" 
-            TextColor="Red">
+                <Label
+                    FontSize="Micro"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"
+                    HorizontalTextAlignment="Center"
+                    TextColor="Red">
                     <Label.Triggers>
                         <MultiTrigger TargetType="Label">
                             <MultiTrigger.Conditions>
-                                <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" Value="True" />
-                                <BindingCondition Binding="{Binding Source={x:Reference notesValidator}, Path=IsValid}" Value="True" />
+                                <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}"
+                                                  Value="True" />
+                                <BindingCondition Binding="{Binding Source={x:Reference notesValidator}, Path=IsValid}"
+                                                  Value="True" />
                             </MultiTrigger.Conditions>
                             <Setter Property="IsVisible" Value="False" />
                         </MultiTrigger>
-                        <DataTrigger TargetType="Label" Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" Value="False">
+                        <DataTrigger TargetType="Label"
+                                     Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" Value="False">
                             <Setter Property="Text" Value="Name is required and must be at least 5 characters." />
                         </DataTrigger>
-                        <DataTrigger TargetType="Label" Binding="{Binding Source={x:Reference notesValidator}, Path=IsValid}" Value="False">
+                        <DataTrigger TargetType="Label"
+                                     Binding="{Binding Source={x:Reference notesValidator}, Path=IsValid}"
+                                     Value="False">
                             <Setter Property="Text" Value="Notes is required and must be at least 10 characters." />
                         </DataTrigger>
                     </Label.Triggers>
                 </Label>
 
             </VerticalStackLayout>
-            <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill" VerticalOptions="Fill" IsVisible="{Binding IsBusy}"/>
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
+            <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
+                     VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center"
+                               HorizontalOptions="Center" />
         </Grid>
     </ScrollView>
 </ContentPage>

@@ -100,7 +100,8 @@
             return eventSummaryRestService.AddEventSummaryAsync(eventSummary, cancellationToken);
         }
 
-        public Task<IEnumerable<Location>> GetLocationsByTimeRangeAsync(DateTimeOffset startDate, DateTimeOffset endDate, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<Location>> GetLocationsByTimeRangeAsync(DateTimeOffset startDate,
+            DateTimeOffset endDate, CancellationToken cancellationToken = default)
         {
             return mobEventRestService.GetLocationsByTimeRangeAsync(startDate, endDate, cancellationToken);
         }

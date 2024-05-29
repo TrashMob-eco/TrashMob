@@ -1,10 +1,9 @@
-﻿
-namespace TrashMob.Shared.Tests
+﻿namespace TrashMob.Shared.Tests
 {
-    using Microsoft.Extensions.Logging;
-    using Moq;
     using System;
     using System.Collections.Generic;
+    using Microsoft.Extensions.Logging;
+    using Moq;
     using TrashMob.Models;
     using TrashMob.Shared.Engine;
     using TrashMob.Shared.Managers.Interfaces;
@@ -14,28 +13,6 @@ namespace TrashMob.Shared.Tests
         private readonly Guid createdById;
         private readonly Guid userId1;
         private readonly Guid userId2;
-
-        protected abstract NotificationTypeEnum NotificationType { get; }
-
-        protected abstract int NumberOfHoursToAddForEventMinOutOfWindow { get; }
-
-        protected Mock<IEventManager> EventManager { get; }
-        
-        protected Mock<IEventAttendeeManager> EventAttendeeManager { get; }
-        
-        protected Mock<IKeyedManager<User>> UserManager { get; }
-        
-        protected Mock<IKeyedManager<UserNotification>> UserNotificationManager { get; }
-
-        protected Mock<INonEventUserNotificationManager> NonEventUserNotificationManager { get; }
-
-        protected Mock<IEmailSender> EmailSender { get; }
-
-        protected Mock<IEmailManager> EmailManager { get; }
-
-        protected Mock<IMapManager> MapRepository { get; }
-
-        protected Mock<ILogger> Logger { get; }
 
         public NotifierTestsBase()
         {
@@ -54,13 +31,36 @@ namespace TrashMob.Shared.Tests
             Logger = new Mock<ILogger>();
 
             // Setup a default return of distance between User and Event of 10 (in whatever units)
-            MapRepository.Setup(mr => mr.GetDistanceBetweenTwoPointsAsync(It.IsAny<Tuple<double, double>>(), It.IsAny<Tuple<double, double>>(), It.IsAny<bool>())).ReturnsAsync(10);
+            MapRepository.Setup(mr => mr.GetDistanceBetweenTwoPointsAsync(It.IsAny<Tuple<double, double>>(),
+                It.IsAny<Tuple<double, double>>(), It.IsAny<bool>())).ReturnsAsync(10);
             EmailManager.Setup(em => em.GetHtmlEmailCopy(It.IsAny<string>())).Returns("Test");
         }
 
+        protected abstract NotificationTypeEnum NotificationType { get; }
+
+        protected abstract int NumberOfHoursToAddForEventMinOutOfWindow { get; }
+
+        protected Mock<IEventManager> EventManager { get; }
+
+        protected Mock<IEventAttendeeManager> EventAttendeeManager { get; }
+
+        protected Mock<IKeyedManager<User>> UserManager { get; }
+
+        protected Mock<IKeyedManager<UserNotification>> UserNotificationManager { get; }
+
+        protected Mock<INonEventUserNotificationManager> NonEventUserNotificationManager { get; }
+
+        protected Mock<IEmailSender> EmailSender { get; }
+
+        protected Mock<IEmailManager> EmailManager { get; }
+
+        protected Mock<IMapManager> MapRepository { get; }
+
+        protected Mock<ILogger> Logger { get; }
+
         protected List<User> GetUserList1()
         {
-            var user = new User()
+            var user = new User
             {
                 City = "Seattle",
                 Country = "United States",
@@ -80,7 +80,7 @@ namespace TrashMob.Shared.Tests
 
             var users = new List<User>
             {
-                user
+                user,
             };
 
             return users;
@@ -88,7 +88,7 @@ namespace TrashMob.Shared.Tests
 
         protected List<User> GetUserList2()
         {
-            var user1 = new User()
+            var user1 = new User
             {
                 City = "Seattle",
                 Country = "United States",
@@ -107,7 +107,7 @@ namespace TrashMob.Shared.Tests
                 Latitude = 1,
             };
 
-            var user2 = new User()
+            var user2 = new User
             {
                 City = "Seattle",
                 Country = "United States",
@@ -136,7 +136,7 @@ namespace TrashMob.Shared.Tests
 
         protected List<Event> GetEventList1()
         {
-            var relevantEvent = new Event()
+            var relevantEvent = new Event
             {
                 City = "Seattle",
                 Country = "United States",
@@ -161,7 +161,7 @@ namespace TrashMob.Shared.Tests
 
             var events = new List<Event>
             {
-                relevantEvent
+                relevantEvent,
             };
 
             return events;
@@ -169,7 +169,7 @@ namespace TrashMob.Shared.Tests
 
         protected List<Event> GetEventList2()
         {
-            var relevantEvent1 = new Event()
+            var relevantEvent1 = new Event
             {
                 City = "Seattle",
                 Country = "United States",
@@ -192,7 +192,7 @@ namespace TrashMob.Shared.Tests
                 IsEventPublic = true,
             };
 
-            var relevantEvent2 = new Event()
+            var relevantEvent2 = new Event
             {
                 City = "Seattle",
                 Country = "United States",

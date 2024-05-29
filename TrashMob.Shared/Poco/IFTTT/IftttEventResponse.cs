@@ -5,10 +5,10 @@
     public class IftttEventResponse : TriggersResponse
     {
         public string event_name { get; set; } = string.Empty;
-        
-        public string event_id { get;set; } = string.Empty;
 
-        public DateTimeOffset event_date { get;set; }
+        public string event_id { get; set; } = string.Empty;
+
+        public DateTimeOffset event_date { get; set; }
 
         public string street_address { get; set; } = string.Empty;
 

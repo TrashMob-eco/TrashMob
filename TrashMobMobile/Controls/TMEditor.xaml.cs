@@ -1,15 +1,20 @@
-using Maui.BindableProperty.Generator.Core;
 namespace TrashMobMobile.Controls;
+
+using Maui.BindableProperty.Generator.Core;
 
 public partial class TMEditor : ContentView
 {
-	public TMEditor()
-	{
-		InitializeComponent();
-	}
-
     [AutoBindable(DefaultBindingMode = "TwoWay", OnChanged = nameof(TextPropertyChanged))]
-    private string _text;
+    private readonly string text;
+
+    [AutoBindable(OnChanged = nameof(PlaceholderPropertyChanged))]
+    private readonly string placeholder;
+
+    public TMEditor()
+    {
+        InitializeComponent();
+    }
+
     private void TextPropertyChanged(string newValue)
     {
         if (WrappedEditor.Text != newValue)
@@ -26,8 +31,6 @@ public partial class TMEditor : ContentView
         }
     }
 
-    [AutoBindable(OnChanged = nameof(PlaceholderPropertyChanged))]
-    private string placeholder;
     private void PlaceholderPropertyChanged(string newValue)
     {
         WrappedEditor.Placeholder = newValue;

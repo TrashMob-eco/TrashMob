@@ -8,16 +8,16 @@ using Microsoft.Maui.Maps;
 [QueryProperty(nameof(EventId), nameof(EventId))]
 public partial class EditEventPage : ContentPage
 {
-    private readonly EditEventViewModel _viewModel;
+    private readonly EditEventViewModel viewModel;
 
     public EditEventPage(EditEventViewModel viewModel)
     {
         InitializeComponent();
-        _viewModel = viewModel;
-        _viewModel.Notify = Notify;
-        _viewModel.NotifyError = NotifyError;
-        _viewModel.Navigation = Navigation;
-        BindingContext = _viewModel;
+        this.viewModel = viewModel;
+        this.viewModel.Notify = Notify;
+        this.viewModel.NotifyError = NotifyError;
+        this.viewModel.Navigation = Navigation;
+        BindingContext = this.viewModel;
     }
 
     public string EventId { get; set; }
@@ -25,18 +25,18 @@ public partial class EditEventPage : ContentPage
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        await _viewModel.Init(new Guid(EventId));
+        await viewModel.Init(new Guid(EventId));
 
-        if (_viewModel?.EventViewModel?.Address?.Location != null)
+        if (viewModel?.EventViewModel?.Address?.Location != null)
         {
-            var mapSpan = new MapSpan(_viewModel.EventViewModel.Address.Location, 0.05, 0.05);
+            var mapSpan = new MapSpan(viewModel.EventViewModel.Address.Location, 0.05, 0.05);
             eventLocationMap.MoveToRegion(mapSpan);
         }
     }
 
     private async void OnMapClicked(object sender, MapClickedEventArgs e)
     {
-        await _viewModel.ChangeLocation(e.Location);
+        await viewModel.ChangeLocation(e.Location);
     }
 
     private async Task Notify(string message)
@@ -59,7 +59,7 @@ public partial class EditEventPage : ContentPage
             BackgroundColor = Colors.Red,
             TextColor = Colors.White,
             CornerRadius = new CornerRadius(10),
-            Font = Microsoft.Maui.Font.SystemFontOfSize(14)
+            Font = Microsoft.Maui.Font.SystemFontOfSize(14),
         };
 
         var text = message;

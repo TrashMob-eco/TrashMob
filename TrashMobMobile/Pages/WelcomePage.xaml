@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
+
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:TrashMobMobile.ViewModels"
@@ -6,42 +7,52 @@
              x:Class="TrashMobMobile.Pages.WelcomePage">
     <ScrollView>
         <Grid>
-            <VerticalStackLayout Spacing="5">
-                <Label 
-            Text="Welcome to TrashMob.eco!"
-            FontSize="Large"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center"
-            HorizontalTextAlignment="Center"/>
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
+                <Label
+                    Text="Welcome to TrashMob.eco!"
+                    FontSize="Large"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"
+                    HorizontalTextAlignment="Center" />
 
-                <Frame Style="{x:DynamicResource Frame}">
-                    <Grid RowDefinitions = "Auto, Auto, Auto" ColumnDefinitions="1*, 1*, 1*, 1*">
+                <Border Style="{x:StaticResource RoundBorder}">
+                    <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="1*, 1*, 1*, 1*">
                         <Image Grid.Row="0" Grid.Column="0" Source="calendar.svg" MaximumWidthRequest="25" />
-                        <Label Grid.Row="1" Grid.Column="0" Text="{ Binding StatisticsViewModel.TotalEvents }" FontSize="Micro" HorizontalTextAlignment ="Center" />
-                        <Label Grid.Row="2" Grid.Column="0" Text="Events Hosted" FontSize="Micro" HorizontalTextAlignment ="Center" />
+                        <Label Grid.Row="1" Grid.Column="0" Text="{ Binding StatisticsViewModel.TotalEvents }"
+                               FontSize="Micro" HorizontalTextAlignment="Center" />
+                        <Label Grid.Row="2" Grid.Column="0" Text="Events Hosted" FontSize="Micro"
+                               HorizontalTextAlignment="Center" />
                         <Image Grid.Row="0" Grid.Column="1" Source="person.svg" MaximumWidthRequest="25" />
-                        <Label Grid.Row="1" Grid.Column="1" Text="{ Binding StatisticsViewModel.TotalAttendees }" FontSize="Micro" HorizontalTextAlignment ="Center" />
-                        <Label Grid.Row="2" Grid.Column="1" Text="Participants" FontSize="Micro" HorizontalTextAlignment ="Center" />
+                        <Label Grid.Row="1" Grid.Column="1" Text="{ Binding StatisticsViewModel.TotalAttendees }"
+                               FontSize="Micro" HorizontalTextAlignment="Center" />
+                        <Label Grid.Row="2" Grid.Column="1" Text="Participants" FontSize="Micro"
+                               HorizontalTextAlignment="Center" />
                         <Image Grid.Row="0" Grid.Column="2" Source="trashbag.svg" WidthRequest="25" />
-                        <Label Grid.Row="1" Grid.Column="2" Text="{ Binding StatisticsViewModel.TotalBags }" FontSize="Micro"  HorizontalTextAlignment ="Center"/>
-                        <Label Grid.Row="2" Grid.Column="2" Text="Bags Collected" FontSize="Micro" HorizontalTextAlignment ="Center" />
-                        <Image Grid.Row="0" Grid.Column="3" Source="clock.svg" WidthRequest="25"/>
-                        <Label Grid.Row="1" Grid.Column="3" Text="{ Binding StatisticsViewModel.TotalHours }" FontSize="Micro"  HorizontalTextAlignment ="Center" />
-                        <Label Grid.Row="2" Grid.Column="3" Text="Hours Spent" FontSize="Micro" HorizontalTextAlignment ="Center" />
+                        <Label Grid.Row="1" Grid.Column="2" Text="{ Binding StatisticsViewModel.TotalBags }"
+                               FontSize="Micro" HorizontalTextAlignment="Center" />
+                        <Label Grid.Row="2" Grid.Column="2" Text="Bags Collected" FontSize="Micro"
+                               HorizontalTextAlignment="Center" />
+                        <Image Grid.Row="0" Grid.Column="3" Source="clock.svg" WidthRequest="25" />
+                        <Label Grid.Row="1" Grid.Column="3" Text="{ Binding StatisticsViewModel.TotalHours }"
+                               FontSize="Micro" HorizontalTextAlignment="Center" />
+                        <Label Grid.Row="2" Grid.Column="3" Text="Hours Spent" FontSize="Micro"
+                               HorizontalTextAlignment="Center" />
                     </Grid>
-                </Frame>
+                </Border>
 
                 <Button Text="Login"
-                MaximumWidthRequest="150"
-                Command="{Binding SignInCommand}"/>
+                        MaximumWidthRequest="150"
+                        Command="{Binding SignInCommand}" />
 
                 <Label Text="Something went wrong logging you in."
-               HorizontalOptions="Center"
-               HorizontalTextAlignment="Center"
-               IsVisible="{Binding IsError}"/>
+                       HorizontalOptions="Center"
+                       HorizontalTextAlignment="Center"
+                       IsVisible="{Binding IsError}" />
             </VerticalStackLayout>
-            <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill" VerticalOptions="Fill" IsVisible="{Binding IsBusy}"/>
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
+            <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
+                     VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center"
+                               HorizontalOptions="Center" />
         </Grid>
     </ScrollView>
 </ContentPage>

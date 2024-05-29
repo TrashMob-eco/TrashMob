@@ -1,11 +1,10 @@
-﻿
-namespace TrashMob.Shared.Managers
+﻿namespace TrashMob.Shared.Managers
 {
-    using Microsoft.EntityFrameworkCore;
     using System;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.EntityFrameworkCore;
     using TrashMob.Models;
     using TrashMob.Shared.Engine;
     using TrashMob.Shared.Managers.Interfaces;
@@ -14,31 +13,31 @@ namespace TrashMob.Shared.Managers
 
     public class UserManager : KeyedManager<User>, IUserManager
     {
-        private readonly Guid TrashMobUserId = Guid.Empty;
+        private readonly IEmailManager emailManager;
         private readonly IBaseRepository<EventAttendee> eventAttendeesRepository;
-        private readonly IKeyedRepository<UserNotification> userNotificationRepository;
-        private readonly IKeyedRepository<NonEventUserNotification> nonEventUserNotificationRepository;
-        private readonly IKeyedRepository<PartnerRequest> partnerRequestRepository;
-        private readonly IBaseRepository<EventSummary> eventSummaryRepository;
         private readonly IBaseRepository<EventPartnerLocationService> eventPartnerRepository;
         private readonly IKeyedRepository<Event> eventRepository;
-        private readonly IKeyedRepository<Partner> partnerRepository;
+        private readonly IBaseRepository<EventSummary> eventSummaryRepository;
+        private readonly IKeyedRepository<NonEventUserNotification> nonEventUserNotificationRepository;
         private readonly IBaseRepository<PartnerAdmin> partnerAdminRepository;
         private readonly IKeyedRepository<PartnerLocation> partnerLocationRepository;
-        private readonly IEmailManager emailManager;
+        private readonly IKeyedRepository<Partner> partnerRepository;
+        private readonly IKeyedRepository<PartnerRequest> partnerRequestRepository;
+        private readonly Guid TrashMobUserId = Guid.Empty;
+        private readonly IKeyedRepository<UserNotification> userNotificationRepository;
 
         public UserManager(IKeyedRepository<User> repository,
-                           IBaseRepository<EventAttendee> eventAttendeesRepository,
-                           IKeyedRepository<UserNotification> userNotificationRepository,
-                           IKeyedRepository<NonEventUserNotification> nonEventUserNotificationRepository,
-                           IKeyedRepository<PartnerRequest> partnerRequestRepository,
-                           IBaseRepository<EventSummary> eventSummaryRepository,
-                           IBaseRepository<EventPartnerLocationService> eventPartnerRepository,
-                           IKeyedRepository<Event> eventRepository,
-                           IKeyedRepository<Partner> partnerRepository,
-                           IBaseRepository<PartnerAdmin> partnerUserRepository,
-                           IKeyedRepository<PartnerLocation> partnerLocationRepository,
-                           IEmailManager emailManager) : base(repository)
+            IBaseRepository<EventAttendee> eventAttendeesRepository,
+            IKeyedRepository<UserNotification> userNotificationRepository,
+            IKeyedRepository<NonEventUserNotification> nonEventUserNotificationRepository,
+            IKeyedRepository<PartnerRequest> partnerRequestRepository,
+            IBaseRepository<EventSummary> eventSummaryRepository,
+            IBaseRepository<EventPartnerLocationService> eventPartnerRepository,
+            IKeyedRepository<Event> eventRepository,
+            IKeyedRepository<Partner> partnerRepository,
+            IBaseRepository<PartnerAdmin> partnerUserRepository,
+            IKeyedRepository<PartnerLocation> partnerLocationRepository,
+            IEmailManager emailManager) : base(repository)
         {
             this.eventAttendeesRepository = eventAttendeesRepository;
             this.userNotificationRepository = userNotificationRepository;
@@ -48,12 +47,13 @@ namespace TrashMob.Shared.Managers
             this.eventPartnerRepository = eventPartnerRepository;
             this.eventRepository = eventRepository;
             this.partnerRepository = partnerRepository;
-            this.partnerAdminRepository = partnerUserRepository;
+            partnerAdminRepository = partnerUserRepository;
             this.partnerLocationRepository = partnerLocationRepository;
             this.emailManager = emailManager;
         }
 
-        public async Task<User> GetUserByNameIdentifierAsync(string nameIdentifier, CancellationToken cancellationToken = default)
+        public async Task<User> GetUserByNameIdentifierAsync(string nameIdentifier,
+            CancellationToken cancellationToken = default)
         {
             return await Repo.Get(u => u.NameIdentifier == nameIdentifier).FirstOrDefaultAsync(cancellationToken);
         }
@@ -98,14 +98,16 @@ namespace TrashMob.Shared.Managers
             }
 
             // Remove the userNotification records where the user created or updated the event
-            var userNotifications = await userNotificationRepository.Get(e => e.UserId == id).ToListAsync(cancellationToken);
+            var userNotifications =
+                await userNotificationRepository.Get(e => e.UserId == id).ToListAsync(cancellationToken);
 
             foreach (var userNotification in userNotifications)
             {
                 await userNotificationRepository.DeleteAsync(userNotification);
             }
 
-            var nonEventUserNotifications = await nonEventUserNotificationRepository.Get(e => e.UserId == id).ToListAsync(cancellationToken);
+            var nonEventUserNotifications = await nonEventUserNotificationRepository.Get(e => e.UserId == id)
+                .ToListAsync(cancellationToken);
 
             foreach (var nonEventUserNotification in nonEventUserNotifications)
             {
@@ -113,7 +115,8 @@ namespace TrashMob.Shared.Managers
             }
 
             // Remove the Partner Requests
-            var partnerRequests = await partnerRequestRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id).ToListAsync(cancellationToken);
+            var partnerRequests = await partnerRequestRepository
+                .Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id).ToListAsync(cancellationToken);
 
             foreach (var partnerRequest in partnerRequests)
             {
@@ -131,7 +134,8 @@ namespace TrashMob.Shared.Managers
             }
 
             // Remove the records where the user created or updated the event
-            var eventSummaries = await eventSummaryRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id).ToListAsync(cancellationToken);
+            var eventSummaries = await eventSummaryRepository
+                .Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id).ToListAsync(cancellationToken);
 
             foreach (var eventSummary in eventSummaries)
             {
@@ -149,7 +153,8 @@ namespace TrashMob.Shared.Managers
             }
 
             // Remove the event partner records for this event
-            var eventPartners = await eventPartnerRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id).ToListAsync(cancellationToken);
+            var eventPartners = await eventPartnerRepository
+                .Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id).ToListAsync(cancellationToken);
 
             foreach (var eventPartner in eventPartners)
             {
@@ -166,7 +171,8 @@ namespace TrashMob.Shared.Managers
                 await eventPartnerRepository.UpdateAsync(eventPartner);
             }
 
-            var events = await eventRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id).ToListAsync(cancellationToken);
+            var events = await eventRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id)
+                .ToListAsync(cancellationToken);
 
             foreach (var mobEvent in events)
             {
@@ -183,7 +189,8 @@ namespace TrashMob.Shared.Managers
                 await eventRepository.UpdateAsync(mobEvent);
             }
 
-            var partners = await partnerRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id).ToListAsync(cancellationToken);
+            var partners = await partnerRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id)
+                .ToListAsync(cancellationToken);
 
             foreach (var partner in partners)
             {
@@ -200,7 +207,9 @@ namespace TrashMob.Shared.Managers
                 await partnerRepository.UpdateAsync(partner);
             }
 
-            var partnerAdmins = await partnerAdminRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id || e.UserId == id).ToListAsync(cancellationToken);
+            var partnerAdmins = await partnerAdminRepository
+                .Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id || e.UserId == id)
+                .ToListAsync(cancellationToken);
 
             foreach (var partnerUser in partnerAdmins)
             {
@@ -225,7 +234,8 @@ namespace TrashMob.Shared.Managers
             }
 
             // Remove the Partner Locations
-            var partnerLocations = await partnerLocationRepository.Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id).ToListAsync(cancellationToken);
+            var partnerLocations = await partnerLocationRepository
+                .Get(e => e.CreatedByUserId == id || e.LastUpdatedByUserId == id).ToListAsync(cancellationToken);
 
             foreach (var partnerLocation in partnerLocations)
             {
@@ -267,15 +277,17 @@ namespace TrashMob.Shared.Managers
             {
                 username = Constants.TrashMobEmailName,
                 emailCopy = message,
-                subject = subject,
+                subject,
             };
 
             var recipients = new List<EmailAddress>
             {
-                new EmailAddress { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress }
+                new() { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress },
             };
 
-            await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None).ConfigureAwait(false);
+            await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.GenericEmail,
+                    SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None)
+                .ConfigureAwait(false);
 
             // Send welcome email to new User
             var welcomeMessage = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.WelcomeToTrashMob.ToString());
@@ -290,10 +302,12 @@ namespace TrashMob.Shared.Managers
 
             var welcomeRecipients = new List<EmailAddress>
             {
-                new EmailAddress { Name = user.UserName, Email = user.Email }
+                new() { Name = user.UserName, Email = user.Email },
             };
 
-            await emailManager.SendTemplatedEmailAsync(welcomeSubject, SendGridEmailTemplateId.GenericEmail, SendGridEmailGroupId.General, userDynamicTemplateData, welcomeRecipients, CancellationToken.None).ConfigureAwait(false);
+            await emailManager.SendTemplatedEmailAsync(welcomeSubject, SendGridEmailTemplateId.GenericEmail,
+                    SendGridEmailGroupId.General, userDynamicTemplateData, welcomeRecipients, CancellationToken.None)
+                .ConfigureAwait(false);
 
             return addedUser;
         }

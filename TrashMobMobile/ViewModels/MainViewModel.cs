@@ -5,6 +5,7 @@ using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMobMobile.Authentication;
+using TrashMobMobile.Config;
 using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
 
@@ -77,13 +78,21 @@ public partial class MainViewModel : BaseViewModel
         {
             var email = authService.GetUserEmail();
             var user = await userRestService.GetUserByEmailAsync(email, UserState.UserContext);
-            if (user != null)
+
+            WelcomeMessage = $"Welcome, {user.UserName}!";
+
+            if (user.Latitude is not null && user.Longitude is not null)
             {
-                WelcomeMessage = $"Welcome, {user.UserName}!";
-                UserLocation = App.CurrentUser.GetAddress();
-                TravelDistance = App.CurrentUser.TravelLimitForLocalEvents;
-                UserLocationDisplay = $"{UserLocation.City}, {UserLocation.Region}";
+                TravelDistance = user.TravelLimitForLocalEvents;
+                UserLocation = user.GetAddress();
             }
+            else
+            {
+                TravelDistance = Settings.DefaultTravelDistance;
+                UserLocation = GetDefaultAddress();
+            }
+
+            UserLocationDisplay = $"{UserLocation.City}, {UserLocation.Region}";
 
             await RefreshEvents();
 
@@ -173,5 +182,16 @@ public partial class MainViewModel : BaseViewModel
     private async Task SearchEvents()
     {
         await Shell.Current.GoToAsync(nameof(SearchEventsPage));
+    }
+
+    private static AddressViewModel GetDefaultAddress()
+    {
+        return new AddressViewModel
+        {
+            City = Settings.DefaultCity,
+            Region = Settings.DefaultRegion,
+            Country = Settings.DefaultCountry,
+            Location = new Location(Settings.DefaultLatitude, Settings.DefaultLongitude),
+        };
     }
 }

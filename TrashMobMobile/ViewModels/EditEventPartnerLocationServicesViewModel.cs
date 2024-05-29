@@ -53,7 +53,7 @@ public partial class EditEventPartnerLocationServicesViewModel : BaseViewModel
                     PartnerLocationNotes = eventPartnerLocationService.PartnerLocationServicePublicNotes,
                     ServiceName = serviceTypes.First(st => st.Id == eventPartnerLocationService.ServiceTypeId).Name,
                     ServiceStatus = serviceStatuses.First(ss =>
-                        ss.Id == eventPartnerLocationService.EventPartnerLocationServiceStatusId).Name
+                        ss.Id == eventPartnerLocationService.EventPartnerLocationServiceStatusId).Name,
                 };
 
             EventPartnerLocationServices.Add(eventPartnerLocationServiceViewModel);

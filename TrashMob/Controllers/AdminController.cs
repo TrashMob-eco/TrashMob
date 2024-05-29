@@ -1,12 +1,11 @@
 ﻿namespace TrashMob.Controllers
 {
-    using Microsoft.ApplicationInsights;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Identity.Web.Resource;
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Identity.Web.Resource;
     using TrashMob.Models;
     using TrashMob.Security;
     using TrashMob.Shared;
@@ -15,10 +14,10 @@
     [Route("api/admin")]
     public class AdminController : SecureController
     {
-        private readonly IKeyedManager<PartnerRequest> partnerRequestManager;
         private readonly IEmailManager emailManager;
+        private readonly IKeyedManager<PartnerRequest> partnerRequestManager;
 
-        public AdminController(IKeyedManager<PartnerRequest> partnerRequestManager, IEmailManager emailManager) : base()
+        public AdminController(IKeyedManager<PartnerRequest> partnerRequestManager, IEmailManager emailManager)
         {
             this.partnerRequestManager = partnerRequestManager;
             this.emailManager = emailManager;
@@ -27,9 +26,11 @@
         [HttpPut("partnerrequestupdate/{userId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> UpdatePartnerRequest(Guid userId, PartnerRequest partnerRequest, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdatePartnerRequest(Guid userId, PartnerRequest partnerRequest,
+            CancellationToken cancellationToken)
         {
-            var result = await partnerRequestManager.UpdateAsync(partnerRequest, UserId, cancellationToken).ConfigureAwait(false);
+            var result = await partnerRequestManager.UpdateAsync(partnerRequest, UserId, cancellationToken)
+                .ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(UpdatePartnerRequest));
 
             return Ok(result);

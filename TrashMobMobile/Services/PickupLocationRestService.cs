@@ -175,7 +175,7 @@ public class PickupLocationRestService : RestServiceBase, IPickupLocationRestSer
                 {
                     { streamContent, "formFile", Path.GetFileName(localFileName) },
                     { new StringContent(pickupLocationId.ToString()), "parentId" },
-                    { new StringContent(ImageUploadType.Pickup), "imageType" }
+                    { new StringContent(ImageUploadType.Pickup), "imageType" },
                 };
 
                 request.Content = content;

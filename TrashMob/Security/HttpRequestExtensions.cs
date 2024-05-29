@@ -1,8 +1,8 @@
 ﻿namespace TrashMob.Security
 {
-    using Microsoft.AspNetCore.Http;
     using System.Text.Json;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Http;
 
     internal static class HttpRequestExtensions
     {

@@ -2,9 +2,7 @@
 
 namespace TrashMob.Models
 {
-    using System.Collections.Generic;
-
-    public partial class InvitationStatus : LookupModel
+    public class InvitationStatus : LookupModel
     {
         public InvitationStatus()
         {

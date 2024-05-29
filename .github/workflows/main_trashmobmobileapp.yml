@@ -85,11 +85,13 @@ jobs:
       release_number: ${{ needs.generate-build-number.outputs.releaseNumber }}
       dotnet_version: ${{ needs.exposeEnvironmentVariables.outputs.dotnet_version }}
       bundle_id: ${{ needs.exposeEnvironmentVariables.outputs.bundle_id }}
+      android_key_name: "upload"
+      define_constants: "USETEST"
     secrets:
       android_keystore: ${{ secrets.ANDROID_KEYSTORE }}
       android_keystore_password: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
       appsettings: ${{ secrets.MOBILE_APPSETTINGS }}
-      googlemaps_android_key: ${{ secrets.GOOGLEMAPS_ANDROID_APIKEY }}
+      android_google_apikey: ${{ secrets.ANDROID_GOOGLE_APIKEY }}
 
 
   calliOSBuild:
@@ -103,6 +105,7 @@ jobs:
       bundle_id: ${{ needs.exposeEnvironmentVariables.outputs.bundle_id }}
       dotnet_version: ${{ needs.exposeEnvironmentVariables.outputs.dotnet_version }}
       ios_provisioning_profile_type: ${{ needs.exposeEnvironmentVariables.outputs.ios_provisioning_profile_type }}
+      define_constants: "USETEST"
     secrets:
       ios_signing_certificate: ${{ secrets.IOS_CERTIFICATES_P12 }}
       ios_signing_certificate_password: ${{ secrets.IOS_CERTIFICATES_P12_PASSWORD }}

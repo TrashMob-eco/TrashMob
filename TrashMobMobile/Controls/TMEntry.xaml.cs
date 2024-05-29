@@ -4,13 +4,26 @@ using Maui.BindableProperty.Generator.Core;
 
 public partial class TMEntry : ContentView
 {
-	public TMEntry()
-	{
-		InitializeComponent();
-	}
+    [AutoBindable(OnChanged = nameof(OnKeyboardChanged))]
+    private readonly Keyboard keyboard;
 
     [AutoBindable(DefaultBindingMode = "TwoWay", OnChanged = nameof(TextPropertyChanged))]
-    private string _text;
+    private readonly string text;
+
+    [AutoBindable(OnChanged = nameof(HorizontalTextAlignmentPropertyChanged))]
+    private readonly TextAlignment horizontalTextAlignment;
+
+    [AutoBindable(OnChanged = nameof(IsPasswordPropertyChanged))]
+    private readonly bool isPassword;
+
+    [AutoBindable(OnChanged = nameof(PlaceholderPropertyChanged))]
+    private readonly string placeholder;
+
+    public TMEntry()
+    {
+        InitializeComponent();
+    }
+
     private void TextPropertyChanged(string newValue)
     {
         if (WrappedEntry.Text != newValue)
@@ -27,29 +40,21 @@ public partial class TMEntry : ContentView
         }
     }
 
-    [AutoBindable(OnChanged = nameof(PlaceholderPropertyChanged))]
-    private string placeholder;
     private void PlaceholderPropertyChanged(string newValue)
     {
         WrappedEntry.Placeholder = newValue;
     }
 
-    [AutoBindable(OnChanged = nameof(IsPasswordPropertyChanged))]
-    private bool isPassword;
     private void IsPasswordPropertyChanged(bool newValue)
     {
         WrappedEntry.IsPassword = newValue;
     }
 
-    [AutoBindable(OnChanged = nameof(HorizontalTextAlignmentPropertyChanged))]
-    private TextAlignment horizontalTextAlignment;
     private void HorizontalTextAlignmentPropertyChanged(TextAlignment newValue)
     {
         WrappedEntry.HorizontalTextAlignment = newValue;
     }
 
-    [AutoBindable(OnChanged = nameof(OnKeyboardChanged))]
-    private Keyboard _keyboard;
     private void OnKeyboardChanged(Keyboard kb)
     {
         WrappedEntry.Keyboard = kb;
@@ -80,7 +85,7 @@ public class BorderlessEntry : Entry
         var transparentBackgroundSetter = new Setter
         {
             Property = BackgroundColorProperty,
-            Value = Colors.Transparent
+            Value = Colors.Transparent,
         };
 
         var focusedTrigger = new Trigger(typeof(Entry));

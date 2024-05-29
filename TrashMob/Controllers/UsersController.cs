@@ -1,19 +1,17 @@
-﻿
-namespace TrashMob.Controllers
+﻿namespace TrashMob.Controllers
 {
     using System;
+    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Identity.Web.Resource;
-    using TrashMob.Shared;
-    using Microsoft.ApplicationInsights;
     using TrashMob.Models;
     using TrashMob.Security;
+    using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
-    using System.Security.Claims;
 
     [Route("api/users")]
     public class UsersController : SecureController
@@ -21,7 +19,6 @@ namespace TrashMob.Controllers
         private readonly IUserManager userManager;
 
         public UsersController(IUserManager userManager)
-            : base()
         {
             this.userManager = userManager;
         }
@@ -97,7 +94,7 @@ namespace TrashMob.Controllers
 
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPut()]
+        [HttpPut]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> PutUser(User user, CancellationToken cancellationToken)
         {
@@ -113,10 +110,8 @@ namespace TrashMob.Controllers
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+
+                throw;
             }
         }
 

@@ -1,21 +1,21 @@
 ﻿namespace TrashMob.Shared.Managers
 {
     using System;
+    using System.IO;
     using System.Threading.Tasks;
     using Azure.Storage.Blobs;
     using Azure.Storage.Blobs.Models;
-    using SixLabors.ImageSharp;
     using Microsoft.Extensions.Logging;
+    using SixLabors.ImageSharp;
+    using SixLabors.ImageSharp.Processing;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Poco;
-    using SixLabors.ImageSharp.Processing;
-    using System.IO;
 
     internal class ImageManager : IImageManager
     {
-        private readonly ILogger<ImageManager> logger;
         private readonly BlobServiceClient blobServiceClient;
+        private readonly ILogger<ImageManager> logger;
 
         public ImageManager(ILogger<ImageManager> logger, BlobServiceClient blobServiceClient)
         {
@@ -27,12 +27,13 @@
         {
             var blobContainer = blobServiceClient.GetBlobContainerClient(imageType.ToString().ToLower());
 
-            var fileNameFilter = string.Format("{0}-{1}-{2}", parentId, imageType.ToString(), imageSize.ToString()).ToLower();
+            var fileNameFilter = string.Format("{0}-{1}-{2}", parentId, imageType.ToString(), imageSize.ToString())
+                .ToLower();
 
             var imageUrl = string.Empty;
 
             // Should only be one image.
-            await foreach (BlobItem blob in blobContainer.GetBlobsAsync(prefix: fileNameFilter))
+            await foreach (var blob in blobContainer.GetBlobsAsync(prefix: fileNameFilter))
             {
                 imageUrl = $"{blobContainer.Uri}/{blob.Name}";
                 break;
@@ -53,9 +54,11 @@
 
             var fileTime = DateTimeOffset.UtcNow.ToString("ddHHmmss");
 
-            logger.LogInformation("ParentId: {ParentId}, ImageType: {ImageType}, File: {FileName}", imageUpload.ParentId, imageUpload.ImageType, imageUpload.FormFile?.FileName);
+            logger.LogInformation("ParentId: {ParentId}, ImageType: {ImageType}, File: {FileName}",
+                imageUpload.ParentId, imageUpload.ImageType, imageUpload.FormFile?.FileName);
 
-            var fileName = string.Format("{0}-{1}-{2}-{3}{4}", imageUpload.ParentId, imageUpload.ImageType.ToString(), ImageSizeEnum.Raw.ToString(), fileTime, System.IO.Path.GetExtension(imageUpload.FormFile?.FileName)).ToLower();
+            var fileName = string.Format("{0}-{1}-{2}-{3}{4}", imageUpload.ParentId, imageUpload.ImageType.ToString(),
+                ImageSizeEnum.Raw.ToString(), fileTime, Path.GetExtension(imageUpload.FormFile?.FileName)).ToLower();
 
             // Upload the raw file
             await UploadBlob(imageUpload.FormFile.OpenReadStream(), fileName, blobContainer);
@@ -66,9 +69,10 @@
             memoryStream.Position = 0;
 
             // Create a thumbnail
-            using (Image image = Image.Load(memoryStream))
+            using (var image = Image.Load(memoryStream))
             {
-                var thumbNailFileName = string.Format("{0}-{1}-{2}-{3}.jpg", imageUpload.ParentId, imageUpload.ImageType.ToString(), ImageSizeEnum.Thumb.ToString(), fileTime).ToLower();
+                var thumbNailFileName = string.Format("{0}-{1}-{2}-{3}.jpg", imageUpload.ParentId,
+                    imageUpload.ImageType.ToString(), ImageSizeEnum.Thumb.ToString(), fileTime).ToLower();
 
                 image.Mutate(x => x.Resize(ThumbnailWidth, ThumbnailHeight));
 
@@ -83,9 +87,10 @@
             memoryStream.Position = 0;
 
             // Create a reduced image
-            using (Image image = Image.Load(memoryStream))
+            using (var image = Image.Load(memoryStream))
             {
-                var reducedFileName = string.Format("{0}-{1}-{2}-{3}.jpg", imageUpload.ParentId, imageUpload.ImageType.ToString(), ImageSizeEnum.Reduced.ToString(), fileTime).ToLower();
+                var reducedFileName = string.Format("{0}-{1}-{2}-{3}.jpg", imageUpload.ParentId,
+                    imageUpload.ImageType.ToString(), ImageSizeEnum.Reduced.ToString(), fileTime).ToLower();
 
                 image.Mutate(x => x.Resize(ReducedWidth, ReducedHeight));
 
@@ -96,15 +101,6 @@
 
                 await UploadBlob(memoryStreamReduced, reducedFileName, blobContainer);
             }
-        }
-
-        private async Task UploadBlob(Stream stream, string fileName, BlobContainerClient blobContainer)
-        {
-            logger.LogInformation("Creating blob: {BlobName}, length: {Length}", fileName, stream.Length);
-
-            var blobClient = blobContainer.GetBlobClient(fileName);
-
-            await blobClient.UploadAsync(stream, new BlobHttpHeaders { ContentType = "image/jpeg" });
         }
 
         public async Task<bool> DeleteImage(Guid parentId, ImageTypeEnum imageType)
@@ -122,6 +118,15 @@
             return await blobClient.DeleteIfExistsAsync();
         }
 
+        private async Task UploadBlob(Stream stream, string fileName, BlobContainerClient blobContainer)
+        {
+            logger.LogInformation("Creating blob: {BlobName}, length: {Length}", fileName, stream.Length);
+
+            var blobClient = blobContainer.GetBlobClient(fileName);
+
+            await blobClient.UploadAsync(stream, new BlobHttpHeaders { ContentType = "image/jpeg" });
+        }
+
         private async Task<string> GetImageNameAsync(Guid parentId, ImageTypeEnum imageType)
         {
             var blobContainer = blobServiceClient.GetBlobContainerClient(imageType.ToString().ToLower());
@@ -131,7 +136,7 @@
             var imageName = string.Empty;
 
             // For now, only show the first image, since there should only be one for Pickups.
-            await foreach (BlobItem blob in blobContainer.GetBlobsAsync(prefix: fileNameFilter))
+            await foreach (var blob in blobContainer.GetBlobsAsync(prefix: fileNameFilter))
             {
                 imageName = blob.Name;
                 break;

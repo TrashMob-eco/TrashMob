@@ -1,11 +1,10 @@
 ﻿namespace TrashMob.Controllers
 {
-    using Microsoft.ApplicationInsights;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Mvc;
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
     using TrashMob.Models;
     using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
@@ -15,14 +14,15 @@
     {
         private readonly IPartnerRequestManager partnerRequestManager;
 
-        public PartnerRequestsController(IPartnerRequestManager partnerRequestManager) : base()
+        public PartnerRequestsController(IPartnerRequestManager partnerRequestManager)
         {
             this.partnerRequestManager = partnerRequestManager;
         }
 
         [HttpPost]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
-        public async Task<IActionResult> AddPartnerRequest(PartnerRequest partnerRequest, CancellationToken cancellationToken)
+        public async Task<IActionResult> AddPartnerRequest(PartnerRequest partnerRequest,
+            CancellationToken cancellationToken)
         {
             await partnerRequestManager.AddAsync(partnerRequest, UserId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddPartnerRequest));
@@ -32,9 +32,11 @@
 
         [HttpPut("approve/{partnerRequestId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
-        public async Task<IActionResult> ApprovePartnerRequest(Guid partnerRequestId, CancellationToken cancellationToken)
+        public async Task<IActionResult> ApprovePartnerRequest(Guid partnerRequestId,
+            CancellationToken cancellationToken)
         {
-            var partnerRequest = await partnerRequestManager.ApproveBecomeAPartnerAsync(partnerRequestId, UserId, cancellationToken).ConfigureAwait(false);
+            var partnerRequest = await partnerRequestManager
+                .ApproveBecomeAPartnerAsync(partnerRequestId, UserId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(ApprovePartnerRequest));
 
             return Ok();
@@ -44,8 +46,9 @@
         [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
         public async Task<IActionResult> DenyPartnerRequest(Guid partnerRequestId, CancellationToken cancellationToken)
         {
-            var partnerRequest = await partnerRequestManager.DenyBecomeAPartnerAsync(partnerRequestId, UserId, cancellationToken).ConfigureAwait(false);
-            
+            var partnerRequest = await partnerRequestManager
+                .DenyBecomeAPartnerAsync(partnerRequestId, UserId, cancellationToken).ConfigureAwait(false);
+
             TelemetryClient.TrackEvent(nameof(DenyPartnerRequest));
 
             return Ok();
@@ -69,7 +72,8 @@
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> GetPartnerRequestsByUser(Guid userId, CancellationToken cancellationToken)
         {
-            return Ok(await partnerRequestManager.GetByCreatedUserIdAsync(userId, cancellationToken).ConfigureAwait(false));
+            return Ok(await partnerRequestManager.GetByCreatedUserIdAsync(userId, cancellationToken)
+                .ConfigureAwait(false));
         }
     }
 }

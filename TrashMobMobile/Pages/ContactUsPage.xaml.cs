@@ -5,15 +5,15 @@ using CommunityToolkit.Maui.Core;
 
 public partial class ContactUsPage : ContentPage
 {
-    private readonly ContactUsViewModel _viewModel;
+    private readonly ContactUsViewModel viewModel;
 
     public ContactUsPage(ContactUsViewModel viewModel)
     {
         InitializeComponent();
-        _viewModel = viewModel;
-        _viewModel.Navigation = Navigation;
-        _viewModel.Notify = Notify;
-        BindingContext = _viewModel;
+        this.viewModel = viewModel;
+        this.viewModel.Navigation = Navigation;
+        this.viewModel.Notify = Notify;
+        BindingContext = this.viewModel;
     }
 
     private async Task Notify(string message)

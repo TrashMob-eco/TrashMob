@@ -2,19 +2,19 @@ namespace TrashMobMobile.Pages;
 
 public partial class WelcomePage : ContentPage
 {
-    private readonly WelcomeViewModel _viewModel;
+    private readonly WelcomeViewModel viewModel;
 
     public WelcomePage(WelcomeViewModel viewModel)
     {
         InitializeComponent();
-        _viewModel = viewModel;
-        _viewModel.Navigation = Navigation;
-        BindingContext = _viewModel;
+        this.viewModel = viewModel;
+        this.viewModel.Navigation = Navigation;
+        BindingContext = this.viewModel;
     }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await _viewModel.Init();
+        await viewModel.Init();
     }
 }

@@ -38,7 +38,7 @@ public class UserRestService : RestServiceBase, IUserRestService
         {
             var localHttpClient = new HttpClient
             {
-                BaseAddress = new Uri(string.Concat(TrashMobApiAddress, Controller))
+                BaseAddress = new Uri(string.Concat(TrashMobApiAddress, Controller)),
             };
 
             localHttpClient.DefaultRequestHeaders.Authorization = GetAuthToken(userContext);

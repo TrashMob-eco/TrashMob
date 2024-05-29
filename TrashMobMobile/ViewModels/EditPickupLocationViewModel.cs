@@ -39,7 +39,7 @@ public partial class EditPickupLocationViewModel : BaseViewModel
         PickupLocationViewModel = new PickupLocationViewModel(pickupLocationManager, mobEventManager)
         {
             Name = pickupLocation.Name,
-            Notes = pickupLocation.Notes
+            Notes = pickupLocation.Notes,
         };
 
         await PickupLocationViewModel.Init(eventId);

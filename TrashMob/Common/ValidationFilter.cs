@@ -1,9 +1,9 @@
 ﻿namespace TrashMob.Common
 {
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Mvc.Filters;
     using System.Linq;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Filters;
 
     public class ValidationFilter : IAsyncActionFilter
     {
@@ -26,7 +26,7 @@
                         var errorModel = new ErrorModel
                         {
                             FieldName = error.Key,
-                            Message = subError
+                            Message = subError,
                         };
 
                         errorResponse.Error.Add(errorModel);
