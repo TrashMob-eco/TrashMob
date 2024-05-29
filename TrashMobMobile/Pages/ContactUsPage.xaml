@@ -35,7 +35,7 @@
                                 Keyboard="Email"
                                 FontSize="Small">
                                 <Entry.Behaviors>
-                                    <toolkit:MultiValidationBehavior x:Name="emailValidator">
+                                    <toolkit:MultiValidationBehavior x:Name="EmailValidator">
                                         <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged"
                                                                         MinimumLength="5"
                                                                         toolkit:MultiValidationBehavior.Error="Email is required and must be at least 5 characters." />
@@ -76,7 +76,7 @@
                                             Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}"
                                             Value="True" />
                                         <BindingCondition
-                                            Binding="{Binding Source={x:Reference emailValidator}, Path=IsValid}"
+                                            Binding="{Binding Source={x:Reference EmailValidator}, Path=IsValid}"
                                             Value="True" />
                                         <BindingCondition
                                             Binding="{Binding Source={x:Reference messageValidator}, Path=IsValid}"
@@ -101,7 +101,7 @@
                                             Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}"
                                             Value="True" />
                                         <BindingCondition
-                                            Binding="{Binding Source={x:Reference emailValidator}, Path=IsValid}"
+                                            Binding="{Binding Source={x:Reference EmailValidator}, Path=IsValid}"
                                             Value="True" />
                                         <BindingCondition
                                             Binding="{Binding Source={x:Reference messageValidator}, Path=IsValid}"
@@ -115,10 +115,10 @@
                                     <Setter Property="Text" Value="Name is required and must be at least 5 characters." />
                                 </DataTrigger>
                                 <DataTrigger TargetType="Label"
-                                             Binding="{Binding Source={x:Reference emailValidator}, Path=IsValid}"
+                                             Binding="{Binding Source={x:Reference EmailValidator}, Path=IsValid}"
                                              Value="False">
                                     <Setter Property="Text"
-                                            Value="{Binding Source={x:Reference emailValidator}, Path=Errors[0]}" />
+                                            Value="{Binding Source={x:Reference EmailValidator}, Path=Errors[0]}" />
                                 </DataTrigger>
                                 <DataTrigger TargetType="Label"
                                              Binding="{Binding Source={x:Reference messageValidator}, Path=IsValid}"
