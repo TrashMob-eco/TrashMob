@@ -5,6 +5,8 @@ continuous-delivery-fallback-tag: ''
 branches:
   main:
     regex: ^main$
+    increment: Patch
+    is-release-branch: true
     tag: ''
   release:
     regex: ^release$
