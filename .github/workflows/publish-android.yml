@@ -31,5 +31,4 @@ jobs:
                     packageName: ${{ inputs.bundle_id }}
                     releaseFiles: ./*Signed.aab
                     track: internal
-                    changesNotSentForReview: true
                     status: completed
