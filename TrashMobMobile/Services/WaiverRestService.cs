@@ -13,7 +13,7 @@ public class WaiverRestService : RestServiceBase, IWaiverRestService
         try
         {
             var requestUri = Controller + "/" + waiverName;
-            using (var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken))
+            using (var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken))
             {
                 response.EnsureSuccessStatusCode();
                 var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
