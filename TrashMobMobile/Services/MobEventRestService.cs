@@ -1,6 +1,7 @@
 ﻿namespace TrashMobMobile.Data;
 
 using System.Diagnostics;
+using System.Globalization;
 using System.Net.Http.Json;
 using Newtonsoft.Json;
 using TrashMob.Models;
@@ -198,7 +199,10 @@ public class MobEventRestService : RestServiceBase, IMobEventRestService
     public async Task<IEnumerable<Location>> GetLocationsByTimeRangeAsync(DateTimeOffset startDate,
         DateTimeOffset endDate, CancellationToken cancellationToken = default)
     {
-        var requestUri = Controller + "/locationsbytimerange?startTime=" + startDate + "&endTime=" + endDate;
+        var convertedStartTime = startDate.ToString(@"yyyy/MM/dd hh:mm:ss tt", new CultureInfo("en-US"));
+        var convertedEndTime = endDate.ToString(@"yyyy/MM/dd hh:mm:ss tt", new CultureInfo("en-US"));
+
+        var requestUri = Controller + "/locationsbytimerange?startTime=" + convertedStartTime + "&endTime=" + convertedEndTime;
 
         using (var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken))
         {
