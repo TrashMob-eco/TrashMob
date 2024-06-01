@@ -5,20 +5,14 @@ continuous-delivery-fallback-tag: ''
 branches:
   main:
     regex: ^main$
-    increment: Patch
-    is-release-branch: true
     tag: ''
-    pre-release-weight: 1590664955
-    source-branches: ['main']
   release:
     regex: ^release$
     increment: Patch
     tag: ''
     is-release-branch: true
     pre-release-weight: 1590664954
-    source-branches: ['main', 'release']
+    source-branches: ['main']
 ignore:
   sha: []
 merge-message-formats: {}
-
-
