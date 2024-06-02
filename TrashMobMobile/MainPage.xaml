@@ -6,7 +6,76 @@
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
              xmlns:vm="clr-namespace:TrashMobMobile.ViewModels"
              x:DataType="vm:MainViewModel">
-
+    <ContentPage.Resources>
+        <ControlTemplate x:Key="RadioButtonTemplate">
+            <Border Stroke="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                    StrokeThickness="2"
+                    StrokeShape="RoundRectangle 10"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundLight}, Dark={StaticResource PageBackgroundDark}}"
+                    HeightRequest="50"
+                    WidthRequest="75"
+                    HorizontalOptions="Start"
+                    VerticalOptions="Start">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroupList>
+                        <VisualStateGroup x:Name="CheckedStates">
+                            <VisualState x:Name="Checked">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor"
+                                            Value="{AppThemeBinding Light={StaticResource PageBackgroundLight}, Dark={StaticResource PageBackgroundDark}}"/>
+                                    <Setter Property="Stroke"
+                                            Value="{AppThemeBinding Light={StaticResource PageBackgroundLight}, Dark={StaticResource PageBackgroundDark}}" />
+                                    <Setter TargetName="ContentCheck"
+                                            Property="Opacity"
+                                            Value="1" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Unchecked">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor"
+                                            Value="{AppThemeBinding Light={StaticResource PageBackgroundLight}, Dark={StaticResource PageBackgroundDark}}"/>
+                                    <Setter Property="Stroke"
+                                            Value="{AppThemeBinding Light={StaticResource PageBackgroundLight}, Dark={StaticResource PageBackgroundDark}}" />
+                                    <Setter TargetName="ContentCheck"
+                                            Property="Opacity"
+                                            Value="0"
+                                    />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </VisualStateManager.VisualStateGroups>
+                <Grid Margin="4"
+                      WidthRequest="75">
+                    <Grid Margin="0,5,0,0"
+                          WidthRequest="10"
+                          HeightRequest="10"
+                          HorizontalOptions="CenterAndExpand"
+                          VerticalOptions="StartAndExpand">
+                        <Ellipse
+                            Stroke="{AppThemeBinding Light={StaticResource PageBackgroundLight}, Dark={StaticResource PageBackgroundDark}}"
+                                 Fill="{AppThemeBinding Light={StaticResource PageBackgroundLight}, Dark={StaticResource PageBackgroundDark}}"
+                                 WidthRequest="10"
+                                 HeightRequest="10"
+                                 HorizontalOptions="Center"
+                                 VerticalOptions="StartAndExpand" />
+                        <Ellipse IsVisible="True"
+                            x:Name="ContentCheck"
+                                 Fill="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                 WidthRequest="10"
+                                 HeightRequest="10"
+                                 HorizontalOptions="Center"
+                                 VerticalOptions="StartAndExpand" />
+                    </Grid>
+                    <ContentPresenter />
+                </Grid>
+            </Border>
+        </ControlTemplate>
+        <Style TargetType="RadioButton">
+            <Setter Property="ControlTemplate"
+                    Value="{StaticResource RadioButtonTemplate}" />
+        </Style>
+    </ContentPage.Resources>
     <Grid>
         <ScrollView>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
@@ -108,11 +177,13 @@
                            FontSize="Micro"
                            HorizontalOptions="Center"
                            Text="Your Location" />
-                    <HorizontalStackLayout Grid.Row="2">
-                        <RadioButton x:Name="viewMap"
+                    <HorizontalStackLayout Grid.Row="2" HorizontalOptions="CenterAndExpand">
+                        <RadioButton x:Name="viewMap"                                     
                                      Content="Map"
                                      FontSize="Micro"
-                                     IsChecked="True" />
+                                     IsChecked="True"
+                                     TextColor="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"                                     
+                                     />
                         <RadioButton x:Name="viewList"
                                      Content="List"
                                      FontSize="Micro" />
