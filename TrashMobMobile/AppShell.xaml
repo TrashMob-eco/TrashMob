@@ -9,6 +9,9 @@
     Title="TrashMobMobile"
     Shell.FlyoutBehavior="Flyout">
 
+    <Shell.TitleView>
+        <Image Source="{AppThemeBinding Light=bannerlogo_light.png, Dark=bannerlogo_dark.png}" HeightRequest="150" WidthRequest="150" />
+    </Shell.TitleView>
     <Shell.ItemTemplate>
         <DataTemplate>
             <Border StrokeShape="RoundRectangle 22"
