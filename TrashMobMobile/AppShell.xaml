@@ -10,7 +10,7 @@
     Shell.FlyoutBehavior="Flyout">
 
     <Shell.TitleView>
-        <Image Source="{AppThemeBinding Light=bannerlogo_light.png, Dark=bannerlogo_dark.png}" HeightRequest="150" WidthRequest="150" />
+        <Image Source="{AppThemeBinding Light=bannerlogo_light.png, Dark=bannerlogo_dark.png}" />
     </Shell.TitleView>
     <Shell.ItemTemplate>
         <DataTemplate>
