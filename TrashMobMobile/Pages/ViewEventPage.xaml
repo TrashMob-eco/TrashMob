@@ -8,9 +8,7 @@
     <ScrollView>
         <Grid>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
-                <Frame Style="{DynamicResource Frame}" Padding="1">
-                    <Image Source="bannerlogo.png" />
-                </Frame>
+                
                 <Label
                     Text="{Binding EventViewModel.Name}" Style="{StaticResource Headline}"
                     VerticalOptions="Center"

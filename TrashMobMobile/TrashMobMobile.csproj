@@ -79,6 +79,8 @@
 	  <None Remove="Resources\Fonts\Lexend-Regular.ttf" />
 	  <None Remove="Resources\Fonts\Lexend-SemiBold.ttf" />
 	  <None Remove="Resources\Fonts\Lexend-VariableFont_wght.ttf" />
+	  <None Remove="Resources\Images\bannerlogo_dark.png" />
+	  <None Remove="Resources\Images\bannerlogo_light.png" />
 	</ItemGroup>
 
 	<ItemGroup>
