@@ -199,10 +199,16 @@ public class MobEventRestService : RestServiceBase, IMobEventRestService
     public async Task<IEnumerable<Location>> GetLocationsByTimeRangeAsync(DateTimeOffset startDate,
         DateTimeOffset endDate, CancellationToken cancellationToken = default)
     {
-        var convertedStartTime = startDate.ToString(@"yyyy/MM/dd hh:mm:ss tt", new CultureInfo("en-US"));
-        var convertedEndTime = endDate.ToString(@"yyyy/MM/dd hh:mm:ss tt", new CultureInfo("en-US"));
+        var startDateTime = startDate.ToString();
+        var endDateTime = endDate.ToString();
 
-        var requestUri = Controller + "/locationsbytimerange?startTime=" + convertedStartTime + "&endTime=" + convertedEndTime;
+        // Convert the DateTime string into the correct Format if the Culture is not Invariant
+        if (CultureInfo.CurrentCulture != CultureInfo.InvariantCulture)
+        {
+            startDateTime = startDate.ToString(@"yyyy/MM/dd hh:mm:ss tt", new CultureInfo("en-US"));
+            endDateTime = endDate.ToString(@"yyyy/MM/dd hh:mm:ss tt", new CultureInfo("en-US"));
+        }
+        var requestUri = Controller + "/locationsbytimerange?startTime=" + startDateTime + "&endTime=" + endDateTime;
 
         using (var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken))
         {
