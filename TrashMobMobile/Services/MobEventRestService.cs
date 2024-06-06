@@ -208,6 +208,7 @@ public class MobEventRestService : RestServiceBase, IMobEventRestService
             startDateTime = startDate.ToString(@"yyyy/MM/dd hh:mm:ss tt", new CultureInfo("en-US"));
             endDateTime = endDate.ToString(@"yyyy/MM/dd hh:mm:ss tt", new CultureInfo("en-US"));
         }
+
         var requestUri = Controller + "/locationsbytimerange?startTime=" + startDateTime + "&endTime=" + endDateTime;
 
         using (var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken))
