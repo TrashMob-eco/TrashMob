@@ -8,15 +8,12 @@
     <ScrollView>
         <Grid>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
-                <Label
-                    Text="In order to create or participate in TrashMob.eco events, you must agree to a liability waiver. Please click the
-                Sign Waiver button below. This will open a browser which will ask you to view and sign the waiver.
-                Once that is done, you will be redirected to the TrashMob.eco website to sign in and complete the waiver signing experience there. If you don't complete that last step, you will
-                need to repeat the process."
-                    FontSize="Small"
+                <Label Margin="10"
+                    Text="In order to create or participate in TrashMob.eco events, you must agree to a liability waiver. Please click the Sign Waiver button below. This will open a browser which will ask you to view and sign the waiver.&#10;&#10;Once that is done, you will be redirected to the TrashMob.eco website to sign in and complete the waiver signing experience there. If you don't complete that last step, you will need to repeat the process."
+                    FontSize="Micro"
                     VerticalOptions="Center"
-                    HorizontalOptions="Center"
-                    HorizontalTextAlignment="Center" />
+                    HorizontalOptions="Start"
+                    HorizontalTextAlignment="Start" />
 
                 <Label
                     Text="You will only need to sign this waiver once unless we have to change the legalese."
@@ -26,7 +23,7 @@
                     HorizontalTextAlignment="Center" />
 
                 <Label
-                    Text="Thank you!" FontSize="Small"
+                    Text="Thank you!" FontSize="Micro"
                     VerticalOptions="Center"
                     HorizontalOptions="Center"
                     HorizontalTextAlignment="Center" />
@@ -34,16 +31,14 @@
                 <VerticalStackLayout>
                     <Label Text="Full Name" Style="{StaticResource FieldLabel}" />
 
-                    <Entry Text="{Binding Name}"
-                           FontSize="Small"
-                           VerticalOptions="Center"
-                           HorizontalOptions="Start"
-                           HorizontalTextAlignment="Center">
-                        <Entry.Behaviors>
-                            <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5"
+                    <Border Style="{x:StaticResource RoundBorder}">
+                        <Entry Text="{Binding Name}">
+                            <Entry.Behaviors>
+                                <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5"
                                                             x:Name="nameValidator" />
-                        </Entry.Behaviors>
-                    </Entry>
+                            </Entry.Behaviors>
+                        </Entry>
+                    </Border>
                 </VerticalStackLayout>
 
                 <Button Text="Sign Waiver" Command="{Binding SignWaiverCommand}">
