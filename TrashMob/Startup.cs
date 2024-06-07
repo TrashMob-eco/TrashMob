@@ -80,20 +80,18 @@ namespace TrashMob
                     },
                     options => { Configuration.Bind("AzureAdB2C", options); });
 
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy(AuthorizationPolicyConstants.ValidUser,
-                    policy => policy.AddRequirements(new UserIsValidUserRequirement()));
-                options.AddPolicy(AuthorizationPolicyConstants.UserOwnsEntity,
-                    policy => policy.AddRequirements(new UserOwnsEntityRequirement()));
-                options.AddPolicy(AuthorizationPolicyConstants.UserOwnsEntityOrIsAdmin,
-                    policy => policy.AddRequirements(new UserOwnsEntityOrIsAdminRequirement()));
-                options.AddPolicy(AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin,
-                    policy => policy.AddRequirements(new UserIsPartnerUserOrIsAdminRequirement()));
-                options.AddPolicy(AuthorizationPolicyConstants.UserIsAdmin,
+            services.AddAuthorizationBuilder()
+                .AddPolicy(AuthorizationPolicyConstants.ValidUser,
+                    policy => policy.AddRequirements(new UserIsValidUserRequirement()))
+                .AddPolicy(AuthorizationPolicyConstants.UserOwnsEntity,
+                    policy => policy.AddRequirements(new UserOwnsEntityRequirement()))
+                .AddPolicy(AuthorizationPolicyConstants.UserOwnsEntityOrIsAdmin,
+                    policy => policy.AddRequirements(new UserOwnsEntityOrIsAdminRequirement()))
+                .AddPolicy(AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin,
+                    policy => policy.AddRequirements(new UserIsPartnerUserOrIsAdminRequirement()))
+                .AddPolicy(AuthorizationPolicyConstants.UserIsAdmin,
                     policy => policy.AddRequirements(new UserIsAdminRequirement()));
-            });
-
+   
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "client-app/build"; });
 
@@ -145,9 +143,32 @@ namespace TrashMob
             }
 
             services.AddControllers();
-            services.AddSwaggerGen(c =>
+            services.AddSwaggerGen(options =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "trashmobapi", Version = "v1" });
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "trashmobapi", Version = "v1" });
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please enter a valid token",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
+                    Scheme = "Bearer"
+                });
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type=ReferenceType.SecurityScheme,
+                                Id="Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
             });
         }
 
