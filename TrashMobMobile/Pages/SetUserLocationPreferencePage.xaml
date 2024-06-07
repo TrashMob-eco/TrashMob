@@ -3,6 +3,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             x:DataType="viewModels:UserLocationPreferenceViewModel"
              x:Class="TrashMobMobile.Pages.SetUserLocationPreferencePage"
              Title="Set Your Location">
     <ScrollView>
@@ -20,7 +22,7 @@
                           ItemsSource="{Binding Addresses}"
                           MapClicked="OnMapClicked">
                     <maps:Map.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate x:DataType="viewModels:AddressViewModel">
                             <maps:Pin Location="{Binding Location}"
                                       Address="{Binding StreetAddress}"
                                       Label="Your Preferred Location" />

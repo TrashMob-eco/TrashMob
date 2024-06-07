@@ -2,6 +2,8 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             x:DataType="viewModels:MyDashboardViewModel"
              x:Class="TrashMobMobile.Pages.MyDashboardPage"
              Title="My Dashboard">
 
@@ -64,7 +66,7 @@
                                 Margin="5"
                                 MaximumHeightRequest="250">
                     <CollectionView.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate x:DataType="viewModels:EventViewModel">
                             <Border Style="{StaticResource RoundBorder}" Margin="5">
                                 <Grid ColumnDefinitions="1*, 1*"
                                       RowDefinitions="Auto, Auto, Auto, Auto"
@@ -98,7 +100,7 @@
                                 Margin="5"
                                 MaximumHeightRequest="250">
                     <CollectionView.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate x:DataType="viewModels:EventViewModel">
                             <Border Style="{StaticResource RoundBorder}" Margin="5">
                                 <Grid ColumnDefinitions="1*, 1*"
                                       RowDefinitions="Auto, Auto, Auto, Auto"
@@ -132,7 +134,7 @@
                                 Margin="5"
                                 MaximumHeightRequest="250">
                     <CollectionView.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate x:DataType="viewModels:LitterReportViewModel">
                             <Border Style="{StaticResource RoundBorder}" Margin="5">
                                 <Grid ColumnDefinitions="1*, 1*"
                                       RowDefinitions="Auto, Auto, Auto, Auto"
