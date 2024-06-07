@@ -22,7 +22,7 @@
     <DefineConstants>USETEST</DefineConstants>
 
 		<!-- Display name -->
-		<ApplicationTitle>TrashMobMobile</ApplicationTitle>
+		<ApplicationTitle>TrashMob.eco</ApplicationTitle>
 
 		<!-- App Identifier -->
 		<ApplicationId>eco.trashmob.trashmobmobileapp</ApplicationId>
@@ -53,11 +53,8 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<!--<MauiIcon Include="Resources\AppIcon\appiconfg.svg">
-		  <Color>#FBFBFA</Color>
-		</MauiIcon>-->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg">		  
-		</MauiIcon>
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" />
+		<MauiIcon Include="Resources\AppIcon\appiconfg.svg" />
 
 		<!-- Splash Screen -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#FBFBFA" />

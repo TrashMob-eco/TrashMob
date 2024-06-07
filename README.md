@@ -59,6 +59,12 @@ If you are not doing any database changes (i.e. design work, error handling, etc
 .\setupdev.ps1 -environment dev -region westus2 -subscription 39a254b7-c01a-45ab-bebd-4038ea4adea9
 ```
 
+### To view the Swagger for the TrashMobAPI (Develpment Environment only)
+
+1. Start the TrashMob project in Visual Studio
+1. Go to https://localhost:44332/swagger/index.html
+1. If you want to test the API, you will need to log in to the site first, and then use the token from the site to authenticate in the Swagger UI.
+
 ### To set up your own environment to test in:
 You must use this if you are making database changes to ensure you do not break the backend for everyone else:
 
@@ -294,7 +300,8 @@ In Debug mode, by default, the Android package format is set to apk, and does no
 Note: this may make deployments to your local emulator slower (more data must be copied into the emulator session). You can change this back to "apk" for local development, but failure to switch it back to "bundle" before checkin will cause the PR build to fail. There may be a way to pass this setting in on the command line for the publish step. That has not yet been investigated.
 
 ## How do I get a test distribution of the Mobile App?
-We are currently working on a way to distribute the test version of the mobile app. For now, you can build the app from the source code and deploy it to your device.
+- The test mobile app for Android is available for download by registering as an Internal Tester on the Google Play Store. To do this, send an email to [info@trashmob.eco](mailto:info@trashmob.eco) requesting access to the test builds, specifying that you would like access to the Android Test build.
+- The test mobile app for iOS is available for download by registering as a TestFlight tester. To do this, send an email to [info@trashmob.eco](mailto:info@trashmob.eco) requesting access to the test builds, specifying that you would like access to the iOS Test build.
 
 ## How do I get a production distribution of the Mobile App?
 The production mobile app can be downloaded here:
@@ -387,6 +394,25 @@ TBD
 TBD
 
 ## Deployment Instructions - Mobile App
+
+### Updating the Tag (rarely needed)
+
+When needing to update the major and minor versions of the app, we need to push a new Tag to the repository. This is done by the TrashMob team, and not by individual developers. The steps are as follows:
+1. Open a terminal window in the TrashMob repo folder
+1. Ensure you are on the main branch
+1. Run the following command to create a new tag where x is the major version and y is the minor version:
+```
+git tag x.y
+git push origin --tags
+```
+
+Note that the Main and Release branches have different tags. The Main branch is for the Test environment, and the Release branch is for the Prod environment. To update the Release branch, you must be on the Release branch, then do the following command:
+```
+git tag x.y release
+git push origin --tags
+```
+
+### Deploying to the Test Stores
 
 Deploying the mobile app to the app stores is a multi-step process.
 1. The Workflows in GitHub Main are set to deploy an instance of the app to the Test Apple and Google Play store apps. This is done automatically with each push to the Main branch. 

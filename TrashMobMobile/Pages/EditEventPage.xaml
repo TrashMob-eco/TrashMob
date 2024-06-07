@@ -4,6 +4,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             x:DataType="viewModels:EditEventViewModel"
              x:Class="TrashMobMobile.Pages.EditEventPage"
              Title="Edit Event">
     <ScrollView>
@@ -127,7 +129,7 @@
                 <maps:Map x:Name="eventLocationMap" ItemsSource="{Binding Events}" IsShowingUser="True"
                           MapClicked="OnMapClicked">
                     <maps:Map.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate x:DataType="viewModels:EventViewModel">
                             <maps:Pin Location="{Binding Address.Location}"
                                       Address="{Binding Address.StreetAddress}"
                                       Label="{Binding Name}" />
@@ -208,14 +210,14 @@
                         </Button.Triggers>
                     </Button>
 
-                    <Button Margin="10"
-                            Grid.Row="0"
-                            Grid.Column="2"
-                            Grid.ColumnSpan="2"
-                            Command="{Binding ManageEventPartnersCommand}"
-                            IsEnabled="{Binding IsManageEventPartnersEnabled}"
-                            IsVisible="{Binding IsManageEventPartnersEnabled}"
-                            Text="Manage Partners" />
+                     <Button Margin="10" 
+                             Grid.Row="0" 
+                             Grid.Column="2" 
+                             Grid.ColumnSpan="2" 
+                             Command="{Binding ManageEventPartnersCommand}" 
+                             IsEnabled="{Binding IsManageEventPartnersEnabled}" 
+                             IsVisible="{Binding IsManageEventPartnersEnabled}" 
+                             Text="Manage Partners" /> 
                 </Grid>
 
                 <Label

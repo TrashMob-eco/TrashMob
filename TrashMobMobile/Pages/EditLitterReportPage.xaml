@@ -3,9 +3,10 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             x:DataType="viewModels:EditLitterReportViewModel"
              x:Class="TrashMobMobile.Pages.EditLitterReportPage"
              Title="Edit Litter Report">
-
     <ScrollView>
         <Grid>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
@@ -60,7 +61,7 @@
                     <maps:Map Grid.Row="1" x:Name="litterReportLocationMap"
                               ItemsSource="{Binding LitterImageViewModels}">
                         <maps:Map.ItemTemplate>
-                            <DataTemplate>
+                            <DataTemplate x:DataType="viewModels:LitterImageViewModel">
                                 <maps:Pin Location="{Binding Address.Location}"
                                           Address="{Binding Address.StreetAddress}"
                                           Label="Litter Image" />
@@ -72,7 +73,7 @@
                                     ItemsSource="{Binding LitterImageViewModels}"
                                     SelectionMode="None">
                         <CollectionView.ItemTemplate>
-                            <DataTemplate>
+                            <DataTemplate x:DataType="viewModels:LitterImageViewModel">
                                 <Border Style="{StaticResource RoundBorder}">
                                     <Grid WidthRequest="400"
                                           ColumnDefinitions="*, 1*, 1*"
