@@ -17,6 +17,9 @@ public partial class EditEventViewModel : BaseViewModel
     private EventViewModel eventViewModel;
 
     [ObservableProperty]
+    private bool isManageEventPartnersEnabled;
+
+    [ObservableProperty]
     private string selectedEventType;
 
     [ObservableProperty]
@@ -44,6 +47,7 @@ public partial class EditEventViewModel : BaseViewModel
     {
         IsBusy = true;
 
+        IsManageEventPartnersEnabled = false;
         UserLocation = App.CurrentUser.GetAddress();
         EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
 
@@ -59,6 +63,8 @@ public partial class EditEventViewModel : BaseViewModel
         {
             ETypes.Add(eventType.Name);
         }
+
+        IsManageEventPartnersEnabled = true;
 
         IsBusy = false;
     }

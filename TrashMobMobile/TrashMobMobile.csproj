@@ -22,7 +22,7 @@
     <DefineConstants>USETEST</DefineConstants>
 
 		<!-- Display name -->
-		<ApplicationTitle>TrashMobMobile</ApplicationTitle>
+		<ApplicationTitle>TrashMob.eco</ApplicationTitle>
 
 		<!-- App Identifier -->
 		<ApplicationId>eco.trashmob.trashmobmobileapp</ApplicationId>

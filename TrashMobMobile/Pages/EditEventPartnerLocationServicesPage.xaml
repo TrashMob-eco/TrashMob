@@ -30,8 +30,7 @@
                                         <Label Text="{Binding PartnerLocationName}" Grid.Column="0" FontSize="Micro" />
                                         <Label Text="{Binding ServiceName}" Grid.Column="1" FontSize="Micro" />
                                         <Label Text="{Binding ServiceStatus}" Grid.Column="2" FontSize="Micro" />
-                                        <!-- TODO find the attribute to bind -->
-                                        <!-- <Label Text="{Binding Notes}" Grid.Column="3" FontSize="Micro" /> -->
+                                        <Label Text="{Binding PartnerLocationNotes}" Grid.Column="3" FontSize="Micro" /> 
                                         <Button Text="Request Service" Command="{Binding RequestServiceCommand}"
                                                 IsEnabled="{Binding CanRequestService}"
                                                 IsVisible="{Binding CanRequestService}" Grid.Column="4"

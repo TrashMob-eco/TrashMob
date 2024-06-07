@@ -210,15 +210,14 @@
                         </Button.Triggers>
                     </Button>
 
-                    <!-- TODO find the attribute to bind -->
-                    <!-- <Button Margin="10" -->
-                    <!--         Grid.Row="0" -->
-                    <!--         Grid.Column="2" -->
-                    <!--         Grid.ColumnSpan="2" -->
-                    <!--         Command="{Binding ManageEventPartnersCommand}" -->
-                    <!--         IsEnabled="{Binding IsManageEventPartnersEnabled}" -->
-                    <!--         IsVisible="{Binding IsManageEventPartnersEnabled}" -->
-                    <!--         Text="Manage Partners" /> -->
+                     <Button Margin="10" 
+                             Grid.Row="0" 
+                             Grid.Column="2" 
+                             Grid.ColumnSpan="2" 
+                             Command="{Binding ManageEventPartnersCommand}" 
+                             IsEnabled="{Binding IsManageEventPartnersEnabled}" 
+                             IsVisible="{Binding IsManageEventPartnersEnabled}" 
+                             Text="Manage Partners" /> 
                 </Grid>
 
                 <Label
