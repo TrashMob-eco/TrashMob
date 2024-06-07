@@ -3,6 +3,8 @@
 <ContentPage x:Class="TrashMobMobile.Pages.CreateLitterReportPage"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             x:DataType="viewModels:CreateLitterReportViewModel"
              Title="Submit Litter Report">
     <ScrollView>
         <Grid>
@@ -48,7 +50,7 @@
                                     ItemsSource="{Binding LitterImageViewModels}"
                                     SelectionMode="None">
                         <CollectionView.ItemTemplate>
-                            <DataTemplate>
+                            <DataTemplate x:DataType="viewModels:LitterImageViewModel">
                                 <Border Style="{StaticResource RoundBorder}">
                                     <Grid ColumnDefinitions="Auto, *, Auto">
                                         <Image Grid.Column="0"

@@ -2,6 +2,8 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             x:DataType="viewModels:SearchLitterReportsViewModel"
              x:Class="TrashMobMobile.Pages.SearchLitterReportsPage"
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
              Title="Search Litter Reports">
@@ -41,7 +43,7 @@
                               ItemsSource="{Binding LitterImages}"
                               IsVisible="{Binding Source={x:Reference viewMap}, Path=IsChecked}">
                         <maps:Map.ItemTemplate>
-                            <DataTemplate>
+                            <DataTemplate x:DataType="viewModels:LitterImageViewModel">
                                 <maps:Pin Location="{Binding Address.Location}"
                                           Address="{Binding Address.StreetAddress}"
                                           Label="{Binding Address.StreetAddress}"
@@ -57,7 +59,7 @@
                                     IsVisible="{Binding Source={x:Reference viewList}, Path=IsChecked}"
                                     SelectionMode="Single">
                         <CollectionView.ItemTemplate>
-                            <DataTemplate>
+                            <DataTemplate x:DataType="viewModels:LitterReportViewModel">
                                 <StackLayout Margin="5">
                                     <Border Style="{StaticResource RoundBorder}">
                                         <Grid ColumnDefinitions="1*, 1*"
@@ -73,7 +75,7 @@
                                             <CollectionView ItemsSource="{Binding LitterImageViewModels}" Grid.Row="2"
                                                             Grid.Column="1">
                                                 <CollectionView.ItemTemplate>
-                                                    <DataTemplate>
+                                                    <DataTemplate x:DataType="viewModels:LitterImageViewModel">
                                                         <Label Text="{Binding Address.DisplayAddress}" FontSize="Micro" />
                                                     </DataTemplate>
                                                 </CollectionView.ItemTemplate>

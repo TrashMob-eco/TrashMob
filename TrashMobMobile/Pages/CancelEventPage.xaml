@@ -3,6 +3,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             x:DataType="viewModels:CancelEventViewModel"
              x:Class="TrashMobMobile.Pages.CancelEventPage"
              Title="Cancel Event">
     <ScrollView>
@@ -19,14 +21,14 @@
                     <VerticalStackLayout Grid.Row="1">
                         <Label Text="Event Date" Style="{StaticResource FieldLabel}" />
                         <Border Style="{x:StaticResource RoundBorder}">
-                            <Label Text="{Binding EventViewModel.EventViewModel.DisplayDate}" FontSize="Small" />
+                            <Label Text="{Binding EventViewModel.DisplayDate}" FontSize="Small" />
                         </Border>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="2">
                         <Label Text="Event Date" Style="{StaticResource FieldLabel}" />
                         <Border Style="{x:StaticResource RoundBorder}">
-                            <Label Text="{Binding EventViewModel.EventViewModel.DisplayTime}" FontSize="Small" />
+                            <Label Text="{Binding EventViewModel.DisplayTime}" FontSize="Small" />
                         </Border>
                     </VerticalStackLayout>
 

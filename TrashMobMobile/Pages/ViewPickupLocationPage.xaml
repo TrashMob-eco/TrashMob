@@ -4,6 +4,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             x:DataType="viewModels:ViewPickupLocationViewModel"
              x:Class="TrashMobMobile.Pages.ViewPickupLocationPage"
              Title="View Pickup Location">
     <ScrollView>
@@ -40,7 +42,7 @@
                           ItemsSource="{Binding PickupLocations}"
                           IsVisible="{Binding Source={x:Reference viewMap}, Path=IsChecked}">
                     <maps:Map.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate x:DataType="viewModels:PickupLocationViewModel">
                             <maps:Pin Location="{Binding Address.Location}"
                                       Address="{Binding Address.StreetAddress}"
                                       Label="{Binding Id}"
