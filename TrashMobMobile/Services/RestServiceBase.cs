@@ -20,7 +20,7 @@
         {
             get
             {
-                var authorizedHttpClient = httpClientFactory.CreateClient("AuthorizedHttpClient");
+                var authorizedHttpClient = httpClientFactory.CreateClient("ServerAPI");
 
                 authorizedHttpClient.BaseAddress = new Uri(string.Concat(TrashMobApiAddress, Controller));
                 authorizedHttpClient.DefaultRequestHeaders.Add("Accept", "application/json, text/plain");
@@ -34,7 +34,7 @@
         {
             get
             {
-                var anonymousHttpClient = httpClientFactory.CreateClient("AnonymousHttpClient");
+                var anonymousHttpClient = httpClientFactory.CreateClient("ServerAPI.Anonymous");
                 anonymousHttpClient.BaseAddress = new Uri(string.Concat(TrashMobApiAddress, Controller));
                 anonymousHttpClient.DefaultRequestHeaders.Add("Accept", "application/json, text/plain");
                 return anonymousHttpClient;
