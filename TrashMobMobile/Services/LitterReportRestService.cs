@@ -6,8 +6,9 @@
     using Newtonsoft.Json;
     using TrashMob.Models;
     using TrashMobMobile.Models;
+    using TrashMobMobile.Services;
 
-    public class LitterReportRestService : RestServiceBase, ILitterReportRestService
+    public class LitterReportRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), ILitterReportRestService
     {
         protected override string Controller => "litterreport";
 

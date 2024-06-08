@@ -10,8 +10,6 @@
 
     public static class ServiceCollectionExtensions
     {
-        public const string ASSEMBLY_NAME = "TrashMobMobile";
-
         public static IServiceCollection AddTrashMobServices(this IServiceCollection services)
         {
             services.AddSingleton<IAuthService, AuthService>();
@@ -52,24 +50,17 @@
              * Use your correct FairPlayTube API port
              * */
             //ngrok.exe http https://localhost:44373 -host-header="localhost:44373"
-            //string fairPlayTubeapiAddress = "REPLACE_WITH_NGROK_GENERATED_URL"
             services.AddScoped<BaseAddressAuthorizationMessageHandler>();
-            services.AddHttpClient($"{ASSEMBLY_NAME}.ServerAPI", client =>
+            services.AddHttpClient($"ServerAPI", client =>
                     client.BaseAddress = new Uri(Settings.ApiBaseUrl))
                 .AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>()
                 .SetHandlerLifetime(TimeSpan.FromMinutes(5)) //Set lifetime to five minutes
                 .AddPolicyHandler(GetRetryPolicy());
 
-            services.AddHttpClient($"{ASSEMBLY_NAME}.ServerAPI.Anonymous", client =>
+            services.AddHttpClient($"ServerAPI.Anonymous", client =>
                     client.BaseAddress = new Uri(Settings.ApiBaseUrl))
                 .SetHandlerLifetime(TimeSpan.FromMinutes(5)) //Set lifetime to five minutes
                 .AddPolicyHandler(GetRetryPolicy());
-
-            services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>()
-                .CreateClient($"{ASSEMBLY_NAME}.ServerAPI"));
-
-            services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>()
-                .CreateClient($"{ASSEMBLY_NAME}.ServerAPI.Anonymous"));
 
             return services;
         }

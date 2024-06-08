@@ -3,8 +3,9 @@
 using System.Diagnostics;
 using Newtonsoft.Json;
 using TrashMob.Models;
+using TrashMobMobile.Services;
 
-public class EventTypeRestService : RestServiceBase, IEventTypeRestService
+public class EventTypeRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IEventTypeRestService
 {
     protected override string Controller => "eventtypes";
 

@@ -7,8 +7,9 @@ using Newtonsoft.Json;
 using TrashMob.Models;
 using TrashMob.Models.Poco;
 using TrashMobMobile.Models;
+using TrashMobMobile.Services;
 
-public class MobEventRestService : RestServiceBase, IMobEventRestService
+public class MobEventRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IMobEventRestService
 {
     protected override string Controller => "events";
 

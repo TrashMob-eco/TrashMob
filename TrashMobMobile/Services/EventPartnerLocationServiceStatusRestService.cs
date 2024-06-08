@@ -3,8 +3,9 @@
 using System.Diagnostics;
 using Newtonsoft.Json;
 using TrashMob.Models;
+using TrashMobMobile.Services;
 
-public class EventPartnerLocationServiceStatusRestService : RestServiceBase,
+public class EventPartnerLocationServiceStatusRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory),
     IEventPartnerLocationServiceStatusRestService
 {
     protected override string Controller => "eventpartnerlocationservicestatuses";

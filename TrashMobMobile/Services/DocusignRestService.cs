@@ -4,8 +4,9 @@ using System.Diagnostics;
 using System.Net.Http.Json;
 using Newtonsoft.Json;
 using TrashMobMobile.Models;
+using TrashMobMobile.Services;
 
-public class DocusignRestService : RestServiceBase, IDocusignRestService
+public class DocusignRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IDocusignRestService
 {
     protected override string Controller => "docusign";
 

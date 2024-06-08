@@ -5,8 +5,9 @@ using System.Net.Http.Json;
 using Newtonsoft.Json;
 using TrashMob.Models;
 using TrashMobMobile.Models;
+using TrashMobMobile.Services;
 
-public class PickupLocationRestService : RestServiceBase, IPickupLocationRestService
+public class PickupLocationRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IPickupLocationRestService
 {
     protected override string Controller => "pickuplocations";
 

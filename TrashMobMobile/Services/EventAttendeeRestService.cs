@@ -3,8 +3,9 @@
 using System.Diagnostics;
 using System.Net.Http.Json;
 using TrashMob.Models;
+using TrashMobMobile.Services;
 
-public class EventAttendeeRestService : RestServiceBase, IEventAttendeeRestService
+public class EventAttendeeRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IEventAttendeeRestService
 {
     protected override string Controller => "eventattendees";
 
