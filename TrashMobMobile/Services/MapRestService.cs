@@ -3,8 +3,9 @@
 using System.Diagnostics;
 using Newtonsoft.Json;
 using TrashMob.Models;
+using TrashMobMobile.Services;
 
-public class MapRestService : RestServiceBase, IMapRestService
+public class MapRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IMapRestService
 {
     protected override string Controller => "maps";
 

@@ -5,8 +5,9 @@ using System.Net.Http.Json;
 using Newtonsoft.Json;
 using TrashMob.Models;
 using TrashMob.Models.Poco;
+using TrashMobMobile.Services;
 
-public class EventPartnerLocationServiceRestService : RestServiceBase, IEventPartnerLocationServiceRestService
+public class EventPartnerLocationServiceRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IEventPartnerLocationServiceRestService
 {
     protected override string Controller => "eventpartnerlocationservices";
 

@@ -3,8 +3,9 @@
 using System.Diagnostics;
 using Newtonsoft.Json;
 using TrashMob.Models;
+using TrashMobMobile.Services;
 
-public class ServiceTypeRestService : RestServiceBase, IServiceTypeRestService
+public class ServiceTypeRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IServiceTypeRestService
 {
     protected override string Controller => "servicetypes";
 

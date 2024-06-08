@@ -5,8 +5,9 @@ using System.Net.Http.Json;
 using Newtonsoft.Json;
 using TrashMob.Models;
 using TrashMobMobile.Authentication;
+using TrashMobMobile.Services;
 
-public class UserRestService : RestServiceBase, IUserRestService
+public class UserRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IUserRestService
 {
     protected override string Controller => "users";
 

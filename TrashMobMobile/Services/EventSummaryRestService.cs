@@ -4,8 +4,9 @@
     using System.Net.Http.Json;
     using Newtonsoft.Json;
     using TrashMob.Models;
+    using TrashMobMobile.Services;
 
-    public class EventSummaryRestService : RestServiceBase, IEventSummaryRestService
+    public class EventSummaryRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IEventSummaryRestService
     {
         protected override string Controller => "eventsummaries";
 
