@@ -24,16 +24,10 @@ namespace TrashMob
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence;
 
-    public class Startup
+    public class Startup(IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
     {
-        public Startup(IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
-        {
-            Configuration = configuration;
-            CurrentEnvironment = webHostEnvironment;
-        }
-
-        public IConfiguration Configuration { get; }
-        private IWebHostEnvironment CurrentEnvironment { get; }
+        public IConfiguration Configuration { get; } = configuration;
+        private IWebHostEnvironment CurrentEnvironment { get; } = webHostEnvironment;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)

@@ -14,15 +14,8 @@
     using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/users")]
-    public class UsersController : SecureController
+    public class UsersController(IUserManager userManager) : SecureController
     {
-        private readonly IUserManager userManager;
-
-        public UsersController(IUserManager userManager)
-        {
-            this.userManager = userManager;
-        }
-
         [HttpGet]
         [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
         public async Task<IActionResult> GetUsers(CancellationToken cancellationToken)

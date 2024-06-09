@@ -2,6 +2,7 @@ namespace TrashMob.Controllers
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
@@ -17,27 +18,14 @@ namespace TrashMob.Controllers
     using TrashMob.Shared.Poco;
 
     [Route("api/litterreport")]
-    public class LitterReportController : SecureController
+    public class LitterReportController(
+        ILitterReportManager litterReportManager,
+        ILitterImageManager litterImageManager,
+        IUserManager userManager,
+        IImageManager imageManager,
+        ILogger<LitterReportController> logger)
+        : SecureController
     {
-        private readonly IImageManager imageManager;
-        private readonly ILitterImageManager litterImageManager;
-        private readonly ILitterReportManager litterReportManager;
-        private readonly ILogger<LitterReportController> logger;
-        private readonly IUserManager userManager;
-
-        public LitterReportController(ILitterReportManager litterReportManager,
-            ILitterImageManager litterImageManager,
-            IUserManager userManager,
-            IImageManager imageManager,
-            ILogger<LitterReportController> logger)
-        {
-            this.litterReportManager = litterReportManager;
-            this.litterImageManager = litterImageManager;
-            this.userManager = userManager;
-            this.imageManager = imageManager;
-            this.logger = logger;
-        }
-
         [HttpGet("{litterReportId}")]
         public async Task<IActionResult> GetLitterReport(Guid litterReportId, CancellationToken cancellationToken)
         {
@@ -129,6 +117,31 @@ namespace TrashMob.Controllers
         {
             var result = await litterReportManager.GetFilteredLitterReportsAsync(filter, cancellationToken)
                 .ConfigureAwait(false);
+
+            if (filter.PageSize != null)
+            {
+                var pagedResults = result.Skip(filter.PageIndex.GetValueOrDefault(0) * filter.PageSize.GetValueOrDefault(10))
+                    .Take(filter.PageSize.GetValueOrDefault(10)).ToList();
+                return Ok(pagedResults);
+            }
+
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("pagedfilteredlitterreports")]
+        public async Task<IActionResult> GetPagedFilteredLitterReports([FromBody] LitterReportFilter filter,
+            CancellationToken cancellationToken)
+        {
+            var result = await litterReportManager.GetFilteredLitterReportsAsync(filter, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (filter.PageSize != null)
+            {
+                var pagedResults = await PaginatedList<LitterReport>.CreateAsync(result.AsQueryable(),
+                    filter.PageIndex.GetValueOrDefault(0), filter.PageSize.GetValueOrDefault(10));
+                return Ok(pagedResults);
+            }
 
             return Ok(result);
         }
@@ -257,7 +270,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetImage(Guid litterImageId, ImageSizeEnum imageSize,
             CancellationToken cancellationToken)
         {
-            var url = await imageManager.GetImageUrlAsync(litterImageId, ImageTypeEnum.LitterImage, imageSize);
+            var url = await imageManager.GetImageUrlAsync(litterImageId, ImageTypeEnum.LitterImage, imageSize, cancellationToken);
 
             if (string.IsNullOrEmpty(url))
             {

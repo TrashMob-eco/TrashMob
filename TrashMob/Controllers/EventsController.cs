@@ -18,21 +18,12 @@
     using TrashMob.Shared.Poco;
 
     [Route("api/events")]
-    public class EventsController : SecureController
+    public class EventsController(
+        IKeyedManager<User> userManager,
+        IEventManager eventManager,
+        IEventAttendeeManager eventAttendeeManager)
+        : SecureController
     {
-        private readonly IEventAttendeeManager eventAttendeeManager;
-        private readonly IEventManager eventManager;
-        private readonly IKeyedManager<User> userManager;
-
-        public EventsController(IKeyedManager<User> userManager,
-            IEventManager eventManager,
-            IEventAttendeeManager eventAttendeeManager)
-        {
-            this.eventManager = eventManager;
-            this.eventAttendeeManager = eventAttendeeManager;
-            this.userManager = userManager;
-        }
-
         [HttpGet]
         public async Task<IActionResult> GetEvents(CancellationToken cancellationToken)
         {
@@ -160,6 +151,30 @@
             CancellationToken cancellationToken)
         {
             var result = await eventManager.GetFilteredEventsAsync(filter, cancellationToken).ConfigureAwait(false);
+
+            if (filter.PageSize != null)
+            {
+                var pagedResults = result.Skip(filter.PageIndex.GetValueOrDefault(0) * filter.PageSize.GetValueOrDefault(10))
+                    .Take(filter.PageSize.GetValueOrDefault(10)).ToList();
+                return Ok(pagedResults);
+            }
+
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("pagedfilteredevents")]
+        public async Task<IActionResult> GetPagedFilteredEvents([FromBody] GeneralFilter filter,
+            CancellationToken cancellationToken)
+        {
+            var result = await eventManager.GetFilteredEventsAsync(filter, cancellationToken).ConfigureAwait(false);
+
+            if (filter.PageSize != null)
+            {
+                var pagedResults = await PaginatedList<Event>.CreateAsync(result.AsQueryable(),
+                                       filter.PageIndex.GetValueOrDefault(0), filter.PageSize.GetValueOrDefault(10));
+                return Ok(pagedResults);
+            }
 
             return Ok(result);
         }
