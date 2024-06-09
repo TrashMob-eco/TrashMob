@@ -8,15 +8,8 @@
     using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/waivers")]
-    public class WaiverController : BaseController
+    public class WaiverController(IWaiverManager waiverManager) : BaseController
     {
-        private readonly IWaiverManager waiverManager;
-
-        public WaiverController(IWaiverManager waiverManager)
-        {
-            this.waiverManager = waiverManager;
-        }
-
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [HttpGet("{waiverName}")]
         public async Task<IActionResult> GetWaiver(string waiverName, CancellationToken cancellationToken)

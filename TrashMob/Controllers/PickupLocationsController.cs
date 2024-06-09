@@ -13,21 +13,12 @@
     using TrashMob.Shared.Poco;
 
     [Route("api/pickuplocations")]
-    public class PickupLocationsController : KeyedController<PickupLocation>
+    public class PickupLocationsController(
+        IPickupLocationManager pickupLocationManager,
+        IEventManager eventManager,
+        IImageManager imageManager)
+        : KeyedController<PickupLocation>(pickupLocationManager)
     {
-        private readonly IEventManager eventManager;
-        private readonly IImageManager imageManager;
-        private readonly IPickupLocationManager pickupLocationManager;
-
-        public PickupLocationsController(IPickupLocationManager pickupLocationManager, IEventManager eventManager,
-            IImageManager imageManager)
-            : base(pickupLocationManager)
-        {
-            this.pickupLocationManager = pickupLocationManager;
-            this.eventManager = eventManager;
-            this.imageManager = imageManager;
-        }
-
         [HttpGet("{pickupLocationId}")]
         public async Task<IActionResult> Get(Guid pickupLocationId, CancellationToken cancellationToken)
         {
@@ -147,7 +138,7 @@
         [HttpGet("image/{pickupLocationId}")]
         public async Task<IActionResult> GetImage(Guid pickupLocationId, CancellationToken cancellationToken)
         {
-            var url = await imageManager.GetImageUrlAsync(pickupLocationId, ImageTypeEnum.Pickup, ImageSizeEnum.Raw);
+            var url = await imageManager.GetImageUrlAsync(pickupLocationId, ImageTypeEnum.Pickup, ImageSizeEnum.Raw, cancellationToken);
 
             if (string.IsNullOrEmpty(url))
             {
@@ -161,7 +152,7 @@
         public async Task<IActionResult> GetImage(Guid pickupLocationId, ImageSizeEnum imageSize,
             CancellationToken cancellationToken)
         {
-            var url = await imageManager.GetImageUrlAsync(pickupLocationId, ImageTypeEnum.Pickup, imageSize);
+            var url = await imageManager.GetImageUrlAsync(pickupLocationId, ImageTypeEnum.Pickup, imageSize, cancellationToken);
 
             if (string.IsNullOrEmpty(url))
             {
