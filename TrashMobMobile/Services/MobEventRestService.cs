@@ -76,6 +76,23 @@ public class MobEventRestService(IHttpClientFactory httpClientFactory) : RestSer
         return mobEvents;
     }
 
+    public async Task<PaginatedList<Event>> GetFilteredEventsAsync(GeneralFilter filter, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var requestUri = $"{Controller}/pagedfilteredevents";
+            var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+            return JsonConvert.DeserializeObject<PaginatedList<Event>>(content);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(@"\tERROR {0}", ex.Message);
+            throw;
+        }
+    }
+
     public async Task<IEnumerable<Event>> GetUserEventsAsync(Guid userId, bool showFutureEventsOnly,
         CancellationToken cancellationToken = default)
     {

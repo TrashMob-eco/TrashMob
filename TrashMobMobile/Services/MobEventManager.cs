@@ -33,6 +33,11 @@
             return mobEventRestService.GetAllEventsAsync(cancellationToken);
         }
 
+        public Task<PaginatedList<Event>> GetFilteredEventsAsync(GeneralFilter filter, CancellationToken cancellationToken = default)
+        {
+            return mobEventRestService.GetFilteredEventsAsync(filter, cancellationToken);
+        }
+
         public Task<IEnumerable<Event>> GetUserEventsAsync(Guid userId, bool showFutureEventsOnly,
             CancellationToken cancellationToken = default)
         {
