@@ -1,6 +1,7 @@
 ﻿namespace TrashMobMobile.Data
 {
     using TrashMob.Models;
+    using TrashMob.Models.Poco;
     using TrashMobMobile.Models;
 
     public interface IMobEventManager
@@ -10,6 +11,9 @@
         Task<IEnumerable<Event>> GetCompletedEventsAsync(CancellationToken cancellationToken = default);
 
         Task<IEnumerable<Event>> GetAllEventsAsync(CancellationToken cancellationToken = default);
+
+        Task<PaginatedList<Event>> GetFilteredEventsAsync(GeneralFilter filter,
+            CancellationToken cancellationToken = default);
 
         Task<IEnumerable<Event>> GetUserEventsAsync(Guid userId, bool showFutureEventsOnly,
             CancellationToken cancellationToken = default);

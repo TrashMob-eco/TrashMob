@@ -120,7 +120,7 @@ namespace TrashMob.Controllers
 
             if (filter.PageSize != null)
             {
-                var pagedResults = result.Skip(filter.PageIndex.GetValueOrDefault(0) * filter.PageSize.GetValueOrDefault(10))
+                var pagedResults = result.OrderByDescending(e => e.CreatedDate).Skip(filter.PageIndex.GetValueOrDefault(0) * filter.PageSize.GetValueOrDefault(10))
                     .Take(filter.PageSize.GetValueOrDefault(10)).ToList();
                 return Ok(pagedResults);
             }
@@ -138,7 +138,7 @@ namespace TrashMob.Controllers
 
             if (filter.PageSize != null)
             {
-                var pagedResults = PaginatedList<LitterReport>.Create(result.AsQueryable(),
+                var pagedResults = PaginatedList<LitterReport>.Create(result.OrderByDescending(e => e.CreatedDate).AsQueryable(),
                     filter.PageIndex.GetValueOrDefault(0), filter.PageSize.GetValueOrDefault(10));
                 return Ok(pagedResults);
             }
