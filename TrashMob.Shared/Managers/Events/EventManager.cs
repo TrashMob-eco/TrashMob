@@ -15,25 +15,15 @@
     using TrashMob.Shared.Persistence.Interfaces;
     using TrashMob.Shared.Poco;
 
-    public class EventManager : KeyedManager<Event>, IKeyedManager<Event>, IEventManager
+    public class EventManager(
+        IKeyedRepository<Event> repository,
+        IEventAttendeeManager eventAttendeeManager,
+        IBaseRepository<EventAttendee> eventAttendeeRepository,
+        IMapManager mapManager,
+        IEmailManager emailManager)
+        : KeyedManager<Event>(repository), IEventManager
     {
         private const int StandardEventWindowInMinutes = 120;
-        private readonly IEmailManager emailManager;
-        private readonly IEventAttendeeManager eventAttendeeManager;
-        private readonly IBaseRepository<EventAttendee> eventAttendeeRepository;
-        private readonly IMapManager mapManager;
-
-        public EventManager(IKeyedRepository<Event> repository,
-            IEventAttendeeManager eventAttendeeManager,
-            IBaseRepository<EventAttendee> eventAttendeeRepository,
-            IMapManager mapManager,
-            IEmailManager emailManager) : base(repository)
-        {
-            this.eventAttendeeManager = eventAttendeeManager;
-            this.eventAttendeeRepository = eventAttendeeRepository;
-            this.mapManager = mapManager;
-            this.emailManager = emailManager;
-        }
 
         public async Task<IEnumerable<Event>> GetActiveEventsAsync(CancellationToken cancellationToken = default)
         {
@@ -69,7 +59,7 @@
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<IEnumerable<Event>> GetFilteredEventsAsync(GeneralFilter filter,
+        public async Task<IEnumerable<Event>> GetFilteredEventsAsync(EventFilter filter,
             CancellationToken cancellationToken = default)
         {
             return await Repo.Get(e => (filter.StartDate == null || e.CreatedDate >= filter.StartDate) &&
@@ -77,6 +67,7 @@
                                        (filter.Country == null || e.Country == filter.Country) &&
                                        (filter.Region == null || e.Region == filter.Region) &&
                                        (filter.City == null || e.City == filter.City) &&
+                                       (filter.EventStatusId == null || e.EventStatusId == filter.EventStatusId) &&
                                        (filter.CreatedByUserId == null || e.CreatedByUserId == filter.CreatedByUserId))
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
         }

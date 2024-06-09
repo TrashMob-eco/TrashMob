@@ -147,7 +147,7 @@
 
         [HttpGet]
         [Route("filteredevents")]
-        public async Task<IActionResult> GetFilteredEvents([FromBody] GeneralFilter filter,
+        public async Task<IActionResult> GetFilteredEvents([FromBody] EventFilter filter,
             CancellationToken cancellationToken)
         {
             var result = await eventManager.GetFilteredEventsAsync(filter, cancellationToken).ConfigureAwait(false);
@@ -164,14 +164,14 @@
 
         [HttpGet]
         [Route("pagedfilteredevents")]
-        public async Task<IActionResult> GetPagedFilteredEvents([FromBody] GeneralFilter filter,
+        public async Task<IActionResult> GetPagedFilteredEvents([FromBody] EventFilter filter,
             CancellationToken cancellationToken)
         {
             var result = await eventManager.GetFilteredEventsAsync(filter, cancellationToken).ConfigureAwait(false);
 
             if (filter.PageSize != null)
             {
-                var pagedResults = await PaginatedList<Event>.CreateAsync(result.AsQueryable(),
+                var pagedResults = PaginatedList<Event>.Create(result.AsQueryable(),
                                        filter.PageIndex.GetValueOrDefault(0), filter.PageSize.GetValueOrDefault(10));
                 return Ok(pagedResults);
             }

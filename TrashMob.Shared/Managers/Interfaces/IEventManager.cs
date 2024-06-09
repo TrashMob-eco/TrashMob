@@ -19,7 +19,7 @@
         Task<IEnumerable<Event>> GetCanceledUserEventsAsync(Guid userId, bool futureEventsOnly,
             CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<Event>> GetFilteredEventsAsync(GeneralFilter filter,
+        Task<IEnumerable<Event>> GetFilteredEventsAsync(EventFilter filter,
             CancellationToken cancellationToken = default);
 
         Task<IEnumerable<Location>> GeEventLocationsByTimeRangeAsync(DateTimeOffset? startTime, DateTimeOffset? endTime,
