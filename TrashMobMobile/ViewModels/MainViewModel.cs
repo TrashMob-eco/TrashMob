@@ -6,8 +6,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMobMobile.Authentication;
 using TrashMobMobile.Config;
-using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
+using TrashMobMobile.Services;
 
 public partial class MainViewModel : BaseViewModel
 {

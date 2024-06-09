@@ -3,8 +3,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMobMobile.Config;
-using TrashMobMobile.Data;
 using TrashMobMobile.Models;
+using TrashMobMobile.Services;
 
 public partial class WaiverViewModel : BaseViewModel
 {

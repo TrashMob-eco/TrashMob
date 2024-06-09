@@ -1,10 +1,9 @@
-﻿namespace TrashMobMobile.Data;
+﻿namespace TrashMobMobile.Services;
 
 using System.Diagnostics;
 using System.Net.Http.Json;
 using Newtonsoft.Json;
 using TrashMobMobile.Models;
-using TrashMobMobile.Services;
 
 public class DocusignRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IDocusignRestService
 {

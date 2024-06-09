@@ -2,9 +2,9 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Models;
+using TrashMobMobile.Services;
 
 public partial class CancelEventViewModel : BaseViewModel
 {

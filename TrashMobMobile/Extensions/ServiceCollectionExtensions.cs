@@ -5,7 +5,6 @@
     using Polly.Extensions.Http;
     using TrashMobMobile.Authentication;
     using TrashMobMobile.Config;
-    using TrashMobMobile.Data;
     using TrashMobMobile.Services;
 
     public static class ServiceCollectionExtensions

@@ -1,12 +1,12 @@
-﻿namespace TrashMobMobile.Data
+﻿namespace TrashMobMobile.Services
 {
     using System.Diagnostics;
     using System.Globalization;
     using System.Net.Http.Json;
     using Newtonsoft.Json;
     using TrashMob.Models;
+    using TrashMob.Models.Poco;
     using TrashMobMobile.Models;
-    using TrashMobMobile.Services;
 
     public class LitterReportRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), ILitterReportRestService
     {
@@ -174,6 +174,19 @@
                 }
 
                 return JsonConvert.DeserializeObject<IEnumerable<LitterReport>>(content);
+            }
+        }
+
+        public async Task<PaginatedList<LitterReport>> GetLitterReportsAsync(LitterReportFilter filter, CancellationToken cancellationToken = default)
+        {
+            var requestUri = Controller + "/pagedfilteredlitterreports";
+
+            using (var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken))
+            {
+                response.EnsureSuccessStatusCode();
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+
+                return JsonConvert.DeserializeObject<PaginatedList<LitterReport>>(content);
             }
         }
 

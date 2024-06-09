@@ -1,4 +1,4 @@
-﻿namespace TrashMobMobile.Data;
+﻿namespace TrashMobMobile.Services;
 
 using System.Diagnostics;
 using System.Globalization;
@@ -7,7 +7,6 @@ using Newtonsoft.Json;
 using TrashMob.Models;
 using TrashMob.Models.Poco;
 using TrashMobMobile.Models;
-using TrashMobMobile.Services;
 
 public class MobEventRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IMobEventRestService
 {

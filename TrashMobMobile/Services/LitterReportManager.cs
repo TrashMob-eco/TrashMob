@@ -1,6 +1,7 @@
-﻿namespace TrashMobMobile.Data
+﻿namespace TrashMobMobile.Services
 {
     using TrashMob.Models;
+    using TrashMob.Models.Poco;
 
     public class LitterReportManager : ILitterReportManager
     {
@@ -43,6 +44,12 @@
             CancellationToken cancellationToken = default)
         {
             return litterReportRestService.GetNotCancelledLitterReportsAsync(cancellationToken);
+        }
+
+        public Task<PaginatedList<LitterReport>> GetLitterReportsAsync(LitterReportFilter filter,
+            CancellationToken cancellationToken = default)
+        {
+            return litterReportRestService.GetLitterReportsAsync(filter, cancellationToken);
         }
 
         public Task<IEnumerable<LitterReport>> GetUserLitterReportsAsync(Guid userId,
