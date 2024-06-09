@@ -3,8 +3,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
-using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
+using TrashMobMobile.Services;
 
 public partial class EditPickupLocationViewModel : BaseViewModel
 {

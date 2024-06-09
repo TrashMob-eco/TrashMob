@@ -1,7 +1,7 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using TrashMobMobile.Authentication;
-using TrashMobMobile.Data;
+using TrashMobMobile.Services;
 
 public class LogoutViewModel : BaseViewModel
 {

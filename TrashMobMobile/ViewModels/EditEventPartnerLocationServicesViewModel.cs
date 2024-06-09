@@ -2,7 +2,7 @@
 
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using TrashMobMobile.Data;
+using TrashMobMobile.Services;
 
 public partial class EditEventPartnerLocationServicesViewModel : BaseViewModel
 {

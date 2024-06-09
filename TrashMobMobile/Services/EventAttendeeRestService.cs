@@ -1,9 +1,8 @@
-﻿namespace TrashMobMobile.Data;
+﻿namespace TrashMobMobile.Services;
 
 using System.Diagnostics;
 using System.Net.Http.Json;
 using TrashMob.Models;
-using TrashMobMobile.Services;
 
 public class EventAttendeeRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IEventAttendeeRestService
 {

@@ -1,11 +1,10 @@
-﻿namespace TrashMobMobile.Data;
+﻿namespace TrashMobMobile.Services;
 
 using System.Diagnostics;
 using System.Net.Http.Json;
 using Newtonsoft.Json;
 using TrashMob.Models;
 using TrashMobMobile.Models;
-using TrashMobMobile.Services;
 
 public class PickupLocationRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IPickupLocationRestService
 {

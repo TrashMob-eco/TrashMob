@@ -3,7 +3,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using TrashMob.Models;
-using TrashMobMobile.Data;
+using TrashMobMobile.Services;
 
 public partial class ViewPickupLocationViewModel : BaseViewModel
 {

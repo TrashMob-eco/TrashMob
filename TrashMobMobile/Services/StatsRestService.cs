@@ -1,9 +1,8 @@
-﻿namespace TrashMobMobile.Data;
+﻿namespace TrashMobMobile.Services;
 
 using System.Diagnostics;
 using Newtonsoft.Json;
 using TrashMob.Models.Poco;
-using TrashMobMobile.Services;
 
 public class StatsRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IStatsRestService
 {

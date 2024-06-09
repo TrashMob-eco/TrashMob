@@ -3,8 +3,8 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using TrashMob.Models;
-using TrashMobMobile.Data;
 using TrashMobMobile.Extensions;
+using TrashMobMobile.Services;
 
 public partial class ManageEventPartnersViewModel : BaseViewModel
 {
