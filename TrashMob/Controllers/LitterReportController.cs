@@ -138,7 +138,7 @@ namespace TrashMob.Controllers
 
             if (filter.PageSize != null)
             {
-                var pagedResults = await PaginatedList<LitterReport>.CreateAsync(result.AsQueryable(),
+                var pagedResults = PaginatedList<LitterReport>.Create(result.AsQueryable(),
                     filter.PageIndex.GetValueOrDefault(0), filter.PageSize.GetValueOrDefault(10));
                 return Ok(pagedResults);
             }

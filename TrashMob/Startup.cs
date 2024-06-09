@@ -26,6 +26,8 @@ namespace TrashMob
 
     public class Startup(IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
     {
+        private const string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
         public IConfiguration Configuration { get; } = configuration;
         private IWebHostEnvironment CurrentEnvironment { get; } = webHostEnvironment;
 
@@ -109,6 +111,15 @@ namespace TrashMob
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                    policy =>
+                    {
+                        policy.WithOrigins("http://localhost");
+                    });
+            });
+
             if (CurrentEnvironment.IsDevelopment())
             {
                 services.AddScoped<IKeyVaultManager, LocalKeyVaultManager>();
@@ -186,6 +197,8 @@ namespace TrashMob
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            
+            app.UseCors(MyAllowSpecificOrigins);
 
             app.UseAuthentication();
             app.UseAuthorization();
