@@ -1,6 +1,6 @@
 namespace TrashMob
 {
-    using System;
+   using System;
     using System.Text;
     using System.Text.Json;
     using System.Text.Json.Nodes;
@@ -116,7 +116,7 @@ namespace TrashMob
                 options.AddPolicy(name: MyAllowSpecificOrigins,
                     policy =>
                     {
-                        policy.WithOrigins("http://localhost:3000/", "https://localhost:3000/")
+                        policy.WithOrigins("http://localhost:3000", "https://localhost:3000")
                             .AllowAnyHeader()
                             .AllowAnyMethod();
                     });
@@ -196,18 +196,17 @@ namespace TrashMob
                 app.UseHsts();
             }
 
-            app.UseCors(MyAllowSpecificOrigins);
-
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
+            app.UseSpaStaticFiles();
 
             app.UseRouting();
-            
+
+            app.UseCors(MyAllowSpecificOrigins);
+
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-
-            app.UseStaticFiles();
-            app.UseSpaStaticFiles();
 
             app.UseSpa(spa =>
             {
