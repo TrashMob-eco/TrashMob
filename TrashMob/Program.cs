@@ -124,12 +124,13 @@ namespace TrashMob
 
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy(name: MyAllowSpecificOrigins,
+                options.AddDefaultPolicy(
                     policy =>
                     {
                         policy.WithOrigins("http://localhost:3000")
                             .AllowAnyHeader()
-                            .AllowAnyMethod();
+                            .AllowAnyMethod()
+                            .AllowCredentials();
                     });
             });
 
@@ -210,7 +211,7 @@ namespace TrashMob
 
             app.UseRouting();
 
-            app.UseCors(MyAllowSpecificOrigins);
+            app.UseCors();
 
             app.UseAuthentication();
             app.UseAuthorization();
