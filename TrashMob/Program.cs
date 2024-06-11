@@ -211,7 +211,7 @@ namespace TrashMob
 
             app.UseRouting();
 
-            app.UseCors(MyAllowSpecificOrigins);
+            app.UseCors();
 
             app.UseAuthentication();
             app.UseAuthorization();
