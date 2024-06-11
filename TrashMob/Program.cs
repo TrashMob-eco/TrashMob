@@ -127,7 +127,7 @@ namespace TrashMob
                 options.AddDefaultPolicy(
                     policy =>
                     {
-                        policy.WithOrigins("http://localhost:3000")
+                        policy.SetIsOriginAllowed(x => true)
                             .AllowAnyHeader()
                             .AllowAnyMethod()
                             .AllowCredentials();
