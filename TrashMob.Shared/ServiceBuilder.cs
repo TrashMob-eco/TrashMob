@@ -13,7 +13,7 @@
 
     public static class ServiceBuilder
     {
-        public static void AddManagers(IServiceCollection services)
+        public static IServiceCollection AddManagers(this IServiceCollection services)
         {
             // Migrated Managers
             services.AddScoped<IKeyedManager<ContactRequest>, ContactRequestManager>();
@@ -82,9 +82,11 @@
             services.AddScoped<IQueriesManager, QueriesManager>();
             services.AddScoped<ITriggersManager, TriggersManager>();
             services.AddScoped<IDbTransaction, DbTransaction>();
+
+            return services;
         }
 
-        public static void AddRepositories(IServiceCollection services)
+        public static IServiceCollection AddRepositories(this IServiceCollection services)
         {
             // Migrated Repositories
             services.AddScoped<IKeyedRepository<ContactRequest>, KeyedRepository<ContactRequest>>();
@@ -125,6 +127,8 @@
             services.AddScoped<IKeyedRepository<Waiver>, KeyedRepository<Waiver>>();
             services.AddScoped<IKeyedRepository<LitterImage>, KeyedRepository<LitterImage>>();
             services.AddScoped<IKeyedRepository<LitterReport>, KeyedRepository<LitterReport>>();
+
+            return services;
         }
     }
 }
