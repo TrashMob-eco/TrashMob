@@ -47,6 +47,18 @@ namespace TrashMob
             builder.Logging.AddApplicationInsights();
             builder.Services.AddApplicationInsightsTelemetry();
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(MyAllowSpecificOrigins,
+                    policy =>
+                    {
+                        policy.WithOrigins("http://localhost:3000")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod()
+                            .AllowCredentials();
+                    });
+            });
+
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(options =>
                 {
@@ -121,18 +133,6 @@ namespace TrashMob
             builder.Services.AddRepositories();
 
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-            builder.Services.AddCors(options =>
-            {
-                options.AddDefaultPolicy(
-                    policy =>
-                    {
-                        policy.SetIsOriginAllowed(x => true)
-                            .AllowAnyHeader()
-                            .AllowAnyMethod()
-                            .AllowCredentials();
-                    });
-            });
 
             if (builder.Environment.IsDevelopment())
             {
@@ -211,12 +211,15 @@ namespace TrashMob
 
             app.UseRouting();
 
-            app.UseCors();
+            app.UseCors(MyAllowSpecificOrigins);
 
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers().RequireCors(MyAllowSpecificOrigins);
+            });
 
             app.UseSpa(spa =>
             {
