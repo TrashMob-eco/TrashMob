@@ -5,14 +5,10 @@
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
 
-    public abstract class LookupController<T> : BaseController where T : LookupModel
+    public abstract class LookupController<T>(ILookupManager<T> manager) : BaseController
+        where T : LookupModel
     {
-        public LookupController(ILookupManager<T> manager)
-        {
-            Manager = manager;
-        }
-
-        protected ILookupManager<T> Manager { get; }
+        protected ILookupManager<T> Manager { get; } = manager;
 
         [HttpGet]
         public async Task<IActionResult> Get()
