@@ -47,18 +47,6 @@ namespace TrashMob
             builder.Logging.AddApplicationInsights();
             builder.Services.AddApplicationInsightsTelemetry();
 
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy(MyAllowSpecificOrigins,
-                    policy =>
-                    {
-                        policy.WithOrigins("http://localhost:3000")
-                            .AllowAnyHeader()
-                            .AllowAnyMethod()
-                            .AllowCredentials();
-                    });
-            });
-
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(options =>
                 {
@@ -112,6 +100,18 @@ namespace TrashMob
 
             // In production, the React files will be served from this directory
             builder.Services.AddSpaStaticFiles(configuration => { configuration.RootPath = "client-app/build"; });
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(MyAllowSpecificOrigins,
+                    policy =>
+                    {
+                        policy.WithOrigins("http://localhost:3000")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod()
+                            .AllowCredentials();
+                    });
+            });
 
             builder.Services.AddControllers()
                 .AddJsonOptions(x =>
