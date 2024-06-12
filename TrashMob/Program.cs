@@ -37,6 +37,11 @@ namespace TrashMob
             builder.Configuration.AddJsonFile("appsettings.json", true, true)
                                  .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true); // optional extra provider     
 
+            if (builder.Environment.IsDevelopment())
+            {
+                builder.Configuration.AddJsonFile("appsettings.Development.json", true, true);
+            }
+
             if (!builder.Environment.IsDevelopment())
             {
                 var secretClient = new SecretClient(new Uri(builder.Configuration.GetValue<string>("VaultUri")),
