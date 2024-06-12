@@ -218,7 +218,8 @@ namespace TrashMob
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers().RequireCors(MyAllowSpecificOrigins);
+                endpoints.MapControllers()
+                    .RequireCors(MyAllowSpecificOrigins);
             });
 
             app.UseSpa(spa =>
