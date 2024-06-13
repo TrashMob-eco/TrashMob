@@ -52,18 +52,6 @@ namespace TrashMob
             builder.Logging.AddApplicationInsights();
             builder.Services.AddApplicationInsightsTelemetry();
 
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy(MyAllowSpecificOrigins,
-                    policy =>
-                    {
-                        policy.WithOrigins("http://localhost:3000")
-                            .AllowAnyHeader()
-                            .AllowAnyMethod()
-                            .AllowCredentials();
-                    });
-            });
-
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(options =>
                 {
@@ -123,7 +111,7 @@ namespace TrashMob
                 options.AddPolicy(MyAllowSpecificOrigins,
                     policy =>
                     {
-                        policy.WithOrigins("http://localhost:3000")
+                        policy.WithOrigins("http://localhost:3000", "https://localhost:3000")
                             .AllowAnyHeader()
                             .AllowAnyMethod()
                             .AllowCredentials();
