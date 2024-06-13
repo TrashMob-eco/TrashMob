@@ -25,6 +25,7 @@ namespace TrashMob
     using Microsoft.Extensions.Azure;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Identity.Web;
+    using Microsoft.AspNetCore.HttpOverrides;
 
     public class Program
     {
@@ -111,11 +112,18 @@ namespace TrashMob
                 options.AddPolicy(MyAllowSpecificOrigins,
                     policy =>
                     {
+                        policy.WithOrigins("http://localhost:3000", "https://localhost:3000")
                         policy.WithOrigins("http://localhost:3000", "https://localhost:3000", "http://localhost:3000/", "https://localhost:3000/")
                             .AllowAnyHeader()
                             .AllowAnyMethod()
                             .AllowCredentials();
                     });
+            });
+
+            builder.Services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders =
+                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
             });
 
             builder.Services.AddControllers()
@@ -199,6 +207,7 @@ namespace TrashMob
             if (builder.Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseForwardedHeaders();
                 app.UseMigrationsEndPoint();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "trashmobapi v1"));
@@ -206,6 +215,7 @@ namespace TrashMob
             else
             {
                 app.UseExceptionHandler("/Error");
+                app.UseForwardedHeaders();
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
