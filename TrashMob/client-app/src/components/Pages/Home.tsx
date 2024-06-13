@@ -36,7 +36,7 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, mat
 
         const headers = getDefaultHeaders('GET');
 
-        fetch('https://as-tm-dev-westus2.azurewebsites.net/api/stats', {
+        fetch('/api/stats', {
             method: 'GET',
             headers: headers
         })
