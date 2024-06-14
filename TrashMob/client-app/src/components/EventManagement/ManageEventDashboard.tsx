@@ -33,21 +33,23 @@ const ManageEventDashboard: React.FC<ManageEventDashboardProps> = (props) => {
             setLoadedEventId(Guid.createEmpty().toString())
         }
         else {
-            setEventId(evId);
+            if (evId !== Guid.EMPTY) {
+                setEventId(evId);
 
-            const headers = getDefaultHeaders('GET');
+                const headers = getDefaultHeaders('GET');
 
-            // Check to see if this event has been completed
-            fetch('/api/Events/' + evId, {
-                method: 'GET',
-                headers: headers
-            })
-                .then(response => response.json() as Promise<EventData>)
-                .then(eventData => {
-                    if (new Date(eventData.eventDate) < new Date()) {
-                        setIsEventComplete(true);
-                    }
+                // Check to see if this event has been completed
+                fetch('/api/Events/' + evId, {
+                    method: 'GET',
+                    headers: headers
                 })
+                    .then(response => response.json() as Promise<EventData>)
+                    .then(eventData => {
+                        if (new Date(eventData.eventDate) < new Date()) {
+                            setIsEventComplete(true);
+                        }
+                    })
+            }
         }
 
         setIsEventIdReady(true);
