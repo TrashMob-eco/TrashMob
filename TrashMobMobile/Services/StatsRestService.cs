@@ -1,10 +1,10 @@
-﻿namespace TrashMobMobile.Data;
+﻿namespace TrashMobMobile.Services;
 
 using System.Diagnostics;
 using Newtonsoft.Json;
 using TrashMob.Models.Poco;
 
-public class StatsRestService : RestServiceBase, IStatsRestService
+public class StatsRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IStatsRestService
 {
     protected override string Controller => "stats";
 

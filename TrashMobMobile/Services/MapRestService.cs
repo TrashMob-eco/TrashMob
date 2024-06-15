@@ -1,10 +1,10 @@
-﻿namespace TrashMobMobile.Data;
+﻿namespace TrashMobMobile.Services;
 
 using System.Diagnostics;
 using Newtonsoft.Json;
 using TrashMob.Models;
 
-public class MapRestService : RestServiceBase, IMapRestService
+public class MapRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IMapRestService
 {
     protected override string Controller => "maps";
 

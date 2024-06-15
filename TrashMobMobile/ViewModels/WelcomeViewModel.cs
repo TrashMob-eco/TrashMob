@@ -3,7 +3,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMobMobile.Authentication;
-using TrashMobMobile.Data;
+using TrashMobMobile.Services;
 
 public partial class WelcomeViewModel : BaseViewModel
 {

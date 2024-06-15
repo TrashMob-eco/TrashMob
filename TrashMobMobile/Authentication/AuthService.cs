@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Text;
 using Microsoft.Identity.Client;
 using Newtonsoft.Json.Linq;
-using TrashMobMobile.Data;
+using TrashMobMobile.Services;
 
 public class AuthService : IAuthService
 {

@@ -110,22 +110,41 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
 
         if (eventId === Guid.EMPTY) {
 
-            fetch('/api/waivers/trashmob', {
-                method: 'GET',
-                headers: headers
-            })
-                .then(response => response.json() as Promise<WaiverData>)
-                .then(data => {
+            const account = msalClient.getAllAccounts()[0];
+            var apiConfig = getApiConfig();
 
-                    // Have user sign waiver if needed
-                    const isTrashMobWaiverOutOfDate = (new Date(props.currentUser.dateAgreedToTrashMobWaiver)).toISOString() < CurrentTrashMobWaiverVersion.versionDate.toISOString();
-                    if (data.isWaiverEnabled && (isTrashMobWaiverOutOfDate || (props.currentUser.trashMobWaiverVersion === ""))) {
-                        sessionStorage.setItem('targetUrl', window.location.pathname);
-                        props.history.push("/waivers");
-                    }
+            var request = {
+                scopes: apiConfig.b2cScopes,
+                account: account
+            };
 
-                    setIsDataLoaded(true);
+            msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+                if (!validateToken(tokenResponse.idTokenClaims)) {
+                    return;
+                }
+
+                var method = "GET";
+                const headers = getDefaultHeaders(method);
+                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+                fetch('/api/waivers/trashmob', {
+                    method: method,
+                    headers: headers
                 })
+                    .then(response => response.json() as Promise<WaiverData>)
+                    .then(data => {
+
+                        // Have user sign waiver if needed
+                        const isTrashMobWaiverOutOfDate = (new Date(props.currentUser.dateAgreedToTrashMobWaiver)).toISOString() < CurrentTrashMobWaiverVersion.versionDate.toISOString();
+                        if (data.isWaiverEnabled && (isTrashMobWaiverOutOfDate || (props.currentUser.trashMobWaiverVersion === ""))) {
+                            sessionStorage.setItem('targetUrl', window.location.pathname);
+                            props.history.push("/waivers");
+                        }
+
+                        setIsDataLoaded(true);
+                    })
+            });
         }
 
         MapStore.getOption().then(opts => {

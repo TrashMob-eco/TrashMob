@@ -3,7 +3,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
-using TrashMobMobile.Data;
+using TrashMobMobile.Services;
 
 public partial class ContactUsViewModel : BaseViewModel
 {

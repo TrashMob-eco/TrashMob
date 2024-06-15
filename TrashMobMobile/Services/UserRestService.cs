@@ -1,4 +1,4 @@
-﻿namespace TrashMobMobile.Data;
+﻿namespace TrashMobMobile.Services;
 
 using System.Diagnostics;
 using System.Net.Http.Json;
@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 using TrashMob.Models;
 using TrashMobMobile.Authentication;
 
-public class UserRestService : RestServiceBase, IUserRestService
+public class UserRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IUserRestService
 {
     protected override string Controller => "users";
 

@@ -1,10 +1,10 @@
-﻿namespace TrashMobMobile.Data;
+﻿namespace TrashMobMobile.Services;
 
 using System.Diagnostics;
 using Newtonsoft.Json;
 using TrashMob.Models;
 
-public class ServiceTypeRestService : RestServiceBase, IServiceTypeRestService
+public class ServiceTypeRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IServiceTypeRestService
 {
     protected override string Controller => "servicetypes";
 

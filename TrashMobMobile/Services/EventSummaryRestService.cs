@@ -1,11 +1,11 @@
-﻿namespace TrashMobMobile.Data
+﻿namespace TrashMobMobile.Services
 {
     using System.Diagnostics;
     using System.Net.Http.Json;
     using Newtonsoft.Json;
     using TrashMob.Models;
 
-    public class EventSummaryRestService : RestServiceBase, IEventSummaryRestService
+    public class EventSummaryRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IEventSummaryRestService
     {
         protected override string Controller => "eventsummaries";
 

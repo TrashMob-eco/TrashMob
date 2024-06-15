@@ -1,10 +1,10 @@
-﻿namespace TrashMobMobile.Data;
+﻿namespace TrashMobMobile.Services;
 
 using System.Diagnostics;
 using Newtonsoft.Json;
 using TrashMob.Models;
 
-public class WaiverRestService : RestServiceBase, IWaiverRestService
+public class WaiverRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IWaiverRestService
 {
     protected override string Controller => "waivers";
 

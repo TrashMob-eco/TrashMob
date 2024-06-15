@@ -1,11 +1,11 @@
-﻿namespace TrashMobMobile.Data;
+﻿namespace TrashMobMobile.Services;
 
 using System.Diagnostics;
 using System.Net.Http.Json;
 using Newtonsoft.Json;
 using TrashMobMobile.Models;
 
-public class DocusignRestService : RestServiceBase, IDocusignRestService
+public class DocusignRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IDocusignRestService
 {
     protected override string Controller => "docusign";
 

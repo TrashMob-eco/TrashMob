@@ -1,4 +1,4 @@
-﻿namespace TrashMobMobile.Data;
+﻿namespace TrashMobMobile.Services;
 
 using TrashMobMobile.Config;
 using TrashMobMobile.Extensions;

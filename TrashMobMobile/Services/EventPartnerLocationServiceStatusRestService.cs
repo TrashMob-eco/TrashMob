@@ -1,10 +1,10 @@
-﻿namespace TrashMobMobile.Data;
+﻿namespace TrashMobMobile.Services;
 
 using System.Diagnostics;
 using Newtonsoft.Json;
 using TrashMob.Models;
 
-public class EventPartnerLocationServiceStatusRestService : RestServiceBase,
+public class EventPartnerLocationServiceStatusRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory),
     IEventPartnerLocationServiceStatusRestService
 {
     protected override string Controller => "eventpartnerlocationservicestatuses";

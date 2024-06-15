@@ -58,7 +58,7 @@ jobs:
       run: dotnet publish TrashMob\TrashMob.csproj --configuration ${{ env.CONFIGURATION }} --output "${{env.DOTNET_ROOT}}/trashmobwebapp" --no-restore
 
     - name: Upload artifact for deployment job
-      uses: actions/upload-artifact@v3.1.2
+      uses: actions/upload-artifact@v3.1.3
       with:
         name: .net-app
         path: "${{env.DOTNET_ROOT}}/trashmobwebapp"

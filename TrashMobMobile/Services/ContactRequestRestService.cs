@@ -1,10 +1,10 @@
-﻿namespace TrashMobMobile.Data;
+﻿namespace TrashMobMobile.Services;
 
 using System.Diagnostics;
 using System.Net.Http.Json;
 using TrashMob.Models;
 
-public class ContactRequestRestService : RestServiceBase, IContactRequestRestService
+public class ContactRequestRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IContactRequestRestService
 {
     protected override string Controller => "contactrequest";
 

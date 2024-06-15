@@ -18,21 +18,12 @@
     using TrashMob.Shared.Poco;
 
     [Route("api/events")]
-    public class EventsController : SecureController
+    public class EventsController(
+        IKeyedManager<User> userManager,
+        IEventManager eventManager,
+        IEventAttendeeManager eventAttendeeManager)
+        : SecureController
     {
-        private readonly IEventAttendeeManager eventAttendeeManager;
-        private readonly IEventManager eventManager;
-        private readonly IKeyedManager<User> userManager;
-
-        public EventsController(IKeyedManager<User> userManager,
-            IEventManager eventManager,
-            IEventAttendeeManager eventAttendeeManager)
-        {
-            this.eventManager = eventManager;
-            this.eventAttendeeManager = eventAttendeeManager;
-            this.userManager = userManager;
-        }
-
         [HttpGet]
         public async Task<IActionResult> GetEvents(CancellationToken cancellationToken)
         {
@@ -156,10 +147,34 @@
 
         [HttpGet]
         [Route("filteredevents")]
-        public async Task<IActionResult> GetFilteredEvents([FromBody] GeneralFilter filter,
+        public async Task<IActionResult> GetFilteredEvents([FromBody] EventFilter filter,
             CancellationToken cancellationToken)
         {
             var result = await eventManager.GetFilteredEventsAsync(filter, cancellationToken).ConfigureAwait(false);
+
+            if (filter.PageSize != null)
+            {
+                var pagedResults = result.OrderByDescending(e => e.EventDate).Skip(filter.PageIndex.GetValueOrDefault(0) * filter.PageSize.GetValueOrDefault(10))
+                    .Take(filter.PageSize.GetValueOrDefault(10)).ToList();
+                return Ok(pagedResults);
+            }
+
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("pagedfilteredevents")]
+        public async Task<IActionResult> GetPagedFilteredEvents([FromBody] EventFilter filter,
+            CancellationToken cancellationToken)
+        {
+            var result = await eventManager.GetFilteredEventsAsync(filter, cancellationToken).ConfigureAwait(false);
+
+            if (filter.PageSize != null)
+            {
+                var pagedResults = PaginatedList<Event>.Create(result.OrderByDescending(e => e.EventDate).AsQueryable(),
+                                       filter.PageIndex.GetValueOrDefault(0), filter.PageSize.GetValueOrDefault(10));
+                return Ok(pagedResults);
+            }
 
             return Ok(result);
         }

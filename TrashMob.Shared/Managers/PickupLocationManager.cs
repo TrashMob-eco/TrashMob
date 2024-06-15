@@ -13,32 +13,16 @@
     using TrashMob.Shared.Persistence.Interfaces;
     using TrashMob.Shared.Poco;
 
-    public class PickupLocationManager : KeyedManager<PickupLocation>, IPickupLocationManager
+    public class PickupLocationManager(
+        IKeyedRepository<PickupLocation> pickupLocationRepository,
+        IEventManager eventManager,
+        IEventPartnerLocationServiceManager eventPartnerLocationServiceManager,
+        IPartnerLocationContactManager partnerLocationContactManager,
+        IPartnerAdminManager partnerAdminManager,
+        IEmailManager emailManager,
+        IImageManager imageManager)
+        : KeyedManager<PickupLocation>(pickupLocationRepository), IPickupLocationManager
     {
-        private readonly IEmailManager emailManager;
-        private readonly IEventManager eventManager;
-        private readonly IEventPartnerLocationServiceManager eventPartnerLocationServiceManager;
-        private readonly IImageManager imageManager;
-        private readonly IPartnerAdminManager partnerAdminManager;
-        private readonly IPartnerLocationContactManager partnerLocationContactManager;
-
-        public PickupLocationManager(IKeyedRepository<PickupLocation> pickupLocationRepository,
-            IEventManager eventManager,
-            IEventPartnerLocationServiceManager eventPartnerLocationServiceManager,
-            IPartnerLocationContactManager partnerLocationContactManager,
-            IPartnerAdminManager partnerAdminManager,
-            IEmailManager emailManager,
-            IImageManager imageManager)
-            : base(pickupLocationRepository)
-        {
-            this.eventManager = eventManager;
-            this.eventPartnerLocationServiceManager = eventPartnerLocationServiceManager;
-            this.partnerLocationContactManager = partnerLocationContactManager;
-            this.partnerAdminManager = partnerAdminManager;
-            this.emailManager = emailManager;
-            this.imageManager = imageManager;
-        }
-
         public override async Task<IEnumerable<PickupLocation>> GetByParentIdAsync(Guid parentId,
             CancellationToken cancellationToken)
         {
@@ -131,7 +115,7 @@
 
             foreach (var pickupLocation in pickupLocations)
             {
-                var imageUrl = await imageManager.GetImageUrlAsync(eventId, ImageTypeEnum.Pickup, ImageSizeEnum.Thumb);
+                var imageUrl = await imageManager.GetImageUrlAsync(eventId, ImageTypeEnum.Pickup, ImageSizeEnum.Thumb, cancellationToken);
 
                 var pickSpot = new PickupSpot
                 {
