@@ -52,11 +52,11 @@ jobs:
         id: set_build_number
         run: |
           buildNumber=${{ steps.version_step.outputs.semVer }}
-          releaseNumber=$GITHUB_RUN_NUMBER_WITH_OFFSET
+          releaseNumber=${{ env.GITHUB_RUN_NUMBER_WITH_OFFSET }}
           echo "buildNumber=${{ steps.version_step.outputs.semVer }}" >> $GITHUB_ENV
           echo "buildNumber=${{ steps.version_step.outputs.semVer }}" >> $GITHUB_OUTPUT
-          echo "releaseNumber=$GITHUB_RUN_NUMBER_WITH_OFFSET >> $GITHUB_ENV
-          echo "releaseNumber=$GITHUB_RUN_NUMBER_WITH_OFFSET >> $GITHUB_OUTPUT
+          echo "releaseNumber=${{ env.GITHUB_RUN_NUMBER_WITH_OFFSET }} >> $GITHUB_ENV
+          echo "releaseNumber=${{ env.GITHUB_RUN_NUMBER_WITH_OFFSET }} >> $GITHUB_OUTPUT
 
   exposeEnvironmentVariables:
     runs-on: ubuntu-latest
