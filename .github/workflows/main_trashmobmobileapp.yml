@@ -42,7 +42,7 @@ jobs:
       - name: Set Offsets
         env:
           NUM: ${{ github.run_number }}
-          OFFSET: ${{ steps.version_step.outputs.semVer }}
+          OFFSET: ${{ steps.version_step.outputs.WeightedPreReleaseNumber }}
         run: |
           echo ::set-env name=GITHUB_RUN_NUMBER_WITH_OFFSET::$(($NUM+$OFFSET))
 
@@ -53,8 +53,8 @@ jobs:
           releaseNumber=$GITHUB_RUN_NUMBER_WITH_OFFSET
           echo "buildNumber=${{ steps.version_step.outputs.semVer }}" >> $GITHUB_ENV
           echo "buildNumber=${{ steps.version_step.outputs.semVer }}" >> $GITHUB_OUTPUT
-          echo "releaseNumber=${{ steps.version_step.outputs.WeightedPreReleaseNumber }}" >> $GITHUB_ENV
-          echo "releaseNumber=${{ steps.version_step.outputs.WeightedPreReleaseNumber }}" >> $GITHUB_OUTPUT
+          echo "releaseNumber=$GITHUB_RUN_NUMBER_WITH_OFFSET >> $GITHUB_ENV
+          echo "releaseNumber=$GITHUB_RUN_NUMBER_WITH_OFFSET >> $GITHUB_OUTPUT
 
   exposeEnvironmentVariables:
     runs-on: ubuntu-latest
