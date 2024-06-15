@@ -24,16 +24,33 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAtte
     const [waiver, setWaiver] = useState<WaiverData>();
 
     React.useEffect(() => {
-        const headers = getDefaultHeaders('GET');
+        const account = msalClient.getAllAccounts()[0];
+        var apiConfig = getApiConfig();
 
-        fetch('/api/waivers/trashmob', {
-            method: 'GET',
-            headers: headers
-        })
-            .then(response => response.json() as Promise<WaiverData>)
-            .then(data => {
-                setWaiver(data);
+        var request = {
+            scopes: apiConfig.b2cScopes,
+            account: account
+        };
+
+        msalClient.acquireTokenSilent(request).then(tokenResponse => {
+
+            if (!validateToken(tokenResponse.idTokenClaims)) {
+                return;
+            }
+
+            var method = "GET";
+            const headers = getDefaultHeaders(method);
+            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+
+            fetch('/api/waivers/trashmob', {
+                method: 'GET',
+                headers: headers
             })
+                .then(response => response.json() as Promise<WaiverData>)
+                .then(data => {
+                    setWaiver(data);
+                })
+        })
     }, [])
 
     const addAttendee = (eventId: string) => {
