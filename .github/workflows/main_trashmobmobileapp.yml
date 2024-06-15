@@ -44,7 +44,8 @@ jobs:
           NUM: ${{ github.run_number }}
           OFFSET: ${{ steps.version_step.outputs.WeightedPreReleaseNumber }}
         run: |
-          GITHUB_RUN_NUMBER_WITH_OFFSET=$(($NUM+$OFFSET))
+          echo "GITHUB_RUN_NUMBER_WITH_OFFSET=$(($NUM+$OFFSET))" >> $GITHUB_ENV
+          echo "GITHUB_RUN_NUMBER_WITH_OFFSET=$(($NUM+$OFFSET))" >> $GITHUB_OUTPUT
 
       - name: Set Build Number
         id: set_build_number
