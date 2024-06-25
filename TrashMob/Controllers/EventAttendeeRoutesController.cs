@@ -23,11 +23,41 @@
             this.eventAttendeeRouteManager = eventAttendeeRouteManager;
         }
 
-        [HttpGet("{eventId}")]
-        public async Task<IActionResult> GetEventAttendeeRoutes(Guid eventId)
+        [HttpGet("{eventId}/{userId}")]
+        public async Task<IActionResult> GetEventAttendeeRoutes(Guid eventId, Guid userId)
         {
             var result =
                 (await eventAttendeeRouteManager.GetByParentIdAsync(eventId, CancellationToken.None)
+                    .ConfigureAwait(false)).Where(e => e.CreatedByUserId == userId).Select(u => u.User.ToDisplayUser());
+            TelemetryClient.TrackEvent(nameof(GetEventAttendeeRoutes));
+            return Ok(result);
+        }
+
+        [HttpGet("byeventid/{eventId}")]
+        public async Task<IActionResult> GetEventAttendeeRoutesByEventId(Guid eventId)
+        {
+            var result =
+                (await eventAttendeeRouteManager.GetByParentIdAsync(eventId, CancellationToken.None)
+                    .ConfigureAwait(false)).Select(u => u.User.ToDisplayUser());
+            TelemetryClient.TrackEvent(nameof(GetEventAttendeeRoutes));
+            return Ok(result);
+        }
+
+        [HttpGet("byuserid/{userId}")]
+        public async Task<IActionResult> GetEventAttendeeRoutesByUserId(Guid userId)
+        {
+            var result =
+                (await eventAttendeeRouteManager.GetByCreatedUserIdAsync(userId, CancellationToken.None)
+                    .ConfigureAwait(false)).Select(u => u.User.ToDisplayUser());
+            TelemetryClient.TrackEvent(nameof(GetEventAttendeeRoutes));
+            return Ok(result);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetEventAttendeeRoute(Guid id)
+        {
+            var result =
+                (await eventAttendeeRouteManager.GetAsync(x => x.Id == id, CancellationToken.None)
                     .ConfigureAwait(false)).Select(u => u.User.ToDisplayUser());
             TelemetryClient.TrackEvent(nameof(GetEventAttendeeRoutes));
             return Ok(result);
@@ -65,11 +95,11 @@
             return Ok();
         }
 
-        [HttpDelete("{eventId}/{userId}/{routeId}")]
+        [HttpDelete("{routeId}")]
         // Todo: Tighten this down
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> DeleteEventAttendeeRoute(Guid eventId, Guid userId, Guid routeId,
+        public async Task<IActionResult> DeleteEventAttendeeRoute(Guid routeId,
             CancellationToken cancellationToken)
         {
             await eventAttendeeRouteManager.DeleteAsync(routeId, cancellationToken).ConfigureAwait(false);
