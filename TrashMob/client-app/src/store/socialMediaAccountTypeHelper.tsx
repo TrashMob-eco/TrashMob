@@ -1,27 +1,17 @@
 import SocialMediaAccountTypeData from "../components/Models/SocialMediaAccountTypeData";
-import { getDefaultHeaders } from "./AuthStore";
+import { GetSocialMediaAccountTypes } from "../services/social-media";
 
 export function getSocialMediaAccountType(socialMediaAccountTypeList: SocialMediaAccountTypeData[], socialMediaAccountTypeId: any): string {
-    if (socialMediaAccountTypeList === null || socialMediaAccountTypeList.length === 0) {
-        socialMediaAccountTypeList = getSocialMediaAccountTypes();
-    }
-
-    var socialMediaAccountType = socialMediaAccountTypeList.find(et => et.id === socialMediaAccountTypeId)
-    if (socialMediaAccountType)
-        return socialMediaAccountType.name;
-    return "Unknown";
+    const socialMediaAccountType = socialMediaAccountTypeList.find(et => et.id === socialMediaAccountTypeId)
+    return (socialMediaAccountType) ? socialMediaAccountType.name : "Unknown";
 }
 
-function getSocialMediaAccountTypes() : SocialMediaAccountTypeData[] {
-    const headers = getDefaultHeaders('GET');
+export async function getSocialMediaAccountTypeAsync(socialMediaAccountTypeId: any): Promise<string> {
+    const socialMediaAccountTypeList = await getSocialMediaAccountTypes();
+    return getSocialMediaAccountType(socialMediaAccountTypeList, socialMediaAccountTypeId);
+}
 
-    fetch('/api/socialMediaAccounttypes', {
-        method: 'GET',
-        headers: headers
-    })
-        .then(response => response.json() as Promise<Array<any>>)
-        .then(data => {
-            return data;
-        });
-    return [];
+async function getSocialMediaAccountTypes(): Promise<SocialMediaAccountTypeData[]> {
+    const result = await GetSocialMediaAccountTypes().service().then(res => res.data).catch(err => [])
+    return result;
 }

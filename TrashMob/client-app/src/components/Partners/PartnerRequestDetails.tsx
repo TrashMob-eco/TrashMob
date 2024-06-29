@@ -1,11 +1,9 @@
 import * as React from 'react'
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../../store/ToolTips";
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
-import PartnerRequestData from '../Models/PartnerRequestData';
 import UserData from '../Models/UserData';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../../store/MapStore';
@@ -17,6 +15,9 @@ import { getPartnerRequestStatus } from '../../store/partnerRequestStatusHelper'
 import { getPartnerType } from '../../store/partnerTypeHelper';
 import { Guid } from 'guid-typescript';
 import PhoneInput from 'react-phone-input-2'
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { GetPartnerRequestById, GetPartnerRequestStatuses, GetPartnerTypes } from '../../services/partners';
+import { Services } from '../../config/services.config';
 
 export interface PartnerRequestDetailsMatchParams {
     partnerRequestId: string;
@@ -55,6 +56,36 @@ export const PartnerRequestDetails: React.FC<PartnerRequestDetailsParams> = (pro
     const [isPartnerRequestIdReady, setIsPartnerRequestIdReady] = React.useState<boolean>();
     const [loadedPartnerRequestId, setLoadedPartnerRequestId] = React.useState<string | undefined>(props.match?.params["partnerRequestId"]);
 
+    const [partnerType, setPartnerType] = React.useState("Unknown");
+    const [partnerRequestStatus, setPartnerRequestStatus] = React.useState("Unknown");
+
+    React.useEffect(() => {
+        setPartnerType(getPartnerType(partnerTypeList, partnerTypeId))
+    }, [partnerTypeList, partnerTypeId]);
+
+    React.useEffect(() => {
+        setPartnerRequestStatus(getPartnerRequestStatus(partnerRequestStatusList, partnerRequestStatusId))
+    }, [partnerRequestStatusList, partnerRequestStatusId]);
+
+    const getPartnerRequestStatuses = useQuery({
+        queryKey: GetPartnerRequestStatuses().key,
+        queryFn: GetPartnerRequestStatuses().service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    })
+
+    const getPartnerTypes = useQuery({
+        queryKey: GetPartnerTypes().key,
+        queryFn: GetPartnerTypes().service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    })
+
+    const getPartnerRequestById = useMutation({
+        mutationKey: GetPartnerRequestById().key,
+        mutationFn: GetPartnerRequestById().service,
+    })
+
     React.useEffect(() => {
         var partId = loadedPartnerRequestId;
         if (!partId) {
@@ -72,65 +103,32 @@ export const PartnerRequestDetails: React.FC<PartnerRequestDetailsParams> = (pro
     React.useEffect(() => {
 
         if (props.isUserLoaded) {
-
             setIsPartnerRequestDataLoaded(false);
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            const request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-                const headers = getDefaultHeaders('GET');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/partnerRequestStatuses', {
-                    method: 'GET',
-                    headers: headers
+            getPartnerRequestStatuses.refetch().then(partnerRequestStatusesRes => {
+                setPartnerRequestStatusList(partnerRequestStatusesRes.data?.data || []);
+                getPartnerTypes.refetch().then(partnerTypesRes => {
+                    setPartnerTypeList(partnerTypesRes.data?.data || []);
+                    getPartnerRequestById.mutateAsync({ id: partnerRequestId }).then(partnerRequestByIdRes => {
+                        setName(partnerRequestByIdRes.data.name);
+                        setEmail(partnerRequestByIdRes.data.email);
+                        setWebsite(partnerRequestByIdRes.data.website);
+                        setPhone(partnerRequestByIdRes.data.phone);
+                        setStreetAddress(partnerRequestByIdRes.data.streetAddress);
+                        setCity(partnerRequestByIdRes.data.city);
+                        setRegion(partnerRequestByIdRes.data.region);
+                        setCountry(partnerRequestByIdRes.data.country);
+                        setPostalCode(partnerRequestByIdRes.data.postalCode);
+                        setLatitude(partnerRequestByIdRes.data.latitude ?? 0);
+                        setLongitude(partnerRequestByIdRes.data.longitude ?? 0);
+                        setPartnerRequestStatusId(partnerRequestByIdRes.data.partnerRequestStatusId);
+                        setPartnerTypeId(partnerRequestByIdRes.data.partnerTypeId);
+                        setNotes(partnerRequestByIdRes.data.notes);
+                        setCreatedDate(partnerRequestByIdRes.data.createdDate ? new Date(partnerRequestByIdRes.data.createdDate) : new Date());
+                        setLastUpdatedDate(partnerRequestByIdRes.data.lastUpdatedDate ? new Date(partnerRequestByIdRes.data.lastUpdatedDate) : new Date());
+                        setIsPartnerRequestDataLoaded(true);
+                    });
                 })
-                    .then(response => response.json() as Promise<PartnerRequestStatusData[]>)
-                    .then(data => {
-                        setPartnerRequestStatusList(data);
-                    })
-                    .then(() => {
-                        fetch('/api/partnertypes', {
-                            method: 'GET',
-                            headers: headers
-                        })
-                            .then(response => response.json() as Promise<PartnerTypeData[]>)
-                            .then(data => {
-                                setPartnerTypeList(data)
-                            })
-                            .then(() => {
-                                fetch('/api/partnerrequests/' + partnerRequestId, {
-                                    method: 'GET',
-                                    headers: headers
-                                })
-                                    .then(response => response.json() as Promise<PartnerRequestData>)
-                                    .then(data => {
-                                        setName(data.name);
-                                        setEmail(data.email);
-                                        setWebsite(data.website);
-                                        setPhone(data.phone);
-                                        setStreetAddress(data.streetAddress);
-                                        setCity(data.city);
-                                        setRegion(data.region);
-                                        setCountry(data.country);
-                                        setPostalCode(data.postalCode);
-                                        setLatitude(data.latitude ?? 0);
-                                        setLongitude(data.longitude ?? 0);
-                                        setPartnerRequestStatusId(data.partnerRequestStatusId);
-                                        setPartnerTypeId(data.partnerTypeId);
-                                        setNotes(data.notes);
-                                        setCreatedDate(data.createdDate ? new Date(data.createdDate) : new Date());
-                                        setLastUpdatedDate(data.lastUpdatedDate ? new Date(data.lastUpdatedDate) : new Date());
-                                        setIsPartnerRequestDataLoaded(true);
-                                    });
-                            })
-                    })
-            });
+            })
         }
         MapStore.getOption().then(opts => {
             setMapOptions(opts);
@@ -232,7 +230,7 @@ export const PartnerRequestDetails: React.FC<PartnerRequestDetailsParams> = (pro
                                             <OverlayTrigger placement="top" overlay={renderPartnerTypeToolTip}>
                                                 <Form.Label className="control-label font-weight-bold h5">Partner Type</Form.Label>
                                             </OverlayTrigger>
-                                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="partnerType" value={getPartnerType(partnerTypeList, partnerTypeId)} />
+                                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="partnerType" value={partnerType} />
                                         </Form.Group>
                                     </Col>
                                     <Col>
@@ -240,7 +238,7 @@ export const PartnerRequestDetails: React.FC<PartnerRequestDetailsParams> = (pro
                                             <OverlayTrigger placement="top" overlay={renderPartnerRequestStatusToolTip}>
                                                 <Form.Label className="control-label font-weight-bold h5">Request Status</Form.Label>
                                             </OverlayTrigger>
-                                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="requestStatus" value={getPartnerRequestStatus(partnerRequestStatusList, partnerRequestStatusId)} />
+                                            <Form.Control type="text" className='border-0 bg-light h-60 p-18' disabled name="requestStatus" value={partnerRequestStatus} />
                                         </Form.Group>
                                     </Col>
                                 </Form.Row>

@@ -1,13 +1,15 @@
 import * as React from 'react'
 import UserData from '../Models/UserData';
 import { Button, Col, Container, Dropdown, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
-import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import { Guid } from 'guid-typescript';
 import PartnerContactData from '../Models/PartnerContactData';
 import * as Constants from '../Models/Constants';
 import { Pencil, XSquare } from 'react-bootstrap-icons';
 import PhoneInput from 'react-phone-input-2'
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { Services } from '../../config/services.config';
+import { CreatePartnerContact, DeletePartnerContactByContactId, GetPartnerContactsByContactId, GetPartnerContactsByPartnerId, UpdatePartnerContact } from '../../services/contact';
 
 export interface PartnerContactsDataProps {
     partnerId: string;
@@ -16,7 +18,6 @@ export interface PartnerContactsDataProps {
 };
 
 export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
-
     const [partnerContactId, setPartnerContactId] = React.useState<string>(Guid.EMPTY);
     const [name, setName] = React.useState<string>("");
     const [email, setEmail] = React.useState<string>("");
@@ -35,31 +36,38 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
     const [isAddEnabled, setIsAddEnabled] = React.useState<boolean>(true);
 
+    const getPartnerContactsByPartnerId = useQuery({
+        queryKey: GetPartnerContactsByPartnerId({ partnerId: props.partnerId }).key,
+        queryFn: GetPartnerContactsByPartnerId({ partnerId: props.partnerId }).service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const getPartnerContactsByContactId = useMutation({
+        mutationKey: GetPartnerContactsByContactId().key,
+        mutationFn: GetPartnerContactsByContactId().service
+    });
+
+    const createPartnerContact = useMutation({
+        mutationKey: CreatePartnerContact().key,
+        mutationFn: CreatePartnerContact().service
+    });
+
+    const updatePartnerContact = useMutation({
+        mutationKey: UpdatePartnerContact().key,
+        mutationFn: UpdatePartnerContact().service
+    });
+
+    const deletePartnerContactByContactId = useMutation({
+        mutationKey: DeletePartnerContactByContactId().key,
+        mutationFn: DeletePartnerContactByContactId().service
+    });
+
     React.useEffect(() => {
-
-        const headers = getDefaultHeaders('GET');
-
         if (props.isUserLoaded && props.partnerId && props.partnerId !== Guid.EMPTY) {
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/partnercontacts/getbypartner/' + props.partnerId, {
-                    method: 'GET',
-                    headers: headers,
-                })
-                    .then(response => response.json() as Promise<PartnerContactData[]>)
-                    .then(data => {
-                        setPartnerContacts(data);
-                        setIsPartnerContactsDataLoaded(true);
-                    });
+            getPartnerContactsByPartnerId.refetch().then(res => {
+                setPartnerContacts(res.data?.data || []);
+                setIsPartnerContactsDataLoaded(true);
             });
         }
     }, [props.partnerId, props.isUserLoaded])
@@ -93,137 +101,59 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
     }
 
     function editContact(partnerContactId: string) {
-        const account = msalClient.getAllAccounts()[0];
-        var apiConfig = getApiConfig();
-
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            const headers = getDefaultHeaders('GET');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch('/api/partnercontacts/' + partnerContactId, {
-                method: 'GET',
-                headers: headers,
-            })
-                .then(response => response.json() as Promise<PartnerContactData>)
-                .then(data => {
-                    setPartnerContactId(data.id);
-                    setName(data.name);
-                    setPhone(data.phone);
-                    setEmail(data.email);
-                    setNotes(data.notes);
-                    setCreatedByUserId(data.createdByUserId);
-                    setCreatedDate(new Date(data.createdDate));
-                    setLastUpdatedDate(new Date(data.lastUpdatedDate));
-                    setIsEditOrAdd(true);
-                    setIsAddEnabled(false);
-                });
+        getPartnerContactsByContactId.mutateAsync({ contactId: partnerContactId }).then((res) => {
+            setPartnerContactId(res.data.id);
+            setName(res.data.name);
+            setPhone(res.data.phone);
+            setEmail(res.data.email);
+            setNotes(res.data.notes);
+            setCreatedByUserId(res.data.createdByUserId);
+            setCreatedDate(new Date(res.data.createdDate));
+            setLastUpdatedDate(new Date(res.data.lastUpdatedDate));
+            setIsEditOrAdd(true);
+            setIsAddEnabled(false);
         });
     }
 
     function removeContact(partnerContactId: string, name: string,) {
-        if (!window.confirm("Please confirm that you want to remove contact: '" + name + "' from this Partner ?"))
-            return;
+        if (!window.confirm("Please confirm that you want to remove contact: '" + name + "' from this Partner ?")) return;
         else {
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-                const headers = getDefaultHeaders('DELETE');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/partnercontacts/' + partnerContactId, {
-                    method: 'DELETE',
-                    headers: headers,
+            deletePartnerContactByContactId.mutateAsync({ contactId: partnerContactId }).then(() => {
+                setIsPartnerContactsDataLoaded(false);
+                getPartnerContactsByPartnerId.refetch().then(res => {
+                    setPartnerContacts(res.data?.data || []);
+                    setIsPartnerContactsDataLoaded(true);
                 })
-                    .then(() => {
-                        setIsPartnerContactsDataLoaded(false);
-
-                        fetch('/api/partnercontacts/getbypartner/' + props.partnerId, {
-                            method: 'GET',
-                            headers: headers,
-                        })
-                            .then(response => response.json() as Promise<PartnerContactData[]>)
-                            .then(data => {
-                                setPartnerContacts(data);
-                                setIsPartnerContactsDataLoaded(true);
-                            });
-                    })
             });
         }
     }
 
-    function handleSave(event: any) {
-
+    async function handleSave(event: any) {
         event.preventDefault();
 
-        if (!isSaveEnabled) {
-            return;
-        }
-
+        if (!isSaveEnabled) return;
         setIsSaveEnabled(false);
 
-        const account = msalClient.getAllAccounts()[0];
-        var apiConfig = getApiConfig();
+        const body = new PartnerContactData();
+        body.id = partnerContactId;
+        body.partnerId = props.partnerId;
+        body.name = name;
+        body.phone = phone;
+        body.email = email;
+        body.notes = notes;
+        body.createdByUserId = createdByUserId;
 
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
+        if (partnerContactId === Guid.EMPTY) await createPartnerContact.mutateAsync(body);
+        else await updatePartnerContact.mutateAsync(body);
 
-        var method = "PUT";
+        setIsEditOrAdd(false);
+        setIsPartnerContactsDataLoaded(false);
 
-        if (partnerContactId === Guid.EMPTY) {
-            method = "POST";
-        }
-
-        var partnerContact = new PartnerContactData();
-        partnerContact.id = partnerContactId;
-        partnerContact.partnerId = props.partnerId;
-        partnerContact.name = name;
-        partnerContact.phone = phone;
-        partnerContact.email = email;
-        partnerContact.notes = notes;
-        partnerContact.createdByUserId = createdByUserId;
-
-        var data = JSON.stringify(partnerContact);
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            const headers = getDefaultHeaders(method);
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch('/api/partnercontacts', {
-                method: method,
-                headers: headers,
-                body: data,
-            })
-                .then(() => {
-                    setIsEditOrAdd(false);
-                    setIsPartnerContactsDataLoaded(false);
-                    var getHeaders = getDefaultHeaders("GET");
-                    getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                    fetch('/api/partnercontacts/getbypartner/' + props.partnerId, {
-                        method: 'GET',
-                        headers: getHeaders,
-                    })
-                        .then(response => response.json() as Promise<PartnerContactData[]>)
-                        .then(data => {
-                            setPartnerContacts(data);
-                            setIsPartnerContactsDataLoaded(true);
-                            setIsEditOrAdd(false);
-                            setIsAddEnabled(true);
-                        });
-                });
+        getPartnerContactsByPartnerId.refetch().then(res => {
+            setPartnerContacts(res.data?.data || []);
+            setIsPartnerContactsDataLoaded(true);
+            setIsEditOrAdd(false);
+            setIsAddEnabled(true);
         });
     }
 

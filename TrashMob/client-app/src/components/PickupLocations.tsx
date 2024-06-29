@@ -1,19 +1,21 @@
 import * as React from 'react'
 import UserData from './Models/UserData';
 import { Button, Col, Dropdown, Form, OverlayTrigger, ToggleButton, Tooltip } from 'react-bootstrap';
-import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from './../store/AuthStore';
 import * as ToolTips from ".././store/ToolTips";
 import PartnerLocationData from './Models/PartnerLocationData';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import * as MapStore from '../store/MapStore';
 import { data } from 'azure-maps-control';
 import { Guid } from 'guid-typescript';
-import AddressData from './Models/AddressData';
 import MapControllerSinglePointNoEvent from './MapControllerSinglePointNoEvent';
 import PickupLocationData from './Models/PickupLocationData';
 import { Pencil, XSquare } from 'react-bootstrap-icons';
 import PhoneInput from 'react-phone-input-2'
 import { ManageEventPartners } from './EventManagement/ManageEventPartners';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { CreateEventPickupLocation, DeleteEventPickupLocationById, GetEventPickupLocationById, GetEventPickupLocations, GetHaulingPartnerLocation, SubmitEventPickupLocations, UpdateEventPickupLocation } from '../services/locations';
+import { Services } from '../config/services.config';
+import { AzureMapSearchAddressReverse } from '../services/maps';
 
 export interface PickupLocationsDataProps {
     eventId: string;
@@ -51,61 +53,61 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
     const [isEditOrAdd, setIsEditOrAdd] = React.useState<boolean>(false);
     const [statusMessage, setStatusMessage] = React.useState<string>("Loading...");
 
+    const getHaulingPartnerLocation = useQuery({ 
+        queryKey: GetHaulingPartnerLocation({ eventId: props.eventId }).key,
+        queryFn: GetHaulingPartnerLocation({ eventId: props.eventId }).service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const getEventPickupLocations = useQuery({ 
+        queryKey: GetEventPickupLocations({ eventId: props.eventId }).key,
+        queryFn: GetEventPickupLocations({ eventId: props.eventId }).service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const getEventPickupLocationById = useMutation({
+        mutationKey: GetEventPickupLocationById().key,
+        mutationFn: GetEventPickupLocationById().service,
+    });
+
+    const azureMapSearchAddressReverse = useMutation({
+        mutationKey: AzureMapSearchAddressReverse().key,
+        mutationFn: AzureMapSearchAddressReverse().service,
+    });
+
+    const submitEventPickupLocations = useMutation({
+        mutationKey: SubmitEventPickupLocations().key,
+        mutationFn: SubmitEventPickupLocations().service
+    })
+
+    const createEventPickupLocation = useMutation({
+        mutationKey: CreateEventPickupLocation().key,
+        mutationFn: CreateEventPickupLocation().service
+    })
+
+    const updateEventPickupLocation = useMutation({
+        mutationKey: UpdateEventPickupLocation().key,
+        mutationFn: UpdateEventPickupLocation().service
+    })
+
+    const deleteEventPickupLocationById = useMutation({
+        mutationKey: DeleteEventPickupLocationById().key,
+        mutationFn: DeleteEventPickupLocationById().service
+    })
 
     React.useEffect(() => {
-
         if (props.isUserLoaded && props.eventId && props.eventId !== Guid.EMPTY) {
-
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
-
-                const headers = getDefaultHeaders('GET');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/eventpartnerlocationservices/gethaulingpartnerlocation/' + props.eventId, {
-                    method: 'GET',
-                    headers: headers,
+            getHaulingPartnerLocation.refetch().then((partnerLocationRes) => {
+                setHaulingPartnerLocation(partnerLocationRes.data?.data);
+                setIsPartnerLocationsDataLoaded(true);
+                getEventPickupLocations.refetch().then((pickupLocationRes) => {
+                    setPickupLocationsData(pickupLocationRes.data?.data || []);
+                    setIsPickupLocationsDataLoaded(true);
+                    if (pickupLocationRes.data?.data.some(pl => pl.hasBeenSubmitted === false)) setIsSubmitEnabled(true);
                 })
-                    .then(response => {
-                        if (response.status === 200) {
-                            return response.json() as Promise<PartnerLocationData>;
-                        }
-                        else {
-                            throw Error("You must add a hauling partner and have it accepted before you can add pickup locations.");
-                        }
-                    })
-                    .then(data => {
-                        setHaulingPartnerLocation(data);
-                        setIsPartnerLocationsDataLoaded(true);
-                        fetch('/api/pickuplocations/getbyevent/' + props.eventId, {
-                            method: 'GET',
-                            headers: headers,
-                        })
-                            .then(response => response.json() as Promise<PickupLocationData[]>)
-                            .then(data => {
-                                setPickupLocationsData(data);
-                                setIsPickupLocationsDataLoaded(true);
-
-                                if (data.some(pl => pl.hasBeenSubmitted === false)) {
-                                    setIsSubmitEnabled(true);
-                                }
-                            });
-                    })
-                    .catch((error) => {
-                        setStatusMessage(error.message);
-                    });
-            });
+            }).catch(err => setStatusMessage('You must add a hauling partner and have it accepted before you can add pickup locations.'));
         }
 
         MapStore.getOption().then(opts => {
@@ -187,242 +189,106 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
     }
 
     function removePickupLocation(pickupLocationId: string) {
-        if (!window.confirm("Please confirm that you want to remove this pickup location?"))
-            return;
+        if (!window.confirm("Please confirm that you want to remove this pickup location?")) return;
         else {
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
-
-                const headers = getDefaultHeaders('DELETE');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/pickuplocations/' + pickupLocationId, {
-                    method: 'DELETE',
-                    headers: headers,
+            deleteEventPickupLocationById.mutateAsync({ locationId: pickupLocationId }).then(() => {
+                getEventPickupLocations.refetch().then((res) => {
+                    resetForm();
+                    setPickupLocationsData(res.data?.data || []);
+                    setIsPickupLocationsDataLoaded(true);
+                    if (res.data?.data.some(pl => !pl.hasBeenSubmitted)) setIsSubmitEnabled(true);
                 })
-                    .then(() => {
-                        fetch('/api/pickuplocations/getbyevent/' + props.eventId, {
-                            method: 'GET',
-                            headers: headers
-                        })
-                            .then(response => response.json() as Promise<PickupLocationData[]>)
-                            .then(data => {
-                                resetForm();
-                                setPickupLocationsData(data);
-                                setIsPickupLocationsDataLoaded(true);
-
-                                if (data.some(pl => !pl.hasBeenSubmitted)) {
-                                    setIsSubmitEnabled(true);
-                                }
-                            })
-                    });
-            });
+            })
         }
     }
 
     function submitPickupLocations() {
-        if (!window.confirm("Please confirm that you want to submit these pickup locations? Once submitted, they cannot be updated."))
-            return;
+        if (!window.confirm("Please confirm that you want to submit these pickup locations? Once submitted, they cannot be updated.")) return;
         else {
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
-
-                const headers = getDefaultHeaders('POST');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/pickuplocations/submit/' + props.eventId, {
-                    method: 'POST',
-                    headers: headers,
+            submitEventPickupLocations.mutateAsync({ eventId: props.eventId }).then(() => {
+                getEventPickupLocations.refetch().then((res) => {
+                    resetForm();
+                    setPickupLocationsData(res.data?.data || []);
+                    setIsPickupLocationsDataLoaded(true);
+                    setIsSubmitEnabled(false);
+                    setIsAddEnabled(true);
+                    setIsEditOrAdd(false);
                 })
-                    .then(() => {
-                        const getHeaders = getDefaultHeaders('GET');
-                        fetch('/api/pickuplocations/getbyevent/' + props.eventId, {
-                            method: 'GET',
-                            headers: getHeaders
-                        })
-                            .then(response => response.json() as Promise<PickupLocationData[]>)
-                            .then(data => {
-                                resetForm();
-                                setPickupLocationsData(data);
-                                setIsPickupLocationsDataLoaded(true);
-                                setIsSubmitEnabled(false);
-                                setIsAddEnabled(true);
-                                setIsEditOrAdd(false);
-                            })
-                    });
-            });
+            })
         }
     }
 
-    function handleSave(event: any) {
-
+    async function handleSave(event: any) {
         event.preventDefault();
 
-        if (!isSaveEnabled) {
-            return;
-        }
-
+        if (!isSaveEnabled) return;
         setIsSaveEnabled(false);
 
-        var partnerLocationData = new PickupLocationData();
-        partnerLocationData.id = pickupLocationId;
-        partnerLocationData.eventId = props.eventId;
-        partnerLocationData.streetAddress = streetAddress ?? "";
-        partnerLocationData.city = city ?? "";
-        partnerLocationData.region = region ?? "";
-        partnerLocationData.country = country ?? "";
-        partnerLocationData.postalCode = postalCode ?? "";
-        partnerLocationData.latitude = latitude ?? 0;
-        partnerLocationData.longitude = longitude ?? 0;
-        partnerLocationData.hasBeenSubmitted = hasBeenSubmitted;
-        partnerLocationData.hasBeenPickedUp = hasBeenPickedUp;
-        partnerLocationData.name = name ?? "Pickup";
-        partnerLocationData.notes = notes ?? "";
-        partnerLocationData.createdByUserId = createdByUserId ?? props.currentUser.id;
-        partnerLocationData.createdDate = createdDate;
+        const body = new PickupLocationData();
+        body.id = pickupLocationId;
+        body.eventId = props.eventId;
+        body.streetAddress = streetAddress ?? "";
+        body.city = city ?? "";
+        body.region = region ?? "";
+        body.country = country ?? "";
+        body.postalCode = postalCode ?? "";
+        body.latitude = latitude ?? 0;
+        body.longitude = longitude ?? 0;
+        body.hasBeenSubmitted = hasBeenSubmitted;
+        body.hasBeenPickedUp = hasBeenPickedUp;
+        body.name = name ?? "Pickup";
+        body.notes = notes ?? "";
+        body.createdByUserId = createdByUserId ?? props.currentUser.id;
+        body.createdDate = createdDate;
 
-        var data = JSON.stringify(partnerLocationData);
+        if (pickupLocationId !== Guid.EMPTY) await updateEventPickupLocation.mutateAsync(body);
+        else await createEventPickupLocation.mutateAsync(body);
 
-        const account = msalClient.getAllAccounts()[0];
-        var apiConfig = getApiConfig();
-
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-            if (!validateToken(tokenResponse.idTokenClaims)) {
-                return;
-            }
-
-            var method = "PUT";
-
-            if (pickupLocationId === Guid.EMPTY) {
-                method = "POST";
-            }
-
-            const headers = getDefaultHeaders(method);
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch('/api/pickuplocations', {
-                method: method,
-                body: data,
-                headers: headers,
-            })
-                .then(response => response.json() as Promise<PickupLocationData>)
-                .then(() => {
-                    fetch('/api/pickuplocations/getbyevent/' + props.eventId, {
-                        method: 'GET',
-                        headers: headers
-                    })
-                        .then(response => response.json() as Promise<PickupLocationData[]>)
-                        .then(data => {
-                            resetForm();
-                            setPickupLocationsData(data);
-                            setIsPickupLocationsDataLoaded(true);
-
-                            if (data.some(pl => pl.hasBeenSubmitted === false)) {
-                                setIsSubmitEnabled(true);
-                            }
-                            setIsAddEnabled(true);
-                            setIsEditOrAdd(false);
-                        })
-                });
-        });
+        getEventPickupLocations.refetch().then((res) => {
+            resetForm();
+            setPickupLocationsData(res.data?.data || []);
+            setIsPickupLocationsDataLoaded(true);
+            if (res.data?.data.some(pl => pl.hasBeenSubmitted === false)) setIsSubmitEnabled(true);
+            setIsAddEnabled(true);
+            setIsEditOrAdd(false);
+        })
     }
 
-    function handleLocationChange(point: data.Position) {
+    async function handleLocationChange(point: data.Position) {
         // In an Azure Map point, the longitude is the first position, and latitude is second
         setLatitude(point[1]);
         setLongitude(point[0]);
-        var locationString = point[1] + ',' + point[0]
-        var headers = getDefaultHeaders('GET');
-
-        MapStore.getKey()
-            .then(key => {
-                fetch('https://atlas.microsoft.com/search/address/reverse/json?subscription-key=' + key + '&api-version=1.0&query=' + locationString, {
-                    method: 'GET',
-                    headers: headers
-                })
-                    .then(response => response.json() as Promise<AddressData>)
-                    .then(data => {
-                        setStreetAddress(data.addresses[0].address.streetNameAndNumber);
-                        setCity(data.addresses[0].address.municipality);
-                        setCountry(data.addresses[0].address.country);
-                        setRegion(data.addresses[0].address.countrySubdivisionName);
-                        setPostalCode(data.addresses[0].address.postalCode);
-                        setIsSaveEnabled(true);
-                    })
-            })
+        const azureKey = await MapStore.getKey();
+        azureMapSearchAddressReverse.mutateAsync({ azureKey:azureKey, lat: point[1], long: point[0] }).then((res) => {
+            setStreetAddress(res.data.addresses[0].address.streetNameAndNumber);
+            setCity(res.data.addresses[0].address.municipality);
+            setCountry(res.data.addresses[0].address.country);
+            setRegion(res.data.addresses[0].address.countrySubdivisionName);
+            setPostalCode(res.data.addresses[0].address.postalCode);
+            setIsSaveEnabled(true);
+        });
     }
 
     function editPickupLocation(locationId: string) {
-        const account = msalClient.getAllAccounts()[0];
-        var apiConfig = getApiConfig();
-
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-            if (!validateToken(tokenResponse.idTokenClaims)) {
-                return;
-            }
-
-            const headers = getDefaultHeaders('GET');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch('/api/pickuplocations/' + locationId, {
-                method: 'GET',
-                headers: headers,
-            })
-                .then(response => response.json() as Promise<PickupLocationData>)
-                .then(data => {
-                    setPickupLocationId(data.id);
-                    setStreetAddress(data.streetAddress);
-                    setCity(data.city);
-                    setCountry(data.country);
-                    setRegion(data.region);
-                    setPostalCode(data.postalCode);
-                    setLatitude(data.latitude);
-                    setLongitude(data.longitude);
-                    setHasBeenPickedUp(data.hasBeenPickedUp);
-                    setHasBeenSubmitted(data.hasBeenSubmitted);
-                    setName(data.name);
-                    setNotes(data.notes);
-                    setCreatedByUserId(data.createdByUserId);
-                    setCreatedDate(new Date(data.createdDate));
-                    setLastUpdatedDate(new Date(data.lastUpdatedDate));
-                    setIsEditOrAdd(true);
-                    setIsAddEnabled(false);
-                });
-        });
+        getEventPickupLocationById.mutateAsync({ locationId }).then((res) => {
+            setPickupLocationId(res.data.id);
+            setStreetAddress(res.data.streetAddress);
+            setCity(res.data.city);
+            setCountry(res.data.country);
+            setRegion(res.data.region);
+            setPostalCode(res.data.postalCode);
+            setLatitude(res.data.latitude);
+            setLongitude(res.data.longitude);
+            setHasBeenPickedUp(res.data.hasBeenPickedUp);
+            setHasBeenSubmitted(res.data.hasBeenSubmitted);
+            setName(res.data.name);
+            setNotes(res.data.notes);
+            setCreatedByUserId(res.data.createdByUserId);
+            setCreatedDate(new Date(res.data.createdDate));
+            setLastUpdatedDate(new Date(res.data.lastUpdatedDate));
+            setIsEditOrAdd(true);
+            setIsAddEnabled(false);
+        })
     }
 
     // This will handle Cancel button click event.

@@ -4,11 +4,11 @@ import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import UserData from '../Models/UserData';
 import { Col, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
-import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
-import EnvelopeResponse from '../Models/EnvelopeResponse';
 import logo from "../assets/logo.svg";
 import * as ToolTips from "../../store/ToolTips";
 import { HeroSection } from '../Customization/HeroSection'
+import { useMutation } from '@tanstack/react-query';
+import { CreateDocusign } from '../../services/docusign';
 
 export interface WaiversProps {
     isUserLoaded: boolean;
@@ -26,11 +26,15 @@ export class TrashMobWaiverVersion {
 }
 
 const Waivers: React.FC<WaiversProps> = (props) => {
-
     const [fullName, setFullName] = React.useState<string>("");
     const [fullNameErrors, setFullNameErrors] = React.useState<string>("");
     const [email, setEmail] = React.useState<string | undefined>();
     const [isSignWaiverEnabled, setIsSignWaiverEnabled] = React.useState<boolean>(false);
+
+    const createDocusign = useMutation({
+        mutationKey: CreateDocusign().key,
+        mutationFn: CreateDocusign().service,
+    })
 
     useEffect(() => {
         if (props.currentUser) {
@@ -39,45 +43,12 @@ const Waivers: React.FC<WaiversProps> = (props) => {
     }, [props.currentUser])
 
     async function signWaiver() {
-
-        const account = msalClient.getAllAccounts()[0];
-        var apiConfig = getApiConfig();
-
-        const request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        return msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-            if (!validateToken(tokenResponse.idTokenClaims)) {
-                return;
-            }
-
-            const headers = getDefaultHeaders('POST');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-            var hostname = window.location.hostname;
-
-            if (hostname === "localhost") {
-                hostname = hostname + ":" + window.location.port
-            }
-
-            const envelopeRequest = {
-                signerEmail: email,
-                signerName: fullName,
-                createdByUserId: props.currentUser.id,
-                returnUrl: "https://" + hostname + "/waiversreturn",
-            };
-            fetch('/api/docusign', {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify(envelopeRequest),
-            }).then(response => response.json() as Promise<EnvelopeResponse>)
-                .then(data => {
-                    // Save the envelope Id to state
-                    sessionStorage.setItem('envelopeId', data.envelopeId);
-                    window.location.href = data.redirectUrl;
-                })
+        let hostname = window.location.hostname;
+        if (hostname === "localhost") hostname = hostname + ":" + window.location.port
+        createDocusign.mutateAsync({ signerEmail: email, signerName: fullName, createdByUserId: props.currentUser.id, returnUrl: `https://${hostname}/waiversreturn` }).then(res => {
+            // Save the envelope Id to state
+            sessionStorage.setItem('envelopeId', res.data.envelopeId);
+            window.location.href = res.data.redirectUrl;
         });
     }
 

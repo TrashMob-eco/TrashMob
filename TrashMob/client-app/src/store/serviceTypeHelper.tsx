@@ -1,27 +1,17 @@
 import ServiceTypeData from "../components/Models/ServiceTypeData";
-import { getDefaultHeaders } from "./AuthStore";
+import { GetServiceTypes } from "../services/services";
 
 export function getServiceType(serviceTypeList: ServiceTypeData[], serviceTypeId: any): string {
-    if (serviceTypeList === null || serviceTypeList.length === 0) {
-        serviceTypeList = getServiceTypes();
-    }
-
-    var serviceType = serviceTypeList.find(et => et.id === serviceTypeId)
-    if (serviceType)
-        return serviceType.name;
-    return "Unknown";
+    const serviceType = serviceTypeList.find(et => et.id === serviceTypeId)
+    return (serviceType) ? serviceType.name : "Unknown";
 }
 
-function getServiceTypes(): ServiceTypeData[] {
-    const headers = getDefaultHeaders('GET');
+export async function getServiceTypeAsync(serviceTypeId: any): Promise<string> {
+    const serviceTypeList = await getServiceTypes();
+    return getServiceType(serviceTypeList, serviceTypeId)
+}
 
-    fetch('/api/serviceTypes', {
-        method: 'GET',
-        headers: headers
-    })
-        .then(response => response.json() as Promise<Array<any>>)
-        .then(data => {
-            return data;
-        });
-    return [];
+async function getServiceTypes(): Promise<ServiceTypeData[]> {
+    const result = await GetServiceTypes().service().then(res => res.data).catch(err => [])
+    return result
 }
