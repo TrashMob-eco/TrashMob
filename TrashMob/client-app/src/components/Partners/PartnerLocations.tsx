@@ -9,6 +9,9 @@ import { PartnerLocationContacts } from './PartnerLocationContacts';
 import { PartnerLocationEventRequests } from './PartnerLocationEventRequests';
 import { Guid } from 'guid-typescript';
 import { Pencil, XSquare } from 'react-bootstrap-icons';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { DeletePartnerLocation, GetLocationsByPartner } from '../../services/locations';
+import { Services } from '../../config/services.config';
 
 export interface PartnerLocationsDataProps {
     partnerId: string;
@@ -25,78 +28,37 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     const [isAdd, setIsAdd] = React.useState<boolean>(false);
     const [isAddEnabled, setIsAddEnabled] = React.useState<boolean>(true);
 
+    const getLocationsByPartner = useQuery({
+        queryKey: GetLocationsByPartner({ partnerId: props.partnerId }).key,
+        queryFn: GetLocationsByPartner({ partnerId: props.partnerId }).service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const deletePartnerLocation = useMutation({
+        mutationKey: DeletePartnerLocation().key,
+        mutationFn: DeletePartnerLocation().service,
+    })
+
     React.useEffect(() => {
-
         if (props.isUserLoaded) {
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
-
-                const headers = getDefaultHeaders('GET');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/partnerlocations/getbypartner/' + props.partnerId, {
-                    method: 'GET',
-                    headers: headers
-                })
-                    .then(response => response.json() as Promise<PartnerLocationData[]>)
-                    .then(data => {
-                        setPartnerLocations(data);
-                        setIsPartnerLocationDataLoaded(true);
-                    });
-            });
+            getLocationsByPartner.refetch().then(res => {
+                setPartnerLocations(res.data?.data || []);
+                setIsPartnerLocationDataLoaded(true);
+            })
         }
     }, [props.currentUser, props.isUserLoaded, props.partnerId]);
 
     function removeLocation(locationId: string, name: string) {
-        if (!window.confirm("Please confirm that you want to remove Location with name: '" + name + "' as a location from this Partner?"))
-            return;
+        if (!window.confirm("Please confirm that you want to remove Location with name: '" + name + "' as a location from this Partner?")) return;
         else {
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
-
-                const headers = getDefaultHeaders('DELETE');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/partnerlocations/' + locationId, {
-                    method: 'DELETE',
-                    headers: headers,
+            deletePartnerLocation.mutateAsync({ locationId }).then(() => {
+                setIsPartnerLocationDataLoaded(false);
+                getLocationsByPartner.refetch().then(res => {
+                    setPartnerLocations(res.data?.data || []);
+                    setIsPartnerLocationDataLoaded(true);
                 })
-                    .then(() => {
-                        setIsPartnerLocationDataLoaded(false);
-
-                        fetch('/api/partnerlocations/getbypartner/' + props.partnerId, {
-                            method: 'GET',
-                            headers: headers,
-                        })
-                            .then(response => response.json() as Promise<PartnerLocationData[]>)
-                            .then(data => {
-                                setPartnerLocations(data);
-                                setIsPartnerLocationDataLoaded(true);
-                            });
-                    })
-            });
+            })
         }
     }
 
@@ -117,37 +79,13 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     // This will handle Save button click event.
     function handleSave() {
         setPartnerLocationId(Guid.EMPTY);
-
-        const account = msalClient.getAllAccounts()[0];
-        var apiConfig = getApiConfig();
-
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-            if (!validateToken(tokenResponse.idTokenClaims)) {
-                return;
-            }
-
-            const headers = getDefaultHeaders('GET');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch('/api/partnerlocations/getbypartner/' + props.partnerId, {
-                method: 'GET',
-                headers: headers
-            })
-                .then(response => response.json() as Promise<PartnerLocationData[]>)
-                .then(data => {
-                    setPartnerLocations(data);
-                    setIsPartnerLocationDataLoaded(true);
-                    setIsAdd(false);
-                    setIsEdit(false);
-                    setIsAddEnabled(true);
-                });
-        });
+        getLocationsByPartner.refetch().then(res => {
+            setPartnerLocations(res.data?.data || []);
+            setIsPartnerLocationDataLoaded(true);
+            setIsAdd(false);
+            setIsEdit(false);
+            setIsAddEnabled(true);
+        })
     }
 
     function editLocation(partnerLocationId: string) {

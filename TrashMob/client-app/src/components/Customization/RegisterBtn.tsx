@@ -9,6 +9,10 @@ import { RouteComponentProps } from 'react-router-dom';
 import { CurrentTrashMobWaiverVersion } from '../Waivers/Waivers';
 import React from 'react';
 import WaiverData from '../Models/WaiverData';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { GetTrashMobWaivers } from '../../services/waivers';
+import { Services } from '../../config/services.config';
+import { AddEventAttendee } from '../../services/events';
 
 interface RegisterBtnProps extends RouteComponentProps {
     currentUser: UserData;
@@ -23,55 +27,33 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAtte
     const [registered, setRegistered] = useState<boolean>(false);
     const [waiver, setWaiver] = useState<WaiverData>();
 
-    React.useEffect(() => {
-        const headers = getDefaultHeaders('GET');
+    const getTrashMobWaivers = useQuery({ 
+        queryKey: GetTrashMobWaivers().key,
+        queryFn: GetTrashMobWaivers().service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
 
-        fetch('/api/waivers/trashmob', {
-            method: 'GET',
-            headers: headers
+    const addEventAttendee = useMutation({
+        mutationKey: AddEventAttendee().key,
+        mutationFn: AddEventAttendee().service
+    })
+
+    React.useEffect(() => {
+        getTrashMobWaivers.refetch().then((res) => {
+            setWaiver(res.data?.data)
         })
-            .then(response => response.json() as Promise<WaiverData>)
-            .then(data => {
-                setWaiver(data);
-            })
     }, [])
 
-    const addAttendee = (eventId: string) => {
-        const account = msalClient.getAllAccounts()[0];
-        var apiConfig = getApiConfig();
+    const addAttendee = async (eventId: string) => {
+        const body = new EventAttendeeData();
+        body.userId = currentUser.id;
+        body.eventId = eventId;
 
-        const request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-            if (!validateToken(tokenResponse.idTokenClaims)) {
-                return;
-            }
-
-            const eventAttendee = new EventAttendeeData();
-            eventAttendee.userId = currentUser.id;
-            eventAttendee.eventId = eventId;
-
-            const data = JSON.stringify(eventAttendee);
-
-            const headers = getDefaultHeaders('POST');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            // POST request for Add EventAttendee.  
-            fetch('/api/eventattendees', {
-                method: 'POST',
-                body: data,
-                headers: headers,
-            }).then(() => onAttendanceChanged(eventId))
-                .then(() => setRegistered(true))
-                    .then(() => {
-                        // re-direct user to event details page once they are registered
-                        history.push(`/eventdetails/${eventId}`)
-                    })
-        })
+        await addEventAttendee.mutateAsync(body);
+        await onAttendanceChanged(eventId);
+        setRegistered(true)
+        history.push(`/eventdetails/${eventId}`);   // re-direct user to event details page once they are registered
     }
 
     const handleAttend = (eventId: string) => {

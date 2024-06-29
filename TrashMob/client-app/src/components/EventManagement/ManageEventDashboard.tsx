@@ -10,6 +10,9 @@ import { Guid } from 'guid-typescript';
 import { getDefaultHeaders } from '../../store/AuthStore';
 import EventData from '../Models/EventData';
 import { HeroSection } from '../Customization/HeroSection'
+import { GetEventById } from '../../services/events';
+import { useQuery } from '@tanstack/react-query';
+import { Services } from '../../config/services.config';
 
 export interface ManageEventDashboardMatchParams {
     eventId?: string;
@@ -26,6 +29,13 @@ const ManageEventDashboard: React.FC<ManageEventDashboardProps> = (props) => {
     const [loadedEventId, setLoadedEventId] = React.useState<string | undefined>(props.match?.params["eventId"]);
     const [isEventComplete, setIsEventComplete] = React.useState<boolean>(false);
 
+    const getEventById = useQuery({ 
+        queryKey: GetEventById({ eventId: eventId }).key,
+        queryFn: GetEventById({ eventId: eventId }).service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
     React.useEffect(() => {
         var evId = loadedEventId;
         if (!evId) {
@@ -34,20 +44,10 @@ const ManageEventDashboard: React.FC<ManageEventDashboardProps> = (props) => {
         }
         else {
             setEventId(evId);
-
-            const headers = getDefaultHeaders('GET');
-
             // Check to see if this event has been completed
-            fetch('/api/Events/' + evId, {
-                method: 'GET',
-                headers: headers
+            getEventById.refetch().then((res) => {
+                if (res.data !== undefined && new Date(res.data?.data.eventDate) < new Date()) setIsEventComplete(true);
             })
-                .then(response => response.json() as Promise<EventData>)
-                .then(eventData => {
-                    if (new Date(eventData.eventDate) < new Date()) {
-                        setIsEventComplete(true);
-                    }
-                })
         }
 
         setIsEventIdReady(true);

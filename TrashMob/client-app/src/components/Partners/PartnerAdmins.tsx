@@ -9,6 +9,10 @@ import { Guid } from 'guid-typescript';
 import { getInvitationStatus } from '../../store/invitationStatusHelper';
 import InvitationStatusData from '../Models/InvitationStatusData';
 import { Envelope, XSquare } from 'react-bootstrap-icons';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { Services } from '../../config/services.config';
+import { CreatePartnerAdminInvitation, DeletePartnerAdminInvitation, GetInvitationStatuses, GetPartnerAdminInvitationsByGetByPartnerId, GetPartnerAdminInvitationsByPartnerId, ResendPartnerAdminInvitation } from '../../services/invitations';
+import { DeletePartnerAdminsByPartnerIAndUserId, GetPartnerAdminsByPartnerId } from '../../services/admin';
 
 export interface PartnerAdminsDataProps {
     partnerId: string;
@@ -17,7 +21,6 @@ export interface PartnerAdminsDataProps {
 };
 
 export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
-
     const [userEmail, setUserEmail] = React.useState<string>("");
     const [administrators, setAdministrators] = React.useState<UserData[]>([]);
     const [isPartnerAdminDataLoaded, setIsPartnerAdminDataLoaded] = React.useState<boolean>(false);
@@ -29,261 +32,138 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
     const [isAddEnabled, setIsAddEnabled] = React.useState<boolean>(true);
     const [isEditOrAdd, setIsEditOrAdd] = React.useState<boolean>(false);
 
+    const getInvitationStatuses = useQuery({
+        queryKey: GetInvitationStatuses().key,
+        queryFn: GetInvitationStatuses().service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const getPartnerAdminsByPartnerId = useQuery({
+        queryKey: GetPartnerAdminsByPartnerId({ partnerId: props.partnerId }).key,
+        queryFn: GetPartnerAdminsByPartnerId({ partnerId: props.partnerId }).service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const getPartnerAdminInvitationsByPartnerId = useQuery({
+        queryKey: GetPartnerAdminInvitationsByPartnerId({ partnerId: props.partnerId }).key,
+        queryFn: GetPartnerAdminInvitationsByPartnerId({ partnerId: props.partnerId }).service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const getPartnerAdminInvitationsByGetByPartnerId = useQuery({
+        queryKey: GetPartnerAdminInvitationsByGetByPartnerId({ partnerId: props.partnerId }).key,
+        queryFn: GetPartnerAdminInvitationsByGetByPartnerId({ partnerId: props.partnerId }).service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const deletePartnerAdminsByPartnerIAndUserId = useMutation({
+        mutationKey: DeletePartnerAdminsByPartnerIAndUserId().key,
+        mutationFn: DeletePartnerAdminsByPartnerIAndUserId().service,
+    })
+
+    const resendPartnerAdminInvitation = useMutation({
+        mutationKey: ResendPartnerAdminInvitation().key,
+        mutationFn: ResendPartnerAdminInvitation().service,
+    })
+
+    const deletePartnerAdminInvitation = useMutation({
+        mutationKey: DeletePartnerAdminInvitation().key,
+        mutationFn: DeletePartnerAdminInvitation().service,
+    })
+
+    const createPartnerAdminInvitation = useMutation({
+        mutationKey: CreatePartnerAdminInvitation().key,
+        mutationFn: CreatePartnerAdminInvitation().service,
+    })
+
     React.useEffect(() => {
-
-        const headers = getDefaultHeaders('GET');
-
-        fetch('/api/invitationstatuses', {
-            method: 'GET',
-            headers: headers,
+        getInvitationStatuses.refetch().then(res => {
+            setInvitationStatusList(res.data?.data || []);
         })
-            .then(response => response.json() as Promise<Array<any>>)
-            .then(data => {
-                setInvitationStatusList(data);
-            });
 
         if (props.isUserLoaded) {
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
-
-                const headers = getDefaultHeaders('GET');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/partneradmins/' + props.partnerId, {
-                    method: 'GET',
-                    headers: headers
+            getPartnerAdminsByPartnerId.refetch().then(partnerAdminsRes => {
+                setAdministrators(partnerAdminsRes.data?.data || []);
+                setIsPartnerAdminDataLoaded(true);
+                setIsPartnerAdminInvitationsDataLoaded(false);
+                getPartnerAdminInvitationsByPartnerId.refetch().then(partnerAdminInvitationsRes => {
+                    setPartnerAdminInvitations(partnerAdminInvitationsRes.data?.data || []);
+                    setIsPartnerAdminInvitationsDataLoaded(true);
+                    setIsEditOrAdd(false);
+                    setIsAddEnabled(true);
                 })
-                    .then(response => response.json() as Promise<UserData[]>)
-                    .then(data => {
-                        setAdministrators(data);
-                        setIsPartnerAdminDataLoaded(true);
-                    })
-                    .then(() => {
-                        setIsPartnerAdminInvitationsDataLoaded(false);
-                        var getHeaders = getDefaultHeaders("GET");
-                        getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                        fetch('/api/partneradmininvitations/' + props.partnerId, {
-                            method: 'GET',
-                            headers: getHeaders,
-                        })
-                            .then(response => response.json() as Promise<PartnerAdminInvitationData[]>)
-                            .then(data => {
-                                setPartnerAdminInvitations(data);
-                                setIsPartnerAdminInvitationsDataLoaded(true);
-                                setIsEditOrAdd(false);
-                                setIsAddEnabled(true);
-                            });
-                    });
             });
         }
     }, [props.currentUser, props.isUserLoaded, props.partnerId]);
 
     function removeUser(userId: string, email: string) {
-        if (!window.confirm("Please confirm that you want to remove user with email: '" + email + "' as a user from this Partner?"))
-            return;
+        if (!window.confirm("Please confirm that you want to remove user with email: '" + email + "' as a user from this Partner?")) return;
         else {
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
-
-                const headers = getDefaultHeaders('DELETE');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/partneradmins/' + props.partnerId + '/' + userId, {
-                    method: 'DELETE',
-                    headers: headers,
+            deletePartnerAdminsByPartnerIAndUserId.mutateAsync({ partnerId: props.partnerId, userId }).then(() => {
+                getPartnerAdminsByPartnerId.refetch().then(res => {
+                    setAdministrators(res.data?.data || []);
+                    setIsPartnerAdminDataLoaded(true);
                 })
-                    .then(() => {
-                        fetch('/api/partneradmins/' + props.partnerId, {
-                            method: 'GET',
-                            headers: headers
-                        })
-                            .then(response => response.json() as Promise<UserData[]>)
-                            .then(data => {
-                                setAdministrators(data);
-                                setIsPartnerAdminDataLoaded(true);
-                            })
-                    });
-            });
+            })
         }
     }
 
     function handleResendInvite(invitationId: string, email: string) {
-
-        if (!window.confirm("Please confirm you want to resend invite to user with Email: '" + email + "'")) {
-            return;
-        }
+        if (!window.confirm("Please confirm you want to resend invite to user with Email: '" + email + "'")) return;
         else {
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
-
-                const headers = getDefaultHeaders('POST');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-                fetch('/api/partneradmininvitations/resend/' + invitationId, {
-                    method: 'POST',
-                    headers: headers,
+            resendPartnerAdminInvitation.mutateAsync({ invitationId }).then(() => {
+                setIsPartnerAdminInvitationsDataLoaded(false);
+                getPartnerAdminInvitationsByGetByPartnerId.refetch().then(res => {
+                    setPartnerAdminInvitations(res.data?.data || []);
+                    setIsPartnerAdminInvitationsDataLoaded(true);
+                    setIsEditOrAdd(false);
+                    setIsAddEnabled(true);
                 })
-                    .then(() => {
-                        setIsPartnerAdminInvitationsDataLoaded(false);
-                        var getHeaders = getDefaultHeaders("GET");
-                        getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                        fetch('/api/partneradmininvitations/getbypartner/' + props.partnerId, {
-                            method: 'GET',
-                            headers: getHeaders,
-                        })
-                            .then(response => response.json() as Promise<PartnerAdminInvitationData[]>)
-                            .then(data => {
-                                setPartnerAdminInvitations(data);
-                                setIsPartnerAdminInvitationsDataLoaded(true);
-                                setIsEditOrAdd(false);
-                                setIsAddEnabled(true);
-                            });
-                    });
-            });
+            })
         }
     }
 
     function handleCancelInvite(invitationId: string, email: string) {
-
-        if (!window.confirm("Please confirm you want to cancel invite for user with Email: '" + email + "'")) {
-            return;
-        }
+        if (!window.confirm("Please confirm you want to cancel invite for user with Email: '" + email + "'")) return;
         else {
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
-
-                const headers = getDefaultHeaders('DELETE');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-                fetch('/api/partneradmininvitations/' + invitationId, {
-                    method: 'POST',
-                    headers: headers,
+            deletePartnerAdminInvitation.mutateAsync({ invitationId }).then(() => {
+                setIsPartnerAdminInvitationsDataLoaded(false);
+                getPartnerAdminInvitationsByGetByPartnerId.refetch().then(res => {
+                    setPartnerAdminInvitations(res.data?.data || []);
+                    setIsPartnerAdminInvitationsDataLoaded(true);
+                    setIsEditOrAdd(false);
+                    setIsAddEnabled(true);
                 })
-                    .then(() => {
-                        setIsPartnerAdminInvitationsDataLoaded(false);
-                        var getHeaders = getDefaultHeaders("GET");
-                        getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                        fetch('/api/partneradmininvitations/getbypartner/' + props.partnerId, {
-                            method: 'GET',
-                            headers: getHeaders,
-                        })
-                            .then(response => response.json() as Promise<PartnerAdminInvitationData[]>)
-                            .then(data => {
-                                setPartnerAdminInvitations(data);
-                                setIsPartnerAdminInvitationsDataLoaded(true);
-                                setIsEditOrAdd(false);
-                                setIsAddEnabled(true);
-                            });
-                    });
-            });
+            })
         }
     }
 
     function handleSendInvite(event: any) {
-
         event.preventDefault();
 
-        if (!isSendEnabled) {
-            return;
-        }
-
+        if (!isSendEnabled) return;
         setIsSaveEnabled(false);
 
-        if (!window.confirm("Please confirm you want to send an invitation to be an Administator for this Partner to: " + userEmail)) {
-            return;
-        }
+        if (!window.confirm("Please confirm you want to send an invitation to be an Administator for this Partner to: " + userEmail)) return;
         else {
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
+            const body = new PartnerAdminInvitationData();
+            body.partnerId = props.partnerId;
+            body.email = userEmail ?? "";
+            body.invitationStatusId = 1;
 
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            var partnerAdminInvitationData = new PartnerAdminInvitationData();
-            partnerAdminInvitationData.partnerId = props.partnerId;
-            partnerAdminInvitationData.email = userEmail ?? "";
-            partnerAdminInvitationData.invitationStatusId = 1;
-
-            var data = JSON.stringify(partnerAdminInvitationData);
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
-
-                const headers = getDefaultHeaders('POST');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-                fetch('/api/partneradmininvitations', {
-                    method: 'POST',
-                    body: data,
-                    headers: headers,
+            createPartnerAdminInvitation.mutateAsync(body).then(() => {
+                setIsPartnerAdminInvitationsDataLoaded(false);
+                getPartnerAdminInvitationsByPartnerId.refetch().then(res => {
+                    setPartnerAdminInvitations(res.data?.data || []);
+                    setIsPartnerAdminInvitationsDataLoaded(true);
+                    setIsEditOrAdd(false);
+                    setIsAddEnabled(true);
                 })
-                    .then(() => {
-                        setIsPartnerAdminInvitationsDataLoaded(false);
-                        var getHeaders = getDefaultHeaders("GET");
-                        getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                        fetch('/api/partneradmininvitations/' + props.partnerId, {
-                            method: 'GET',
-                            headers: getHeaders,
-                        })
-                            .then(response => response.json() as Promise<PartnerAdminInvitationData[]>)
-                            .then(data => {
-                                setPartnerAdminInvitations(data);
-                                setIsPartnerAdminInvitationsDataLoaded(true);
-                                setIsEditOrAdd(false);
-                                setIsAddEnabled(true);
-                            });
-                    });
-            });
+            })
         }
     }
 

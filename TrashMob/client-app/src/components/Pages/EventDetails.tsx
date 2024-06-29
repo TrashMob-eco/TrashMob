@@ -17,6 +17,9 @@ import moment from 'moment';
 import { RegisterBtn } from '../Customization/RegisterBtn';
 import { HeroSection } from '../Customization/HeroSection'
 import * as SharingMessages from '../../store/SharingMessages';
+import { useQuery } from '@tanstack/react-query';
+import { GetAllEvents, GetAllEventsBeingAttendedByUser, GetEventAttendees, GetEventById, GetEventTypes } from '../../services/events';
+import { Services } from '../../config/services.config';
 
 export interface DetailsMatchParams {
     eventId: string;
@@ -68,93 +71,75 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
         endsAt: moment(endDateTime).format()
     }
 
+    const getEventTypes = useQuery({ 
+        queryKey: GetEventTypes().key,
+        queryFn: GetEventTypes().service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const getEventAttendees = useQuery({ 
+        queryKey: GetEventAttendees({ eventId }).key,
+        queryFn: GetEventAttendees({ eventId }).service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const getEventById = useQuery({ 
+        queryKey: GetEventById({ eventId }).key,
+        queryFn: GetEventById({ eventId }).service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const getAllEventsBeingAttendedByUser = useQuery({ 
+        queryKey: GetAllEventsBeingAttendedByUser({ userId: currentUser.id }).key,
+        queryFn: GetAllEventsBeingAttendedByUser({ userId: currentUser.id }).service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
     useEffect(() => {
         window.scrollTo(0, 0);
 
-        const headers = getDefaultHeaders('GET');
-
-        fetch('/api/eventtypes', {
-            method: 'GET',
-            headers: headers,
+        getEventTypes.refetch().then((res) => {
+            setEventTypeList(res.data?.data || []);
         })
-            .then(response => response.json() as Promise<Array<any>>)
-            .then(data => {
-                setEventTypeList(data);
-            });
 
-        if (eventId != null) {
-            fetch('/api/eventattendees/' + eventId, {
-                method: 'GET',
-                headers: headers,
+        if (eventId !== null) {
+            getEventAttendees.refetch().then((res) => {
+                setUserList(res.data?.data || []);
             })
-                .then(response => response.json() as Promise<UserData[]>)
-                .then(data => {
-                    setUserList(data);
-                });
 
-            fetch('/api/Events/' + eventId, {
-                method: 'GET',
-                headers: headers
+            getEventById.refetch().then((res) => {
+                if (res.data === undefined) return;
+                setEventId(res.data.data.id);
+                setEventName(res.data.data.name);
+                setDescription(res.data.data.description);
+                setEventDate(new Date(res.data.data.eventDate));
+                setDurationHours(res.data.data.durationHours);
+                setDurationMinutes(res.data.data.durationMinutes);
+                setEventTypeId(res.data.data.eventTypeId);
+                setStreetAddress(res.data.data.streetAddress);
+                setCity(res.data.data.city);
+                setCountry(res.data.data.country);
+                setRegion(res.data.data.region);
+                setPostalCode(res.data.data.postalCode);
+                setLatitude(res.data.data.latitude);
+                setLongitude(res.data.data.longitude);
+                setCreatedById(res.data.data.createdByUserId);
+                setMaxNumberOfParticipants(res.data.data.maxNumberOfParticipants);
+                setCenter(new data.Position(res.data.data.longitude, res.data.data.latitude));
+                setEventToShare(res.data.data)
+                setIsDataLoaded(true);
+                setIsEventCompleted(new Date(res.data.data.eventDate) < new Date());
+            }).then(() => {
+                if (!isUserLoaded || !currentUser) return;
+                getAllEventsBeingAttendedByUser.refetch().then((eventsBeingAttendedRes) => {
+                    setMyAttendanceList(eventsBeingAttendedRes.data?.data || []);
+                    setIsUserEventDataLoaded(true);
+                })
             })
-                .then(response => response.json() as Promise<EventData>)
-                .then(eventData => {
-                    setEventId(eventData.id);
-                    setEventName(eventData.name);
-                    setDescription(eventData.description);
-                    setEventDate(new Date(eventData.eventDate));
-                    setDurationHours(eventData.durationHours);
-                    setDurationMinutes(eventData.durationMinutes);
-                    setEventTypeId(eventData.eventTypeId);
-                    setStreetAddress(eventData.streetAddress);
-                    setCity(eventData.city);
-                    setCountry(eventData.country);
-                    setRegion(eventData.region);
-                    setPostalCode(eventData.postalCode);
-                    setLatitude(eventData.latitude);
-                    setLongitude(eventData.longitude);
-                    setCreatedById(eventData.createdByUserId);
-                    setMaxNumberOfParticipants(eventData.maxNumberOfParticipants);
-                    setCenter(new data.Position(eventData.longitude, eventData.latitude));
-                    setEventToShare(eventData)
-                    setIsDataLoaded(true);
-                    setIsEventCompleted(new Date(eventData.eventDate) < new Date());
-                })
-                .then(() => {
-                    if (!isUserLoaded || !currentUser) {
-                        return;
-                    }
-
-                    // If the user is logged in, get the events they are attending
-                    const accounts = msalClient.getAllAccounts();
-                    var apiConfig = getApiConfig();
-
-                    if (accounts !== null && accounts.length > 0) {
-                        const request = {
-                            scopes: apiConfig.b2cScopes,
-                            account: accounts[0]
-                        };
-
-                        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-                            if (!validateToken(tokenResponse.idTokenClaims)) {
-                                return;
-                            }
-
-                            const headers = getDefaultHeaders('GET');
-                            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                            fetch('/api/events/eventsuserisattending/' + currentUser.id, {
-                                method: 'GET',
-                                headers: headers
-                            })
-                                .then(response => response.json() as Promise<EventData[]>)
-                                .then(data => {
-                                    setMyAttendanceList(data);
-                                    setIsUserEventDataLoaded(true);
-                                })
-                        });
-                    }
-                })
-
         }
 
         MapStore.getOption().then(opts => {
@@ -173,51 +158,17 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
     }, [isUserLoaded, currentUser, eventId, myAttendanceList, isUserEventDataLoaded]);
 
     useEffect(() => {
-        const headers = getDefaultHeaders('GET');
-        fetch('/api/eventattendees/' + eventId, {
-            method: 'GET',
-            headers: headers,
+        getEventAttendees.refetch().then(res => {
+            setUserList(res.data?.data || []);
         })
-            .then(response => response.json() as Promise<UserData[]>)
-            .then(data => {
-                setUserList(data);
-            });
     }, [eventId, myAttendanceList])
 
     const handleAttendanceChanged = () => {
-        if (!isUserLoaded || !currentUser) {
-            return;
-        }
-
-        // If the user is logged in, get the events they are attending
-        const accounts = msalClient.getAllAccounts();
-        var apiConfig = getApiConfig();
-
-        if (accounts !== null && accounts.length > 0) {
-            const request = {
-                scopes: apiConfig.b2cScopes,
-                account: accounts[0]
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
-
-                const headers = getDefaultHeaders('GET');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/events/eventsuserisattending/' + currentUser.id, {
-                    method: 'GET',
-                    headers: headers
-                })
-                    .then(response => response.json() as Promise<EventData[]>)
-                    .then(data => {
-                        setMyAttendanceList(data);
-                        setIsUserEventDataLoaded(true);
-                    })
-            });
-        }
+        if (!isUserLoaded || !currentUser) return;
+        getAllEventsBeingAttendedByUser.refetch().then(res => {
+            setMyAttendanceList(res.data?.data || []);
+            setIsUserEventDataLoaded(true);
+        })
     }
 
     const handleLocationChange = (point: data.Position) => {

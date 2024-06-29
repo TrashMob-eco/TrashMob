@@ -7,6 +7,8 @@ import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../s
 import { getEventType } from '../store/eventTypeHelper';
 import UserData from './Models/UserData';
 import { Button } from 'react-bootstrap';
+import { useMutation } from '@tanstack/react-query';
+import { DeleteEventAttendee } from '../services/events';
 
 interface UserEventsPropsType extends RouteComponentProps {
     eventList: EventData[];
@@ -19,34 +21,15 @@ interface UserEventsPropsType extends RouteComponentProps {
 
 export const UserEvents: React.FC<UserEventsPropsType> = (props) => {
 
+    const deleteEventAttendee = useMutation({
+        mutationKey: DeleteEventAttendee().key,
+        mutationFn: DeleteEventAttendee().service
+    })
+
     // Handle Remove request for an event
     function handleRemove(id: string, name: string) {
-        if (!window.confirm("Do you want to remove yourself from this event: " + name + "?"))
-            return;
-        else {
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
-
-                const headers = getDefaultHeaders('DELETE');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/EventAttendees/' + id + '/' + props.currentUser.id, {
-                    method: 'delete',
-                    headers: headers
-                }).then(() => { props.onEventListChanged(); })
-            });
-        }
+        if (!window.confirm("Do you want to remove yourself from this event: " + name + "?")) return;
+        else deleteEventAttendee.mutateAsync({ eventId: id, userId: props.currentUser.id }).then(() => props.onEventListChanged());
     }
 
     function renderEventsTable(events: EventData[]) {

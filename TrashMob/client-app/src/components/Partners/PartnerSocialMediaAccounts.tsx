@@ -8,6 +8,9 @@ import SocialMediaAccountTypeData from '../Models/SocialMediaAccountTypeData';
 import PartnerSocialMediaAccountData from '../Models/PartnerSocialMediaAccountData';
 import { getSocialMediaAccountType } from '../../store/socialMediaAccountTypeHelper';
 import { Pencil, XSquare } from 'react-bootstrap-icons';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { CreatePartnerSocialMediaAccount, DeletePartnerSocialMediaAccountById, GetPartnerSocialMediaAccount, GetPartnerSocialMediaAccountsByPartnerId, GetSocialMediaAccountTypes, UpdatePartnerSocialMediaAccount } from '../../services/social-media';
+import { Services } from '../../config/services.config';
 
 export interface PartnerSocialMediaAccountsDataProps {
     partnerId: string;
@@ -32,46 +35,50 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
     const [isAddEnabled, setIsAddEnabled] = React.useState<boolean>(true);
 
+    const getSocialMediaAccountTypes = useQuery({
+        queryKey: GetSocialMediaAccountTypes().key,
+        queryFn: GetSocialMediaAccountTypes().service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const getPartnerSocialMediaAccountsByPartnerId = useQuery({
+        queryKey: GetPartnerSocialMediaAccountsByPartnerId({ partnerId: props.partnerId }).key,
+        queryFn: GetPartnerSocialMediaAccountsByPartnerId({ partnerId: props.partnerId }).service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const getPartnerSocialMediaAccount = useMutation({
+        mutationKey: GetPartnerSocialMediaAccount().key,
+        mutationFn: GetPartnerSocialMediaAccount().service
+    })
+
+    const createPartnerSocialMediaAccount = useMutation({
+        mutationKey: CreatePartnerSocialMediaAccount().key,
+        mutationFn: CreatePartnerSocialMediaAccount().service
+    })
+
+    const updatePartnerSocialMediaAccount = useMutation({
+        mutationKey: UpdatePartnerSocialMediaAccount().key,
+        mutationFn: UpdatePartnerSocialMediaAccount().service
+    })
+
+    const deletePartnerSocialMediaAccountById = useMutation({
+        mutationKey: DeletePartnerSocialMediaAccountById().key,
+        mutationFn: DeletePartnerSocialMediaAccountById().service
+    })
+
     React.useEffect(() => {
-
-        const headers = getDefaultHeaders('GET');
-
-        fetch('/api/socialmediaaccounttypes', {
-            method: 'GET',
-            headers: headers,
+        getSocialMediaAccountTypes.refetch().then(res => {
+            setSocialMediaAccountTypeList(res.data?.data || []);
         })
-            .then(response => response.json() as Promise<Array<any>>)
-            .then(data => {
-                setSocialMediaAccountTypeList(data);
-            });
 
         if (props.isUserLoaded && props.partnerId && props.partnerId !== Guid.EMPTY) {
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
-
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/partnersocialmediaaccounts/getbypartner/' + props.partnerId, {
-                    method: 'GET',
-                    headers: headers,
-                })
-                    .then(response => response.json() as Promise<PartnerSocialMediaAccountData[]>)
-                    .then(data => {
-                        setSocialMediaAccounts(data);
-                        setIsSocialMediaAccountDataLoaded(true);
-                    });
-            });
+            getPartnerSocialMediaAccountsByPartnerId.refetch().then(res => {
+                setSocialMediaAccounts(res.data?.data || []);
+                setIsSocialMediaAccountDataLoaded(true);
+            })
         }
     }, [props.partnerId, props.isUserLoaded])
 
@@ -95,150 +102,56 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
     }
 
     function editAccount(partnerAccountId: string) {
-        const account = msalClient.getAllAccounts()[0];
-        var apiConfig = getApiConfig();
-
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-            if (!validateToken(tokenResponse.idTokenClaims)) {
-                return;
-            }
-
-            const headers = getDefaultHeaders('GET');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch('/api/partnersocialmediaaccounts/' + partnerAccountId, {
-                method: 'GET',
-                headers: headers,
-            })
-                .then(response => response.json() as Promise<PartnerSocialMediaAccountData>)
-                .then(data => {
-                    setSocialMediaAccountId(data.id);
-                    setAccountName(data.accountIdentifier);
-                    setSocialMediaAccountTypeId(data.socialMediaAccountTypeId);
-                    setIsActive(data.isActive);
-                    setCreatedByUserId(data.createdByUserId);
-                    setCreatedDate(new Date(data.createdDate));
-                    setLastUpdatedDate(new Date(data.lastUpdatedDate));
-                    setIsEditOrAdd(true);
-                    setIsAddEnabled(false);
-                });
-        });
+        getPartnerSocialMediaAccount.mutateAsync({ partnerAccountId }).then(res => {
+            setSocialMediaAccountId(res.data.id);
+            setAccountName(res.data.accountIdentifier);
+            setSocialMediaAccountTypeId(res.data.socialMediaAccountTypeId);
+            setIsActive(res.data.isActive);
+            setCreatedByUserId(res.data.createdByUserId);
+            setCreatedDate(new Date(res.data.createdDate));
+            setLastUpdatedDate(new Date(res.data.lastUpdatedDate));
+            setIsEditOrAdd(true);
+            setIsAddEnabled(false);
+        })
     }
 
     function removeAccount(accountId: string, accountName: string) {
-        if (!window.confirm("Please confirm that you want to remove social media account with name: '" + accountName + "' as a social media account from this Partner?"))
-            return;
+        if (!window.confirm("Please confirm that you want to remove social media account with name: '" + accountName + "' as a social media account from this Partner?")) return;
         else {
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
-
-                const headers = getDefaultHeaders('DELETE');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/partnersocialmediaaccounts/' + accountId, {
-                    method: 'DELETE',
-                    headers: headers,
+            deletePartnerSocialMediaAccountById.mutateAsync({ accountId }).then(() => {
+                setIsSocialMediaAccountDataLoaded(false);
+                getPartnerSocialMediaAccountsByPartnerId.refetch().then(res => {
+                    setSocialMediaAccounts(res.data?.data || []);
+                    setIsSocialMediaAccountDataLoaded(true);
                 })
-                    .then(() => {
-                        setIsSocialMediaAccountDataLoaded(false);
-
-                        fetch('/api/partnersocialmediaaccounts/getbypartner/' + props.partnerId, {
-                            method: 'GET',
-                            headers: headers,
-                        })
-                            .then(response => response.json() as Promise<PartnerSocialMediaAccountData[]>)
-                            .then(data => {
-                                setSocialMediaAccounts(data);
-                                setIsSocialMediaAccountDataLoaded(true);
-                            });
-                    })
             });
         }
     }
 
-    function handleSave(event: any) {
-
+    async function handleSave(event: any) {
         event.preventDefault();
 
-        if (!isSaveEnabled) {
-            return;
-        }
-
+        if (!isSaveEnabled) return;
         setIsSaveEnabled(false);
 
-        const account = msalClient.getAllAccounts()[0];
-        var apiConfig = getApiConfig();
+        const body = new PartnerSocialMediaAccountData();
+        body.id = socialMediaAccountId;
+        body.partnerId = props.partnerId;
+        body.accountIdentifier = accountName;
+        body.isActive = isActive;
+        body.socialMediaAccountTypeId = socialMediaAccountTypeId ?? 0;
+        body.createdByUserId = createdByUserId;
 
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
+        if (socialMediaAccountId === Guid.EMPTY) await createPartnerSocialMediaAccount.mutateAsync(body);
+        else await updatePartnerSocialMediaAccount.mutateAsync(body);
 
-        var socialMediaAccountData = new PartnerSocialMediaAccountData();
-        socialMediaAccountData.id = socialMediaAccountId;
-        socialMediaAccountData.partnerId = props.partnerId;
-        socialMediaAccountData.accountIdentifier = accountName;
-        socialMediaAccountData.isActive = isActive;
-        socialMediaAccountData.socialMediaAccountTypeId = socialMediaAccountTypeId ?? 0;
-        socialMediaAccountData.createdByUserId = createdByUserId;
-
-        var data = JSON.stringify(socialMediaAccountData);
-
-        var method = "PUT";
-
-        if (socialMediaAccountId === Guid.EMPTY) {
-            method = "POST";
-        }
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-            if (!validateToken(tokenResponse.idTokenClaims)) {
-                return;
-            }
-
-            const headers = getDefaultHeaders(method);
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch('/api/partnersocialmediaaccounts', {
-                method: method,
-                headers: headers,
-                body: data,
-            })
-                .then(() => {
-                    setIsEditOrAdd(false);
-                    setIsSocialMediaAccountDataLoaded(false);
-                    var getHeaders = getDefaultHeaders("GET");
-                    getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                    fetch('/api/partnersocialmediaaccounts/getbypartner/' + props.partnerId, {
-                        method: 'GET',
-                        headers: getHeaders,
-                    })
-                        .then(response => response.json() as Promise<PartnerSocialMediaAccountData[]>)
-                        .then(data => {
-                            setSocialMediaAccounts(data);
-                            setIsSocialMediaAccountDataLoaded(true);
-                            setIsEditOrAdd(false);
-                            setIsAddEnabled(true);
-                        });
-                });
+        setIsEditOrAdd(false);
+        setIsSocialMediaAccountDataLoaded(false);
+        getPartnerSocialMediaAccountsByPartnerId.refetch().then(res => {
+            setSocialMediaAccounts(res.data?.data || []);
+            setIsSocialMediaAccountDataLoaded(true);
+            setIsEditOrAdd(false);
+            setIsAddEnabled(true);
         });
     }
 

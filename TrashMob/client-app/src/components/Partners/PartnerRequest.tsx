@@ -14,6 +14,9 @@ import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import AddressData from '../Models/AddressData';
 import MapControllerSinglePointNoEvents from '../MapControllerSinglePointNoEvent';
 import PhoneInput from 'react-phone-input-2'
+import { useMutation } from '@tanstack/react-query';
+import { CreatePartnerRequest } from '../../services/partners';
+import { AzureMapSearchAddressReverse } from '../../services/maps';
 
 interface PartnerRequestProps extends RouteComponentProps<any> {
     mode: string;
@@ -46,6 +49,16 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
     const [title, setTitle] = React.useState<string>("Apply to become a partner");
     const [mode, setMode] = React.useState<string>("");
+
+    const createPartnerRequest = useMutation({
+        mutationKey: CreatePartnerRequest().key,
+        mutationFn: CreatePartnerRequest().service
+    })
+
+    const azureMapSearchAddressReverse = useMutation({
+        mutationKey: AzureMapSearchAddressReverse().key,
+        mutationFn: AzureMapSearchAddressReverse().service
+    }); 
 
     React.useEffect(() => {
 
@@ -91,56 +104,29 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     function handleSave(event: any) {
         event.preventDefault();
 
-        if (!isSaveEnabled) {
-            return;
-        }
-
+        if (!isSaveEnabled) return;
         setIsSaveEnabled(false);
 
-        var partnerRequestData = new PartnerRequestData();
-        partnerRequestData.name = name ?? "";
-        partnerRequestData.email = email ?? "";
-        partnerRequestData.phone = phone ?? "";
-        partnerRequestData.website = website ?? "";
-        partnerRequestData.partnerRequestStatusId = Constants.PartnerRequestStatusSent;
-        partnerRequestData.notes = notes ?? "";
-        partnerRequestData.streetAddress = streetAddress ?? "";
-        partnerRequestData.city = city ?? "";
-        partnerRequestData.region = region ?? "";
-        partnerRequestData.country = country ?? "";
-        partnerRequestData.latitude = latitude ?? 0;
-        partnerRequestData.longitude = longitude ?? 0;
-        partnerRequestData.createdByUserId = props.currentUser.id;
-        partnerRequestData.partnerTypeId = partnerTypeId;
-        partnerRequestData.isBecomeAPartnerRequest = (mode !== 'send')
+        const body = new PartnerRequestData();
+        body.name = name ?? "";
+        body.email = email ?? "";
+        body.phone = phone ?? "";
+        body.website = website ?? "";
+        body.partnerRequestStatusId = Constants.PartnerRequestStatusSent;
+        body.notes = notes ?? "";
+        body.streetAddress = streetAddress ?? "";
+        body.city = city ?? "";
+        body.region = region ?? "";
+        body.country = country ?? "";
+        body.latitude = latitude ?? 0;
+        body.longitude = longitude ?? 0;
+        body.createdByUserId = props.currentUser.id;
+        body.partnerTypeId = partnerTypeId;
+        body.isBecomeAPartnerRequest = (mode !== 'send')
 
-        var data = JSON.stringify(partnerRequestData);
-
-        const account = msalClient.getAllAccounts()[0];
-        var apiConfig = getApiConfig();
-
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-            if (!validateToken(tokenResponse.idTokenClaims)) {
-                return;
-            }
-
-            const headers = getDefaultHeaders('POST');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch('/api/PartnerRequests', {
-                method: 'POST',
-                body: data,
-                headers: headers,
-            }).then(() => {
-                props.history.push("/");
-            })
-        });
+        createPartnerRequest.mutateAsync(body).then(res => {
+            props.history.push("/");
+        })
     }
 
     // This will handle Cancel button click event.  
@@ -247,28 +233,17 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         }
     }
 
-    function handleLocationChange(point: data.Position) {
-        // In an Azure Map point, the longitude is the first position, and latitude is second
+    async function handleLocationChange(point: data.Position) {
         setLatitude(point[1]);
         setLongitude(point[0]);
-        var locationString = point[1] + ',' + point[0]
-        var headers = getDefaultHeaders('GET');
-
-        MapStore.getKey()
-            .then(key => {
-                fetch('https://atlas.microsoft.com/search/address/reverse/json?subscription-key=' + key + '&api-version=1.0&query=' + locationString, {
-                    method: 'GET',
-                    headers: headers
-                })
-                    .then(response => response.json() as Promise<AddressData>)
-                    .then(data => {
-                        setStreetAddress(data.addresses[0].address.streetNameAndNumber);
-                        setCity(data.addresses[0].address.municipality);
-                        setCountry(data.addresses[0].address.country);
-                        setRegion(data.addresses[0].address.countrySubdivisionName);
-                        setPostalCode(data.addresses[0].address.postalCode);
-                    })
-            })
+        const azureKey = await MapStore.getKey();
+        azureMapSearchAddressReverse.mutateAsync({ azureKey, lat: point[1], long: point[0] }).then(res => {
+            setStreetAddress(res.data.addresses[0].address.streetNameAndNumber);
+            setCity(res.data.addresses[0].address.municipality);
+            setCountry(res.data.addresses[0].address.country);
+            setRegion(res.data.addresses[0].address.countrySubdivisionName);
+            setPostalCode(res.data.addresses[0].address.postalCode);
+        })
     }
 
     function createFormDescriptionContent() {

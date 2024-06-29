@@ -4,6 +4,9 @@ import UserData from '../Models/UserData';
 import { Guid } from 'guid-typescript';
 import { Container, Dropdown } from 'react-bootstrap';
 import { ThreeDots } from 'react-bootstrap-icons';
+import { useQuery } from '@tanstack/react-query';
+import { GetEventAttendees } from '../../services/events';
+import { Services } from '../../config/services.config';
 
 export interface ManageEventAttendeesProps {
     eventId: string;
@@ -38,35 +41,19 @@ export const ManageEventAttendees: React.FC<ManageEventAttendeesProps> = (props)
     //    setModalDescription("Maybe I want to send a specific message out to all the attendees. Maybe it’s reminding them of what clothes to wear, that the event time changed, etc. ")
     //}
 
+    const getEventAttendees = useQuery({ 
+        queryKey: GetEventAttendees({ eventId: props.eventId }).key,
+        queryFn: GetEventAttendees({ eventId: props.eventId }).service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
     React.useEffect(() => {
         if (props.isUserLoaded && props.eventId && props.eventId !== Guid.EMPTY) {
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
-
-                const headers = getDefaultHeaders('GET');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/eventattendees/' + props.eventId, {
-                    method: 'GET',
-                    headers: headers,
-                })
-                    .then(response => response.json() as Promise<UserData[]>)
-                    .then(data => {
-                        setEventAttendees(data);
-                        setIsEventAttendeeDataLoaded(true);
-                    });
-            });
+            getEventAttendees.refetch().then(res => {
+                setEventAttendees(res.data?.data || []);
+                setIsEventAttendeeDataLoaded(true);  
+            })
         }
     }, [props.eventId, props.isUserLoaded])
 

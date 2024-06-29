@@ -9,6 +9,8 @@ import { HtmlMarkerLayer } from './HtmlMarkerLayer/src/layer/HtmlMarkerLayer'
 import { AsyncTypeahead } from 'react-bootstrap-typeahead';
 import { getDefaultHeaders } from '../store/AuthStore';
 import SearchAddressData from './Models/SearchAddressData';
+import { useMutation } from '@tanstack/react-query';
+import { AzureMapSearchAddress } from '../services/maps';
 
 interface MapControllerProps {
     mapOptions: IAzureMapOptions | undefined
@@ -33,6 +35,11 @@ export const MapControllerSinglePointNoEvent: React.FC<MapControllerProps> = (pr
     const [query, setQuery] = React.useState('');
     const mapKeyRef = React.useRef('');
     const [isPrevLoaded, setIsPrevLoaded] = React.useState<boolean>(false);
+
+    const azureMapSearchAddress = useMutation({
+        mutationKey: AzureMapSearchAddress().key,
+        mutationFn: AzureMapSearchAddress().service,
+    });
 
     const handleInputChange = (q: string) => {
         setQuery(q);
@@ -185,25 +192,11 @@ export const MapControllerSinglePointNoEvent: React.FC<MapControllerProps> = (pr
         // eslint-disable-next-line
     }, []);
 
-    function makeAndHandleRequest(query: string, page: number = 1) {
-
-        var headers = getDefaultHeaders('GET');
-
-        return fetch('https://atlas.microsoft.com/search/address/json?typeahead=true&subscription-key=' + mapKeyRef.current + '&api-version=1.0&query=' + query, {
-            method: 'GET',
-            mode: 'cors',
-            headers: headers
-        })
-            .then((resp) => resp.json() as Promise<SearchAddressData>)
-            .then((addressData) => {
-                const options = addressData.results.map((i: any) => ({
-                    id: i.id,
-                    displayAddress: i.address.freeformAddress,
-                    position: i.position,
-                }));
-                const totalResults = addressData.summary.totalResults;
-                return { options, totalResults };
-            });
+    async function makeAndHandleRequest(query: string, page: number = 1) {
+        const res = await azureMapSearchAddress.mutateAsync({ azureKey: mapKeyRef.current, query });
+        const options = res.data.results.map((i: any) => ({ id: i.id, displayAddress: i.address.freeformAddress, position: i.position }));
+        const totalResults = res.data.summary.totalResults;
+        return { options, totalResults };
     }
 
     function handleSelectedChanged(val: any) {

@@ -16,9 +16,13 @@ import { Guid } from 'guid-typescript';
 import MapControllerSinglePoint from '../MapControllerSinglePoint';
 import { RouteComponentProps } from 'react-router-dom';
 import { CurrentTrashMobWaiverVersion } from '../Waivers/Waivers';
-import WaiverData from '../Models/WaiverData';
 import moment from 'moment';
 import { EventStatusActive } from '../Models/Constants';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { CreateEvent, GetEventById, GetEventTypes, UpdateEvent } from '../../services/events';
+import { Services } from '../../config/services.config';
+import { GetTrashMobWaivers } from '../../services/waivers';
+import { AzureMapSearchAddressReverse } from '../../services/maps';
 
 export interface EditEventProps extends RouteComponentProps {
     eventId: string;
@@ -61,71 +65,85 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     // const [title, setTitle] = React.useState<string>("Create Event");
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
 
+    const getEventTypes = useQuery({ 
+        queryKey: GetEventTypes().key,
+        queryFn: GetEventTypes().service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const getEventById = useQuery({ 
+        queryKey: GetEventById({ eventId }).key,
+        queryFn: GetEventById({ eventId }).service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const getTrashMobWaivers = useQuery({ 
+        queryKey: GetTrashMobWaivers().key,
+        queryFn: GetTrashMobWaivers().service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const createEvent = useMutation({
+        mutationKey: CreateEvent().key,
+        mutationFn: CreateEvent().service
+    })
+
+    const updateEvent = useMutation({
+        mutationKey: UpdateEvent().key,
+        mutationFn: UpdateEvent().service
+    })
+
+    const azureMapSearchAddressReverse = useMutation({
+        mutationKey: AzureMapSearchAddressReverse().key,
+        mutationFn: AzureMapSearchAddressReverse().service
+    })
+
     React.useEffect(() => {
-        const headers = getDefaultHeaders('GET');
-
-        fetch('/api/eventtypes', {
-            method: 'GET',
-            headers: headers
-        })
-            .then(response => response.json() as Promise<Array<any>>)
-            .then(data => {
-                setEventTypeList(data);
-            })
-            .then(() => {
-                // This will set state for Edit Event  
-                if (eventId !== null && eventId !== "" && eventId !== Guid.EMPTY) {
-                    // setTitle("Edit Event");
-                    fetch('/api/Events/' + eventId, {
-                        method: 'GET',
-                        headers: headers
-                    })
-                        .then(response => response.json() as Promise<EventData>)
-                        .then(eventData => {
-                            setEventId(eventData.id);
-                            setEventName(eventData.name);
-                            setDescription(eventData.description);
-                            setEventDate(new Date(eventData.eventDate));
-                            setAbsTime(new Date(eventData.eventDate));
-                            setEventTime(new Date(eventData.eventDate).toTimeString());
-                            setDurationHours(eventData.durationHours);
-                            setDurationMinutes(eventData.durationMinutes);
-                            setEventTypeId(eventData.eventTypeId);
-                            setStreetAddress(eventData.streetAddress);
-                            setCity(eventData.city);
-                            setCountry(eventData.country);
-                            setRegion(eventData.region);
-                            setPostalCode(eventData.postalCode);
-                            setLatitude(eventData.latitude);
-                            setLongitude(eventData.longitude);
-                            setMaxNumberOfParticipants(eventData.maxNumberOfParticipants);
-                            setIsEventPublic(eventData.isEventPublic);
-                            setCreatedByUserId(eventData.createdByUserId);
-                            setEventStatusId(eventData.eventStatusId);
-                            setCenter(new data.Position(eventData.longitude, eventData.latitude));
-                            setIsDataLoaded(true);
-                        });
-                }
-            });
-
-        if (eventId === Guid.EMPTY) {
-
-            fetch('/api/waivers/trashmob', {
-                method: 'GET',
-                headers: headers
-            })
-                .then(response => response.json() as Promise<WaiverData>)
-                .then(data => {
-
-                    // Have user sign waiver if needed
-                    const isTrashMobWaiverOutOfDate = (new Date(props.currentUser.dateAgreedToTrashMobWaiver)).toISOString() < CurrentTrashMobWaiverVersion.versionDate.toISOString();
-                    if (data.isWaiverEnabled && (isTrashMobWaiverOutOfDate || (props.currentUser.trashMobWaiverVersion === ""))) {
-                        sessionStorage.setItem('targetUrl', window.location.pathname);
-                        props.history.push("/waivers");
-                    }
-
+        getEventTypes.refetch().then((res) => {
+            setEventTypeList(res.data?.data || []);
+            // This will set state for Edit Event  
+            if (eventId !== null && eventId !== "" && eventId !== Guid.EMPTY) {
+                getEventById.refetch().then((res) => {
+                    if (res.data === undefined) return
+                    setEventId(res.data.data.id);
+                    setEventName(res.data.data.name);
+                    setDescription(res.data.data.description);
+                    setEventDate(new Date(res.data.data.eventDate));
+                    setAbsTime(new Date(res.data.data.eventDate));
+                    setEventTime(new Date(res.data.data.eventDate).toTimeString());
+                    setDurationHours(res.data.data.durationHours);
+                    setDurationMinutes(res.data.data.durationMinutes);
+                    setEventTypeId(res.data.data.eventTypeId);
+                    setStreetAddress(res.data.data.streetAddress);
+                    setCity(res.data.data.city);
+                    setCountry(res.data.data.country);
+                    setRegion(res.data.data.region);
+                    setPostalCode(res.data.data.postalCode);
+                    setLatitude(res.data.data.latitude);
+                    setLongitude(res.data.data.longitude);
+                    setMaxNumberOfParticipants(res.data.data.maxNumberOfParticipants);
+                    setIsEventPublic(res.data.data.isEventPublic);
+                    setCreatedByUserId(res.data.data.createdByUserId);
+                    setEventStatusId(res.data.data.eventStatusId);
+                    setCenter(new data.Position(res.data.data.longitude, res.data.data.latitude));
                     setIsDataLoaded(true);
                 })
+            }
+        })
+
+        if (eventId === Guid.EMPTY) {
+            getTrashMobWaivers.refetch().then((res) => {
+                // Have user sign waiver if needed
+                const isTrashMobWaiverOutOfDate = (new Date(props.currentUser.dateAgreedToTrashMobWaiver)).toISOString() < CurrentTrashMobWaiverVersion.versionDate.toISOString();
+                if (res.data?.data.isWaiverEnabled && (isTrashMobWaiverOutOfDate || (props.currentUser.trashMobWaiverVersion === ""))) {
+                    sessionStorage.setItem('targetUrl', window.location.pathname);
+                    props.history.push("/waivers");
+                }
+                setIsDataLoaded(true);
+            })
         }
 
         MapStore.getOption().then(opts => {
@@ -216,29 +234,17 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         }
     }
 
-    function handleLocationChange(point: data.Position) {
-        // In an Azure Map point, the longitude is the first position, and latitude is second
+    async function handleLocationChange(point: data.Position) {
         setLatitude(point[1]);
         setLongitude(point[0]);
-        var locationString = point[1] + ',' + point[0]
-        var headers = getDefaultHeaders('GET');
-
-        getKey()
-            .then(key => {
-                fetch('https://atlas.microsoft.com/search/address/reverse/json?subscription-key=' + key + '&api-version=1.0&query=' + locationString, {
-                    method: 'GET',
-                    headers: headers
-                })
-                    .then(response => response.json() as Promise<AddressData>)
-                    .then(data => {
-                        setStreetAddress(data.addresses[0].address.streetNameAndNumber);
-                        setCity(data.addresses[0].address.municipality);
-                        setCountry(data.addresses[0].address.country);
-                        setRegion(data.addresses[0].address.countrySubdivisionName);
-                        setPostalCode(data.addresses[0].address.postalCode);
-                    })
-            }
-            )
+        const azureKey = await getKey();
+        azureMapSearchAddressReverse.mutateAsync({ azureKey, lat: point[1], long: point[0] }).then((res) => {
+            setStreetAddress(res.data.addresses[0].address.streetNameAndNumber);
+            setCity(res.data.addresses[0].address.municipality);
+            setCountry(res.data.addresses[0].address.country);
+            setRegion(res.data.addresses[0].address.countrySubdivisionName);
+            setPostalCode(res.data.addresses[0].address.postalCode);
+        })
     }
 
     function handleEventDateChanged(passedDate: string) {
@@ -328,70 +334,35 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     }
 
     // This will handle the submit form event.  
-    function handleSave(event: any) {
-
+    async function handleSave(event: any) {
         event.preventDefault();
-
-        if (!isSaveEnabled) {
-            return;
-        }
+        if (!isSaveEnabled) return;
 
         setIsSaveEnabled(false);
 
-        var eventData = new EventData();
-        var method = "POST";
+        const body = new EventData();
+        body.name = eventName ?? "";
+        body.description = description ?? "";
+        body.eventDate = new Date(absTime);
+        body.durationHours = durationHours ?? 2;
+        body.durationMinutes = durationMinutes ?? 0;
+        body.eventTypeId = eventTypeId ?? 0;
+        body.streetAddress = streetAddress ?? "";
+        body.city = city ?? "";
+        body.region = region ?? "";
+        body.country = country ?? "";
+        body.postalCode = postalCode ?? "";
+        body.latitude = latitude ?? 0;
+        body.longitude = longitude ?? 0;
+        body.maxNumberOfParticipants = maxNumberOfParticipants ?? 0;
+        body.isEventPublic = isEventPublic;
+        body.createdByUserId = createdByUserId ?? props.currentUser.id;
+        body.eventStatusId = eventStatusId;
 
-        if (eventId && eventId !== Guid.EMPTY) {
-            eventData.id = eventId;
-            method = "PUT";
-        }
+        if (eventId && eventId !== Guid.EMPTY) await updateEvent.mutateAsync({ ...body, id: eventId });
+        else await createEvent.mutateAsync(body);
 
-        eventData.name = eventName ?? "";
-        eventData.description = description ?? "";
-        eventData.eventDate = new Date(absTime);
-        eventData.durationHours = durationHours ?? 2;
-        eventData.durationMinutes = durationMinutes ?? 0;
-        eventData.eventTypeId = eventTypeId ?? 0;
-        eventData.streetAddress = streetAddress ?? "";
-        eventData.city = city ?? "";
-        eventData.region = region ?? "";
-        eventData.country = country ?? "";
-        eventData.postalCode = postalCode ?? "";
-        eventData.latitude = latitude ?? 0;
-        eventData.longitude = longitude ?? 0;
-        eventData.maxNumberOfParticipants = maxNumberOfParticipants ?? 0;
-        eventData.isEventPublic = isEventPublic;
-        eventData.createdByUserId = createdByUserId ?? props.currentUser.id;
-        eventData.eventStatusId = eventStatusId;
-
-        var evtdata = JSON.stringify(eventData);
-
-        // PUT request for Edit Event.  
-        const account = msalClient.getAllAccounts()[0];
-        var apiConfig = getApiConfig();
-
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        return msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-            if (!validateToken(tokenResponse.idTokenClaims)) {
-                return;
-            }
-
-            const headers = getDefaultHeaders(method);
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch('/api/Events', {
-                method: method,
-                headers: headers,
-                body: evtdata,
-            }).then(() => {
-                props.onEditSave();
-            });
-        })
+        props.onEditSave();
     }
 
     const dateForPicker = (dateString: Date) => {

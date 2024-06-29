@@ -1,7 +1,6 @@
 import * as React from 'react'
 import UserData from './Models/UserData';
 import { Button, Col, Container, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
-import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from './../store/AuthStore';
 import * as ToolTips from "./../store/ToolTips";
 import EventSummaryData from './Models/EventSummaryData';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
@@ -10,6 +9,9 @@ import { PickupLocations } from './PickupLocations';
 import { SocialsModal } from './EventManagement/ShareToSocialsModal';
 import { Guid } from 'guid-typescript';
 import * as SharingMessages from "./../store/SharingMessages";
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { CreateEventSummary, GetEventById, GetEventSummaryById, UpdateEventSummary } from '../services/events';
+import { Services } from '../config/services.config';
 
 export interface EventSummaryMatchParams {
     eventId: string;
@@ -42,52 +44,50 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
     const [showModal, setShowSocialsModal] = React.useState<boolean>(false);
     const [eventToShare, setEventToShare] = React.useState<EventData>();
 
+    const getEventById = useQuery({
+        queryKey: GetEventById({ eventId: loadedEventId }).key,
+        queryFn: GetEventById({ eventId: loadedEventId }).service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const getEventSummaryById = useQuery({ 
+        queryKey: GetEventSummaryById({ eventId: loadedEventId }).key,
+        queryFn: GetEventSummaryById({ eventId: loadedEventId }).service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const createEventSummary = useMutation({
+        mutationKey: CreateEventSummary().key,
+        mutationFn: CreateEventSummary().service,
+    });
+
+    const updateEventSummary = useMutation({
+        mutationKey: UpdateEventSummary().key,
+        mutationFn: UpdateEventSummary().service,
+    });
+
     React.useEffect(() => {
-
         window.scrollTo(0, 0);
+        getEventById.refetch().then(res => {
+            if (res.data === undefined) return;
+            setEventName(res.data.data.name);
+            setEventDate(new Date(res.data.data.eventDate));
+            setEventToShare(res.data.data)
+            if (res.data.data.createdByUserId === props.currentUser.id) setIsOwner(true);
+        });
 
-        const headers = getDefaultHeaders('GET');
-
-        fetch('/api/Events/' + loadedEventId, {
-            method: 'GET',
-            headers: headers
+        getEventSummaryById.refetch().then(res => {
+            if (res.data === undefined) return;
+            setActualNumberOfAttendees(res.data.data.actualNumberOfAttendees);
+            setCreatedByUserId(res.data.data.createdByUserId);
+            setCreatedDate(new Date(res.data.data.createdDate));
+            setDurationInMinutes(res.data.data.durationInMinutes);
+            setNotes(res.data.data.notes);
+            setNumberOfBags(res.data.data.numberOfBags);
+            setNumberOfBuckets(res.data.data.numberOfBuckets);
         })
-            .then(response => response.json() as Promise<EventData>)
-            .then(eventData => {
-                setEventName(eventData.name);
-                setEventDate(new Date(eventData.eventDate));
-                setEventToShare(eventData)
-                if (eventData.createdByUserId === props.currentUser.id) {
-                    setIsOwner(true);
-                }
-            })
-            .then(() => {
-                fetch('/api/eventsummaries/' + loadedEventId, {
-                    method: 'GET',
-                    headers: headers,
-                })
-                    .then(response => {
-                        if (response.status === 200) {
-                            return response.json() as Promise<EventSummaryData>;
-                        }
-                        else {
-                            throw Error(response.statusText);
-                        }
-                    })
-                    .then(data => {
-                        setActualNumberOfAttendees(data.actualNumberOfAttendees);
-                        setCreatedByUserId(data.createdByUserId);
-                        setCreatedDate(new Date(data.createdDate));
-                        setDurationInMinutes(data.durationInMinutes);
-                        setNotes(data.notes);
-                        setNumberOfBags(data.numberOfBags);
-                        setNumberOfBuckets(data.numberOfBuckets);
-                    })
-                    .catch((error) => {
-                    });
-            })
-            .catch((error) => {
-            });
     }, [loadedEventId, props.currentUser.id]);
 
     React.useEffect(() => {
@@ -101,58 +101,23 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
 
     // This will handle the submit form event.  
     function handleSave(event: any) {
-
         event.preventDefault();
-
-        if (!isSaveEnabled) {
-            return;
-        }
-
+        
+        if (!isSaveEnabled) return;
         setIsSaveEnabled(false);
 
-        var method = 'POST';
+        const body = new EventSummaryData();
+        body.eventId = loadedEventId;
+        body.actualNumberOfAttendees = actualNumberOfAttendees;
+        body.numberOfBags = numberOfBags;
+        body.numberOfBuckets = numberOfBuckets;
+        body.durationInMinutes = durationInMinutes;
+        body.notes = notes ?? "";
+        body.createdByUserId = createdByUserId ?? props.currentUser.id;
+        body.createdDate = createdDate;
 
-        if (createdByUserId && createdByUserId !== Guid.EMPTY) {
-            method = 'PUT';
-        }
-
-        var eventSummaryData = new EventSummaryData();
-        eventSummaryData.eventId = loadedEventId;
-        eventSummaryData.actualNumberOfAttendees = actualNumberOfAttendees;
-        eventSummaryData.numberOfBags = numberOfBags;
-        eventSummaryData.numberOfBuckets = numberOfBuckets;
-        eventSummaryData.durationInMinutes = durationInMinutes;
-        eventSummaryData.notes = notes ?? "";
-        eventSummaryData.createdByUserId = createdByUserId ?? props.currentUser.id;
-        eventSummaryData.createdDate = createdDate;
-
-        var data = JSON.stringify(eventSummaryData);
-
-        const account = msalClient.getAllAccounts()[0];
-        var apiConfig = getApiConfig();
-
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-            if (!validateToken(tokenResponse.idTokenClaims)) {
-                return;
-            }
-
-            const headers = getDefaultHeaders(method);
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch('/api/eventsummaries', {
-                method: method,
-                body: data,
-                headers: headers,
-            }).then(() => {
-                handleShowModal(true)
-            });
-        });
+        if (createdByUserId && createdByUserId !== Guid.EMPTY) updateEventSummary.mutateAsync(body);
+        else createEventSummary.mutateAsync(body).then(() => handleShowModal(true));
     }
 
     function handleActualNumberOfAttendeesChanged(val: string) {

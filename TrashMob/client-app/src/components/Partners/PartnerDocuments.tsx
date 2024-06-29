@@ -6,6 +6,9 @@ import * as ToolTips from "../../store/ToolTips";
 import { Guid } from 'guid-typescript';
 import PartnerDocumentData from '../Models/PartnerDocumentData';
 import { Pencil, XSquare } from 'react-bootstrap-icons';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { Services } from '../../config/services.config';
+import { CreatePartnerDocument, DeletePartnerDocumentByDocuemntId, GetPartnerDocumentsByDocumentId, GetPartnerDocumentsByPartnerId, UpdatePartnerDocument } from '../../services/documents';
 
 export interface PartnerDocumentsDataProps {
     partnerId: string;
@@ -14,7 +17,6 @@ export interface PartnerDocumentsDataProps {
 };
 
 export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => {
-
     const [partnerDocumentId, setPartnerDocumentId] = React.useState<string>(Guid.EMPTY);
     const [documentName, setDocumentName] = React.useState<string>("");
     const [documentUrl, setDocumentUrl] = React.useState<string>("");
@@ -28,31 +30,38 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
     const [isAddEnabled, setIsAddEnabled] = React.useState<boolean>(true);
 
+    const getPartnerDocumentsByPartnerId = useQuery({
+        queryKey: GetPartnerDocumentsByPartnerId({ partnerId: props.partnerId }).key,
+        queryFn: GetPartnerDocumentsByPartnerId({ partnerId: props.partnerId }).service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const getPartnerDocumentsByDocumentId = useMutation({
+        mutationKey: GetPartnerDocumentsByDocumentId().key,
+        mutationFn: GetPartnerDocumentsByDocumentId().service
+    });
+
+    const createPartnerDocument = useMutation({
+        mutationKey: CreatePartnerDocument().key,
+        mutationFn: CreatePartnerDocument().service
+    });
+
+    const updatePartnerDocument = useMutation({
+        mutationKey: UpdatePartnerDocument().key,
+        mutationFn: UpdatePartnerDocument().service
+    });
+
+    const deletePartnerDocumentByDocuemntId = useMutation({
+        mutationKey: DeletePartnerDocumentByDocuemntId().key,
+        mutationFn: DeletePartnerDocumentByDocuemntId().service
+    });
+
     React.useEffect(() => {
-
-        const headers = getDefaultHeaders('GET');
-
         if (props.isUserLoaded && props.partnerId && props.partnerId !== Guid.EMPTY) {
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/partnerdocuments/getbypartner/' + props.partnerId, {
-                    method: 'GET',
-                    headers: headers,
-                })
-                    .then(response => response.json() as Promise<PartnerDocumentData[]>)
-                    .then(data => {
-                        setPartnerDocuments(data);
-                        setIsPartnerDocumentsDataLoaded(true);
-                    });
+            getPartnerDocumentsByPartnerId.refetch().then(res => {
+                setPartnerDocuments(res.data?.data || []);
+                setIsPartnerDocumentsDataLoaded(true);
             });
         }
     }, [props.partnerId, props.isUserLoaded])
@@ -82,134 +91,56 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
         setIsAddEnabled(true);
     }
     function editDocument(partnerDocumentId: string) {
-        const account = msalClient.getAllAccounts()[0];
-        var apiConfig = getApiConfig();
-
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            const headers = getDefaultHeaders('GET');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch('/api/partnerdocuments/' + partnerDocumentId, {
-                method: 'GET',
-                headers: headers,
-            })
-                .then(response => response.json() as Promise<PartnerDocumentData>)
-                .then(data => {
-                    setPartnerDocumentId(data.id);
-                    setDocumentName(data.name);
-                    setDocumentUrl(data.url);
-                    setCreatedByUserId(data.createdByUserId);
-                    setCreatedDate(new Date(data.createdDate));
-                    setLastUpdatedDate(new Date(data.lastUpdatedDate));
-                    setIsEditOrAdd(true);
-                    setIsAddEnabled(false);
-                });
+        getPartnerDocumentsByDocumentId.mutateAsync({ documentId: partnerDocumentId }).then((res) => {
+            setPartnerDocumentId(res.data.id);
+            setDocumentName(res.data.name);
+            setDocumentUrl(res.data.url);
+            setCreatedByUserId(res.data.createdByUserId);
+            setCreatedDate(new Date(res.data.createdDate));
+            setLastUpdatedDate(new Date(res.data.lastUpdatedDate));
+            setIsEditOrAdd(true);
+            setIsAddEnabled(false);
         });
     }
 
     function removeDocument(documentId: string, documentName: string) {
-        if (!window.confirm("Please confirm that you want to remove document with name: '" + documentName + "' as a document from this Partner?"))
-            return;
+        if (!window.confirm("Please confirm that you want to remove document with name: '" + documentName + "' as a document from this Partner?")) return;
         else {
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-                const headers = getDefaultHeaders('DELETE');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/partnerdocuments/' + documentId, {
-                    method: 'DELETE',
-                    headers: headers,
+            deletePartnerDocumentByDocuemntId.mutateAsync({ documentId }).then(() => {
+                setIsPartnerDocumentsDataLoaded(false);
+                getPartnerDocumentsByPartnerId.refetch().then(res => {
+                    setPartnerDocuments(res.data?.data || []);
+                    setIsPartnerDocumentsDataLoaded(true);
                 })
-                    .then(() => {
-                        setIsPartnerDocumentsDataLoaded(false);
-
-                        fetch('/api/partnerdocuments/getbypartner/' + props.partnerId, {
-                            method: 'GET',
-                            headers: headers,
-                        })
-                            .then(response => response.json() as Promise<PartnerDocumentData[]>)
-                            .then(data => {
-                                setPartnerDocuments(data);
-                                setIsPartnerDocumentsDataLoaded(true);
-                            });
-                    })
             });
         }
     }
 
-    function handleSave(event: any) {
-
+    async function handleSave(event: any) {
         event.preventDefault();
 
-        if (!isSaveEnabled) {
-            return;
-        }
-
+        if (!isSaveEnabled) return;
         setIsSaveEnabled(false);
 
-        const account = msalClient.getAllAccounts()[0];
-        var apiConfig = getApiConfig();
+        const body = new PartnerDocumentData();
+        body.id = partnerDocumentId;
+        body.partnerId = props.partnerId;
+        body.name = documentName;
+        body.url = documentUrl ?? 0;
+        body.createdDate = createdDate;
+        body.createdByUserId = createdByUserId;
 
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
+        if (partnerDocumentId === Guid.EMPTY) await createPartnerDocument.mutateAsync(body);
+        else await updatePartnerDocument.mutateAsync(body);
 
-        var method = "PUT";
+        setIsEditOrAdd(false);
+        setIsPartnerDocumentsDataLoaded(false);
 
-        if (partnerDocumentId === Guid.EMPTY) {
-            method = "POST";
-        }
-
-        var documentData = new PartnerDocumentData();
-        documentData.id = partnerDocumentId;
-        documentData.partnerId = props.partnerId;
-        documentData.name = documentName;
-        documentData.url = documentUrl ?? 0;
-        documentData.createdDate = createdDate;
-        documentData.createdByUserId = createdByUserId;
-
-        var data = JSON.stringify(documentData);
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            const headers = getDefaultHeaders(method);
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch('/api/partnerdocuments', {
-                method: method,
-                headers: headers,
-                body: data,
-            })
-                .then(() => {
-                    setIsEditOrAdd(false);
-                    setIsPartnerDocumentsDataLoaded(false);
-                    var getHeaders = getDefaultHeaders("GET");
-                    getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                    fetch('/api/partnerdocuments/getbypartner/' + props.partnerId, {
-                        method: 'GET',
-                        headers: getHeaders,
-                    })
-                        .then(response => response.json() as Promise<PartnerDocumentData[]>)
-                        .then(data => {
-                            setPartnerDocuments(data);
-                            setIsPartnerDocumentsDataLoaded(true);
-                            setIsEditOrAdd(false);
-                            setIsAddEnabled(true);
-                        });
-                });
+        getPartnerDocumentsByPartnerId.refetch().then(res => {
+            setPartnerDocuments(res.data?.data || []);
+            setIsPartnerDocumentsDataLoaded(true);
+            setIsEditOrAdd(false);
+            setIsAddEnabled(true);
         });
     }
 

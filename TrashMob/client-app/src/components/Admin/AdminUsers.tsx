@@ -5,6 +5,9 @@ import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../.
 import UserData from '../Models/UserData';
 import { Col, Container, Dropdown, Row } from 'react-bootstrap';
 import { XSquare } from 'react-bootstrap-icons';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { DeleteUserById, GetAllUsers } from '../../services/users';
+import { Services } from '../../config/services.config';
 
 interface AdminUsersPropsType extends RouteComponentProps {
     isUserLoaded: boolean;
@@ -12,86 +15,40 @@ interface AdminUsersPropsType extends RouteComponentProps {
 };
 
 export const AdminUsers: React.FC<AdminUsersPropsType> = (props) => {
-
     const [userList, setUserList] = React.useState<UserData[]>([]);
     const [isUserDataLoaded, setIsUserDataLoaded] = React.useState<boolean>(false);
 
+    const getAllUsers = useQuery({ 
+        queryKey: GetAllUsers().key,
+        queryFn: GetAllUsers().service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const deleteUserById = useMutation({
+        mutationKey: DeleteUserById().key,
+        mutationFn: DeleteUserById().service,
+    })
+
     React.useEffect(() => {
-
         if (props.isUserLoaded) {
-
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
-
-                const headers = getDefaultHeaders('GET');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                // Load the User List
-                fetch('/api/users', {
-                    method: 'GET',
-                    headers: headers,
-                })
-                    .then(response => response.json() as Promise<Array<UserData>>)
-                    .then(data => {
-                        setUserList(data);
-                        setIsUserDataLoaded(true);
-                    });
+            getAllUsers.refetch().then((res) => {
+                setUserList(res.data?.data || []);
+                setIsUserDataLoaded(true);
             })
         }
     }, [props.isUserLoaded])
 
     // Handle Delete request for a user  
     function handleDelete(id: string, name: string) {
-        if (!window.confirm("Are you sure you want to delete user with name: " + name))
-            return;
+        if (!window.confirm("Are you sure you want to delete user with name: " + name)) return;
         else {
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
-
-                const headers = getDefaultHeaders('DELETE');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('api/users/' + id, {
-                    method: 'delete',
-                    headers: headers
-                }).then(() => {
-                    const getHeaders = getDefaultHeaders('GET');
-                    getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                    // Load the User List
-                    fetch('/api/users', {
-                        method: 'GET',
-                        headers: getHeaders,
-                    })
-                        .then(response => response.json() as Promise<Array<UserData>>)
-                        .then(data => {
-                            setUserList(data);
-                            setIsUserDataLoaded(true);
-                        });
-                });
-            });
+            deleteUserById.mutateAsync({ id }).then(() => {
+                getAllUsers.refetch().then((res) => {
+                    setUserList(res.data?.data || []);
+                    setIsUserDataLoaded(true);
+                })
+            })
         }
     }
 

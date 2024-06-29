@@ -1,54 +1,27 @@
 import PartnerRequestStatusData from "../components/Models/PartnerRequestStatusData";
 import PartnerStatusData from "../components/Models/PartnerStatusData";
-import { getDefaultHeaders } from "./AuthStore";
+import { GetPartnerRequestStatuses, GetPartnerStatuses } from "../services/partners";
 
 export function getDisplayPartnershipStatus(partnerStatusList: PartnerStatusData[], partnerRequestStatusList: PartnerRequestStatusData[], partnerStatusId: any, partnerRequestStatusId: any): string {
-    if (partnerStatusList === null || partnerStatusList.length === 0) {
-        partnerStatusList = getPartnerStatuses();
-    }
-
-    if (partnerRequestStatusList === null || partnerRequestStatusList.length === 0) {
-        partnerRequestStatusList = getPartnerRequestStatuses();
-    }
-
-    var partnerStatus = partnerStatusList.find(et => et.id === partnerStatusId)
-    var partnerRequestStatus = partnerRequestStatusList.find(et => et.id === partnerRequestStatusId)
-
-    if (partnerRequestStatus) {
-        return partnerRequestStatus.name;
-    }
-    else if (partnerStatus) {
-        return partnerStatus.name;
-    }
-
+    const partnerStatus = partnerStatusList.find(et => et.id === partnerStatusId)
+    const partnerRequestStatus = partnerRequestStatusList.find(et => et.id === partnerRequestStatusId)
+    if (partnerRequestStatus) return partnerRequestStatus.name;
+    else if (partnerStatus) return partnerStatus.name;
     return "Unknown";
 }
 
-function getPartnerRequestStatuses(): PartnerRequestStatusData[] {
-    const headers = getDefaultHeaders('GET');
-
-    fetch('/api/partnerRequestStatuses', {
-        method: 'GET',
-        headers: headers
-    })
-        .then(response => response.json() as Promise<Array<any>>)
-        .then(data => {
-            return data;
-        });
-    return [];
+export async function getDisplayPartnershipStatusAsync(partnerStatusId: any, partnerRequestStatusId: any): Promise<string> {
+    const partnerStatusList = await getPartnerStatuses();
+    const partnerRequestStatusList = await getPartnerRequestStatuses();
+    return getDisplayPartnershipStatus(partnerStatusList, partnerRequestStatusList, partnerStatusId, partnerRequestStatusId);
 }
 
+async function getPartnerRequestStatuses(): Promise<PartnerRequestStatusData[]> {
+    const result = await GetPartnerRequestStatuses().service().then(res => res.data).catch(err => [])
+    return result;
+}
 
-function getPartnerStatuses(): PartnerStatusData[] {
-    const headers = getDefaultHeaders('GET');
-
-    fetch('/api/partnerStatuses', {
-        method: 'GET',
-        headers: headers
-    })
-        .then(response => response.json() as Promise<Array<any>>)
-        .then(data => {
-            return data;
-        });
-    return [];
+async function getPartnerStatuses(): Promise<PartnerStatusData[]> {
+    const result = await GetPartnerStatuses().service().then(res => res.data).catch(err => [])
+    return result;
 }

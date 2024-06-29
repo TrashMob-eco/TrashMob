@@ -22,7 +22,7 @@ import { VolunteerOpportunities } from './components/VolunteerOpportunities';
 import { initializeIcons } from '@uifabric/icons';
 import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
 import { InteractionType } from '@azure/msal-browser';
-import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from './store/AuthStore';
+import { msalClient } from './store/AuthStore';
 import { EventDetails, DetailsMatchParams } from './components/Pages/EventDetails';
 import { NoMatch } from './components/NoMatch';
 import UserData from './components/Models/UserData';
@@ -45,6 +45,9 @@ import WaiversReturn, { WaiversReturnMatchParams } from './components/Waivers/Wa
 import PartnerRequestDetails, { PartnerRequestDetailsMatchParams } from './components/Partners/PartnerRequestDetails';
 import { Partnerships } from './components/Partners/Partnerships';
 import { Help } from './components/Pages/Help';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { GetUserByEmail, GetUserById } from './services/users';
 
 interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> {
 }
@@ -66,6 +69,8 @@ interface WaiversReturnProps extends RouteComponentProps<WaiversReturnMatchParam
 
 interface DeleteMyDataProps extends RouteComponentProps {
 }
+
+const queryClient = new QueryClient();
 
 export const App: FC = () => {
     const [isUserLoaded, setIsUserLoaded] = useState(false);
@@ -186,199 +191,152 @@ export const App: FC = () => {
     }
 
     function handleUserUpdated() {
-        const account = msalClient.getAllAccounts()[0];
-
-        var apiConfig = getApiConfig();
-
-        const request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
         setIsUserLoaded(false);
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            if (!validateToken(tokenResponse.idTokenClaims)) {
-                return;
-            }
-
-            const headers = getDefaultHeaders('GET');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch('/api/Users/' + currentUser.id, {
-                method: 'GET',
-                headers: headers,
-            })
-                .then(response => response.json() as Promise<UserData>)
-                .then(data => {
-                    setCurrentUser(data);
-                    setIsUserLoaded(true);
-                    sessionStorage.setItem('user', JSON.stringify(data));
-                });
-        });
+        GetUserById({ userId: currentUser.id }).service().then(res => {
+            setCurrentUser(res.data || new UserData());
+            setIsUserLoaded(true);
+            sessionStorage.setItem('user', JSON.stringify(res.data));
+        })
     }
 
     function verifyAccount(result: msal.AuthenticationResult) {
-
-        var userDeleted = result.idTokenClaims["userDeleted"];
-
+        const userDeleted = (result.idTokenClaims as Record<string, any>)["userDeleted"];
         if (userDeleted && userDeleted === true) {
             clearUser();
             return;
         }
 
-        var email = result.idTokenClaims["email"];
-        const account = msalClient.getAllAccounts()[0];
-        var apiConfig = getApiConfig();
-
-        const request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-            if (!validateToken(tokenResponse.idTokenClaims)) {
-                return;
-            }
-
-            const method = 'GET';
-            const headers = getDefaultHeaders(method);
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+        const email = (result.idTokenClaims as Record<string, any>)["email"];
+        GetUserByEmail({ email }).service().then(res => {
             const user = new UserData();
-
-            fetch('/api/Users/getuserbyemail/' + encodeURIComponent(email), {
-                method: method,
-                headers: headers
-            })
-                .then(response => response.json() as Promise<UserData> | null)
-                .then(data => {
-                    if (data) {
-                        user.id = data.id;
-                        user.userName = data.userName;
-                        user.dateAgreedToTrashMobWaiver = data.dateAgreedToTrashMobWaiver;
-                        user.memberSince = data.memberSince;
-                        user.trashMobWaiverVersion = data.trashMobWaiverVersion;
-                        user.isSiteAdmin = data.isSiteAdmin;
-                        user.email = data.email;
-                        setCurrentUser(user);
-                        setIsUserLoaded(true);
-                        sessionStorage.setItem('user', JSON.stringify(user));
-                    }
-                });
-        });
+            if (!!res.data) {
+                user.id = res.data.id;
+                user.userName = res.data.userName;
+                user.dateAgreedToTrashMobWaiver = res.data.dateAgreedToTrashMobWaiver;
+                user.memberSince = res.data.memberSince;
+                user.trashMobWaiverVersion = res.data.trashMobWaiverVersion;
+                user.isSiteAdmin = res.data.isSiteAdmin;
+                user.email = res.data.email;
+            }
+            setCurrentUser(user);
+            setIsUserLoaded(true);
+            sessionStorage.setItem('user', JSON.stringify(user));
+        })
     }
 
     return (
-        <MsalProvider instance={msalClient} >
-            <div className="d-flex flex-column h-100">
-                <BrowserRouter>
-                    <TopMenu isUserLoaded={isUserLoaded} currentUser={currentUser} />
-                    <div className="container-fluid px-0">
-                        <Switch>
-                            <Route path="/manageeventdashboard/:eventId?" render={(props: AppProps) => renderEditEvent(props)} />
-                            <Route path="/partnerdashboard/:partnerId?" render={(props: PartnerProps) => renderPartnerDashboard(props)} />
-                            <Route path="/partnerrequestdetails/:partnerRequestId" render={(props: PartnerRequestDetailsProps) => renderPartnerRequestDetails(props)} />
-                            <Route path="/eventsummary/:eventId?" render={(props: AppProps) => renderEventSummary(props)} />
-                            <Route path="/eventdetails/:eventId" render={(props: DetailsProps) => renderEventDetails(props)} />
-                            <Route path="/cancelevent/:eventId" render={(props: CancelProps) => renderCancelEvent(props)} />
-                            <Route path="/waiversreturn/:envelopeId" render={(props: WaiversReturnProps) => renderWaiversReturn(props)} />
-                            <Route path="/deletemydata" render={(props: DeleteMyDataProps) => renderDeleteMyData(props)} />
-                            <Route exact path="/mydashboard">
-                                <MsalAuthenticationTemplate
-                                    interactionType={InteractionType.Redirect}
-                                    errorComponent={ErrorComponent}
-                                    loadingComponent={LoadingComponent}>
-                                    <MyDashboard currentUser={currentUser} isUserLoaded={isUserLoaded} />
-                                </MsalAuthenticationTemplate >
-                            </Route>
-                            <Route exact path="/becomeapartner">
-                                <MsalAuthenticationTemplate
-                                    interactionType={InteractionType.Redirect}
-                                    errorComponent={ErrorComponent}
-                                    loadingComponent={LoadingComponent}>
-                                    <PartnerRequest currentUser={currentUser} isUserLoaded={isUserLoaded} mode="become" />
-                                </MsalAuthenticationTemplate >
-                            </Route>
-                            <Route exact path="/inviteapartner">
-                                <MsalAuthenticationTemplate
-                                    interactionType={InteractionType.Redirect}
-                                    errorComponent={ErrorComponent}
-                                    loadingComponent={LoadingComponent}>
-                                    <PartnerRequest currentUser={currentUser} isUserLoaded={isUserLoaded} mode="send" />
-                                </MsalAuthenticationTemplate >
-                            </Route>
-                            <Route exact path="/siteadmin">
-                                <MsalAuthenticationTemplate
-                                    interactionType={InteractionType.Redirect}
-                                    errorComponent={ErrorComponent}
-                                    loadingComponent={LoadingComponent}>
-                                    <SiteAdmin currentUser={currentUser} isUserLoaded={isUserLoaded} />
-                                </MsalAuthenticationTemplate >
-                            </Route>
-                            <Route exact path="/locationpreference">
-                                <MsalAuthenticationTemplate
-                                    interactionType={InteractionType.Redirect}
-                                    errorComponent={ErrorComponent}
-                                    loadingComponent={LoadingComponent}>
-                                    <LocationPreference currentUser={currentUser} isUserLoaded={isUserLoaded} onUserUpdated={handleUserUpdated} />
-                                </MsalAuthenticationTemplate >
-                            </Route>
-                            <Route exact path="/waivers">
-                                <MsalAuthenticationTemplate
-                                    interactionType={InteractionType.Redirect}
-                                    errorComponent={ErrorComponent}
-                                    loadingComponent={LoadingComponent}>
-                                    <Waivers currentUser={currentUser} isUserLoaded={isUserLoaded} />
-                                </MsalAuthenticationTemplate >
-                            </Route>
-                            <Route exact path="/partnerships">
-                                <Partnerships />
-                            </Route>
-                            <Route exact path="/shop">
-                                <Shop />
-                            </Route>
-                            <Route exact path="/help">
-                                <Help />
-                            </Route>
-                            <Route exact path="/aboutus">
-                                <AboutUs />
-                            </Route>
-                            <Route exact path="/board">
-                                <Board />
-                            </Route>
-                            <Route exact path="/contactus">
-                                <ContactUs />
-                            </Route>
-                            <Route exact path="/eventsummaries">
-                                <EventSummaries />
-                            </Route>
-                            <Route exact path="/faq">
-                                <Faq />
-                            </Route>
-                            <Route exact path="/gettingstarted">
-                                <GettingStarted />
-                            </Route>
-                            <Route exact path="/privacypolicy">
-                                <PrivacyPolicy />
-                            </Route>
-                            <Route exact path="/termsofservice">
-                                <TermsOfService />
-                            </Route>
-                            <Route exact path="/volunteeropportunities">
-                                <VolunteerOpportunities />
-                            </Route>
-                            <Route exact path='/'>
-                                <Home currentUser={currentUser} isUserLoaded={isUserLoaded} onUserUpdated={handleUserUpdated} />
-                            </Route>
-                            <Route>
-                                <NoMatch />
-                            </Route>
-                        </Switch>
-                    </div>
-                    <Footer />
-                </BrowserRouter>
-            </div>
-        </MsalProvider>
+        <QueryClientProvider client={queryClient}>
+            <MsalProvider instance={msalClient} >
+                <div className="d-flex flex-column h-100">
+                    <BrowserRouter>
+                        <TopMenu isUserLoaded={isUserLoaded} currentUser={currentUser} />
+                        <div className="container-fluid px-0">
+                            <Switch>
+                                <Route path="/manageeventdashboard/:eventId?" render={(props: AppProps) => renderEditEvent(props)} />
+                                <Route path="/partnerdashboard/:partnerId?" render={(props: PartnerProps) => renderPartnerDashboard(props)} />
+                                <Route path="/partnerrequestdetails/:partnerRequestId" render={(props: PartnerRequestDetailsProps) => renderPartnerRequestDetails(props)} />
+                                <Route path="/eventsummary/:eventId?" render={(props: AppProps) => renderEventSummary(props)} />
+                                <Route path="/eventdetails/:eventId" render={(props: DetailsProps) => renderEventDetails(props)} />
+                                <Route path="/cancelevent/:eventId" render={(props: CancelProps) => renderCancelEvent(props)} />
+                                <Route path="/waiversreturn/:envelopeId" render={(props: WaiversReturnProps) => renderWaiversReturn(props)} />
+                                <Route path="/deletemydata" render={(props: DeleteMyDataProps) => renderDeleteMyData(props)} />
+                                <Route exact path="/mydashboard">
+                                    <MsalAuthenticationTemplate
+                                        interactionType={InteractionType.Redirect}
+                                        errorComponent={ErrorComponent}
+                                        loadingComponent={LoadingComponent}>
+                                        <MyDashboard currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                                    </MsalAuthenticationTemplate >
+                                </Route>
+                                <Route exact path="/becomeapartner">
+                                    <MsalAuthenticationTemplate
+                                        interactionType={InteractionType.Redirect}
+                                        errorComponent={ErrorComponent}
+                                        loadingComponent={LoadingComponent}>
+                                        <PartnerRequest currentUser={currentUser} isUserLoaded={isUserLoaded} mode="become" />
+                                    </MsalAuthenticationTemplate >
+                                </Route>
+                                <Route exact path="/inviteapartner">
+                                    <MsalAuthenticationTemplate
+                                        interactionType={InteractionType.Redirect}
+                                        errorComponent={ErrorComponent}
+                                        loadingComponent={LoadingComponent}>
+                                        <PartnerRequest currentUser={currentUser} isUserLoaded={isUserLoaded} mode="send" />
+                                    </MsalAuthenticationTemplate >
+                                </Route>
+                                <Route exact path="/siteadmin">
+                                    <MsalAuthenticationTemplate
+                                        interactionType={InteractionType.Redirect}
+                                        errorComponent={ErrorComponent}
+                                        loadingComponent={LoadingComponent}>
+                                        <SiteAdmin currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                                    </MsalAuthenticationTemplate >
+                                </Route>
+                                <Route exact path="/locationpreference">
+                                    <MsalAuthenticationTemplate
+                                        interactionType={InteractionType.Redirect}
+                                        errorComponent={ErrorComponent}
+                                        loadingComponent={LoadingComponent}>
+                                        <LocationPreference currentUser={currentUser} isUserLoaded={isUserLoaded} onUserUpdated={handleUserUpdated} />
+                                    </MsalAuthenticationTemplate >
+                                </Route>
+                                <Route exact path="/waivers">
+                                    <MsalAuthenticationTemplate
+                                        interactionType={InteractionType.Redirect}
+                                        errorComponent={ErrorComponent}
+                                        loadingComponent={LoadingComponent}>
+                                        <Waivers currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                                    </MsalAuthenticationTemplate >
+                                </Route>
+                                <Route exact path="/partnerships">
+                                    <Partnerships />
+                                </Route>
+                                <Route exact path="/shop">
+                                    <Shop />
+                                </Route>
+                                <Route exact path="/help">
+                                    <Help />
+                                </Route>
+                                <Route exact path="/aboutus">
+                                    <AboutUs />
+                                </Route>
+                                <Route exact path="/board">
+                                    <Board />
+                                </Route>
+                                <Route exact path="/contactus">
+                                    <ContactUs />
+                                </Route>
+                                <Route exact path="/eventsummaries">
+                                    <EventSummaries />
+                                </Route>
+                                <Route exact path="/faq">
+                                    <Faq />
+                                </Route>
+                                <Route exact path="/gettingstarted">
+                                    <GettingStarted />
+                                </Route>
+                                <Route exact path="/privacypolicy">
+                                    <PrivacyPolicy />
+                                </Route>
+                                <Route exact path="/termsofservice">
+                                    <TermsOfService />
+                                </Route>
+                                <Route exact path="/volunteeropportunities">
+                                    <VolunteerOpportunities />
+                                </Route>
+                                <Route exact path='/'>
+                                    <Home currentUser={currentUser} isUserLoaded={isUserLoaded} onUserUpdated={handleUserUpdated} />
+                                </Route>
+                                <Route>
+                                    <NoMatch />
+                                </Route>
+                            </Switch>
+                        </div>
+                        <Footer />
+                    </BrowserRouter>
+                </div>
+            </MsalProvider>
+            <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
     );
 }

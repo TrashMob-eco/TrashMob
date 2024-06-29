@@ -5,6 +5,9 @@ import { getDefaultHeaders } from '../store/AuthStore';
 import { getEventType } from '../store/eventTypeHelper';
 import DisplayEventSummary from './Models/DisplayEventSummary';
 import EventTypeData from './Models/EventTypeData';
+import { useQuery } from '@tanstack/react-query';
+import { GetEventsSummaries, GetEventTypes } from '../services/events';
+import { Services } from '../config/services.config';
 
 export const EventSummaries: React.FC = () => {
     const [displaySummaries, setDisplaySummaries] = React.useState<DisplayEventSummary[]>([]);
@@ -15,32 +18,32 @@ export const EventSummaries: React.FC = () => {
     const [region, setRegion] = React.useState<string>("");
     const [postalCode, setPostalCode] = React.useState<string>("");
 
+    const getEventTypes = useQuery({ 
+        queryKey: GetEventTypes().key,
+        queryFn: GetEventTypes().service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const getEventsSummaries = useQuery({ 
+        queryKey: GetEventsSummaries({ country, region, city, postalCode }).key,
+        queryFn: GetEventsSummaries({ country, region, city, postalCode }).service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
     React.useEffect(() => {
         window.scrollTo(0, 0);
-
-        const headers = getDefaultHeaders('GET');
-
-        fetch('/api/eventtypes', {
-            method: 'GET',
-            headers: headers,
+        getEventTypes.refetch().then(res => {
+            setEventTypeList(res.data?.data || [])
         })
-            .then(response => response.json() as Promise<Array<any>>)
-            .then(data => {
-                setEventTypeList(data);
-            })
     }, [])
 
     React.useEffect(() => {
-        const headers = getDefaultHeaders('GET');
-        fetch('/api/eventsummaries?country=' + country + '&region=' + region + '&city=' + city + '&postalCode=' + postalCode, {
-            method: 'GET',
-            headers: headers,
+        getEventsSummaries.refetch().then(res => {
+            setDisplaySummaries(res.data?.data || []);
+            setIsEventSummaryDataLoaded(true);
         })
-            .then(response => response.json() as Promise<DisplayEventSummary[]>)
-            .then(data => {
-                setDisplaySummaries(data);
-                setIsEventSummaryDataLoaded(true);
-            });
     }, [country, region, city, postalCode])
 
     function handleCityChanged(val: string) {

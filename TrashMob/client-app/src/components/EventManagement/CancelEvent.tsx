@@ -9,6 +9,9 @@ import { Button, Col, Container, Form } from 'react-bootstrap';
 import { RouteComponentProps } from 'react-router-dom';
 import { SocialsModal } from './ShareToSocialsModal';
 import * as SharingMessages from "../../store/SharingMessages";
+import { DeleteEvent, GetEventById } from '../../services/events';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { Services } from '../../config/services.config';
 
 export interface CancelEventMatchParams {
     eventId: string;
@@ -28,20 +31,26 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
     const [showModal, setShowSocialsModal] = React.useState<boolean>(false);
     const [eventToShare, setEventToShare] = React.useState<EventData>();
 
-    React.useEffect(() => {
-        const headers = getDefaultHeaders('GET');
+    const getEventById = useQuery({ 
+        queryKey: GetEventById({ eventId }).key,
+        queryFn: GetEventById({ eventId }).service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
 
-        fetch('/api/Events/' + eventId, {
-            method: 'GET',
-            headers: headers
+    const deleteEvent = useMutation({
+        mutationKey: DeleteEvent().key,
+        mutationFn: DeleteEvent().service
+    })
+    
+    React.useEffect(() => {
+        getEventById.refetch().then(res => {
+            if (res.data === undefined) return;
+            setEventId(res.data.data.id);
+            setEventName(res.data.data.name);
+            setEventToShare(res.data.data)
+            setIsDataLoaded(true);
         })
-            .then(response => response.json() as Promise<EventData>)
-            .then(eventData => {
-                setEventId(eventData.id);
-                setEventName(eventData.name);
-                setEventToShare(eventData)
-                setIsDataLoaded(true);
-            });
     }, [eventId])
 
     React.useEffect(() => {
@@ -69,47 +78,11 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
 
     // This will handle the submit form event.  
     function handleSave(event: any) {
-
         event.preventDefault();
-
-        if (!isSaveEnabled) {
-            return;
-        }
-
+        if (!isSaveEnabled) return;
         setIsSaveEnabled(false);
-
-        var method = "DELETE";
-
-        // PUT request for Edit Event.  
-        const account = msalClient.getAllAccounts()[0];
-        var apiConfig = getApiConfig();
-
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        var content = { eventId: eventId, cancellationReason: cancellationReason };
-
-        return msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-            if (!validateToken(tokenResponse.idTokenClaims)) {
-                return;
-            }
-
-            const headers = getDefaultHeaders(method);
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch('/api/Events', {
-                method: method,
-                headers: headers,
-                body: JSON.stringify(content),
-            }).then(() => {
-
-                if (eventToShare) {
-                    handleShowModal(true)
-                }
-            });
+        return deleteEvent.mutateAsync({ eventId, cancellationReason }).then((res) => {
+            if (eventToShare) handleShowModal(true)
         })
     }
 

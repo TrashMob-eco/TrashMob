@@ -6,6 +6,8 @@ import UserData from '../Models/UserData';
 import { Button, ButtonGroup, Col, Container, Form, Modal, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import * as ToolTips from "../../store/ToolTips";
 import MessageRequestData from '../Models/MessageRequestData';
+import { useMutation } from '@tanstack/react-query';
+import { CreateMessageRequest } from '../../services/message';
 
 interface AdminSendNotificationsPropsType extends RouteComponentProps {
     isUserLoaded: boolean;
@@ -23,6 +25,11 @@ export const AdminSendNotifications: React.FC<AdminSendNotificationsPropsType> =
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
+    const createMessageRequest = useMutation({
+        mutationKey: CreateMessageRequest().key,
+        mutationFn: CreateMessageRequest().service,
+    })
+
     // This will handle Cancel button click event.  
     function handleCancel(event: any) {
         event.preventDefault();
@@ -31,45 +38,19 @@ export const AdminSendNotifications: React.FC<AdminSendNotificationsPropsType> =
 
     // Handle Delete request for a user  
     function handleSendNotification(event: any) {
-
-        if (!isSendEnabled) {
-            return;
-        }
-
-        setIsSendEnabled(false);
+        if (!isSendEnabled) return;
+        
         event.preventDefault();
+        setIsSendEnabled(false);
 
-        var messageRequestData = new MessageRequestData();
-        messageRequestData.userName = name ?? "";
-        messageRequestData.message = message ?? "";
-        var data = JSON.stringify(messageRequestData);
+        const body = new MessageRequestData();
+        body.userName = name ?? "";
+        body.message = message ?? "";
 
-        const account = msalClient.getAllAccounts()[0];
-        var apiConfig = getApiConfig();
-
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-            if (!validateToken(tokenResponse.idTokenClaims)) {
-                return;
-            }
-
-            const headers = getDefaultHeaders('POST');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch('api/messagerequest/', {
-                method: 'post',
-                body: data,
-                headers: headers
-            }).then(() => {
-                handleShow();
-                setIsSendEnabled(false);
-            });
-        });
+        createMessageRequest.mutateAsync(body).then(res => {
+            handleShow();
+            setIsSendEnabled(false);
+        })
     }
 
     React.useEffect(() => {

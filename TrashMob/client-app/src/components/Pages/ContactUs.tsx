@@ -5,6 +5,8 @@ import { loadCaptchaEnginge, LoadCanvasTemplateNoReload, validateCaptcha } from 
 import { getDefaultHeaders } from '../../store/AuthStore';
 import { Button, ButtonGroup, Col, Container, Form, Modal, Row } from 'react-bootstrap';
 import * as Constants from '../Models/Constants';
+import { useMutation } from '@tanstack/react-query';
+import { CreateContactRequest } from '../../services/contact';
 
 interface ContactUsProps extends RouteComponentProps<any> { }
 
@@ -21,50 +23,40 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
+    const createContactRequest = useMutation({
+        mutationKey: CreateContactRequest().key,
+        mutationFn: CreateContactRequest().service,
+    })
+
     React.useEffect(() => {
         window.scrollTo(0, 0);
     })
 
     // This will handle the submit form event.  
     function handleSave(event: any) {
-
         event.preventDefault();
 
-        if (!isSaveEnabled) {
-            return;
-        }
-
+        if (!isSaveEnabled) return;
         setIsSaveEnabled(false);
-        event.preventDefault();
 
         const form = new FormData(event.target);
 
-        var user_captcha_value = form.get("user_captcha_input")?.toString() ?? "";
-
-        if (validateCaptcha(user_captcha_value) === true) {
-
-            var contactRequestData = new ContactRequestData();
-            contactRequestData.name = name ?? "";
-            contactRequestData.email = email ?? "";
-            contactRequestData.message = message ?? "";
-
-            var data = JSON.stringify(contactRequestData);
-
-            const headers = getDefaultHeaders('POST');
-
-            fetch('/api/ContactRequest', {
-                method: 'POST',
-                body: data,
-                headers: headers,
-            }).then(() => {
-                setTimeout(() => props.history.push("/"), 2000);
-            });
-
-            handleShow();
-        }
-        else {
+        const user_captcha_value = form.get("user_captcha_input")?.toString() ?? "";
+        if (validateCaptcha(user_captcha_value) === false) {
             alert('Captcha Does Not Match');
+            return;
         }
+
+        const body = new ContactRequestData();
+        body.name = name ?? "";
+        body.email = email ?? "";
+        body.message = message ?? "";
+
+        createContactRequest.mutateAsync(body).then(() => {
+            setTimeout(() => props.history.push("/"), 2000);
+        })
+
+        handleShow();
     }
 
     React.useEffect(() => {

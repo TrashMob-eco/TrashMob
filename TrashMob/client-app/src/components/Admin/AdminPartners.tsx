@@ -6,6 +6,9 @@ import UserData from '../Models/UserData';
 import { Col, Container, Dropdown, Row } from 'react-bootstrap';
 import PartnerData from '../Models/PartnerData';
 import { XSquare } from 'react-bootstrap-icons';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { DeletePartnerById, GetPartners } from '../../services/partners';
+import { Services } from '../../config/services.config';
 
 interface AdminPartnersPropsType extends RouteComponentProps {
     isUserLoaded: boolean;
@@ -16,81 +19,38 @@ export const AdminPartners: React.FC<AdminPartnersPropsType> = (props) => {
     const [partnerList, setPartnerList] = React.useState<PartnerData[]>([]);
     const [isPartnerDataLoaded, setIsPartnerDataLoaded] = React.useState<boolean>(false);
 
+    const getPartners = useQuery({ 
+        queryKey: GetPartners().key,
+        queryFn: GetPartners().service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const deletePartnerById = useMutation({
+        mutationKey: DeletePartnerById().key,
+        mutationFn: DeletePartnerById().service,
+    })
+
     React.useEffect(() => {
 
         if (props.isUserLoaded) {
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
-
-                const headers = getDefaultHeaders('GET');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                // Load the Partner List
-                fetch('/api/partners', {
-                    method: 'GET',
-                    headers: headers,
-                })
-                    .then(response => response.json() as Promise<Array<PartnerData>>)
-                    .then(data => {
-                        setPartnerList(data);
-                        setIsPartnerDataLoaded(true);
-                    });
+            getPartners.refetch().then(res => {
+                setPartnerList(res.data?.data || []);
+                setIsPartnerDataLoaded(true);
             })
         }
     }, [props.isUserLoaded])
 
     // Handle Delete request for an partner
     function handleDelete(id: string, name: string) {
-        if (!window.confirm("Are you sure you want to delete partner with name: " + name))
-            return;
+        if (!window.confirm("Are you sure you want to delete partner with name: " + name)) return;
         else {
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
-
-                const headers = getDefaultHeaders('DELETE');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('api/partners/' + id, {
-                    method: 'delete',
-                    headers: headers
-                }).then(() => {
-                    const getHeaders = getDefaultHeaders('GET');
-                    getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                    // Load the Partner List
-                    fetch('/api/partners', {
-                        method: 'GET',
-                        headers: getHeaders,
-                    })
-                        .then(response => response.json() as Promise<Array<PartnerData>>)
-                        .then(data => {
-                            setPartnerList(data);
-                            setIsPartnerDataLoaded(true);
-                        });
-                });
-            });
+            deletePartnerById.mutateAsync({ id }).then(() => {
+                getPartners.refetch().then(res => {
+                    setPartnerList(res.data?.data || []);
+                    setIsPartnerDataLoaded(true);
+                })
+            })
         }
     }
 
