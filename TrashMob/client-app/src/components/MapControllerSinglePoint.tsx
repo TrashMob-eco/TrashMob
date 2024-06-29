@@ -7,8 +7,6 @@ import * as MapStore from '../store/MapStore'
 import UserData from './Models/UserData';
 import { HtmlMarkerLayer } from './HtmlMarkerLayer/src/layer/HtmlMarkerLayer'
 import { AsyncTypeahead } from 'react-bootstrap-typeahead';
-import { getDefaultHeaders } from '../store/AuthStore';
-import SearchAddressData from './Models/SearchAddressData';
 import { useMutation } from '@tanstack/react-query';
 import { AzureMapSearchAddress } from '../services/maps';
 

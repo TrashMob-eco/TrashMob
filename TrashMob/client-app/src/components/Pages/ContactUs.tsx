@@ -2,7 +2,6 @@ import * as React from 'react'
 import ContactRequestData from '../Models/ContactRequestData';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { loadCaptchaEnginge, LoadCanvasTemplateNoReload, validateCaptcha } from 'react-simple-captcha';
-import { getDefaultHeaders } from '../../store/AuthStore';
 import { Button, ButtonGroup, Col, Container, Form, Modal, Row } from 'react-bootstrap';
 import * as Constants from '../Models/Constants';
 import { useMutation } from '@tanstack/react-query';

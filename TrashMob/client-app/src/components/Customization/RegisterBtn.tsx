@@ -1,7 +1,7 @@
 
 import { FC, useState } from 'react';
 import { Button } from 'react-bootstrap';
-import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
+import { getApiConfig, msalClient } from '../../store/AuthStore';
 import EventAttendeeData from '../Models/EventAttendeeData';
 import UserData from '../Models/UserData';
 import { DisplayEvent } from '../MainEvents';

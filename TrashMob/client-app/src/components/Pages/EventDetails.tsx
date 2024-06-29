@@ -3,7 +3,6 @@ import { RouteComponentProps } from 'react-router';
 import EventData from '../Models/EventData';
 import UserData from '../Models/UserData';
 import EventTypeData from '../Models/EventTypeData';
-import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import { getEventType } from '../../store/eventTypeHelper';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../../store/MapStore';
@@ -18,7 +17,7 @@ import { RegisterBtn } from '../Customization/RegisterBtn';
 import { HeroSection } from '../Customization/HeroSection'
 import * as SharingMessages from '../../store/SharingMessages';
 import { useQuery } from '@tanstack/react-query';
-import { GetAllEvents, GetAllEventsBeingAttendedByUser, GetEventAttendees, GetEventById, GetEventTypes } from '../../services/events';
+import { GetAllEventsBeingAttendedByUser, GetEventAttendees, GetEventById, GetEventTypes } from '../../services/events';
 import { Services } from '../../config/services.config';
 
 export interface DetailsMatchParams {

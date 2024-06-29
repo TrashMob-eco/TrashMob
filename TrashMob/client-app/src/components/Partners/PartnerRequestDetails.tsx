@@ -1,11 +1,9 @@
 import * as React from 'react'
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../../store/ToolTips";
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
-import PartnerRequestData from '../Models/PartnerRequestData';
 import UserData from '../Models/UserData';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../../store/MapStore';

@@ -1,10 +1,8 @@
 import * as React from 'react'
 import EventData from '../Models/EventData';
 import EventTypeData from '../Models/EventTypeData';
-import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import { data } from 'azure-maps-control';
 import { getKey } from '../../store/MapStore';
-import AddressData from '../Models/AddressData';
 import * as MapStore from '../../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import UserData from '../Models/UserData';

@@ -1,7 +1,6 @@
 import * as React from 'react'
 import UserData from '../Models/UserData';
 import { Button, Col, Container, Dropdown, Row } from 'react-bootstrap';
-import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import PartnerLocationData from '../Models/PartnerLocationData';
 import { PartnerLocationEdit } from './PartnerLocationEdit';
 import { PartnerLocationServices } from './PartnerLocationServices';

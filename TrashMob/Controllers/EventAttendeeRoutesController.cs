@@ -14,14 +14,9 @@
     using TrashMob.Shared.Poco;
 
     [Route("api/eventattendeeroutes")]
-    public class EventAttendeeRoutesController : SecureController
+    public class EventAttendeeRoutesController(IEventAttendeeRouteManager eventAttendeeRouteManager) : SecureController
     {
-        private readonly IEventAttendeeRouteManager eventAttendeeRouteManager;
-
-        public EventAttendeeRoutesController(IEventAttendeeRouteManager eventAttendeeRouteManager)
-        {
-            this.eventAttendeeRouteManager = eventAttendeeRouteManager;
-        }
+        private readonly IEventAttendeeRouteManager eventAttendeeRouteManager = eventAttendeeRouteManager;
 
         [HttpGet("{eventId}")]
         public async Task<IActionResult> GetEventAttendeeRoutes(Guid eventId)
@@ -33,7 +28,7 @@
             return Ok(result);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> UpdateEventAttendeeRoute(EventAttendeeRoute eventAttendeeRoute,
             CancellationToken cancellationToken)
@@ -65,11 +60,11 @@
             return Ok();
         }
 
-        [HttpDelete("{eventId}/{userId}/{routeId}")]
+        [HttpDelete("{routeId}")]
         // Todo: Tighten this down
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> DeleteEventAttendeeRoute(Guid eventId, Guid userId, Guid routeId,
+        public async Task<IActionResult> DeleteEventAttendeeRoute(Guid routeId,
             CancellationToken cancellationToken)
         {
             await eventAttendeeRouteManager.DeleteAsync(routeId, cancellationToken).ConfigureAwait(false);

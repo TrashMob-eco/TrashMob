@@ -2,12 +2,11 @@ import * as React from 'react'
 import UserData from '../Models/UserData';
 import { Button, Col, Container, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import PartnerData from '../Models/PartnerData';
-import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import PartnerStatusData from '../Models/PartnerStatusData';
 import PartnerTypeData from '../Models/PartnerTypeData';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { GetPartnerById, GetPartners, GetPartnerStatuses, GetPartnerTypes, UpdatePartner } from '../../services/partners';
+import { GetPartnerById, GetPartnerStatuses, GetPartnerTypes, UpdatePartner } from '../../services/partners';
 import { Services } from '../../config/services.config';
 
 export interface PartnerEditDataProps {

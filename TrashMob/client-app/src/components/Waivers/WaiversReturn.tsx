@@ -1,6 +1,5 @@
 import { FC, useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
 import { CurrentTrashMobWaiverVersion } from './Waivers';
 import { useMutation, useQuery } from '@tanstack/react-query';

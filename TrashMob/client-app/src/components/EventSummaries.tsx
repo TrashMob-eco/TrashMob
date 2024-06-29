@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { Col, Form } from 'react-bootstrap';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
-import { getDefaultHeaders } from '../store/AuthStore';
 import { getEventType } from '../store/eventTypeHelper';
 import DisplayEventSummary from './Models/DisplayEventSummary';
 import EventTypeData from './Models/EventTypeData';

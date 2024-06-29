@@ -1,14 +1,12 @@
 import * as React from 'react'
 import UserData from '../Models/UserData';
 import { Button, Col, Form, OverlayTrigger, ToggleButton, Tooltip } from 'react-bootstrap';
-import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import PartnerLocationData from '../Models/PartnerLocationData';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import * as MapStore from '../../store/MapStore';
 import { data } from 'azure-maps-control';
 import { Guid } from 'guid-typescript';
-import AddressData from '../Models/AddressData';
 import MapControllerSinglePointNoEvent from '../MapControllerSinglePointNoEvent';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { CreatePartnerLocations, GetPartnerLocations, UpdatePartnerLocations } from '../../services/locations';

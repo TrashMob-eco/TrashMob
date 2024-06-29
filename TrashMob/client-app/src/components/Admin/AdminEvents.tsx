@@ -4,7 +4,6 @@ import { RouteComponentProps } from 'react-router-dom';
 import EventData from '../Models/EventData';
 import UserData from '../Models/UserData';
 import { Col, Container, Dropdown, Row } from 'react-bootstrap';
-import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import { Eye, Pencil, XSquare, SortDown } from 'react-bootstrap-icons';
 import { useQuery } from '@tanstack/react-query';
 import { GetAllEvents } from '../../services/events';
