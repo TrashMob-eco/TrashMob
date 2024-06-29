@@ -7,8 +7,6 @@ import { EditEvent } from './EditEvent';
 import { ManageEventPartners } from './ManageEventPartners';
 import { ManageEventAttendees } from './ManageEventAttendees';
 import { Guid } from 'guid-typescript';
-import { getDefaultHeaders } from '../../store/AuthStore';
-import EventData from '../Models/EventData';
 import { HeroSection } from '../Customization/HeroSection'
 import { GetEventById } from '../../services/events';
 import { useQuery } from '@tanstack/react-query';
