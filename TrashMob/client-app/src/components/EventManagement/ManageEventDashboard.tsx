@@ -42,7 +42,7 @@ const ManageEventDashboard: React.FC<ManageEventDashboardProps> = (props) => {
             setEventId(Guid.createEmpty().toString());
             setLoadedEventId(Guid.createEmpty().toString())
         }
-        else {
+        else if (evId !== Guid.EMPTY) {
             setEventId(evId);
             // Check to see if this event has been completed
             getEventById.refetch().then((res) => {
