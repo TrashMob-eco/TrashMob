@@ -85,6 +85,7 @@ public static class MauiProgram
         builder.Services.AddTransient<CancelEventViewModel>();
         builder.Services.AddTransient<ContactUsViewModel>();
         builder.Services.AddTransient<CreateEventViewModel>();
+        builder.Services.AddTransient<CreateEventViewModelNew>();
         builder.Services.AddTransient<CreateLitterReportViewModel>();
         builder.Services.AddTransient<EditEventViewModel>();
         builder.Services.AddTransient<EditEventPartnerLocationServicesViewModel>();
