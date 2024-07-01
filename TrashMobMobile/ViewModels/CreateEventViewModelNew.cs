@@ -1,4 +1,6 @@
-﻿namespace TrashMobMobile.ViewModels;
+﻿using System.Windows.Input;
+
+namespace TrashMobMobile.ViewModels;
 
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -15,6 +17,9 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
     private readonly IMobEventManager mobEventManager;
     private readonly IWaiverManager waiverManager;
+    
+    public ICommand PreviousCommand { get; set; }
+    public ICommand NextCommand { get; set; }
 
     [ObservableProperty]
     private EventViewModel eventViewModel;
