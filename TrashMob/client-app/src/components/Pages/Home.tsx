@@ -1,6 +1,5 @@
 import { FC, useEffect, useState } from 'react'
 import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
-import { getDefaultHeaders } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
 import { Col, Container, Row } from 'react-bootstrap';
 import Globe2 from '../assets/globe2.png';
@@ -10,12 +9,15 @@ import Trashbag from '../assets/home/Trashbag.svg';
 import Person from '../assets/home/Person.svg';
 import Clock from '../assets/home/Clock.svg';
 import { GettingStartedSection } from '../GettingStartedSection';
-import StatsData from '../Models/StatsData';
 import { Share } from 'react-bootstrap-icons';
 import { SocialsModal } from '../EventManagement/ShareToSocialsModal';
 import * as SharingMessages from '../../store/SharingMessages';
 import {EventsSection} from '../EventsSection';
 import { Button } from 'reactstrap';
+import { GetStats } from '../../services/stats';
+import { useQuery } from '@tanstack/react-query';
+import { Services } from '../../config/services.config';
+import StatsData from '../Models/StatsData';
 
 export interface HomeProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -23,35 +25,24 @@ export interface HomeProps extends RouteComponentProps<any> {
     onUserUpdated: any;
 }
 
-const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, match }) => {
-    const [totalBags, setTotalBags] = useState<number>(0);
-    const [totalHours, setTotalHours] = useState<number>(0);
-    const [totalEvents, setTotalEvents] = useState<number>(0);
-    const [totalParticipants, setTotalParticipants] = useState<number>(0);
+const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, match }) => {    
     const [showModal, setShowSocialsModal] = useState<boolean>(false);
+    const [stats, setStats] = useState<StatsData | null>(null);
+
+    const handleShowModal = (showModal: boolean) => setShowSocialsModal(showModal);
+    const getStats = useQuery({ 
+        queryKey: GetStats().key, 
+        queryFn: GetStats().service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
 
     useEffect(() => {
-
         window.scrollTo(0, 0);
-
-        const headers = getDefaultHeaders('GET');
-
-        fetch('/api/stats', {
-            method: 'GET',
-            headers: headers
-        })
-            .then(response => response.json() as Promise<StatsData>)
-            .then(data => {
-                setTotalBags(data.totalBags);
-                setTotalHours(data.totalHours);
-                setTotalEvents(data.totalEvents);
-                setTotalParticipants(data.totalParticipants);
-            });
+        getStats.refetch().then(res => {
+            setStats(res.data?.data || null)
+        });
     }, [isUserLoaded, currentUser])
-
-    const handleShowModal = (showModal: boolean) => {
-        setShowSocialsModal(showModal)
-    }
 
     return (
         <>
@@ -63,7 +54,7 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, mat
                             <img src={Logo} alt="TrashMob.eco logo" className="banner-logo"></img>
                             <h3 className="ml-md-4 mt-4 mb-4 mb-md-5 font-weight-bold font-size-xl banner-heading pl-3">Meet up. Clean up. Feel good.</h3>
                             <Link className="btn btn-primary ml-5 py-md-3 banner-button" to="/gettingstarted">Join us today</Link>
-                            <Button className="btn btn-primary ml-5 py-md-3 banner-button" onClick={() => { handleShowModal(true) }}>
+                            <Button className="btn btn-primary ml-5 py-md-3 banner-button" onClick={() => handleShowModal(true)}>
                                 <Share className="mr-2" />
                                 Invite a friend
                             </Button>
@@ -87,26 +78,18 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, mat
                 </Container>
             </div>
             <Container className="d-flex justify-content-around my-5 py-5 flex-column flex-md-row">
-                <div className="d-flex flex-column justify-content-center text-center">
-                    <img src={Calendar} alt="Calendar icon" className="w-auto mx-auto mb-3" />
-                    <span className="font-weight-bold font-size-lg">{totalEvents}</span>
-                    <span className="font-weight-bold">Events Hosted</span>
-                </div>
-                <div className="d-flex flex-column justify-content-center text-center">
-                    <img src={Trashbag} alt="Trashbag icon" className="w-auto mx-auto mb-3" />
-                    <span className="font-weight-bold font-size-lg">{totalBags}</span>
-                    <span className="font-weight-bold">Bags Collected</span>
-                </div>
-                <div className="d-flex flex-column justify-content-center text-center">
-                    <img src={Person} alt="Person icon" className="w-auto mx-auto mb-3" />
-                    <span className="font-weight-bold font-size-lg">{totalParticipants}</span>
-                    <span className="font-weight-bold">Participants</span>
-                </div>
-                <div className="d-flex flex-column justify-content-center text-center">
-                    <img src={Clock} alt="Clock icon" className="w-auto mx-auto mb-3" />
-                    <span className="font-weight-bold font-size-lg">{totalHours}</span>
-                    <span className="font-weight-bold">Hours Spent</span>
-                </div>
+                {[
+                    { id: 0, title: 'Events Hosted', value: stats?.totalEvents || 0, icon: Calendar, alt: 'Calendar icon' },
+                    { id: 1, title: 'Bags Collected', value: stats?.totalBags || 0, icon: Trashbag, alt: 'Trashbag icon' },
+                    { id: 2, title: 'Participants', value: stats?.totalParticipants || 0, icon: Person, alt: 'Person icon' },
+                    { id: 3, title: 'Hours Spent', value: stats?.totalHours || 0, icon: Clock, alt: 'Clock icon' },
+                ].map(item => (
+                    <div key={item.id} className="d-flex flex-column justify-content-center text-center">
+                        <img src={item.icon} alt={item.alt} className="w-auto mx-auto mb-3" />
+                        <span className="font-weight-bold font-size-lg">{item.value}</span>
+                        <span className="font-weight-bold">{item.title}</span>
+                    </div>
+                ))}
             </Container>
             <EventsSection currentUser={currentUser} isUserLoaded={isUserLoaded} history={history} location={location} match={match}></EventsSection>
             <GettingStartedSection />

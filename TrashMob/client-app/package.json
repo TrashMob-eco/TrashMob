@@ -8,15 +8,9 @@
     "@culturehq/add-to-calendar": "^1.1.2",
     "@fluentui/react": "^8.14.13",
     "@material-ui/core": "^4.11.4",
-    "@testing-library/jest-dom": "^5.12.0",
-    "@testing-library/react": "^11.2.7",
-    "@testing-library/user-event": "^12.8.3",
-    "@types/jest": "^26.0.23",
-    "@types/node": "^12.20.13",
-    "@types/react": "^17.0.6",
-    "@types/react-dom": "^17.0.5",
-    "@types/react-router-dom": "^5.1.7",
+    "@tanstack/react-query": "^4.36.1",
     "@uifabric/icons": "^7.5.23",
+    "axios": "^1.7.2",
     "azure-maps-control": "2.0.32",
     "bootstrap": "^4.6.0",
     "buffer": "^6.0.3",
@@ -46,7 +40,6 @@
     "react-simple-captcha": "^9.0.2",
     "reactstrap": "^8.9.0",
     "rimraf": "^3.0.2",
-    "typescript": "^4.2.4",
     "web-vitals": "^1.1.2"
   },
   "scripts": {
@@ -59,7 +52,10 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "rules": {
+      "react-hooks/exhaustive-deps": "off"
+    }
   },
   "browserslist": {
     "production": [
@@ -74,8 +70,18 @@
     ]
   },
   "devDependencies": {
+    "@tanstack/react-query-devtools": "^4.36.1",
+    "@testing-library/jest-dom": "^5.12.0",
+    "@testing-library/react": "^11.2.7",
+    "@testing-library/user-event": "^12.8.3",
+    "@types/jest": "^26.0.23",
+    "@types/node": "^12.20.13",
+    "@types/react": "^17.0.6",
+    "@types/react-dom": "^17.0.5",
+    "@types/react-router-dom": "^5.1.7",
     "node-gyp": "^9.3.1",
     "node-sass": "^8.0.0",
-    "react-scripts": "^5.0.1"
+    "react-scripts": "^5.0.1",
+    "typescript": "^4.2.4"
   }
 }

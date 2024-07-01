@@ -1,7 +1,6 @@
 import * as React from 'react'
 import UserData from '../Models/UserData';
 import { Dropdown } from 'react-bootstrap';
-import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import * as Constants from '../Models/Constants';
 import EventPartnerLocationServiceStatusData from '../Models/EventPartnerLocationServiceStatusData';
 import { getEventPartnerLocationServiceStatus } from '../../store/eventPartnerLocationServiceStatusHelper';
@@ -11,6 +10,10 @@ import DisplayPartnerLocationEventServiceData from '../Models/DisplayPartnerLoca
 import ServiceTypeData from '../Models/ServiceTypeData';
 import { getServiceType } from '../../store/serviceTypeHelper';
 import { CheckSquare, XSquare } from 'react-bootstrap-icons';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { Services } from '../../config/services.config';
+import { GetEventPartnerLocationServiceStatuses, GetPartnerLocationEventServicesByLocationId, GetPartnerLocationEventServicesByUserId, UpdateEventPartnerLocationServices } from '../../services/locations';
+import { GetServiceTypes } from '../../services/services';
 
 export interface PartnerLocationEventRequestsDataProps {
     partnerLocationId: string;
@@ -25,110 +28,66 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
     const [serviceTypeList, setServiceTypeList] = React.useState<ServiceTypeData[]>([]);
     const [partnerLocationEvents, setPartnerLocationEvents] = React.useState<DisplayPartnerLocationEventData[]>([]);
 
+    const getEventPartnerLocationServiceStatuses = useQuery({
+        queryKey: GetEventPartnerLocationServiceStatuses().key,
+        queryFn: GetEventPartnerLocationServiceStatuses().service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const getServiceTypes = useQuery({
+        queryKey: GetServiceTypes().key,
+        queryFn: GetServiceTypes().service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const getPartnerLocationEventServicesByUserId = useQuery({
+        queryKey: GetPartnerLocationEventServicesByUserId({ userId: props.currentUser.id }).key,
+        queryFn: GetPartnerLocationEventServicesByUserId({ userId: props.currentUser.id }).service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const getPartnerLocationEventServicesByLocationId = useMutation({
+        mutationKey: GetPartnerLocationEventServicesByLocationId().key,
+        mutationFn: GetPartnerLocationEventServicesByLocationId().service
+    })
+
+    const updateEventPartnerLocationServices = useMutation({
+        mutationKey: UpdateEventPartnerLocationServices().key,
+        mutationFn: UpdateEventPartnerLocationServices().service
+    })
+
     React.useEffect(() => {
         if (props.isUserLoaded && props.partnerLocationId) {
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
-
-                const headers = getDefaultHeaders('GET');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/eventpartnerlocationservicestatuses', {
-                    method: 'GET',
-                    headers: headers
-                })
-                    .then(response => response.json() as Promise<EventPartnerLocationServiceStatusData[]>)
-                    .then(data => {
-                        setEventPartnerStatusList(data)
-                    })
-                    .then(() => {
-                        if (props.partnerLocationId !== Guid.EMPTY) {
-                            fetch('/api/partnerlocationeventservices/' + props.partnerLocationId, {
-                                method: 'GET',
-                                headers: headers
-                            })
-                                .then(response => response.json() as Promise<DisplayPartnerLocationEventData[]>)
-                                .then(data => {
-                                    setPartnerLocationEvents(data);
-                                })
-                        }
-                        else {
-                            fetch('/api/partnerlocationeventservices/getbyuser/' + props.currentUser.id, {
-                                method: 'GET',
-                                headers: headers
-                            })
-                                .then(response => response.json() as Promise<DisplayPartnerLocationEventData[]>)
-                                .then(data => {
-                                    setPartnerLocationEvents(data);
-                                })
-                        }
-
-                    })
-                    .then(() => {
-                        fetch('/api/servicetypes/', {
-                            method: 'GET',
-                            headers: headers
-                        })
-                            .then(response => response.json() as Promise<ServiceTypeData[]>)
-                            .then(data => {
-                                setServiceTypeList(data);
-                                setIsPartnerLocationEventDataLoaded(true)
-                            })
+            getEventPartnerLocationServiceStatuses.refetch().then(locationServiceStatusesRes => {
+                setEventPartnerStatusList(locationServiceStatusesRes.data?.data || [])
+                if (props.partnerLocationId !== Guid.EMPTY) {
+                    getPartnerLocationEventServicesByLocationId.mutateAsync({ locationId: props.partnerLocationId }).then(res => {
+                        setPartnerLocationEvents(res.data || []);
                     });
-            });
+                } else {
+                    getPartnerLocationEventServicesByUserId.refetch().then(res => {
+                        setPartnerLocationEvents(res.data?.data || []);
+                    });
+                }
+            }).then(() => {
+                getServiceTypes.refetch().then(serviceTypesRes => {
+                    setServiceTypeList(serviceTypesRes.data?.data || []);
+                    setIsPartnerLocationEventDataLoaded(true)
+                })
+            })
         }
     }, [props.partnerLocationId, props.isUserLoaded, props.currentUser.id])
 
     // This will handle the submit form event.  
     function handleRequestPartnerAssistance(eventId: string, partnerLocationId: string, serviceTypeId: number, eventPartnerLocationServiceStatusId: number) {
-
-        var method = "PUT";
-
-        const account = msalClient.getAllAccounts()[0];
-        var apiConfig = getApiConfig();
-
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        var acceptDecline = (eventPartnerLocationServiceStatusId === Constants.EventPartnerLocationServiceStatusAccepted) ? "accept" : "decline";
-        var url = "/api/eventpartnerlocationservices/" + acceptDecline + "/" + eventId + "/" + partnerLocationId + "/" + serviceTypeId;
-
-        return msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-            if (!validateToken(tokenResponse.idTokenClaims)) {
-                return;
-            }
-
-            const headers = getDefaultHeaders(method);
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch(url, {
-                method: method,
-                headers: headers,
-            }).then(() => {
-                fetch('/api/partnerlocationeventservices/' + partnerLocationId, {
-                    method: 'GET',
-                    headers: headers
-                })
-                    .then(response => response.json() as Promise<DisplayPartnerLocationEventData[]>)
-                    .then(data => {
-                        setPartnerLocationEvents(data);
-                        setIsPartnerLocationEventDataLoaded(true)
-                    })
-            });
+        updateEventPartnerLocationServices.mutateAsync({ eventId, partnerLocationId, serviceTypeId, acceptDecline: eventPartnerLocationServiceStatusId === Constants.EventPartnerLocationServiceStatusAccepted ? 'accept' : 'decline' }).then(() => {
+            getPartnerLocationEventServicesByLocationId.mutateAsync({ locationId: partnerLocationId }).then(res => {
+                setPartnerLocationEvents(res.data || []);
+                setIsPartnerLocationEventDataLoaded(true)
+            })
         })
     }
 

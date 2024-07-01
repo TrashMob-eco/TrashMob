@@ -1,7 +1,6 @@
 import * as React from 'react'
 
 import { RouteComponentProps } from 'react-router-dom';
-import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
 import { Col, Container, Dropdown, Row } from 'react-bootstrap';
 import PartnerRequestData from '../Models/PartnerRequestData';
@@ -10,6 +9,9 @@ import { getPartnerRequestStatus } from '../../store/partnerRequestStatusHelper'
 import * as Constants from '../Models/Constants'
 import { CheckSquare, XSquare } from 'react-bootstrap-icons';
 import PhoneInput from 'react-phone-input-2'
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { Services } from '../../config/services.config';
+import { ApprovePartnerRequest, DenyPartnerRequest, GetPartnerRequests, GetPartnerRequestStatuses } from '../../services/partners';
 
 interface AdminPartnerRequestsPropsType extends RouteComponentProps {
     isUserLoaded: boolean;
@@ -21,47 +23,39 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
     const [isPartnerRequestDataLoaded, setIsPartnerRequestDataLoaded] = React.useState<boolean>(false);
     const [partnerRequestStatusList, setPartnerRequestStatusList] = React.useState<PartnerRequestStatusData[]>([]);
 
+    const getPartnerRequestStatuses = useQuery({ 
+        queryKey: GetPartnerRequestStatuses().key,
+        queryFn: GetPartnerRequestStatuses().service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const getPartnerRequests = useQuery({ 
+        queryKey: GetPartnerRequests().key,
+        queryFn: GetPartnerRequests().service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const approvePartnerRequest = useMutation({
+        mutationKey: ApprovePartnerRequest().key,
+        mutationFn: ApprovePartnerRequest().service,
+    })
+
+    const denyPartnerRequest = useMutation({
+        mutationKey: DenyPartnerRequest().key,
+        mutationFn: DenyPartnerRequest().service,
+    })
+
     React.useEffect(() => {
 
         if (props.isUserLoaded) {
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
-
-                const headers = getDefaultHeaders('GET');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                // Load the PartnerRequestStatusList
-                fetch('/api/partnerrequeststatuses', {
-                    method: 'GET',
-                    headers: headers
+            getPartnerRequestStatuses.refetch().then((partnerRequestStatusesRes) => {
+                setPartnerRequestStatusList(partnerRequestStatusesRes.data?.data || []);
+                getPartnerRequests.refetch().then((partnerRequestsRes) => {
+                    setPartnerRequestList(partnerRequestsRes.data?.data || []);
+                    setIsPartnerRequestDataLoaded(true);
                 })
-                    .then(response => response.json() as Promise<Array<any>>)
-                    .then(data => {
-                        setPartnerRequestStatusList(data);
-                    })
-                    .then(() => {
-                        // Load the Partner Request List
-                        fetch('/api/partnerrequests', {
-                            method: 'GET',
-                            headers: headers,
-                        })
-                            .then(response => response.json() as Promise<Array<PartnerRequestData>>)
-                            .then(data => {
-                                setPartnerRequestList(data);
-                                setIsPartnerRequestDataLoaded(true);
-                            });
-                    });
             })
         }
     }, [props.isUserLoaded])
@@ -69,89 +63,27 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
 
     // Handle approve request for a partner  
     function handleApprove(id: string, name: string) {
-        if (!window.confirm("Do you want to approve partner with name: " + name))
-            return;
+        if (!window.confirm("Do you want to approve partner with name: " + name)) return;
         else {
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
-
-                const headers = getDefaultHeaders('PUT');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('api/partnerrequests/approve/' + id, {
-                    method: 'put',
-                    headers: headers
-                }).then(() => {
-                    const getHeaders = getDefaultHeaders('GET');
-                    getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                    // Load the Partner Request List
-                    fetch('/api/partnerrequests', {
-                        method: 'GET',
-                        headers: getHeaders,
-                    })
-                        .then(response => response.json() as Promise<Array<PartnerRequestData>>)
-                        .then(data => {
-                            setPartnerRequestList(data);
-                            setIsPartnerRequestDataLoaded(true);
-                        });
-                });
-            });
+            approvePartnerRequest.mutateAsync({ id }).then(() => {
+                getPartnerRequests.refetch().then(res => {
+                    setPartnerRequestList(res.data?.data || []);
+                    setIsPartnerRequestDataLoaded(true);
+                })
+            })
         }
     }
 
     // Handle approve request for a partner  
     function handleDeny(id: string, name: string) {
-        if (!window.confirm("Do you want to deny partner with name: " + name))
-            return;
+        if (!window.confirm("Do you want to deny partner with name: " + name)) return;
         else {
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
-
-                const headers = getDefaultHeaders('PUT');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('api/partnerrequests/deny/' + id, {
-                    method: 'put',
-                    headers: headers
-                }).then(() => {
-                    const getHeaders = getDefaultHeaders('GET');
-                    getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                    // Load the Partner Request List
-                    fetch('/api/partnerrequests', {
-                        method: 'GET',
-                        headers: getHeaders,
-                    })
-                        .then(response => response.json() as Promise<Array<PartnerRequestData>>)
-                        .then(data => {
-                            setPartnerRequestList(data);
-                            setIsPartnerRequestDataLoaded(true);
-                        });
-                });
-            });
+            denyPartnerRequest.mutateAsync({ id }).then(() => {
+                getPartnerRequests.refetch().then(res => {
+                    setPartnerRequestList(res.data?.data || []);
+                    setIsPartnerRequestDataLoaded(true);
+                })
+            })
         }
     }
 

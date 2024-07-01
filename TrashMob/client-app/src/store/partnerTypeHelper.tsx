@@ -1,27 +1,17 @@
 import PartnerTypeData from "../components/Models/PartnerTypeData";
-import { getDefaultHeaders } from "./AuthStore";
+import { GetPartnerTypes } from "../services/partners";
 
 export function getPartnerType(partnerTypeList: PartnerTypeData[], partnerTypeId: any): string {
-    if (partnerTypeList === null || partnerTypeList.length === 0) {
-        partnerTypeList = getPartnerTypes();
-    }
-
-    var partnerType = partnerTypeList.find(et => et.id === partnerTypeId)
-    if (partnerType)
-        return partnerType.name;
-    return "Unknown";
+    const partnerType = partnerTypeList.find(et => et.id === partnerTypeId)
+    return (partnerType) ? partnerType.name : "Unknown";
 }
 
-function getPartnerTypes(): PartnerTypeData[] {
-    const headers = getDefaultHeaders('GET');
+export async function getPartnerTypeAsync(partnerTypeId: any): Promise<string> {
+    const partnerTypeList = await getPartnerTypes();
+    return getPartnerType(partnerTypeList, partnerTypeId);
+}
 
-    fetch('/api/partnerTypes', {
-        method: 'GET',
-        headers: headers
-    })
-        .then(response => response.json() as Promise<Array<any>>)
-        .then(data => {
-            return data;
-        });
-    return [];
+async function getPartnerTypes(): Promise<PartnerTypeData[]> {
+    const result = await GetPartnerTypes().service().then(res => res.data).catch(err => [])
+    return result
 }

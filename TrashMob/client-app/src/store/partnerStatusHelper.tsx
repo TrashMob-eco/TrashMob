@@ -1,27 +1,17 @@
 import PartnerStatusData from "../components/Models/PartnerStatusData";
-import { getDefaultHeaders } from "./AuthStore";
+import { GetPartnerStatuses } from "../services/partners";
 
 export function getPartnerStatus(partnerStatusList: PartnerStatusData[], partnerStatusId: any): string {
-    if (partnerStatusList === null || partnerStatusList.length === 0) {
-        partnerStatusList = getPartnerStatuses();
-    }
-
-    var partnerStatus = partnerStatusList.find(et => et.id === partnerStatusId)
-    if (partnerStatus)
-        return partnerStatus.name;
-    return "Unknown";
+    const partnerStatus = partnerStatusList.find(et => et.id === partnerStatusId)
+    return partnerStatus ? partnerStatus.name : "Unknown";
 }
 
-function getPartnerStatuses(): PartnerStatusData[] {
-    const headers = getDefaultHeaders('GET');
+export async function getPartnerStatusAsync(partnerStatusId: any): Promise<string> {
+    const partnerStatusList = await getPartnerStatuses();
+    return getPartnerStatus(partnerStatusList, partnerStatusId);
+}
 
-    fetch('/api/partnerStatuses', {
-        method: 'GET',
-        headers: headers
-    })
-        .then(response => response.json() as Promise<Array<any>>)
-        .then(data => {
-            return data;
-        });
-    return [];
+async function getPartnerStatuses(): Promise<PartnerStatusData[]> {
+    const result = await GetPartnerStatuses().service().then(res => res.data).catch(err => [])
+    return result;
 }

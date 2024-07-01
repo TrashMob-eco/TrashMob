@@ -1,13 +1,16 @@
 import * as React from 'react'
 import UserData from '../Models/UserData';
 import { Button, Col, Dropdown, Form, OverlayTrigger, ToggleButton, Tooltip } from 'react-bootstrap';
-import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import { Guid } from 'guid-typescript';
 import ServiceTypeData from '../Models/ServiceTypeData';
 import { getServiceType } from '../../store/serviceTypeHelper';
 import PartnerLocationServiceData from '../Models/PartnerLocationServiceData';
 import { Pencil, XSquare } from 'react-bootstrap-icons';
+import { GetServiceTypes } from '../../services/services';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { Services } from '../../config/services.config';
+import { CreateLocationService, DeletePartnerLocationServiceByLocationIdAndServiceType, GetPartnerLocationServiceByLocationIdAndServiceType, GetPartnerLocationsServicesByLocationId, UpdateLocationService } from '../../services/locations';
 
 export interface PartnerLocationServicesDataProps {
     partnerLocationId: string;
@@ -33,46 +36,50 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
     const [isAddEnabled, setIsAddEnabled] = React.useState<boolean>(true);
 
+    const getServiceTypes = useQuery({
+        queryKey: GetServiceTypes().key,
+        queryFn: GetServiceTypes().service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const getPartnerLocationsServicesByLocationId = useQuery({
+        queryKey: GetPartnerLocationsServicesByLocationId({ locationId: props.partnerLocationId }).key,
+        queryFn: GetPartnerLocationsServicesByLocationId({ locationId: props.partnerLocationId }).service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const getPartnerLocationServiceByLocationIdAndServiceType = useMutation({
+        mutationKey: GetPartnerLocationServiceByLocationIdAndServiceType().key,
+        mutationFn: GetPartnerLocationServiceByLocationIdAndServiceType().service,
+    });
+
+    const deletePartnerLocationServiceByLocationIdAndServiceType = useMutation({
+        mutationKey: DeletePartnerLocationServiceByLocationIdAndServiceType().key,
+        mutationFn: DeletePartnerLocationServiceByLocationIdAndServiceType().service,
+    });
+
+    const createLocationService = useMutation({
+        mutationKey: CreateLocationService().key,
+        mutationFn: CreateLocationService().service,
+    });
+
+    const updateLocationService = useMutation({
+        mutationKey: UpdateLocationService().key,
+        mutationFn: UpdateLocationService().service,
+    });
+
     React.useEffect(() => {
-
-        const headers = getDefaultHeaders('GET');
-
-        fetch('/api/servicetypes', {
-            method: 'GET',
-            headers: headers,
+        getServiceTypes.refetch().then(res => {
+            setServiceTypeList(res.data?.data || []);
         })
-            .then(response => response.json() as Promise<Array<any>>)
-            .then(data => {
-                setServiceTypeList(data);
-            });
 
         if (props.isUserLoaded && props.partnerLocationId && props.partnerLocationId !== Guid.EMPTY) {
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
-
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/partnerlocationservices/getbypartnerlocation/' + props.partnerLocationId, {
-                    method: 'GET',
-                    headers: headers,
-                })
-                    .then(response => response.json() as Promise<PartnerLocationServiceData[]>)
-                    .then(data => {
-                        setPartnerLocationServices(data);
-                        setIsPartnerLocationServicesDataLoaded(true);
-                    });
-            });
+            getPartnerLocationsServicesByLocationId.refetch().then(res => {
+                setPartnerLocationServices(res.data?.data || []);
+                setIsPartnerLocationServicesDataLoaded(true);
+            })
         }
     }, [props.partnerLocationId, props.isUserLoaded])
 
@@ -106,158 +113,80 @@ export const PartnerLocationServices: React.FC<PartnerLocationServicesDataProps>
     }
 
     function editService(serviceTypeId: number) {
-        const account = msalClient.getAllAccounts()[0];
-        var apiConfig = getApiConfig();
-
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-            if (!validateToken(tokenResponse.idTokenClaims)) {
-                return;
-            }
-
-            const headers = getDefaultHeaders('GET');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch('/api/partnerlocationservices/' + props.partnerLocationId + '/' + serviceTypeId, {
-                method: 'GET',
-                headers: headers,
-            })
-                .then(response => response.json() as Promise<PartnerLocationServiceData>)
-                .then(data => {
-                    setServiceTypeId(data.serviceTypeId);
-                    setNotes(data.notes);
-                    setIsAutoApproved(data.isAutoApproved);
-                    setIsAdvanceNoticeRequired(data.isAdvanceNoticeRequired);
-                    setCreatedByUserId(data.createdByUserId);
-                    setCreatedDate(new Date(data.createdDate));
-                    setLastUpdatedDate(new Date(data.lastUpdatedDate));
-                    setIsAddEnabled(false);
-                    setIsEdit(true);
-                });
-        });
+        getPartnerLocationServiceByLocationIdAndServiceType.mutateAsync({ locationId: props.partnerLocationId, serviceTypeId }).then(res => {
+            setServiceTypeId(res.data.serviceTypeId);
+            setNotes(res.data.notes);
+            setIsAutoApproved(res.data.isAutoApproved);
+            setIsAdvanceNoticeRequired(res.data.isAdvanceNoticeRequired);
+            setCreatedByUserId(res.data.createdByUserId);
+            setCreatedDate(new Date(res.data.createdDate));
+            setLastUpdatedDate(new Date(res.data.lastUpdatedDate));
+            setIsAddEnabled(false);
+            setIsEdit(true);
+        })
     }
 
     function removeService(serviceTypeId: number) {
-        if (!window.confirm("Please confirm that you want to remove service type: '" + getServiceType(serviceTypeList, serviceTypeId) + "' from this Partner?"))
-            return;
+        if (!window.confirm("Please confirm that you want to remove service type: '" + getServiceType(serviceTypeList, serviceTypeId) + "' from this Partner?")) return;
         else {
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
-
-                const headers = getDefaultHeaders('DELETE');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/partnerlocationservices/' + props.partnerLocationId + '/' + serviceTypeId, {
-                    method: 'DELETE',
-                    headers: headers,
+            deletePartnerLocationServiceByLocationIdAndServiceType.mutateAsync({ locationId: props.partnerLocationId, serviceTypeId }).then(() => {
+                setIsPartnerLocationServicesDataLoaded(false);
+                getPartnerLocationsServicesByLocationId.refetch().then(res => {
+                    setPartnerLocationServices(res.data?.data || []);
+                    setIsPartnerLocationServicesDataLoaded(true);
                 })
-                    .then(() => {
-                        setIsPartnerLocationServicesDataLoaded(false);
-
-                        fetch('/api/partnerlocationservices/getbypartnerlocation/' + props.partnerLocationId, {
-                            method: 'GET',
-                            headers: headers,
-                        })
-                            .then(response => response.json() as Promise<PartnerLocationServiceData[]>)
-                            .then(data => {
-                                setPartnerLocationServices(data);
-                                setIsPartnerLocationServicesDataLoaded(true);
-                            });
-                    })
-            });
+            })
         }
     }
 
     function handleSave(event: any) {
-
         event.preventDefault();
 
-        if (!isSaveEnabled) {
-            return;
-        }
-
+        if (!isSaveEnabled) return;
         setIsSaveEnabled(false);
 
-        const account = msalClient.getAllAccounts()[0];
-        var apiConfig = getApiConfig();
-
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        var method = "PUT";
+        const body = new PartnerLocationServiceData();
+        body.partnerLocationId = props.partnerLocationId;
+        body.serviceTypeId = serviceTypeId ?? 0;
+        body.notes = notes;
+        body.isAutoApproved = isAutoApproved;
+        body.isAdvanceNoticeRequired = isAdvanceNoticeRequired;
+        body.createdByUserId = createdByUserId;
+        setIsAdvanceNoticeRequired(true);
 
         if (createdByUserId === Guid.EMPTY) {
-            method = "POST";
-
             // We need to prevent an additional add of an existing service type
             if (partnerLocationServices.find(obj => obj.serviceTypeId === serviceTypeId)) {
                 window.alert("Adding more than one instance of an existing service type is not allowed.")
                 return;
             }
-        }
-
-        var partnerService = new PartnerLocationServiceData();
-        partnerService.partnerLocationId = props.partnerLocationId;
-        partnerService.serviceTypeId = serviceTypeId ?? 0;
-        partnerService.notes = notes;
-        partnerService.isAutoApproved = isAutoApproved;
-        partnerService.isAdvanceNoticeRequired = isAdvanceNoticeRequired;
-        setIsAdvanceNoticeRequired(true);
-        partnerService.createdByUserId = createdByUserId;
-
-        var data = JSON.stringify(partnerService);
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-            if (!validateToken(tokenResponse.idTokenClaims)) {
-                return;
-            }
-
-            const headers = getDefaultHeaders(method);
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch('/api/partnerlocationservices', {
-                method: method,
-                headers: headers,
-                body: data,
-            })
-                .then(() => {
-                    setIsAdd(false);
+            
+            createLocationService.mutateAsync(body).then(() => {
+                setIsAdd(false);
+                setIsEdit(false);
+                setIsPartnerLocationServicesDataLoaded(false);
+                getPartnerLocationsServicesByLocationId.refetch().then(res => {
+                    setPartnerLocationServices(res.data?.data || []);
+                    setIsPartnerLocationServicesDataLoaded(true);
                     setIsEdit(false);
-                    setIsPartnerLocationServicesDataLoaded(false);
-
-                    fetch('/api/partnerlocationservices/getbypartnerlocation/' + props.partnerLocationId, {
-                        method: 'GET',
-                        headers: headers,
-                    })
-                        .then(response => response.json() as Promise<PartnerLocationServiceData[]>)
-                        .then(data => {
-                            setPartnerLocationServices(data);
-                            setIsPartnerLocationServicesDataLoaded(true);
-                            setIsEdit(false);
-                            setIsAdd(false);
-                            setIsAddEnabled(true);
-                        });
-                });
-        });
+                    setIsAdd(false);
+                    setIsAddEnabled(true);
+                })
+            })
+        } else {
+            updateLocationService.mutateAsync(body).then(() => {
+                setIsAdd(false);
+                setIsEdit(false);
+                setIsPartnerLocationServicesDataLoaded(false);
+                getPartnerLocationsServicesByLocationId.refetch().then(res => {
+                    setPartnerLocationServices(res.data?.data || []);
+                    setIsPartnerLocationServicesDataLoaded(true);
+                    setIsEdit(false);
+                    setIsAdd(false);
+                    setIsAddEnabled(true);
+                })
+            })
+        }
     }
 
     React.useEffect(() => {

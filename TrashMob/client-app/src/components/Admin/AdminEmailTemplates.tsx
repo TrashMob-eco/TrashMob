@@ -1,10 +1,12 @@
 import * as React from 'react'
 
 import { RouteComponentProps } from 'react-router-dom';
-import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import UserData from '../Models/UserData';
 import { Col, Container, Row } from 'react-bootstrap';
 import EmailTemplateData from '../Models/EmailTemplateData';
+import { useQuery } from '@tanstack/react-query';
+import { GetAdminEmailTemplates } from '../../services/admin';
+import { Services } from '../../config/services.config';
 
 interface AdminEmailTemplatesPropsType extends RouteComponentProps {
     isUserLoaded: boolean;
@@ -12,42 +14,22 @@ interface AdminEmailTemplatesPropsType extends RouteComponentProps {
 };
 
 export const AdminEmailTemplates: React.FC<AdminEmailTemplatesPropsType> = (props) => {
-
     const [emailList, setEmailList] = React.useState<EmailTemplateData[]>([]);
     const [isEmailDataLoaded, setIsEmailDataLoaded] = React.useState<boolean>(false);
 
+    const getAdminEmailTemplates = useQuery({ 
+        queryKey: GetAdminEmailTemplates().key,
+        queryFn: GetAdminEmailTemplates().service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+    
     React.useEffect(() => {
-
         if (props.isUserLoaded) {
-
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
-
-                const headers = getDefaultHeaders('GET');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                // Load the User List
-                fetch('/api/admin/emailtemplates', {
-                    method: 'GET',
-                    headers: headers,
-                })
-                    .then(response => response.json() as Promise<Array<EmailTemplateData>>)
-                    .then(data => {
-                        setEmailList(data);
-                        setIsEmailDataLoaded(true);
-                    });
-            })
+            getAdminEmailTemplates.refetch().then((res) => {
+                setEmailList(res.data?.data || []);
+                setIsEmailDataLoaded(true);
+            });
         }
     }, [props.isUserLoaded])
 
