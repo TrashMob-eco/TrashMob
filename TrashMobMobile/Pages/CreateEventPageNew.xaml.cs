@@ -10,11 +10,8 @@ using Microsoft.Maui.Maps;
 
 public partial class CreateEventPageNew : ContentPage
 {
-    private int _currentStep = 0;
-    private readonly ContentView[] _steps;
-    
     private readonly CreateEventViewModelNew viewModel;
-    
+
     public CreateEventPageNew(CreateEventViewModelNew viewModel)
     {
         InitializeComponent();
@@ -22,40 +19,19 @@ public partial class CreateEventPageNew : ContentPage
         this.viewModel.Notify = Notify;
         this.viewModel.NotifyError = NotifyError;
         this.viewModel.Navigation = Navigation;
-        
-        _steps = new ContentView[]
+
+        viewModel.Steps = new IContentView[]
         {
             new Step1(),
             new Step2(),
             new Step3(),
             new Step4()
         };
-        
-        StepContent.Content = _steps[_currentStep];
-        
-        this.viewModel.PreviousCommand = new Command(OnPrevious);
-        this.viewModel.NextCommand = new Command(OnNext);
-        
+
         BindingContext = this.viewModel;
     }
 
-    private void OnPrevious()
-    {
-        if (_currentStep > 0)
-        {
-            _currentStep--;
-            StepContent.Content = _steps[_currentStep];
-        }
-    }
 
-    private void OnNext()
-    {
-        if (_currentStep < _steps.Length - 1)
-        {
-            _currentStep++;
-            StepContent.Content = _steps[_currentStep];
-        }
-    }
 
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
@@ -77,7 +53,7 @@ public partial class CreateEventPageNew : ContentPage
         await viewModel.ChangeLocation(e.Location);
     }
 
-    // TODO: These can be moved to a service/abstraction
+// TODO: These can be moved to a service/abstraction
     private async Task Notify(string message)
     {
         var cancellationTokenSource = new CancellationTokenSource();

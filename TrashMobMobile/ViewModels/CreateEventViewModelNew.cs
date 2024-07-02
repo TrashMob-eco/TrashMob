@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
+using Color = Microsoft.Maui.Graphics.Color;
 
 public partial class CreateEventViewModelNew : BaseViewModel
 {
@@ -17,21 +18,27 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
     private readonly IMobEventManager mobEventManager;
     private readonly IWaiverManager waiverManager;
-    
+
     public ICommand PreviousCommand { get; set; }
     public ICommand NextCommand { get; set; }
+    
+    public ICommand CloseCommand { get; set; }
 
-    [ObservableProperty]
-    private EventViewModel eventViewModel;
+    [ObservableProperty] private Color stepOneColor;
 
-    [ObservableProperty]
-    private bool isManageEventPartnersEnabled;
+    [ObservableProperty] private Color stepTwoColor;
 
-    [ObservableProperty]
-    private string selectedEventType;
+    [ObservableProperty] private Color stepThreeColor;
 
-    [ObservableProperty]
-    private AddressViewModel userLocation;
+    [ObservableProperty] private Color stepFourColor;
+
+    [ObservableProperty] private EventViewModel eventViewModel;
+
+    [ObservableProperty] private bool isManageEventPartnersEnabled;
+
+    [ObservableProperty] private string selectedEventType;
+
+    [ObservableProperty] private AddressViewModel userLocation;
 
     public CreateEventViewModelNew(IMobEventManager mobEventManager,
         IEventTypeRestService eventTypeRestService,
@@ -42,9 +49,68 @@ public partial class CreateEventViewModelNew : BaseViewModel
         this.eventTypeRestService = eventTypeRestService;
         this.mapRestService = mapRestService;
         this.waiverManager = waiverManager;
+
+        NextCommand = new Command(() =>
+        {
+            SetCurrentStep(StepType.Forward);
+        });
+        
+        PreviousCommand = new Command(() =>
+        {
+            SetCurrentStep(StepType.Backward);
+        });
+        
+        CloseCommand= new Command(() =>
+        {
+            Shell.Current.GoToAsync("..");
+        });
     }
 
     public string DefaultEventName { get; } = "New Event";
+
+    public int CurrentStep { get; set; }
+
+    [ObservableProperty]
+    private IContentView currentView;
+
+    public IContentView[] Steps { get; set; }
+
+    public enum StepType
+    {
+        Forward,
+        Backward
+    }
+
+    public void SetCurrentView()
+    {
+        CurrentView = Steps[CurrentStep];
+        //TODO reference this colors from the app styles
+        StepOneColor = CurrentStep == 0 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
+        StepTwoColor = CurrentStep == 1 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
+        StepThreeColor = CurrentStep == 2 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
+        StepFourColor = CurrentStep == 3 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
+    }
+
+    public void SetCurrentStep(StepType step)
+    {
+        if (step == StepType.Backward)
+        {
+            if (CurrentStep > 0)
+            {
+                CurrentStep--;
+                SetCurrentView();
+            }
+        }
+        else
+        {
+            if (CurrentStep < Steps.Length - 1)
+            {
+                CurrentStep++;
+                SetCurrentView();
+            }
+        }
+    }
+
 
     // This is only for the map point
     public ObservableCollection<EventViewModel> Events { get; set; } = [];
@@ -56,6 +122,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
     public async Task Init()
     {
         IsBusy = true;
+
+        SetCurrentView();
 
         if (!await waiverManager.HasUserSignedTrashMobWaiverAsync())
         {
