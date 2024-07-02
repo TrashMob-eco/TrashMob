@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TrashMobMobile.Pages.CreateEvent;
 
-public partial class Step3 : ContentView
+public partial class Step3 : BaseStepClass 
 {
     public Step3()
     {

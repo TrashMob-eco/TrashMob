@@ -1,4 +1,5 @@
 ﻿using System.Windows.Input;
+using TrashMobMobile.Pages.CreateEvent;
 
 namespace TrashMobMobile.ViewModels;
 
@@ -21,7 +22,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
     public ICommand PreviousCommand { get; set; }
     public ICommand NextCommand { get; set; }
-    
+
     public ICommand CloseCommand { get; set; }
 
     [ObservableProperty] private Color stepOneColor;
@@ -50,28 +51,18 @@ public partial class CreateEventViewModelNew : BaseViewModel
         this.mapRestService = mapRestService;
         this.waiverManager = waiverManager;
 
-        NextCommand = new Command(() =>
-        {
-            SetCurrentStep(StepType.Forward);
-        });
-        
-        PreviousCommand = new Command(() =>
-        {
-            SetCurrentStep(StepType.Backward);
-        });
-        
-        CloseCommand= new Command(() =>
-        {
-            Shell.Current.GoToAsync("..");
-        });
+        NextCommand = new Command(() => { SetCurrentStep(StepType.Forward); });
+
+        PreviousCommand = new Command(() => { SetCurrentStep(StepType.Backward); });
+
+        CloseCommand = new Command(() => { Shell.Current.GoToAsync(".."); });
     }
 
     public string DefaultEventName { get; } = "New Event";
 
     public int CurrentStep { get; set; }
 
-    [ObservableProperty]
-    private IContentView currentView;
+    [ObservableProperty] private IContentView currentView;
 
     public IContentView[] Steps { get; set; }
 
@@ -81,9 +72,13 @@ public partial class CreateEventViewModelNew : BaseViewModel
         Backward
     }
 
-    public void SetCurrentView()
+    private void SetCurrentView()
     {
         CurrentView = Steps[CurrentStep];
+        
+        if (CurrentView is BaseStepClass current)
+            current.OnNavigated();
+        
         //TODO reference this colors from the app styles
         StepOneColor = CurrentStep == 0 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
         StepTwoColor = CurrentStep == 1 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
@@ -124,6 +119,12 @@ public partial class CreateEventViewModelNew : BaseViewModel
         IsBusy = true;
 
         SetCurrentView();
+
+        foreach (var item in Steps)
+        {
+            if (item is BaseStepClass step)
+                step.ViewModel = this;
+        }
 
         if (!await waiverManager.HasUserSignedTrashMobWaiverAsync())
         {

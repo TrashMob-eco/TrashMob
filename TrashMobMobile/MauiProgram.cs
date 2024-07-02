@@ -15,7 +15,7 @@ public static class MauiProgram
             .ConfigureSyncfusionCore()
             .UseMauiApp<App>()
             .UseMauiMaps()
-            .UseMauiCommunityToolkit()
+            .UseMauiCommunityToolkit(options => { options.SetShouldSuppressExceptionsInBehaviors(true); })
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
