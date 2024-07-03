@@ -7,12 +7,15 @@ using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class ViewEventViewModel : BaseViewModel
+public partial class ViewEventViewModel(IMobEventManager mobEventManager,
+    IEventTypeRestService eventTypeRestService,
+    IWaiverManager waiverManager,
+    IEventAttendeeRestService eventAttendeeRestService) : BaseViewModel
 {
-    private readonly IEventAttendeeRestService eventAttendeeRestService;
-    private readonly IEventTypeRestService eventTypeRestService;
-    private readonly IMobEventManager mobEventManager;
-    private readonly IWaiverManager waiverManager;
+    private readonly IEventAttendeeRestService eventAttendeeRestService = eventAttendeeRestService;
+    private readonly IEventTypeRestService eventTypeRestService = eventTypeRestService;
+    private readonly IMobEventManager mobEventManager = mobEventManager;
+    private readonly IWaiverManager waiverManager = waiverManager;
 
     [ObservableProperty]
     private string attendeeCount;
@@ -28,6 +31,12 @@ public partial class ViewEventViewModel : BaseViewModel
 
     [ObservableProperty]
     private bool enableUnregister;
+
+    [ObservableProperty]
+    private bool enableStartTrackEventRoute;
+
+    [ObservableProperty]
+    private bool enableStopEventRoute;
 
     [ObservableProperty]
     private bool enableViewEventSummary;
@@ -46,16 +55,7 @@ public partial class ViewEventViewModel : BaseViewModel
     [ObservableProperty]
     private string whatToExpect;
 
-    public ViewEventViewModel(IMobEventManager mobEventManager,
-        IEventTypeRestService eventTypeRestService,
-        IWaiverManager waiverManager,
-        IEventAttendeeRestService eventAttendeeRestService)
-    {
-        this.mobEventManager = mobEventManager;
-        this.eventTypeRestService = eventTypeRestService;
-        this.waiverManager = waiverManager;
-        this.eventAttendeeRestService = eventAttendeeRestService;
-    }
+    pr
 
     public ObservableCollection<EventViewModel> Events { get; set; } = [];
 
@@ -76,6 +76,8 @@ public partial class ViewEventViewModel : BaseViewModel
 
         EnableEditEvent = mobEvent.IsEventLead();
         EnableViewEventSummary = mobEvent.IsCompleted();
+        EnableStartTrackEventRoute = mobEvent.IsEventLead();
+        EnableStopEventRoute = false;
 
         WhatToExpect =
             "What to Expect: \n\tCleanup supplies provided\n\tMeet fellow community members\n\tContribute to a cleaner environment.";
@@ -120,6 +122,24 @@ public partial class ViewEventViewModel : BaseViewModel
     private async Task EditEvent()
     {
         await Shell.Current.GoToAsync($"{nameof(EditEventPage)}?EventId={EventViewModel.Id}");
+    }
+
+    [RelayCommand]
+    private Task StartTrackEventRoute()
+    {
+        EnableStartTrackEventRoute = false;
+        EnableStopEventRoute = true;
+
+        return Task.CompletedTask;
+    }
+
+    [RelayCommand]
+    private Task StopTrackEventRoute()
+    {
+        EnableStartTrackEventRoute = false;
+        EnableStopEventRoute = true;
+
+        return Task.CompletedTask;
     }
 
     [RelayCommand]
