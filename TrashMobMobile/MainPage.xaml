@@ -46,8 +46,15 @@
                                Text="Events Hosted" />
                         <Image Grid.Row="1"
                                Grid.Column="1"
-                               MaximumWidthRequest="25"
-                               Source="person.svg" />
+                               MaximumWidthRequest="25">
+                               <Image.Source>
+                                      <FontImageSource
+                                             FontFamily="{StaticResource GoogleMaterialFontFamily}"
+                                             Glyph="{StaticResource IconAccount}"
+                                             Size="24"
+                                             Color="GreenYellow" />
+                               </Image.Source>
+                        </Image>
                         <Label Grid.Row="2"
                                Grid.Column="1"
                                FontSize="Micro"
