@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<createEvent:BaseStepClass  xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                            xmlns:createEvent="clr-namespace:TrashMobMobile.Pages.CreateEvent"
+                            x:Class="TrashMobMobile.Pages.CreateEvent.Step5">
+    <Label Text="Step 5"></Label>
+</createEvent:BaseStepClass>

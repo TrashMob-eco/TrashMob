@@ -29,7 +29,7 @@
                     <Image.Source>
                         <FontImageSource
                             FontFamily="Icons"
-                            Glyph="{DynamicResource IconHome}"
+                            Glyph="{DynamicResource IconClose}"
                             Color="Black" />
                     </Image.Source>
                     <Image.GestureRecognizers>
@@ -38,7 +38,7 @@
                 </Image>
                 <Label Margin="35,0,0,0" VerticalOptions="Start" Text="Create an Event" FontSize="24"></Label>
             </StackLayout>
-            <Grid RowDefinitions="Auto" ColumnDefinitions="*,*,*,*">
+            <Grid RowDefinitions="Auto" ColumnDefinitions="*,*,*,*,*,*">
                 <BoxView BackgroundColor="{Binding StepOneColor}" Style="{StaticResource BoxLabelStyle}"
                          HeightRequest="4">
                 </BoxView>
@@ -50,6 +50,12 @@
                 </BoxView>
                 <BoxView BackgroundColor="{Binding StepFourColor}" Style="{StaticResource BoxLabelStyle}"
                          Grid.Column="3" HeightRequest="4">
+                </BoxView>
+                <BoxView BackgroundColor="{Binding StepFiveColor}" Style="{StaticResource BoxLabelStyle}"
+                         Grid.Column="4" HeightRequest="4">
+                </BoxView>
+                <BoxView BackgroundColor="{Binding StepSixColor}" Style="{StaticResource BoxLabelStyle}"
+                         Grid.Column="5" HeightRequest="4">
                 </BoxView>
             </Grid>
         </StackLayout>

@@ -32,6 +32,10 @@ public partial class CreateEventViewModelNew : BaseViewModel
     [ObservableProperty] private Color stepThreeColor;
 
     [ObservableProperty] private Color stepFourColor;
+    
+    [ObservableProperty] private Color stepFiveColor;
+    
+    [ObservableProperty] private Color stepSixColor;
 
     [ObservableProperty] private EventViewModel eventViewModel;
 
@@ -84,6 +88,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
         StepTwoColor = CurrentStep == 1 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
         StepThreeColor = CurrentStep == 2 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
         StepFourColor = CurrentStep == 3 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
+        StepFiveColor = CurrentStep == 4 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
+        StepSixColor = CurrentStep == 5 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
     }
 
     public void SetCurrentStep(StepType step)

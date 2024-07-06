@@ -186,6 +186,14 @@
 	    <DependentUpon>CreateEventPageNew.xaml</DependentUpon>
 	    <SubType>Code</SubType>
 	  </Compile>
+	  <Compile Update="Pages\CreateEvent\Step5.xaml.cs">
+	    <DependentUpon>Step5.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="Pages\CreateEvent\Step6.xaml.cs">
+	    <DependentUpon>Step6.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -267,6 +275,12 @@
 	  <MauiXaml Update="Pages\CreateEventPageNew.xaml">
 	    <SubType>Designer</SubType>
 	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\CreateEvent\Step5.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\CreateEvent\Step6.xaml">
+	    <SubType>Designer</SubType>
 	  </MauiXaml>
 	</ItemGroup>
 

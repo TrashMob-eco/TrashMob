@@ -346,7 +346,7 @@
     <!-- <x:String x:Key="IconClockIn">&#xf0153;</x:String> -->
     <!-- <x:String x:Key="IconClockOut">&#xf0154;</x:String> -->
     <!-- <x:String x:Key="IconClockStart">&#xf0155;</x:String> -->
-    <!-- <x:String x:Key="IconClose">&#xf0156;</x:String> -->
+    <x:String x:Key="IconClose">&#xf0156;</x:String>
     <!-- <x:String x:Key="IconCloseBox">&#xf0157;</x:String> -->
     <!-- <x:String x:Key="IconCloseBoxOutline">&#xf0158;</x:String> -->
     <!-- <x:String x:Key="IconCloseCircle">&#xf0159;</x:String> -->
