@@ -3,7 +3,6 @@
 <createEvent:BaseStepClass xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
              xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
              xmlns:createEvent="clr-namespace:TrashMobMobile.Pages.CreateEvent"
              x:DataType="viewModels:CreateEventViewModelNew"
@@ -21,10 +20,10 @@
                         <Label Text="Name" Style="{StaticResource FieldLabel}" />
 
                         <Entry Text="{Binding EventViewModel.Name}">
-                            <Entry.Behaviors>
-                                <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5"
-                                                                x:Name="nameValidator" />
-                            </Entry.Behaviors>
+                            <!-- <Entry.Behaviors> -->
+                            <!--     <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5" -->
+                            <!--                                     x:Name="nameValidator" /> -->
+                            <!-- </Entry.Behaviors> -->
                         </Entry>
                     </VerticalStackLayout>
 
@@ -51,7 +50,15 @@
                                 Time="{Binding EventViewModel.EventTime}" />
                         </Border>
                     </VerticalStackLayout>
+                    <VerticalStackLayout>
+                        <Label Text="Event Type" Style="{StaticResource FieldLabel}" />
 
+                        <Border Style="{x:StaticResource RoundBorder}">
+                            <Picker Title="Event Type"
+                                    ItemsSource="{Binding ETypes}"
+                                    SelectedItem="{Binding SelectedEventType}" />
+                        </Border>
+                    </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
                         <Label Text="Duration Hours" Style="{StaticResource FieldLabel}" />
 
@@ -77,107 +84,21 @@
                             </Entry.Behaviors>
                         </Entry>
                     </VerticalStackLayout>
+                    <VerticalStackLayout>
+                        <Label Text="Description" Style="{StaticResource FieldLabel}" />
 
-                    <VerticalStackLayout Grid.Row="4" Grid.Column="2">
-                        <Label Text="Max Attendees" Style="{StaticResource FieldLabel}" />
-
-                        <Entry Keyboard="Numeric"
-                               Text="{Binding EventViewModel.MaxNumberOfParticipants}">
-                            <Entry.Behaviors>
-                                <toolkit:NumericValidationBehavior Flags="ValidateOnValueChanged"
-                                                                   x:Name="maxNumberOfParticipantsValidator"
-                                                                   MinimumValue="0" MaximumDecimalPlaces="0" />
-                            </Entry.Behaviors>
-                        </Entry>
-                    </VerticalStackLayout>
-
-                    <VerticalStackLayout Grid.Row="4" Grid.Column="3">
-                        <Label Text="Is Event Public?" Style="{StaticResource FieldLabel}" />
-
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <CheckBox IsChecked="{Binding EventViewModel.IsEventPublic}" />
-                        </Border>
+                        <Editor Text="{Binding EventViewModel.Description}">
+                            <Editor.Behaviors>
+                                <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="10"
+                                                                x:Name="descriptionValidator" />
+                            </Editor.Behaviors>
+                        </Editor>
                     </VerticalStackLayout>
                 </Grid>
-
-                <Grid ColumnDefinitions="1*, 1*"
-                      RowDefinitions="Auto, Auto, Auto">
-                    <VerticalStackLayout Grid.Row="0" Grid.ColumnSpan="2">
-                        <Label Text="Address" Style="{StaticResource FieldLabel}" />
-
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Label FontSize="Micro"
-                                   Text="{Binding EventViewModel.Address.StreetAddress}" />
-                        </Border>
-                    </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Row="1" Grid.Column="0">
-                        <Label Text="City" Style="{StaticResource FieldLabel}" />
-
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Label FontSize="Micro"
-                                   Text="{Binding EventViewModel.Address.City}" />
-                        </Border>
-                    </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Row="1" Grid.Column="1">
-                        <Label Text="State/Region" Style="{StaticResource FieldLabel}" />
-
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Label FontSize="Micro"
-                                   Text="{Binding EventViewModel.Address.Region}" />
-                        </Border>
-                    </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Row="2" Grid.Column="0">
-                        <Label Text="Country" Style="{StaticResource FieldLabel}" />
-
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Label FontSize="Micro"
-                                   Text="{Binding EventViewModel.Address.Country}" />
-                        </Border>
-                    </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Row="2" Grid.Column="1">
-                        <Label Text="Postal Code" Style="{StaticResource FieldLabel}" />
-
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Label FontSize="Micro"
-                                   Text="{Binding EventViewModel.Address.PostalCode}" />
-                        </Border>
-                    </VerticalStackLayout>
-                </Grid>
-
                 <Grid ColumnDefinitions="1*,1*, 1*, 1*"
                       RowDefinitions="Auto"
                       VerticalOptions="End"
                       Margin="0,0,0,20">
-
-                    <Button Margin="10"
-                            Grid.Row="0"
-                            Grid.Column="0"
-                            Grid.ColumnSpan="2"
-                            Command="{Binding SaveEventCommand}"
-                            Text="Save Event">
-                        <Button.Triggers>
-                            <MultiTrigger TargetType="Button">
-                                <MultiTrigger.Conditions>
-                                    <BindingCondition
-                                        Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}"
-                                        Value="True" />
-                                    <!-- <BindingCondition -->
-                                    <!--     Binding="{Binding Source={x:Reference descriptionValidator}, Path=IsValid}" -->
-                                    <!--     Value="True" /> -->
-                                    <BindingCondition
-                                        Binding="{Binding Source={x:Reference maxNumberOfParticipantsValidator}, Path=IsValid}"
-                                        Value="True" />
-                                    <BindingCondition
-                                        Binding="{Binding Source={x:Reference durationHoursValidator}, Path=IsValid}"
-                                        Value="True" />
-                                    <BindingCondition
-                                        Binding="{Binding Source={x:Reference durationMinutesValidator}, Path=IsValid}"
-                                        Value="True" />
-                                </MultiTrigger.Conditions>
-                                <Setter Property="IsEnabled" Value="True" />
-                            </MultiTrigger>
-                        </Button.Triggers>
-                    </Button>
 
                     <Button Margin="10"
                             Grid.Row="0"
@@ -188,7 +109,6 @@
                             IsVisible="{Binding IsManageEventPartnersEnabled}"
                             Text="Manage Partners" />
                 </Grid>
-
                 <!--TODO: check with Shiyi, but I think the validations should be with their respective elements
                             rather than at the end of the page. Especially in a scrollview.
                 -->
@@ -200,14 +120,14 @@
                     <Label.Triggers>
                         <MultiTrigger TargetType="Label">
                             <MultiTrigger.Conditions>
-                                <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}"
-                                                  Value="True" />
+                                <!-- <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" -->
+                                <!--                   Value="True" /> -->
                                 <!-- <BindingCondition -->
                                 <!--     Binding="{Binding Source={x:Reference descriptionValidator}, Path=IsValid}" -->
                                 <!--     Value="True" /> -->
-                                <BindingCondition
-                                    Binding="{Binding Source={x:Reference maxNumberOfParticipantsValidator}, Path=IsValid}"
-                                    Value="True" />
+                                <!-- <BindingCondition -->
+                                <!--     Binding="{Binding Source={x:Reference maxNumberOfParticipantsValidator}, Path=IsValid}" -->
+                                <!--     Value="True" /> -->
                                 <BindingCondition
                                     Binding="{Binding Source={x:Reference durationHoursValidator}, Path=IsValid}"
                                     Value="True" />
@@ -217,22 +137,22 @@
                             </MultiTrigger.Conditions>
                             <Setter Property="IsVisible" Value="False" />
                         </MultiTrigger>
-                        <DataTrigger Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}"
-                                     TargetType="Label"
-                                     Value="False">
-                            <Setter Property="Text" Value="Name is required and must be at least 5 characters." />
-                        </DataTrigger>
+                        <!-- <DataTrigger Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" -->
+                        <!--              TargetType="Label" -->
+                        <!--              Value="False"> -->
+                        <!--     <Setter Property="Text" Value="Name is required and must be at least 5 characters." /> -->
+                        <!-- </DataTrigger> -->
                         <!-- <DataTrigger Binding="{Binding Source={x:Reference descriptionValidator}, Path=IsValid}" -->
                         <!--              TargetType="Label" -->
                         <!--              Value="False"> -->
                         <!--     <Setter Property="Text" Value="Description is required and must be at least 10 characters." /> -->
                         <!-- </DataTrigger> -->
-                        <DataTrigger
-                            Binding="{Binding Source={x:Reference maxNumberOfParticipantsValidator}, Path=IsValid}"
-                            TargetType="Label"
-                            Value="False">
-                            <Setter Property="Text" Value="Maximum Participants cannot be less than 0." />
-                        </DataTrigger>
+                        <!-- <DataTrigger -->
+                        <!--     Binding="{Binding Source={x:Reference maxNumberOfParticipantsValidator}, Path=IsValid}" -->
+                        <!--     TargetType="Label" -->
+                        <!--     Value="False"> -->
+                        <!--     <Setter Property="Text" Value="Maximum Participants cannot be less than 0." /> -->
+                        <!-- </DataTrigger> -->
                         <DataTrigger Binding="{Binding Source={x:Reference durationHoursValidator}, Path=IsValid}"
                                      TargetType="Label"
                                      Value="False">

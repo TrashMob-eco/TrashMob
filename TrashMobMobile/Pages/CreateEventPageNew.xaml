@@ -24,7 +24,7 @@
     <Grid Margin="16" RowDefinitions="Auto,*,Auto">
         <StackLayout>
             <StackLayout Orientation="Horizontal" Margin="0,25">
-                <Image HeightRequest="25"
+                <Image HeightRequest="125"
                        VerticalOptions="Center">
                     <Image.Source>
                         <FontImageSource
