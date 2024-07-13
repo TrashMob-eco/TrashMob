@@ -58,9 +58,9 @@
                     <Button Grid.Row="10" Grid.Column="1" Text="View Event Summary"
                             Command="{Binding ViewEventSummaryCommand}" IsVisible="{Binding EnableViewEventSummary}"
                             Margin="10" />
-                    <Button Grid.Row="11" Grid.Column="0" Text="Start Track Event Route" Command="{Binding StartTrackEventRouteCommand}"
+                    <Button Grid.Row="11" Grid.Column="0" Text="Start Track Event Route" Command="{Binding RealTimeLocationTrackerCommand}"
                             IsVisible="{Binding EnableStartTrackEventRoute}" Margin="10" />
-                    <Button Grid.Row="11" Grid.Column="1" Text="Stop Track Event Route" Command="{Binding StopTrackEventRouteCommand}"
+                    <Button Grid.Row="11" Grid.Column="1" Text="Stop Track Event Route" Command="{Binding RealTimeLocationTrackerCommand}"
                             IsVisible="{Binding EnableStopTrackEventRoute}" Margin="10" />
                 </Grid>
 

@@ -1,8 +1,10 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
+using System;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Maui.Devices.Sensors;
 using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
@@ -36,7 +38,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     private bool enableStartTrackEventRoute;
 
     [ObservableProperty]
-    private bool enableStopEventRoute;
+    private bool enableStopTrackEventRoute;
 
     [ObservableProperty]
     private bool enableViewEventSummary;
@@ -54,8 +56,6 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
     [ObservableProperty]
     private string whatToExpect;
-
-    pr
 
     public ObservableCollection<EventViewModel> Events { get; set; } = [];
 
@@ -77,7 +77,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
         EnableEditEvent = mobEvent.IsEventLead();
         EnableViewEventSummary = mobEvent.IsCompleted();
         EnableStartTrackEventRoute = mobEvent.IsEventLead();
-        EnableStopEventRoute = false;
+        EnableStopTrackEventRoute = false;
 
         WhatToExpect =
             "What to Expect: \n\tCleanup supplies provided\n\tMeet fellow community members\n\tContribute to a cleaner environment.";
@@ -123,23 +123,29 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     {
         await Shell.Current.GoToAsync($"{nameof(EditEventPage)}?EventId={EventViewModel.Id}");
     }
+    
+    private Location? currentLocation;
+    public ObservableCollection<Location> Locations { get; } = [];
 
-    [RelayCommand]
-    private Task StartTrackEventRoute()
+    [RelayCommand(IncludeCancelCommand = true, AllowConcurrentExecutions = false)]
+    private async Task RealTimeLocationTracker(CancellationToken cancellationToken)
     {
-        EnableStartTrackEventRoute = false;
-        EnableStopEventRoute = true;
+        var progress = new Progress<Location>(location =>
+        {
+            if (currentLocation is null)
+            {
+                currentLocation = location;
+            }
+            else
+            {
+                Locations.Remove(currentLocation);
+                currentLocation = location;
+            }
 
-        return Task.CompletedTask;
-    }
+            Locations.Add(currentLocation);
+        });
 
-    [RelayCommand]
-    private Task StopTrackEventRoute()
-    {
-        EnableStartTrackEventRoute = false;
-        EnableStopEventRoute = true;
-
-        return Task.CompletedTask;
+        await Geolocator.Default.StartListening(progress, cancellationToken);
     }
 
     [RelayCommand]

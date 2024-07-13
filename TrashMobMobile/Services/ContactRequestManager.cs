@@ -2,14 +2,9 @@
 {
     using TrashMob.Models;
 
-    public class ContactRequestManager : IContactRequestManager
+    public class ContactRequestManager(IContactRequestRestService service) : IContactRequestManager
     {
-        private readonly IContactRequestRestService contactRequestRestService;
-
-        public ContactRequestManager(IContactRequestRestService service)
-        {
-            contactRequestRestService = service;
-        }
+        private readonly IContactRequestRestService contactRequestRestService = service;
 
         public Task AddContactRequestAsync(ContactRequest contactRequest, CancellationToken cancellationToken = default)
         {
