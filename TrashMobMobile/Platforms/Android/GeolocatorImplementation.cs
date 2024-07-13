@@ -10,7 +10,7 @@ using Permissions = Microsoft.Maui.ApplicationModel.Permissions;
 
 public class GeolocatorImplementation : IGeolocator
 {
-    GeolocatorImplementation? locator;
+    GeolocationContinuousListener? locator;
 
     public async Task StartListening(IProgress<Microsoft.Maui.Devices.Sensors.Location> positionChangedProgress, CancellationToken cancellationToken)
     {
@@ -25,7 +25,7 @@ public class GeolocatorImplementation : IGeolocator
             }
         }
 
-        locator = new GeolocatorImplementation();
+        locator = new GeolocationContinuousListener();
         var taskCompletionSource = new TaskCompletionSource();
         cancellationToken.Register(() =>
         {
@@ -40,13 +40,13 @@ public class GeolocatorImplementation : IGeolocator
     }
 }
 
-internal class GeolocatorImplementation : Java.Lang.Object, ILocationListener
+internal class GeolocationContinuousListener : Java.Lang.Object, ILocationListener
 {
     public Action<Location>? OnLocationChangedAction { get; set; }
 
     LocationManager? locationManager;
 
-    public GeolocatorImplementation()
+    public GeolocationContinuousListener()
     {
         locationManager = (LocationManager?)Android.App.Application.Context.GetSystemService(Android.Content.Context.LocationService);
         // Requests location updates each second and notify if location changes more then 100 meters
