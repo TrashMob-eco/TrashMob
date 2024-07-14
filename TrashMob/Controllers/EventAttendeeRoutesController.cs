@@ -7,11 +7,11 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Identity.Web.Resource;
-    using TrashMob.Models;
+    using TrashMob.Models.Extensions;
+    using TrashMob.Models.Poco;
     using TrashMob.Security;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
-    using TrashMob.Shared.Poco;
 
     [Route("api/eventattendeeroutes")]
     public class EventAttendeeRoutesController(IEventAttendeeRouteManager eventAttendeeRouteManager) : SecureController
@@ -21,9 +21,10 @@
         [HttpGet("{eventId}/{userId}")]
         public async Task<IActionResult> GetEventAttendeeRoutes(Guid eventId, Guid userId)
         {
-            var result =
-                (await eventAttendeeRouteManager.GetByParentIdAsync(eventId, CancellationToken.None)
-                    .ConfigureAwait(false)).Where(e => e.CreatedByUserId == userId).Select(u => u.User.ToDisplayUser());
+            var result = (await eventAttendeeRouteManager.GetByParentIdAsync(eventId, CancellationToken.None).ConfigureAwait(false)).Where(e => e.CreatedByUserId == userId);
+
+            var displayEventAttendeeRoutes = result.Select(x => x.ToDisplayEventAttendeeRoute()).ToList();
+
             TelemetryClient.TrackEvent(nameof(GetEventAttendeeRoutes));
             return Ok(result);
         }
@@ -31,9 +32,10 @@
         [HttpGet("byeventid/{eventId}")]
         public async Task<IActionResult> GetEventAttendeeRoutesByEventId(Guid eventId)
         {
-            var result =
-                (await eventAttendeeRouteManager.GetByParentIdAsync(eventId, CancellationToken.None)
-                    .ConfigureAwait(false)).Select(u => u.User.ToDisplayUser());
+            var result = await eventAttendeeRouteManager.GetByParentIdAsync(eventId, CancellationToken.None).ConfigureAwait(false);
+
+            var displayEventAttendeeRoutes = result.Select(x => x.ToDisplayEventAttendeeRoute()).ToList();
+
             TelemetryClient.TrackEvent(nameof(GetEventAttendeeRoutes));
             return Ok(result);
         }
@@ -41,9 +43,10 @@
         [HttpGet("byuserid/{userId}")]
         public async Task<IActionResult> GetEventAttendeeRoutesByUserId(Guid userId)
         {
-            var result =
-                (await eventAttendeeRouteManager.GetByCreatedUserIdAsync(userId, CancellationToken.None)
-                    .ConfigureAwait(false)).Select(u => u.User.ToDisplayUser());
+            var result = await eventAttendeeRouteManager.GetByCreatedUserIdAsync(userId, CancellationToken.None).ConfigureAwait(false);
+
+            var displayEventAttendeeRoutes = result.Select(x => x.ToDisplayEventAttendeeRoute()).ToList();
+
             TelemetryClient.TrackEvent(nameof(GetEventAttendeeRoutes));
             return Ok(result);
         }
@@ -51,25 +54,28 @@
         [HttpGet("{id}")]
         public async Task<IActionResult> GetEventAttendeeRoute(Guid id)
         {
-            var result =
-                (await eventAttendeeRouteManager.GetAsync(x => x.Id == id, CancellationToken.None)
-                    .ConfigureAwait(false)).Select(u => u.User.ToDisplayUser());
+            var result = await eventAttendeeRouteManager.GetAsync(x => x.Id == id, CancellationToken.None).ConfigureAwait(false));
+
+            var displayEventAttendeeRoute = result.ToDisplayEventAttendeeRoute();
+
             TelemetryClient.TrackEvent(nameof(GetEventAttendeeRoutes));
             return Ok(result);
         }
 
         [HttpPut]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> UpdateEventAttendeeRoute(EventAttendeeRoute eventAttendeeRoute,
+        public async Task<IActionResult> UpdateEventAttendeeRoute(DisplayEventAttendeeRoute displayEventAttendeeRoute,
             CancellationToken cancellationToken)
         {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, eventAttendeeRoute,
+            var authResult = await AuthorizationService.AuthorizeAsync(User, displayEventAttendeeRoute,
                 AuthorizationPolicyConstants.UserOwnsEntity);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
                 return Forbid();
             }
+
+            var eventAttendeeRoute = displayEventAttendeeRoute.ToEventAttendeeRoute();
 
             var updatedEventAttendeeRoute = await eventAttendeeRouteManager
                 .UpdateAsync(eventAttendeeRoute, UserId, cancellationToken).ConfigureAwait(false);
@@ -81,9 +87,11 @@
         [HttpPost]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> AddEventAttendeeRoute(EventAttendeeRoute eventAttendeeRoute,
+        public async Task<IActionResult> AddEventAttendeeRoute(DisplayEventAttendeeRoute displayEventAttendeeRoute,
             CancellationToken cancellationToken)
         {
+            var eventAttendeeRoute = displayEventAttendeeRoute.ToEventAttendeeRoute();
+
             await eventAttendeeRouteManager.AddAsync(eventAttendeeRoute, UserId, cancellationToken)
                 .ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddEventAttendeeRoute));
