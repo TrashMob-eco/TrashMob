@@ -56,7 +56,12 @@
         {
             var result = await eventAttendeeRouteManager.GetAsync(x => x.Id == id, CancellationToken.None).ConfigureAwait(false);
 
-            var displayEventAttendeeRoute = result.ToDisplayEventAttendeeRoute();
+            if (result == null || result.Count() == 0)
+            {
+                return NotFound();
+            }
+
+            var displayEventAttendeeRoute = result.FirstOrDefault().ToDisplayEventAttendeeRoute();
 
             TelemetryClient.TrackEvent(nameof(GetEventAttendeeRoutes));
             return Ok(result);
