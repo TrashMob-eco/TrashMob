@@ -54,7 +54,7 @@
         [HttpGet("{id}")]
         public async Task<IActionResult> GetEventAttendeeRoute(Guid id)
         {
-            var result = await eventAttendeeRouteManager.GetAsync(x => x.Id == id, CancellationToken.None).ConfigureAwait(false));
+            var result = await eventAttendeeRouteManager.GetAsync(x => x.Id == id, CancellationToken.None).ConfigureAwait(false);
 
             var displayEventAttendeeRoute = result.ToDisplayEventAttendeeRoute();
 
