@@ -4,7 +4,9 @@ using System;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using GeoAPI.Geometries;
 using Microsoft.Maui.Devices.Sensors;
+using NetTopologySuite.Geometries;
 using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
@@ -12,7 +14,8 @@ using TrashMobMobile.Services;
 public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     IEventTypeRestService eventTypeRestService,
     IWaiverManager waiverManager,
-    IEventAttendeeRestService eventAttendeeRestService) : BaseViewModel
+    IEventAttendeeRestService eventAttendeeRestService,
+    IEventAttendeeRouteRestService eventAttendeeRouteRestService) : BaseViewModel
 {
     private readonly IEventAttendeeRestService eventAttendeeRestService = eventAttendeeRestService;
     private readonly IEventTypeRestService eventTypeRestService = eventTypeRestService;
@@ -124,13 +127,27 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
         await Shell.Current.GoToAsync($"{nameof(EditEventPage)}?EventId={EventViewModel.Id}");
     }
     
-    private Location? currentLocation;
-    public ObservableCollection<Location> Locations { get; } = [];
+    private Microsoft.Maui.Devices.Sensors.Location? currentLocation;
+    public ObservableCollection<Microsoft.Maui.Devices.Sensors.Location> Locations { get; } = [];
 
     [RelayCommand(IncludeCancelCommand = true, AllowConcurrentExecutions = false)]
     private async Task RealTimeLocationTracker(CancellationToken cancellationToken)
     {
-        var progress = new Progress<Location>(location =>
+        if (EnableStartTrackEventRoute)
+        {
+            EnableStopTrackEventRoute = true;
+            EnableStartTrackEventRoute = false;
+        }
+
+        cancellationToken.Register(async () =>
+        {
+            await SaveRoute();
+            Locations.Clear();
+            EnableStopTrackEventRoute = false;
+            EnableStartTrackEventRoute = true;
+        });
+
+        var progress = new Progress<Microsoft.Maui.Devices.Sensors.Location>(location =>
         {
             if (currentLocation is null)
             {
@@ -146,6 +163,34 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
         });
 
         await Geolocator.Default.StartListening(progress, cancellationToken);
+    }
+
+    private async Task SaveRoute()
+    {
+        // If there are no locations, then there is nothing to save.
+        if (Locations.Count == 0)
+        {
+            return;
+        }
+
+        // If there is only one location, then add a second location to make a line.
+        if (Locations.Count == 1)
+        {
+            Locations.Add(Locations[0]);
+        }
+
+        await eventAttendeeRouteRestService.AddEventAttendeeRouteAsync(new EventAttendeeRoute
+        {
+            EventId = mobEvent.Id,
+            UserId = App.CurrentUser.Id,
+            UserPath = GetLineString(),
+        });
+    }
+
+    private LineString GetLineString()
+    {
+        var coordinates = Locations.Select(l => new Coordinate(l.Latitude, l.Longitude)).ToArray();
+        return new LineString(coordinates);
     }
 
     [RelayCommand]
