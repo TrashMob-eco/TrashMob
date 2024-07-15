@@ -1,24 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <createEvent:BaseStepClass xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
-             xmlns:createEvent="clr-namespace:TrashMobMobile.Pages.CreateEvent"
-             x:DataType="viewModels:CreateEventViewModelNew"
-             x:Class="TrashMobMobile.Pages.CreateEvent.Step1">
-  <ScrollView>
+                           xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                           xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+                           xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+                           xmlns:createEvent="clr-namespace:TrashMobMobile.Pages.CreateEvent"
+                           x:DataType="viewModels:CreateEventViewModelNew"
+                           x:Class="TrashMobMobile.Pages.CreateEvent.Step1">
+    <ScrollView>
         <Grid>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
-                <Grid ColumnDefinitions="1*, 1*, 1*, 1*"
+                <Grid ColumnDefinitions="*, *"
                       MaximumWidthRequest="400"
-                      RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto">
+                      RowDefinitions="Auto, Auto, Auto, Auto, Auto">
                     <VerticalStackLayout Grid.Row="0"
-                                         Grid.ColumnSpan="4"
+                                         Grid.ColumnSpan="2"
                                          Margin="10"
                                          Spacing="5">
                         <Label Text="Name" Style="{StaticResource FieldLabel}" />
-
                         <Entry Text="{Binding EventViewModel.Name}">
                             <!-- <Entry.Behaviors> -->
                             <!--     <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5" -->
@@ -39,18 +38,7 @@
                                 Date="{Binding EventViewModel.EventDateOnly}" />
                         </Border>
                     </VerticalStackLayout>
-
-                    <VerticalStackLayout Grid.Row="1"
-                                         Grid.Column="2"
-                                         Grid.ColumnSpan="2">
-                        <Label Text="Event Time" Style="{StaticResource FieldLabel}" />
-
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <TimePicker
-                                Time="{Binding EventViewModel.EventTime}" />
-                        </Border>
-                    </VerticalStackLayout>
-                    <VerticalStackLayout>
+                    <VerticalStackLayout Grid.Row="2" Grid.ColumnSpan="2">
                         <Label Text="Event Type" Style="{StaticResource FieldLabel}" />
 
                         <Border Style="{x:StaticResource RoundBorder}">
@@ -59,55 +47,41 @@
                                     SelectedItem="{Binding SelectedEventType}" />
                         </Border>
                     </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
-                        <Label Text="Duration Hours" Style="{StaticResource FieldLabel}" />
+
+                    <VerticalStackLayout Grid.Row="3" Grid.Column="0">
+                        <Label Text="Start time" Style="{StaticResource FieldLabel}" />
 
                         <Entry Keyboard="Numeric"
                                Text="{Binding EventViewModel.DurationHours}">
-                            <Entry.Behaviors>
-                                <toolkit:NumericValidationBehavior Flags="ValidateOnValueChanged"
-                                                                   x:Name="durationHoursValidator" MinimumValue="1"
-                                                                   MaximumValue="10" MaximumDecimalPlaces="0" />
-                            </Entry.Behaviors>
+                            <!-- <Entry.Behaviors> -->
+                            <!--     <toolkit:NumericValidationBehavior Flags="ValidateOnValueChanged" -->
+                            <!--                                        x:Name="durationHoursValidator" MinimumValue="1" -->
+                            <!--                                        MaximumValue="10" MaximumDecimalPlaces="0" /> -->
+                            <!-- </Entry.Behaviors> -->
                         </Entry>
                     </VerticalStackLayout>
 
-                    <VerticalStackLayout Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2">
-                        <Label Text="Duration Minutes" Style="{StaticResource FieldLabel}" />
+                    <VerticalStackLayout Grid.Row="3" Grid.Column="1">
+                        <Label Text="End time" Style="{StaticResource FieldLabel}" />
 
                         <Entry Keyboard="Numeric"
                                Text="{Binding EventViewModel.DurationMinutes}">
-                            <Entry.Behaviors>
-                                <toolkit:NumericValidationBehavior Flags="ValidateOnValueChanged"
-                                                                   x:Name="durationMinutesValidator" MinimumValue="0"
-                                                                   MaximumValue="59" MaximumDecimalPlaces="0" />
-                            </Entry.Behaviors>
+                            <!-- <Entry.Behaviors> -->
+                            <!--     <toolkit:NumericValidationBehavior Flags="ValidateOnValueChanged" -->
+                            <!--                                        x:Name="durationMinutesValidator" MinimumValue="0" -->
+                            <!--                                        MaximumValue="59" MaximumDecimalPlaces="0" /> -->
+                            <!-- </Entry.Behaviors> -->
                         </Entry>
                     </VerticalStackLayout>
-                    <VerticalStackLayout>
+                    <VerticalStackLayout Grid.Row="4" Grid.ColumnSpan="2">
                         <Label Text="Description" Style="{StaticResource FieldLabel}" />
-
                         <Editor Text="{Binding EventViewModel.Description}">
-                            <Editor.Behaviors>
-                                <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="10"
-                                                                x:Name="descriptionValidator" />
-                            </Editor.Behaviors>
+                            <!-- <Editor.Behaviors> -->
+                            <!--     <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="10" -->
+                            <!--                                     x:Name="descriptionValidator" /> -->
+                            <!-- </Editor.Behaviors> -->
                         </Editor>
                     </VerticalStackLayout>
-                </Grid>
-                <Grid ColumnDefinitions="1*,1*, 1*, 1*"
-                      RowDefinitions="Auto"
-                      VerticalOptions="End"
-                      Margin="0,0,0,20">
-
-                    <Button Margin="10"
-                            Grid.Row="0"
-                            Grid.Column="2"
-                            Grid.ColumnSpan="2"
-                            Command="{Binding ManageEventPartnersCommand}"
-                            IsEnabled="{Binding IsManageEventPartnersEnabled}"
-                            IsVisible="{Binding IsManageEventPartnersEnabled}"
-                            Text="Manage Partners" />
                 </Grid>
                 <!--TODO: check with Shiyi, but I think the validations should be with their respective elements
                             rather than at the end of the page. Especially in a scrollview.
@@ -128,12 +102,12 @@
                                 <!-- <BindingCondition -->
                                 <!--     Binding="{Binding Source={x:Reference maxNumberOfParticipantsValidator}, Path=IsValid}" -->
                                 <!--     Value="True" /> -->
-                                <BindingCondition
-                                    Binding="{Binding Source={x:Reference durationHoursValidator}, Path=IsValid}"
-                                    Value="True" />
-                                <BindingCondition
-                                    Binding="{Binding Source={x:Reference durationMinutesValidator}, Path=IsValid}"
-                                    Value="True" />
+                                <!-- <BindingCondition -->
+                                <!--     Binding="{Binding Source={x:Reference durationHoursValidator}, Path=IsValid}" -->
+                                <!--     Value="True" /> -->
+                                <!-- <BindingCondition -->
+                                <!--     Binding="{Binding Source={x:Reference durationMinutesValidator}, Path=IsValid}" -->
+                                <!--     Value="True" /> -->
                             </MultiTrigger.Conditions>
                             <Setter Property="IsVisible" Value="False" />
                         </MultiTrigger>
@@ -153,27 +127,19 @@
                         <!--     Value="False"> -->
                         <!--     <Setter Property="Text" Value="Maximum Participants cannot be less than 0." /> -->
                         <!-- </DataTrigger> -->
-                        <DataTrigger Binding="{Binding Source={x:Reference durationHoursValidator}, Path=IsValid}"
-                                     TargetType="Label"
-                                     Value="False">
-                            <Setter Property="Text" Value="Duration Hours must be between 1 and 10." />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Source={x:Reference durationMinutesValidator}, Path=IsValid}"
-                                     TargetType="Label"
-                                     Value="False">
-                            <Setter Property="Text" Value="Duration Minutes must be between 0 and 59." />
-                        </DataTrigger>
+                        <!-- <DataTrigger Binding="{Binding Source={x:Reference durationHoursValidator}, Path=IsValid}" -->
+                        <!--              TargetType="Label" -->
+                        <!--              Value="False"> -->
+                        <!--     <Setter Property="Text" Value="Duration Hours must be between 1 and 10." /> -->
+                        <!-- </DataTrigger> -->
+                        <!-- <DataTrigger Binding="{Binding Source={x:Reference durationMinutesValidator}, Path=IsValid}" -->
+                        <!--              TargetType="Label" -->
+                        <!--              Value="False"> -->
+                        <!--     <Setter Property="Text" Value="Duration Minutes must be between 0 and 59." /> -->
+                        <!-- </DataTrigger> -->
                     </Label.Triggers>
                 </Label>
             </VerticalStackLayout>
-            <BoxView BackgroundColor="{StaticResource TransparentBlack}"
-                     HorizontalOptions="Fill"
-                     IsVisible="{Binding IsBusy}"
-                     VerticalOptions="Fill" />
-            <ActivityIndicator HorizontalOptions="Center"
-                               IsRunning="{Binding IsBusy}"
-                               IsVisible="{Binding IsBusy}"
-                               VerticalOptions="Center" />
         </Grid>
     </ScrollView>
-</createEvent:BaseStepClass >
+</createEvent:BaseStepClass>

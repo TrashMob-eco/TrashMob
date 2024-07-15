@@ -23,13 +23,13 @@
     </ContentPage.Resources>
     <Grid Margin="16" RowDefinitions="Auto,*,Auto">
         <StackLayout>
-            <StackLayout Orientation="Horizontal" Margin="0,25">
-                <Image HeightRequest="125"
+            <StackLayout Orientation="Horizontal" Margin="0,15">
+                <Image HeightRequest="45"
                        VerticalOptions="Center">
                     <Image.Source>
                         <FontImageSource
-                            FontFamily="Icons"
-                            Glyph="{DynamicResource IconClose}"
+                            FontFamily="{StaticResource GoogleMaterialFontFamily}"
+                            Glyph="{StaticResource IconClose}"
                             Color="Black" />
                     </Image.Source>
                     <Image.GestureRecognizers>

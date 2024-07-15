@@ -7,68 +7,68 @@
                            xmlns:createEvent="clr-namespace:TrashMobMobile.Pages.CreateEvent"
                            x:DataType="viewModels:CreateEventViewModelNew"
                            x:Class="TrashMobMobile.Pages.CreateEvent.Step2">
-    <VerticalStackLayout>
-        <Label
-            Margin="5"
-            FontSize="Micro"
-            HorizontalOptions="Center"
-            HorizontalTextAlignment="Center"
-            Text="Click on the map to set the event location."
-            VerticalOptions="Center" />
-        <maps:Map x:Name="eventLocationMap"
-                  ItemsSource="{Binding Events}"
-                  MapClicked="OnMapClicked">
-            <maps:Map.ItemTemplate>
-                <DataTemplate x:DataType="viewModels:EventViewModel">
-                    <maps:Pin Address="{Binding Address.StreetAddress}"
-                              Label="{Binding Name}"
-                              Location="{Binding Address.Location}" />
-                </DataTemplate>
-            </maps:Map.ItemTemplate>
-        </maps:Map>
-        <Grid ColumnDefinitions="1*, 1*"
-              RowDefinitions="Auto, Auto, Auto">
-            <VerticalStackLayout Grid.Row="0" Grid.ColumnSpan="2">
-                <Label Text="Address" Style="{StaticResource FieldLabel}" />
+    <ScrollView>
+        <VerticalStackLayout>
+            <Label
+                Margin="5"
+                FontSize="Micro"
+                HorizontalOptions="Center"
+                HorizontalTextAlignment="Center"
+                Text="Click on the map to set the event location."
+                VerticalOptions="Center" />
+            <maps:Map x:Name="eventLocationMap"
+                      ItemsSource="{Binding Events}"
+                      MapClicked="OnMapClicked">
+                <maps:Map.ItemTemplate>
+                    <DataTemplate x:DataType="viewModels:EventViewModel">
+                        <maps:Pin Address="{Binding Address.StreetAddress}"
+                                  Label="{Binding Name}"
+                                  Location="{Binding Address.Location}" />
+                    </DataTemplate>
+                </maps:Map.ItemTemplate>
+            </maps:Map>
+            <Grid ColumnDefinitions="1*, 1*"
+                  RowDefinitions="Auto, Auto, Auto">
+                <VerticalStackLayout Grid.Row="0" Grid.ColumnSpan="2">
+                    <Label Text="Address" Style="{StaticResource FieldLabel}" />
 
-                <Border Style="{x:StaticResource RoundBorder}">
-                    <Label FontSize="Micro"
-                           Text="{Binding EventViewModel.Address.StreetAddress}" />
-                </Border>
-            </VerticalStackLayout>
-            <VerticalStackLayout Grid.Row="1" Grid.Column="0">
-                <Label Text="City" Style="{StaticResource FieldLabel}" />
+                    <Border Style="{x:StaticResource RoundBorder}">
+                        <Label FontSize="Micro"
+                               Text="{Binding EventViewModel.Address.StreetAddress}" />
+                    </Border>
+                </VerticalStackLayout>
+                <VerticalStackLayout Grid.Row="1" Grid.Column="0">
+                    <Label Text="City" Style="{StaticResource FieldLabel}" />
 
-                <Border Style="{x:StaticResource RoundBorder}">
-                    <Label FontSize="Micro"
-                           Text="{Binding EventViewModel.Address.City}" />
-                </Border>
-            </VerticalStackLayout>
-            <VerticalStackLayout Grid.Row="1" Grid.Column="1">
-                <Label Text="State/Region" Style="{StaticResource FieldLabel}" />
+                    <Border Style="{x:StaticResource RoundBorder}">
+                        <Label FontSize="Micro"
+                               Text="{Binding EventViewModel.Address.City}" />
+                    </Border>
+                </VerticalStackLayout>
+                <VerticalStackLayout Grid.Row="1" Grid.Column="1">
+                    <Label Text="State/Region" Style="{StaticResource FieldLabel}" />
 
-                <Border Style="{x:StaticResource RoundBorder}">
-                    <Label FontSize="Micro"
-                           Text="{Binding EventViewModel.Address.Region}" />
-                </Border>
-            </VerticalStackLayout>
-            <VerticalStackLayout Grid.Row="2" Grid.Column="0">
-                <Label Text="Country" Style="{StaticResource FieldLabel}" />
+                    <Border Style="{x:StaticResource RoundBorder}">
+                        <Label FontSize="Micro"
+                               Text="{Binding EventViewModel.Address.Region}" />
+                    </Border>
+                </VerticalStackLayout>
+                <VerticalStackLayout Grid.Row="2" Grid.Column="0">
+                    <Label Text="Country" Style="{StaticResource FieldLabel}" />
 
-                <Border Style="{x:StaticResource RoundBorder}">
-                    <Label FontSize="Micro"
-                           Text="{Binding EventViewModel.Address.Country}" />
-                </Border>
-            </VerticalStackLayout>
-            <VerticalStackLayout Grid.Row="2" Grid.Column="1">
-                <Label Text="Postal Code" Style="{StaticResource FieldLabel}" />
-
-                <Border Style="{x:StaticResource RoundBorder}">
-                    <Label FontSize="Micro"
-                           Text="{Binding EventViewModel.Address.PostalCode}" />
-                </Border>
-            </VerticalStackLayout>
-        </Grid>
-    </VerticalStackLayout>
-
+                    <Border Style="{x:StaticResource RoundBorder}">
+                        <Label FontSize="Micro"
+                               Text="{Binding EventViewModel.Address.Country}" />
+                    </Border>
+                </VerticalStackLayout>
+                <VerticalStackLayout Grid.Row="2" Grid.Column="1">
+                    <Label Text="Postal Code" Style="{StaticResource FieldLabel}" />
+                    <Border Style="{x:StaticResource RoundBorder}">
+                        <Label FontSize="Micro"
+                               Text="{Binding EventViewModel.Address.PostalCode}" />
+                    </Border>
+                </VerticalStackLayout>
+            </Grid>
+        </VerticalStackLayout>
+    </ScrollView>
 </createEvent:BaseStepClass>
