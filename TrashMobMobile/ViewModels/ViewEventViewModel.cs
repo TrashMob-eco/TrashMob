@@ -8,6 +8,7 @@ using GeoAPI.Geometries;
 using Microsoft.Maui.Devices.Sensors;
 using NetTopologySuite.Geometries;
 using TrashMob.Models;
+using TrashMob.Models.Poco;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
@@ -128,6 +129,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     }
     
     private Microsoft.Maui.Devices.Sensors.Location? currentLocation;
+    
     public ObservableCollection<Microsoft.Maui.Devices.Sensors.Location> Locations { get; } = [];
 
     [RelayCommand(IncludeCancelCommand = true, AllowConcurrentExecutions = false)]
@@ -179,18 +181,31 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             Locations.Add(Locations[0]);
         }
 
-        await eventAttendeeRouteRestService.AddEventAttendeeRouteAsync(new EventAttendeeRoute
+        await eventAttendeeRouteRestService.AddEventAttendeeRouteAsync(new DisplayEventAttendeeRoute
         {
             EventId = mobEvent.Id,
             UserId = App.CurrentUser.Id,
-            UserPath = GetLineString(),
+            Locations = GetSortableLocations()
         });
     }
 
-    private LineString GetLineString()
+    private List<SortableLocation> GetSortableLocations()
     {
-        var coordinates = Locations.Select(l => new Coordinate(l.Latitude, l.Longitude)).ToArray();
-        return new LineString(coordinates);
+        var sortableLocations = new List<SortableLocation>();
+        int order = 0;
+        foreach (var location in Locations.OrderBy(l => l.Timestamp))
+        {
+            var sortableLocation = new SortableLocation
+            {
+                Latitude = location.Latitude,
+                Longitude = location.Longitude,
+                SortOrder = order++
+            };
+
+            sortableLocations.Add(sortableLocation);
+        }
+
+        return sortableLocations;
     }
 
     [RelayCommand]
