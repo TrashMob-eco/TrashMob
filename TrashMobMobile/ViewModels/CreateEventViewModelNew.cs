@@ -32,9 +32,9 @@ public partial class CreateEventViewModelNew : BaseViewModel
     [ObservableProperty] private Color stepThreeColor;
 
     [ObservableProperty] private Color stepFourColor;
-    
+
     [ObservableProperty] private Color stepFiveColor;
-    
+
     [ObservableProperty] private Color stepSixColor;
 
     [ObservableProperty] private EventViewModel eventViewModel;
@@ -55,9 +55,32 @@ public partial class CreateEventViewModelNew : BaseViewModel
         this.mapRestService = mapRestService;
         this.waiverManager = waiverManager;
 
-        NextCommand = new Command(() => { SetCurrentStep(StepType.Forward); });
+        NextCommand = new Command(async () =>
+        {
+            if (IsBusy)
+                return;
 
-        PreviousCommand = new Command(() => { SetCurrentStep(StepType.Backward); });
+            IsBusy = true;
+
+            await Task.Delay(200);
+            SetCurrentStep(StepType.Forward);
+
+            IsBusy = false;
+        });
+
+        PreviousCommand = new Command(async
+            () =>
+        {
+            if (IsBusy)
+                return;
+
+            IsBusy = true;
+
+            await Task.Delay(200);
+            SetCurrentStep(StepType.Backward);
+
+            IsBusy = false;
+        });
 
         CloseCommand = new Command(() => { Shell.Current.GoToAsync(".."); });
     }
@@ -79,10 +102,10 @@ public partial class CreateEventViewModelNew : BaseViewModel
     private void SetCurrentView()
     {
         CurrentView = Steps[CurrentStep];
-        
+
         if (CurrentView is BaseStepClass current)
             current.OnNavigated();
-        
+
         //TODO reference this colors from the app styles
         StepOneColor = CurrentStep == 0 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
         StepTwoColor = CurrentStep == 1 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
