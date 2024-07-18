@@ -1,6 +1,6 @@
 ﻿namespace TrashMob.Models.Extensions
 {
-    using GeoAPI.Geometries;
+    using System.Collections.Generic;
     using NetTopologySuite.Geometries;
     using TrashMob.Models.Poco;
 
@@ -15,7 +15,7 @@
                 coordinates.Add(new Coordinate(location.Longitude, location.Latitude));
             }
 
-            var userPath = new LineString(coordinates.ToArray());
+            var userPath = new LineString([.. coordinates]);
 
             return new EventAttendeeRoute
             {
