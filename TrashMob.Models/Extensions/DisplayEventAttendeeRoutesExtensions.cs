@@ -1,7 +1,6 @@
 ﻿namespace TrashMob.Models.Extensions
 {
     using System.Collections.Generic;
-    using GeoAPI.Geometries;
     using NetTopologySuite.Geometries;
     using TrashMob.Models.Poco;
 
