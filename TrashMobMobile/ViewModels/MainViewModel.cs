@@ -170,6 +170,7 @@ public partial class MainViewModel : BaseViewModel
     private async Task CreateEvent()
     {
         await Shell.Current.GoToAsync(nameof(CreateEventPage));
+        //await Shell.Current.GoToAsync(nameof(CreateEventPageNew));
     }
 
     [RelayCommand]
