@@ -64,7 +64,7 @@
         </ContentView>
         <StackLayout Grid.Row="2" Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
             <Button Text="Previous" Command="{Binding PreviousCommand}" />
-            <Button Text="Next" Command="{Binding NextCommand}" />
+            <Button Text="Next" Command="{Binding NextCommand}" IsEnabled="{Binding IsStepValid}"/>
         </StackLayout>
     </Grid>
 

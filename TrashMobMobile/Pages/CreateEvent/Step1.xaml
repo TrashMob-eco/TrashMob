@@ -27,13 +27,16 @@
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="1"
                                          Grid.Column="0"
-                                         Grid.ColumnSpan="2"
                                          Margin="10"
                                          Spacing="5">
                         <Label Text="Event Date" Style="{StaticResource FieldLabel}" />
                         <DatePicker
                             Date="{Binding EventViewModel.EventDateOnly}" />
                     </VerticalStackLayout>
+                    <HorizontalStackLayout Grid.Row="1" Grid.Column="1">
+                        <Label Text="Is Event Public?" Style="{StaticResource FieldLabel}" />
+                        <CheckBox IsChecked="{Binding EventViewModel.IsEventPublic}" />
+                    </HorizontalStackLayout>
                     <VerticalStackLayout Grid.Row="2" Grid.ColumnSpan="2">
                         <Label Text="Event Type" Style="{StaticResource FieldLabel}" />
                         <Picker Title="Event Type"

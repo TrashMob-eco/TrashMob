@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using System.ComponentModel;
+using System.Windows.Input;
 using TrashMobMobile.Pages.CreateEvent;
 
 namespace TrashMobMobile.ViewModels;
@@ -44,6 +45,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
     [ObservableProperty] private string selectedEventType;
 
     [ObservableProperty] private AddressViewModel userLocation;
+
+    [ObservableProperty] private bool isStepValid;
 
     public CreateEventViewModelNew(IMobEventManager mobEventManager,
         IEventTypeRestService eventTypeRestService,
@@ -99,6 +102,32 @@ public partial class CreateEventViewModelNew : BaseViewModel
         Backward
     }
 
+    private void ValidateCurrentStep(object sender, PropertyChangedEventArgs e)
+    {
+        if (EventViewModel == null)
+            return;
+
+        switch (CurrentStep)
+        {
+            //Step 1 validation 
+            case 0:
+                if (!string.IsNullOrEmpty(EventViewModel.Name) &&
+                    EventViewModel.EventDateOnly != default && 
+                   !string.IsNullOrEmpty(SelectedEventType))
+                {
+                    IsStepValid = true;
+                }
+                else
+                {
+                    IsStepValid = false;
+                }
+
+                break;
+            default:
+                break;
+        }
+    }
+
     private void SetCurrentView()
     {
         CurrentView = Steps[CurrentStep];
@@ -123,7 +152,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
             {
                 CurrentStep--;
                 SetCurrentView();
-            }
+            } 
         }
         else
         {
@@ -178,7 +207,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
             EventTypeId = EventTypes.OrderBy(e => e.DisplayOrder).First().Id,
             EventStatusId = ActiveEventStatus,
         };
-
+        
         SelectedEventType = EventTypes.OrderBy(e => e.DisplayOrder).First().Name;
 
         Events.Add(EventViewModel);
@@ -189,6 +218,10 @@ public partial class CreateEventViewModelNew : BaseViewModel
         }
 
         IsBusy = false;
+        
+        //We need to subscribe to both eventViewmodel and creatEventViewmodel propertyChanged to validate step
+        eventViewModel.PropertyChanged += ValidateCurrentStep;
+        PropertyChanged += ValidateCurrentStep;
     }
 
     [RelayCommand]

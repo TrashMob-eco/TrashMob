@@ -8,9 +8,8 @@
                            x:DataType="viewModels:CreateEventViewModelNew"
                            x:Class="TrashMobMobile.Pages.CreateEvent.Step3">
     <VerticalStackLayout>
-        <VerticalStackLayout>
+        <HorizontalStackLayout Spacing="10">
             <Label Text="Max Attendees" Style="{StaticResource FieldLabel}" />
-
             <Entry Keyboard="Numeric"
                    Text="{Binding EventViewModel.MaxNumberOfParticipants}">
                 <Entry.Behaviors>
@@ -19,38 +18,6 @@
                                                        MinimumValue="0" MaximumDecimalPlaces="0" />
                 </Entry.Behaviors>
             </Entry>
-        </VerticalStackLayout>
-        <VerticalStackLayout>
-            <Label Text="Is Event Public?" Style="{StaticResource FieldLabel}" />
-            <Border Style="{x:StaticResource RoundBorder}">
-                <CheckBox IsChecked="{Binding EventViewModel.IsEventPublic}" />
-            </Border>
-        </VerticalStackLayout>
-        <Button Margin="10"
-                Command="{Binding SaveEventCommand}"
-                Text="Save Event">
-            <Button.Triggers>
-                <MultiTrigger TargetType="Button">
-                    <MultiTrigger.Conditions>
-                        <!-- <BindingCondition -->
-                        <!--     Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" -->
-                        <!--     Value="True" /> -->
-                        <!-- <BindingCondition -->
-                        <!--     Binding="{Binding Source={x:Reference descriptionValidator}, Path=IsValid}" -->
-                        <!--     Value="True" /> -->
-                        <BindingCondition
-                            Binding="{Binding Source={x:Reference maxNumberOfParticipantsValidator}, Path=IsValid}"
-                            Value="True" />
-                        <!-- <BindingCondition -->
-                        <!--     Binding="{Binding Source={x:Reference durationHoursValidator}, Path=IsValid}" -->
-                        <!--     Value="True" /> -->
-                        <!-- <BindingCondition -->
-                        <!--     Binding="{Binding Source={x:Reference durationMinutesValidator}, Path=IsValid}" -->
-                        <!--     Value="True" /> -->
-                    </MultiTrigger.Conditions>
-                    <Setter Property="IsEnabled" Value="True" />
-                </MultiTrigger>
-            </Button.Triggers>
-        </Button>
+        </HorizontalStackLayout>
     </VerticalStackLayout>
 </createEvent:BaseStepClass>

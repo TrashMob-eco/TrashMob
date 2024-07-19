@@ -1,8 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<createEvent:BaseStepClass  xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-                            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-                            xmlns:createEvent="clr-namespace:TrashMobMobile.Pages.CreateEvent"
-                            x:Class="TrashMobMobile.Pages.CreateEvent.Step4">
-    <Label Text="Step 4"></Label>
+<createEvent:BaseStepClass xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                           xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                           xmlns:createEvent="clr-namespace:TrashMobMobile.Pages.CreateEvent"
+                           xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+                           x:DataType="viewModels:CreateEventViewModelNew"
+                           x:Class="TrashMobMobile.Pages.CreateEvent.Step4">
+    <ScrollView>
+        <Grid>
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
+                <Label Text="Name" Style="{StaticResource FieldLabel}" />
+                <Label Text="{Binding EventViewModel.Name}" />
+
+                <Label Text="Event Date" Style="{StaticResource FieldLabel}" />
+                <Label Text="{Binding EventViewModel.EventDateOnly}" />
+
+                <Label Text="Event Type" Style="{StaticResource FieldLabel}" />
+                <Label Text="{Binding SelectedEventType}" Style="{StaticResource FieldLabel}" />
+
+                <VerticalStackLayout HeightRequest="50"></VerticalStackLayout>
+
+                <Button Margin="10"
+                        Command="{Binding SaveEventCommand}"
+                        Text="Save Event">
+                    <Button.Triggers>
+                        <MultiTrigger TargetType="Button">
+                            <MultiTrigger.Conditions>
+                                <!-- <BindingCondition -->
+                                <!--     Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" -->
+                                <!--     Value="True" /> -->
+                                <!-- <BindingCondition -->
+                                <!--     Binding="{Binding Source={x:Reference descriptionValidator}, Path=IsValid}" -->
+                                <!--     Value="True" /> -->
+                                <!-- <BindingCondition -->
+                                <!--     Binding="{Binding Source={x:Reference maxNumberOfParticipantsValidator}, Path=IsValid}" -->
+                                <!--     Value="True" /> -->
+                                <!-- <BindingCondition -->
+                                <!--     Binding="{Binding Source={x:Reference durationHoursValidator}, Path=IsValid}" -->
+                                <!--     Value="True" /> -->
+                                <!-- <BindingCondition -->
+                                <!--     Binding="{Binding Source={x:Reference durationMinutesValidator}, Path=IsValid}" -->
+                                <!--     Value="True" /> -->
+                            </MultiTrigger.Conditions>
+                            <Setter Property="IsEnabled" Value="True" />
+                        </MultiTrigger>
+                    </Button.Triggers>
+                </Button>
+            </VerticalStackLayout>
+        </Grid>
+    </ScrollView>
 </createEvent:BaseStepClass>
