@@ -8,6 +8,8 @@
     {
         public static EventAttendeeRoute ToEventAttendeeRoute(this DisplayEventAttendeeRoute displayEventAttendeeRoute)
         {
+            var geometryFactory = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+
             var coordinates = new List<Coordinate>();
 
             foreach (var location in displayEventAttendeeRoute.Locations.OrderBy(x => x.SortOrder))
@@ -15,7 +17,7 @@
                 coordinates.Add(new Coordinate(location.Longitude, location.Latitude));
             }
 
-            var userPath = new LineString([.. coordinates]);
+            var userPath = geometryFactory.CreateLineString([.. coordinates]);
 
             return new EventAttendeeRoute
             {
