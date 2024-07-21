@@ -18,7 +18,7 @@
             };
         }
 
-        private static List<SortableLocation> GetSortedLocations(LineString userPath)
+        private static List<SortableLocation> GetSortedLocations(Geometry userPath)
         {
             var locations = new List<SortableLocation>();
             var order = 0;
