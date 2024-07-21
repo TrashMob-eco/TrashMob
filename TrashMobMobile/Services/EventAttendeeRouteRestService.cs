@@ -3,7 +3,6 @@
     using System.Diagnostics;
     using System.Net.Http.Json;
     using Newtonsoft.Json;
-    using TrashMob.Models;
     using TrashMob.Models.Poco;
 
     public class EventAttendeeRouteRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IEventAttendeeRouteRestService
