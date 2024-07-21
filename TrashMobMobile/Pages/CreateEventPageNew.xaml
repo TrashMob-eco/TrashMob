@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage x:Class="TrashMobMobile.Pages.CreateEventPageNew"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             Shell.NavBarIsVisible="False"
+             x:DataType="viewModels:CreateEventViewModelNew"
+             Title="Create Event">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style
+                x:Key="BoxLabelStyle"
+                TargetType="BoxView">
+                <Setter Property="Margin"
+                        Value="3,0" />
+                <Setter Property="HeightRequest" Value="4" />
+                <Setter Property="CornerRadius" Value="2" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <Grid Margin="16" RowDefinitions="Auto,*,Auto">
+        <StackLayout>
+            <StackLayout Orientation="Horizontal" Margin="0,15">
+                <Image HeightRequest="45"
+                       VerticalOptions="Center">
+                    <Image.Source>
+                        <FontImageSource
+                            FontFamily="{StaticResource GoogleMaterialFontFamily}"
+                            Glyph="{StaticResource IconClose}"
+                            Color="Black" />
+                    </Image.Source>
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding CloseCommand}" NumberOfTapsRequired="1" />
+                    </Image.GestureRecognizers>
+                </Image>
+                <Label Margin="35,0,0,0" VerticalOptions="Start" Text="Create an Event" FontSize="24"></Label>
+            </StackLayout>
+            <Grid RowDefinitions="Auto" ColumnDefinitions="*,*,*,*,*,*">
+                <BoxView BackgroundColor="{Binding StepOneColor}" Style="{StaticResource BoxLabelStyle}"
+                         HeightRequest="4">
+                </BoxView>
+                <BoxView BackgroundColor="{Binding StepTwoColor}" Style="{StaticResource BoxLabelStyle}"
+                         Grid.Column="1" HeightRequest="4">
+                </BoxView>
+                <BoxView BackgroundColor="{Binding StepThreeColor}" Style="{StaticResource BoxLabelStyle}"
+                         Grid.Column="2" HeightRequest="4">
+                </BoxView>
+                <BoxView BackgroundColor="{Binding StepFourColor}" Style="{StaticResource BoxLabelStyle}"
+                         Grid.Column="3" HeightRequest="4">
+                </BoxView>
+                <BoxView BackgroundColor="{Binding StepFiveColor}" Style="{StaticResource BoxLabelStyle}"
+                         Grid.Column="4" HeightRequest="4">
+                </BoxView>
+                <BoxView BackgroundColor="{Binding StepSixColor}" Style="{StaticResource BoxLabelStyle}"
+                         Grid.Column="5" HeightRequest="4">
+                </BoxView>
+            </Grid>
+        </StackLayout>
+
+        <ContentView Grid.Row="1" x:Name="StepContent" Margin="0,16" Content="{Binding CurrentView}">
+        </ContentView>
+        <StackLayout Grid.Row="2" Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
+            <Button Text="Previous" Command="{Binding PreviousCommand}" />
+            <Button Text="Next" Command="{Binding NextCommand}" IsEnabled="{Binding IsStepValid}"/>
+        </StackLayout>
+    </Grid>
+
+    <!-- The content of the current step will be loaded here -->
+
+
+    <!-- <ScrollView> -->
+    <!--     <Grid> -->
+    <!--         <VerticalStackLayout Style="{StaticResource OuterVerticalStack}"> -->
+    <!--             <Grid ColumnDefinitions="1*, 1*, 1*, 1*" -->
+    <!--                   MaximumWidthRequest="400" -->
+    <!--                   RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto"> -->
+    <!--                 <VerticalStackLayout Grid.Row="0" -->
+    <!--                                      Grid.ColumnSpan="4" -->
+    <!--                                      Margin="10" -->
+    <!--                                      Spacing="5"> -->
+    <!--                     <Label Text="Name" Style="{StaticResource FieldLabel}" /> -->
+    <!-- -->
+    <!--                     <Entry Text="{Binding EventViewModel.Name}"> -->
+    <!--                         <Entry.Behaviors> -->
+    <!--                             <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5" -->
+    <!--                                                             x:Name="nameValidator" /> -->
+    <!--                         </Entry.Behaviors> -->
+    <!--                     </Entry> -->
+    <!--                 </VerticalStackLayout> -->
+    <!-- -->
+    <!--                 <VerticalStackLayout Grid.Row="1" -->
+    <!--                                      Grid.Column="0" -->
+    <!--                                      Grid.ColumnSpan="2" -->
+    <!--                                      Margin="10" -->
+    <!--                                      Spacing="5"> -->
+    <!--                     <Label Text="Event Date" Style="{StaticResource FieldLabel}" /> -->
+    <!-- -->
+    <!--                     <Border Style="{x:StaticResource RoundBorder}"> -->
+    <!--                         <DatePicker -->
+    <!--                             Date="{Binding EventViewModel.EventDateOnly}" /> -->
+    <!--                     </Border> -->
+    <!--                 </VerticalStackLayout> -->
+    <!-- -->
+    <!--                 <VerticalStackLayout Grid.Row="1" -->
+    <!--                                      Grid.Column="2" -->
+    <!--                                      Grid.ColumnSpan="2"> -->
+    <!--                     <Label Text="Event Time" Style="{StaticResource FieldLabel}" /> -->
+    <!-- -->
+    <!--                     <Border Style="{x:StaticResource RoundBorder}"> -->
+    <!--                         <TimePicker -->
+    <!--                             Time="{Binding EventViewModel.EventTime}" /> -->
+    <!--                     </Border> -->
+    <!--                 </VerticalStackLayout> -->
+    <!-- -->
+    <!--                 <VerticalStackLayout Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"> -->
+    <!--                     <Label Text="Duration Hours" Style="{StaticResource FieldLabel}" /> -->
+    <!-- -->
+    <!--                     <Entry Keyboard="Numeric" -->
+    <!--                            Text="{Binding EventViewModel.DurationHours}"> -->
+    <!--                         <Entry.Behaviors> -->
+    <!--                             <toolkit:NumericValidationBehavior Flags="ValidateOnValueChanged" -->
+    <!--                                                                x:Name="durationHoursValidator" MinimumValue="1" -->
+    <!--                                                                MaximumValue="10" MaximumDecimalPlaces="0" /> -->
+    <!--                         </Entry.Behaviors> -->
+    <!--                     </Entry> -->
+    <!--                 </VerticalStackLayout> -->
+    <!-- -->
+    <!--                 <VerticalStackLayout Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2"> -->
+    <!--                     <Label Text="Duration Minutes" Style="{StaticResource FieldLabel}" /> -->
+    <!-- -->
+    <!--                     <Entry Keyboard="Numeric" -->
+    <!--                            Text="{Binding EventViewModel.DurationMinutes}"> -->
+    <!--                         <Entry.Behaviors> -->
+    <!--                             <toolkit:NumericValidationBehavior Flags="ValidateOnValueChanged" -->
+    <!--                                                                x:Name="durationMinutesValidator" MinimumValue="0" -->
+    <!--                                                                MaximumValue="59" MaximumDecimalPlaces="0" /> -->
+    <!--                         </Entry.Behaviors> -->
+    <!--                     </Entry> -->
+    <!--                 </VerticalStackLayout> -->
+    <!-- -->
+    <!--                 <VerticalStackLayout Grid.Row="3" Grid.ColumnSpan="4"> -->
+    <!--                     <Label Text="Description" Style="{StaticResource FieldLabel}" /> -->
+    <!-- -->
+    <!--                     <Editor Text="{Binding EventViewModel.Description}"> -->
+    <!--                         <Editor.Behaviors> -->
+    <!--                             <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="10" -->
+    <!--                                                             x:Name="descriptionValidator" /> -->
+    <!--                         </Editor.Behaviors> -->
+    <!--                     </Editor> -->
+    <!--                 </VerticalStackLayout> -->
+    <!-- -->
+    <!-- -->
+    <!--                 <VerticalStackLayout Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"> -->
+    <!--                     <Label Text="Event Type" Style="{StaticResource FieldLabel}" /> -->
+    <!-- -->
+    <!--                     <Border Style="{x:StaticResource RoundBorder}"> -->
+    <!--                         <Picker Title="Event Type" -->
+    <!--                                 ItemsSource="{Binding ETypes}" -->
+    <!--                                 SelectedItem="{Binding SelectedEventType}" /> -->
+    <!--                     </Border> -->
+    <!--                 </VerticalStackLayout> -->
+    <!-- -->
+    <!--                 <VerticalStackLayout Grid.Row="4" Grid.Column="2"> -->
+    <!--                     <Label Text="Max Attendees" Style="{StaticResource FieldLabel}" /> -->
+    <!-- -->
+    <!--                     <Entry Keyboard="Numeric" -->
+    <!--                            Text="{Binding EventViewModel.MaxNumberOfParticipants}"> -->
+    <!--                         <Entry.Behaviors> -->
+    <!--                             <toolkit:NumericValidationBehavior Flags="ValidateOnValueChanged" -->
+    <!--                                                                x:Name="maxNumberOfParticipantsValidator" -->
+    <!--                                                                MinimumValue="0" MaximumDecimalPlaces="0" /> -->
+    <!--                         </Entry.Behaviors> -->
+    <!--                     </Entry> -->
+    <!--                 </VerticalStackLayout> -->
+    <!-- -->
+    <!--                 <VerticalStackLayout Grid.Row="4" Grid.Column="3"> -->
+    <!--                     <Label Text="Is Event Public?" Style="{StaticResource FieldLabel}" /> -->
+    <!-- -->
+    <!--                     <Border Style="{x:StaticResource RoundBorder}"> -->
+    <!--                         <CheckBox IsChecked="{Binding EventViewModel.IsEventPublic}" /> -->
+    <!--                     </Border> -->
+    <!--                 </VerticalStackLayout> -->
+    <!-- -->
+    <!--                 <Label Grid.Row="5" Grid.ColumnSpan="4" -->
+    <!--                        Margin="5" -->
+    <!--                        FontSize="Micro" -->
+    <!--                        HorizontalOptions="Center" -->
+    <!--                        HorizontalTextAlignment="Center" -->
+    <!--                        Text="Click on the map to set the event location." -->
+    <!--                        VerticalOptions="Center" /> -->
+    <!-- -->
+    <!--                 <maps:Map x:Name="eventLocationMap" -->
+    <!--                           Grid.Row="6" -->
+    <!--                           Grid.ColumnSpan="4" -->
+    <!--                           ItemsSource="{Binding Events}" -->
+    <!--                           MapClicked="OnMapClicked"> -->
+    <!--                     <maps:Map.ItemTemplate> -->
+    <!--                         <DataTemplate x:DataType="viewModels:EventViewModel"> -->
+    <!--                             <maps:Pin Address="{Binding Address.StreetAddress}" -->
+    <!--                                       Label="{Binding Name}" -->
+    <!--                                       Location="{Binding Address.Location}" /> -->
+    <!--                         </DataTemplate> -->
+    <!--                     </maps:Map.ItemTemplate> -->
+    <!--                 </maps:Map> -->
+    <!--             </Grid> -->
+    <!-- -->
+    <!--             <Grid ColumnDefinitions="1*, 1*" -->
+    <!--                   RowDefinitions="Auto, Auto, Auto"> -->
+    <!--                 <VerticalStackLayout Grid.Row="0" Grid.ColumnSpan="2"> -->
+    <!--                     <Label Text="Address" Style="{StaticResource FieldLabel}" /> -->
+    <!-- -->
+    <!--                     <Border Style="{x:StaticResource RoundBorder}"> -->
+    <!--                         <Label FontSize="Micro" -->
+    <!--                                Text="{Binding EventViewModel.Address.StreetAddress}" /> -->
+    <!--                     </Border> -->
+    <!--                 </VerticalStackLayout> -->
+    <!--                 <VerticalStackLayout Grid.Row="1" Grid.Column="0"> -->
+    <!--                     <Label Text="City" Style="{StaticResource FieldLabel}" /> -->
+    <!-- -->
+    <!--                     <Border Style="{x:StaticResource RoundBorder}"> -->
+    <!--                         <Label FontSize="Micro" -->
+    <!--                                Text="{Binding EventViewModel.Address.City}" /> -->
+    <!--                     </Border> -->
+    <!--                 </VerticalStackLayout> -->
+    <!--                 <VerticalStackLayout Grid.Row="1" Grid.Column="1"> -->
+    <!--                     <Label Text="State/Region" Style="{StaticResource FieldLabel}" /> -->
+    <!-- -->
+    <!--                     <Border Style="{x:StaticResource RoundBorder}"> -->
+    <!--                         <Label FontSize="Micro" -->
+    <!--                                Text="{Binding EventViewModel.Address.Region}" /> -->
+    <!--                     </Border> -->
+    <!--                 </VerticalStackLayout> -->
+    <!--                 <VerticalStackLayout Grid.Row="2" Grid.Column="0"> -->
+    <!--                     <Label Text="Country" Style="{StaticResource FieldLabel}" /> -->
+    <!-- -->
+    <!--                     <Border Style="{x:StaticResource RoundBorder}"> -->
+    <!--                         <Label FontSize="Micro" -->
+    <!--                                Text="{Binding EventViewModel.Address.Country}" /> -->
+    <!--                     </Border> -->
+    <!--                 </VerticalStackLayout> -->
+    <!--                 <VerticalStackLayout Grid.Row="2" Grid.Column="1"> -->
+    <!--                     <Label Text="Postal Code" Style="{StaticResource FieldLabel}" /> -->
+    <!-- -->
+    <!--                     <Border Style="{x:StaticResource RoundBorder}"> -->
+    <!--                         <Label FontSize="Micro" -->
+    <!--                                Text="{Binding EventViewModel.Address.PostalCode}" /> -->
+    <!--                     </Border> -->
+    <!--                 </VerticalStackLayout> -->
+    <!--             </Grid> -->
+    <!-- -->
+    <!--             <Grid ColumnDefinitions="1*,1*, 1*, 1*" -->
+    <!--                   RowDefinitions="Auto" -->
+    <!--                   VerticalOptions="End" -->
+    <!--                   Margin="0,0,0,20"> -->
+    <!-- -->
+    <!--                 <Button Margin="10" -->
+    <!--                         Grid.Row="0" -->
+    <!--                         Grid.Column="0" -->
+    <!--                         Grid.ColumnSpan="2" -->
+    <!--                         Command="{Binding SaveEventCommand}" -->
+    <!--                         Text="Save Event"> -->
+    <!--                     <Button.Triggers> -->
+    <!--                         <MultiTrigger TargetType="Button"> -->
+    <!--                             <MultiTrigger.Conditions> -->
+    <!--                                 <BindingCondition -->
+    <!--                                     Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" -->
+    <!--                                     Value="True" /> -->
+    <!--                                 <BindingCondition -->
+    <!--                                     Binding="{Binding Source={x:Reference descriptionValidator}, Path=IsValid}" -->
+    <!--                                     Value="True" /> -->
+    <!--                                 <BindingCondition -->
+    <!--                                     Binding="{Binding Source={x:Reference maxNumberOfParticipantsValidator}, Path=IsValid}" -->
+    <!--                                     Value="True" /> -->
+    <!--                                 <BindingCondition -->
+    <!--                                     Binding="{Binding Source={x:Reference durationHoursValidator}, Path=IsValid}" -->
+    <!--                                     Value="True" /> -->
+    <!--                                 <BindingCondition -->
+    <!--                                     Binding="{Binding Source={x:Reference durationMinutesValidator}, Path=IsValid}" -->
+    <!--                                     Value="True" /> -->
+    <!--                             </MultiTrigger.Conditions> -->
+    <!--                             <Setter Property="IsEnabled" Value="True" /> -->
+    <!--                         </MultiTrigger> -->
+    <!--                     </Button.Triggers> -->
+    <!--                 </Button> -->
+    <!-- -->
+    <!--                 <Button Margin="10" -->
+    <!--                         Grid.Row="0" -->
+    <!--                         Grid.Column="2" -->
+    <!--                         Grid.ColumnSpan="2" -->
+    <!--                         Command="{Binding ManageEventPartnersCommand}" -->
+    <!--                         IsEnabled="{Binding IsManageEventPartnersEnabled}" -->
+    <!--                         IsVisible="{Binding IsManageEventPartnersEnabled}" -->
+    <!--                         Text="Manage Partners" /> -->
+    <!--             </Grid> -->
+    <!-- -->
+
+    <!--                         rather than at the end of the page. Especially in a scrollview. -->
+
+    <!--             <Label FontSize="Micro" -->
+    <!--                    HorizontalOptions="Center" -->
+    <!--                    HorizontalTextAlignment="Center" -->
+    <!--                    TextColor="Red" -->
+    <!--                    VerticalOptions="Center"> -->
+    <!--                 <Label.Triggers> -->
+    <!--                     <MultiTrigger TargetType="Label"> -->
+    <!--                         <MultiTrigger.Conditions> -->
+    <!--                             <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" -->
+    <!--                                               Value="True" /> -->
+    <!--                             <BindingCondition -->
+    <!--                                 Binding="{Binding Source={x:Reference descriptionValidator}, Path=IsValid}" -->
+    <!--                                 Value="True" /> -->
+    <!--                             <BindingCondition -->
+    <!--                                 Binding="{Binding Source={x:Reference maxNumberOfParticipantsValidator}, Path=IsValid}" -->
+    <!--                                 Value="True" /> -->
+    <!--                             <BindingCondition -->
+    <!--                                 Binding="{Binding Source={x:Reference durationHoursValidator}, Path=IsValid}" -->
+    <!--                                 Value="True" /> -->
+    <!--                             <BindingCondition -->
+    <!--                                 Binding="{Binding Source={x:Reference durationMinutesValidator}, Path=IsValid}" -->
+    <!--                                 Value="True" /> -->
+    <!--                         </MultiTrigger.Conditions> -->
+    <!--                         <Setter Property="IsVisible" Value="False" /> -->
+    <!--                     </MultiTrigger> -->
+    <!--                     <DataTrigger Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" -->
+    <!--                                  TargetType="Label" -->
+    <!--                                  Value="False"> -->
+    <!--                         <Setter Property="Text" Value="Name is required and must be at least 5 characters." /> -->
+    <!--                     </DataTrigger> -->
+    <!--                     <DataTrigger Binding="{Binding Source={x:Reference descriptionValidator}, Path=IsValid}" -->
+    <!--                                  TargetType="Label" -->
+    <!--                                  Value="False"> -->
+    <!--                         <Setter Property="Text" Value="Description is required and must be at least 10 characters." /> -->
+    <!--                     </DataTrigger> -->
+    <!--                     <DataTrigger -->
+    <!--                         Binding="{Binding Source={x:Reference maxNumberOfParticipantsValidator}, Path=IsValid}" -->
+    <!--                         TargetType="Label" -->
+    <!--                         Value="False"> -->
+    <!--                         <Setter Property="Text" Value="Maximum Participants cannot be less than 0." /> -->
+    <!--                     </DataTrigger> -->
+    <!--                     <DataTrigger Binding="{Binding Source={x:Reference durationHoursValidator}, Path=IsValid}" -->
+    <!--                                  TargetType="Label" -->
+    <!--                                  Value="False"> -->
+    <!--                         <Setter Property="Text" Value="Duration Hours must be between 1 and 10." /> -->
+    <!--                     </DataTrigger> -->
+    <!--                     <DataTrigger Binding="{Binding Source={x:Reference durationMinutesValidator}, Path=IsValid}" -->
+    <!--                                  TargetType="Label" -->
+    <!--                                  Value="False"> -->
+    <!--                         <Setter Property="Text" Value="Duration Minutes must be between 0 and 59." /> -->
+    <!--                     </DataTrigger> -->
+    <!--                 </Label.Triggers> -->
+    <!--             </Label> -->
+    <!--         </VerticalStackLayout> -->
+    <!--         <BoxView BackgroundColor="{StaticResource TransparentBlack}" -->
+    <!--                  HorizontalOptions="Fill" -->
+    <!--                  IsVisible="{Binding IsBusy}" -->
+    <!--                  VerticalOptions="Fill" /> -->
+    <!--         <ActivityIndicator HorizontalOptions="Center" -->
+    <!--                            IsRunning="{Binding IsBusy}" -->
+    <!--                            IsVisible="{Binding IsBusy}" -->
+    <!--                            VerticalOptions="Center" /> -->
+    <!--     </Grid> -->
+    <!-- </ScrollView> -->
+</ContentPage>
