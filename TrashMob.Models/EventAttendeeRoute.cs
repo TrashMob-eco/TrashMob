@@ -10,7 +10,7 @@ namespace TrashMob.Models
 
         public Guid UserId { get; set; }
 
-        public LineString UserPath { get; set; }
+        public Geometry UserPath { get; set; }
 
         public DateTimeOffset StartTime { get; set; }
 
