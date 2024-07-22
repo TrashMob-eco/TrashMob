@@ -11,7 +11,7 @@
     "@tanstack/react-query": "^4.36.1",
     "@uifabric/icons": "^7.5.23",
     "axios": "^1.7.2",
-    "azure-maps-control": "2.0.32",
+    "azure-maps-control": "2.3.7",
     "bootstrap": "^4.6.0",
     "buffer": "^6.0.3",
     "classnames": "^2.3.1",
