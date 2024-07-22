@@ -2,7 +2,6 @@
 
 using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
-using Syncfusion.Maui.Core.Hosting;
 using TrashMobMobile.Authentication;
 using TrashMobMobile.Extensions;
 
@@ -12,7 +11,6 @@ public static class MauiProgram
     {
         var builder = MauiApp.CreateBuilder();
         builder
-            .ConfigureSyncfusionCore()
             .UseMauiApp<App>()
             .UseMauiMaps()
             .UseMauiCommunityToolkit(options => { options.SetShouldSuppressExceptionsInBehaviors(true); })

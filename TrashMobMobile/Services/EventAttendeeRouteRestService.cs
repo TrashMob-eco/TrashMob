@@ -3,13 +3,13 @@
     using System.Diagnostics;
     using System.Net.Http.Json;
     using Newtonsoft.Json;
-    using TrashMob.Models;
+    using TrashMob.Models.Poco;
 
     public class EventAttendeeRouteRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IEventAttendeeRouteRestService
     {
         protected override string Controller => "eventattendeeroutes";
 
-        public async Task<IEnumerable<EventAttendeeRoute>> GetEventAttendeeRoutesAsync(Guid eventId, 
+        public async Task<IEnumerable<DisplayEventAttendeeRoute>> GetEventAttendeeRoutesAsync(Guid eventId, 
             Guid userId,
             CancellationToken cancellationToken = default)
         {
@@ -21,7 +21,7 @@
                 {
                         response.EnsureSuccessStatusCode();
                         var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                        return JsonConvert.DeserializeObject<IEnumerable<EventAttendeeRoute>>(content);
+                        return JsonConvert.DeserializeObject<IEnumerable<DisplayEventAttendeeRoute>>(content);
                 }
             }
             catch (Exception ex)
@@ -31,7 +31,7 @@
             }
         }
 
-        public async Task<IEnumerable<EventAttendeeRoute>> GetEventAttendeeRoutesForEventAsync(Guid eventId,
+        public async Task<IEnumerable<DisplayEventAttendeeRoute>> GetEventAttendeeRoutesForEventAsync(Guid eventId,
                 CancellationToken cancellationToken = default)
         {
             try
@@ -42,7 +42,7 @@
                 {
                     response.EnsureSuccessStatusCode();
                     var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                    return JsonConvert.DeserializeObject<IEnumerable<EventAttendeeRoute>>(content);
+                    return JsonConvert.DeserializeObject<IEnumerable<DisplayEventAttendeeRoute>>(content);
                 }
             }
             catch (Exception ex)
@@ -52,7 +52,7 @@
             }
         }
 
-        public async Task<IEnumerable<EventAttendeeRoute>> GetEventAttendeeRoutesForUserAsync(Guid userId,
+        public async Task<IEnumerable<DisplayEventAttendeeRoute>> GetEventAttendeeRoutesForUserAsync(Guid userId,
         CancellationToken cancellationToken = default)
         {
             try
@@ -63,7 +63,7 @@
                 {
                     response.EnsureSuccessStatusCode();
                     var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                    return JsonConvert.DeserializeObject<IEnumerable<EventAttendeeRoute>>(content);
+                    return JsonConvert.DeserializeObject<IEnumerable<DisplayEventAttendeeRoute>>(content);
                 }
             }
             catch (Exception ex)
@@ -73,7 +73,7 @@
             }
         }
 
-        public async Task<EventAttendeeRoute> GetEventAttendeeRouteAsync(Guid id,
+        public async Task<DisplayEventAttendeeRoute> GetEventAttendeeRouteAsync(Guid id,
             CancellationToken cancellationToken = default)
         {
             try
@@ -84,7 +84,7 @@
                 {
                     response.EnsureSuccessStatusCode();
                     var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                    return JsonConvert.DeserializeObject<EventAttendeeRoute>(content);
+                    return JsonConvert.DeserializeObject<DisplayEventAttendeeRoute>(content);
                 }
             }
             catch (Exception ex)
@@ -94,12 +94,12 @@
             }
         }
 
-        public async Task<EventAttendeeRoute> AddEventAttendeeRouteAsync(EventAttendeeRoute eventAttendeeRoute,
+        public async Task<DisplayEventAttendeeRoute> AddEventAttendeeRouteAsync(DisplayEventAttendeeRoute eventAttendeeRoute,
             CancellationToken cancellationToken = default)
         {
             try
             {
-                var content = JsonContent.Create(eventAttendeeRoute, typeof(EventAttendeeRoute), null, SerializerOptions);
+                var content = JsonContent.Create(eventAttendeeRoute, typeof(DisplayEventAttendeeRoute), null, SerializerOptions);
 
                 using (var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken))
                 {
