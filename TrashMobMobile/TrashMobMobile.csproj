@@ -97,7 +97,6 @@
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="Polly" Version="8.4.1" />
 		<PackageReference Include="Sentry.Maui" Version="4.8.0" />
-		<PackageReference Include="Syncfusion.Maui.DataForm" Version="25.2.7" />
 	</ItemGroup>
 
 	<ItemGroup>
