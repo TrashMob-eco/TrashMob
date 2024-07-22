@@ -4,6 +4,12 @@
 
     public static class Geolocator
     {
-        public static IGeolocator Default { get; } = new GeolocatorImplementation();
+        public static IGeolocator Default { get; }
+#if Android
+            = new TrashMobMobile.AndroidPlatform.GeolocatorImplementation();
+#endif
+#if IOS
+        = new TrashMobMobile.iOSPlatform.GeolocatorImplementation();
+#endif
     }
 }

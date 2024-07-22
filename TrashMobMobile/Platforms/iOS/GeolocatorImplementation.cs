@@ -1,16 +1,17 @@
-﻿namespace TrashMobMobile
-{
-    using CommunityToolkit.Maui.Alerts;
-    using CoreLocation;
-    using System;
-    using System.Threading.Tasks;
-    using TrashMobMobile.Services;
+﻿using CommunityToolkit.Maui.Alerts;
+using CoreLocation;
+using System;
+using System.Threading.Tasks;
+using TrashMobMobile.Services;
 
+namespace TrashMobMobile.iOSPlatform
+{
     public class GeolocatorImplementation : IGeolocator
     {
         readonly CLLocationManager manager = new();
 
-        public async Task StartListening(IProgress<Location> positionChangedProgress, CancellationToken cancellationToken)
+        public async Task StartListening(IProgress<Location> positionChangedProgress,
+            CancellationToken cancellationToken)
         {
             var permission = await Permissions.CheckStatusAsync<Permissions.LocationAlways>();
             if (permission != PermissionStatus.Granted)

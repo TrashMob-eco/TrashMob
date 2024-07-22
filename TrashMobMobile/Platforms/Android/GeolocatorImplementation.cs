@@ -1,4 +1,4 @@
-﻿namespace TrashMobMobile;
+﻿
 
 using Android.Locations;
 using Android.OS;
@@ -7,6 +7,8 @@ using CommunityToolkit.Maui.Alerts;
 using TrashMobMobile.Services;
 using Location = Android.Locations.Location;
 using Permissions = Microsoft.Maui.ApplicationModel.Permissions;
+
+namespace TrashMobMobile.AndroidPlatform;
 
 public class GeolocatorImplementation : IGeolocator
 {
