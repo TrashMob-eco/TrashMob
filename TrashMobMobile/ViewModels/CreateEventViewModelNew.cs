@@ -26,18 +26,6 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
     public ICommand CloseCommand { get; set; }
 
-    [ObservableProperty] private Color stepOneColor;
-
-    [ObservableProperty] private Color stepTwoColor;
-
-    [ObservableProperty] private Color stepThreeColor;
-
-    [ObservableProperty] private Color stepFourColor;
-
-    [ObservableProperty] private Color stepFiveColor;
-
-    [ObservableProperty] private Color stepSixColor;
-
     [ObservableProperty] private EventViewModel eventViewModel;
 
     [ObservableProperty] private bool isManageEventPartnersEnabled;
@@ -47,6 +35,55 @@ public partial class CreateEventViewModelNew : BaseViewModel
     [ObservableProperty] private AddressViewModel userLocation;
 
     [ObservableProperty] private bool isStepValid;
+
+
+    private bool validating;
+
+    private TimeSpan startTime;
+    private TimeSpan endTime;
+
+    public TimeSpan StartTime
+    {
+        get => startTime;
+        set
+        {
+            if (startTime != value)
+            {
+                startTime = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(FormattedEventDuration));
+            }
+        }
+    }
+
+    public TimeSpan EndTime
+    {
+        get => endTime;
+        set
+        {
+            if (endTime != value)
+            {
+                endTime = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(FormattedEventDuration));
+            }
+        }
+    }
+
+    public string FormattedEventDuration
+    {
+        get
+        {
+            if (EventViewModel != null)
+            {
+                var duration = EndTime - StartTime;
+                return $"{duration.Hours} Hours and {duration.Minutes} Minutes";
+            }
+
+            return string.Empty;
+        }
+    }
+
 
     public CreateEventViewModelNew(IMobEventManager mobEventManager,
         IEventTypeRestService eventTypeRestService,
@@ -102,18 +139,40 @@ public partial class CreateEventViewModelNew : BaseViewModel
         Backward
     }
 
+    private void ValidateViewModel()
+    {
+        EventDurationError = string.Empty;
+
+        if ((EndTime - StartTime).TotalHours > 10)
+        {
+            EventDurationError = "Event maximum duration can only be 10 hours";
+        }
+
+        if ((EndTime - StartTime).TotalHours < 1)
+        {
+            EventDurationError = "Event minimum duration must be at least 1 hour";
+        }
+    }
+
     private void ValidateCurrentStep(object sender, PropertyChangedEventArgs e)
     {
         if (EventViewModel == null)
             return;
+
+        if (validating)
+            return;
+
+        validating = true;
+
+        ValidateViewModel();
 
         switch (CurrentStep)
         {
             //Step 1 validation 
             case 0:
                 if (!string.IsNullOrEmpty(EventViewModel.Name) &&
-                    EventViewModel.EventDateOnly != default && 
-                   !string.IsNullOrEmpty(SelectedEventType))
+                    EventViewModel.EventDateOnly != default &&
+                    !string.IsNullOrEmpty(SelectedEventType) && string.IsNullOrEmpty(EventDurationError))
                 {
                     IsStepValid = true;
                 }
@@ -126,6 +185,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
             default:
                 break;
         }
+
+        validating = false;
     }
 
     private void SetCurrentView()
@@ -134,7 +195,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
         if (CurrentView is BaseStepClass current)
             current.OnNavigated();
-
+        
         //TODO reference this colors from the app styles
         StepOneColor = CurrentStep == 0 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
         StepTwoColor = CurrentStep == 1 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
@@ -152,7 +213,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
             {
                 CurrentStep--;
                 SetCurrentView();
-            } 
+            }
         }
         else
         {
@@ -207,7 +268,11 @@ public partial class CreateEventViewModelNew : BaseViewModel
             EventTypeId = EventTypes.OrderBy(e => e.DisplayOrder).First().Id,
             EventStatusId = ActiveEventStatus,
         };
-        
+
+        StartTime = TimeSpan.FromHours(12);
+
+        EndTime = TimeSpan.FromHours(14);
+
         SelectedEventType = EventTypes.OrderBy(e => e.DisplayOrder).First().Name;
 
         Events.Add(EventViewModel);
@@ -218,7 +283,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
         }
 
         IsBusy = false;
-        
+
         //We need to subscribe to both eventViewmodel and creatEventViewmodel propertyChanged to validate step
         eventViewModel.PropertyChanged += ValidateCurrentStep;
         PropertyChanged += ValidateCurrentStep;
@@ -291,4 +356,26 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
         return true;
     }
+
+    #region UI Related properties
+
+    //Event current step control
+
+    [ObservableProperty] private Color stepOneColor;
+
+    [ObservableProperty] private Color stepTwoColor;
+
+    [ObservableProperty] private Color stepThreeColor;
+
+    [ObservableProperty] private Color stepFourColor;
+
+    [ObservableProperty] private Color stepFiveColor;
+
+    [ObservableProperty] private Color stepSixColor;
+
+    //Validation Errors
+
+    [ObservableProperty] private string eventDurationError;
+
+    #endregion
 }
