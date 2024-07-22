@@ -195,7 +195,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
         if (CurrentView is BaseStepClass current)
             current.OnNavigated();
-in 
+        
         //TODO reference this colors from the app styles
         StepOneColor = CurrentStep == 0 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
         StepTwoColor = CurrentStep == 1 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
