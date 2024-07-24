@@ -5,8 +5,15 @@
                            xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
                            xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
                            xmlns:createEvent="clr-namespace:TrashMobMobile.Pages.CreateEvent"
+                           xmlns:createEvent1="clr-namespace:TrashMobMobile.Pages.CreateEvent"
+                           xmlns:converters="clr-namespace:TrashMobMobile.Converters"
                            x:DataType="viewModels:CreateEventViewModelNew"
                            x:Class="TrashMobMobile.Pages.CreateEvent.Step1">
+    <createEvent1:Step1.Resources>
+        <ResourceDictionary>
+            <converters:StringToBoolConverter x:Key="StringToBoolConverter" />
+        </ResourceDictionary>
+    </createEvent1:Step1.Resources>
     <ScrollView>
         <Grid>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
@@ -15,7 +22,7 @@
                       RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto">
                     <VerticalStackLayout Grid.Row="0"
                                          Grid.ColumnSpan="2"
-                                         Margin="10"
+                                         Margin="0,10"
                                          Spacing="5">
                         <Label Text="Name" Style="{StaticResource FieldLabel}" />
                         <Entry Text="{Binding EventViewModel.Name}">
@@ -27,7 +34,7 @@
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="1"
                                          Grid.Column="0"
-                                         Margin="10"
+                                         Margin="0,10"
                                          Spacing="5">
                         <Label Text="Event Date" Style="{StaticResource FieldLabel}" />
                         <DatePicker
@@ -37,14 +44,14 @@
                         <Label Text="Is Event Public?" Style="{StaticResource FieldLabel}" />
                         <CheckBox IsChecked="{Binding EventViewModel.IsEventPublic}" />
                     </HorizontalStackLayout>
-                    <VerticalStackLayout Grid.Row="2" Grid.ColumnSpan="2">
+                    <VerticalStackLayout Grid.Row="2" Grid.ColumnSpan="2" Margin="0,10">
                         <Label Text="Event Type" Style="{StaticResource FieldLabel}" />
                         <Picker Title="Event Type"
                                 ItemsSource="{Binding ETypes}"
                                 SelectedItem="{Binding SelectedEventType}" />
                     </VerticalStackLayout>
                     <Grid Grid.Row="3" ColumnSpan="2"
-                          Margin="10"
+                          Margin="0,10"
                           ColumnDefinitions="*,*"
                           RowDefinitions="Auto,Auto,Auto">
                         <Label Text="Start time" Style="{StaticResource FieldLabel}" />
@@ -53,18 +60,19 @@
                         <Label Grid.Column="1" Text="End time" Style="{StaticResource FieldLabel}" />
                         <TimePicker Grid.Row="1" Grid.Column="1" Time="{Binding EndTime}">
                         </TimePicker>
-                        <Label Grid.Row="2" Grid.ColumnSpan="2" Style="{StaticResource ErrorLabel}"
+                        <Label x:Name="DurationErrorLabel" Grid.Row="2" Grid.ColumnSpan="2"
+                               Style="{StaticResource ErrorLabel}" 
+                               IsVisible="{Binding EventDurationError, Converter={StaticResource StringToBoolConverter}}"
                                Text="{Binding EventDurationError}">
                         </Label>
                     </Grid>
-                    
-                    <VerticalStackLayout Grid.Row="4" Grid.ColumnSpan="2">
+                    <VerticalStackLayout Grid.Row="4" Grid.ColumnSpan="2" Margin="0,10">
                         <Label Text="Duration" Style="{StaticResource FieldLabel}"></Label>
                         <Label Text="{Binding FormattedEventDuration}">
                         </Label>
                     </VerticalStackLayout>
 
-                    <VerticalStackLayout Grid.Row="5" Grid.ColumnSpan="2">
+                    <VerticalStackLayout Grid.Row="5" Grid.ColumnSpan="2" Margin="0,10">
                         <Label Text="Description" Style="{StaticResource FieldLabel}" />
                         <Editor Placeholder="Describe your event here" Text="{Binding EventViewModel.Description}">
                             <!-- <Editor.Behaviors> -->
