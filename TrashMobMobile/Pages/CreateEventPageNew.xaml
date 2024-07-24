@@ -3,8 +3,6 @@
 <ContentPage x:Class="TrashMobMobile.Pages.CreateEventPageNew"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
              Shell.NavBarIsVisible="False"
              x:DataType="viewModels:CreateEventViewModelNew"
@@ -23,6 +21,7 @@
     </ContentPage.Resources>
     <Grid Margin="16" RowDefinitions="Auto,*,Auto">
         <StackLayout>
+            <BoxView HeightRequest="2" BackgroundColor="{StaticResource Secondary}" HorizontalOptions="Fill" Margin="-16,0"></BoxView>
             <StackLayout Orientation="Horizontal" Margin="0,15">
                 <Image HeightRequest="45"
                        VerticalOptions="Center">
@@ -36,7 +35,7 @@
                         <TapGestureRecognizer Command="{Binding CloseCommand}" NumberOfTapsRequired="1" />
                     </Image.GestureRecognizers>
                 </Image>
-                <Label Margin="35,0,0,0" VerticalOptions="Start" Text="Create an Event" FontSize="24"></Label>
+                <Label Margin="35,0,0,0" VerticalOptions="Center" Text="Create an Event" FontSize="24"></Label>
             </StackLayout>
             <Grid RowDefinitions="Auto" ColumnDefinitions="*,*,*,*,*,*">
                 <BoxView BackgroundColor="{Binding StepOneColor}" Style="{StaticResource BoxLabelStyle}"
@@ -60,7 +59,7 @@
             </Grid>
         </StackLayout>
 
-        <ContentView Grid.Row="1" x:Name="StepContent" Margin="0,16" Content="{Binding CurrentView}">
+        <ContentView Grid.Row="1" x:Name="StepContent" Margin="0,10" Content="{Binding CurrentView}">
         </ContentView>
         <StackLayout Grid.Row="2" Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
             <Button Text="Previous" Command="{Binding PreviousCommand}" />
