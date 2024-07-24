@@ -68,7 +68,7 @@
                         </Border>
                         <Label x:Name="DurationErrorLabel" Grid.Row="2" Grid.ColumnSpan="2"
                                Style="{StaticResource ErrorLabel}" 
-                               IsVisible="{Binding EventDurationError, Converter={StaticResource StringToBoolConverter}}">
+                               IsVisible="{Binding EventDurationError, Converter={StaticResource StringToBoolConverter}}">or
                         </Label>
                     </Grid>
                     <VerticalStackLayout Grid.Row="4" Grid.ColumnSpan="2" Margin="0,10">
