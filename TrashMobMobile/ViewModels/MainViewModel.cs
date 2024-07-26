@@ -100,14 +100,7 @@ public partial class MainViewModel : BaseViewModel
         }
         else
         {
-            try
-            {
-                await Shell.Current.GoToAsync($"{nameof(WelcomePage)}");
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error: {ex.Message}");
-            }
+            await Shell.Current.GoToAsync($"{nameof(WelcomePage)}");
         }
 
         await RefreshStatistics();

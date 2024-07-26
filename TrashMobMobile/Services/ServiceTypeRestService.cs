@@ -1,6 +1,5 @@
 ﻿namespace TrashMobMobile.Services;
 
-using System.Diagnostics;
 using Newtonsoft.Json;
 using TrashMob.Models;
 
@@ -10,20 +9,13 @@ public class ServiceTypeRestService(IHttpClientFactory httpClientFactory) : Rest
 
     public async Task<IEnumerable<ServiceType>> GetServiceTypesAsync(CancellationToken cancellationToken = default)
     {
-        try
-        {
-            using (var response = await AnonymousHttpClient.GetAsync(Controller, cancellationToken))
-            {
-                response.EnsureSuccessStatusCode();
-                var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
-                return JsonConvert.DeserializeObject<List<ServiceType>>(responseString);
-            }
-        }
-        catch (Exception ex)
+        using (var response = await AnonymousHttpClient.GetAsync(Controller, cancellationToken))
         {
-            Debug.WriteLine(@"\tERROR {0}", ex.Message);
-            throw;
+            response.EnsureSuccessStatusCode();
+            var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
+
+            return JsonConvert.DeserializeObject<List<ServiceType>>(responseString);
         }
     }
 }

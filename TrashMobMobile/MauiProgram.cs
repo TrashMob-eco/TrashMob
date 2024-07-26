@@ -4,6 +4,7 @@ using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
 using TrashMobMobile.Authentication;
 using TrashMobMobile.Extensions;
+using TrashMobMobile.Services;
 
 public static class MauiProgram
 {
@@ -104,7 +105,13 @@ public static class MauiProgram
 
 #if USETEST
         builder.Logging.AddDebug();
+        builder.Services.AddSingleton<ILoggingService, DebugLoggingService>();
+#else
+		builder.Services.AddSingleton<ILoggingService, DebugLoggingService>();
+		// use the following for Sentry builds
+		//builder.Services.AddSingleton<ILoggingService, LoggingService>();
 #endif
+
         return builder.Build();
     }
 }
