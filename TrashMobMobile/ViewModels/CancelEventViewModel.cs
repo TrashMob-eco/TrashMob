@@ -22,9 +22,16 @@ public partial class CancelEventViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        var mobEvent = await mobEventManager.GetEventAsync(eventId);
+        try
+        {
+            var mobEvent = await mobEventManager.GetEventAsync(eventId);
 
-        EventViewModel = mobEvent.ToEventViewModel();
+            EventViewModel = mobEvent.ToEventViewModel();
+        }
+        catch
+        {
+            await NotifyError($"An error has occured while loading the event. Please wait and try again in a moment.");
+        }
 
         IsBusy = false;
     }
@@ -40,12 +47,19 @@ public partial class CancelEventViewModel : BaseViewModel
             EventId = EventViewModel.Id,
         };
 
-        await mobEventManager.DeleteEventAsync(cancellationRequest);
+        try
+        {
+            await mobEventManager.DeleteEventAsync(cancellationRequest);
 
-        IsBusy = false;
+            IsBusy = false;
 
-        await Notify("The event has been cancelled.");
+            await Notify("The event has been cancelled.");
 
-        await Navigation.PopAsync();
+            await Navigation.PopAsync();
+        }
+        catch
+        {
+            await NotifyError($"An error has occured while cancelling the event. Please wait and try again in a moment.");
+        }
     }
 }
