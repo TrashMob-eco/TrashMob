@@ -45,12 +45,6 @@ public static class MauiProgram
 
         // Services
         builder.Services.AddSingleton<AuthHandler>();
-
-        builder.Services
-            .AddHttpClient(AuthConstants.AuthenticatedClient,
-                client => { client.BaseAddress = new Uri(AuthConstants.ApiBaseUri); })
-            .AddHttpMessageHandler<AuthHandler>();
-
         builder.Services.AddTrashMobServices();
         builder.Services.AddRestClientServices(builder.Configuration);
 
