@@ -6,30 +6,33 @@ using TrashMobMobile.Extensions;
 using TrashMobMobile.Models;
 using TrashMobMobile.Services;
 
-public partial class CancelEventViewModel : BaseViewModel
+public partial class CancelEventViewModel(IMobEventManager mobEventManager,
+    INotificationService notificationService) : BaseViewModel(notificationService)
 {
-    private readonly IMobEventManager mobEventManager;
-    private readonly IToastService toastService;
+    private readonly IMobEventManager mobEventManager = mobEventManager;
+    private readonly INotificationService notificationService = notificationService;
 
     [ObservableProperty]
     private EventViewModel eventViewModel;
-
-    public CancelEventViewModel(IMobEventManager mobEventManager,
-        IToastService toastService)
-    {
-        this.mobEventManager = mobEventManager;
-        this.toastService = toastService;
-    }
 
     public async Task Init(Guid eventId)
     {
         IsBusy = true;
 
-        var mobEvent = await mobEventManager.GetEventAsync(eventId);
+        try
+        {
+            var mobEvent = await mobEventManager.GetEventAsync(eventId);
 
-        EventViewModel = mobEvent.ToEventViewModel();
+            EventViewModel = mobEvent.ToEventViewModel();
 
-        IsBusy = false;
+            IsBusy = false;
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotificationService.NotifyError($"An error has occurred while loading the event. Please wait and try again in a moment.");
+        }
     }
 
     [RelayCommand]
@@ -43,12 +46,20 @@ public partial class CancelEventViewModel : BaseViewModel
             EventId = EventViewModel.Id,
         };
 
-        await mobEventManager.DeleteEventAsync(cancellationRequest);
+        try
+        {
+            await mobEventManager.DeleteEventAsync(cancellationRequest);
 
-        IsBusy = false;
+            IsBusy = false;
 
-        await toastService.Notify("The event has been cancelled.");
+            await notificationService.Notify("The event has been cancelled.");
 
-        await Navigation.PopAsync();
+            await Navigation.PopAsync();
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            await NotificationService.NotifyError($"An error has occurred while cancelling the event. Please wait and try again in a moment.");
+        }
     }
 }

@@ -6,11 +6,11 @@ using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class PickupLocationViewModel : BaseViewModel
+public partial class PickupLocationViewModel(IPickupLocationManager pickupLocationManager, IMobEventManager mobEventManager, INotificationService notificationService) : BaseViewModel(notificationService)
 {
-    private readonly IMobEventManager mobEventManager;
+    private readonly IMobEventManager mobEventManager = mobEventManager;
 
-    private readonly IPickupLocationManager pickupLocationManager;
+    private readonly IPickupLocationManager pickupLocationManager = pickupLocationManager;
 
     [ObservableProperty]
     private AddressViewModel address;
@@ -35,33 +35,46 @@ public partial class PickupLocationViewModel : BaseViewModel
     [ObservableProperty]
     private string notes;
 
-    public PickupLocationViewModel(IPickupLocationManager pickupLocationManager, IMobEventManager mobEventManager)
-    {
-        this.pickupLocationManager = pickupLocationManager;
-        this.mobEventManager = mobEventManager;
-    }
-
     public PickupLocation PickupLocation { get; set; }
 
     public async Task Init(Guid eventId)
     {
         IsBusy = true;
-        mobEvent = await mobEventManager.GetEventAsync(eventId);
 
-        CanDeletePickupLocation = mobEvent.IsEventLead();
-        CanEditPickupLocation = mobEvent.IsEventLead();
+        try
+        {
+            mobEvent = await mobEventManager.GetEventAsync(eventId);
 
-        IsBusy = false;
+            CanDeletePickupLocation = mobEvent.IsEventLead();
+            CanEditPickupLocation = mobEvent.IsEventLead();
+
+            IsBusy = false;
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotificationService.NotifyError("An error has occurred while loading the event. Please wait and try again in a moment.");
+        }
     }
 
     [RelayCommand]
     private async Task DeletePickupLocation()
     {
-        await pickupLocationManager.DeletePickupLocationAsync(PickupLocation);
+        try
+        {
+            await pickupLocationManager.DeletePickupLocationAsync(PickupLocation);
 
-        await Notify("Pickup location has been removed.");
+            await NotificationService.Notify("Pickup location has been removed.");
 
-        await Navigation.PopAsync();
+            await Navigation.PopAsync();
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotificationService.NotifyError("An error has occurred while deleting the pickup location. Please wait and try again in a moment.");
+        }
     }
 
     [RelayCommand]

@@ -1,7 +1,6 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMobMobile.Authentication;
@@ -9,13 +8,17 @@ using TrashMobMobile.Config;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class MainViewModel : BaseViewModel
+public partial class MainViewModel(IAuthService authService,
+    IUserRestService userRestService,
+    IStatsRestService statsRestService,
+    IMobEventManager mobEventManager,
+    INotificationService notificationService) : BaseViewModel(notificationService)
 {
-    private readonly IAuthService authService;
-    private readonly IMobEventManager mobEventManager;
-    private readonly IStatsRestService statsRestService;
-    private readonly IUserRestService userRestService;
-    private readonly IToastService toastService;
+    private readonly IAuthService authService = authService;
+    private readonly IMobEventManager mobEventManager = mobEventManager;
+    private readonly IStatsRestService statsRestService = statsRestService;
+    private readonly IUserRestService userRestService = userRestService;
+    private readonly INotificationService notificationService = notificationService;
     private EventViewModel selectedEvent;
 
     [ObservableProperty]
@@ -32,19 +35,6 @@ public partial class MainViewModel : BaseViewModel
 
     [ObservableProperty]
     private string? welcomeMessage;
-
-    public MainViewModel(IAuthService authService,
-        IUserRestService userRestService,
-        IStatsRestService statsRestService,
-        IMobEventManager mobEventManager,
-        IToastService toastService)
-    {
-        this.authService = authService;
-        this.userRestService = userRestService;
-        this.statsRestService = statsRestService;
-        this.mobEventManager = mobEventManager;
-        this.toastService = toastService;
-    }
 
     public ObservableCollection<EventViewModel> UpcomingEvents { get; set; } = [];
 
@@ -75,65 +65,61 @@ public partial class MainViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        var signedIn = await authService.SignInSilentAsync();
-
-        if (signedIn.Succeeded)
+        try
         {
-            var email = authService.GetUserEmail();
-            var user = await userRestService.GetUserByEmailAsync(email, UserState.UserContext);
+            var signedIn = await authService.SignInSilentAsync();
 
-            WelcomeMessage = $"Welcome, {user.UserName}!";
-
-            if (user.Latitude is not null && user.Longitude is not null)
+            if (signedIn.Succeeded)
             {
-                TravelDistance = user.TravelLimitForLocalEvents;
-                UserLocation = user.GetAddress();
+                var email = authService.GetUserEmail();
+                var user = await userRestService.GetUserByEmailAsync(email, UserState.UserContext);
+
+                WelcomeMessage = $"Welcome, {user.UserName}!";
+
+                if (user.Latitude is not null && user.Longitude is not null)
+                {
+                    TravelDistance = user.TravelLimitForLocalEvents;
+                    UserLocation = user.GetAddress();
+                }
+                else
+                {
+                    TravelDistance = Settings.DefaultTravelDistance;
+                    UserLocation = GetDefaultAddress();
+                }
+
+                UserLocationDisplay = $"{UserLocation.City}, {UserLocation.Region}";
+
+                await RefreshEvents();
+
+                IsBusy = false;
             }
             else
             {
-                TravelDistance = Settings.DefaultTravelDistance;
-                UserLocation = GetDefaultAddress();
-            }
-
-            UserLocationDisplay = $"{UserLocation.City}, {UserLocation.Region}";
-
-            await RefreshEvents();
-
-            IsBusy = false;
-        }
-        else
-        {
-            try
-            {
                 await Shell.Current.GoToAsync($"{nameof(WelcomePage)}");
             }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error: {ex.Message}");
-            }
-        }
 
-        await RefreshStatistics();
+            await RefreshStatistics();
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotificationService.NotifyError($"An error occurred while initializing the application. Please wait and try again in a moment.");
+        }
     }
 
     private async Task RefreshStatistics()
     {
-        IsBusy = true;
-
         var stats = await statsRestService.GetStatsAsync();
 
         StatisticsViewModel.TotalAttendees = stats.TotalParticipants;
         StatisticsViewModel.TotalBags = stats.TotalBags;
         StatisticsViewModel.TotalEvents = stats.TotalEvents;
         StatisticsViewModel.TotalHours = stats.TotalHours;
-
-        IsBusy = false;
     }
 
     private async Task RefreshEvents()
     {
-        IsBusy = true;
-
         UpcomingEvents.Clear();
         var events = await mobEventManager.GetActiveEventsAsync();
 
@@ -147,8 +133,6 @@ public partial class MainViewModel : BaseViewModel
 
             UpcomingEvents.Add(vm);
         }
-
-        IsBusy = false;
     }
 
     [RelayCommand]

@@ -1,16 +1,15 @@
-﻿using System.ComponentModel;
-using System.Windows.Input;
-using TrashMobMobile.Pages.CreateEvent;
-
-namespace TrashMobMobile.ViewModels;
+﻿namespace TrashMobMobile.ViewModels;
 
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Color = Microsoft.Maui.Graphics.Color;
 using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
-using Color = Microsoft.Maui.Graphics.Color;
+using TrashMobMobile.Pages.CreateEvent;
 
 public partial class CreateEventViewModelNew : BaseViewModel
 {
@@ -21,7 +20,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
     private readonly IMobEventManager mobEventManager;
     private readonly IWaiverManager waiverManager;
     
-    private readonly IToastService toastService;
+    private readonly INotificationService notificationService;
 
     public ICommand PreviousCommand { get; set; }
     public ICommand NextCommand { get; set; }
@@ -37,7 +36,6 @@ public partial class CreateEventViewModelNew : BaseViewModel
     [ObservableProperty] private AddressViewModel userLocation;
 
     [ObservableProperty] private bool isStepValid;
-
 
     private bool validating;
 
@@ -86,18 +84,18 @@ public partial class CreateEventViewModelNew : BaseViewModel
         }
     }
 
-
     public CreateEventViewModelNew(IMobEventManager mobEventManager,
         IEventTypeRestService eventTypeRestService,
         IMapRestService mapRestService,
         IWaiverManager waiverManager,
-        IToastService toastService)
+        INotificationService notificationService) 
+        : base(notificationService)
     {
         this.mobEventManager = mobEventManager;
         this.eventTypeRestService = eventTypeRestService;
         this.mapRestService = mapRestService;
         this.waiverManager = waiverManager;
-        this.toastService = toastService;
+        this.notificationService = notificationService;
 
         NextCommand = new Command(async () =>
         {
@@ -228,7 +226,6 @@ public partial class CreateEventViewModelNew : BaseViewModel
         }
     }
 
-
     // This is only for the map point
     public ObservableCollection<EventViewModel> Events { get; set; } = [];
 
@@ -248,48 +245,57 @@ public partial class CreateEventViewModelNew : BaseViewModel
                 step.ViewModel = this;
         }
 
-        if (!await waiverManager.HasUserSignedTrashMobWaiverAsync())
+        try
         {
-            await Shell.Current.GoToAsync($"{nameof(WaiverPage)}");
+            if (!await waiverManager.HasUserSignedTrashMobWaiverAsync())
+            {
+                await Shell.Current.GoToAsync($"{nameof(WaiverPage)}");
+            }
+
+            IsManageEventPartnersEnabled = false;
+
+            UserLocation = App.CurrentUser.GetAddress();
+            EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
+
+            // Set defaults
+            EventViewModel = new EventViewModel
+            {
+                Name = DefaultEventName,
+                EventDate = DateTime.Now.AddDays(1),
+                IsEventPublic = true,
+                MaxNumberOfParticipants = 0,
+                DurationHours = 2,
+                DurationMinutes = 0,
+                Address = UserLocation,
+                EventTypeId = EventTypes.OrderBy(e => e.DisplayOrder).First().Id,
+                EventStatusId = ActiveEventStatus,
+            };
+
+            StartTime = TimeSpan.FromHours(12);
+
+            EndTime = TimeSpan.FromHours(14);
+
+            SelectedEventType = EventTypes.OrderBy(e => e.DisplayOrder).First().Name;
+
+            Events.Add(EventViewModel);
+
+            foreach (var eventType in EventTypes)
+            {
+                ETypes.Add(eventType.Name);
+            }
+
+            // We need to subscribe to both eventViewmodel and creatEventViewmodel propertyChanged to validate step
+            eventViewModel.PropertyChanged += ValidateCurrentStep;
+            PropertyChanged += ValidateCurrentStep;
+
+            IsBusy = false;
         }
-
-        IsManageEventPartnersEnabled = false;
-
-        UserLocation = App.CurrentUser.GetAddress();
-        EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
-
-        // Set defaults
-        EventViewModel = new EventViewModel
+        catch (Exception ex)
         {
-            Name = DefaultEventName,
-            EventDate = DateTime.Now.AddDays(1),
-            IsEventPublic = true,
-            MaxNumberOfParticipants = 0,
-            DurationHours = 2,
-            DurationMinutes = 0,
-            Address = UserLocation,
-            EventTypeId = EventTypes.OrderBy(e => e.DisplayOrder).First().Id,
-            EventStatusId = ActiveEventStatus,
-        };
-
-        StartTime = TimeSpan.FromHours(12);
-
-        EndTime = TimeSpan.FromHours(14);
-
-        SelectedEventType = EventTypes.OrderBy(e => e.DisplayOrder).First().Name;
-
-        Events.Add(EventViewModel);
-
-        foreach (var eventType in EventTypes)
-        {
-            ETypes.Add(eventType.Name);
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotificationService.NotifyError($"An error has occurred while loading the page. Please wait and try again in a moment.");
         }
-
-        IsBusy = false;
-
-        //We need to subscribe to both eventViewmodel and creatEventViewmodel propertyChanged to validate step
-        eventViewModel.PropertyChanged += ValidateCurrentStep;
-        PropertyChanged += ValidateCurrentStep;
     }
 
     [RelayCommand]
@@ -297,33 +303,42 @@ public partial class CreateEventViewModelNew : BaseViewModel
     {
         IsBusy = true;
 
-        if (!await Validate())
+        try
         {
-            IsBusy = false;
-            return;
-        }
-
-        if (!string.IsNullOrEmpty(SelectedEventType))
-        {
-            var eventType = EventTypes.FirstOrDefault(e => e.Name == SelectedEventType);
-            if (eventType != null)
+            if (!await Validate())
             {
-                EventViewModel.EventTypeId = eventType.Id;
+                IsBusy = false;
+                return;
             }
+
+            if (!string.IsNullOrEmpty(SelectedEventType))
+            {
+                var eventType = EventTypes.FirstOrDefault(e => e.Name == SelectedEventType);
+                if (eventType != null)
+                {
+                    EventViewModel.EventTypeId = eventType.Id;
+                }
+            }
+
+            var mobEvent = EventViewModel.ToEvent();
+
+            var updatedEvent = await mobEventManager.AddEventAsync(mobEvent);
+
+            EventViewModel = updatedEvent.ToEventViewModel();
+            Events.Clear();
+            Events.Add(EventViewModel);
+
+            IsManageEventPartnersEnabled = true;
+            IsBusy = false;
+
+            await notificationService.Notify("Event has been saved.");
         }
-
-        var mobEvent = EventViewModel.ToEvent();
-
-        var updatedEvent = await mobEventManager.AddEventAsync(mobEvent);
-
-        EventViewModel = updatedEvent.ToEventViewModel();
-        Events.Clear();
-        Events.Add(EventViewModel);
-
-        IsManageEventPartnersEnabled = true;
-        IsBusy = false;
-
-        await toastService.Notify("Event has been saved.");
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotificationService.NotifyError($"An error has occurred while saving the event. Please wait and try again in a moment.");
+        }
     }
 
     [RelayCommand]
@@ -353,7 +368,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
     {
         if (EventViewModel.IsEventPublic && EventViewModel.EventDate < DateTimeOffset.Now)
         {
-            await NotifyError("Event Dates for new public events must be in the future.");
+            await NotificationService.NotifyError("Event Dates for new public events must be in the future.");
             return false;
         }
 

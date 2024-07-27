@@ -13,7 +13,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     IEventTypeRestService eventTypeRestService,
     IWaiverManager waiverManager,
     IEventAttendeeRestService eventAttendeeRestService,
-    IEventAttendeeRouteRestService eventAttendeeRouteRestService) : BaseViewModel
+    IEventAttendeeRouteRestService eventAttendeeRouteRestService,
+    INotificationService notificationService) : BaseViewModel(notificationService)
 {
     private readonly IEventAttendeeRestService eventAttendeeRestService = eventAttendeeRestService;
     private readonly IEventTypeRestService eventTypeRestService = eventTypeRestService;
@@ -64,32 +65,41 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     {
         IsBusy = true;
 
-        mobEvent = await mobEventManager.GetEventAsync(eventId);
+        try
+        {
+            mobEvent = await mobEventManager.GetEventAsync(eventId);
 
-        EventViewModel = mobEvent.ToEventViewModel();
+            EventViewModel = mobEvent.ToEventViewModel();
 
-        var eventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
-        SelectedEventType = eventTypes.First(et => et.Id == mobEvent.EventTypeId).Name;
-        DisplayDuration = mobEvent.GetFormattedDuration();
+            var eventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
+            SelectedEventType = eventTypes.First(et => et.Id == mobEvent.EventTypeId).Name;
+            DisplayDuration = mobEvent.GetFormattedDuration();
 
-        Events.Clear();
-        Events.Add(EventViewModel);
+            Events.Clear();
+            Events.Add(EventViewModel);
 
-        EnableEditEvent = mobEvent.IsEventLead();
-        EnableViewEventSummary = mobEvent.IsCompleted();
+            EnableEditEvent = mobEvent.IsEventLead();
+            EnableViewEventSummary = mobEvent.IsCompleted();
 
 #if USETEST
-        EnableStartTrackEventRoute = mobEvent.IsEventLead();
-        EnableStopTrackEventRoute = false;
+            EnableStartTrackEventRoute = mobEvent.IsEventLead();
+            EnableStopTrackEventRoute = false;
 #endif
 
-        WhatToExpect =
-            "What to Expect: \n\tCleanup supplies provided\n\tMeet fellow community members\n\tContribute to a cleaner environment.";
+            WhatToExpect =
+                "What to Expect: \n\tCleanup supplies provided\n\tMeet fellow community members\n\tContribute to a cleaner environment.";
 
-        await SetRegistrationOptions();
-        await GetAttendeeCount();
+            await SetRegistrationOptions();
+            await GetAttendeeCount();
 
-        IsBusy = false;
+            IsBusy = false;
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotificationService.NotifyError("An error occurred while loading the event. Please try again.");
+        }
     }
 
     private async Task GetAttendeeCount()
@@ -169,24 +179,33 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
     private async Task SaveRoute()
     {
-        // If there are no locations, then there is nothing to save.
-        if (Locations.Count == 0)
+        try
         {
-            return;
-        }
+            // If there are no locations, then there is nothing to save.
+            if (Locations.Count == 0)
+            {
+                return;
+            }
 
-        // If there is only one location, then add a second location to make a line.
-        if (Locations.Count == 1)
-        {
-            Locations.Add(Locations[0]);
-        }
+            // If there is only one location, then add a second location to make a line.
+            if (Locations.Count == 1)
+            {
+                Locations.Add(Locations[0]);
+            }
 
-        await eventAttendeeRouteRestService.AddEventAttendeeRouteAsync(new DisplayEventAttendeeRoute
+            await eventAttendeeRouteRestService.AddEventAttendeeRouteAsync(new DisplayEventAttendeeRoute
+            {
+                EventId = mobEvent.Id,
+                UserId = App.CurrentUser.Id,
+                Locations = GetSortableLocations()
+            });
+        }
+        catch (Exception ex)
         {
-            EventId = mobEvent.Id,
-            UserId = App.CurrentUser.Id,
-            Locations = GetSortableLocations()
-        });
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotificationService.NotifyError("An error occurred while saving your route.");
+        }
     }
 
     private List<SortableLocation> GetSortableLocations()
@@ -219,25 +238,34 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     {
         IsBusy = true;
 
-        if (!await waiverManager.HasUserSignedTrashMobWaiverAsync())
+        try
         {
-            await Shell.Current.GoToAsync($"{nameof(WaiverPage)}");
+            if (!await waiverManager.HasUserSignedTrashMobWaiverAsync())
+            {
+                await Shell.Current.GoToAsync($"{nameof(WaiverPage)}");
+            }
+
+            var eventAttendee = new EventAttendee
+            {
+                EventId = EventViewModel.Id,
+                UserId = App.CurrentUser.Id,
+            };
+
+            await mobEventManager.AddEventAttendeeAsync(eventAttendee);
+
+            await SetRegistrationOptions();
+            await GetAttendeeCount();
+
+            IsBusy = false;
+
+            await NotificationService.Notify("You have been registered for this event.");
         }
-
-        var eventAttendee = new EventAttendee
+        catch (Exception ex)
         {
-            EventId = EventViewModel.Id,
-            UserId = App.CurrentUser.Id,
-        };
-
-        await mobEventManager.AddEventAttendeeAsync(eventAttendee);
-
-        await SetRegistrationOptions();
-        await GetAttendeeCount();
-
-        IsBusy = false;
-
-        await Notify("You have been registered for this event.");
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotificationService.NotifyError("An error occurred while registering you for this event. Please try again.");
+        }
     }
 
     [RelayCommand]
@@ -245,20 +273,29 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     {
         IsBusy = true;
 
-        var eventAttendee = new EventAttendee
+        try
         {
-            EventId = EventViewModel.Id,
-            UserId = App.CurrentUser.Id,
-        };
+            var eventAttendee = new EventAttendee
+            {
+                EventId = EventViewModel.Id,
+                UserId = App.CurrentUser.Id,
+            };
 
-        await mobEventManager.RemoveEventAttendeeAsync(eventAttendee);
+            await mobEventManager.RemoveEventAttendeeAsync(eventAttendee);
 
-        await SetRegistrationOptions();
-        await GetAttendeeCount();
+            await SetRegistrationOptions();
+            await GetAttendeeCount();
 
-        IsBusy = false;
+            IsBusy = false;
 
-        await Notify("You have been unregistered for this event.");
+            await NotificationService.Notify("You have been unregistered for this event.");
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotificationService.NotifyError("An error occurred while unregistering you for this event. Please try again.");
+        }
     }
 
     private async Task SetRegistrationOptions()

@@ -7,11 +7,15 @@ using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class EditEventViewModel : BaseViewModel
+public partial class EditEventViewModel(IMobEventManager mobEventManager,
+    IEventTypeRestService eventTypeRestService,
+    IMapRestService mapRestService,
+    INotificationService notificationService)
+    : BaseViewModel(notificationService)
 {
-    private readonly IEventTypeRestService eventTypeRestService;
-    private readonly IMapRestService mapRestService;
-    private readonly IMobEventManager mobEventManager;
+    private readonly IEventTypeRestService eventTypeRestService = eventTypeRestService;
+    private readonly IMapRestService mapRestService = mapRestService;
+    private readonly IMobEventManager mobEventManager = mobEventManager;
 
     [ObservableProperty]
     private EventViewModel eventViewModel;
@@ -24,15 +28,6 @@ public partial class EditEventViewModel : BaseViewModel
 
     [ObservableProperty]
     private AddressViewModel userLocation;
-
-    public EditEventViewModel(IMobEventManager mobEventManager,
-        IEventTypeRestService eventTypeRestService,
-        IMapRestService mapRestService)
-    {
-        this.mobEventManager = mobEventManager;
-        this.eventTypeRestService = eventTypeRestService;
-        this.mapRestService = mapRestService;
-    }
 
     private Event MobEvent { get; set; }
 
@@ -47,74 +42,92 @@ public partial class EditEventViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        IsManageEventPartnersEnabled = false;
-        UserLocation = App.CurrentUser.GetAddress();
-        EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
-
-        MobEvent = await mobEventManager.GetEventAsync(eventId);
-
-        SelectedEventType = EventTypes.First(et => et.Id == MobEvent.EventTypeId).Name;
-
-        EventViewModel = MobEvent.ToEventViewModel();
-
-        Events.Add(EventViewModel);
-
-        foreach (var eventType in EventTypes)
+        try
         {
-            ETypes.Add(eventType.Name);
+            IsManageEventPartnersEnabled = false;
+            UserLocation = App.CurrentUser.GetAddress();
+            EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
+
+            MobEvent = await mobEventManager.GetEventAsync(eventId);
+
+            SelectedEventType = EventTypes.First(et => et.Id == MobEvent.EventTypeId).Name;
+
+            EventViewModel = MobEvent.ToEventViewModel();
+
+            Events.Add(EventViewModel);
+
+            foreach (var eventType in EventTypes)
+            {
+                ETypes.Add(eventType.Name);
+            }
+
+            IsManageEventPartnersEnabled = true;
+            IsBusy = false;
         }
-
-        IsManageEventPartnersEnabled = true;
-
-        IsBusy = false;
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotificationService.NotifyError("An error has occurred while loading the event. Please wait and try again in a moment.");
+        }
     }
 
     [RelayCommand]
     private async Task SaveEvent()
     {
         IsBusy = true;
-        if (!await Validate())
-        {
-            IsBusy = false;
-            return;
-        }
 
-        if (!string.IsNullOrEmpty(SelectedEventType))
+        try
         {
-            var eventType = EventTypes.FirstOrDefault(e => e.Name == SelectedEventType);
-            if (eventType != null)
+            if (!await Validate())
             {
-                EventViewModel.EventTypeId = eventType.Id;
+                IsBusy = false;
+                return;
             }
+
+            if (!string.IsNullOrEmpty(SelectedEventType))
+            {
+                var eventType = EventTypes.FirstOrDefault(e => e.Name == SelectedEventType);
+                if (eventType != null)
+                {
+                    EventViewModel.EventTypeId = eventType.Id;
+                }
+            }
+
+            // We need to copy back the property values that could have changed back to the event to be updated
+            // (there are other values that cannot be updated) via the form that must be preserved on edit.
+            MobEvent.City = EventViewModel.Address.City;
+            MobEvent.Country = EventViewModel.Address.Country;
+            MobEvent.Description = EventViewModel.Description;
+            MobEvent.DurationHours = EventViewModel.DurationHours;
+            MobEvent.DurationMinutes = EventViewModel.DurationMinutes;
+            MobEvent.EventDate = EventViewModel.EventDate;
+            MobEvent.EventTypeId = EventViewModel.EventTypeId;
+            MobEvent.IsEventPublic = EventViewModel.IsEventPublic;
+            MobEvent.Latitude = EventViewModel.Address.Latitude;
+            MobEvent.Longitude = EventViewModel.Address.Longitude;
+            MobEvent.MaxNumberOfParticipants = EventViewModel.MaxNumberOfParticipants;
+            MobEvent.Name = EventViewModel.Name;
+            MobEvent.PostalCode = EventViewModel.Address.PostalCode;
+            MobEvent.Region = EventViewModel.Address.Region;
+            MobEvent.StreetAddress = EventViewModel.Address.StreetAddress;
+
+            MobEvent = await mobEventManager.UpdateEventAsync(MobEvent);
+
+            EventViewModel = MobEvent.ToEventViewModel();
+            Events.Clear();
+            Events.Add(EventViewModel);
+
+            IsBusy = false;
+
+            await NotificationService.Notify("Event has been saved.");
         }
-
-        // We need to copy back the property values that could have changed back to the event to be updated
-        // (there are other values that cannot be updated) via the form that must be preserved on edit.
-        MobEvent.City = EventViewModel.Address.City;
-        MobEvent.Country = EventViewModel.Address.Country;
-        MobEvent.Description = EventViewModel.Description;
-        MobEvent.DurationHours = EventViewModel.DurationHours;
-        MobEvent.DurationMinutes = EventViewModel.DurationMinutes;
-        MobEvent.EventDate = EventViewModel.EventDate;
-        MobEvent.EventTypeId = EventViewModel.EventTypeId;
-        MobEvent.IsEventPublic = EventViewModel.IsEventPublic;
-        MobEvent.Latitude = EventViewModel.Address.Latitude;
-        MobEvent.Longitude = EventViewModel.Address.Longitude;
-        MobEvent.MaxNumberOfParticipants = EventViewModel.MaxNumberOfParticipants;
-        MobEvent.Name = EventViewModel.Name;
-        MobEvent.PostalCode = EventViewModel.Address.PostalCode;
-        MobEvent.Region = EventViewModel.Address.Region;
-        MobEvent.StreetAddress = EventViewModel.Address.StreetAddress;
-
-        MobEvent = await mobEventManager.UpdateEventAsync(MobEvent);
-
-        EventViewModel = MobEvent.ToEventViewModel();
-        Events.Clear();
-        Events.Add(EventViewModel);
-
-        IsBusy = false;
-
-        await Notify("Event has been saved.");
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotificationService.NotifyError("An error has occurred while saving the event. Please wait and try again in a moment.");
+        }
     }
 
     public async Task ChangeLocation(Location location)
@@ -148,7 +161,7 @@ public partial class EditEventViewModel : BaseViewModel
     {
         if (EventViewModel.IsEventPublic && EventViewModel.EventDate < DateTimeOffset.Now)
         {
-            await NotifyError("Event Dates for new public events must be in the future.");
+            await NotificationService.NotifyError("Event Dates for new public events must be in the future.");
             return false;
         }
 

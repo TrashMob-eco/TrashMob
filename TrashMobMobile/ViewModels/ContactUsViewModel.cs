@@ -5,9 +5,9 @@ using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
 using TrashMobMobile.Services;
 
-public partial class ContactUsViewModel : BaseViewModel
+public partial class ContactUsViewModel(IContactRequestManager contactRequestManager, INotificationService notificationService) : BaseViewModel(notificationService)
 {
-    private readonly IContactRequestManager contactRequestManager;
+    private readonly IContactRequestManager contactRequestManager = contactRequestManager;
 
     [ObservableProperty]
     private string confirmation;
@@ -21,11 +21,6 @@ public partial class ContactUsViewModel : BaseViewModel
     [ObservableProperty]
     private string name;
 
-    public ContactUsViewModel(IContactRequestManager contactRequestManager)
-    {
-        this.contactRequestManager = contactRequestManager;
-    }
-
     [RelayCommand]
     private async Task SubmitMessage()
     {
@@ -38,12 +33,21 @@ public partial class ContactUsViewModel : BaseViewModel
             Message = Message,
         };
 
-        await contactRequestManager.AddContactRequestAsync(contactRequest);
+        try
+        {
+            await contactRequestManager.AddContactRequestAsync(contactRequest);
 
-        IsBusy = false;
+            IsBusy = false;
 
-        await Notify("Message sent successfully!");
+            await NotificationService.Notify("Message sent successfully!");
 
-        await Navigation.PopToRootAsync();
+            await Navigation.PopToRootAsync();
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotificationService.NotifyError("An error has occurred while sending the message. Please wait and try again in a moment.");
+        }
     }
 }

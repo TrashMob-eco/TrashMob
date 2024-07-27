@@ -1,12 +1,6 @@
-using System.Windows.Input;
-using TrashMobMobile.Pages.CreateEvent;
-
 namespace TrashMobMobile.Pages;
 
-using CommunityToolkit.Maui.Alerts;
-using CommunityToolkit.Maui.Core;
-using Microsoft.Maui.Controls.Maps;
-using Microsoft.Maui.Maps;
+using TrashMobMobile.Pages.CreateEvent;
 
 public partial class CreateEventPageNew : ContentPage
 {
@@ -16,7 +10,6 @@ public partial class CreateEventPageNew : ContentPage
     {
         InitializeComponent();
         this.viewModel = viewModel;
-        this.viewModel.NotifyError = NotifyError;
         this.viewModel.Navigation = Navigation;
 
         viewModel.Steps = new IContentView[]
@@ -36,25 +29,5 @@ public partial class CreateEventPageNew : ContentPage
     {
         base.OnNavigatedTo(args);
         await viewModel.Init();
-    }
-
-    private async Task NotifyError(string message)
-    {
-        var cancellationTokenSource = new CancellationTokenSource();
-
-        var snackbarOptions = new SnackbarOptions
-        {
-            BackgroundColor = Colors.Red,
-            TextColor = Colors.White,
-            CornerRadius = new CornerRadius(10),
-            Font = Microsoft.Maui.Font.SystemFontOfSize(14),
-        };
-
-        var text = message;
-        var duration = TimeSpan.FromSeconds(3);
-
-        var snackbar = Snackbar.Make(text, duration: duration, visualOptions: snackbarOptions);
-
-        await snackbar.Show(cancellationTokenSource.Token);
     }
 }

@@ -12,19 +12,11 @@ public class DocusignRestService(IHttpClientFactory httpClientFactory) : RestSer
     public async Task<EnvelopeResponse> GetWaiverEnvelopeAsync(EnvelopeRequest envelopeRequest,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            var content = JsonContent.Create(envelopeRequest, typeof(EnvelopeRequest), null, SerializerOptions);
+        var content = JsonContent.Create(envelopeRequest, typeof(EnvelopeRequest), null, SerializerOptions);
 
-            var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken);
-            response.EnsureSuccessStatusCode();
-            var returnContent = await response.Content.ReadAsStringAsync(cancellationToken);
-            return JsonConvert.DeserializeObject<EnvelopeResponse>(returnContent);
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(@"\tERROR {0}", ex.Message);
-            throw;
-        }
+        var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken);
+        response.EnsureSuccessStatusCode();
+        var returnContent = await response.Content.ReadAsStringAsync(cancellationToken);
+        return JsonConvert.DeserializeObject<EnvelopeResponse>(returnContent);
     }
 }

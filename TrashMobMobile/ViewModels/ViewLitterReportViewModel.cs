@@ -7,13 +7,13 @@ using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class ViewLitterReportViewModel : BaseViewModel
+public partial class ViewLitterReportViewModel(ILitterReportManager litterReportManager, INotificationService notificationService) : BaseViewModel(notificationService)
 {
     private const int NewLitterReportStatus = 1;
     private const int AssignedLitterReportStatus = 2;
     private const int CleanedLitterReportStatus = 3;
 
-    private readonly ILitterReportManager litterReportManager;
+    private readonly ILitterReportManager litterReportManager = litterReportManager;
 
     [ObservableProperty]
     private bool canDeleteLitterReport;
@@ -30,11 +30,6 @@ public partial class ViewLitterReportViewModel : BaseViewModel
     [ObservableProperty]
     public LitterReportViewModel? litterReportViewModel;
 
-    public ViewLitterReportViewModel(ILitterReportManager litterReportManager)
-    {
-        this.litterReportManager = litterReportManager;
-    }
-
     private LitterReport LitterReport { get; set; }
 
     public ObservableCollection<LitterImageViewModel> LitterImageViewModels { get; init; } = [];
@@ -45,55 +40,64 @@ public partial class ViewLitterReportViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        LitterReport = await litterReportManager.GetLitterReportAsync(litterReportId, ImageSizeEnum.Reduced);
+        try
+        {
+            LitterReport = await litterReportManager.GetLitterReportAsync(litterReportId, ImageSizeEnum.Reduced);
 
-        LitterReportViewModel = LitterReport.ToLitterReportViewModel();
-        LitterReportStatus = LitterReportExtensions.GetLitterStatusFromId(LitterReportViewModel?.LitterReportStatusId);
+            LitterReportViewModel = LitterReport.ToLitterReportViewModel(NotificationService);
+            LitterReportStatus = LitterReportExtensions.GetLitterStatusFromId(LitterReportViewModel?.LitterReportStatusId);
 
-        if (LitterReport.CreatedByUserId == App.CurrentUser.Id &&
-            LitterReport.LitterReportStatusId == NewLitterReportStatus)
-        {
-            CanDeleteLitterReport = true;
-        }
-        else
-        {
-            CanDeleteLitterReport = false;
-        }
-
-        if (LitterReport.CreatedByUserId == App.CurrentUser.Id &&
-            (LitterReport.LitterReportStatusId == NewLitterReportStatus ||
-             LitterReport.LitterReportStatusId == AssignedLitterReportStatus))
-        {
-            CanEditLitterReport = true;
-        }
-        else
-        {
-            CanEditLitterReport = false;
-        }
-
-        if (LitterReport.CreatedByUserId == App.CurrentUser.Id &&
-            (LitterReport.LitterReportStatusId == NewLitterReportStatus ||
-             LitterReport.LitterReportStatusId == AssignedLitterReportStatus))
-        {
-            CanMarkLitterReportCleaned = true;
-        }
-        else
-        {
-            CanMarkLitterReportCleaned = false;
-        }
-
-        LitterImageViewModels.Clear();
-        foreach (var litterImage in LitterReport.LitterImages)
-        {
-            var litterImageViewModel = litterImage.ToLitterImageViewModel();
-
-            if (litterImageViewModel != null)
+            if (LitterReport.CreatedByUserId == App.CurrentUser.Id &&
+                LitterReport.LitterReportStatusId == NewLitterReportStatus)
             {
-                LitterImageViewModels.Add(litterImageViewModel);
+                CanDeleteLitterReport = true;
             }
-        }
+            else
+            {
+                CanDeleteLitterReport = false;
+            }
 
-        IsBusy = false;
+            if (LitterReport.CreatedByUserId == App.CurrentUser.Id &&
+                (LitterReport.LitterReportStatusId == NewLitterReportStatus ||
+                 LitterReport.LitterReportStatusId == AssignedLitterReportStatus))
+            {
+                CanEditLitterReport = true;
+            }
+            else
+            {
+                CanEditLitterReport = false;
+            }
+
+            if (LitterReport.CreatedByUserId == App.CurrentUser.Id &&
+                (LitterReport.LitterReportStatusId == NewLitterReportStatus ||
+                 LitterReport.LitterReportStatusId == AssignedLitterReportStatus))
+            {
+                CanMarkLitterReportCleaned = true;
+            }
+            else
+            {
+                CanMarkLitterReportCleaned = false;
+            }
+
+            LitterImageViewModels.Clear();
+            foreach (var litterImage in LitterReport.LitterImages)
+            {
+                var litterImageViewModel = litterImage.ToLitterImageViewModel(NotificationService);
+
+                if (litterImageViewModel != null)
+                {
+                    LitterImageViewModels.Add(litterImageViewModel);
+                }
+            }
+
+            IsBusy = false;
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotificationService.NotifyError("An error occurred while loading this litter report. Please try again.");
+        }
     }
 
     [RelayCommand]
@@ -112,10 +116,22 @@ public partial class ViewLitterReportViewModel : BaseViewModel
     [RelayCommand]
     private async Task MarkLitterReportCleaned()
     {
-        LitterReport.LitterReportStatusId = CleanedLitterReportStatus;
-        var tempLitterReport = LitterReport;
-        tempLitterReport.LitterImages.Clear();
-        await litterReportManager.UpdateLitterReportAsync(tempLitterReport);
-        await Navigation.PopAsync();
+        IsBusy = true;
+
+        try
+        {
+            LitterReport.LitterReportStatusId = CleanedLitterReportStatus;
+            var tempLitterReport = LitterReport;
+            tempLitterReport.LitterImages.Clear();
+            await litterReportManager.UpdateLitterReportAsync(tempLitterReport);
+            IsBusy = false;
+            await Navigation.PopAsync();
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotificationService.NotifyError("An error occurred while updating the status of this litter report. Please try again.");
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿namespace TrashMobMobile.Extensions
 {
     using TrashMob.Models;
+    using TrashMobMobile.Services;
 
     public static class LitterReportExtensions
     {
@@ -9,7 +10,7 @@
             return id == null ? string.Empty : Enum.GetName(typeof(LitterReportStatusEnum), id.Value) ?? string.Empty;
         }
 
-        public static LitterReportViewModel ToLitterReportViewModel(this LitterReport litterReport)
+        public static LitterReportViewModel ToLitterReportViewModel(this LitterReport litterReport, INotificationService notificationService)
         {
             var litterReportViewModel = new LitterReportViewModel
             {
@@ -22,7 +23,7 @@
 
             foreach (var litterImage in litterReport.LitterImages)
             {
-                var litterImageViewModel = litterImage.ToLitterImageViewModel();
+                var litterImageViewModel = litterImage.ToLitterImageViewModel(notificationService);
                 if (litterImageViewModel != null)
                 {
                     litterReportViewModel.LitterImageViewModels.Add(litterImageViewModel);
@@ -53,14 +54,14 @@
             };
         }
 
-        public static LitterImageViewModel? ToLitterImageViewModel(this LitterImage litterImage)
+        public static LitterImageViewModel? ToLitterImageViewModel(this LitterImage litterImage, INotificationService notificationService)
         {
             if (litterImage?.Latitude == null || litterImage.Longitude == null)
             {
                 return null;
             }
 
-            return new LitterImageViewModel
+            return new LitterImageViewModel(notificationService)
             {
                 Id = litterImage.Id,
                 LitterReportId = litterImage.LitterReportId,
