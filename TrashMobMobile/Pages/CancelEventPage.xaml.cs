@@ -12,7 +12,6 @@ public partial class CancelEventPage : ContentPage
     {
         InitializeComponent();
         this.viewModel = viewModel;
-        this.viewModel.Notify = Notify;
         this.viewModel.NotifyError = NotifyError;
         this.viewModel.Navigation = Navigation;
         BindingContext = this.viewModel;
@@ -24,17 +23,6 @@ public partial class CancelEventPage : ContentPage
     {
         base.OnNavigatedTo(args);
         await viewModel.Init(new Guid(EventId));
-    }
-
-    private async Task Notify(string message)
-    {
-        var cancellationTokenSource = new CancellationTokenSource();
-
-        var duration = ToastDuration.Short;
-        double fontSize = 14;
-
-        var toast = Toast.Make(message, duration, fontSize);
-        await toast.Show(cancellationTokenSource.Token);
     }
 
     private async Task NotifyError(string message)

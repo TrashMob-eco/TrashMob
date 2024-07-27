@@ -16,7 +16,6 @@ public partial class CreateEventPageNew : ContentPage
     {
         InitializeComponent();
         this.viewModel = viewModel;
-        this.viewModel.Notify = Notify;
         this.viewModel.NotifyError = NotifyError;
         this.viewModel.Navigation = Navigation;
 
@@ -32,24 +31,11 @@ public partial class CreateEventPageNew : ContentPage
 
         BindingContext = this.viewModel;
     }
-    
 
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
         await viewModel.Init();
-    }
-
-// TODO: These can be moved to a service/abstraction
-    private async Task Notify(string message)
-    {
-        var cancellationTokenSource = new CancellationTokenSource();
-
-        var duration = ToastDuration.Short;
-        double fontSize = 14;
-
-        var toast = Toast.Make(message, duration, fontSize);
-        await toast.Show(cancellationTokenSource.Token);
     }
 
     private async Task NotifyError(string message)

@@ -9,13 +9,16 @@ using TrashMobMobile.Services;
 public partial class CancelEventViewModel : BaseViewModel
 {
     private readonly IMobEventManager mobEventManager;
+    private readonly IToastService toastService;
 
     [ObservableProperty]
     private EventViewModel eventViewModel;
 
-    public CancelEventViewModel(IMobEventManager mobEventManager)
+    public CancelEventViewModel(IMobEventManager mobEventManager,
+        IToastService toastService)
     {
         this.mobEventManager = mobEventManager;
+        this.toastService = toastService;
     }
 
     public async Task Init(Guid eventId)
@@ -44,7 +47,7 @@ public partial class CancelEventViewModel : BaseViewModel
 
         IsBusy = false;
 
-        await Notify("The event has been cancelled.");
+        await toastService.Notify("The event has been cancelled.");
 
         await Navigation.PopAsync();
     }

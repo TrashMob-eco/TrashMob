@@ -13,7 +13,6 @@ public partial class CreateEventPage : ContentPage
     {
         InitializeComponent();
         this.viewModel = viewModel;
-        this.viewModel.Notify = Notify;
         this.viewModel.NotifyError = NotifyError;
         this.viewModel.Navigation = Navigation;
         BindingContext = this.viewModel;
@@ -37,18 +36,6 @@ public partial class CreateEventPage : ContentPage
     private async void OnMapClicked(object sender, MapClickedEventArgs e)
     {
         await viewModel.ChangeLocation(e.Location);
-    }
-
-    // TODO: These can be moved to a service/abstraction
-    private async Task Notify(string message)
-    {
-        var cancellationTokenSource = new CancellationTokenSource();
-
-        var duration = ToastDuration.Short;
-        double fontSize = 14;
-
-        var toast = Toast.Make(message, duration, fontSize);
-        await toast.Show(cancellationTokenSource.Token);
     }
 
     private async Task NotifyError(string message)
