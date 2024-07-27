@@ -53,13 +53,14 @@ public partial class EditEventPartnerLocationServicesViewModel(
 
                 EventPartnerLocationServices.Add(eventPartnerLocationServiceViewModel);
             }
+
+            IsBusy = false;
         }
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
+            IsBusy = false;
             await NotifyError($"An error has occured while loading the event partner location services. Please wait and try again in a moment.");
         }
-
-        IsBusy = false;
     }
 }

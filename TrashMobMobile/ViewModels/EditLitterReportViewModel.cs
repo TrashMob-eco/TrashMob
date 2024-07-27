@@ -87,14 +87,15 @@ public partial class EditLitterReportViewModel(ILitterReportManager litterReport
                     LitterImageViewModels.Add(litterImageViewModel);
                 }
             }
+
+            IsBusy = false;
         }
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
+            IsBusy = false;
             await NotifyError("An error has occured while loading the litter report. Please wait and try again in a moment.");
         }
-
-        IsBusy = false;
     }
 
     public async Task AddImageToCollection()

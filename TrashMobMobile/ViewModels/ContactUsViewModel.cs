@@ -51,6 +51,7 @@ public partial class ContactUsViewModel : BaseViewModel
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
+            IsBusy = false;
             await NotifyError("An error has occured while sending the message. Please wait and try again in a moment.");
         }
     }

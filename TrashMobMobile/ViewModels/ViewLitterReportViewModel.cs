@@ -121,12 +121,15 @@ public partial class ViewLitterReportViewModel : BaseViewModel
     [RelayCommand]
     private async Task MarkLitterReportCleaned()
     {
+        IsBusy = true;
+
         try
         {
             LitterReport.LitterReportStatusId = CleanedLitterReportStatus;
             var tempLitterReport = LitterReport;
             tempLitterReport.LitterImages.Clear();
             await litterReportManager.UpdateLitterReportAsync(tempLitterReport);
+            IsBusy = false;
             await Navigation.PopAsync();
         }
         catch (Exception ex)

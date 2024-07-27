@@ -124,7 +124,6 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-
             await NotifyError("Failed to initialize Litter Report search page.");
         }
     }

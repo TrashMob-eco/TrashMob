@@ -179,6 +179,8 @@ public partial class CreateLitterReportViewModel : BaseViewModel
 
             await litterReportManager.AddLitterReportAsync(litterReport);
 
+            IsBusy = false;
+
             await Notify("Litter Report has been submitted.");
 
             await Navigation.PopAsync();
@@ -186,10 +188,9 @@ public partial class CreateLitterReportViewModel : BaseViewModel
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
+            IsBusy = false;
             await NotifyError($"An error has occured while saving the litter report. Please wait and try again in a moment.");
         }
-
-        IsBusy = false;
     }
 
     public void ValidateReport()

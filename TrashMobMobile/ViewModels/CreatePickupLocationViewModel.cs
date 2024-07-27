@@ -46,14 +46,15 @@ public partial class CreatePickupLocationViewModel(IPickupLocationManager pickup
             };
 
             await PickupLocationViewModel.Init(eventId);
+
+            IsBusy = false;
         }
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
+            IsBusy = false;
             await NotifyError($"An error has occured while loading the event. Please wait and try again in a moment.");
         }
-
-        IsBusy = false;
     }
 
     public async Task UpdateLocation()
@@ -150,6 +151,7 @@ public partial class CreatePickupLocationViewModel(IPickupLocationManager pickup
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
+            IsBusy = false;
             await NotifyError($"An error has occured while saving the pickup location. Please wait and try again in a moment.");
         }
     }

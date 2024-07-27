@@ -116,15 +116,16 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
             Events.Clear();
             Events.Add(EventViewModel);
 
+            IsBusy = false;
+
             await Notify("Event has been saved.");
         }
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
+            IsBusy = false;
             await NotifyError("An error has occured while saving the event. Please wait and try again in a moment.");
         }
-
-        IsBusy = false;
     }
 
     public async Task ChangeLocation(Location location)

@@ -108,7 +108,6 @@ public partial class SearchEventsViewModel : BaseViewModel
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-
             await NotifyError("An error has occurred while loading the events. Please try again in a few moments.");
         }
     }

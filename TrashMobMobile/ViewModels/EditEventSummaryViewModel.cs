@@ -43,14 +43,15 @@ public partial class EditEventSummaryViewModel : BaseViewModel
             }
 
             EnableSaveEventSummary = true;
+
+            IsBusy = false;
         }
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
+            IsBusy = false;
             await NotifyError($"An error has occured while loading the event summary. Please wait and try again in a moment.");
         }
-
-        IsBusy = false;
     }
 
     [RelayCommand]
@@ -75,14 +76,15 @@ public partial class EditEventSummaryViewModel : BaseViewModel
                 await mobEventManager.UpdateEventSummaryAsync(EventSummary);
             }
 
+            IsBusy = false;
+
             await Notify("Event Summary has been updated.");
         }
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
+            IsBusy = false;
             await NotifyError($"An error has occured while saving the event summary. Please wait and try again in a moment.");
         }
-
-        IsBusy = false;
     }
 }

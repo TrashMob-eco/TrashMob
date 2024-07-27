@@ -30,14 +30,15 @@ public partial class CancelEventViewModel : BaseViewModel
             var mobEvent = await mobEventManager.GetEventAsync(eventId);
 
             EventViewModel = mobEvent.ToEventViewModel();
+
+            IsBusy = false;
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
+            IsBusy = false;
             await NotifyError($"An error has occured while loading the event. Please wait and try again in a moment.");
         }
-
-        IsBusy = false;
     }
 
     [RelayCommand]

@@ -282,18 +282,19 @@ public partial class CreateEventViewModelNew : BaseViewModel
             {
                 ETypes.Add(eventType.Name);
             }
+
+            // We need to subscribe to both eventViewmodel and creatEventViewmodel propertyChanged to validate step
+            eventViewModel.PropertyChanged += ValidateCurrentStep;
+            PropertyChanged += ValidateCurrentStep;
+
+            IsBusy = false;
         }
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
+            IsBusy = false;
             await NotifyError($"An error has occured while loading the page. Please wait and try again in a moment.");
         }
-
-        IsBusy = false;
-
-        //We need to subscribe to both eventViewmodel and creatEventViewmodel propertyChanged to validate step
-        eventViewModel.PropertyChanged += ValidateCurrentStep;
-        PropertyChanged += ValidateCurrentStep;
     }
 
     [RelayCommand]
@@ -334,6 +335,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
+            IsBusy = false;
             await NotifyError($"An error has occured while saving the event. Please wait and try again in a moment.");
         }
     }

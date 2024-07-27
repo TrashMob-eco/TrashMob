@@ -78,14 +78,15 @@ public partial class CreateEventViewModel(IMobEventManager mobEventManager,
             {
                 ETypes.Add(eventType.Name);
             }
+
+            IsBusy = false;
         }
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
+            IsBusy = false;
             await NotifyError("An error has occured while loading the page. Please wait and try again in a moment.");
         }
-
-        IsBusy = false;
     }
 
     [RelayCommand]
@@ -126,6 +127,7 @@ public partial class CreateEventViewModel(IMobEventManager mobEventManager,
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
+            IsBusy = false;
             await NotifyError($"An error has occured while saving the event. Please wait and try again in a moment.");
         }
     }
