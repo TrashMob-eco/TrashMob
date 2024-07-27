@@ -7,14 +7,17 @@ using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class CreateEventViewModel : BaseViewModel
+public partial class CreateEventViewModel(IMobEventManager mobEventManager,
+    IEventTypeRestService eventTypeRestService,
+    IMapRestService mapRestService,
+    IWaiverManager waiverManager) : BaseViewModel
 {
     private const int ActiveEventStatus = 1;
-    private readonly IEventTypeRestService eventTypeRestService;
-    private readonly IMapRestService mapRestService;
+    private readonly IEventTypeRestService eventTypeRestService = eventTypeRestService;
+    private readonly IMapRestService mapRestService = mapRestService;
 
-    private readonly IMobEventManager mobEventManager;
-    private readonly IWaiverManager waiverManager;
+    private readonly IMobEventManager mobEventManager = mobEventManager;
+    private readonly IWaiverManager waiverManager = waiverManager;
 
     [ObservableProperty]
     private EventViewModel eventViewModel;
@@ -27,17 +30,6 @@ public partial class CreateEventViewModel : BaseViewModel
 
     [ObservableProperty]
     private AddressViewModel userLocation;
-
-    public CreateEventViewModel(IMobEventManager mobEventManager,
-        IEventTypeRestService eventTypeRestService,
-        IMapRestService mapRestService,
-        IWaiverManager waiverManager)
-    {
-        this.mobEventManager = mobEventManager;
-        this.eventTypeRestService = eventTypeRestService;
-        this.mapRestService = mapRestService;
-        this.waiverManager = waiverManager;
-    }
 
     public string DefaultEventName { get; } = "New Event";
 
@@ -101,33 +93,41 @@ public partial class CreateEventViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        if (!await Validate())
+        try
         {
-            IsBusy = false;
-            return;
-        }
-
-        if (!string.IsNullOrEmpty(SelectedEventType))
-        {
-            var eventType = EventTypes.FirstOrDefault(e => e.Name == SelectedEventType);
-            if (eventType != null)
+            if (!await Validate())
             {
-                EventViewModel.EventTypeId = eventType.Id;
+                IsBusy = false;
+                return;
             }
+
+            if (!string.IsNullOrEmpty(SelectedEventType))
+            {
+                var eventType = EventTypes.FirstOrDefault(e => e.Name == SelectedEventType);
+                if (eventType != null)
+                {
+                    EventViewModel.EventTypeId = eventType.Id;
+                }
+            }
+
+            var mobEvent = EventViewModel.ToEvent();
+
+            var updatedEvent = await mobEventManager.AddEventAsync(mobEvent);
+
+            EventViewModel = updatedEvent.ToEventViewModel();
+            Events.Clear();
+            Events.Add(EventViewModel);
+
+            IsManageEventPartnersEnabled = true;
+            IsBusy = false;
+
+            await Notify("Event has been saved.");
         }
-
-        var mobEvent = EventViewModel.ToEvent();
-
-        var updatedEvent = await mobEventManager.AddEventAsync(mobEvent);
-
-        EventViewModel = updatedEvent.ToEventViewModel();
-        Events.Clear();
-        Events.Add(EventViewModel);
-
-        IsManageEventPartnersEnabled = true;
-        IsBusy = false;
-
-        await Notify("Event has been saved.");
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            await NotifyError($"An error has occured while saving the event. Please wait and try again in a moment.");
+        }
     }
 
     [RelayCommand]

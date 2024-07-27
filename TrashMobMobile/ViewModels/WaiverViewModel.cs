@@ -23,19 +23,28 @@ public partial class WaiverViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        var envelopeRequest = new EnvelopeRequest();
-        envelopeRequest.SignerEmail = App.CurrentUser.Email;
-        envelopeRequest.CreatedByUserId = App.CurrentUser.Id;
-        envelopeRequest.SignerName = Name;
-        envelopeRequest.ReturnUrl = $"{Settings.SiteBaseUrl}/waiversreturn";
+        try
+        {
+            var envelopeRequest = new EnvelopeRequest();
+            envelopeRequest.SignerEmail = App.CurrentUser.Email;
+            envelopeRequest.CreatedByUserId = App.CurrentUser.Id;
+            envelopeRequest.SignerName = Name;
+            envelopeRequest.ReturnUrl = $"{Settings.SiteBaseUrl}/waiversreturn";
 
-        var response = await waiverManager.GetWaiverEnvelopeAsync(envelopeRequest);
+            var response = await waiverManager.GetWaiverEnvelopeAsync(envelopeRequest);
 
-        var uri = new Uri(response.RedirectUrl);
-        await Browser.Default.OpenAsync(uri, BrowserLaunchMode.SystemPreferred);
+            var uri = new Uri(response.RedirectUrl);
+            await Browser.Default.OpenAsync(uri, BrowserLaunchMode.SystemPreferred);
 
-        await Navigation.PopAsync();
+            await Navigation.PopAsync();
 
-        IsBusy = false;
+            IsBusy = false;
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotifyError("An error occured while opening the waiver page. Please try again.");
+        }
     }
 }

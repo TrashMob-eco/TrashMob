@@ -6,11 +6,12 @@ using CommunityToolkit.Mvvm.Input;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class MyDashboardViewModel : BaseViewModel
+public partial class MyDashboardViewModel(IMobEventManager mobEventManager, IStatsRestService statsRestService,
+    ILitterReportManager litterReportManager) : BaseViewModel
 {
-    private readonly ILitterReportManager litterReportManager;
-    private readonly IMobEventManager mobEventManager;
-    private readonly IStatsRestService statsRestService;
+    private readonly ILitterReportManager litterReportManager = litterReportManager;
+    private readonly IMobEventManager mobEventManager = mobEventManager;
+    private readonly IStatsRestService statsRestService = statsRestService;
     private EventViewModel? completedSelectedEvent;
     private LitterReportViewModel? selectedLitterReport;
 
@@ -18,14 +19,6 @@ public partial class MyDashboardViewModel : BaseViewModel
     public StatisticsViewModel statisticsViewModel;
 
     private EventViewModel? upcomingSelectedEvent;
-
-    public MyDashboardViewModel(IMobEventManager mobEventManager, IStatsRestService statsRestService,
-        ILitterReportManager litterReportManager)
-    {
-        this.mobEventManager = mobEventManager;
-        this.statsRestService = statsRestService;
-        this.litterReportManager = litterReportManager;
-    }
 
     public ObservableCollection<EventViewModel> UpcomingEvents { get; set; } = [];
 
@@ -91,13 +84,22 @@ public partial class MyDashboardViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        var task1 = RefreshEvents();
-        var task2 = RefreshStatistics();
-        var task3 = RefreshLitterReports();
+        try
+        {
+            var task1 = RefreshEvents();
+            var task2 = RefreshStatistics();
+            var task3 = RefreshLitterReports();
 
-        await Task.WhenAll(task1, task2, task3);
+            await Task.WhenAll(task1, task2, task3);
 
-        IsBusy = false;
+            IsBusy = false;
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotifyError("An error has occurred while loading the dashboard. Please wait and try again in a moment.");
+        }
     }
 
     private async void PerformEventNavigation(EventViewModel eventViewModel)

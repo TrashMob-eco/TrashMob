@@ -16,10 +16,19 @@ public class LogoutViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        await authService.SignOutAsync();
+        try
+        {
+            await authService.SignOutAsync();
 
-        await Shell.Current.GoToAsync($"{nameof(WelcomePage)}");
+            await Shell.Current.GoToAsync($"{nameof(WelcomePage)}");
 
-        IsBusy = false;
+            IsBusy = false;
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotifyError($"An error has occured while logging out. Please wait and try again in a moment.");
+        }   
     }
 }

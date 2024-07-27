@@ -66,20 +66,28 @@ public partial class EventPartnerLocationServiceViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        var eventPartnerLocationService = new EventPartnerLocationService
+        try
         {
-            EventId = EventId,
-            PartnerLocationId = PartnerLocationId,
-            ServiceTypeId = ServiceTypeId,
-            EventPartnerLocationServiceStatusId = (int)EventPartnerLocationServiceStatusEnum.Requested,
-        };
+            var eventPartnerLocationService = new EventPartnerLocationService
+            {
+                EventId = EventId,
+                PartnerLocationId = PartnerLocationId,
+                ServiceTypeId = ServiceTypeId,
+                EventPartnerLocationServiceStatusId = (int)EventPartnerLocationServiceStatusEnum.Requested,
+            };
 
-        await eventPartnerLocationServiceRestService.AddEventPartnerLocationService(eventPartnerLocationService);
+            await eventPartnerLocationServiceRestService.AddEventPartnerLocationService(eventPartnerLocationService);
 
-        ServiceStatusId = (int)EventPartnerLocationServiceStatusEnum.Requested;
-        ServiceStatus = EventPartnerLocationServiceStatusEnum.Requested.ToString();
-
-        IsBusy = true;
+            ServiceStatusId = (int)EventPartnerLocationServiceStatusEnum.Requested;
+            ServiceStatus = EventPartnerLocationServiceStatusEnum.Requested.ToString();
+            IsBusy = false;
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotifyError("An error has occured while requesting the service. Please wait and try again in a moment.");
+        }
     }
 
     [RelayCommand]
@@ -87,20 +95,29 @@ public partial class EventPartnerLocationServiceViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        var eventPartnerLocationService = new EventPartnerLocationService
+        try
         {
-            EventId = EventId,
-            PartnerLocationId = PartnerLocationId,
-            ServiceTypeId = ServiceTypeId,
-            EventPartnerLocationServiceStatusId = (int)EventPartnerLocationServiceStatusEnum.Requested,
-        };
+            var eventPartnerLocationService = new EventPartnerLocationService
+            {
+                EventId = EventId,
+                PartnerLocationId = PartnerLocationId,
+                ServiceTypeId = ServiceTypeId,
+                EventPartnerLocationServiceStatusId = (int)EventPartnerLocationServiceStatusEnum.Requested,
+            };
 
-        await eventPartnerLocationServiceRestService
-            .DeleteEventPartnerLocationServiceAsync(eventPartnerLocationService);
+            await eventPartnerLocationServiceRestService
+                .DeleteEventPartnerLocationServiceAsync(eventPartnerLocationService);
 
-        ServiceStatusId = (int)EventPartnerLocationServiceStatusEnum.None;
-        ServiceStatus = EventPartnerLocationServiceStatusEnum.None.ToString();
+            ServiceStatusId = (int)EventPartnerLocationServiceStatusEnum.None;
+            ServiceStatus = EventPartnerLocationServiceStatusEnum.None.ToString();
 
-        IsBusy = true;
+            IsBusy = true;
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotifyError("An error has occured while removing the service. Please wait and try again in a moment.");
+        }
     }
 }

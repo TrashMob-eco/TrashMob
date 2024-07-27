@@ -58,61 +58,70 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        var mobEvent = await mobEventManager.GetEventAsync(eventId);
-        EventViewModel = mobEvent.ToEventViewModel();
-
-        var eventSummary = await mobEventManager.GetEventSummaryAsync(eventId);
-
-        if (eventSummary != null)
+        try
         {
-            EventSummaryViewModel = new EventSummaryViewModel
+            var mobEvent = await mobEventManager.GetEventAsync(eventId);
+            EventViewModel = mobEvent.ToEventViewModel();
+
+            var eventSummary = await mobEventManager.GetEventSummaryAsync(eventId);
+
+            if (eventSummary != null)
             {
-                ActualNumberOfAttendees = eventSummary.ActualNumberOfAttendees,
-                DurationInMinutes = eventSummary.DurationInMinutes,
-                EventId = eventId,
-                Notes = eventSummary.Notes,
-                NumberOfBags = eventSummary.NumberOfBags,
-            };
-        }
-
-        EnableEditEventSummary = mobEvent.IsEventLead();
-        EnableAddPickupLocation = mobEvent.IsEventLead();
-
-        var pickupLocations = await pickupLocationManager.GetPickupLocationsAsync(eventId, ImageSizeEnum.Thumb);
-
-        PickupLocations.Clear();
-        foreach (var pickupLocation in pickupLocations)
-        {
-            var pickupLocationViewModel = new PickupLocationViewModel(pickupLocationManager, mobEventManager)
-            {
-                Address = new AddressViewModel
+                EventSummaryViewModel = new EventSummaryViewModel
                 {
-                    City = pickupLocation.City,
-                    Country = pickupLocation.Country,
-                    County = pickupLocation.County,
-                    Location = new Location(pickupLocation.Latitude.Value, pickupLocation.Longitude.Value),
-                    Latitude = pickupLocation.Latitude.Value,
-                    Longitude = pickupLocation.Longitude.Value,
-                    PostalCode = pickupLocation.PostalCode,
-                    Region = pickupLocation.Region,
-                    StreetAddress = pickupLocation.StreetAddress,
-                },
-                Id = pickupLocation.Id,
-                Notes = pickupLocation.Notes,
-                Name = pickupLocation.Name,
-                Notify = Notify,
-                NotifyError = NotifyError,
-                Navigation = Navigation,
-                PickupLocation = pickupLocation,
-                ImageUrl = pickupLocation.ImageUrl,
-            };
+                    ActualNumberOfAttendees = eventSummary.ActualNumberOfAttendees,
+                    DurationInMinutes = eventSummary.DurationInMinutes,
+                    EventId = eventId,
+                    Notes = eventSummary.Notes,
+                    NumberOfBags = eventSummary.NumberOfBags,
+                };
+            }
 
-            await pickupLocationViewModel.Init(eventId);
+            EnableEditEventSummary = mobEvent.IsEventLead();
+            EnableAddPickupLocation = mobEvent.IsEventLead();
 
-            PickupLocations.Add(pickupLocationViewModel);
+            var pickupLocations = await pickupLocationManager.GetPickupLocationsAsync(eventId, ImageSizeEnum.Thumb);
+
+            PickupLocations.Clear();
+            foreach (var pickupLocation in pickupLocations)
+            {
+                var pickupLocationViewModel = new PickupLocationViewModel(pickupLocationManager, mobEventManager)
+                {
+                    Address = new AddressViewModel
+                    {
+                        City = pickupLocation.City,
+                        Country = pickupLocation.Country,
+                        County = pickupLocation.County,
+                        Location = new Location(pickupLocation.Latitude.Value, pickupLocation.Longitude.Value),
+                        Latitude = pickupLocation.Latitude.Value,
+                        Longitude = pickupLocation.Longitude.Value,
+                        PostalCode = pickupLocation.PostalCode,
+                        Region = pickupLocation.Region,
+                        StreetAddress = pickupLocation.StreetAddress,
+                    },
+                    Id = pickupLocation.Id,
+                    Notes = pickupLocation.Notes,
+                    Name = pickupLocation.Name,
+                    Notify = Notify,
+                    NotifyError = NotifyError,
+                    Navigation = Navigation,
+                    PickupLocation = pickupLocation,
+                    ImageUrl = pickupLocation.ImageUrl,
+                };
+
+                await pickupLocationViewModel.Init(eventId);
+
+                PickupLocations.Add(pickupLocationViewModel);
+            }
+
+            IsBusy = false;
         }
-
-        IsBusy = false;
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotifyError("An error occured while loading the event summary. Please try again.");
+        }
     }
 
     [RelayCommand]

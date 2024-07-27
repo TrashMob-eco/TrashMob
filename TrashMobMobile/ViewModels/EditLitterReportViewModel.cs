@@ -7,12 +7,12 @@ using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class EditLitterReportViewModel : BaseViewModel
+public partial class EditLitterReportViewModel(ILitterReportManager litterReportManager, IMapRestService mapRestService) : BaseViewModel
 {
     private const int NewLitterReportStatus = 1;
     public const int MaxImages = 5;
-    private readonly ILitterReportManager litterReportManager;
-    private readonly IMapRestService mapRestService;
+    private readonly ILitterReportManager litterReportManager = litterReportManager;
+    private readonly IMapRestService mapRestService = mapRestService;
 
     [ObservableProperty]
     private bool canAddImages;
@@ -34,12 +34,6 @@ public partial class EditLitterReportViewModel : BaseViewModel
 
     [ObservableProperty]
     private bool reportIsValid;
-
-    public EditLitterReportViewModel(ILitterReportManager litterReportManager, IMapRestService mapRestService)
-    {
-        this.litterReportManager = litterReportManager;
-        this.mapRestService = mapRestService;
-    }
 
     public string Name
     {
@@ -73,23 +67,31 @@ public partial class EditLitterReportViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        litterReport = await litterReportManager.GetLitterReportAsync(litterReportId, ImageSizeEnum.Thumb);
-
-        if (litterReport != null)
+        try
         {
-            Name = litterReport.Name;
-            Description = litterReport.Description;
+            litterReport = await litterReportManager.GetLitterReportAsync(litterReportId, ImageSizeEnum.Thumb);
 
-            LitterReportStatus = LitterReportExtensions.GetLitterStatusFromId(litterReport.LitterReportStatusId);
-            Name = litterReport.Name;
-            Description = litterReport.Description;
-
-            LitterImageViewModels.Clear();
-            foreach (var litterImage in litterReport.LitterImages)
+            if (litterReport != null)
             {
-                var litterImageViewModel = litterImage.ToLitterImageViewModel();
-                LitterImageViewModels.Add(litterImageViewModel);
+                Name = litterReport.Name;
+                Description = litterReport.Description;
+
+                LitterReportStatus = LitterReportExtensions.GetLitterStatusFromId(litterReport.LitterReportStatusId);
+                Name = litterReport.Name;
+                Description = litterReport.Description;
+
+                LitterImageViewModels.Clear();
+                foreach (var litterImage in litterReport.LitterImages)
+                {
+                    var litterImageViewModel = litterImage.ToLitterImageViewModel();
+                    LitterImageViewModels.Add(litterImageViewModel);
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            await NotifyError("An error has occured while loading the litter report. Please wait and try again in a moment.");
         }
 
         IsBusy = false;
@@ -153,9 +155,9 @@ public partial class EditLitterReportViewModel : BaseViewModel
         //{
         //    // Handle permission exception
         //}
-        catch
+        catch (Exception ex)
         {
-            // Unable to get location
+            SentrySdk.CaptureException(ex);
         }
 
         return null;
@@ -166,47 +168,56 @@ public partial class EditLitterReportViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        if (!ReportIsValid)
+        try
         {
-            IsBusy = false;
-            return;
-        }
-
-        litterReport.Name = Name;
-        litterReport.Description = Description;
-        litterReport.LitterImages.Clear();
-        foreach (var litterImageViewModel in LitterImageViewModels)
-        {
-            var litterImage = new LitterImage
+            if (!ReportIsValid)
             {
-                Id = Guid.NewGuid(),
-                City = litterImageViewModel.Address.City,
-                Country = litterImageViewModel.Address.Country,
-                LitterReportId = litterImageViewModel.LitterReportId,
-                Latitude = litterImageViewModel.Address.Latitude,
-                Longitude = litterImageViewModel.Address.Longitude,
-                PostalCode = litterImageViewModel.Address.PostalCode,
-                Region = litterImageViewModel.Address.Region,
-                StreetAddress = litterImageViewModel.Address.StreetAddress,
-                CreatedByUserId = litterImageViewModel.CreatedByUserId,
-                LastUpdatedByUserId = litterImageViewModel.LastUpdatedByUserId,
-                CreatedDate = litterImageViewModel.CreatedDate,
-                LastUpdatedDate = litterImageViewModel.LastUpdatedDate,
+                IsBusy = false;
+                return;
+            }
 
-                // Use the Azure Blob Url as local file on create
-                AzureBlobURL = litterImageViewModel.FilePath,
-            };
+            litterReport.Name = Name;
+            litterReport.Description = Description;
+            litterReport.LitterImages.Clear();
+            foreach (var litterImageViewModel in LitterImageViewModels)
+            {
+                var litterImage = new LitterImage
+                {
+                    Id = Guid.NewGuid(),
+                    City = litterImageViewModel.Address.City,
+                    Country = litterImageViewModel.Address.Country,
+                    LitterReportId = litterImageViewModel.LitterReportId,
+                    Latitude = litterImageViewModel.Address.Latitude,
+                    Longitude = litterImageViewModel.Address.Longitude,
+                    PostalCode = litterImageViewModel.Address.PostalCode,
+                    Region = litterImageViewModel.Address.Region,
+                    StreetAddress = litterImageViewModel.Address.StreetAddress,
+                    CreatedByUserId = litterImageViewModel.CreatedByUserId,
+                    LastUpdatedByUserId = litterImageViewModel.LastUpdatedByUserId,
+                    CreatedDate = litterImageViewModel.CreatedDate,
+                    LastUpdatedDate = litterImageViewModel.LastUpdatedDate,
 
-            litterReport.LitterImages.Add(litterImage);
+                    // Use the Azure Blob Url as local file on create
+                    AzureBlobURL = litterImageViewModel.FilePath,
+                };
+
+                litterReport.LitterImages.Add(litterImage);
+            }
+
+            var updatedLitterReport = await litterReportManager.UpdateLitterReportAsync(litterReport);
+
+            IsBusy = false;
+
+            await Notify("Litter Report has been updated.");
+
+            await Navigation.PopAsync();
         }
-
-        var updatedLitterReport = await litterReportManager.UpdateLitterReportAsync(litterReport);
-
-        IsBusy = false;
-
-        await Notify("Litter Report has been updated.");
-
-        await Navigation.PopAsync();
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotifyError("An error has occured while saving the litter report. Please wait and try again in a moment.");
+        }
     }
 
     public void ValidateReport()

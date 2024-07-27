@@ -7,26 +7,19 @@ using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class CreatePickupLocationViewModel : BaseViewModel
+public partial class CreatePickupLocationViewModel(IPickupLocationManager pickupLocationManager, IMapRestService mapRestService,
+    IMobEventManager mobEventManager) : BaseViewModel
 {
-    private readonly IMapRestService mapRestService;
-    private readonly IMobEventManager mobEventManager;
+    private readonly IMapRestService mapRestService = mapRestService;
+    private readonly IMobEventManager mobEventManager = mobEventManager;
 
-    private readonly IPickupLocationManager pickupLocationManager;
+    private readonly IPickupLocationManager pickupLocationManager = pickupLocationManager;
 
     [ObservableProperty]
     private EventViewModel eventViewModel;
 
     [ObservableProperty]
     private PickupLocationViewModel pickupLocationViewModel;
-
-    public CreatePickupLocationViewModel(IPickupLocationManager pickupLocationManager, IMapRestService mapRestService,
-        IMobEventManager mobEventManager)
-    {
-        this.pickupLocationManager = pickupLocationManager;
-        this.mapRestService = mapRestService;
-        this.mobEventManager = mobEventManager;
-    }
 
     // This is only for the map point
     public ObservableCollection<PickupLocationViewModel> PickupLocations { get; set; } = new();
@@ -37,20 +30,28 @@ public partial class CreatePickupLocationViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        var mobEvent = await mobEventManager.GetEventAsync(eventId);
-
-        EventViewModel = mobEvent.ToEventViewModel();
-
-        PickupLocationViewModel = new PickupLocationViewModel(pickupLocationManager, mobEventManager)
+        try
         {
-            Name = "Pickup",
-            Address = new AddressViewModel(),
-            Notify = Notify,
-            NotifyError = NotifyError,
-            Navigation = Navigation,
-        };
+            var mobEvent = await mobEventManager.GetEventAsync(eventId);
 
-        await PickupLocationViewModel.Init(eventId);
+            EventViewModel = mobEvent.ToEventViewModel();
+
+            PickupLocationViewModel = new PickupLocationViewModel(pickupLocationManager, mobEventManager)
+            {
+                Name = "Pickup",
+                Address = new AddressViewModel(),
+                Notify = Notify,
+                NotifyError = NotifyError,
+                Navigation = Navigation,
+            };
+
+            await PickupLocationViewModel.Init(eventId);
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            await NotifyError($"An error has occured while loading the event. Please wait and try again in a moment.");
+        }
 
         IsBusy = false;
     }
@@ -104,8 +105,9 @@ public partial class CreatePickupLocationViewModel : BaseViewModel
         //{
         //    // Handle permission exception
         //}
-        catch
+        catch (Exception ex)
         {
+            SentrySdk.CaptureException(ex);
             // Unable to get location
         }
 
@@ -117,30 +119,38 @@ public partial class CreatePickupLocationViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        var pickupLocation = new PickupLocation
+        try
         {
-            City = PickupLocationViewModel.Address.City,
-            Country = PickupLocationViewModel.Address.Country,
-            EventId = EventViewModel.Id,
-            HasBeenPickedUp = false,
-            HasBeenSubmitted = false,
-            Latitude = PickupLocationViewModel.Address.Latitude,
-            Longitude = PickupLocationViewModel.Address.Longitude,
-            Notes = PickupLocationViewModel.Notes,
-            Name = PickupLocationViewModel.Name,
-            PostalCode = PickupLocationViewModel.Address.PostalCode,
-            Region = PickupLocationViewModel.Address.Region,
-            StreetAddress = PickupLocationViewModel.Address.StreetAddress,
-            County = PickupLocationViewModel.Address.County,
-        };
+            var pickupLocation = new PickupLocation
+            {
+                City = PickupLocationViewModel.Address.City,
+                Country = PickupLocationViewModel.Address.Country,
+                EventId = EventViewModel.Id,
+                HasBeenPickedUp = false,
+                HasBeenSubmitted = false,
+                Latitude = PickupLocationViewModel.Address.Latitude,
+                Longitude = PickupLocationViewModel.Address.Longitude,
+                Notes = PickupLocationViewModel.Notes,
+                Name = PickupLocationViewModel.Name,
+                PostalCode = PickupLocationViewModel.Address.PostalCode,
+                Region = PickupLocationViewModel.Address.Region,
+                StreetAddress = PickupLocationViewModel.Address.StreetAddress,
+                County = PickupLocationViewModel.Address.County,
+            };
 
-        var updatedPickupLocation = await pickupLocationManager.AddPickupLocationAsync(pickupLocation);
-        await pickupLocationManager.AddPickupLocationImageAsync(updatedPickupLocation.EventId, updatedPickupLocation.Id,
-            LocalFilePath);
+            var updatedPickupLocation = await pickupLocationManager.AddPickupLocationAsync(pickupLocation);
+            await pickupLocationManager.AddPickupLocationImageAsync(updatedPickupLocation.EventId, updatedPickupLocation.Id,
+                LocalFilePath);
 
-        IsBusy = false;
+            IsBusy = false;
 
-        await Notify("Pickup Location has been saved.");
-        await Navigation.PopAsync();
+            await Notify("Pickup Location has been saved.");
+            await Navigation.PopAsync();
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            await NotifyError($"An error has occured while saving the pickup location. Please wait and try again in a moment.");
+        }
     }
 }

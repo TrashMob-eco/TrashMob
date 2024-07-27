@@ -5,32 +5,35 @@ using CommunityToolkit.Mvvm.Input;
 using TrashMobMobile.Authentication;
 using TrashMobMobile.Services;
 
-public partial class WelcomeViewModel : BaseViewModel
+public partial class WelcomeViewModel(IAuthService authService, IStatsRestService statsRestService) : BaseViewModel
 {
-    private readonly IAuthService authService;
-    private readonly IStatsRestService statsRestService;
+    private readonly IAuthService authService = authService;
+    private readonly IStatsRestService statsRestService = statsRestService;
 
     [ObservableProperty]
     private StatisticsViewModel statisticsViewModel = new();
-
-    public WelcomeViewModel(IAuthService authService, IStatsRestService statsRestService)
-    {
-        this.authService = authService;
-        this.statsRestService = statsRestService;
-    }
 
     public async Task Init()
     {
         IsBusy = true;
 
-        var stats = await statsRestService.GetStatsAsync();
+        try
+        {
+            var stats = await statsRestService.GetStatsAsync();
 
-        StatisticsViewModel.TotalAttendees = stats.TotalParticipants;
-        StatisticsViewModel.TotalBags = stats.TotalBags;
-        StatisticsViewModel.TotalEvents = stats.TotalEvents;
-        StatisticsViewModel.TotalHours = stats.TotalHours;
+            StatisticsViewModel.TotalAttendees = stats.TotalParticipants;
+            StatisticsViewModel.TotalBags = stats.TotalBags;
+            StatisticsViewModel.TotalEvents = stats.TotalEvents;
+            StatisticsViewModel.TotalHours = stats.TotalHours;
 
-        IsBusy = false;
+            IsBusy = false;
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotifyError("An error occured while loading this page. Please try again.");
+        }
     }
 
     [RelayCommand]
@@ -38,17 +41,26 @@ public partial class WelcomeViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        var signedIn = await authService.SignInAsync();
-
-        IsBusy = false;
-
-        if (signedIn.Succeeded)
+        try
         {
-            await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+            var signedIn = await authService.SignInAsync();
+
+            IsBusy = false;
+
+            if (signedIn.Succeeded)
+            {
+                await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+            }
+            else
+            {
+                IsError = true;
+            }
         }
-        else
+        catch (Exception ex)
         {
-            IsError = true;
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotifyError("An error occured while signing you in. Please try again.");
         }
     }
 }

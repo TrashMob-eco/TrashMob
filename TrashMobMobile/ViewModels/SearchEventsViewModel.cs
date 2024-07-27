@@ -93,8 +93,24 @@ public partial class SearchEventsViewModel : BaseViewModel
 
     public async Task Init()
     {
-        UserLocation = App.CurrentUser.GetAddress();
-        await RefreshEvents();
+        IsBusy = true;
+
+        try
+        {
+            UserLocation = App.CurrentUser.GetAddress();
+            await RefreshEvents();
+
+            IsBusy = false;
+
+            await Notify("Event list has been refreshed.");
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+
+            await NotifyError("An error has occurred while loading the events. Please try again in a few moments.");
+        }
     }
 
     private async void PerformNavigation(EventViewModel eventViewModel)
@@ -104,8 +120,6 @@ public partial class SearchEventsViewModel : BaseViewModel
 
     private async Task RefreshEvents()
     {
-        IsBusy = true;
-
         Events.Clear();
 
         locations = await mobEventManager.GetLocationsByTimeRangeAsync(DateTimeOffset.Now.AddDays(-180),
@@ -137,10 +151,6 @@ public partial class SearchEventsViewModel : BaseViewModel
         var countryList = RawEvents.Select(e => e.Country).Distinct();
 
         UpdateEventReportViewModels();
-
-        IsBusy = false;
-
-        await Notify("Event list has been refreshed.");
     }
 
     private void HandleCountrySelected(string? selectedCountry)

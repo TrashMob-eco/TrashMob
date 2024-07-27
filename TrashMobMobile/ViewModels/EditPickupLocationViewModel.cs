@@ -30,21 +30,30 @@ public partial class EditPickupLocationViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        var mobEvent = await mobEventManager.GetEventAsync(eventId);
-
-        EventViewModel = mobEvent.ToEventViewModel();
-
-        pickupLocation = await pickupLocationManager.GetPickupLocationAsync(pickupLocationId);
-
-        PickupLocationViewModel = new PickupLocationViewModel(pickupLocationManager, mobEventManager)
+        try
         {
-            Name = pickupLocation.Name,
-            Notes = pickupLocation.Notes,
-        };
+            var mobEvent = await mobEventManager.GetEventAsync(eventId);
 
-        await PickupLocationViewModel.Init(eventId);
+            EventViewModel = mobEvent.ToEventViewModel();
 
-        IsBusy = false;
+            pickupLocation = await pickupLocationManager.GetPickupLocationAsync(pickupLocationId);
+
+            PickupLocationViewModel = new PickupLocationViewModel(pickupLocationManager, mobEventManager)
+            {
+                Name = pickupLocation.Name,
+                Notes = pickupLocation.Notes,
+            };
+
+            await PickupLocationViewModel.Init(eventId);
+            
+            IsBusy = false;
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotifyError($"An error has occured while loading the event. Please wait and try again in a moment.");
+        }
     }
 
     [RelayCommand]
@@ -52,14 +61,23 @@ public partial class EditPickupLocationViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        pickupLocation.Notes = PickupLocationViewModel.Notes;
-        pickupLocation.Name = PickupLocationViewModel.Name;
+        try
+        {
+            pickupLocation.Notes = PickupLocationViewModel.Notes;
+            pickupLocation.Name = PickupLocationViewModel.Name;
 
-        var updatedPickupLocation = await pickupLocationManager.UpdatePickupLocationAsync(pickupLocation);
+            var updatedPickupLocation = await pickupLocationManager.UpdatePickupLocationAsync(pickupLocation);
 
-        IsBusy = false;
+            IsBusy = false;
 
-        await Notify("Pickup Location has been saved.");
-        await Navigation.PopAsync();
+            await Notify("Pickup Location has been saved.");
+            await Navigation.PopAsync();
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotifyError("An error has occured while saving the Pickup Location. Please wait and try again in a moment.");
+        }
     }
 }

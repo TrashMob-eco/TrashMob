@@ -26,21 +26,29 @@ public partial class EditEventSummaryViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        EventSummary = await mobEventManager.GetEventSummaryAsync(new Guid(eventId));
-
-        if (EventSummary != null)
+        try
         {
-            EventSummaryViewModel = new EventSummaryViewModel
-            {
-                ActualNumberOfAttendees = EventSummary.ActualNumberOfAttendees,
-                DurationInMinutes = EventSummary.DurationInMinutes,
-                EventId = EventSummary.EventId,
-                Notes = EventSummary.Notes,
-                NumberOfBags = EventSummary.NumberOfBags,
-            };
-        }
+            EventSummary = await mobEventManager.GetEventSummaryAsync(new Guid(eventId));
 
-        EnableSaveEventSummary = true;
+            if (EventSummary != null)
+            {
+                EventSummaryViewModel = new EventSummaryViewModel
+                {
+                    ActualNumberOfAttendees = EventSummary.ActualNumberOfAttendees,
+                    DurationInMinutes = EventSummary.DurationInMinutes,
+                    EventId = EventSummary.EventId,
+                    Notes = EventSummary.Notes,
+                    NumberOfBags = EventSummary.NumberOfBags,
+                };
+            }
+
+            EnableSaveEventSummary = true;
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            await NotifyError($"An error has occured while loading the event summary. Please wait and try again in a moment.");
+        }
 
         IsBusy = false;
     }
@@ -49,23 +57,32 @@ public partial class EditEventSummaryViewModel : BaseViewModel
     private async Task SaveEventSummary()
     {
         IsBusy = true;
-        EventSummary.ActualNumberOfAttendees = EventSummaryViewModel.ActualNumberOfAttendees;
-        EventSummary.NumberOfBags = EventSummaryViewModel.NumberOfBags;
-        EventSummary.DurationInMinutes = EventSummaryViewModel.DurationInMinutes;
-        EventSummary.Notes = EventSummaryViewModel.Notes;
 
-        if (EventSummary.CreatedByUserId == Guid.Empty)
+        try
         {
-            EventSummary.CreatedByUserId = App.CurrentUser.Id;
-            await mobEventManager.AddEventSummaryAsync(EventSummary);
+            EventSummary.ActualNumberOfAttendees = EventSummaryViewModel.ActualNumberOfAttendees;
+            EventSummary.NumberOfBags = EventSummaryViewModel.NumberOfBags;
+            EventSummary.DurationInMinutes = EventSummaryViewModel.DurationInMinutes;
+            EventSummary.Notes = EventSummaryViewModel.Notes;
+
+            if (EventSummary.CreatedByUserId == Guid.Empty)
+            {
+                EventSummary.CreatedByUserId = App.CurrentUser.Id;
+                await mobEventManager.AddEventSummaryAsync(EventSummary);
+            }
+            else
+            {
+                await mobEventManager.UpdateEventSummaryAsync(EventSummary);
+            }
+
+            await Notify("Event Summary has been updated.");
         }
-        else
+        catch (Exception ex)
         {
-            await mobEventManager.UpdateEventSummaryAsync(EventSummary);
+            SentrySdk.CaptureException(ex);
+            await NotifyError($"An error has occured while saving the event summary. Please wait and try again in a moment.");
         }
 
         IsBusy = false;
-
-        await Notify("Event Summary has been updated.");
     }
 }
