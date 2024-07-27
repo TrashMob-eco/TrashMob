@@ -13,7 +13,6 @@ public partial class EditEventSummaryPage : ContentPage
         InitializeComponent();
         this.viewModel = viewModel;
         this.viewModel.Navigation = Navigation;
-        this.viewModel.Notify = Notify;
         BindingContext = this.viewModel;
     }
 
@@ -23,16 +22,5 @@ public partial class EditEventSummaryPage : ContentPage
     {
         base.OnNavigatedTo(args);
         await viewModel.Init(EventId);
-    }
-
-    private async Task Notify(string message)
-    {
-        var cancellationTokenSource = new CancellationTokenSource();
-
-        var duration = ToastDuration.Short;
-        double fontSize = 14;
-
-        var toast = Toast.Make(message, duration, fontSize);
-        await toast.Show(cancellationTokenSource.Token);
     }
 }

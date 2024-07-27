@@ -14,7 +14,7 @@
             services.AddSingleton<IAuthService, AuthService>();
             services.AddSingleton<IUserService, UserService>();
             
-            services.AddSingleton<IToastService, ToastService>();
+            services.AddSingleton<INotificationService, NotificationService>();
 
             services.AddSingleton<IContactRequestManager, ContactRequestManager>();
             services.AddSingleton<IContactRequestRestService, ContactRequestRestService>();

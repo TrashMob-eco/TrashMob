@@ -5,7 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using TrashMobMobile.Authentication;
 using TrashMobMobile.Services;
 
-public partial class WelcomeViewModel(IAuthService authService, IStatsRestService statsRestService) : BaseViewModel
+public partial class WelcomeViewModel(IAuthService authService, IStatsRestService statsRestService, INotificationService notificationService) : BaseViewModel(notificationService)
 {
     private readonly IAuthService authService = authService;
     private readonly IStatsRestService statsRestService = statsRestService;
@@ -32,7 +32,7 @@ public partial class WelcomeViewModel(IAuthService authService, IStatsRestServic
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError("An error occured while loading this page. Please try again.");
+            await NotificationService.NotifyError("An error occurred while loading this page. Please try again.");
         }
     }
 
@@ -60,7 +60,7 @@ public partial class WelcomeViewModel(IAuthService authService, IStatsRestServic
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError("An error occured while signing you in. Please try again.");
+            await NotificationService.NotifyError("An error occurred while signing you in. Please try again.");
         }
     }
 }

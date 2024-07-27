@@ -5,7 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using TrashMob.Models;
 using TrashMobMobile.Services;
 
-public partial class ViewPickupLocationViewModel(IPickupLocationManager pickupLocationManager, IMobEventManager mobEventManager) : BaseViewModel
+public partial class ViewPickupLocationViewModel(IPickupLocationManager pickupLocationManager, IMobEventManager mobEventManager, INotificationService notificationService) : BaseViewModel(notificationService)
 {
     private readonly IMobEventManager mobEventManager = mobEventManager;
     private readonly IPickupLocationManager pickupLocationManager = pickupLocationManager;
@@ -24,7 +24,7 @@ public partial class ViewPickupLocationViewModel(IPickupLocationManager pickupLo
             var pickupLocation =
                 await pickupLocationManager.GetPickupLocationImageAsync(pickupLocationId, ImageSizeEnum.Reduced);
 
-            var pickupLocationViewModel = new PickupLocationViewModel(pickupLocationManager, mobEventManager)
+            var pickupLocationViewModel = new PickupLocationViewModel(pickupLocationManager, mobEventManager, NotificationService)
             {
                 Address = new AddressViewModel
                 {
@@ -41,8 +41,6 @@ public partial class ViewPickupLocationViewModel(IPickupLocationManager pickupLo
                 Id = pickupLocation.Id,
                 Notes = pickupLocation.Notes,
                 Name = pickupLocation.Name,
-                Notify = Notify,
-                NotifyError = NotifyError,
                 Navigation = Navigation,
                 PickupLocation = pickupLocation,
                 ImageUrl = pickupLocation.ImageUrl,
@@ -59,7 +57,7 @@ public partial class ViewPickupLocationViewModel(IPickupLocationManager pickupLo
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError("An error occured while loading the pickup location. Please try again.");
+            await NotificationService.NotifyError("An error occurred while loading the pickup location. Please try again.");
         }
     }
 }

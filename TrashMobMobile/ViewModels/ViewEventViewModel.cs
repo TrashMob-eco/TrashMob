@@ -13,7 +13,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     IEventTypeRestService eventTypeRestService,
     IWaiverManager waiverManager,
     IEventAttendeeRestService eventAttendeeRestService,
-    IEventAttendeeRouteRestService eventAttendeeRouteRestService) : BaseViewModel
+    IEventAttendeeRouteRestService eventAttendeeRouteRestService,
+    INotificationService notificationService) : BaseViewModel(notificationService)
 {
     private readonly IEventAttendeeRestService eventAttendeeRestService = eventAttendeeRestService;
     private readonly IEventTypeRestService eventTypeRestService = eventTypeRestService;
@@ -97,7 +98,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError("An error occured while loading the event. Please try again.");
+            await NotificationService.NotifyError("An error occurred while loading the event. Please try again.");
         }
     }
 
@@ -203,7 +204,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError("An error occured while saving your route.");
+            await NotificationService.NotifyError("An error occurred while saving your route.");
         }
     }
 
@@ -257,13 +258,13 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
             IsBusy = false;
 
-            await Notify("You have been registered for this event.");
+            await NotificationService.Notify("You have been registered for this event.");
         }
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError("An error occured while registering you for this event. Please try again.");
+            await NotificationService.NotifyError("An error occurred while registering you for this event. Please try again.");
         }
     }
 
@@ -287,13 +288,13 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
             IsBusy = false;
 
-            await Notify("You have been unregistered for this event.");
+            await NotificationService.Notify("You have been unregistered for this event.");
         }
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError("An error occured while unregistering you for this event. Please try again.");
+            await NotificationService.NotifyError("An error occurred while unregistering you for this event. Please try again.");
         }
     }
 

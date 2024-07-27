@@ -6,17 +6,12 @@ using TrashMobMobile.Config;
 using TrashMobMobile.Models;
 using TrashMobMobile.Services;
 
-public partial class WaiverViewModel : BaseViewModel
+public partial class WaiverViewModel(IWaiverManager waiverManager, INotificationService notificationService) : BaseViewModel(notificationService)
 {
-    private readonly IWaiverManager waiverManager;
+    private readonly IWaiverManager waiverManager = waiverManager;
 
     [ObservableProperty]
     private string name;
-
-    public WaiverViewModel(IWaiverManager waiverManager)
-    {
-        this.waiverManager = waiverManager;
-    }
 
     [RelayCommand]
     private async Task SignWaiver()
@@ -44,7 +39,7 @@ public partial class WaiverViewModel : BaseViewModel
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError("An error occured while opening the waiver page. Please try again.");
+            await NotificationService.NotifyError("An error occurred while opening the waiver page. Please try again.");
         }
     }
 }

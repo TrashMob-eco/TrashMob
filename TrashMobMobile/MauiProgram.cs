@@ -47,6 +47,7 @@ public static class MauiProgram
 
         // Services
         builder.Services.AddSingleton<AuthHandler>();
+        builder.Services.AddTransient<SentryHttpMessageHandler>();
         builder.Services.AddTrashMobServices();
         builder.Services.AddRestClientServices(builder.Configuration);
 

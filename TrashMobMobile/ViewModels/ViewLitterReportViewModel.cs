@@ -7,13 +7,13 @@ using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class ViewLitterReportViewModel : BaseViewModel
+public partial class ViewLitterReportViewModel(ILitterReportManager litterReportManager, INotificationService notificationService) : BaseViewModel(notificationService)
 {
     private const int NewLitterReportStatus = 1;
     private const int AssignedLitterReportStatus = 2;
     private const int CleanedLitterReportStatus = 3;
 
-    private readonly ILitterReportManager litterReportManager;
+    private readonly ILitterReportManager litterReportManager = litterReportManager;
 
     [ObservableProperty]
     private bool canDeleteLitterReport;
@@ -30,11 +30,6 @@ public partial class ViewLitterReportViewModel : BaseViewModel
     [ObservableProperty]
     public LitterReportViewModel? litterReportViewModel;
 
-    public ViewLitterReportViewModel(ILitterReportManager litterReportManager)
-    {
-        this.litterReportManager = litterReportManager;
-    }
-
     private LitterReport LitterReport { get; set; }
 
     public ObservableCollection<LitterImageViewModel> LitterImageViewModels { get; init; } = [];
@@ -49,7 +44,7 @@ public partial class ViewLitterReportViewModel : BaseViewModel
         {
             LitterReport = await litterReportManager.GetLitterReportAsync(litterReportId, ImageSizeEnum.Reduced);
 
-            LitterReportViewModel = LitterReport.ToLitterReportViewModel();
+            LitterReportViewModel = LitterReport.ToLitterReportViewModel(NotificationService);
             LitterReportStatus = LitterReportExtensions.GetLitterStatusFromId(LitterReportViewModel?.LitterReportStatusId);
 
             if (LitterReport.CreatedByUserId == App.CurrentUser.Id &&
@@ -87,7 +82,7 @@ public partial class ViewLitterReportViewModel : BaseViewModel
             LitterImageViewModels.Clear();
             foreach (var litterImage in LitterReport.LitterImages)
             {
-                var litterImageViewModel = litterImage.ToLitterImageViewModel();
+                var litterImageViewModel = litterImage.ToLitterImageViewModel(NotificationService);
 
                 if (litterImageViewModel != null)
                 {
@@ -101,7 +96,7 @@ public partial class ViewLitterReportViewModel : BaseViewModel
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError("An error occured while loading this litter report. Please try again.");
+            await NotificationService.NotifyError("An error occurred while loading this litter report. Please try again.");
         }
     }
 
@@ -136,7 +131,7 @@ public partial class ViewLitterReportViewModel : BaseViewModel
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError("An error occured while updating the status of this litter report. Please try again.");
+            await NotificationService.NotifyError("An error occurred while updating the status of this litter report. Please try again.");
         }
     }
 }

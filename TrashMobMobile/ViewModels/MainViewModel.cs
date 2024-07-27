@@ -12,13 +12,13 @@ public partial class MainViewModel(IAuthService authService,
     IUserRestService userRestService,
     IStatsRestService statsRestService,
     IMobEventManager mobEventManager,
-    IToastService toastService) : BaseViewModel
+    INotificationService notificationService) : BaseViewModel(notificationService)
 {
     private readonly IAuthService authService = authService;
     private readonly IMobEventManager mobEventManager = mobEventManager;
     private readonly IStatsRestService statsRestService = statsRestService;
     private readonly IUserRestService userRestService = userRestService;
-    private readonly IToastService toastService = toastService;
+    private readonly INotificationService notificationService = notificationService;
     private EventViewModel selectedEvent;
 
     [ObservableProperty]
@@ -104,7 +104,7 @@ public partial class MainViewModel(IAuthService authService,
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError($"An error has occured while initializing the application. Please wait and try again in a moment.");
+            await NotificationService.NotifyError($"An error occurred while initializing the application. Please wait and try again in a moment.");
         }
     }
 

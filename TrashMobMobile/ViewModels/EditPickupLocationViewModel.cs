@@ -6,11 +6,11 @@ using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class EditPickupLocationViewModel : BaseViewModel
+public partial class EditPickupLocationViewModel(IPickupLocationManager pickupLocationManager, IMobEventManager mobEventManager, INotificationService notificationService) : BaseViewModel(notificationService)
 {
-    private readonly IMobEventManager mobEventManager;
+    private readonly IMobEventManager mobEventManager = mobEventManager;
 
-    private readonly IPickupLocationManager pickupLocationManager;
+    private readonly IPickupLocationManager pickupLocationManager = pickupLocationManager;
 
     [ObservableProperty]
     private EventViewModel eventViewModel;
@@ -19,12 +19,6 @@ public partial class EditPickupLocationViewModel : BaseViewModel
 
     [ObservableProperty]
     private PickupLocationViewModel pickupLocationViewModel;
-
-    public EditPickupLocationViewModel(IPickupLocationManager pickupLocationManager, IMobEventManager mobEventManager)
-    {
-        this.pickupLocationManager = pickupLocationManager;
-        this.mobEventManager = mobEventManager;
-    }
 
     public async Task Init(Guid eventId, Guid pickupLocationId)
     {
@@ -38,7 +32,7 @@ public partial class EditPickupLocationViewModel : BaseViewModel
 
             pickupLocation = await pickupLocationManager.GetPickupLocationAsync(pickupLocationId);
 
-            PickupLocationViewModel = new PickupLocationViewModel(pickupLocationManager, mobEventManager)
+            PickupLocationViewModel = new PickupLocationViewModel(pickupLocationManager, mobEventManager, NotificationService)
             {
                 Name = pickupLocation.Name,
                 Notes = pickupLocation.Notes,
@@ -52,7 +46,7 @@ public partial class EditPickupLocationViewModel : BaseViewModel
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError($"An error has occured while loading the event. Please wait and try again in a moment.");
+            await NotificationService.NotifyError($"An error has occurred while loading the event. Please wait and try again in a moment.");
         }
     }
 
@@ -70,14 +64,14 @@ public partial class EditPickupLocationViewModel : BaseViewModel
 
             IsBusy = false;
 
-            await Notify("Pickup Location has been saved.");
+            await NotificationService.Notify("Pickup Location has been saved.");
             await Navigation.PopAsync();
         }
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError("An error has occured while saving the Pickup Location. Please wait and try again in a moment.");
+            await NotificationService.NotifyError("An error has occurred while saving the Pickup Location. Please wait and try again in a moment.");
         }
     }
 }

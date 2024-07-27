@@ -13,7 +13,6 @@ public partial class SearchLitterReportsPage : ContentPage
     {
         InitializeComponent();
         this.viewModel = viewModel;
-        this.viewModel.Notify = Notify;
         this.viewModel.Navigation = Navigation;
         BindingContext = this.viewModel;
     }
@@ -31,17 +30,6 @@ public partial class SearchLitterReportsPage : ContentPage
                     0.05, 0.05);
             litterImagesMap.MoveToRegion(mapSpan);
         }
-    }
-
-    private async Task Notify(string message)
-    {
-        var cancellationTokenSource = new CancellationTokenSource();
-
-        var duration = ToastDuration.Short;
-        double fontSize = 14;
-
-        var toast = Toast.Make(message, duration, fontSize);
-        await toast.Show(cancellationTokenSource.Token);
     }
 
     private async void OnReportStatusRadioButtonCheckedChanged(object sender, CheckedChangedEventArgs e)

@@ -7,7 +7,7 @@ using TrashMobMobile.Config;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class UserLocationPreferenceViewModel(IUserManager userManager, IMapRestService mapRestService) : BaseViewModel
+public partial class UserLocationPreferenceViewModel(IUserManager userManager, IMapRestService mapRestService, INotificationService notificationService) : BaseViewModel(notificationService)
 {
     private readonly IMapRestService mapRestService = mapRestService;
     private readonly IUserManager userManager = userManager;
@@ -41,7 +41,7 @@ public partial class UserLocationPreferenceViewModel(IUserManager userManager, I
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError("An error occurred while initializing the user location preference page.");
+            await NotificationService.NotifyError("An error occurred while initializing the user location preference page.");
         }
     }
 
@@ -71,7 +71,7 @@ public partial class UserLocationPreferenceViewModel(IUserManager userManager, I
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError("An error occured while updating your location. Please try again.");
+            await NotificationService.NotifyError("An error occurred while updating your location. Please try again.");
         }
     }
 
@@ -95,7 +95,7 @@ public partial class UserLocationPreferenceViewModel(IUserManager userManager, I
 
             IsBusy = false;
 
-            await Notify("User location preference has been updated.");
+            await NotificationService.Notify("User location preference has been updated.");
 
             await Navigation.PopToRootAsync();
         }
@@ -103,7 +103,7 @@ public partial class UserLocationPreferenceViewModel(IUserManager userManager, I
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError("An error occured while updating your location. Please try again.");
+            await NotificationService.NotifyError("An error occurred while updating your location. Please try again.");
         }
     }
 }

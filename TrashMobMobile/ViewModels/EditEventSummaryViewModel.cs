@@ -5,20 +5,15 @@ using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
 using TrashMobMobile.Services;
 
-public partial class EditEventSummaryViewModel : BaseViewModel
+public partial class EditEventSummaryViewModel(IMobEventManager mobEventManager, INotificationService notificationService) : BaseViewModel(notificationService)
 {
-    private readonly IMobEventManager mobEventManager;
+    private readonly IMobEventManager mobEventManager = mobEventManager;
 
     [ObservableProperty]
     private bool enableSaveEventSummary;
 
     [ObservableProperty]
     private EventSummaryViewModel eventSummaryViewModel;
-
-    public EditEventSummaryViewModel(IMobEventManager mobEventManager)
-    {
-        this.mobEventManager = mobEventManager;
-    }
 
     private EventSummary EventSummary { get; set; }
 
@@ -50,7 +45,7 @@ public partial class EditEventSummaryViewModel : BaseViewModel
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError($"An error has occured while loading the event summary. Please wait and try again in a moment.");
+            await NotificationService.NotifyError($"An error has occurred while loading the event summary. Please wait and try again in a moment.");
         }
     }
 
@@ -78,13 +73,13 @@ public partial class EditEventSummaryViewModel : BaseViewModel
 
             IsBusy = false;
 
-            await Notify("Event Summary has been updated.");
+            await NotificationService.Notify("Event Summary has been updated.");
         }
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError($"An error has occured while saving the event summary. Please wait and try again in a moment.");
+            await NotificationService.NotifyError($"An error has occurred while saving the event summary. Please wait and try again in a moment.");
         }
     }
 }

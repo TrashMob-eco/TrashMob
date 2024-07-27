@@ -7,7 +7,9 @@ using TrashMobMobile.Services;
 public partial class EditEventPartnerLocationServicesViewModel(
     IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService,
     IServiceTypeRestService serviceTypeRestService,
-    IEventPartnerLocationServiceStatusRestService eventPartnerLocationServiceStatusRestService) : BaseViewModel
+    IEventPartnerLocationServiceStatusRestService eventPartnerLocationServiceStatusRestService,
+    INotificationService notificationService)
+        : BaseViewModel(notificationService)
 {
     private readonly IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService = eventPartnerLocationServiceRestService;
     private readonly IEventPartnerLocationServiceStatusRestService eventPartnerLocationServiceStatusRestService = eventPartnerLocationServiceStatusRestService;
@@ -38,7 +40,7 @@ public partial class EditEventPartnerLocationServicesViewModel(
             foreach (var eventPartnerLocationService in eventPartnerLocationServices)
             {
                 var eventPartnerLocationServiceViewModel =
-                    new EventPartnerLocationServiceViewModel(eventPartnerLocationServiceRestService)
+                    new EventPartnerLocationServiceViewModel(eventPartnerLocationServiceRestService, NotificationService)
                     {
                         EventId = eventId,
                         PartnerLocationId = partnerLocationId,
@@ -60,7 +62,7 @@ public partial class EditEventPartnerLocationServicesViewModel(
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError($"An error has occured while loading the event partner location services. Please wait and try again in a moment.");
+            await NotificationService.NotifyError($"An error has occurred while loading the event partner location services. Please wait and try again in a moment.");
         }
     }
 }

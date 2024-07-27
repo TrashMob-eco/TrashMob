@@ -6,11 +6,11 @@ using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class PickupLocationViewModel : BaseViewModel
+public partial class PickupLocationViewModel(IPickupLocationManager pickupLocationManager, IMobEventManager mobEventManager, INotificationService notificationService) : BaseViewModel(notificationService)
 {
-    private readonly IMobEventManager mobEventManager;
+    private readonly IMobEventManager mobEventManager = mobEventManager;
 
-    private readonly IPickupLocationManager pickupLocationManager;
+    private readonly IPickupLocationManager pickupLocationManager = pickupLocationManager;
 
     [ObservableProperty]
     private AddressViewModel address;
@@ -35,12 +35,6 @@ public partial class PickupLocationViewModel : BaseViewModel
     [ObservableProperty]
     private string notes;
 
-    public PickupLocationViewModel(IPickupLocationManager pickupLocationManager, IMobEventManager mobEventManager)
-    {
-        this.pickupLocationManager = pickupLocationManager;
-        this.mobEventManager = mobEventManager;
-    }
-
     public PickupLocation PickupLocation { get; set; }
 
     public async Task Init(Guid eventId)
@@ -60,7 +54,7 @@ public partial class PickupLocationViewModel : BaseViewModel
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError("An error has occured while loading the event. Please wait and try again in a moment.");
+            await NotificationService.NotifyError("An error has occurred while loading the event. Please wait and try again in a moment.");
         }
     }
 
@@ -71,7 +65,7 @@ public partial class PickupLocationViewModel : BaseViewModel
         {
             await pickupLocationManager.DeletePickupLocationAsync(PickupLocation);
 
-            await Notify("Pickup location has been removed.");
+            await NotificationService.Notify("Pickup location has been removed.");
 
             await Navigation.PopAsync();
         }
@@ -79,7 +73,7 @@ public partial class PickupLocationViewModel : BaseViewModel
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError("An error has occured while deletign the pickup location. Please wait and try again in a moment.");
+            await NotificationService.NotifyError("An error has occurred while deleting the pickup location. Please wait and try again in a moment.");
         }
     }
 

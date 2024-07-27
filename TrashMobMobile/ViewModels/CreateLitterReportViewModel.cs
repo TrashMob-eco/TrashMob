@@ -34,7 +34,9 @@ public partial class CreateLitterReportViewModel : BaseViewModel
     [ObservableProperty]
     private bool reportIsValid;
 
-    public CreateLitterReportViewModel(ILitterReportManager litterReportManager, IMapRestService mapRestService)
+    public CreateLitterReportViewModel(ILitterReportManager litterReportManager, IMapRestService mapRestService,
+        INotificationService notificationService)
+        : base(notificationService)
     {
         this.litterReportManager = litterReportManager;
         this.mapRestService = mapRestService;
@@ -80,7 +82,7 @@ public partial class CreateLitterReportViewModel : BaseViewModel
         {
             if (SelectedLitterImageViewModel == null)
             {
-                SelectedLitterImageViewModel = new LitterImageViewModel();
+                SelectedLitterImageViewModel = new LitterImageViewModel(NotificationService);
             }
 
             var address = await mapRestService.GetAddressAsync(location.Latitude, location.Longitude);
@@ -104,7 +106,7 @@ public partial class CreateLitterReportViewModel : BaseViewModel
         }
         else
         {
-            await NotifyError("Could not get location for image");
+            await NotificationService.NotifyError("Could not get location for image");
         }
     }
 
@@ -133,7 +135,7 @@ public partial class CreateLitterReportViewModel : BaseViewModel
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
-            await NotifyError($"An error has occured while gettign your location. Please wait and try again in a moment.");
+            await NotificationService.NotifyError($"An error has occurred while gettign your location. Please wait and try again in a moment.");
         }
 
         return null;
@@ -181,7 +183,7 @@ public partial class CreateLitterReportViewModel : BaseViewModel
 
             IsBusy = false;
 
-            await Notify("Litter Report has been submitted.");
+            await NotificationService.Notify("Litter Report has been submitted.");
 
             await Navigation.PopAsync();
         }
@@ -189,7 +191,7 @@ public partial class CreateLitterReportViewModel : BaseViewModel
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError($"An error has occured while saving the litter report. Please wait and try again in a moment.");
+            await NotificationService.NotifyError($"An error has occurred while saving the litter report. Please wait and try again in a moment.");
         }
     }
 

@@ -7,9 +7,9 @@ using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class SearchEventsViewModel : BaseViewModel
+public partial class SearchEventsViewModel(IMobEventManager mobEventManager, INotificationService notificationService) : BaseViewModel(notificationService)
 {
-    private readonly IMobEventManager mobEventManager;
+    private readonly IMobEventManager mobEventManager = mobEventManager;
 
     [ObservableProperty]
     private string eventStatus = "Upcoming";
@@ -23,11 +23,6 @@ public partial class SearchEventsViewModel : BaseViewModel
 
     [ObservableProperty]
     private AddressViewModel userLocation;
-
-    public SearchEventsViewModel(IMobEventManager mobEventManager)
-    {
-        this.mobEventManager = mobEventManager;
-    }
 
     private IEnumerable<Event> RawEvents { get; set; } = [];
 
@@ -102,13 +97,13 @@ public partial class SearchEventsViewModel : BaseViewModel
 
             IsBusy = false;
 
-            await Notify("Event list has been refreshed.");
+            await NotificationService.Notify("Event list has been refreshed.");
         }
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError("An error has occurred while loading the events. Please try again in a few moments.");
+            await NotificationService.NotifyError("An error has occurred while loading the events. Please try again in a few moments.");
         }
     }
 

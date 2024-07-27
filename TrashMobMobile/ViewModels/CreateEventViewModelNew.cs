@@ -20,7 +20,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
     private readonly IMobEventManager mobEventManager;
     private readonly IWaiverManager waiverManager;
     
-    private readonly IToastService toastService;
+    private readonly INotificationService notificationService;
 
     public ICommand PreviousCommand { get; set; }
     public ICommand NextCommand { get; set; }
@@ -88,13 +88,14 @@ public partial class CreateEventViewModelNew : BaseViewModel
         IEventTypeRestService eventTypeRestService,
         IMapRestService mapRestService,
         IWaiverManager waiverManager,
-        IToastService toastService)
+        INotificationService notificationService) 
+        : base(notificationService)
     {
         this.mobEventManager = mobEventManager;
         this.eventTypeRestService = eventTypeRestService;
         this.mapRestService = mapRestService;
         this.waiverManager = waiverManager;
-        this.toastService = toastService;
+        this.notificationService = notificationService;
 
         NextCommand = new Command(async () =>
         {
@@ -293,7 +294,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError($"An error has occured while loading the page. Please wait and try again in a moment.");
+            await NotificationService.NotifyError($"An error has occurred while loading the page. Please wait and try again in a moment.");
         }
     }
 
@@ -330,13 +331,13 @@ public partial class CreateEventViewModelNew : BaseViewModel
             IsManageEventPartnersEnabled = true;
             IsBusy = false;
 
-            await toastService.Notify("Event has been saved.");
+            await notificationService.Notify("Event has been saved.");
         }
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError($"An error has occured while saving the event. Please wait and try again in a moment.");
+            await NotificationService.NotifyError($"An error has occurred while saving the event. Please wait and try again in a moment.");
         }
     }
 
@@ -367,7 +368,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
     {
         if (EventViewModel.IsEventPublic && EventViewModel.EventDate < DateTimeOffset.Now)
         {
-            await NotifyError("Event Dates for new public events must be in the future.");
+            await NotificationService.NotifyError("Event Dates for new public events must be in the future.");
             return false;
         }
 

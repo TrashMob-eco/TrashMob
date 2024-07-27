@@ -7,10 +7,10 @@ using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class ViewEventSummaryViewModel : BaseViewModel
+public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager, IPickupLocationManager pickupLocationManager, INotificationService notificationService) : BaseViewModel(notificationService)
 {
-    private readonly IMobEventManager mobEventManager;
-    private readonly IPickupLocationManager pickupLocationManager;
+    private readonly IMobEventManager mobEventManager = mobEventManager;
+    private readonly IPickupLocationManager pickupLocationManager = pickupLocationManager;
 
     [ObservableProperty]
     private bool enableAddPickupLocation;
@@ -25,12 +25,6 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
     private EventViewModel eventViewModel;
 
     private PickupLocationViewModel selectedPickupLocationViewModel;
-
-    public ViewEventSummaryViewModel(IMobEventManager mobEventManager, IPickupLocationManager pickupLocationManager)
-    {
-        this.mobEventManager = mobEventManager;
-        this.pickupLocationManager = pickupLocationManager;
-    }
 
     public ObservableCollection<PickupLocationViewModel> PickupLocations { get; set; } = new();
 
@@ -85,7 +79,7 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
             PickupLocations.Clear();
             foreach (var pickupLocation in pickupLocations)
             {
-                var pickupLocationViewModel = new PickupLocationViewModel(pickupLocationManager, mobEventManager)
+                var pickupLocationViewModel = new PickupLocationViewModel(pickupLocationManager, mobEventManager, NotificationService)
                 {
                     Address = new AddressViewModel
                     {
@@ -102,8 +96,6 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
                     Id = pickupLocation.Id,
                     Notes = pickupLocation.Notes,
                     Name = pickupLocation.Name,
-                    Notify = Notify,
-                    NotifyError = NotifyError,
                     Navigation = Navigation,
                     PickupLocation = pickupLocation,
                     ImageUrl = pickupLocation.ImageUrl,
@@ -120,7 +112,7 @@ public partial class ViewEventSummaryViewModel : BaseViewModel
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError("An error occured while loading the event summary. Please try again.");
+            await NotificationService.NotifyError("An error occurred while loading the event summary. Please try again.");
         }
     }
 

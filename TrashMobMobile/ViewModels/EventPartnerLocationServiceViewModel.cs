@@ -39,7 +39,7 @@ public partial class EventPartnerLocationServiceViewModel : BaseViewModel
     private int serviceTypeId;
 
     public EventPartnerLocationServiceViewModel(
-        IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService)
+        IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService, INotificationService notificationService) : base(notificationService)
     {
         this.eventPartnerLocationServiceRestService = eventPartnerLocationServiceRestService;
         CanRequestService = true;
@@ -86,7 +86,7 @@ public partial class EventPartnerLocationServiceViewModel : BaseViewModel
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError("An error has occured while requesting the service. Please wait and try again in a moment.");
+            await NotificationService.NotifyError("An error has occurred while requesting the service. Please wait and try again in a moment.");
         }
     }
 
@@ -117,7 +117,7 @@ public partial class EventPartnerLocationServiceViewModel : BaseViewModel
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError("An error has occured while removing the service. Please wait and try again in a moment.");
+            await NotificationService.NotifyError("An error has occurred while removing the service. Please wait and try again in a moment.");
         }
     }
 }

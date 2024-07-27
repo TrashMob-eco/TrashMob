@@ -7,7 +7,8 @@ using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class EditLitterReportViewModel(ILitterReportManager litterReportManager, IMapRestService mapRestService) : BaseViewModel
+public partial class EditLitterReportViewModel(ILitterReportManager litterReportManager, IMapRestService mapRestService, INotificationService notificationService) 
+    : BaseViewModel(notificationService)
 {
     private const int NewLitterReportStatus = 1;
     public const int MaxImages = 5;
@@ -83,7 +84,7 @@ public partial class EditLitterReportViewModel(ILitterReportManager litterReport
                 LitterImageViewModels.Clear();
                 foreach (var litterImage in litterReport.LitterImages)
                 {
-                    var litterImageViewModel = litterImage.ToLitterImageViewModel();
+                    var litterImageViewModel = litterImage.ToLitterImageViewModel(NotificationService);
                     LitterImageViewModels.Add(litterImageViewModel);
                 }
             }
@@ -94,7 +95,7 @@ public partial class EditLitterReportViewModel(ILitterReportManager litterReport
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError("An error has occured while loading the litter report. Please wait and try again in a moment.");
+            await NotificationService.NotifyError("An error has occurred while loading the litter report. Please wait and try again in a moment.");
         }
     }
 
@@ -106,7 +107,7 @@ public partial class EditLitterReportViewModel(ILitterReportManager litterReport
         {
             if (SelectedLitterImageViewModel == null)
             {
-                SelectedLitterImageViewModel = new LitterImageViewModel();
+                SelectedLitterImageViewModel = new LitterImageViewModel(NotificationService);
             }
 
             var address = await mapRestService.GetAddressAsync(location.Latitude, location.Longitude);
@@ -130,7 +131,7 @@ public partial class EditLitterReportViewModel(ILitterReportManager litterReport
         }
         else
         {
-            await NotifyError("Could not get location for image");
+            await NotificationService.NotifyError("Could not get location for image");
         }
     }
 
@@ -209,7 +210,7 @@ public partial class EditLitterReportViewModel(ILitterReportManager litterReport
 
             IsBusy = false;
 
-            await Notify("Litter Report has been updated.");
+            await NotificationService.Notify("Litter Report has been updated.");
 
             await Navigation.PopAsync();
         }
@@ -217,7 +218,7 @@ public partial class EditLitterReportViewModel(ILitterReportManager litterReport
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError("An error has occured while saving the litter report. Please wait and try again in a moment.");
+            await NotificationService.NotifyError("An error has occurred while saving the litter report. Please wait and try again in a moment.");
         }
     }
 

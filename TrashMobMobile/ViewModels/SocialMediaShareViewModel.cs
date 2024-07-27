@@ -1,5 +1,7 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
-public class SocialMediaShareViewModel : BaseViewModel
+using TrashMobMobile.Services;
+
+public class SocialMediaShareViewModel(INotificationService notificationService) : BaseViewModel(notificationService)
 {
 }

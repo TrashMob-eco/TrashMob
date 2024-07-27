@@ -6,20 +6,14 @@ using TrashMobMobile.Extensions;
 using TrashMobMobile.Models;
 using TrashMobMobile.Services;
 
-public partial class CancelEventViewModel : BaseViewModel
+public partial class CancelEventViewModel(IMobEventManager mobEventManager,
+    INotificationService notificationService) : BaseViewModel(notificationService)
 {
-    private readonly IMobEventManager mobEventManager;
-    private readonly IToastService toastService;
+    private readonly IMobEventManager mobEventManager = mobEventManager;
+    private readonly INotificationService notificationService = notificationService;
 
     [ObservableProperty]
     private EventViewModel eventViewModel;
-
-    public CancelEventViewModel(IMobEventManager mobEventManager,
-        IToastService toastService)
-    {
-        this.mobEventManager = mobEventManager;
-        this.toastService = toastService;
-    }
 
     public async Task Init(Guid eventId)
     {
@@ -37,7 +31,7 @@ public partial class CancelEventViewModel : BaseViewModel
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError($"An error has occured while loading the event. Please wait and try again in a moment.");
+            await NotificationService.NotifyError($"An error has occurred while loading the event. Please wait and try again in a moment.");
         }
     }
 
@@ -58,14 +52,14 @@ public partial class CancelEventViewModel : BaseViewModel
 
             IsBusy = false;
 
-            await toastService.Notify("The event has been cancelled.");
+            await notificationService.Notify("The event has been cancelled.");
 
             await Navigation.PopAsync();
         }
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
-            await NotifyError($"An error has occured while cancelling the event. Please wait and try again in a moment.");
+            await NotificationService.NotifyError($"An error has occurred while cancelling the event. Please wait and try again in a moment.");
         }
     }
 }

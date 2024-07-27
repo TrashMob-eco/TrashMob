@@ -9,7 +9,9 @@ using TrashMobMobile.Services;
 
 public partial class EditEventViewModel(IMobEventManager mobEventManager,
     IEventTypeRestService eventTypeRestService,
-    IMapRestService mapRestService) : BaseViewModel
+    IMapRestService mapRestService,
+    INotificationService notificationService)
+    : BaseViewModel(notificationService)
 {
     private readonly IEventTypeRestService eventTypeRestService = eventTypeRestService;
     private readonly IMapRestService mapRestService = mapRestService;
@@ -66,7 +68,7 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError("An error has occured while loading the event. Please wait and try again in a moment.");
+            await NotificationService.NotifyError("An error has occurred while loading the event. Please wait and try again in a moment.");
         }
     }
 
@@ -118,13 +120,13 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
 
             IsBusy = false;
 
-            await Notify("Event has been saved.");
+            await NotificationService.Notify("Event has been saved.");
         }
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError("An error has occured while saving the event. Please wait and try again in a moment.");
+            await NotificationService.NotifyError("An error has occurred while saving the event. Please wait and try again in a moment.");
         }
     }
 
@@ -159,7 +161,7 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
     {
         if (EventViewModel.IsEventPublic && EventViewModel.EventDate < DateTimeOffset.Now)
         {
-            await NotifyError("Event Dates for new public events must be in the future.");
+            await NotificationService.NotifyError("Event Dates for new public events must be in the future.");
             return false;
         }
 

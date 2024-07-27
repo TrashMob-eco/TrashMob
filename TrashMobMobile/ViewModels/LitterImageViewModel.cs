@@ -1,6 +1,7 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using TrashMobMobile.Services;
 
 public partial class LitterImageViewModel : BaseViewModel
 {
@@ -34,7 +35,7 @@ public partial class LitterImageViewModel : BaseViewModel
     [ObservableProperty]
     private Guid litterReportId;
 
-    public LitterImageViewModel()
+    public LitterImageViewModel(INotificationService notificationService) : base(notificationService)
     {
         AzureBlobUrl = string.Empty;
         Address = new AddressViewModel();

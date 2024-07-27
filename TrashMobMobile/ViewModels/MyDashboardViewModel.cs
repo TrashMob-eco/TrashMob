@@ -7,7 +7,7 @@ using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
 public partial class MyDashboardViewModel(IMobEventManager mobEventManager, IStatsRestService statsRestService,
-    ILitterReportManager litterReportManager) : BaseViewModel
+    ILitterReportManager litterReportManager, INotificationService notificationService) : BaseViewModel(notificationService)
 {
     private readonly ILitterReportManager litterReportManager = litterReportManager;
     private readonly IMobEventManager mobEventManager = mobEventManager;
@@ -98,7 +98,7 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager, ISta
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError("An error has occurred while loading the dashboard. Please wait and try again in a moment.");
+            await NotificationService.NotifyError("An error has occurred while loading the dashboard. Please wait and try again in a moment.");
         }
     }
 
@@ -157,7 +157,7 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager, ISta
 
         foreach (var litterReport in litterReports.OrderByDescending(l => l.CreatedDate))
         {
-            var vm = litterReport.ToLitterReportViewModel();
+            var vm = litterReport.ToLitterReportViewModel(NotificationService);
             LitterReports.Add(vm);
         }
     }

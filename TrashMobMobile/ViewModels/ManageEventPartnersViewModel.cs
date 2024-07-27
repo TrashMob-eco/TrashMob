@@ -7,7 +7,7 @@ using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
 public partial class ManageEventPartnersViewModel(IMobEventManager mobEventManager,
-    IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService) : BaseViewModel
+    IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService, INotificationService notificationService) : BaseViewModel(notificationService)
 {
     private readonly IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService = eventPartnerLocationServiceRestService;
     private readonly IMobEventManager mobEventManager = mobEventManager;
@@ -79,7 +79,7 @@ public partial class ManageEventPartnersViewModel(IMobEventManager mobEventManag
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError("An error has occured while loading the event partners. Please wait and try again in a moment.");
+            await NotificationService.NotifyError("An error has occurred while loading the event partners. Please wait and try again in a moment.");
         }
     }
 }

@@ -7,7 +7,7 @@ using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class SearchLitterReportsViewModel(ILitterReportManager litterReportManager) : BaseViewModel
+public partial class SearchLitterReportsViewModel(ILitterReportManager litterReportManager, INotificationService notificationService) : BaseViewModel(notificationService)
 {
     private readonly ILitterReportManager litterReportManager = litterReportManager;
 
@@ -118,13 +118,13 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
             UserLocation = App.CurrentUser.GetAddress();
             await RefreshLitterReports();
             IsBusy = false;
-            await Notify("Litter Report list has been refreshed.");
+            await NotificationService.Notify("Litter Report list has been refreshed.");
         }
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError("Failed to initialize Litter Report search page.");
+            await NotificationService.NotifyError("Failed to initialize Litter Report search page.");
         }
     }
 
@@ -248,11 +248,11 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
 
         foreach (var litterReport in RawLitterReports.OrderByDescending(l => l.CreatedDate))
         {
-            var vm = litterReport.ToLitterReportViewModel();
+            var vm = litterReport.ToLitterReportViewModel(NotificationService);
 
             foreach (var litterImage in litterReport.LitterImages)
             {
-                var litterImageViewModel = litterImage.ToLitterImageViewModel();
+                var litterImageViewModel = litterImage.ToLitterImageViewModel(NotificationService);
 
                 if (litterImageViewModel != null)
                 {

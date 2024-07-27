@@ -10,7 +10,9 @@ using TrashMobMobile.Services;
 public partial class CreateEventViewModel(IMobEventManager mobEventManager,
     IEventTypeRestService eventTypeRestService,
     IMapRestService mapRestService,
-    IWaiverManager waiverManager) : BaseViewModel
+    IWaiverManager waiverManager, 
+    INotificationService notificationService)
+    : BaseViewModel(notificationService)
 {
     private const int ActiveEventStatus = 1;
     private readonly IEventTypeRestService eventTypeRestService = eventTypeRestService;
@@ -85,7 +87,7 @@ public partial class CreateEventViewModel(IMobEventManager mobEventManager,
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError("An error has occured while loading the page. Please wait and try again in a moment.");
+            await NotificationService.NotifyError("An error has occurred while loading the page. Please wait and try again in a moment.");
         }
     }
 
@@ -122,13 +124,13 @@ public partial class CreateEventViewModel(IMobEventManager mobEventManager,
             IsManageEventPartnersEnabled = true;
             IsBusy = false;
 
-            await Notify("Event has been saved.");
+            await NotificationService.Notify("Event has been saved.");
         }
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotifyError($"An error has occured while saving the event. Please wait and try again in a moment.");
+            await NotificationService.NotifyError($"An error has occurred while saving the event. Please wait and try again in a moment.");
         }
     }
 
@@ -159,7 +161,7 @@ public partial class CreateEventViewModel(IMobEventManager mobEventManager,
     {
         if (EventViewModel.IsEventPublic && EventViewModel.EventDate < DateTimeOffset.Now)
         {
-            await NotifyError("Event Dates for new public events must be in the future.");
+            await NotificationService.NotifyError("Event Dates for new public events must be in the future.");
             return false;
         }
 
