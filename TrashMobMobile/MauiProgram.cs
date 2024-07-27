@@ -42,6 +42,7 @@ public static class MauiProgram
             options.TracesSampleRate = 1.0;
 
             // Other Sentry options can be set here.
+            options.CaptureFailedRequests = true;
         });
 
         // Services

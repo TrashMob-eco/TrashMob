@@ -52,37 +52,45 @@ public partial class CreateEventViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        if (!await waiverManager.HasUserSignedTrashMobWaiverAsync())
+        try
         {
-            await Shell.Current.GoToAsync($"{nameof(WaiverPage)}");
+            if (!await waiverManager.HasUserSignedTrashMobWaiverAsync())
+            {
+                await Shell.Current.GoToAsync($"{nameof(WaiverPage)}");
+            }
+
+            IsManageEventPartnersEnabled = false;
+
+            UserLocation = App.CurrentUser.GetAddress();
+            EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
+
+            // Set defaults
+            EventViewModel = new EventViewModel
+            {
+                Name = DefaultEventName,
+                EventDate = DateTime.Now.AddDays(1),
+                IsEventPublic = true,
+                MaxNumberOfParticipants = 0,
+                DurationHours = 2,
+                DurationMinutes = 0,
+                Address = UserLocation,
+                EventTypeId = EventTypes.OrderBy(e => e.DisplayOrder).First().Id,
+                EventStatusId = ActiveEventStatus,
+            };
+
+            SelectedEventType = EventTypes.OrderBy(e => e.DisplayOrder).First().Name;
+
+            Events.Add(EventViewModel);
+
+            foreach (var eventType in EventTypes)
+            {
+                ETypes.Add(eventType.Name);
+            }
         }
-
-        IsManageEventPartnersEnabled = false;
-
-        UserLocation = App.CurrentUser.GetAddress();
-        EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
-
-        // Set defaults
-        EventViewModel = new EventViewModel
+        catch (Exception ex)
         {
-            Name = DefaultEventName,
-            EventDate = DateTime.Now.AddDays(1),
-            IsEventPublic = true,
-            MaxNumberOfParticipants = 0,
-            DurationHours = 2,
-            DurationMinutes = 0,
-            Address = UserLocation,
-            EventTypeId = EventTypes.OrderBy(e => e.DisplayOrder).First().Id,
-            EventStatusId = ActiveEventStatus,
-        };
-
-        SelectedEventType = EventTypes.OrderBy(e => e.DisplayOrder).First().Name;
-
-        Events.Add(EventViewModel);
-
-        foreach (var eventType in EventTypes)
-        {
-            ETypes.Add(eventType.Name);
+            SentrySdk.CaptureException(ex);
+            await NotifyError("An error has occured while loading the page. Please wait and try again in a moment.");
         }
 
         IsBusy = false;

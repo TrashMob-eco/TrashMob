@@ -31,8 +31,9 @@ public partial class CancelEventViewModel : BaseViewModel
 
             EventViewModel = mobEvent.ToEventViewModel();
         }
-        catch
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
             await NotifyError($"An error has occured while loading the event. Please wait and try again in a moment.");
         }
 
@@ -56,12 +57,13 @@ public partial class CancelEventViewModel : BaseViewModel
 
             IsBusy = false;
 
-        await toastService.Notify("The event has been cancelled.");
+            await toastService.Notify("The event has been cancelled.");
 
             await Navigation.PopAsync();
         }
-        catch
+        catch (Exception ex)
         {
+            SentrySdk.CaptureException(ex);
             await NotifyError($"An error has occured while cancelling the event. Please wait and try again in a moment.");
         }
     }

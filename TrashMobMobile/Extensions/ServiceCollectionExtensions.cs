@@ -56,12 +56,14 @@
             services.AddHttpClient($"ServerAPI", client =>
                     client.BaseAddress = new Uri(Settings.ApiBaseUrl))
                 .AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>()
+                .AddHttpMessageHandler<SentryHttpMessageHandler>()
                 .SetHandlerLifetime(TimeSpan.FromMinutes(5)) //Set lifetime to five minutes
                 .AddPolicyHandler(GetRetryPolicy());
 
             services.AddHttpClient($"ServerAPI.Anonymous", client =>
                     client.BaseAddress = new Uri(Settings.ApiBaseUrl))
                 .SetHandlerLifetime(TimeSpan.FromMinutes(5)) //Set lifetime to five minutes
+                .AddHttpMessageHandler<SentryHttpMessageHandler>()
                 .AddPolicyHandler(GetRetryPolicy());
 
             return services;

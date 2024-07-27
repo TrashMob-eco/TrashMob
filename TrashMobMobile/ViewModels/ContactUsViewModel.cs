@@ -38,12 +38,20 @@ public partial class ContactUsViewModel : BaseViewModel
             Message = Message,
         };
 
-        await contactRequestManager.AddContactRequestAsync(contactRequest);
+        try
+        {
+            await contactRequestManager.AddContactRequestAsync(contactRequest);
 
-        IsBusy = false;
+            IsBusy = false;
 
-        await Notify("Message sent successfully!");
+            await Notify("Message sent successfully!");
 
-        await Navigation.PopToRootAsync();
+            await Navigation.PopToRootAsync();
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            await NotifyError("An error has occured while sending the message. Please wait and try again in a moment.");
+        }
     }
 }
