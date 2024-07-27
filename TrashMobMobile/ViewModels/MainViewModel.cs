@@ -15,6 +15,7 @@ public partial class MainViewModel : BaseViewModel
     private readonly IMobEventManager mobEventManager;
     private readonly IStatsRestService statsRestService;
     private readonly IUserRestService userRestService;
+    private readonly IToastService toastService;
     private EventViewModel selectedEvent;
 
     [ObservableProperty]
@@ -35,12 +36,14 @@ public partial class MainViewModel : BaseViewModel
     public MainViewModel(IAuthService authService,
         IUserRestService userRestService,
         IStatsRestService statsRestService,
-        IMobEventManager mobEventManager)
+        IMobEventManager mobEventManager,
+        IToastService toastService)
     {
         this.authService = authService;
         this.userRestService = userRestService;
         this.statsRestService = statsRestService;
         this.mobEventManager = mobEventManager;
+        this.toastService = toastService;
     }
 
     public ObservableCollection<EventViewModel> UpcomingEvents { get; set; } = [];
