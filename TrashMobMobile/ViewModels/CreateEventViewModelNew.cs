@@ -20,6 +20,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
     private readonly IMobEventManager mobEventManager;
     private readonly IWaiverManager waiverManager;
+    
+    private readonly IToastService toastService;
 
     public ICommand PreviousCommand { get; set; }
     public ICommand NextCommand { get; set; }
@@ -88,12 +90,14 @@ public partial class CreateEventViewModelNew : BaseViewModel
     public CreateEventViewModelNew(IMobEventManager mobEventManager,
         IEventTypeRestService eventTypeRestService,
         IMapRestService mapRestService,
-        IWaiverManager waiverManager)
+        IWaiverManager waiverManager,
+        IToastService toastService)
     {
         this.mobEventManager = mobEventManager;
         this.eventTypeRestService = eventTypeRestService;
         this.mapRestService = mapRestService;
         this.waiverManager = waiverManager;
+        this.toastService = toastService;
 
         NextCommand = new Command(async () =>
         {
@@ -104,7 +108,6 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
             await Task.Delay(200);
             SetCurrentStep(StepType.Forward);
-
             IsBusy = false;
         });
 
@@ -320,7 +323,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
         IsManageEventPartnersEnabled = true;
         IsBusy = false;
 
-        await Notify("Event has been saved.");
+        await toastService.Notify("Event has been saved.");
     }
 
     [RelayCommand]
