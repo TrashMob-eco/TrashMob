@@ -3,6 +3,7 @@ import { Col, Container, Image, Row } from 'react-bootstrap';
 import linkedIn from './assets/card/linkedin.svg';
 import JoeBeernink from './assets/boardOfDirectors/JoeBeernink.jpg';
 import DarylBarber from './assets/boardOfDirectors/darylbarber.jpg';
+import JacquelineHayot from './assets/boardOfDirectors/JacquelineHayot.jpg';
 import JakeDiliberto from './assets/boardOfDirectors/JakeDiliberto.svg';
 import KevinGleason from './assets/boardOfDirectors/KevinGleason.svg';
 import SandraMau from './assets/boardOfDirectors/SandraMau.png';
@@ -144,6 +145,21 @@ export const Board: React.FC = () => {
                                 Mr. Gleason has advised and transacted business globally on 5 continents including across Europe, the Middle East, Asia, and South America.  He has counseled C-suite executives and boards of directors on the creation of compliance and ethics programs; the development of controls, training, testing, conflicts identification, and risk assessments; and the structuring of governance frameworks.
                             </p>
                             <p className='font-size-sm color-grey'>Mr. Gleason has a law degree and a masters in financial services law.  He has earned an MBA from The University of Chicago and BA from University of Notre Dame.  He is or has been a board member at Arizona Science Center, National Society of Compliance Professionals, and Journal of Financial Compliance. He is a frequent speaker at and contributor to industry events and publications.</p>
+                        </Col>
+                    </Row>
+                </div>
+                <div className='p-4 directorCard'>
+                    <Row>
+                        <Col md={5}>
+                            <Image src={JacquelineHayot} alt="Jacqueline Hayot" className="h-100 mt-0 object-fit-cover rounded" />
+                        </Col>
+                        <Col md={7}>
+                            <div className='d-flex justify-content-between align-items-center'>
+                                <h2 className='m-0 fw-500 font-size-xl color-primary '>Jacqueline Hayot</h2>
+                                <a href="https://www.linkedin.com/in/jacqueline-hayot-ba-1aa29b1/"><Image src={linkedIn} alt="linkedIn icon" className="h-100 mt-0 object-fit-cover" /></a>
+                            </div>
+                            <h5 className='my-3 fw-500 color-grey'>Member at large</h5>
+                            <p className='font-size-sm color-grey'>Jacqueline has over 25 years of experience in capital markets and financial product marketing. In the last several years, she has leveraged her experience and skills to raise capital for investment funds and founders, namely in the climate tech space. She is an angel investor in several climate start-ups and funds. Most recently, she led business development at Mercator Partners, a climate-focused investment fund in Princeton, NJ. She has held COO and Business Development roles at several funds including AltraVue Capital in Bellevue, WA. She began her post-MBA career in debt and equity capital markets at Morgan Stanley and led equity derivatives marketing at BNP Paribas. She earned her MBA from the Wharton School at the University of Pennsylvania, an MA from the School of Advanced International Studies (SAIS) at Johns Hopkins University, and her BA from Dartmouth College.</p>
                         </Col>
                     </Row>
                 </div>
