@@ -25,14 +25,19 @@
                                          Margin="0,10"
                                          Spacing="5">
                         <Label Text="Name" Style="{StaticResource FieldLabel}" />
-                        <Entry Text="{Binding EventViewModel.Name}">
-                            <!-- <Entry.Behaviors> -->
-                            <!--     <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5" -->
-                            <!--                                     x:Name="nameValidator" /> -->
-                            <!-- </Entry.Behaviors> -->
-                        </Entry>
+                        <Entry Text="{Binding EventViewModel.Name}" />
                     </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Row="1"
+                    <VerticalStackLayout Grid.Row="1" Margin="0,10">
+                        <Label Text="Event Type" Style="{StaticResource FieldLabel}" />
+                        <Picker Title="Event Type"
+                                ItemsSource="{Binding ETypes}"
+                                SelectedItem="{Binding SelectedEventType}" />
+                    </VerticalStackLayout>
+                    <HorizontalStackLayout Grid.Row="1" Grid.Column="1">
+                        <Label Text="Is Event Public?" Style="{StaticResource FieldLabel}" />
+                        <CheckBox IsChecked="{Binding EventViewModel.IsEventPublic}" />
+                    </HorizontalStackLayout>
+                    <VerticalStackLayout Grid.Row="2"
                                          Grid.Column="0"
                                          Margin="0,10"
                                          Spacing="5">
@@ -40,17 +45,7 @@
                         <DatePicker
                             Date="{Binding EventViewModel.EventDateOnly}" />
                     </VerticalStackLayout>
-                    <HorizontalStackLayout Grid.Row="1" Grid.Column="1">
-                        <Label Text="Is Event Public?" Style="{StaticResource FieldLabel}" />
-                        <CheckBox IsChecked="{Binding EventViewModel.IsEventPublic}" />
-                    </HorizontalStackLayout>
-                    <VerticalStackLayout Grid.Row="2" Grid.ColumnSpan="2" Margin="0,10">
-                        <Label Text="Event Type" Style="{StaticResource FieldLabel}" />
-                        <Picker Title="Event Type"
-                                ItemsSource="{Binding ETypes}"
-                                SelectedItem="{Binding SelectedEventType}" />
-                    </VerticalStackLayout>
-                    <Grid Grid.Row="3" ColumnSpan="2"
+                    <Grid Grid.Row="2" Grid.Column="1"
                           Margin="0,10"
                           ColumnDefinitions="*,*"
                           RowDefinitions="Auto,Auto,Auto">
@@ -68,18 +63,13 @@
                     </Grid>
                     <VerticalStackLayout Grid.Row="4" Grid.ColumnSpan="2" Margin="0,10">
                         <Label Text="Duration" Style="{StaticResource FieldLabel}"></Label>
-                        <Label Text="{Binding FormattedEventDuration}">
+                        <Label Text="{Binding FormattedEventDuration}" FontSize="Small">
                         </Label>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="5" Grid.ColumnSpan="2" Margin="0,10">
                         <Label Text="Description" Style="{StaticResource FieldLabel}" />
-                        <Editor Placeholder="Describe your event here" Text="{Binding EventViewModel.Description}">
-                            <!-- <Editor.Behaviors> -->
-                            <!--     <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="10" -->
-                            <!--                                     x:Name="descriptionValidator" /> -->
-                            <!-- </Editor.Behaviors> -->
-                        </Editor>
+                        <Editor Placeholder="Describe your event here" Text="{Binding EventViewModel.Description}" />
                     </VerticalStackLayout>
                 </Grid>
                 <Label FontSize="Micro"

@@ -3,50 +3,57 @@
 <createEvent:BaseStepClass xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                            xmlns:createEvent="clr-namespace:TrashMobMobile.Pages.CreateEvent"
+                           xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
                            xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
                            x:DataType="viewModels:CreateEventViewModelNew"
                            x:Class="TrashMobMobile.Pages.CreateEvent.Step4">
     <ScrollView>
         <Grid>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
-                <Label Text="Name" Style="{StaticResource FieldLabel}" />
-                <Label Text="{Binding EventViewModel.Name}" />
 
-                <Label Text="Event Date" Style="{StaticResource FieldLabel}" />
-                <Label Text="{Binding EventViewModel.EventDateOnly}" />
+                <Label
+                    Text="{Binding EventViewModel.Name}" Style="{StaticResource Headline}"
+                    VerticalOptions="Center"
+                    Margin="5" />
 
-                <Label Text="Event Type" Style="{StaticResource FieldLabel}" />
-                <Label Text="{Binding SelectedEventType}" Style="{StaticResource FieldLabel}" />
+                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
-                <VerticalStackLayout HeightRequest="50"></VerticalStackLayout>
-
+                <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto" RowSpacing="3"
+                      ColumnDefinitions="1*, 2*">
+                    <Label Grid.Row="0" Grid.Column="0" Text="{Binding SelectedEventType}" FontSize="Small"
+                           Margin="10, 0, 10,0" Grid.ColumnSpan="2" />
+                    <Label Grid.Row="1" Grid.Column="0" Text="{Binding EventViewModel.DisplayDate}"
+                           FontAttributes="Bold" Margin="10,0,10,0" Grid.ColumnSpan="2" />
+                    <Label Grid.Row="2" Grid.Column="0" Text="{Binding EventViewModel.DisplayTime}" FontSize="Micro"
+                           Margin="10, 0, 10,0" />
+                    <Label Grid.Row="2" Grid.Column="1" Text="{Binding FormattedEventDuration}" FontSize="Micro"
+                           Margin="10, 0, 10,0" />
+                    <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                           Text="{Binding EventViewModel.Address.DisplayAddress }" FontAttributes="Bold"
+                           Margin="10,0,10,0" />
+                    <maps:Map Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" x:Name="eventLocationMap"
+                              ItemsSource="{Binding Events}">
+                        <maps:Map.ItemTemplate>
+                            <DataTemplate x:DataType="viewModels:EventViewModel">
+                                <maps:Pin Location="{Binding Address.Location}"
+                                          Address="{Binding Address.StreetAddress}"
+                                          Label="{Binding Name}" />
+                            </DataTemplate>
+                        </maps:Map.ItemTemplate>
+                    </maps:Map>
+                    <Label Grid.Row="5" Grid.Column="0" Text="About this event" FontAttributes="Bold"
+                           Grid.ColumnSpan="2" />
+                    <Label Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding EventViewModel.Description}"
+                           FontSize="Micro" />
+                 </Grid>
                 <Button Margin="10"
-                        Command="{Binding SaveEventCommand}"
-                        Text="Save Event">
-                    <Button.Triggers>
-                        <MultiTrigger TargetType="Button">
-                            <MultiTrigger.Conditions>
-                                <!-- <BindingCondition -->
-                                <!--     Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" -->
-                                <!--     Value="True" /> -->
-                                <!-- <BindingCondition -->
-                                <!--     Binding="{Binding Source={x:Reference descriptionValidator}, Path=IsValid}" -->
-                                <!--     Value="True" /> -->
-                                <!-- <BindingCondition -->
-                                <!--     Binding="{Binding Source={x:Reference maxNumberOfParticipantsValidator}, Path=IsValid}" -->
-                                <!--     Value="True" /> -->
-                                <!-- <BindingCondition -->
-                                <!--     Binding="{Binding Source={x:Reference durationHoursValidator}, Path=IsValid}" -->
-                                <!--     Value="True" /> -->
-                                <!-- <BindingCondition -->
-                                <!--     Binding="{Binding Source={x:Reference durationMinutesValidator}, Path=IsValid}" -->
-                                <!--     Value="True" /> -->
-                            </MultiTrigger.Conditions>
-                            <Setter Property="IsEnabled" Value="True" />
-                        </MultiTrigger>
-                    </Button.Triggers>
-                </Button>
+                       Command="{Binding SaveEventCommand}"
+                       Text="Save Event" />
             </VerticalStackLayout>
+            <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
+                     VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center"
+                               HorizontalOptions="Center" />
         </Grid>
     </ScrollView>
 </createEvent:BaseStepClass>

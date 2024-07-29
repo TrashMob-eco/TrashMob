@@ -6,7 +6,7 @@ public class BaseStepClass : ContentView
 
     public event EventHandler NavigatedEvent;
 
-    public void OnNavigated()
+    public virtual void OnNavigated()
     {
         NavigatedEvent?.Invoke(null,EventArgs.Empty);
     }
