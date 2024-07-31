@@ -19,7 +19,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
     private readonly IMobEventManager mobEventManager;
     private readonly IWaiverManager waiverManager;
-    
+
     private readonly INotificationService notificationService;
 
     public ICommand PreviousCommand { get; set; }
@@ -36,6 +36,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
     [ObservableProperty] private AddressViewModel userLocation;
 
     [ObservableProperty] private bool isStepValid;
+
+    [ObservableProperty] private bool canGoBack;
 
     private bool validating;
 
@@ -88,7 +90,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
         IEventTypeRestService eventTypeRestService,
         IMapRestService mapRestService,
         IWaiverManager waiverManager,
-        INotificationService notificationService) 
+        INotificationService notificationService)
         : base(notificationService)
     {
         this.mobEventManager = mobEventManager;
@@ -183,6 +185,18 @@ public partial class CreateEventViewModelNew : BaseViewModel
                 }
 
                 break;
+            //Step 2 validation 
+            case 1:
+                if (!string.IsNullOrEmpty(EventViewModel.Address.StreetAddress))
+                {
+                    IsStepValid = true;
+                }
+                else
+                {
+                    IsStepValid = false;
+                }
+
+                break;
             default:
                 break;
         }
@@ -196,7 +210,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
         if (CurrentView is BaseStepClass current)
             current.OnNavigated();
-        
+
         //TODO reference this colors from the app styles
         StepOneColor = CurrentStep == 0 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
         StepTwoColor = CurrentStep == 1 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
@@ -224,6 +238,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
                 SetCurrentView();
             }
         }
+
+        CanGoBack = CurrentStep != 0 && CurrentStep != 4;
     }
 
     // This is only for the map point
@@ -275,14 +291,14 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
             EndTime = TimeSpan.FromHours(14);
 
-            SelectedEventType = EventTypes.OrderBy(e => e.DisplayOrder).First().Name;
-
-            Events.Add(EventViewModel);
-
             foreach (var eventType in EventTypes)
             {
                 ETypes.Add(eventType.Name);
             }
+
+            SelectedEventType = EventTypes.OrderBy(e => e.DisplayOrder).First().Name;
+
+            Events.Add(EventViewModel);
 
             // We need to subscribe to both eventViewmodel and creatEventViewmodel propertyChanged to validate step
             eventViewModel.PropertyChanged += ValidateCurrentStep;
@@ -294,7 +310,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotificationService.NotifyError($"An error has occurred while loading the page. Please wait and try again in a moment.");
+            await NotificationService.NotifyError(
+                $"An error has occurred while loading the page. Please wait and try again in a moment.");
         }
     }
 
@@ -337,7 +354,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotificationService.NotifyError($"An error has occurred while saving the event. Please wait and try again in a moment.");
+            await NotificationService.NotifyError(
+                $"An error has occurred while saving the event. Please wait and try again in a moment.");
         }
     }
 
@@ -362,6 +380,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
         Events.Clear();
         Events.Add(EventViewModel);
+
+        ValidateCurrentStep(null, null);
     }
 
     private async Task<bool> Validate()
