@@ -187,7 +187,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
                 break;
             //Step 2 validation 
             case 1:
-                if (!string.IsNullOrEmpty(EventViewModel.Address.StreetAddress))
+                if (!string.IsNullOrEmpty(EventViewModel.Address.City))
                 {
                     IsStepValid = true;
                 }
