@@ -145,6 +145,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
     private void ValidateViewModel()
     {
         EventDurationError = string.Empty;
+        DescriptionRequiredError = string.Empty;
 
         if ((EndTime - StartTime).TotalHours > 10)
         {
@@ -154,6 +155,11 @@ public partial class CreateEventViewModelNew : BaseViewModel
         if ((EndTime - StartTime).TotalHours < 1)
         {
             EventDurationError = "Event minimum duration must be at least 1 hour";
+        }
+
+        if (string.IsNullOrEmpty(EventViewModel.Description))
+        {
+            DescriptionRequiredError = "Event description is required";
         }
     }
 
@@ -175,7 +181,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
             case 0:
                 if (!string.IsNullOrEmpty(EventViewModel.Name) &&
                     EventViewModel.EventDateOnly != default &&
-                    !string.IsNullOrEmpty(SelectedEventType) && string.IsNullOrEmpty(EventDurationError))
+                    !string.IsNullOrEmpty(SelectedEventType) && string.IsNullOrEmpty(EventDurationError) &&
+                    !string.IsNullOrEmpty(EventViewModel.Description))
                 {
                     IsStepValid = true;
                 }
@@ -208,6 +215,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
     {
         CurrentView = Steps[CurrentStep];
 
+        NextStepText = CurrentStep != 3 ? "Next" : "Save Event";
+
         if (CurrentView is BaseStepClass current)
             current.OnNavigated();
 
@@ -220,7 +229,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
         StepSixColor = CurrentStep == 5 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
     }
 
-    public void SetCurrentStep(StepType step)
+    public async Task SetCurrentStep(StepType step)
     {
         if (step == StepType.Backward)
         {
@@ -235,11 +244,17 @@ public partial class CreateEventViewModelNew : BaseViewModel
             if (CurrentStep < Steps.Length - 1)
             {
                 CurrentStep++;
+
+                if (CurrentStep == 5)
+                {
+                    await SaveEvent();
+                }
+
                 SetCurrentView();
             }
         }
 
-        CanGoBack = CurrentStep != 0 && CurrentStep != 4;
+        CanGoBack = CurrentStep != 0 && CurrentStep < 4;
     }
 
     // This is only for the map point
@@ -397,6 +412,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
     #region UI Related properties
 
+    [ObservableProperty] private string nextStepText = "Next";
+
     //Event current step control
 
     [ObservableProperty] private Color stepOneColor;
@@ -414,6 +431,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
     //Validation Errors
 
     [ObservableProperty] private string eventDurationError;
+    
+    [ObservableProperty] private string descriptionRequiredError;
 
     #endregion
 }

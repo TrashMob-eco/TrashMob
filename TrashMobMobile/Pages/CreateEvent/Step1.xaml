@@ -56,7 +56,7 @@
                         <TimePicker Grid.Row="1" Grid.Column="1" Time="{Binding EndTime}">
                         </TimePicker>
                         <Label x:Name="DurationErrorLabel" Grid.Row="2" Grid.ColumnSpan="2"
-                               Style="{StaticResource ErrorLabel}" 
+                               Style="{StaticResource ErrorLabel}"
                                IsVisible="{Binding EventDurationError, Converter={StaticResource StringToBoolConverter}}"
                                Text="{Binding EventDurationError}">
                         </Label>
@@ -70,61 +70,12 @@
                     <VerticalStackLayout Grid.Row="5" Grid.ColumnSpan="2" Margin="0,10">
                         <Label Text="Description" Style="{StaticResource FieldLabel}" />
                         <Editor Placeholder="Describe your event here" Text="{Binding EventViewModel.Description}" />
+                        <Label Style="{StaticResource ErrorLabel}"
+                               IsVisible="{Binding DescriptionRequiredError, Converter={StaticResource StringToBoolConverter}}"
+                               Text="{Binding DescriptionRequiredError}">
+                        </Label>
                     </VerticalStackLayout>
                 </Grid>
-                <Label FontSize="Micro"
-                       HorizontalOptions="Center"
-                       HorizontalTextAlignment="Center"
-                       TextColor="Red"
-                       VerticalOptions="Center">
-                    <Label.Triggers>
-                        <MultiTrigger TargetType="Label">
-                            <MultiTrigger.Conditions>
-                                <!-- <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" -->
-                                <!--                   Value="True" /> -->
-                                <!-- <BindingCondition -->
-                                <!--     Binding="{Binding Source={x:Reference descriptionValidator}, Path=IsValid}" -->
-                                <!--     Value="True" /> -->
-                                <!-- <BindingCondition -->
-                                <!--     Binding="{Binding Source={x:Reference maxNumberOfParticipantsValidator}, Path=IsValid}" -->
-                                <!--     Value="True" /> -->
-                                <!-- <BindingCondition -->
-                                <!--     Binding="{Binding Source={x:Reference durationHoursValidator}, Path=IsValid}" -->
-                                <!--     Value="True" /> -->
-                                <!-- <BindingCondition -->
-                                <!--     Binding="{Binding Source={x:Reference durationMinutesValidator}, Path=IsValid}" -->
-                                <!--     Value="True" /> -->
-                            </MultiTrigger.Conditions>
-                            <Setter Property="IsVisible" Value="False" />
-                        </MultiTrigger>
-                        <!-- <DataTrigger Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" -->
-                        <!--              TargetType="Label" -->
-                        <!--              Value="False"> -->
-                        <!--     <Setter Property="Text" Value="Name is required and must be at least 5 characters." /> -->
-                        <!-- </DataTrigger> -->
-                        <!-- <DataTrigger Binding="{Binding Source={x:Reference descriptionValidator}, Path=IsValid}" -->
-                        <!--              TargetType="Label" -->
-                        <!--              Value="False"> -->
-                        <!--     <Setter Property="Text" Value="Description is required and must be at least 10 characters." /> -->
-                        <!-- </DataTrigger> -->
-                        <!-- <DataTrigger -->
-                        <!--     Binding="{Binding Source={x:Reference maxNumberOfParticipantsValidator}, Path=IsValid}" -->
-                        <!--     TargetType="Label" -->
-                        <!--     Value="False"> -->
-                        <!--     <Setter Property="Text" Value="Maximum Participants cannot be less than 0." /> -->
-                        <!-- </DataTrigger> -->
-                        <!-- <DataTrigger Binding="{Binding Source={x:Reference durationHoursValidator}, Path=IsValid}" -->
-                        <!--              TargetType="Label" -->
-                        <!--              Value="False"> -->
-                        <!--     <Setter Property="Text" Value="Duration Hours must be between 1 and 10." /> -->
-                        <!-- </DataTrigger> -->
-                        <!-- <DataTrigger Binding="{Binding Source={x:Reference durationMinutesValidator}, Path=IsValid}" -->
-                        <!--              TargetType="Label" -->
-                        <!--              Value="False"> -->
-                        <!--     <Setter Property="Text" Value="Duration Minutes must be between 0 and 59." /> -->
-                        <!-- </DataTrigger> -->
-                    </Label.Triggers>
-                </Label>
             </VerticalStackLayout>
         </Grid>
     </ScrollView>
