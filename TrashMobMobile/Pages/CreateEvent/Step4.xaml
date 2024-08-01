@@ -46,9 +46,6 @@
                     <Label Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding EventViewModel.Description}"
                            FontSize="Micro" />
                  </Grid>
-                <Button Margin="10"
-                       Command="{Binding SaveEventCommand}"
-                       Text="Save Event" />
             </VerticalStackLayout>
             <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
                      VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />

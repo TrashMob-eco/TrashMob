@@ -19,7 +19,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
     private readonly IMobEventManager mobEventManager;
     private readonly IWaiverManager waiverManager;
-    
+
     private readonly INotificationService notificationService;
 
     public ICommand PreviousCommand { get; set; }
@@ -36,6 +36,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
     [ObservableProperty] private AddressViewModel userLocation;
 
     [ObservableProperty] private bool isStepValid;
+
+    [ObservableProperty] private bool canGoBack;
 
     private bool validating;
 
@@ -88,7 +90,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
         IEventTypeRestService eventTypeRestService,
         IMapRestService mapRestService,
         IWaiverManager waiverManager,
-        INotificationService notificationService) 
+        INotificationService notificationService)
         : base(notificationService)
     {
         this.mobEventManager = mobEventManager;
@@ -143,6 +145,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
     private void ValidateViewModel()
     {
         EventDurationError = string.Empty;
+        DescriptionRequiredError = string.Empty;
 
         if ((EndTime - StartTime).TotalHours > 10)
         {
@@ -152,6 +155,11 @@ public partial class CreateEventViewModelNew : BaseViewModel
         if ((EndTime - StartTime).TotalHours < 1)
         {
             EventDurationError = "Event minimum duration must be at least 1 hour";
+        }
+
+        if (string.IsNullOrEmpty(EventViewModel.Description))
+        {
+            DescriptionRequiredError = "Event description is required";
         }
     }
 
@@ -173,7 +181,20 @@ public partial class CreateEventViewModelNew : BaseViewModel
             case 0:
                 if (!string.IsNullOrEmpty(EventViewModel.Name) &&
                     EventViewModel.EventDateOnly != default &&
-                    !string.IsNullOrEmpty(SelectedEventType) && string.IsNullOrEmpty(EventDurationError))
+                    !string.IsNullOrEmpty(SelectedEventType) && string.IsNullOrEmpty(EventDurationError) &&
+                    !string.IsNullOrEmpty(EventViewModel.Description))
+                {
+                    IsStepValid = true;
+                }
+                else
+                {
+                    IsStepValid = false;
+                }
+
+                break;
+            //Step 2 validation 
+            case 1:
+                if (!string.IsNullOrEmpty(EventViewModel.Address.City))
                 {
                     IsStepValid = true;
                 }
@@ -194,9 +215,11 @@ public partial class CreateEventViewModelNew : BaseViewModel
     {
         CurrentView = Steps[CurrentStep];
 
+        NextStepText = CurrentStep != 3 ? "Next" : "Save Event";
+
         if (CurrentView is BaseStepClass current)
             current.OnNavigated();
-        
+
         //TODO reference this colors from the app styles
         StepOneColor = CurrentStep == 0 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
         StepTwoColor = CurrentStep == 1 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
@@ -206,7 +229,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
         StepSixColor = CurrentStep == 5 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
     }
 
-    public void SetCurrentStep(StepType step)
+    public async Task SetCurrentStep(StepType step)
     {
         if (step == StepType.Backward)
         {
@@ -221,9 +244,17 @@ public partial class CreateEventViewModelNew : BaseViewModel
             if (CurrentStep < Steps.Length - 1)
             {
                 CurrentStep++;
+
+                if (CurrentStep == 5)
+                {
+                    await SaveEvent();
+                }
+
                 SetCurrentView();
             }
         }
+
+        CanGoBack = CurrentStep != 0 && CurrentStep < 4;
     }
 
     // This is only for the map point
@@ -275,14 +306,14 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
             EndTime = TimeSpan.FromHours(14);
 
-            SelectedEventType = EventTypes.OrderBy(e => e.DisplayOrder).First().Name;
-
-            Events.Add(EventViewModel);
-
             foreach (var eventType in EventTypes)
             {
                 ETypes.Add(eventType.Name);
             }
+
+            SelectedEventType = EventTypes.OrderBy(e => e.DisplayOrder).First().Name;
+
+            Events.Add(EventViewModel);
 
             // We need to subscribe to both eventViewmodel and creatEventViewmodel propertyChanged to validate step
             eventViewModel.PropertyChanged += ValidateCurrentStep;
@@ -294,7 +325,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotificationService.NotifyError($"An error has occurred while loading the page. Please wait and try again in a moment.");
+            await NotificationService.NotifyError(
+                $"An error has occurred while loading the page. Please wait and try again in a moment.");
         }
     }
 
@@ -337,7 +369,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
         {
             SentrySdk.CaptureException(ex);
             IsBusy = false;
-            await NotificationService.NotifyError($"An error has occurred while saving the event. Please wait and try again in a moment.");
+            await NotificationService.NotifyError(
+                $"An error has occurred while saving the event. Please wait and try again in a moment.");
         }
     }
 
@@ -362,6 +395,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
         Events.Clear();
         Events.Add(EventViewModel);
+
+        ValidateCurrentStep(null, null);
     }
 
     private async Task<bool> Validate()
@@ -376,6 +411,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
     }
 
     #region UI Related properties
+
+    [ObservableProperty] private string nextStepText = "Next";
 
     //Event current step control
 
@@ -394,6 +431,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
     //Validation Errors
 
     [ObservableProperty] private string eventDurationError;
+    
+    [ObservableProperty] private string descriptionRequiredError;
 
     #endregion
 }
