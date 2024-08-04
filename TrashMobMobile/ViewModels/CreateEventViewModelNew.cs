@@ -113,7 +113,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
             IsBusy = true;
 
             await Task.Delay(200);
-            SetCurrentStep(StepType.Forward);
+            await SetCurrentStep(StepType.Forward);
             IsBusy = false;
         });
 
@@ -126,7 +126,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
             IsBusy = true;
 
             await Task.Delay(200);
-            SetCurrentStep(StepType.Backward);
+            await SetCurrentStep(StepType.Backward);
 
             IsBusy = false;
         });
@@ -390,6 +390,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
             Events.Add(EventViewModel);
 
             await LoadPartners();
+            
+            await SetCurrentStep(StepType.Forward);
 
             IsBusy = false;
 
