@@ -10,19 +10,22 @@ using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 using TrashMobMobile.Pages.CreateEvent;
+using TrashMob.Models.Poco;
 
 public partial class CreateEventViewModelNew : BaseViewModel
 {
     private const int ActiveEventStatus = 1;
+    private const int NewLitterReportStatus = 1;
     private readonly IEventTypeRestService eventTypeRestService;
     private readonly IMapRestService mapRestService;
 
     private readonly IMobEventManager mobEventManager;
     private readonly IWaiverManager waiverManager;
     private readonly IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService;
-
+    private readonly ILitterReportManager litterReportManager;
     private readonly INotificationService notificationService;
     private readonly IEventPartnerLocationServiceStatusRestService eventPartnerLocationServiceStatusRestService;
+    private IEnumerable<LitterReport> RawLitterReports { get; set; } = [];
 
     public ICommand PreviousCommand { get; set; }
     public ICommand NextCommand { get; set; }
@@ -42,6 +45,10 @@ public partial class CreateEventViewModelNew : BaseViewModel
     [ObservableProperty] private bool arePartnersAvailable;
 
     [ObservableProperty] private bool areNoPartnersAvailable;
+
+    [ObservableProperty] private bool areLitterReportsAvailable;
+
+    [ObservableProperty] private bool areNoLitterReportsAvailable;
 
     private bool validating;
 
@@ -95,7 +102,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
         IMapRestService mapRestService,
         IWaiverManager waiverManager,
         INotificationService notificationService,
-        IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService)
+        IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService,
+        ILitterReportManager litterReportManager)
         : base(notificationService)
     {
         this.mobEventManager = mobEventManager;
@@ -104,7 +112,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
         this.waiverManager = waiverManager;
         this.notificationService = notificationService;
         this.eventPartnerLocationServiceRestService = eventPartnerLocationServiceRestService;
-
+        this.litterReportManager = litterReportManager;
         NextCommand = new Command(async () =>
         {
             if (IsBusy)
@@ -265,6 +273,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
     // This is only for the map point
     public ObservableCollection<EventViewModel> Events { get; set; } = [];
+    public ObservableCollection<LitterImageViewModel> LitterImages { get; set; } = [];
+    public ObservableCollection<LitterReportViewModel> LitterReports { get; set; } = [];
 
     private List<EventType> EventTypes { get; set; } = [];
     private EventPartnerLocationViewModel selectedEventPartnerLocation;
@@ -390,7 +400,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
             Events.Add(EventViewModel);
 
             await LoadPartners();
-            
+            await LoadLitterReports();
+
             await SetCurrentStep(StepType.Forward);
 
             IsBusy = false;
@@ -433,7 +444,28 @@ public partial class CreateEventViewModelNew : BaseViewModel
         AreNoPartnersAvailable = !ArePartnersAvailable;
     }
 
-    public async Task ChangeLocation(Location location)
+    private async Task LoadLitterReports()
+    {
+        AreLitterReportsAvailable = false;
+        AreNoLitterReportsAvailable = true;
+
+        // Todo: Fix this
+        //var filter = new LitterReportFilter()
+        //{
+        //    City = EventViewModel.Address.City,
+        //    Country = EventViewModel.Address.Country,
+        //    LitterReportStatusId = NewLitterReportStatus,
+        //};
+
+        RawLitterReports = await litterReportManager.GetNewLitterReportsAsync();
+
+        UpdateLitterReportViewModels();
+
+        AreLitterReportsAvailable = LitterReports.Any();
+        AreNoLitterReportsAvailable = !AreLitterReportsAvailable;
+    }
+
+    public async Task ChangeLocation(Microsoft.Maui.Devices.Sensors.Location location)
     {
         var addr = await mapRestService.GetAddressAsync(location.Latitude, location.Longitude);
 
@@ -450,6 +482,29 @@ public partial class CreateEventViewModelNew : BaseViewModel
         Events.Add(EventViewModel);
 
         ValidateCurrentStep(null, null);
+    }
+
+    private void UpdateLitterReportViewModels()
+    {
+        LitterReports.Clear();
+        LitterImages.Clear();
+
+        foreach (var litterReport in RawLitterReports.OrderByDescending(l => l.CreatedDate))
+        {
+            var vm = litterReport.ToLitterReportViewModel(NotificationService);
+
+            foreach (var litterImage in litterReport.LitterImages)
+            {
+                var litterImageViewModel = litterImage.ToLitterImageViewModel(NotificationService);
+
+                if (litterImageViewModel != null)
+                {
+                    LitterImages.Add(litterImageViewModel);
+                }
+            }
+
+            LitterReports.Add(vm);
+        }
     }
 
     private async Task<bool> Validate()
