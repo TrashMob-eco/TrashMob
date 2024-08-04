@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+namespace TrashMobMobile.Pages.CreateEvent;
+
 using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Maps;
-
-namespace TrashMobMobile.Pages.CreateEvent;
 
 public partial class Step2 : BaseStepClass
 {

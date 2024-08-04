@@ -9,20 +9,6 @@
     <ScrollView>
         <VerticalStackLayout>
             <Label Text="Step 6"></Label>
-            <Grid ColumnDefinitions="1*,1*, 1*, 1*"
-                  RowDefinitions="Auto"
-                  VerticalOptions="End"
-                  Margin="0,0,0,20">
-
-                <Button Margin="10"
-                        Grid.Row="0"
-                        Grid.Column="2"
-                        Grid.ColumnSpan="2"
-                        Command="{Binding ManageEventPartnersCommand}"
-                        IsEnabled="{Binding IsManageEventPartnersEnabled}"
-                        IsVisible="{Binding IsManageEventPartnersEnabled}"
-                        Text="Manage Partners" />
-            </Grid>
         </VerticalStackLayout>
     </ScrollView>
 </createEvent:BaseStepClass>

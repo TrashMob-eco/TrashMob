@@ -19,8 +19,10 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
     private readonly IMobEventManager mobEventManager;
     private readonly IWaiverManager waiverManager;
+    private readonly IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService;
 
     private readonly INotificationService notificationService;
+    private readonly IEventPartnerLocationServiceStatusRestService eventPartnerLocationServiceStatusRestService;
 
     public ICommand PreviousCommand { get; set; }
     public ICommand NextCommand { get; set; }
@@ -29,8 +31,6 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
     [ObservableProperty] private EventViewModel eventViewModel;
 
-    [ObservableProperty] private bool isManageEventPartnersEnabled;
-
     [ObservableProperty] private string selectedEventType;
 
     [ObservableProperty] private AddressViewModel userLocation;
@@ -38,6 +38,10 @@ public partial class CreateEventViewModelNew : BaseViewModel
     [ObservableProperty] private bool isStepValid;
 
     [ObservableProperty] private bool canGoBack;
+
+    [ObservableProperty] private bool arePartnersAvailable;
+
+    [ObservableProperty] private bool areNoPartnersAvailable;
 
     private bool validating;
 
@@ -90,7 +94,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
         IEventTypeRestService eventTypeRestService,
         IMapRestService mapRestService,
         IWaiverManager waiverManager,
-        INotificationService notificationService)
+        INotificationService notificationService,
+        IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService)
         : base(notificationService)
     {
         this.mobEventManager = mobEventManager;
@@ -98,6 +103,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
         this.mapRestService = mapRestService;
         this.waiverManager = waiverManager;
         this.notificationService = notificationService;
+        this.eventPartnerLocationServiceRestService = eventPartnerLocationServiceRestService;
 
         NextCommand = new Command(async () =>
         {
@@ -261,8 +267,33 @@ public partial class CreateEventViewModelNew : BaseViewModel
     public ObservableCollection<EventViewModel> Events { get; set; } = [];
 
     private List<EventType> EventTypes { get; set; } = [];
+    private EventPartnerLocationViewModel selectedEventPartnerLocation;
 
     public ObservableCollection<string> ETypes { get; set; } = [];
+    public ObservableCollection<EventPartnerLocationViewModel> AvailablePartners { get; set; } = new();
+    public EventPartnerLocationViewModel SelectedEventPartnerLocation
+    {
+        get => selectedEventPartnerLocation;
+        set
+        {
+            if (selectedEventPartnerLocation != value)
+            {
+                selectedEventPartnerLocation = value;
+                OnPropertyChanged(nameof(selectedEventPartnerLocation));
+
+                if (selectedEventPartnerLocation != null)
+                {
+                    PerformNavigation(selectedEventPartnerLocation);
+                }
+            }
+        }
+    }
+
+    private async void PerformNavigation(EventPartnerLocationViewModel eventPartnerLocationViewModel)
+    {
+        await Shell.Current.GoToAsync(
+            $"{nameof(EditEventPartnerLocationServicesPage)}?EventId={EventViewModel.Id}&PartnerLocationId={eventPartnerLocationViewModel.PartnerLocationId}");
+    }
 
     public async Task Init()
     {
@@ -283,8 +314,6 @@ public partial class CreateEventViewModelNew : BaseViewModel
                 await Shell.Current.GoToAsync($"{nameof(WaiverPage)}");
             }
 
-            IsManageEventPartnersEnabled = false;
-
             UserLocation = App.CurrentUser.GetAddress();
             EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
 
@@ -302,9 +331,9 @@ public partial class CreateEventViewModelNew : BaseViewModel
                 EventStatusId = ActiveEventStatus,
             };
 
-            StartTime = TimeSpan.FromHours(12);
+            StartTime = TimeSpan.FromHours(9);
 
-            EndTime = TimeSpan.FromHours(14);
+            EndTime = TimeSpan.FromHours(11);
 
             foreach (var eventType in EventTypes)
             {
@@ -360,7 +389,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
             Events.Clear();
             Events.Add(EventViewModel);
 
-            IsManageEventPartnersEnabled = true;
+            await LoadPartners();
+
             IsBusy = false;
 
             await notificationService.Notify("Event has been saved.");
@@ -374,10 +404,31 @@ public partial class CreateEventViewModelNew : BaseViewModel
         }
     }
 
-    [RelayCommand]
-    private async Task ManageEventPartners()
+    private async Task LoadPartners()
     {
-        await Shell.Current.GoToAsync($"{nameof(ManageEventPartnersPage)}?EventId={EventViewModel.Id}");
+        ArePartnersAvailable = false;
+        AreNoPartnersAvailable = true;
+
+        var eventPartnerLocations = await eventPartnerLocationServiceRestService.GetEventPartnerLocationsAsync(EventViewModel.Id);
+
+        AvailablePartners.Clear();
+
+        foreach (var eventPartnerLocation in eventPartnerLocations)
+        {
+            var eventPartnerLocationViewModel = new EventPartnerLocationViewModel
+            {
+                PartnerLocationId = eventPartnerLocation.PartnerLocationId,
+                PartnerLocationName = eventPartnerLocation.PartnerLocationName,
+                PartnerLocationNotes = eventPartnerLocation.PartnerLocationNotes,
+                PartnerServicesEngaged = eventPartnerLocation.PartnerServicesEngaged,
+                PartnerId = eventPartnerLocation.PartnerId,
+            };
+
+            AvailablePartners.Add(eventPartnerLocationViewModel);
+        }
+
+        ArePartnersAvailable = AvailablePartners.Any();
+        AreNoPartnersAvailable = !ArePartnersAvailable;
     }
 
     public async Task ChangeLocation(Location location)
