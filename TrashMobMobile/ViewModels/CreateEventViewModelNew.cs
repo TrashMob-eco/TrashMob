@@ -250,7 +250,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
          * Step 2 Map Location                  CurrentStep = 1
          * Step 3 Max Attendees                 CurrentStep = 2
          * Step 4 Event Summary and Save        CurrentStep = 3
-         * Step 5 Add Partners                  CurrentStep = 5
+         * Step 5 Add Partners                  CurrentStep = 4
          */
         
         if (step == StepType.Backward)
