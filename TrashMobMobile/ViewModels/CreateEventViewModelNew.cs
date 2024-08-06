@@ -245,6 +245,14 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
     public async Task SetCurrentStep(StepType step)
     {
+        /*
+         * Step 1 Main details                  CurrentStep = 0
+         * Step 2 Map Location                  CurrentStep = 1
+         * Step 3 Max Attendees                 CurrentStep = 2
+         * Step 4 Event Summary and Save        CurrentStep = 3
+         * Step 5 Add Partners                  CurrentStep = 5
+         */
+        
         if (step == StepType.Backward)
         {
             if (CurrentStep > 0)
@@ -257,12 +265,17 @@ public partial class CreateEventViewModelNew : BaseViewModel
         {
             if (CurrentStep < Steps.Length - 1)
             {
-                CurrentStep++;
-
-                if (CurrentStep == 5)
+                if (CurrentStep == 3)
                 {
-                    await SaveEvent();
+                    if (await SaveEvent() == false)
+                    {
+                        return;
+                    }
+                    await LoadPartners();
+                    await LoadLitterReports();
                 }
+                
+                CurrentStep++;
 
                 SetCurrentView();
             }
@@ -370,7 +383,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
     }
 
     [RelayCommand]
-    private async Task SaveEvent()
+    private async Task<bool> SaveEvent()
     {
         IsBusy = true;
 
@@ -379,7 +392,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
             if (!await Validate())
             {
                 IsBusy = false;
-                return;
+                return false;
             }
 
             if (!string.IsNullOrEmpty(SelectedEventType))
@@ -399,14 +412,11 @@ public partial class CreateEventViewModelNew : BaseViewModel
             Events.Clear();
             Events.Add(EventViewModel);
 
-            await LoadPartners();
-            await LoadLitterReports();
-
-            await SetCurrentStep(StepType.Forward);
-
             IsBusy = false;
 
             await notificationService.Notify("Event has been saved.");
+
+            return true;
         }
         catch (Exception ex)
         {
@@ -414,6 +424,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
             IsBusy = false;
             await NotificationService.NotifyError(
                 $"An error has occurred while saving the event. Please wait and try again in a moment.");
+            return false;
         }
     }
 
