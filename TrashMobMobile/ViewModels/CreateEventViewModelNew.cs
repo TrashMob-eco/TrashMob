@@ -271,6 +271,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
                     {
                         return;
                     }
+
                     await LoadPartners();
                     await LoadLitterReports();
                 }
