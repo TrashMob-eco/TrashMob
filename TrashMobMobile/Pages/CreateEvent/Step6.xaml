@@ -43,15 +43,15 @@
                                               RowDefinitions="Auto, Auto, Auto"
                                               x:Name="LitterReportItem">
                                             <CheckBox IsChecked="False" Grid.Row="0" Grid.Column="0" />
-                                            <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="1"
+                                            <Label Text="{Binding Name}" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1"
                                                    FontSize="Small" />
                                             <Label Text="{Binding CreatedDate}" Grid.Row="0" Grid.ColumnSpan="1"
-                                                   Grid.Column="1" FontSize="Micro" />
-                                            <Label Text="{Binding Description}" Grid.Row="1" Grid.ColumnSpan="2"
+                                                   Grid.Column="2" FontSize="Micro" />
+                                            <Label Text="{Binding Description}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
                                                    FontSize="Micro" />
-                                            <Label Text="Locations" Grid.Row="2" FontSize="Micro" FontAttributes="Bold" />
+                                            <Label Text="Locations" Grid.Row="2" Grid.Column="1" FontSize="Micro" FontAttributes="Bold" />
                                             <CollectionView ItemsSource="{Binding LitterImageViewModels}" Grid.Row="2"
-                                                            Grid.Column="1">
+                                                            Grid.Column="2">
                                                 <CollectionView.ItemTemplate>
                                                     <DataTemplate x:DataType="viewModels:LitterImageViewModel">
                                                         <Label Text="{Binding Address.DisplayAddress}" FontSize="Micro" />

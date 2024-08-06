@@ -369,7 +369,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
             Events.Add(EventViewModel);
 
             // We need to subscribe to both eventViewmodel and creatEventViewmodel propertyChanged to validate step
-            eventViewModel.PropertyChanged += ValidateCurrentStep;
+            EventViewModel.PropertyChanged += ValidateCurrentStep;
             PropertyChanged += ValidateCurrentStep;
 
             IsBusy = false;
