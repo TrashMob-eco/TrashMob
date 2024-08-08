@@ -5,24 +5,71 @@
                            xmlns:createEvent="clr-namespace:TrashMobMobile.Pages.CreateEvent"
                            xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
                            x:DataType="viewModels:CreateEventViewModelNew"
+                           xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
                            x:Class="TrashMobMobile.Pages.CreateEvent.Step6">
     <ScrollView>
-        <VerticalStackLayout>
-            <Label Text="Step 6"></Label>
-            <Grid ColumnDefinitions="1*,1*, 1*, 1*"
-                  RowDefinitions="Auto"
-                  VerticalOptions="End"
-                  Margin="0,0,0,20">
+        <Grid>
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
+                <Grid RowDefinitions="Auto, Auto, Auto, *">
+                    <HorizontalStackLayout Grid.Row="2">
+                        <RadioButton Content="Map" IsChecked="True" x:Name="viewMap" FontSize="Micro" />
+                        <RadioButton Content="List" x:Name="viewList" FontSize="Micro" />
+                    </HorizontalStackLayout>
 
-                <Button Margin="10"
-                        Grid.Row="0"
-                        Grid.Column="2"
-                        Grid.ColumnSpan="2"
-                        Command="{Binding ManageEventPartnersCommand}"
-                        IsEnabled="{Binding IsManageEventPartnersEnabled}"
-                        IsVisible="{Binding IsManageEventPartnersEnabled}"
-                        Text="Manage Partners" />
-            </Grid>
-        </VerticalStackLayout>
+                    <maps:Map x:Name="litterImagesMap"
+                              Grid.Row="3"
+                              ItemsSource="{Binding LitterImages}"
+                              IsVisible="{Binding Source={x:Reference viewMap}, Path=IsChecked}">
+                        <maps:Map.ItemTemplate>
+                            <DataTemplate x:DataType="viewModels:LitterImageViewModel">
+                                <maps:Pin Location="{Binding Address.Location}"
+                                          Address="{Binding Address.StreetAddress}"
+                                          Label="{Binding Address.StreetAddress}"
+                                          AutomationId="{Binding LitterReportId}"
+                                          InfoWindowClicked="Pin_InfoWindowClicked" />
+                            </DataTemplate>
+                        </maps:Map.ItemTemplate>
+                    </maps:Map>
+
+                    <CollectionView x:Name="LitterReportsCollection" Grid.Row="4"
+                                    ItemsSource="{Binding LitterReports}"
+                                    IsVisible="{Binding Source={x:Reference viewList}, Path=IsChecked}"
+                                    SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="viewModels:LitterReportViewModel">
+                                <StackLayout Margin="5">
+                                    <Border Style="{StaticResource RoundBorder}">
+                                        <Grid ColumnDefinitions="1*, 1*, 1*"
+                                              RowDefinitions="Auto, Auto, Auto"
+                                              x:Name="LitterReportItem">
+                                            <CheckBox IsChecked="False" Grid.Row="0" Grid.Column="0" />
+                                            <Label Text="{Binding Name}" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1"
+                                                   FontSize="Small" />
+                                            <Label Text="{Binding CreatedDate}" Grid.Row="0" Grid.ColumnSpan="1"
+                                                   Grid.Column="2" FontSize="Micro" />
+                                            <Label Text="{Binding Description}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+                                                   FontSize="Micro" />
+                                            <Label Text="Locations" Grid.Row="2" Grid.Column="1" FontSize="Micro" FontAttributes="Bold" />
+                                            <CollectionView ItemsSource="{Binding LitterImageViewModels}" Grid.Row="2"
+                                                            Grid.Column="2">
+                                                <CollectionView.ItemTemplate>
+                                                    <DataTemplate x:DataType="viewModels:LitterImageViewModel">
+                                                        <Label Text="{Binding Address.DisplayAddress}" FontSize="Micro" />
+                                                    </DataTemplate>
+                                                </CollectionView.ItemTemplate>
+                                            </CollectionView>
+                                        </Grid>
+                                    </Border>
+                                </StackLayout>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+            </VerticalStackLayout>
+            <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
+                     VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center"
+                               HorizontalOptions="Center" />
+        </Grid>
     </ScrollView>
 </createEvent:BaseStepClass>

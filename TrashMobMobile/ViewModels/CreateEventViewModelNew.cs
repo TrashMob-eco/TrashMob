@@ -10,17 +10,22 @@ using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 using TrashMobMobile.Pages.CreateEvent;
+using TrashMob.Models.Poco;
 
 public partial class CreateEventViewModelNew : BaseViewModel
 {
     private const int ActiveEventStatus = 1;
+    private const int NewLitterReportStatus = 1;
     private readonly IEventTypeRestService eventTypeRestService;
     private readonly IMapRestService mapRestService;
 
     private readonly IMobEventManager mobEventManager;
     private readonly IWaiverManager waiverManager;
-
+    private readonly IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService;
+    private readonly ILitterReportManager litterReportManager;
     private readonly INotificationService notificationService;
+    private readonly IEventPartnerLocationServiceStatusRestService eventPartnerLocationServiceStatusRestService;
+    private IEnumerable<LitterReport> RawLitterReports { get; set; } = [];
 
     public ICommand PreviousCommand { get; set; }
     public ICommand NextCommand { get; set; }
@@ -29,8 +34,6 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
     [ObservableProperty] private EventViewModel eventViewModel;
 
-    [ObservableProperty] private bool isManageEventPartnersEnabled;
-
     [ObservableProperty] private string selectedEventType;
 
     [ObservableProperty] private AddressViewModel userLocation;
@@ -38,6 +41,14 @@ public partial class CreateEventViewModelNew : BaseViewModel
     [ObservableProperty] private bool isStepValid;
 
     [ObservableProperty] private bool canGoBack;
+
+    [ObservableProperty] private bool arePartnersAvailable;
+
+    [ObservableProperty] private bool areNoPartnersAvailable;
+
+    [ObservableProperty] private bool areLitterReportsAvailable;
+
+    [ObservableProperty] private bool areNoLitterReportsAvailable;
 
     private bool validating;
 
@@ -90,7 +101,9 @@ public partial class CreateEventViewModelNew : BaseViewModel
         IEventTypeRestService eventTypeRestService,
         IMapRestService mapRestService,
         IWaiverManager waiverManager,
-        INotificationService notificationService)
+        INotificationService notificationService,
+        IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService,
+        ILitterReportManager litterReportManager)
         : base(notificationService)
     {
         this.mobEventManager = mobEventManager;
@@ -98,7 +111,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
         this.mapRestService = mapRestService;
         this.waiverManager = waiverManager;
         this.notificationService = notificationService;
-
+        this.eventPartnerLocationServiceRestService = eventPartnerLocationServiceRestService;
+        this.litterReportManager = litterReportManager;
         NextCommand = new Command(async () =>
         {
             if (IsBusy)
@@ -107,7 +121,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
             IsBusy = true;
 
             await Task.Delay(200);
-            SetCurrentStep(StepType.Forward);
+            await SetCurrentStep(StepType.Forward);
             IsBusy = false;
         });
 
@@ -120,7 +134,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
             IsBusy = true;
 
             await Task.Delay(200);
-            SetCurrentStep(StepType.Backward);
+            await SetCurrentStep(StepType.Backward);
 
             IsBusy = false;
         });
@@ -231,6 +245,14 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
     public async Task SetCurrentStep(StepType step)
     {
+        /*
+         * Step 1 Main details                  CurrentStep = 0
+         * Step 2 Map Location                  CurrentStep = 1
+         * Step 3 Max Attendees                 CurrentStep = 2
+         * Step 4 Event Summary and Save        CurrentStep = 3
+         * Step 5 Add Partners                  CurrentStep = 4
+         */
+        
         if (step == StepType.Backward)
         {
             if (CurrentStep > 0)
@@ -243,12 +265,18 @@ public partial class CreateEventViewModelNew : BaseViewModel
         {
             if (CurrentStep < Steps.Length - 1)
             {
-                CurrentStep++;
-
-                if (CurrentStep == 5)
+                if (CurrentStep == 3)
                 {
-                    await SaveEvent();
+                    if (await SaveEvent() == false)
+                    {
+                        return;
+                    }
+
+                    await LoadPartners();
+                    await LoadLitterReports();
                 }
+                
+                CurrentStep++;
 
                 SetCurrentView();
             }
@@ -259,10 +287,37 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
     // This is only for the map point
     public ObservableCollection<EventViewModel> Events { get; set; } = [];
+    public ObservableCollection<LitterImageViewModel> LitterImages { get; set; } = [];
+    public ObservableCollection<LitterReportViewModel> LitterReports { get; set; } = [];
 
     private List<EventType> EventTypes { get; set; } = [];
+    private EventPartnerLocationViewModel selectedEventPartnerLocation;
 
     public ObservableCollection<string> ETypes { get; set; } = [];
+    public ObservableCollection<EventPartnerLocationViewModel> AvailablePartners { get; set; } = new();
+    public EventPartnerLocationViewModel SelectedEventPartnerLocation
+    {
+        get => selectedEventPartnerLocation;
+        set
+        {
+            if (selectedEventPartnerLocation != value)
+            {
+                selectedEventPartnerLocation = value;
+                OnPropertyChanged(nameof(selectedEventPartnerLocation));
+
+                if (selectedEventPartnerLocation != null)
+                {
+                    PerformNavigation(selectedEventPartnerLocation);
+                }
+            }
+        }
+    }
+
+    private async void PerformNavigation(EventPartnerLocationViewModel eventPartnerLocationViewModel)
+    {
+        await Shell.Current.GoToAsync(
+            $"{nameof(EditEventPartnerLocationServicesPage)}?EventId={EventViewModel.Id}&PartnerLocationId={eventPartnerLocationViewModel.PartnerLocationId}");
+    }
 
     public async Task Init()
     {
@@ -283,8 +338,6 @@ public partial class CreateEventViewModelNew : BaseViewModel
                 await Shell.Current.GoToAsync($"{nameof(WaiverPage)}");
             }
 
-            IsManageEventPartnersEnabled = false;
-
             UserLocation = App.CurrentUser.GetAddress();
             EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
 
@@ -302,9 +355,9 @@ public partial class CreateEventViewModelNew : BaseViewModel
                 EventStatusId = ActiveEventStatus,
             };
 
-            StartTime = TimeSpan.FromHours(12);
+            StartTime = TimeSpan.FromHours(9);
 
-            EndTime = TimeSpan.FromHours(14);
+            EndTime = TimeSpan.FromHours(11);
 
             foreach (var eventType in EventTypes)
             {
@@ -316,7 +369,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
             Events.Add(EventViewModel);
 
             // We need to subscribe to both eventViewmodel and creatEventViewmodel propertyChanged to validate step
-            eventViewModel.PropertyChanged += ValidateCurrentStep;
+            EventViewModel.PropertyChanged += ValidateCurrentStep;
             PropertyChanged += ValidateCurrentStep;
 
             IsBusy = false;
@@ -331,7 +384,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
     }
 
     [RelayCommand]
-    private async Task SaveEvent()
+    private async Task<bool> SaveEvent()
     {
         IsBusy = true;
 
@@ -340,7 +393,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
             if (!await Validate())
             {
                 IsBusy = false;
-                return;
+                return false;
             }
 
             if (!string.IsNullOrEmpty(SelectedEventType))
@@ -360,10 +413,11 @@ public partial class CreateEventViewModelNew : BaseViewModel
             Events.Clear();
             Events.Add(EventViewModel);
 
-            IsManageEventPartnersEnabled = true;
             IsBusy = false;
 
             await notificationService.Notify("Event has been saved.");
+
+            return true;
         }
         catch (Exception ex)
         {
@@ -371,16 +425,59 @@ public partial class CreateEventViewModelNew : BaseViewModel
             IsBusy = false;
             await NotificationService.NotifyError(
                 $"An error has occurred while saving the event. Please wait and try again in a moment.");
+            return false;
         }
     }
 
-    [RelayCommand]
-    private async Task ManageEventPartners()
+    private async Task LoadPartners()
     {
-        await Shell.Current.GoToAsync($"{nameof(ManageEventPartnersPage)}?EventId={EventViewModel.Id}");
+        ArePartnersAvailable = false;
+        AreNoPartnersAvailable = true;
+
+        var eventPartnerLocations = await eventPartnerLocationServiceRestService.GetEventPartnerLocationsAsync(EventViewModel.Id);
+
+        AvailablePartners.Clear();
+
+        foreach (var eventPartnerLocation in eventPartnerLocations)
+        {
+            var eventPartnerLocationViewModel = new EventPartnerLocationViewModel
+            {
+                PartnerLocationId = eventPartnerLocation.PartnerLocationId,
+                PartnerLocationName = eventPartnerLocation.PartnerLocationName,
+                PartnerLocationNotes = eventPartnerLocation.PartnerLocationNotes,
+                PartnerServicesEngaged = eventPartnerLocation.PartnerServicesEngaged,
+                PartnerId = eventPartnerLocation.PartnerId,
+            };
+
+            AvailablePartners.Add(eventPartnerLocationViewModel);
+        }
+
+        ArePartnersAvailable = AvailablePartners.Any();
+        AreNoPartnersAvailable = !ArePartnersAvailable;
     }
 
-    public async Task ChangeLocation(Location location)
+    private async Task LoadLitterReports()
+    {
+        AreLitterReportsAvailable = false;
+        AreNoLitterReportsAvailable = true;
+
+        // Todo: Fix this
+        //var filter = new LitterReportFilter()
+        //{
+        //    City = EventViewModel.Address.City,
+        //    Country = EventViewModel.Address.Country,
+        //    LitterReportStatusId = NewLitterReportStatus,
+        //};
+
+        RawLitterReports = await litterReportManager.GetNewLitterReportsAsync();
+
+        UpdateLitterReportViewModels();
+
+        AreLitterReportsAvailable = LitterReports.Any();
+        AreNoLitterReportsAvailable = !AreLitterReportsAvailable;
+    }
+
+    public async Task ChangeLocation(Microsoft.Maui.Devices.Sensors.Location location)
     {
         var addr = await mapRestService.GetAddressAsync(location.Latitude, location.Longitude);
 
@@ -397,6 +494,29 @@ public partial class CreateEventViewModelNew : BaseViewModel
         Events.Add(EventViewModel);
 
         ValidateCurrentStep(null, null);
+    }
+
+    private void UpdateLitterReportViewModels()
+    {
+        LitterReports.Clear();
+        LitterImages.Clear();
+
+        foreach (var litterReport in RawLitterReports.OrderByDescending(l => l.CreatedDate))
+        {
+            var vm = litterReport.ToLitterReportViewModel(NotificationService);
+
+            foreach (var litterImage in litterReport.LitterImages)
+            {
+                var litterImageViewModel = litterImage.ToLitterImageViewModel(NotificationService);
+
+                if (litterImageViewModel != null)
+                {
+                    LitterImages.Add(litterImageViewModel);
+                }
+            }
+
+            LitterReports.Add(vm);
+        }
     }
 
     private async Task<bool> Validate()
