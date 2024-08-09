@@ -19,6 +19,7 @@
             services.AddScoped<IKeyedManager<ContactRequest>, ContactRequestManager>();
             services.AddScoped<IBaseManager<EventAttendee>, EventAttendeeManager>();
             services.AddScoped<IKeyedManager<EventAttendeeRoute>, EventAttendeeRouteManager>();
+            services.AddScoped<IBaseManager<EventLitterReport>, EventLitterReportManager>();
             services.AddScoped<IKeyedManager<Event>, EventManager>();
             services
                 .AddScoped<ILookupManager<EventPartnerLocationServiceStatus>,
@@ -53,6 +54,7 @@
             // Intentional deviation due to unique methods
             services.AddScoped<IEventAttendeeManager, EventAttendeeManager>();
             services.AddScoped<IEventAttendeeRouteManager, EventAttendeeRouteManager>();
+            services.AddScoped<IEventLitterReportManager, EventLitterReportManager>();
             services.AddScoped<IEventSummaryManager, EventSummaryManager>();
             services.AddScoped<IEventManager, EventManager>();
             services.AddScoped<IEventPartnerLocationServiceManager, EventPartnerLocationServiceManager>();

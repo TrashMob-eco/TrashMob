@@ -34,7 +34,7 @@
             return Ok(result);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> UpdateEventAttendee(EventAttendee eventAttendee,
             CancellationToken cancellationToken)
