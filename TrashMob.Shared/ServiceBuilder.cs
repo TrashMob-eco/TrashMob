@@ -96,6 +96,7 @@
             services.AddScoped<IKeyedRepository<Event>, KeyedRepository<Event>>();
             services.AddScoped<IBaseRepository<EventAttendee>, BaseRepository<EventAttendee>>();
             services.AddScoped<IKeyedRepository<EventAttendeeRoute>, KeyedRepository<EventAttendeeRoute>>();
+            services.AddScoped<IBaseRepository<EventLitterReport>, BaseRepository<EventLitterReport>>();
             services
                 .AddScoped<IBaseRepository<EventPartnerLocationService>, BaseRepository<EventPartnerLocationService>>();
             services
