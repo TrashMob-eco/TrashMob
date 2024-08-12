@@ -35,7 +35,7 @@
                         <TapGestureRecognizer Command="{Binding CloseCommand}" NumberOfTapsRequired="1" />
                     </Image.GestureRecognizers>
                 </Image>
-                <Label Margin="35,0,0,0" VerticalOptions="Center" Text="Create an Event" FontSize="24"></Label>
+                <Label Margin="35,0,0,0" VerticalOptions="Center" Text="{Binding StepTitle}" FontSize="24"></Label>
             </StackLayout>
             <Grid RowDefinitions="Auto" ColumnDefinitions="*,*,*,*,*,*">
                 <BoxView BackgroundColor="{Binding StepOneColor}" Style="{StaticResource BoxLabelStyle}"
