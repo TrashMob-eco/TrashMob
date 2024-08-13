@@ -10,7 +10,6 @@ using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 using TrashMobMobile.Pages.CreateEvent;
-using TrashMob.Models.Poco;
 
 public partial class CreateEventViewModelNew : BaseViewModel
 {
@@ -23,6 +22,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
     private readonly IWaiverManager waiverManager;
     private readonly IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService;
     private readonly ILitterReportManager litterReportManager;
+    private readonly IEventLitterReportRestService eventLitterReportRestService;
     private readonly INotificationService notificationService;
     private readonly IEventPartnerLocationServiceStatusRestService eventPartnerLocationServiceStatusRestService;
     private IEnumerable<LitterReport> RawLitterReports { get; set; } = [];
@@ -103,7 +103,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
         IWaiverManager waiverManager,
         INotificationService notificationService,
         IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService,
-        ILitterReportManager litterReportManager)
+        ILitterReportManager litterReportManager,
+        IEventLitterReportRestService eventLitterReportRestService)
         : base(notificationService)
     {
         this.mobEventManager = mobEventManager;
@@ -113,6 +114,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
         this.notificationService = notificationService;
         this.eventPartnerLocationServiceRestService = eventPartnerLocationServiceRestService;
         this.litterReportManager = litterReportManager;
+        this.eventLitterReportRestService = eventLitterReportRestService;
+
         NextCommand = new Command(async () =>
         {
             if (IsBusy)
@@ -294,6 +297,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
     private List<EventType> EventTypes { get; set; } = [];
     private EventPartnerLocationViewModel selectedEventPartnerLocation;
+    private LitterReportViewModel selectedLitterReport;
 
     public ObservableCollection<string> ETypes { get; set; } = [];
     public ObservableCollection<EventPartnerLocationViewModel> AvailablePartners { get; set; } = new();
@@ -316,10 +320,51 @@ public partial class CreateEventViewModelNew : BaseViewModel
         }
     }
 
+    public LitterReportViewModel SelectedLitterReport
+    {
+        get => selectedLitterReport;
+        set
+        {
+            if (selectedLitterReport != value)
+            {
+                if (selectedLitterReport != null && value == null)
+                {
+                    RemoveLitterReport(selectedLitterReport);
+                }
+
+                selectedLitterReport = value;
+                OnPropertyChanged(nameof(selectedLitterReport));
+
+                if (selectedLitterReport != null)
+                {
+                    UpdateLitterReport(selectedLitterReport);
+                }
+            }
+        }
+    }
+
     private async void PerformNavigation(EventPartnerLocationViewModel eventPartnerLocationViewModel)
     {
         await Shell.Current.GoToAsync(
             $"{nameof(EditEventPartnerLocationServicesPage)}?EventId={EventViewModel.Id}&PartnerLocationId={eventPartnerLocationViewModel.PartnerLocationId}");
+    }
+
+    private async void UpdateLitterReport(LitterReportViewModel litterReportViewModel)
+    {
+        await eventLitterReportRestService.AddLitterReportAsync(new EventLitterReport
+        {
+            EventId = EventViewModel.Id,
+            LitterReportId = litterReportViewModel.Id,
+        });
+    }
+
+    private async void RemoveLitterReport(LitterReportViewModel litterReportViewModel)
+    {
+        await eventLitterReportRestService.RemoveLitterReportAsync(new EventLitterReport
+        {
+            EventId = EventViewModel.Id,
+            LitterReportId = litterReportViewModel.Id,
+        });
     }
 
     public async Task Init()
