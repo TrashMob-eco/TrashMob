@@ -227,6 +227,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
     private void SetCurrentView()
     {
+        StepTitle = stepTitles[CurrentStep];
+        
         CurrentView = Steps[CurrentStep];
 
         NextStepText = CurrentStep != 3 ? "Next" : "Save Event";
@@ -252,7 +254,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
          * Step 4 Event Summary and Save        CurrentStep = 3
          * Step 5 Add Partners                  CurrentStep = 4
          */
-        
+
         if (step == StepType.Backward)
         {
             if (CurrentStep > 0)
@@ -275,7 +277,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
                     await LoadPartners();
                     await LoadLitterReports();
                 }
-                
+
                 CurrentStep++;
 
                 SetCurrentView();
@@ -296,6 +298,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
     public ObservableCollection<string> ETypes { get; set; } = [];
     public ObservableCollection<EventPartnerLocationViewModel> AvailablePartners { get; set; } = new();
+
     public EventPartnerLocationViewModel SelectedEventPartnerLocation
     {
         get => selectedEventPartnerLocation;
@@ -429,6 +432,11 @@ public partial class CreateEventViewModelNew : BaseViewModel
                 }
             }
 
+            //we need to convert start time and end time to DurationHours,Duration Minutes and event date 
+            //EventViewModel.EventDate = StartTime;
+            EventViewModel.DurationHours = (EndTime - StartTime).Hours;
+            EventViewModel.DurationMinutes = (EndTime - StartTime).Hours;
+
             var mobEvent = EventViewModel.ToEvent();
 
             var updatedEvent = await mobEventManager.AddEventAsync(mobEvent);
@@ -458,7 +466,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
         ArePartnersAvailable = false;
         AreNoPartnersAvailable = true;
 
-        var eventPartnerLocations = await eventPartnerLocationServiceRestService.GetEventPartnerLocationsAsync(EventViewModel.Id);
+        var eventPartnerLocations =
+            await eventPartnerLocationServiceRestService.GetEventPartnerLocationsAsync(EventViewModel.Id);
 
         AvailablePartners.Clear();
 
@@ -554,7 +563,12 @@ public partial class CreateEventViewModelNew : BaseViewModel
         return true;
     }
 
+    private readonly string[] stepTitles =
+        ["Set Event Details", "Set Event Location", "Set Event Restrictions", "Review Event", "Event Partners", "Litter Reports"];
+
     #region UI Related properties
+
+    [ObservableProperty] private string stepTitle;
 
     [ObservableProperty] private string nextStepText = "Next";
 
@@ -575,7 +589,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
     //Validation Errors
 
     [ObservableProperty] private string eventDurationError;
-    
+
     [ObservableProperty] private string descriptionRequiredError;
 
     #endregion
