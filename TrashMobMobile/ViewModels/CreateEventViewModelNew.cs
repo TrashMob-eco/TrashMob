@@ -540,7 +540,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
     }
 
     private readonly string[] stepTitles =
-        ["Create EVent", "Create EVent1", "Create EVent2", "Create EVent3", "Create EVent4", "Create EVent5"];
+        ["Set Event Details", "Set Event Location", "Set Event Restrictions", "Review Event", "Event Partners", "Litter Reports"];
 
     #region UI Related properties
 
