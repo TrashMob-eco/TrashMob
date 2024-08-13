@@ -292,6 +292,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
     private List<EventType> EventTypes { get; set; } = [];
     private EventPartnerLocationViewModel selectedEventPartnerLocation;
+    private LitterReportViewModel selectedLitterReport;
 
     public ObservableCollection<string> ETypes { get; set; } = [];
     public ObservableCollection<EventPartnerLocationViewModel> AvailablePartners { get; set; } = new();
@@ -313,10 +314,33 @@ public partial class CreateEventViewModelNew : BaseViewModel
         }
     }
 
+    public LitterReportViewModel SelectedLitterReport
+    {
+        get => selectedLitterReport;
+        set
+        {
+            if (selectedLitterReport != value)
+            {
+                selectedLitterReport = value;
+                OnPropertyChanged(nameof(selectedLitterReport));
+
+                if (selectedLitterReport != null)
+                {
+                    UpdateLitterReport(selectedLitterReport);
+                }
+            }
+        }
+    }
+
     private async void PerformNavigation(EventPartnerLocationViewModel eventPartnerLocationViewModel)
     {
         await Shell.Current.GoToAsync(
             $"{nameof(EditEventPartnerLocationServicesPage)}?EventId={EventViewModel.Id}&PartnerLocationId={eventPartnerLocationViewModel.PartnerLocationId}");
+    }
+
+    private async void UpdateLitterReport(LitterReportViewModel litterReportViewModel)
+    {
+        await litterRepo
     }
 
     public async Task Init()

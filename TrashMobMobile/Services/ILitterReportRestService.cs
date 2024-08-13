@@ -28,6 +28,9 @@
         Task<LitterReport> UpdateLitterReportAsync(LitterReport litterReport,
             CancellationToken cancellationToken = default);
 
+        Task<LitterReport> UpdateLitterReportAsync(LitterReport litterReport,
+            CancellationToken cancellationToken = default);
+
         Task<LitterReport> AddLitterReportAsync(LitterReport litterReport,
             CancellationToken cancellationToken = default);
 
