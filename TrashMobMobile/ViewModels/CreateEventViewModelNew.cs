@@ -63,6 +63,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
             if (startTime != value)
             {
                 startTime = value;
+                UpdateDates(value, EndTime);
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(FormattedEventDuration));
             }
@@ -77,6 +78,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
             if (endTime != value)
             {
                 endTime = value;
+                UpdateDates(StartTime, value);
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(FormattedEventDuration));
             }
@@ -431,6 +433,17 @@ public partial class CreateEventViewModelNew : BaseViewModel
         }
     }
 
+    private void UpdateDates(TimeSpan startTime, TimeSpan endTime)
+    {
+        var durationHours = (endTime - startTime).Hours;
+        var durationMinutes = (endTime - startTime).Minutes % 60;
+
+        EventViewModel.DurationHours = durationHours;
+        EventViewModel.DurationMinutes = durationMinutes;
+        var eventDate = EventViewModel.EventDateOnly.Date.Add(startTime);
+        EventViewModel.EventDate = eventDate;
+    }
+
     [RelayCommand]
     private async Task<bool> SaveEvent()
     {
@@ -452,11 +465,6 @@ public partial class CreateEventViewModelNew : BaseViewModel
                     EventViewModel.EventTypeId = eventType.Id;
                 }
             }
-
-            //we need to convert start time and end time to DurationHours,Duration Minutes and event date 
-            //EventViewModel.EventDate = StartTime;
-            EventViewModel.DurationHours = (EndTime - StartTime).Hours;
-            EventViewModel.DurationMinutes = (EndTime - StartTime).Hours;
 
             var mobEvent = EventViewModel.ToEvent();
 
