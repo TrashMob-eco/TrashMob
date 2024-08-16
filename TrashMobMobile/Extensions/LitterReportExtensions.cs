@@ -33,6 +33,32 @@
             return litterReportViewModel;
         }
 
+        public static EventLitterReportViewModel ToEventLitterReportViewModel(this LitterReport litterReport, 
+                                                                                   INotificationService notificationService, 
+                                                                                   IEventLitterReportRestService eventLitterReportRestService, 
+                                                                                   Guid eventId)
+        {
+            var litterReportViewModel = new EventLitterReportViewModel(eventLitterReportRestService, eventId)
+            {
+                Id = litterReport.Id,
+                Name = litterReport.Name,
+                Description = litterReport.Description,
+                LitterReportStatusId = litterReport.LitterReportStatusId,
+                CreatedDate = litterReport.CreatedDate?.GetFormattedLocalDate() ?? string.Empty,
+            };
+
+            foreach (var litterImage in litterReport.LitterImages)
+            {
+                var litterImageViewModel = litterImage.ToLitterImageViewModel(notificationService);
+                if (litterImageViewModel != null)
+                {
+                    litterReportViewModel.LitterImageViewModels.Add(litterImageViewModel);
+                }
+            }
+
+            return litterReportViewModel;
+        }
+
         public static LitterReport ToLitterReport(this LitterReportViewModel litterReportViewModel)
         {
             return new LitterReport

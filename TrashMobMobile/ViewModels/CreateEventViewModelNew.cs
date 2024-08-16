@@ -295,11 +295,10 @@ public partial class CreateEventViewModelNew : BaseViewModel
     // This is only for the map point
     public ObservableCollection<EventViewModel> Events { get; set; } = [];
     public ObservableCollection<LitterImageViewModel> LitterImages { get; set; } = [];
-    public ObservableCollection<LitterReportViewModel> LitterReports { get; set; } = [];
+    public ObservableCollection<EventLitterReportViewModel> EventLitterReports { get; set; } = [];
 
     private List<EventType> EventTypes { get; set; } = [];
     private EventPartnerLocationViewModel selectedEventPartnerLocation;
-    private LitterReportViewModel selectedLitterReport;
 
     public ObservableCollection<string> ETypes { get; set; } = [];
     public ObservableCollection<EventPartnerLocationViewModel> AvailablePartners { get; set; } = new();
@@ -322,51 +321,10 @@ public partial class CreateEventViewModelNew : BaseViewModel
         }
     }
 
-    public LitterReportViewModel SelectedLitterReport
-    {
-        get => selectedLitterReport;
-        set
-        {
-            if (selectedLitterReport != value)
-            {
-                if (selectedLitterReport != null && value == null)
-                {
-                    RemoveLitterReport(selectedLitterReport);
-                }
-
-                selectedLitterReport = value;
-                OnPropertyChanged(nameof(selectedLitterReport));
-
-                if (selectedLitterReport != null)
-                {
-                    UpdateLitterReport(selectedLitterReport);
-                }
-            }
-        }
-    }
-
     private async void PerformNavigation(EventPartnerLocationViewModel eventPartnerLocationViewModel)
     {
         await Shell.Current.GoToAsync(
             $"{nameof(EditEventPartnerLocationServicesPage)}?EventId={EventViewModel.Id}&PartnerLocationId={eventPartnerLocationViewModel.PartnerLocationId}");
-    }
-
-    private async void UpdateLitterReport(LitterReportViewModel litterReportViewModel)
-    {
-        await eventLitterReportRestService.AddLitterReportAsync(new EventLitterReport
-        {
-            EventId = EventViewModel.Id,
-            LitterReportId = litterReportViewModel.Id,
-        });
-    }
-
-    private async void RemoveLitterReport(LitterReportViewModel litterReportViewModel)
-    {
-        await eventLitterReportRestService.RemoveLitterReportAsync(new EventLitterReport
-        {
-            EventId = EventViewModel.Id,
-            LitterReportId = litterReportViewModel.Id,
-        });
     }
 
     public async Task Init()
@@ -535,7 +493,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
         UpdateLitterReportViewModels();
 
-        AreLitterReportsAvailable = LitterReports.Any();
+        AreLitterReportsAvailable = EventLitterReports.Any();
         AreNoLitterReportsAvailable = !AreLitterReportsAvailable;
     }
 
@@ -560,12 +518,12 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
     private void UpdateLitterReportViewModels()
     {
-        LitterReports.Clear();
+        EventLitterReports.Clear();
         LitterImages.Clear();
 
         foreach (var litterReport in RawLitterReports.OrderByDescending(l => l.CreatedDate))
         {
-            var vm = litterReport.ToLitterReportViewModel(NotificationService);
+            var vm = litterReport.ToEventLitterReportViewModel(NotificationService, eventLitterReportRestService, eventViewModel.Id);
 
             foreach (var litterImage in litterReport.LitterImages)
             {
@@ -577,7 +535,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
                 }
             }
 
-            LitterReports.Add(vm);
+            EventLitterReports.Add(vm);
         }
     }
 

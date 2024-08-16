@@ -32,12 +32,11 @@
                     </maps:Map>
 
                     <CollectionView x:Name="LitterReportsCollection" Grid.Row="4"
-                                    ItemsSource="{Binding LitterReports}"
+                                    ItemsSource="{Binding EventLitterReports}"
                                     IsVisible="{Binding Source={x:Reference viewList}, Path=IsChecked}"
-                                    SelectedItems="{Binding SelectedLitterReport}"
-                                    SelectionMode="Single">
+                                    SelectionMode="None">
                         <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="viewModels:LitterReportViewModel">
+                            <DataTemplate x:DataType="viewModels:EventLitterReportViewModel">
                                 <StackLayout Margin="5">
                                     <Border Style="{StaticResource RoundBorder}">
                                         <Grid ColumnDefinitions="1*, 1*, 1*"
@@ -58,6 +57,8 @@
                                                     </DataTemplate>
                                                 </CollectionView.ItemTemplate>
                                             </CollectionView>
+                                            <Button Text="Add" Command="{Binding AddToEventCommand}" IsVisible="{Binding CanAddToEvent}" />
+                                            <Button Text="Remove" Command="{Binding RemoveFromEventCommand}" IsVisible="{Binding CanRemoveFromEvent}" />
                                         </Grid>
                                     </Border>
                                 </StackLayout>
