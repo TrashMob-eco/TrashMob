@@ -11,6 +11,8 @@ public partial class EventLitterReportViewModel : LitterReportViewModel
     {
         Description = string.Empty;
         Name = string.Empty;
+        Status = "Available";
+        CanAddToEvent = true;
         this.eventLitterReportRestService = eventLitterReportRestService;
         this.eventId = eventId;
     }
@@ -20,6 +22,9 @@ public partial class EventLitterReportViewModel : LitterReportViewModel
 
     [ObservableProperty]
     private bool canRemoveFromEvent;
+
+    [ObservableProperty]
+    private string status;
 
     private readonly IEventLitterReportRestService eventLitterReportRestService;
     private readonly Guid eventId;
@@ -35,6 +40,7 @@ public partial class EventLitterReportViewModel : LitterReportViewModel
 
         CanAddToEvent = false;
         CanRemoveFromEvent = true;
+        Status = "Assigned";
     }
 
     [RelayCommand]
@@ -48,5 +54,6 @@ public partial class EventLitterReportViewModel : LitterReportViewModel
 
         CanAddToEvent = true;
         CanRemoveFromEvent = false;
+        Status = "Available";
     }
 }
