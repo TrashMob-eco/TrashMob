@@ -32,26 +32,25 @@
                     </maps:Map>
 
                     <CollectionView x:Name="LitterReportsCollection" Grid.Row="4"
-                                    ItemsSource="{Binding LitterReports}"
+                                    ItemsSource="{Binding EventLitterReports}"
                                     IsVisible="{Binding Source={x:Reference viewList}, Path=IsChecked}"
-                                    SelectedItems="{Binding SelectedLitterReport}"
-                                    SelectionMode="Single">
+                                    SelectionMode="None">
                         <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="viewModels:LitterReportViewModel">
+                            <DataTemplate x:DataType="viewModels:EventLitterReportViewModel">
                                 <StackLayout Margin="5">
                                     <Border Style="{StaticResource RoundBorder}">
-                                        <Grid ColumnDefinitions="1*, 1*, 1*"
-                                              RowDefinitions="Auto, Auto"
+                                        <Grid ColumnDefinitions="1*, 1*, 1*, 1*, 1*"
+                                              RowDefinitions="Auto, Auto, Auto"
                                               x:Name="LitterReportItem">
-                                            <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="1"
-                                                   FontSize="Small" />
-                                            <Label Text="{Binding CreatedDate}" Grid.Row="0" Grid.ColumnSpan="1"
-                                                   Grid.Column="2" FontSize="Micro" />
-                                            <Label Text="{Binding Description}" Grid.Row="1" Grid.ColumnSpan="2"
-                                                   FontSize="Micro" />
+                                            <Label Text="{Binding Name}" Grid.Row="0" FontSize="Small" FontAttributes="Bold" Grid.ColumnSpan="2" />
+                                            <Label Text="{Binding CreatedDate}" Grid.Row="0" Grid.Column="2" FontSize="Micro" />
+                                            <Label Text="{Binding Status}" Grid.Row="0" Grid.Column="3" FontSize="Micro" />
+                                            <Button Text="Add" Command="{Binding AddToEventCommand}" IsVisible="{Binding CanAddToEvent}" Grid.Row="0" Grid.Column="5" FontSize="Micro" />
+                                            <Button Text="Remove" Command="{Binding RemoveFromEventCommand}" IsVisible="{Binding CanRemoveFromEvent}" Grid.Row="0" Grid.Column="5" FontSize="Micro" />
+                                            <Label Text="{Binding Description}" Grid.Row="1" Grid.ColumnSpan="4" FontSize="Micro" />
                                             <Label Text="Locations" Grid.Row="2" FontSize="Micro" FontAttributes="Bold" />
                                             <CollectionView ItemsSource="{Binding LitterImageViewModels}" Grid.Row="2"
-                                                            Grid.Column="1">
+                                                            Grid.Column="1" Grid.ColumnSpan="4">
                                                 <CollectionView.ItemTemplate>
                                                     <DataTemplate x:DataType="viewModels:LitterImageViewModel">
                                                         <Label Text="{Binding Address.DisplayAddress}" FontSize="Micro" />
