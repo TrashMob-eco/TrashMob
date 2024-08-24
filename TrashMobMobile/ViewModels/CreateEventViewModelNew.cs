@@ -236,7 +236,23 @@ public partial class CreateEventViewModelNew : BaseViewModel
         
         CurrentView = Steps[CurrentStep];
 
-        NextStepText = CurrentStep != 3 ? "Next" : "Save Event";
+        switch (CurrentStep)
+        {
+            case 0:
+            case 1:
+            case 2:
+            case 4:
+                NextStepText = "Next";
+                break;
+            case 3:
+                NextStepText = "Save Event";
+                break;
+            case 5:
+                NextStepText = "Finish";
+                break;
+            default:
+                break;
+        }
 
         if (CurrentView is BaseStepClass current)
             current.OnNavigated();
@@ -258,6 +274,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
          * Step 3 Max Attendees                 CurrentStep = 2
          * Step 4 Event Summary and Save        CurrentStep = 3
          * Step 5 Add Partners                  CurrentStep = 4
+         * Step 6 Add Litter Reports            CurrentStep = 5
          */
 
         if (step == StepType.Backward)
@@ -278,9 +295,6 @@ public partial class CreateEventViewModelNew : BaseViewModel
                     {
                         return;
                     }
-
-                    await LoadPartners();
-                    await LoadLitterReports();
                 }
 
                 CurrentStep++;
@@ -289,7 +303,13 @@ public partial class CreateEventViewModelNew : BaseViewModel
             }
         }
 
-        CanGoBack = CurrentStep != 0 && CurrentStep < 4;
+        if (CurrentStep >= 4)
+        {
+            await LoadPartners();
+            await LoadLitterReports();
+        }
+
+        CanGoBack = CurrentStep != 0 && CurrentStep != 4;
     }
 
     // This is only for the map point
