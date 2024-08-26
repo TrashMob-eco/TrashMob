@@ -10,7 +10,10 @@
     <ScrollView>
         <Grid>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
-                <Grid RowDefinitions="Auto, Auto, Auto, *">
+
+                <Label Text="There are currently no litter reports in the area of your event." IsVisible="{Binding AreNoLitterReportsAvailable}" />
+
+                <Grid RowDefinitions="Auto, Auto, Auto, *" IsVisible="{Binding AreLitterReportsAvailable}">
                     <HorizontalStackLayout Grid.Row="2">
                         <RadioButton Content="Map" IsChecked="True" x:Name="viewMap" FontSize="Micro" />
                         <RadioButton Content="List" x:Name="viewList" FontSize="Micro" />
