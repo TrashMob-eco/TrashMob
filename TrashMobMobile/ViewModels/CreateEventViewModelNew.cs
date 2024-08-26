@@ -34,8 +34,6 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
     [ObservableProperty] private EventViewModel eventViewModel;
 
-    [ObservableProperty] private string selectedEventType;
-
     [ObservableProperty] private AddressViewModel userLocation;
 
     [ObservableProperty] private bool isStepValid;
@@ -49,6 +47,25 @@ public partial class CreateEventViewModelNew : BaseViewModel
     [ObservableProperty] private bool areLitterReportsAvailable;
 
     [ObservableProperty] private bool areNoLitterReportsAvailable;
+
+    private string selectedEventType;
+
+    public string SelectedEventType
+    {
+        get => selectedEventType;
+        set
+        {
+            if (value == null)
+                return;
+
+            if (selectedEventType != value)
+            {
+                selectedEventType = value;
+
+                OnPropertyChanged();
+            }
+        }
+    }
 
     private bool validating;
 
@@ -233,7 +250,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
     private void SetCurrentView()
     {
         StepTitle = stepTitles[CurrentStep];
-        
+
         CurrentView = Steps[CurrentStep];
 
         switch (CurrentStep)
@@ -257,7 +274,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
         if (CurrentView is BaseStepClass current)
             current.OnNavigated();
 
-        //TODO reference this colors from the app styles
+        //TODO reference these colors from the app styles
         StepOneColor = CurrentStep == 0 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
         StepTwoColor = CurrentStep == 1 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
         StepThreeColor = CurrentStep == 2 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
@@ -411,14 +428,14 @@ public partial class CreateEventViewModelNew : BaseViewModel
         }
     }
 
-    private void UpdateDates(TimeSpan startTime, TimeSpan endTime)
+    private void UpdateDates(TimeSpan eventStartTime, TimeSpan eventEndTime)
     {
-        var durationHours = (endTime - startTime).Hours;
-        var durationMinutes = (endTime - startTime).Minutes % 60;
+        var durationHours = (eventEndTime - eventStartTime).Hours;
+        var durationMinutes = (eventEndTime - eventStartTime).Minutes % 60;
 
         EventViewModel.DurationHours = durationHours;
         EventViewModel.DurationMinutes = durationMinutes;
-        var eventDate = EventViewModel.EventDateOnly.Date.Add(startTime);
+        var eventDate = EventViewModel.EventDateOnly.Date.Add(eventStartTime);
         EventViewModel.EventDate = eventDate;
     }
 
@@ -543,7 +560,8 @@ public partial class CreateEventViewModelNew : BaseViewModel
 
         foreach (var litterReport in RawLitterReports.OrderByDescending(l => l.CreatedDate))
         {
-            var vm = litterReport.ToEventLitterReportViewModel(NotificationService, eventLitterReportRestService, eventViewModel.Id);
+            var vm = litterReport.ToEventLitterReportViewModel(NotificationService, eventLitterReportRestService,
+                eventViewModel.Id);
 
             foreach (var litterImage in litterReport.LitterImages)
             {
@@ -571,7 +589,10 @@ public partial class CreateEventViewModelNew : BaseViewModel
     }
 
     private readonly string[] stepTitles =
-        ["Set Event Details", "Set Event Location", "Set Event Restrictions", "Review Event", "Event Partners", "Litter Reports"];
+    [
+        "Set Event Details", "Set Event Location", "Set Event Restrictions", "Review Event", "Event Partners",
+        "Litter Reports"
+    ];
 
     #region UI Related properties
 
