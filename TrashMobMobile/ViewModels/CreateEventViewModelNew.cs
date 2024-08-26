@@ -306,12 +306,26 @@ public partial class CreateEventViewModelNew : BaseViewModel
         {
             if (CurrentStep < Steps.Length - 1)
             {
-                if (CurrentStep == 3)
+                switch (CurrentStep)
                 {
-                    if (await SaveEvent() == false)
+                    case 3:
                     {
-                        return;
+                        if (await SaveEvent() == false)
+                        {
+                            return;
+                        }
+                        break;
                     }
+                    case 4:
+                    {
+                        await LoadPartners();
+                        await LoadLitterReports();
+                        break;
+                    }
+                    case 6:
+                        //Evaluate displaying a confirmation text
+                        CloseCommand.Execute(null);
+                        break;
                 }
 
                 CurrentStep++;
@@ -320,11 +334,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
             }
         }
 
-        if (CurrentStep >= 4)
-        {
-            await LoadPartners();
-            await LoadLitterReports();
-        }
+
 
         CanGoBack = CurrentStep != 0 && CurrentStep != 4;
     }
