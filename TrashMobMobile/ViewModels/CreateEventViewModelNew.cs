@@ -314,12 +314,10 @@ public partial class CreateEventViewModelNew : BaseViewModel
                         {
                             return;
                         }
-                        break;
-                    }
-                    case 4:
-                    {
+
                         await LoadPartners();
                         await LoadLitterReports();
+                        
                         break;
                     }
                     case 6:
@@ -333,8 +331,6 @@ public partial class CreateEventViewModelNew : BaseViewModel
                 SetCurrentView();
             }
         }
-
-
 
         CanGoBack = CurrentStep != 0 && CurrentStep != 4;
     }

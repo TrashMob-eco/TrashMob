@@ -31,7 +31,7 @@
                 Longitude = user.Longitude,
                 PostalCode = user.PostalCode,
                 Region = user.Region,
-                Location = new Location(user.Latitude ?? 0, user.Longitude ?? 0),
+                Location = new Location(user.Latitude ?? Config.Settings.DefaultLatitude, user.Longitude ?? Config.Settings.DefaultLongitude),
             };
         }
     }
