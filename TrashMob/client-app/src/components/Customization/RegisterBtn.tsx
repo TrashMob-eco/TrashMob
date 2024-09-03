@@ -17,8 +17,8 @@ interface RegisterBtnProps extends RouteComponentProps {
     isUserLoaded: boolean;
     isEventCompleted: boolean;
     onAttendanceChanged: any;
-    waiverData: WaiverData;
     addEventAttendee: any;
+    waiverData: any;
 };
 
 export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAttending, isUserLoaded, isEventCompleted, onAttendanceChanged, history, waiverData, addEventAttendee }) => {
