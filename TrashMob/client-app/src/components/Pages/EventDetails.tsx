@@ -245,7 +245,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                     <div className="d-flex justify-content-between align-items-md-end flex-column flex-md-row">
                         <h2 className="font-weight-bold m-0">{eventName}</h2>
                         <div className="d-flex my-3">
-                            <RegisterBtn eventId={eventId} isAttending={isAttending} isEventCompleted={isEventCompleted!} currentUser={currentUser} onAttendanceChanged={handleAttendanceChanged} isUserLoaded={isUserLoaded} history={history} location={location} match={match} waiverData={waiver} addEventAttendee={addEventAttendee}></RegisterBtn>
+                            <RegisterBtn eventId={eventId} isAttending={isAttending} isEventCompleted={isEventCompleted!} currentUser={currentUser} onAttendanceChanged={handleAttendanceChanged} isUserLoaded={isUserLoaded} history={history} location={location} match={match} addEventAttendee={addEventAttendee} waiverData={waiver}></RegisterBtn>
                             <div id="addToCalendarBtn" className='ml-2 p-18' hidden={isEventCompleted}><AddToCalendar event={event} /></div>
                             <Button variant="outline" className="p-18" onClick={() => { handleShowModal(true) }}>
                                 <Share className="mr-2" />
