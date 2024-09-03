@@ -9,10 +9,6 @@ import { RouteComponentProps } from 'react-router-dom';
 import { CurrentTrashMobWaiverVersion } from '../Waivers/Waivers';
 import React from 'react';
 import WaiverData from '../Models/WaiverData';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { GetTrashMobWaivers } from '../../services/waivers';
-import { Services } from '../../config/services.config';
-import { AddEventAttendee } from '../../services/events';
 
 interface RegisterBtnProps extends RouteComponentProps {
     currentUser: UserData;
@@ -21,29 +17,13 @@ interface RegisterBtnProps extends RouteComponentProps {
     isUserLoaded: boolean;
     isEventCompleted: boolean;
     onAttendanceChanged: any;
+    waiverData: WaiverData;
+    addEventAttendee: any;
 };
 
-export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAttending, isUserLoaded, isEventCompleted, onAttendanceChanged, history }) => {
+export const RegisterBtn: FC<RegisterBtnProps> = ({ currentUser, eventId, isAttending, isUserLoaded, isEventCompleted, onAttendanceChanged, history, waiverData, addEventAttendee }) => {
     const [registered, setRegistered] = useState<boolean>(false);
-    const [waiver, setWaiver] = useState<WaiverData>();
-
-    const getTrashMobWaivers = useQuery({ 
-        queryKey: GetTrashMobWaivers().key,
-        queryFn: GetTrashMobWaivers().service,
-        staleTime: Services.CACHE.DISABLE,
-        enabled: false
-    });
-
-    const addEventAttendee = useMutation({
-        mutationKey: AddEventAttendee().key,
-        mutationFn: AddEventAttendee().service
-    })
-
-    React.useEffect(() => {
-        getTrashMobWaivers.refetch().then((res) => {
-            setWaiver(res.data?.data)
-        })
-    }, [])
+    const [waiver] = useState<WaiverData>(waiverData);
 
     const addAttendee = async (eventId: string) => {
         const body = new EventAttendeeData();
