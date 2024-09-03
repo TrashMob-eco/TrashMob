@@ -153,7 +153,7 @@ export const MainEvents: FC<MainEventsDataProps> = ({ isEventDataLoaded, eventLi
                                     </div>
                                     <div className="mt-2 mt-sm-0">
                                         <Link to={'/eventdetails/' + mobEvent.id}><button className="btn btn-outline mr-2 font-weight-bold btn-128">View</button></Link>
-                                        <RegisterBtn eventId={mobEvent.id} isAttending={mobEvent.isAttending} isEventCompleted={new Date(mobEvent.eventDate) < new Date()} currentUser={currentUser} onAttendanceChanged={onAttendanceChanged} isUserLoaded={isUserLoaded} history={history} location={location} match={match} waiverData={waiver} addEventAttendee={addEventAttendee}></RegisterBtn>
+                                        <RegisterBtn eventId={mobEvent.id} isAttending={mobEvent.isAttending} isEventCompleted={new Date(mobEvent.eventDate) < new Date()} currentUser={currentUser} onAttendanceChanged={onAttendanceChanged} isUserLoaded={isUserLoaded} history={history} location={location} match={match} addEventAttendee={addEventAttendee} waiverData={waiver}></RegisterBtn>
                                     </div>
                                 </div>
                             </li>
