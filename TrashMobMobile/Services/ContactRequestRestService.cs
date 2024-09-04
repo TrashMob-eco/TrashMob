@@ -10,19 +10,12 @@ public class ContactRequestRestService(IHttpClientFactory httpClientFactory) : R
 
     public async Task AddContactRequest(ContactRequest contactRequest, CancellationToken cancellationToken = default)
     {
-        try
-        {
-            contactRequest.Id = Guid.NewGuid();
-            var content = JsonContent.Create(contactRequest, typeof(ContactRequest), null, SerializerOptions);
+        contactRequest.Id = Guid.NewGuid();
+        var content = JsonContent.Create(contactRequest, typeof(ContactRequest), null, SerializerOptions);
 
-            using (var response = await AnonymousHttpClient.PostAsync(Controller, content, cancellationToken))
-            {
-                response.EnsureSuccessStatusCode();
-            }
-        }
-        catch (Exception ex)
+        using (var response = await AnonymousHttpClient.PostAsync(Controller, content, cancellationToken))
         {
-            Debug.WriteLine(@"\tERROR {0}", ex.Message);
+            response.EnsureSuccessStatusCode();
         }
     }
 }

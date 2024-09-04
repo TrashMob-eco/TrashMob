@@ -4,8 +4,10 @@ import { RouteComponentProps } from 'react-router-dom';
 import EventData from '../Models/EventData';
 import UserData from '../Models/UserData';
 import { Col, Container, Dropdown, Row } from 'react-bootstrap';
-import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import { Eye, Pencil, XSquare, SortDown } from 'react-bootstrap-icons';
+import { useQuery } from '@tanstack/react-query';
+import { GetAllEvents } from '../../services/events';
+import { Services } from '../../config/services.config';
 
 interface AdminEventsPropsType extends RouteComponentProps {
     isUserLoaded: boolean;
@@ -13,9 +15,15 @@ interface AdminEventsPropsType extends RouteComponentProps {
 };
 
 export const AdminEvents: React.FC<AdminEventsPropsType> = (props) => {
-
     const [eventList, setEventList] = React.useState<EventData[]>([]);
     const [isEventDataLoaded, setIsEventDataLoaded] = React.useState<boolean>(false);
+
+    const getAllEvents = useQuery({ 
+        queryKey: GetAllEvents().key,
+        queryFn: GetAllEvents().service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
 
     const eventStatus = {
         1: "Active",
@@ -25,35 +33,11 @@ export const AdminEvents: React.FC<AdminEventsPropsType> = (props) => {
     }
 
     React.useEffect(() => {
-
         if (props.isUserLoaded) {
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
-
-                const headers = getDefaultHeaders('GET');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                // Load the Partner List
-                fetch('/api/events', {
-                    method: 'GET',
-                    headers: headers,
-                })
-                    .then(response => response.json() as Promise<Array<EventData>>)
-                    .then(data => {
-                        setEventList(data);
-                        setIsEventDataLoaded(true);
-                    });
+            // Load the Partner List
+            getAllEvents.refetch().then((res) => {
+                setEventList(res.data?.data || []);
+                setIsEventDataLoaded(true);
             })
         }
     }, [props.isUserLoaded])

@@ -1,8 +1,9 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using TrashMobMobile.Services;
 
-public abstract partial class BaseViewModel : ObservableObject
+public abstract partial class BaseViewModel(INotificationService notificationService) : ObservableObject
 {
     [ObservableProperty]
     private bool isBusy;
@@ -12,7 +13,5 @@ public abstract partial class BaseViewModel : ObservableObject
 
     public INavigation Navigation { get; set; }
 
-    public Func<string, Task> Notify { get; set; }
-
-    public Func<string, Task> NotifyError { get; set; }
+    public INotificationService NotificationService { get; } = notificationService;
 }

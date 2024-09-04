@@ -1,27 +1,17 @@
 import EventTypeData from "../components/Models/EventTypeData";
-import { getDefaultHeaders } from "./AuthStore";
+import { GetEventTypes } from "../services/events";
 
 export function getEventType(eventTypeList: EventTypeData[], eventTypeId: any): string {
-    if (eventTypeList === null || eventTypeList.length === 0) {
-        eventTypeList = getEventTypes();
-    }
-
-    var eventType = eventTypeList.find(et => et.id === eventTypeId)
-    if (eventType)
-        return eventType.name;
-    return "Unknown";
+    const eventType = eventTypeList.find(et => et.id === eventTypeId)
+    return eventType ? eventType.name : "Unknown"
 }
 
-function getEventTypes() : EventTypeData[] {
-    const headers = getDefaultHeaders('GET');
+export async function getEventTypeAsync(eventTypeId: any): Promise<string> {
+    const eventTypeList = await getEventTypes();
+    return getEventType(eventTypeList, eventTypeId);
+}
 
-    fetch('/api/eventtypes', {
-        method: 'GET',
-        headers: headers
-    })
-        .then(response => response.json() as Promise<Array<any>>)
-        .then(data => {
-            return data;
-        });
-    return [];
+async function getEventTypes(): Promise<EventTypeData[]> {
+    const result = await GetEventTypes().service().then(res => res.data).catch(err => [])
+    return result;
 }

@@ -5,9 +5,9 @@ using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
 using TrashMobMobile.Services;
 
-public partial class EditEventSummaryViewModel : BaseViewModel
+public partial class EditEventSummaryViewModel(IMobEventManager mobEventManager, INotificationService notificationService) : BaseViewModel(notificationService)
 {
-    private readonly IMobEventManager mobEventManager;
+    private readonly IMobEventManager mobEventManager = mobEventManager;
 
     [ObservableProperty]
     private bool enableSaveEventSummary;
@@ -15,57 +15,71 @@ public partial class EditEventSummaryViewModel : BaseViewModel
     [ObservableProperty]
     private EventSummaryViewModel eventSummaryViewModel;
 
-    public EditEventSummaryViewModel(IMobEventManager mobEventManager)
-    {
-        this.mobEventManager = mobEventManager;
-    }
-
     private EventSummary EventSummary { get; set; }
 
     public async Task Init(string eventId)
     {
         IsBusy = true;
 
-        EventSummary = await mobEventManager.GetEventSummaryAsync(new Guid(eventId));
-
-        if (EventSummary != null)
+        try
         {
-            EventSummaryViewModel = new EventSummaryViewModel
+            EventSummary = await mobEventManager.GetEventSummaryAsync(new Guid(eventId));
+
+            if (EventSummary != null)
             {
-                ActualNumberOfAttendees = EventSummary.ActualNumberOfAttendees,
-                DurationInMinutes = EventSummary.DurationInMinutes,
-                EventId = EventSummary.EventId,
-                Notes = EventSummary.Notes,
-                NumberOfBags = EventSummary.NumberOfBags,
-            };
+                EventSummaryViewModel = new EventSummaryViewModel
+                {
+                    ActualNumberOfAttendees = EventSummary.ActualNumberOfAttendees,
+                    DurationInMinutes = EventSummary.DurationInMinutes,
+                    EventId = EventSummary.EventId,
+                    Notes = EventSummary.Notes,
+                    NumberOfBags = EventSummary.NumberOfBags,
+                };
+            }
+
+            EnableSaveEventSummary = true;
+
+            IsBusy = false;
         }
-
-        EnableSaveEventSummary = true;
-
-        IsBusy = false;
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotificationService.NotifyError($"An error has occurred while loading the event summary. Please wait and try again in a moment.");
+        }
     }
 
     [RelayCommand]
     private async Task SaveEventSummary()
     {
         IsBusy = true;
-        EventSummary.ActualNumberOfAttendees = EventSummaryViewModel.ActualNumberOfAttendees;
-        EventSummary.NumberOfBags = EventSummaryViewModel.NumberOfBags;
-        EventSummary.DurationInMinutes = EventSummaryViewModel.DurationInMinutes;
-        EventSummary.Notes = EventSummaryViewModel.Notes;
 
-        if (EventSummary.CreatedByUserId == Guid.Empty)
+        try
         {
-            EventSummary.CreatedByUserId = App.CurrentUser.Id;
-            await mobEventManager.AddEventSummaryAsync(EventSummary);
+            EventSummary.ActualNumberOfAttendees = EventSummaryViewModel.ActualNumberOfAttendees;
+            EventSummary.NumberOfBags = EventSummaryViewModel.NumberOfBags;
+            EventSummary.DurationInMinutes = EventSummaryViewModel.DurationInMinutes;
+            EventSummary.Notes = EventSummaryViewModel.Notes;
+
+            if (EventSummary.CreatedByUserId == Guid.Empty)
+            {
+                EventSummary.CreatedByUserId = App.CurrentUser.Id;
+                await mobEventManager.AddEventSummaryAsync(EventSummary);
+            }
+            else
+            {
+                await mobEventManager.UpdateEventSummaryAsync(EventSummary);
+            }
+
+            IsBusy = false;
+
+            await NotificationService.Notify("Event Summary has been updated.");
         }
-        else
+        catch (Exception ex)
         {
-            await mobEventManager.UpdateEventSummaryAsync(EventSummary);
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotificationService.NotifyError($"An error has occurred while saving the event summary. Please wait and try again in a moment.");
         }
-
-        IsBusy = false;
-
-        await Notify("Event Summary has been updated.");
     }
 }

@@ -36,6 +36,11 @@
         <Setter Property="BackgroundColor"
                 Value="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}" />
     </Style>
+    
+    <Style x:Key="ErrorLabel" TargetType="Label">
+        <Setter Property="FontSize" Value="Micro" />
+        <Setter Property="TextColor" Value="Red" />
+    </Style>
 
     <Style TargetType="Button">
         <Setter Property="TextColor"
@@ -556,5 +561,10 @@
     <Style x:Key="OuterVerticalStack" TargetType="VerticalStackLayout">
         <Setter Property="Margin" Value="2" />
     </Style>
+    
+    <OnPlatform x:Key="GoogleMaterialFontFamily" x:TypeArguments="x:String">
+        <On Platform="iOS" Value="Material Design Icons" />
+        <On Platform="Android" Value="googlematerialdesignicons-webfont.ttf#Material Design Icons" />
+    </OnPlatform>
 
 </ResourceDictionary>

@@ -7,9 +7,9 @@ using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class SearchLitterReportsViewModel : BaseViewModel
+public partial class SearchLitterReportsViewModel(ILitterReportManager litterReportManager, INotificationService notificationService) : BaseViewModel(notificationService)
 {
-    private readonly ILitterReportManager litterReportManager;
+    private readonly ILitterReportManager litterReportManager = litterReportManager;
 
     private IEnumerable<TrashMob.Models.Poco.Location> locations = [];
 
@@ -24,11 +24,6 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
 
     [ObservableProperty]
     private AddressViewModel userLocation;
-
-    public SearchLitterReportsViewModel(ILitterReportManager litterReportManager)
-    {
-        this.litterReportManager = litterReportManager;
-    }
 
     private IEnumerable<LitterReport> RawLitterReports { get; set; } = [];
 
@@ -116,8 +111,21 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
 
     public async Task Init()
     {
-        UserLocation = App.CurrentUser.GetAddress();
-        await RefreshLitterReports();
+        IsBusy = true;
+
+        try
+        {
+            UserLocation = App.CurrentUser.GetAddress();
+            await RefreshLitterReports();
+            IsBusy = false;
+            await NotificationService.Notify("Litter Report list has been refreshed.");
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotificationService.NotifyError("Failed to initialize Litter Report search page.");
+        }
     }
 
     private async void PerformNavigation(Guid litterReportId)
@@ -127,8 +135,6 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
 
     private async Task RefreshLitterReports()
     {
-        IsBusy = true;
-
         LitterReports.Clear();
 
         locations = await litterReportManager.GetLocationsByTimeRangeAsync(DateTimeOffset.Now.AddDays(-180),
@@ -162,10 +168,6 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
         }
 
         UpdateLitterReportViewModels();
-
-        IsBusy = false;
-
-        await Notify("Litter Report list has been refreshed.");
     }
 
     private void HandleCountrySelected(string? selectedCountry)
@@ -246,11 +248,11 @@ public partial class SearchLitterReportsViewModel : BaseViewModel
 
         foreach (var litterReport in RawLitterReports.OrderByDescending(l => l.CreatedDate))
         {
-            var vm = litterReport.ToLitterReportViewModel();
+            var vm = litterReport.ToLitterReportViewModel(NotificationService);
 
             foreach (var litterImage in litterReport.LitterImages)
             {
-                var litterImageViewModel = litterImage.ToLitterImageViewModel();
+                var litterImageViewModel = litterImage.ToLitterImageViewModel(NotificationService);
 
                 if (litterImageViewModel != null)
                 {

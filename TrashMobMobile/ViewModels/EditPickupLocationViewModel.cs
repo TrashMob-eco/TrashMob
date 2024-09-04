@@ -6,11 +6,11 @@ using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class EditPickupLocationViewModel : BaseViewModel
+public partial class EditPickupLocationViewModel(IPickupLocationManager pickupLocationManager, IMobEventManager mobEventManager, INotificationService notificationService) : BaseViewModel(notificationService)
 {
-    private readonly IMobEventManager mobEventManager;
+    private readonly IMobEventManager mobEventManager = mobEventManager;
 
-    private readonly IPickupLocationManager pickupLocationManager;
+    private readonly IPickupLocationManager pickupLocationManager = pickupLocationManager;
 
     [ObservableProperty]
     private EventViewModel eventViewModel;
@@ -20,31 +20,34 @@ public partial class EditPickupLocationViewModel : BaseViewModel
     [ObservableProperty]
     private PickupLocationViewModel pickupLocationViewModel;
 
-    public EditPickupLocationViewModel(IPickupLocationManager pickupLocationManager, IMobEventManager mobEventManager)
-    {
-        this.pickupLocationManager = pickupLocationManager;
-        this.mobEventManager = mobEventManager;
-    }
-
     public async Task Init(Guid eventId, Guid pickupLocationId)
     {
         IsBusy = true;
 
-        var mobEvent = await mobEventManager.GetEventAsync(eventId);
-
-        EventViewModel = mobEvent.ToEventViewModel();
-
-        pickupLocation = await pickupLocationManager.GetPickupLocationAsync(pickupLocationId);
-
-        PickupLocationViewModel = new PickupLocationViewModel(pickupLocationManager, mobEventManager)
+        try
         {
-            Name = pickupLocation.Name,
-            Notes = pickupLocation.Notes,
-        };
+            var mobEvent = await mobEventManager.GetEventAsync(eventId);
 
-        await PickupLocationViewModel.Init(eventId);
+            EventViewModel = mobEvent.ToEventViewModel();
 
-        IsBusy = false;
+            pickupLocation = await pickupLocationManager.GetPickupLocationAsync(pickupLocationId);
+
+            PickupLocationViewModel = new PickupLocationViewModel(pickupLocationManager, mobEventManager, NotificationService)
+            {
+                Name = pickupLocation.Name,
+                Notes = pickupLocation.Notes,
+            };
+
+            await PickupLocationViewModel.Init(eventId);
+            
+            IsBusy = false;
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotificationService.NotifyError($"An error has occurred while loading the event. Please wait and try again in a moment.");
+        }
     }
 
     [RelayCommand]
@@ -52,14 +55,23 @@ public partial class EditPickupLocationViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        pickupLocation.Notes = PickupLocationViewModel.Notes;
-        pickupLocation.Name = PickupLocationViewModel.Name;
+        try
+        {
+            pickupLocation.Notes = PickupLocationViewModel.Notes;
+            pickupLocation.Name = PickupLocationViewModel.Name;
 
-        var updatedPickupLocation = await pickupLocationManager.UpdatePickupLocationAsync(pickupLocation);
+            var updatedPickupLocation = await pickupLocationManager.UpdatePickupLocationAsync(pickupLocation);
 
-        IsBusy = false;
+            IsBusy = false;
 
-        await Notify("Pickup Location has been saved.");
-        await Navigation.PopAsync();
+            await NotificationService.Notify("Pickup Location has been saved.");
+            await Navigation.PopAsync();
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotificationService.NotifyError("An error has occurred while saving the Pickup Location. Please wait and try again in a moment.");
+        }
     }
 }

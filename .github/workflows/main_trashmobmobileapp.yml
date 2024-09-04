@@ -39,15 +39,24 @@ jobs:
         id: version_step # step id used as reference for output values
         uses: gittools/actions/gitversion/execute@v1.1.1
 
+      - name: Set Offsets
+        env:
+          NUM: ${{ github.run_number }}
+          OFFSET: ${{ steps.version_step.outputs.WeightedPreReleaseNumber }}
+        run: |
+          GITHUB_RUN_NUMBER_WITH_OFFSET=$(($NUM+$OFFSET))
+          echo "GITHUB_RUN_NUMBER_WITH_OFFSET=$(($NUM+$OFFSET))" >> $GITHUB_ENV
+          echo "GITHUB_RUN_NUMBER_WITH_OFFSET=$(($NUM+$OFFSET))" >> $GITHUB_OUTPUT
+
       - name: Set Build Number
         id: set_build_number
         run: |
           buildNumber=${{ steps.version_step.outputs.semVer }}
-          releaseNumber=${{ steps.version_step.outputs.WeightedPreReleaseNumber }}
+          releaseNumber=${{ env.GITHUB_RUN_NUMBER_WITH_OFFSET }}
           echo "buildNumber=${{ steps.version_step.outputs.semVer }}" >> $GITHUB_ENV
           echo "buildNumber=${{ steps.version_step.outputs.semVer }}" >> $GITHUB_OUTPUT
-          echo "releaseNumber=${{ steps.version_step.outputs.WeightedPreReleaseNumber }}" >> $GITHUB_ENV
-          echo "releaseNumber=${{ steps.version_step.outputs.WeightedPreReleaseNumber }}" >> $GITHUB_OUTPUT
+          echo "releaseNumber=${{ env.GITHUB_RUN_NUMBER_WITH_OFFSET }}" >> $GITHUB_ENV
+          echo "releaseNumber=${{ env.GITHUB_RUN_NUMBER_WITH_OFFSET }}" >> $GITHUB_OUTPUT
 
   exposeEnvironmentVariables:
     runs-on: ubuntu-latest

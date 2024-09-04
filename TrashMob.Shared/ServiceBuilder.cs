@@ -19,6 +19,7 @@
             services.AddScoped<IKeyedManager<ContactRequest>, ContactRequestManager>();
             services.AddScoped<IBaseManager<EventAttendee>, EventAttendeeManager>();
             services.AddScoped<IKeyedManager<EventAttendeeRoute>, EventAttendeeRouteManager>();
+            services.AddScoped<IBaseManager<EventLitterReport>, EventLitterReportManager>();
             services.AddScoped<IKeyedManager<Event>, EventManager>();
             services
                 .AddScoped<ILookupManager<EventPartnerLocationServiceStatus>,
@@ -52,6 +53,8 @@
 
             // Intentional deviation due to unique methods
             services.AddScoped<IEventAttendeeManager, EventAttendeeManager>();
+            services.AddScoped<IEventAttendeeRouteManager, EventAttendeeRouteManager>();
+            services.AddScoped<IEventLitterReportManager, EventLitterReportManager>();
             services.AddScoped<IEventSummaryManager, EventSummaryManager>();
             services.AddScoped<IEventManager, EventManager>();
             services.AddScoped<IEventPartnerLocationServiceManager, EventPartnerLocationServiceManager>();
@@ -93,6 +96,7 @@
             services.AddScoped<IKeyedRepository<Event>, KeyedRepository<Event>>();
             services.AddScoped<IBaseRepository<EventAttendee>, BaseRepository<EventAttendee>>();
             services.AddScoped<IKeyedRepository<EventAttendeeRoute>, KeyedRepository<EventAttendeeRoute>>();
+            services.AddScoped<IBaseRepository<EventLitterReport>, BaseRepository<EventLitterReport>>();
             services
                 .AddScoped<IBaseRepository<EventPartnerLocationService>, BaseRepository<EventPartnerLocationService>>();
             services
@@ -103,6 +107,8 @@
             services.AddScoped<ILookupRepository<EventType>, LookupRepository<EventType>>();
             services.AddScoped<IBaseRepository<IftttTrigger>, BaseRepository<IftttTrigger>>();
             services.AddScoped<ILookupRepository<InvitationStatus>, LookupRepository<InvitationStatus>>();
+            services.AddScoped<IKeyedRepository<LitterImage>, KeyedRepository<LitterImage>>();
+            services.AddScoped<IKeyedRepository<LitterReport>, KeyedRepository<LitterReport>>();
             services.AddScoped<IKeyedRepository<MessageRequest>, KeyedRepository<MessageRequest>>();
             services.AddScoped<IKeyedRepository<NonEventUserNotification>, KeyedRepository<NonEventUserNotification>>();
             services.AddScoped<IKeyedRepository<Partner>, KeyedRepository<Partner>>();
@@ -125,8 +131,6 @@
             services.AddScoped<IKeyedRepository<User>, KeyedRepository<User>>();
             services.AddScoped<IKeyedRepository<UserNotification>, KeyedRepository<UserNotification>>();
             services.AddScoped<IKeyedRepository<Waiver>, KeyedRepository<Waiver>>();
-            services.AddScoped<IKeyedRepository<LitterImage>, KeyedRepository<LitterImage>>();
-            services.AddScoped<IKeyedRepository<LitterReport>, KeyedRepository<LitterReport>>();
 
             return services;
         }

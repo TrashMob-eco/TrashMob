@@ -14,7 +14,6 @@ public partial class SetUserLocationPreferencePage : ContentPage
         InitializeComponent();
         this.viewModel = viewModel;
         this.viewModel.Navigation = Navigation;
-        this.viewModel.Notify = Notify;
         BindingContext = this.viewModel;
     }
 
@@ -36,16 +35,5 @@ public partial class SetUserLocationPreferencePage : ContentPage
     private async void OnMapClicked(object sender, MapClickedEventArgs e)
     {
         await viewModel.ChangeLocation(e.Location);
-    }
-
-    private async Task Notify(string message)
-    {
-        var cancellationTokenSource = new CancellationTokenSource();
-
-        var duration = ToastDuration.Short;
-        double fontSize = 14;
-
-        var toast = Toast.Make(message, duration, fontSize);
-        await toast.Show(cancellationTokenSource.Token);
     }
 }

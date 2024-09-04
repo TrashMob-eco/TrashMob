@@ -6,11 +6,16 @@ import EventData from './Models/EventData';
 import * as MapStore from '../store/MapStore'
 import UserData from './Models/UserData';
 import ReactDOMServer from "react-dom/server"
-import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../store/AuthStore';
-import EventAttendeeData from './Models/EventAttendeeData';
+import { getApiConfig, msalClient } from '../store/AuthStore';
 import { getEventType } from '../store/eventTypeHelper';
 import { RegisterBtn } from './Customization/RegisterBtn';
 import { RouteComponentProps } from 'react-router-dom';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { AddEventAttendee, GetEventTypes } from '../services/events';
+import { Services } from '../config/services.config';
+import WaiverData from './Models/WaiverData';
+import { GetTrashMobWaivers } from './../services/waivers';
+
 interface MapControllerProps extends RouteComponentProps {
     mapOptions: IAzureMapOptions | undefined
     center: data.Position;
@@ -34,6 +39,32 @@ export const MapControllerPointCollection: FC<MapControllerProps> = (props) => {
     // Here you use mapRef from context
     const { mapRef, isMapReady } = useContext<IAzureMapsContextProps>(AzureMapsContext);
     const [isDataSourceLoaded, setIsDataSourceLoaded] = useState(false);
+    const [waiver, setWaiver] = useState<WaiverData>();
+
+    const getEventTypes = useQuery({ 
+        queryKey: GetEventTypes().key,
+        queryFn: GetEventTypes().service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const getTrashMobWaivers = useQuery({
+        queryKey: GetTrashMobWaivers().key,
+        queryFn: GetTrashMobWaivers().service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const addEventAttendee = useMutation({
+        mutationKey: AddEventAttendee().key,
+        mutationFn: AddEventAttendee().service
+    })
+
+    useEffect(() => {
+        getTrashMobWaivers.refetch().then((res) => {
+            setWaiver(res.data?.data)
+        })
+    }, [])
 
     useEffect(() => {
         if (props.forceReload) {
@@ -105,15 +136,11 @@ export const MapControllerPointCollection: FC<MapControllerProps> = (props) => {
                     isEventComplete: isEventComplete
                 }
 
-                const headers = getDefaultHeaders('GET');
-                fetch('/api/eventtypes', {
-                    method: 'GET',
-                    headers: headers
+                getEventTypes.refetch().then(async (res) => {
+                    if (res.data === undefined) throw new Error()
+                    const type = getEventType(res.data.data, properties.eventTypeId);
+                    properties.eventTypeList = type;
                 })
-                    .then(response => response.json()).then(data => {
-                        const type = getEventType(data, properties.eventTypeId)
-                        properties.eventTypeList = type;
-                    });
 
                 dataSource.add(new data.Feature(point, properties));
 
@@ -183,38 +210,7 @@ export const MapControllerPointCollection: FC<MapControllerProps> = (props) => {
             }
 
             function addAttendee(eventId: string) {
-
-                const account = msalClient.getAllAccounts()[0];
-                var apiConfig = getApiConfig();
-
-                const request = {
-                    scopes: apiConfig.b2cScopes,
-                    account: account
-                };
-
-                msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-                    if (!validateToken(tokenResponse.idTokenClaims)) {
-                        return;
-                    }
-
-                    const eventAttendee = new EventAttendeeData();
-                    eventAttendee.userId = props.currentUser.id;
-                    eventAttendee.eventId = eventId;
-
-                    const data = JSON.stringify(eventAttendee);
-
-                    const headers = getDefaultHeaders('POST');
-                    headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                    // POST request for Add EventAttendee.  
-                    fetch('/api/EventAttendees', {
-                        method: 'POST',
-                        body: data,
-                        headers: headers,
-                    }).then((response) => response.json())
-                        .then(props.onAttendanceChanged())
-                })
+                addEventAttendee.mutateAsync({ userId: props.currentUser.id, eventId: eventId }).then(() => props.onAttendanceChanged());
             }
 
             function getPopUpContent(eventId: string, eventName: string, eventType: string, eventDate: Date, city: string, region: string, country: string, postalCode: string, creator: string, isAttending: string) {
@@ -235,7 +231,7 @@ export const MapControllerPointCollection: FC<MapControllerProps> = (props) => {
                             <button className="btn btn-outline">
                                 <a id="viewDetails" type="button" href={'/eventdetails/' + eventId}>View Details</a>
                             </button>
-                            <RegisterBtn eventId={eventId} isAttending={isAttending} isEventCompleted={new Date(eventDate) < new Date()} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} onAttendanceChanged={props.onAttendanceChanged} history={props.history} location={props.location} match={props.match}></RegisterBtn>
+                            <RegisterBtn eventId={eventId} isAttending={isAttending} isEventCompleted={new Date(eventDate) < new Date()} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} onAttendanceChanged={props.onAttendanceChanged} history={props.history} location={props.location} match={props.match} addEventAttendee={addEventAttendee} waiverData={waiver}></RegisterBtn>
                         </div>
                     </>
                 );

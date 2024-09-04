@@ -2,10 +2,12 @@ import * as React from 'react'
 import UserData from '../Models/UserData';
 import { Button, Col, Container, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import PartnerData from '../Models/PartnerData';
-import { getApiConfig, getDefaultHeaders, msalClient } from '../../store/AuthStore';
 import * as ToolTips from "../../store/ToolTips";
 import PartnerStatusData from '../Models/PartnerStatusData';
 import PartnerTypeData from '../Models/PartnerTypeData';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { GetPartnerById, GetPartnerStatuses, GetPartnerTypes, UpdatePartner } from '../../services/partners';
+import { Services } from '../../config/services.config';
 
 export interface PartnerEditDataProps {
     partnerId: string;
@@ -32,60 +34,54 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
     const [lastUpdatedDate, setLastUpdatedDate] = React.useState<Date>(new Date());
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
 
+    const getPartnerStatuses = useQuery({
+        queryKey: GetPartnerStatuses().key,
+        queryFn: GetPartnerStatuses().service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const getPartnerTypes = useQuery({
+        queryKey: GetPartnerTypes().key,
+        queryFn: GetPartnerTypes().service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const getPartnerById = useQuery({
+        queryKey: GetPartnerById({ partnerId: props.partnerId }).key,
+        queryFn: GetPartnerById({ partnerId: props.partnerId }).service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const updatePartner = useMutation({
+        mutationKey: UpdatePartner().key,
+        mutationFn: UpdatePartner().service,
+    })
+
     React.useEffect(() => {
         if (props.isUserLoaded) {
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            var request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-                const headers = getDefaultHeaders('GET');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/partnerstatuses', {
-                    method: 'GET',
-                    headers: headers
+            getPartnerStatuses.refetch().then(partnerStatusesRes => {
+                setPartnerStatusList(partnerStatusesRes.data?.data || []);
+                getPartnerTypes.refetch().then(partnerTypesRes => {
+                    setPartnerTypeList(partnerTypesRes.data?.data || []);
+                    setIsPartnerDataLoaded(false);
+                    getPartnerById.refetch().then(partnerByIdRes => {
+                        if (partnerByIdRes.data === undefined) return;
+                        setPartnerStatusId(partnerByIdRes.data?.data.partnerStatusId);
+                        setPartnerTypeId(partnerByIdRes.data?.data.partnerTypeId);
+                        setName(partnerByIdRes.data?.data.name);
+                        setPublicNotes(partnerByIdRes.data?.data.publicNotes);
+                        setPrivateNotes(partnerByIdRes.data?.data.privateNotes);
+                        setWebsite(partnerByIdRes.data?.data.website);
+                        setCreatedByUserId(partnerByIdRes.data?.data.createdByUserId);
+                        setCreatedDate(new Date(partnerByIdRes.data?.data.createdDate));
+                        setLastUpdatedDate(new Date(partnerByIdRes.data?.data.lastUpdatedDate));
+                        setIsPartnerDataLoaded(true);
+                    })
                 })
-                    .then(response => response.json() as Promise<PartnerStatusData[]>)
-                    .then(data => {
-                        setPartnerStatusList(data)
-                    })
-                    .then(() => {
-                        fetch('/api/partnertypes', {
-                            method: 'GET',
-                            headers: headers
-                        })
-                            .then(response => response.json() as Promise<PartnerTypeData[]>)
-                            .then(data => {
-                                setPartnerTypeList(data)
-                            })
-                            .then(_ => {
-                                setIsPartnerDataLoaded(false);
-
-                                fetch('/api/partners/' + props.partnerId, {
-                                    method: 'GET',
-                                    headers: headers
-                                })
-                                    .then(response => response.json() as Promise<PartnerData>)
-                                    .then(data => {
-                                        setPartnerStatusId(data.partnerStatusId);
-                                        setPartnerTypeId(data.partnerTypeId);
-                                        setName(data.name);
-                                        setPublicNotes(data.publicNotes);
-                                        setPrivateNotes(data.privateNotes);
-                                        setWebsite(data.website);
-                                        setCreatedByUserId(data.createdByUserId);
-                                        setCreatedDate(new Date(data.createdDate));
-                                        setLastUpdatedDate(new Date(data.lastUpdatedDate));
-                                        setIsPartnerDataLoaded(true);
-                                    })
-                            })
-                    })
-            });
+            })
         }
     }, [props.currentUser, props.isUserLoaded, props.partnerId]);
 
@@ -101,46 +97,23 @@ export const PartnerEdit: React.FC<PartnerEditDataProps> = (props) => {
 
     // This will handle the submit form event.  
     function handleSave(event: any) {
-
         event.preventDefault();
 
-        if (!isSaveEnabled) {
-            return;
-        }
-
+        if (!isSaveEnabled) return;
         setIsSaveEnabled(false);
 
-        var partnerData = new PartnerData();
-        partnerData.id = props.partnerId;
-        partnerData.name = name ?? "";
-        partnerData.website = website ?? "";
-        partnerData.partnerStatusId = partnerStatusId ?? 2;
-        partnerData.publicNotes = publicNotes;
-        partnerData.privateNotes = privateNotes;
-        partnerData.partnerTypeId = partnerTypeId;
-        partnerData.createdByUserId = createdByUserId ?? props.currentUser.id;
-        partnerData.createdDate = createdDate;
+        const body = new PartnerData();
+        body.id = props.partnerId;
+        body.name = name ?? "";
+        body.website = website ?? "";
+        body.partnerStatusId = partnerStatusId ?? 2;
+        body.publicNotes = publicNotes;
+        body.privateNotes = privateNotes;
+        body.partnerTypeId = partnerTypeId;
+        body.createdByUserId = createdByUserId ?? props.currentUser.id;
+        body.createdDate = createdDate;
 
-        var data = JSON.stringify(partnerData);
-
-        const account = msalClient.getAllAccounts()[0];
-        var apiConfig = getApiConfig();
-
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-            const headers = getDefaultHeaders('PUT');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch('/api/Partners', {
-                method: 'PUT',
-                body: data,
-                headers: headers,
-            })
-        });
+        updatePartner.mutateAsync(body);
     }
 
     // This will handle Cancel button click event.  

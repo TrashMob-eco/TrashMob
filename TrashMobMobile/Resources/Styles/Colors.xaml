@@ -12,6 +12,7 @@
     <Color x:Key="Secondary">#CCDEDA</Color>
     <Color x:Key="SecondaryDarkText">#9880e5</Color>
     <Color x:Key="Tertiary">#2B0B98</Color>
+    <Color x:Key="AppGreen">#8BAC00</Color>
 
     <Color x:Key="White">White</Color>
     <Color x:Key="Black">Black</Color>

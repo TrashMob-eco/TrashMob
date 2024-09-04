@@ -3,18 +3,20 @@ import UserData from '../Models/UserData';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import * as ToolTips from "../../store/ToolTips";
-import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import * as MapStore from '../../store/MapStore';
 import { getKey } from '../../store/MapStore';
-import AddressData from '../Models/AddressData';
 import { data } from 'azure-maps-control';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import MapControllerSinglePoint from '../MapControllerSinglePoint';
 import infoCycle from '../assets/info-circle.svg';
 import React from 'react';
 import { HeroSection } from '../Customization/HeroSection';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { GetUserById, UpdateUser } from '../../services/users';
+import { Services } from '../../config/services.config';
+import { AzureMapSearchAddressReverse } from '../../services/maps';
 
 interface LocationPreferenceProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -50,65 +52,50 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
     const [formSubmitErrors, setFormSubmitErrors] = useState<string>("");
     const [units, setUnits] = useState<string[]>([]);
 
+    const getUserById = useQuery({ 
+        queryKey: GetUserById({ userId: userId }).key,
+        queryFn: GetUserById({ userId: userId }).service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const updateUser = useMutation({ 
+        mutationKey: UpdateUser().key,
+        mutationFn: UpdateUser().service,
+    });
+    
+    const azureMapSearchAddressReverse = useMutation({ 
+        mutationKey: AzureMapSearchAddressReverse().key,
+        mutationFn: AzureMapSearchAddressReverse().service,
+    });
+
     useEffect(() => {
-
         window.scrollTo(0, 0);
-
         setUnits(["mi", "km"]);
         if (props.isUserLoaded && !isDataLoaded) {
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
             setEventName("User's Base Location");
-
-            const request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
-
-                const headers = getDefaultHeaders('GET');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/users/' + userId, {
-                    method: 'GET',
-                    headers: headers,
-                })
-                    .then(response => response.json() as Promise<UserData>)
-                    .then(data => {
-                        setUserName(data.userName);
-                        setEmail(data.email);
-                        setCity(data.city);
-                        setCountry(data.country);
-                        setRegion(data.region);
-                        setPostalCode(data.postalCode);
-                        setDateAgreedToTrashMobWaiver(data.dateAgreedToTrashMobWaiver);
-                        setTrashMobWaiverVersion(data.trashMobWaiverVersion);
-                        setMemberSince(data.memberSince);
-                        setLatitude(data.latitude);
-                        setLongitude(data.longitude);
-                        setPrefersMetric(data.prefersMetric);
-                        setTravelLimitForLocalEvents(data.travelLimitForLocalEvents);
-                        setMaxEventsRadiusErrors("");
-                        setTravelLimitForLocalEventsErrors("");
-
-                        if (data.prefersMetric) {
-                            setRadiusType("km");
-                        }
-                        else {
-                            setRadiusType("mi");
-                        }
-
-                        setIsDataLoaded(true);
-                    });
-
+            getUserById.refetch().then((res) => {
+                if (res.data === undefined || res.data.data === null) return;
+                setUserName(res.data.data.userName);
+                setEmail(res.data.data.email);
+                setCity(res.data.data.city);
+                setCountry(res.data.data.country);
+                setRegion(res.data.data.region);
+                setPostalCode(res.data.data.postalCode);
+                setDateAgreedToTrashMobWaiver(res.data.data.dateAgreedToTrashMobWaiver);
+                setTrashMobWaiverVersion(res.data.data.trashMobWaiverVersion);
+                setMemberSince(res.data.data.memberSince);
+                setLatitude(res.data.data.latitude);
+                setLongitude(res.data.data.longitude);
+                setPrefersMetric(res.data.data.prefersMetric);
+                setTravelLimitForLocalEvents(res.data.data.travelLimitForLocalEvents);
+                setMaxEventsRadiusErrors("");
+                setTravelLimitForLocalEventsErrors("");
+                setRadiusType(res.data.data.prefersMetric ? 'km' : 'mi')
                 setIsDataLoaded(true);
-            });
+            })
+
+            setIsDataLoaded(true);
         }
 
         MapStore.getOption().then(opts => {
@@ -141,65 +128,32 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
 
     // This will handle the submit form event.  
     const handleSave = (event: ChangeEvent<HTMLFormElement>) => {
-
         event.preventDefault();
-
-        if (!isSaveEnabled) {
-            return;
-        }
+        if (!isSaveEnabled) return;
 
         setIsSaveEnabled(false);
+        const body = new UserData();
+        body.id = userId;
+        body.userName = userName ?? "";
+        body.email = email ?? "";
+        body.city = city ?? "";
+        body.region = region ?? "";
+        body.country = country ?? "";
+        body.postalCode = postalCode ?? "";
+        body.dateAgreedToTrashMobWaiver = new Date(dateAgreedToTrashMobWaiver);
+        body.memberSince = new Date(memberSince);
+        body.latitude = latitude;
+        body.longitude = longitude;
+        body.prefersMetric = prefersMetric;
+        body.travelLimitForLocalEvents = travelLimitForLocalEvents;
+        body.trashMobWaiverVersion = trashMobWaiverVersion;
 
-        const userData = new UserData();
-
-        userData.id = userId;
-        userData.userName = userName ?? "";
-        userData.email = email ?? "";
-        userData.city = city ?? "";
-        userData.region = region ?? "";
-        userData.country = country ?? "";
-        userData.postalCode = postalCode ?? "";
-        userData.dateAgreedToTrashMobWaiver = new Date(dateAgreedToTrashMobWaiver);
-        userData.memberSince = new Date(memberSince);
-        userData.latitude = latitude;
-        userData.longitude = longitude;
-        userData.prefersMetric = prefersMetric;
-        userData.travelLimitForLocalEvents = travelLimitForLocalEvents;
-        userData.trashMobWaiverVersion = trashMobWaiverVersion;
-
-        const usrdata = JSON.stringify(userData);
-
-        // PUT request for Edit Event.  
-        const account = msalClient.getAllAccounts()[0];
-        var apiConfig = getApiConfig();
-
-        const request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        return msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-            if (!validateToken(tokenResponse.idTokenClaims)) {
-                return;
+        updateUser.mutateAsync(body).then(res => {
+            if (res.status !== 200) setFormSubmitErrors("Unknown error occured while checking user name. Please try again. Error Code: " + res.status);
+            else {
+                setFormSubmitted(true);
+                props.onUserUpdated();
             }
-
-            const headers = getDefaultHeaders('PUT');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch('/api/users', {
-                method: 'PUT',
-                headers: headers,
-                body: usrdata,
-            }).then(response => {
-                if (response.status === 200) {
-                    setFormSubmitted(true);
-                    props.onUserUpdated();
-                }
-                else {
-                    setFormSubmitErrors("Unknown error occured while checking user name. Please try again. Error Code: " + response.status);
-                }
-            });
         })
     }
 
@@ -250,28 +204,16 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.LocationPreferenceTravelLimitForLocalEvents}</Tooltip>
     }
 
-    const handleLocationChange = (point: data.Position) => {
-        // In an Azure Map point, the longitude is the first position, and latitude is second
+    const handleLocationChange = async (point: data.Position) => {
         setLatitude(point[1]);
         setLongitude(point[0]);
-        const locationString = point[1] + ',' + point[0]
-        const headers = getDefaultHeaders('GET');
-
-        getKey()
-            .then(key => {
-                fetch('https://atlas.microsoft.com/search/address/reverse/json?subscription-key=' + key + '&api-version=1.0&query=' + locationString, {
-                    method: 'GET',
-                    headers: headers
-                })
-                    .then(response => response.json() as Promise<AddressData>)
-                    .then(data => {
-                        setCity(data.addresses[0].address.municipality);
-                        setCountry(data.addresses[0].address.country);
-                        setRegion(data.addresses[0].address.countrySubdivisionName);
-                        setPostalCode(data.addresses[0].address.postalCode);
-                    })
-            }
-            )
+        const azureKey = await getKey();
+        azureMapSearchAddressReverse.mutateAsync({ azureKey, lat: point[0], long: point[1] }).then((res) => {
+            setCity(res.data.addresses[0].address.municipality);
+            setCountry(res.data.addresses[0].address.country);
+            setRegion(res.data.addresses[0].address.countrySubdivisionName);
+            setPostalCode(res.data.addresses[0].address.postalCode);
+        })
     }
 
     return (

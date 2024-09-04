@@ -6,36 +6,40 @@ using TrashMobMobile.Config;
 using TrashMobMobile.Models;
 using TrashMobMobile.Services;
 
-public partial class WaiverViewModel : BaseViewModel
+public partial class WaiverViewModel(IWaiverManager waiverManager, INotificationService notificationService) : BaseViewModel(notificationService)
 {
-    private readonly IWaiverManager waiverManager;
+    private readonly IWaiverManager waiverManager = waiverManager;
 
     [ObservableProperty]
     private string name;
-
-    public WaiverViewModel(IWaiverManager waiverManager)
-    {
-        this.waiverManager = waiverManager;
-    }
 
     [RelayCommand]
     private async Task SignWaiver()
     {
         IsBusy = true;
 
-        var envelopeRequest = new EnvelopeRequest();
-        envelopeRequest.SignerEmail = App.CurrentUser.Email;
-        envelopeRequest.CreatedByUserId = App.CurrentUser.Id;
-        envelopeRequest.SignerName = Name;
-        envelopeRequest.ReturnUrl = $"{Settings.SiteBaseUrl}/waiversreturn";
+        try
+        {
+            var envelopeRequest = new EnvelopeRequest();
+            envelopeRequest.SignerEmail = App.CurrentUser.Email;
+            envelopeRequest.CreatedByUserId = App.CurrentUser.Id;
+            envelopeRequest.SignerName = Name;
+            envelopeRequest.ReturnUrl = $"{Settings.SiteBaseUrl}/waiversreturn";
 
-        var response = await waiverManager.GetWaiverEnvelopeAsync(envelopeRequest);
+            var response = await waiverManager.GetWaiverEnvelopeAsync(envelopeRequest);
 
-        var uri = new Uri(response.RedirectUrl);
-        await Browser.Default.OpenAsync(uri, BrowserLaunchMode.SystemPreferred);
+            var uri = new Uri(response.RedirectUrl);
+            await Browser.Default.OpenAsync(uri, BrowserLaunchMode.SystemPreferred);
 
-        await Navigation.PopAsync();
+            await Navigation.PopAsync();
 
-        IsBusy = false;
+            IsBusy = false;
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotificationService.NotifyError("An error occurred while opening the waiver page. Please try again.");
+        }
     }
 }

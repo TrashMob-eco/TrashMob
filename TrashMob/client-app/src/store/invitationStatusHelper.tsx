@@ -1,27 +1,17 @@
 import InvitationStatusData from "../components/Models/InvitationStatusData";
-import { getDefaultHeaders } from "./AuthStore";
+import { GetInvitationStatuses } from "../services/invitations";
 
 export function getInvitationStatus(invitationStatusList: InvitationStatusData[], invitationStatusId: any): string {
-    if (invitationStatusList === null || invitationStatusList.length === 0) {
-        invitationStatusList = getInvitationStatuses();
-    }
-
-    var invitationStatus = invitationStatusList.find(et => et.id === invitationStatusId)
-    if (invitationStatus)
-        return invitationStatus.name;
-    return "Unknown";
+    const invitationStatus = invitationStatusList.find(et => et.id === invitationStatusId)
+    return (invitationStatus) ? invitationStatus.name : "Unknown";
 }
 
-function getInvitationStatuses(): InvitationStatusData[] {
-    const headers = getDefaultHeaders('GET');
+export async function getInvitationStatusAsync(invitationStatusId: any): Promise<string> {
+    const invitationStatusList = await getInvitationStatuses();
+    return getInvitationStatus(invitationStatusList, invitationStatusId);
+}
 
-    fetch('/api/invitationStatuses', {
-        method: 'GET',
-        headers: headers
-    })
-        .then(response => response.json() as Promise<Array<any>>)
-        .then(data => {
-            return data;
-        });
-    return [];
+async function getInvitationStatuses(): Promise<InvitationStatusData[]> {
+    const result = await GetInvitationStatuses().service().then(res => res.data).catch(err => [])
+    return result;
 }

@@ -201,6 +201,16 @@ The mobile app is written using .NET MAUI. It requires a few prerequisites in or
 1. Set your startup project to TrashMobMobileApp
 1. More detail needed here
 
+## Web App Setup:
+
+1. Send your github id to info@trashmob.eco to be added as a contributor to the repository and on Azure subscription
+1. Clone Repository
+1. Download & Install [VS Code](https://code.visualstudio.com/download)
+1. Download & Install [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+1. Install the [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-windows?tabs=azure-cli)
+1. Run `az login` command to login to Azure
+1. Navigate to TashMob/TrashMob directory and run this command to start the Web API and Client App servers. `dotnet run --environment Development`
+
 ## To Build the Web App:
 
 In the Trashmob project folder, run the following command:

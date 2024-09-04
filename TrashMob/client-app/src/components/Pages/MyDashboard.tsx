@@ -3,7 +3,6 @@ import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import { Col, Container, Dropdown, Image, Row } from 'react-bootstrap';
 import EventData from '../Models/EventData';
-import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from '../../store/AuthStore';
 import { data } from 'azure-maps-control';
 import * as MapStore from '../../store/MapStore';
 import MapControllerPointCollection from '../MapControllerPointCollection';
@@ -13,7 +12,6 @@ import twofigure from '../assets/card/twofigure.svg';
 import calendarclock from '../assets/card/calendarclock.svg';
 import bucketplus from '../assets/card/bucketplus.svg';
 import { Eye, PersonX, Link as LinkIcon, Pencil, FileEarmarkCheck, CheckSquare, XSquare, ArrowRightSquare, Share } from 'react-bootstrap-icons';
-import StatsData from '../Models/StatsData';
 import { PartnerStatusActive } from '../Models/Constants';
 import DisplayPartnershipData from '../Models/DisplayPartnershipData';
 import { getDisplayPartnershipStatus } from '../../store/displayPartnershipStatusHelper';
@@ -26,6 +24,14 @@ import PickupLocationData from '../Models/PickupLocationData';
 import { SocialsModal } from '../EventManagement/ShareToSocialsModal';
 import { HeroSection } from '../Customization/HeroSection'
 import * as SharingMessages from '../../store/SharingMessages';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { DeleteEventAttendee, GetUserEvents } from '../../services/events';
+import { Services } from '../../config/services.config';
+import { AcceptPartnerAdminInvitation, DeclinePartnerAdminInvitation, GetPartnerAdminInvitationsByUser } from '../../services/invitations';
+import { GetEventPickupLocationsByUser, PickupLocationMarkAsPickedUp } from '../../services/locations';
+import { GetPartnerRequestByUserId, GetPartnerRequestStatuses, GetPartnerStatuses } from '../../services/partners';
+import { GetPartnerAdminsForUser } from '../../services/admin';
+import { GetStatsForUser } from '../../services/stats';
 
 interface MyDashboardProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -59,6 +65,82 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const [eventToShare, setEventToShare] = useState<EventData>();
     const [showModal, setShowSocialsModal] = useState<boolean>(false);
 
+    const getUserEvents = useQuery({
+        queryKey: GetUserEvents({ userId: props.currentUser.id }).key,
+        queryFn: GetUserEvents({ userId: props.currentUser.id }).service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    })
+
+    const getPartnerAdminInvitationsByUser = useQuery({
+        queryKey: GetPartnerAdminInvitationsByUser({ userId: props.currentUser.id }).key,
+        queryFn: GetPartnerAdminInvitationsByUser({ userId: props.currentUser.id }).service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    })
+
+    const getEventPickupLocationsByUser = useQuery({
+        queryKey: GetEventPickupLocationsByUser({ userId: props.currentUser.id }).key,
+        queryFn: GetEventPickupLocationsByUser({ userId: props.currentUser.id }).service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    })
+
+    const getPartnerRequestByUserId = useQuery({
+        queryKey: GetPartnerRequestByUserId({ userId: props.currentUser.id }).key,
+        queryFn: GetPartnerRequestByUserId({ userId: props.currentUser.id }).service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    })
+
+    const getPartnerAdminsForUser = useQuery({
+        queryKey: GetPartnerAdminsForUser({ userId: props.currentUser.id }).key,
+        queryFn: GetPartnerAdminsForUser({ userId: props.currentUser.id }).service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    })
+
+    const getStatsForUser = useQuery({
+        queryKey: GetStatsForUser({ userId: props.currentUser.id }).key,
+        queryFn: GetStatsForUser({ userId: props.currentUser.id }).service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    })
+
+    const getPartnerRequestStatuses = useQuery({
+        queryKey: GetPartnerRequestStatuses().key,
+        queryFn: GetPartnerRequestStatuses().service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    })
+
+    const getPartnerStatuses = useQuery({
+        queryKey: GetPartnerStatuses().key,
+        queryFn: GetPartnerStatuses().service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    })
+
+    const acceptPartnerAdminInvitation = useMutation({
+        mutationKey: AcceptPartnerAdminInvitation().key,
+        mutationFn: AcceptPartnerAdminInvitation().service,
+    })
+
+    const declinePartnerAdminInvitation = useMutation({
+        mutationKey: DeclinePartnerAdminInvitation().key,
+        mutationFn: DeclinePartnerAdminInvitation().service,
+    })
+
+    const deleteEventAttendee = useMutation({
+        mutationKey: DeleteEventAttendee().key,
+        mutationFn: DeleteEventAttendee().service,
+    })
+
+    const pickupLocationMarkAsPickedUp = useMutation({
+        mutationKey: PickupLocationMarkAsPickedUp().key,
+        mutationFn: PickupLocationMarkAsPickedUp().service,
+    })
+
     useEffect(() => {
         window.scrollTo(0, 0);
 
@@ -79,130 +161,46 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
 
     useEffect(() => {
         if (props.isUserLoaded) {
-
             setCurrentUser(props.currentUser);
             setIsUserLoaded(props.isUserLoaded);
-
             setIsEventDataLoaded(false);
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
 
-            const request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
+            getUserEvents.refetch().then(res => {
+                setMyEventList(res.data?.data || []);
+                setIsEventDataLoaded(true);
+            })
 
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
+            getPartnerAdminInvitationsByUser.refetch().then(res => {
+                setMyPartnerAdminInvitations(res.data?.data || []);
+                setIsPartnerAdminInvitationsDataLoaded(true);
+            })
 
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
+            getEventPickupLocationsByUser.refetch().then(res => {
+                setMyPickupRequests(res.data?.data || []);
+                setIsPickupRequestsDataLoaded(true);
+            })
 
-                const headers = getDefaultHeaders('GET');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
+            getPartnerRequestStatuses.refetch().then(partnerRequestStatusesRes => {
+                setPartnerRequestStatusList(partnerRequestStatusesRes.data?.data || []);
+                getPartnerRequestByUserId.refetch().then(res => {
+                    if (res.data?.status !== 200) throw new Error("No Partner Requests found for this user");
+                    setMyPartnerRequests(res.data.data || []);
+                }).catch(err => setMyPartnerRequests([]))
+            })
 
-                fetch('/api/events/userevents/' + props.currentUser.id + '/false', {
-                    method: 'GET',
-                    headers: headers
-                })
-                    .then(response => response.json() as Promise<EventData[]>)
-                    .then(data => {
-                        setMyEventList(data);
-                        setIsEventDataLoaded(true);
-                    });
+            getPartnerStatuses.refetch().then(partnerStatusesRes => {
+                setPartnerStatusList(partnerStatusesRes.data?.data || []);
+                getPartnerAdminsForUser.refetch().then(res => {
+                    if (res.data?.status !== 200) throw new Error("No Partners found for this user");
+                    setMyPartners(res.data.data || []);
+                }).catch(err => setMyPartners([]))
+            })
 
-                fetch('/api/partnerAdminInvitations/getbyuser/' + props.currentUser.id, {
-                    method: 'GET',
-                    headers: headers
-                })
-                    .then(response => response.json() as Promise<DisplayPartnerAdminInvitationData[]>)
-                    .then(data => {
-                        setMyPartnerAdminInvitations(data);
-                        setIsPartnerAdminInvitationsDataLoaded(true);
-                    });
-
-                fetch('/api/pickupLocations/getbyuser/' + props.currentUser.id, {
-                    method: 'GET',
-                    headers: headers
-                })
-                    .then(response => response.json() as Promise<PickupLocationData[]>)
-                    .then(data => {
-                        setMyPickupRequests(data);
-                        setIsPickupRequestsDataLoaded(true);
-                    });
-
-                fetch('/api/partnerRequestStatuses', {
-                    method: 'GET',
-                    headers: headers
-                })
-                    .then(response => response.json() as Promise<PartnerRequestStatusData[]>)
-                    .then(data => {
-                        setPartnerRequestStatusList(data);
-                    })
-                    .then(() => {
-                        fetch('/api/partnerrequests/byuserid/' + props.currentUser.id, {
-                            method: 'GET',
-                            headers: headers
-                        })
-                            .then(response => {
-                                if (response.ok) {
-                                    return response.json() as Promise<DisplayPartnershipData[]>
-                                }
-                                else {
-                                    throw new Error("No Partner Requests found for this user");
-                                }
-                            })
-                            .then(data => {
-                                setMyPartnerRequests(data);
-                                return;
-                            })
-                            .catch(_ => {
-                                setMyPartnerRequests([]);
-                            });
-                    });
-
-                fetch('/api/partnerStatuses', {
-                    method: 'GET',
-                    headers: headers
-                })
-                    .then(response => response.json() as Promise<PartnerStatusData[]>)
-                    .then(data => {
-                        setPartnerStatusList(data);
-                    })
-                    .then(() => {
-                        fetch('/api/partneradmins/getpartnersforuser/' + props.currentUser.id, {
-                            method: 'GET',
-                            headers: headers
-                        })
-                            .then(response => {
-                                if (response.ok) {
-                                    return response.json() as Promise<DisplayPartnershipData[]>
-                                }
-                                else {
-                                    throw new Error("No Partners found for this user");
-                                }
-                            })
-                            .then(data => {
-                                setMyPartners(data);
-                                return;
-                            })
-                            .catch(_ => {
-                                setMyPartners([]);
-                            });
-                    });
-
-                fetch('/api/stats/' + props.currentUser.id, {
-                    method: 'GET',
-                    headers: headers
-                })
-                    .then(response => response.json() as Promise<StatsData>)
-                    .then(data => {
-                        setTotalBags(data.totalBags);
-                        setTotalHours(data.totalHours);
-                        setTotalEvents(data.totalEvents);
-                    }
-                    )
-            });
+            getStatsForUser.refetch().then(res => {
+                setTotalBags(res.data?.data.totalBags || 0);
+                setTotalHours(res.data?.data.totalHours || 0);
+                setTotalEvents(res.data?.data.totalEvents || 0);
+            })
         }
     }, [reloadEvents, props.currentUser, props.currentUser.id, props.isUserLoaded]);
 
@@ -271,166 +269,43 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     }
 
     const handleAcceptInvitation = (partnerAdminInvitationId: string) => {
-        const account = msalClient.getAllAccounts()[0];
-        var apiConfig = getApiConfig();
-
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-            if (!validateToken(tokenResponse.idTokenClaims)) {
-                return;
-            }
-
-            const headers = getDefaultHeaders('POST');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-            fetch('/api/partneradmininvitations/accept/' + partnerAdminInvitationId, {
-                method: 'POST',
-                headers: headers,
+        acceptPartnerAdminInvitation.mutateAsync({ invitationId: partnerAdminInvitationId }).then(() => {
+            setIsPartnerAdminInvitationsDataLoaded(false);
+            getPartnerAdminInvitationsByUser.refetch().then(partnerAdminInvitationRes => {
+                setMyPartnerAdminInvitations(partnerAdminInvitationRes.data?.data || []);
+                setIsPartnerAdminInvitationsDataLoaded(true);
+                getPartnerAdminsForUser.refetch().then(partnerAdminRes => {
+                    if (partnerAdminRes.data?.status !== 200) throw new Error("No Partners found for this user");
+                    setMyPartners(partnerAdminRes.data.data || []);
+                }).catch(err => setMyPartners([]))
             })
-                .then(() => {
-                    setIsPartnerAdminInvitationsDataLoaded(false);
-                    var getHeaders = getDefaultHeaders("GET");
-                    getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                    fetch('/api/partneradmininvitations/getbyuser/' + props.currentUser.id, {
-                        method: 'GET',
-                        headers: getHeaders,
-                    })
-                        .then(response => response.json() as Promise<DisplayPartnerAdminInvitationData[]>)
-                        .then(data => {
-                            setMyPartnerAdminInvitations(data);
-                            setIsPartnerAdminInvitationsDataLoaded(true);
-                        })
-                        .then(() => {
-                            fetch('/api/partneradmins/getpartnersforuser/' + props.currentUser.id, {
-                                method: 'GET',
-                                headers: headers
-                            })
-                                .then(response => {
-                                    if (response.ok) {
-                                        return response.json() as Promise<DisplayPartnershipData[]>
-                                    }
-                                    else {
-                                        throw new Error("No Partners found for this user");
-                                    }
-                                })
-                                .then(data => {
-                                    setMyPartners(data);
-                                    return;
-                                })
-                                .catch(_ => {
-                                    setMyPartners([]);
-                                });
-                        });
-                });
-        });
+        })
     }
 
     const handleDeclineInvitation = (partnerAdminInvitationId: string) => {
-        const account = msalClient.getAllAccounts()[0];
-        var apiConfig = getApiConfig();
-
-        var request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-            if (!validateToken(tokenResponse.idTokenClaims)) {
-                return;
-            }
-
-            const headers = getDefaultHeaders('POST');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-            fetch('/api/partneradmininvitations/decline/' + partnerAdminInvitationId, {
-                method: 'POST',
-                headers: headers,
+        declinePartnerAdminInvitation.mutateAsync({ invitationId: partnerAdminInvitationId }).then(() => {
+            setIsPartnerAdminInvitationsDataLoaded(false);
+            getPartnerAdminInvitationsByUser.refetch().then(res => {
+                setMyPartnerAdminInvitations(res.data?.data || []);
+                setIsPartnerAdminInvitationsDataLoaded(true);
             })
-                .then(() => {
-                    setIsPartnerAdminInvitationsDataLoaded(false);
-                    var getHeaders = getDefaultHeaders("GET");
-                    getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                    fetch('/api/partneradmininvitations/getbyuser/' + props.currentUser.id, {
-                        method: 'GET',
-                        headers: getHeaders,
-                    })
-                        .then(response => response.json() as Promise<DisplayPartnerAdminInvitationData[]>)
-                        .then(data => {
-                            setMyPartnerAdminInvitations(data);
-                            setIsPartnerAdminInvitationsDataLoaded(true);
-                        })
-                })
         })
     }
 
     const handleUnregisterEvent = (id: string, name: string) => {
-        if (!window.confirm("Do you want to remove yourself from this event: " + name + "?"))
-            return;
+        if (!window.confirm("Do you want to remove yourself from this event: " + name + "?")) return;
         else {
-            const account = msalClient.getAllAccounts()[0];
-            var apiConfig = getApiConfig();
-
-            const request = {
-                scopes: apiConfig.b2cScopes,
-                account: account
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
-
-                const headers = getDefaultHeaders('DELETE');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/EventAttendees/' + id + '/' + props.currentUser.id, {
-                    method: 'delete',
-                    headers: headers
-                }).then(() => { handleReloadEvents(); })
-            });
+            deleteEventAttendee.mutateAsync({ eventId: id, userId: props.currentUser.id }).then(() => {
+                handleReloadEvents();
+            })
         }
     }
 
     const handleMarkAsPickedUp = (id: string) => {
-        const account = msalClient.getAllAccounts()[0];
-        var apiConfig = getApiConfig();
-
-        const request = {
-            scopes: apiConfig.b2cScopes,
-            account: account
-        };
-
-        msalClient.acquireTokenSilent(request).then(tokenResponse => {
-
-            if (!validateToken(tokenResponse.idTokenClaims)) {
-                return;
-            }
-
-            const headers = getDefaultHeaders('POST');
-            headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-            fetch('/api/pickuplocations/markpickedup/' + id, {
-                method: 'post',
-                headers: headers
-            }).then(() => {
-                const getHeaders = getDefaultHeaders('POST');
-                getHeaders.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-                fetch('/api/pickupLocations/getbyuser/' + props.currentUser.id, {
-                    method: 'GET',
-                    headers: getHeaders
-                })
-                    .then(response => response.json() as Promise<PickupLocationData[]>)
-                    .then(data => {
-                        setMyPickupRequests(data);
-                        setIsPickupRequestsDataLoaded(true);
-                    });
+        pickupLocationMarkAsPickedUp.mutateAsync({ locationId: id }).then(() => {
+            getEventPickupLocationsByUser.refetch().then(res => {
+                setMyPickupRequests(res.data?.data || []);
+                setIsPickupRequestsDataLoaded(true);
             })
         });
     }

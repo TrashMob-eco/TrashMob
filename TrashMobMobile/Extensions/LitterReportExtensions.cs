@@ -1,6 +1,7 @@
 ﻿namespace TrashMobMobile.Extensions
 {
     using TrashMob.Models;
+    using TrashMobMobile.Services;
 
     public static class LitterReportExtensions
     {
@@ -9,7 +10,7 @@
             return id == null ? string.Empty : Enum.GetName(typeof(LitterReportStatusEnum), id.Value) ?? string.Empty;
         }
 
-        public static LitterReportViewModel ToLitterReportViewModel(this LitterReport litterReport)
+        public static LitterReportViewModel ToLitterReportViewModel(this LitterReport litterReport, INotificationService notificationService)
         {
             var litterReportViewModel = new LitterReportViewModel
             {
@@ -22,7 +23,33 @@
 
             foreach (var litterImage in litterReport.LitterImages)
             {
-                var litterImageViewModel = litterImage.ToLitterImageViewModel();
+                var litterImageViewModel = litterImage.ToLitterImageViewModel(notificationService);
+                if (litterImageViewModel != null)
+                {
+                    litterReportViewModel.LitterImageViewModels.Add(litterImageViewModel);
+                }
+            }
+
+            return litterReportViewModel;
+        }
+
+        public static EventLitterReportViewModel ToEventLitterReportViewModel(this LitterReport litterReport, 
+                                                                                   INotificationService notificationService, 
+                                                                                   IEventLitterReportRestService eventLitterReportRestService, 
+                                                                                   Guid eventId)
+        {
+            var litterReportViewModel = new EventLitterReportViewModel(eventLitterReportRestService, eventId)
+            {
+                Id = litterReport.Id,
+                Name = litterReport.Name,
+                Description = litterReport.Description,
+                LitterReportStatusId = litterReport.LitterReportStatusId,
+                CreatedDate = litterReport.CreatedDate?.GetFormattedLocalDate() ?? string.Empty,
+            };
+
+            foreach (var litterImage in litterReport.LitterImages)
+            {
+                var litterImageViewModel = litterImage.ToLitterImageViewModel(notificationService);
                 if (litterImageViewModel != null)
                 {
                     litterReportViewModel.LitterImageViewModels.Add(litterImageViewModel);
@@ -53,14 +80,14 @@
             };
         }
 
-        public static LitterImageViewModel? ToLitterImageViewModel(this LitterImage litterImage)
+        public static LitterImageViewModel? ToLitterImageViewModel(this LitterImage litterImage, INotificationService notificationService)
         {
             if (litterImage?.Latitude == null || litterImage.Longitude == null)
             {
                 return null;
             }
 
-            return new LitterImageViewModel
+            return new LitterImageViewModel(notificationService)
             {
                 Id = litterImage.Id,
                 LitterReportId = litterImage.LitterReportId,

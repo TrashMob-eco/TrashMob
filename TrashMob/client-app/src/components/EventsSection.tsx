@@ -3,7 +3,6 @@ import { MainEvents } from './MainEvents';
 import { RouteComponentProps, } from 'react-router-dom';
 import EventData from './Models/EventData';
 import EventTypeData from './Models/EventTypeData';
-import { getApiConfig, getDefaultHeaders, msalClient, validateToken } from './../store/AuthStore';
 import { data } from 'azure-maps-control';
 import * as MapStore from './../store/MapStore';
 import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
@@ -11,8 +10,10 @@ import MapControllerPointCollection from './MapControllerPointCollection';
 import UserData from './Models/UserData';
 import { Button} from 'reactstrap';
 import { Container} from 'react-bootstrap';
-import { getEventType } from '../store/eventTypeHelper';
 import {EventFilterSection, EventTimeFrame, EventTimeLine} from './EventFilterSection';
+import { useQuery } from '@tanstack/react-query';
+import { GetAllActiveEvents, GetAllCompletedEvents, GetAllEventsBeingAttendedByUser, GetAllNotCancelledEvents, GetEventTypes } from '../services/events';
+import { Services } from '../config/services.config';
 
 export interface EventsSectionProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -37,6 +38,42 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
     const [isResetFilters, setIsResetFilters] = useState(false);
     const divRef = useRef<HTMLDivElement>(null);
 
+    const getEventTypes = useQuery({ 
+        queryKey: GetEventTypes().key,
+        queryFn: GetEventTypes().service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const getActiveEvents = useQuery({ 
+        queryKey: GetAllActiveEvents().key,
+        queryFn: GetAllActiveEvents().service, 
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const getCompletedEvents = useQuery({ 
+        queryKey: GetAllCompletedEvents().key,
+        queryFn: GetAllCompletedEvents().service, 
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const getNotCancelledEvents = useQuery({ 
+        queryKey: GetAllNotCancelledEvents().key,
+        queryFn: GetAllNotCancelledEvents().service, 
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const getEventsBeingAttendedByUser = useQuery({ 
+        queryKey: GetAllEventsBeingAttendedByUser({ userId: currentUser.id }).key,
+        queryFn: GetAllEventsBeingAttendedByUser({ userId: currentUser.id }).service, 
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+
     useEffect(()=>{
         setForceReload(false);
     },[presentEventList])
@@ -49,64 +86,30 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
     }, [isResetFilters])
 
     useEffect(() => {
-
         window.scrollTo(0, 0);
+        getEventTypes.refetch().then(res => {
+            setEventTypeList(res.data?.data || [])
+        });
 
-        const headers = getDefaultHeaders('GET');
-        fetch('/api/eventtypes', {
-            method: 'GET',
-            headers: headers
+        getActiveEvents.refetch().then(res => {
+            setForceReload(true);
+            setIsEventDataLoaded(false);
+            setEventList(res.data?.data || []);
+            updateLocationMap(res.data?.data || []);
+            setPresentEventList(res.data?.data || []);
+            setEventHeader("Upcoming Events");
+            setIsEventDataLoaded(true);
+            setForceReload(false);
         })
-            .then(response => response.json() as Promise<Array<any>>)
-            .then(data => {
-                setEventTypeList(data);
-            });
-
-        fetch('/api/Events/active', {
-            method: 'GET',
-            headers: headers
-        })
-            .then(response => response.json() as Promise<EventData[]>)
-            .then(data => {
-                setEventList(data);
-                updateLocationMap(data);
-                setPresentEventList(data);
-                setIsEventDataLoaded(true);
-            });
 
         if (isUserLoaded && currentUser) {
             setMyAttendanceList([]);
             setIsUserEventDataLoaded(false);
-
             // If the user is logged in, get the events they are attending
-            const accounts = msalClient.getAllAccounts();
-            var apiConfig = getApiConfig();
-
-            if (accounts !== null && accounts.length > 0) {
-                const request = {
-                    scopes: apiConfig.b2cScopes,
-                    account: accounts[0]
-                };
-
-                msalClient.acquireTokenSilent(request).then(tokenResponse => {
-                    if (!validateToken(tokenResponse.idTokenClaims)) {
-                        return;
-                    }
-
-                    const headers = getDefaultHeaders('GET');
-                    headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                    fetch('/api/events/eventsuserisattending/' + currentUser.id, {
-                        method: 'GET',
-                        headers: headers
-                    })
-                        .then(response => response.json() as Promise<EventData[]>)
-                        .then(data => {
-                            setMyAttendanceList(data);
-                            setIsUserEventDataLoaded(true);
-                        })
-                });
-            }
+            getEventsBeingAttendedByUser.refetch().then(res => {
+                setMyAttendanceList(res.data?.data || []);
+                setIsUserEventDataLoaded(true);
+            })
         }
 
         MapStore.getOption().then(opts => {
@@ -169,61 +172,42 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
     const handleWhichEvents = (events: string) => {
         if (events === EventTimeLine.Upcoming) {
             setWhichEvents(EventTimeLine.Upcoming);
-
-            const headers = getDefaultHeaders('GET');
-            fetch('/api/Events/active', {
-                method: 'GET',
-                headers: headers
-            }).then(response => response.json() as Promise<EventData[]>)
-                .then(data => {
-                    setForceReload(true);
-                    setIsEventDataLoaded(false);
-                    setEventList(data);
-                    updateLocationMap(data);
-                    setPresentEventList(data);
-                    setEventHeader("Upcoming Events");
-                    setIsEventDataLoaded(true);
-                    setForceReload(false);
-                });
+            getActiveEvents.refetch().then(res => {
+                setForceReload(true);
+                setIsEventDataLoaded(false);
+                setEventList(res.data?.data || []);
+                updateLocationMap(res.data?.data || []);
+                setPresentEventList(res.data?.data || []);
+                setEventHeader("Upcoming Events");
+                setIsEventDataLoaded(true);
+                setForceReload(false);
+            })
         }
         else if(events === EventTimeLine.Completed){
             setWhichEvents(EventTimeLine.Completed);
-
-            const headers = getDefaultHeaders('GET');
-            fetch('/api/Events/completed', {
-                method: 'GET',
-                headers: headers
-            })
-            .then(response => response.json() as Promise<EventData[]>)
-            .then(data => {
+            getCompletedEvents.refetch().then(res => {
                 setForceReload(true);
                 setIsEventDataLoaded(false);
-                setEventList(data);
-                updateLocationMap(data);
-                setPresentEventList(data);
+                setEventList(res.data?.data || []);
+                updateLocationMap(res.data?.data || []);
+                setPresentEventList(res.data?.data || []);
                 setEventHeader("Completed Events");
                 setIsEventDataLoaded(true);
                 setForceReload(false);
-            });
+            })
         }
         else {
             setWhichEvents(EventTimeLine.All);
-            const headers = getDefaultHeaders('GET');
-            fetch('/api/Events/notcanceled', {
-                method: 'GET',
-                headers: headers
+            getNotCancelledEvents.refetch().then(res => {
+                setForceReload(true);
+                setIsEventDataLoaded(false);
+                setEventList(res.data?.data || []);
+                updateLocationMap(res.data?.data || []);
+                setPresentEventList(res.data?.data || []);
+                setEventHeader("All Events");
+                setIsEventDataLoaded(true);
+                setForceReload(false);
             })
-                .then(response => response.json() as Promise<EventData[]>)
-                .then(data => {
-                    setForceReload(true);
-                    setIsEventDataLoaded(false);
-                    setEventList(data);
-                    updateLocationMap(data);
-                    setPresentEventList(data);
-                    setEventHeader("All Events")
-                    setIsEventDataLoaded(true);
-                    setForceReload(false);
-                });
         }
 
         setIsResetFilters(true);
@@ -232,40 +216,12 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
     function handleAttendanceChanged() {
         setMyAttendanceList([]);
         setIsUserEventDataLoaded(false);
-
-        if (!isUserLoaded || !currentUser) {
-            return;
-        }
-
+        if (!isUserLoaded || !currentUser) return;
         // If the user is logged in, get the events they are attending
-        const accounts = msalClient.getAllAccounts();
-        var apiConfig = getApiConfig();
-
-        if (accounts !== null && accounts.length > 0) {
-            const request = {
-                scopes: apiConfig.b2cScopes,
-                account: accounts[0]
-            };
-
-            msalClient.acquireTokenSilent(request).then(tokenResponse => {
-                if (!validateToken(tokenResponse.idTokenClaims)) {
-                    return;
-                }
-
-                const headers = getDefaultHeaders('GET');
-                headers.append('Authorization', 'BEARER ' + tokenResponse.accessToken);
-
-                fetch('/api/events/eventsuserisattending/' + currentUser.id, {
-                    method: 'GET',
-                    headers: headers
-                })
-                    .then(response => response.json() as Promise<EventData[]>)
-                    .then(data => {
-                        setMyAttendanceList(data);
-                        setIsUserEventDataLoaded(true);
-                    })
-            });
-        }
+        getEventsBeingAttendedByUser.refetch().then(res => {
+            setMyAttendanceList(res.data?.data || []);
+            setIsUserEventDataLoaded(true);
+        })
     }
         
     const updateFilterEvents= useCallback((selectedCountry:string, selectedState:string, selectedCities:string[], selectedCleanTypes:string[], selectedTimeFrame:EventTimeFrame)=>{
@@ -288,7 +244,10 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
 
         if(selectedCleanTypes.length > 0)
         {
-            filterEvents = filterEvents.filter((event) => selectedCleanTypes.includes(getEventType(eventTypeList, event.eventTypeId)));
+            filterEvents = filterEvents.filter((event) => {
+                const targetEventType = eventTypeList.find(et => et.id === event.eventTypeId)?.name || "Unknown";
+                return selectedCleanTypes.includes(targetEventType) 
+            });
         }
 
         if(selectedTimeFrame !== EventTimeFrame.AnyTime)

@@ -14,7 +14,6 @@ public partial class ViewEventPage : ContentPage
         InitializeComponent();
         this.viewModel = viewModel;
         this.viewModel.Navigation = Navigation;
-        this.viewModel.Notify = Notify;
 
         BindingContext = this.viewModel;
     }
@@ -31,16 +30,5 @@ public partial class ViewEventPage : ContentPage
             var mapSpan = new MapSpan(viewModel.EventViewModel.Address.Location, 0.05, 0.05);
             eventLocationMap.MoveToRegion(mapSpan);
         }
-    }
-
-    private async Task Notify(string message)
-    {
-        var cancellationTokenSource = new CancellationTokenSource();
-
-        var duration = ToastDuration.Short;
-        double fontSize = 14;
-
-        var toast = Toast.Make(message, duration, fontSize);
-        await toast.Show(cancellationTokenSource.Token);
     }
 }
