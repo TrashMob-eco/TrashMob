@@ -13,6 +13,9 @@ import { RouteComponentProps } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { AddEventAttendee, GetEventTypes } from '../services/events';
 import { Services } from '../config/services.config';
+import WaiverData from './Models/WaiverData';
+import { GetTrashMobWaivers } from './../services/waivers';
+
 interface MapControllerProps extends RouteComponentProps {
     mapOptions: IAzureMapOptions | undefined
     center: data.Position;
@@ -36,6 +39,7 @@ export const MapControllerPointCollection: FC<MapControllerProps> = (props) => {
     // Here you use mapRef from context
     const { mapRef, isMapReady } = useContext<IAzureMapsContextProps>(AzureMapsContext);
     const [isDataSourceLoaded, setIsDataSourceLoaded] = useState(false);
+    const [waiver, setWaiver] = useState<WaiverData>();
 
     const getEventTypes = useQuery({ 
         queryKey: GetEventTypes().key,
@@ -44,10 +48,23 @@ export const MapControllerPointCollection: FC<MapControllerProps> = (props) => {
         enabled: false
     });
 
+    const getTrashMobWaivers = useQuery({
+        queryKey: GetTrashMobWaivers().key,
+        queryFn: GetTrashMobWaivers().service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
     const addEventAttendee = useMutation({
         mutationKey: AddEventAttendee().key,
         mutationFn: AddEventAttendee().service
-    });
+    })
+
+    useEffect(() => {
+        getTrashMobWaivers.refetch().then((res) => {
+            setWaiver(res.data?.data)
+        })
+    }, [])
 
     useEffect(() => {
         if (props.forceReload) {
@@ -214,7 +231,7 @@ export const MapControllerPointCollection: FC<MapControllerProps> = (props) => {
                             <button className="btn btn-outline">
                                 <a id="viewDetails" type="button" href={'/eventdetails/' + eventId}>View Details</a>
                             </button>
-                            <RegisterBtn eventId={eventId} isAttending={isAttending} isEventCompleted={new Date(eventDate) < new Date()} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} onAttendanceChanged={props.onAttendanceChanged} history={props.history} location={props.location} match={props.match}></RegisterBtn>
+                            <RegisterBtn eventId={eventId} isAttending={isAttending} isEventCompleted={new Date(eventDate) < new Date()} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} onAttendanceChanged={props.onAttendanceChanged} history={props.history} location={props.location} match={props.match} addEventAttendee={addEventAttendee} waiverData={waiver}></RegisterBtn>
                         </div>
                     </>
                 );

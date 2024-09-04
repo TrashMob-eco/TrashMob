@@ -16,9 +16,12 @@ import moment from 'moment';
 import { RegisterBtn } from '../Customization/RegisterBtn';
 import { HeroSection } from '../Customization/HeroSection'
 import * as SharingMessages from '../../store/SharingMessages';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { GetAllEventsBeingAttendedByUser, GetEventAttendees, GetEventById, GetEventTypes } from '../../services/events';
 import { Services } from '../../config/services.config';
+import WaiverData from '../Models/WaiverData';
+import { AddEventAttendee } from '../../services/events';
+import { GetTrashMobWaivers } from '../../services/waivers';
 
 export interface DetailsMatchParams {
     eventId: string;
@@ -58,6 +61,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
     const [isEventCompleted, setIsEventCompleted] = useState<boolean>();
     const [showModal, setShowSocialsModal] = useState<boolean>(false);
     const [eventToShare, setEventToShare] = useState<EventData>();
+    const [waiver, setWaiver] = useState<WaiverData>();
 
     const startDateTime = moment(eventDate);
     const endDateTime = moment(startDateTime).add(durationHours, 'hours').add(durationMinutes, 'minutes');
@@ -97,6 +101,24 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
         staleTime: Services.CACHE.DISABLE,
         enabled: false
     });
+
+    const getTrashMobWaivers = useQuery({
+        queryKey: GetTrashMobWaivers().key,
+        queryFn: GetTrashMobWaivers().service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const addEventAttendee = useMutation({
+        mutationKey: AddEventAttendee().key,
+        mutationFn: AddEventAttendee().service
+    })
+
+    useEffect(() => {
+        getTrashMobWaivers.refetch().then((res) => {
+            setWaiver(res.data?.data)
+        })
+    }, [])
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -223,7 +245,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                     <div className="d-flex justify-content-between align-items-md-end flex-column flex-md-row">
                         <h2 className="font-weight-bold m-0">{eventName}</h2>
                         <div className="d-flex my-3">
-                            <RegisterBtn eventId={eventId} isAttending={isAttending} isEventCompleted={isEventCompleted!} currentUser={currentUser} onAttendanceChanged={handleAttendanceChanged} isUserLoaded={isUserLoaded} history={history} location={location} match={match}></RegisterBtn>
+                            <RegisterBtn eventId={eventId} isAttending={isAttending} isEventCompleted={isEventCompleted!} currentUser={currentUser} onAttendanceChanged={handleAttendanceChanged} isUserLoaded={isUserLoaded} history={history} location={location} match={match} addEventAttendee={addEventAttendee} waiverData={waiver}></RegisterBtn>
                             <div id="addToCalendarBtn" className='ml-2 p-18' hidden={isEventCompleted}><AddToCalendar event={event} /></div>
                             <Button variant="outline" className="p-18" onClick={() => { handleShowModal(true) }}>
                                 <Share className="mr-2" />
