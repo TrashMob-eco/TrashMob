@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage x:Class="TrashMobMobile.Pages.CreateEventPageNew"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             Shell.NavBarIsVisible="False"
+             x:DataType="viewModels:CreateEventViewModelNew"
+             Title="Create Event">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style
+                x:Key="BoxLabelStyle"
+                TargetType="BoxView">
+                <Setter Property="Margin"
+                        Value="3,0" />
+                <Setter Property="HeightRequest" Value="4" />
+                <Setter Property="CornerRadius" Value="2" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <Grid Margin="16" RowDefinitions="Auto,*,Auto">
+        <StackLayout>
+            <BoxView HeightRequest="2" BackgroundColor="{StaticResource Secondary}" HorizontalOptions="Fill" Margin="-16,0"></BoxView>
+            <StackLayout Orientation="Horizontal" Margin="0,15">
+                <Image HeightRequest="45"
+                       VerticalOptions="Center">
+                    <Image.Source>
+                        <FontImageSource
+                            FontFamily="{StaticResource GoogleMaterialFontFamily}"
+                            Glyph="{StaticResource IconClose}"
+                            Color="Black" />
+                    </Image.Source>
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding CloseCommand}" NumberOfTapsRequired="1" />
+                    </Image.GestureRecognizers>
+                </Image>
+                <Label Margin="35,0,0,0" VerticalOptions="Center" Text="{Binding StepTitle}" FontSize="24"></Label>
+            </StackLayout>
+            <Grid RowDefinitions="Auto" ColumnDefinitions="*,*,*,*,*,*">
+                <BoxView BackgroundColor="{Binding StepOneColor}" Style="{StaticResource BoxLabelStyle}"
+                         HeightRequest="4">
+                </BoxView>
+                <BoxView BackgroundColor="{Binding StepTwoColor}" Style="{StaticResource BoxLabelStyle}"
+                         Grid.Column="1" HeightRequest="4">
+                </BoxView>
+                <BoxView BackgroundColor="{Binding StepThreeColor}" Style="{StaticResource BoxLabelStyle}"
+                         Grid.Column="2" HeightRequest="4">
+                </BoxView>
+                <BoxView BackgroundColor="{Binding StepFourColor}" Style="{StaticResource BoxLabelStyle}"
+                         Grid.Column="3" HeightRequest="4">
+                </BoxView>
+                <BoxView BackgroundColor="{Binding StepFiveColor}" Style="{StaticResource BoxLabelStyle}"
+                         Grid.Column="4" HeightRequest="4">
+                </BoxView>
+                <BoxView BackgroundColor="{Binding StepSixColor}" Style="{StaticResource BoxLabelStyle}"
+                         Grid.Column="5" HeightRequest="4">
+                </BoxView>
+            </Grid>
+        </StackLayout>
+
+        <ContentView Grid.Row="1" x:Name="StepContent" Margin="0,10" Content="{Binding CurrentView}">
+        </ContentView>
+        <StackLayout Grid.Row="2" Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
+            <Button Text="Previous" Command="{Binding PreviousCommand}" IsEnabled="{Binding CanGoBack}"/>
+            <Button Text="{Binding NextStepText}" Command="{Binding NextCommand}" IsEnabled="{Binding IsStepValid}"/>
+        </StackLayout>
+    </Grid>
+</ContentPage>

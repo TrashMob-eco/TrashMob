@@ -7,6 +7,11 @@ import UserData from './Models/UserData';
 import { RegisterBtn } from './Customization/RegisterBtn';
 import { Pagination } from './Customization/Pagination';
 import { Button} from 'reactstrap';
+import WaiverData from './Models/WaiverData';
+import { GetTrashMobWaivers } from './../services/waivers';
+import { Services } from '../config/services.config';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { AddEventAttendee } from './../services/events';
 
 export interface DisplayEvent {
     id: string;
@@ -43,7 +48,26 @@ export const MainEvents: FC<MainEventsDataProps> = ({ isEventDataLoaded, eventLi
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [currentTableData, setCurrentTableData] = useState<DisplayEvent[]>([]);
     const [sortingOrder, setSortingOrder] = useState<number>(SortingOrder.Ascending);
+    const [waiver, setWaiver] = useState<WaiverData>();
     const eventPerPage = 10;
+
+    const getTrashMobWaivers = useQuery({
+        queryKey: GetTrashMobWaivers().key,
+        queryFn: GetTrashMobWaivers().service,
+        staleTime: Services.CACHE.DISABLE,
+        enabled: false
+    });
+
+    const addEventAttendee = useMutation({
+        mutationKey: AddEventAttendee().key,
+        mutationFn: AddEventAttendee().service
+    })
+
+    useEffect(() => {
+        getTrashMobWaivers.refetch().then((res) => {
+            setWaiver(res.data?.data)
+        })
+    }, [])
 
     useEffect(()=>{
         const firstPageIndex = (currentPage-1)* eventPerPage;
@@ -129,7 +153,7 @@ export const MainEvents: FC<MainEventsDataProps> = ({ isEventDataLoaded, eventLi
                                     </div>
                                     <div className="mt-2 mt-sm-0">
                                         <Link to={'/eventdetails/' + mobEvent.id}><button className="btn btn-outline mr-2 font-weight-bold btn-128">View</button></Link>
-                                        <RegisterBtn eventId={mobEvent.id} isAttending={mobEvent.isAttending} isEventCompleted={new Date(mobEvent.eventDate) < new Date()} currentUser={currentUser} onAttendanceChanged={onAttendanceChanged} isUserLoaded={isUserLoaded} history={history} location={location} match={match} ></RegisterBtn>
+                                        <RegisterBtn eventId={mobEvent.id} isAttending={mobEvent.isAttending} isEventCompleted={new Date(mobEvent.eventDate) < new Date()} currentUser={currentUser} onAttendanceChanged={onAttendanceChanged} isUserLoaded={isUserLoaded} history={history} location={location} match={match} addEventAttendee={addEventAttendee} waiverData={waiver}></RegisterBtn>
                                     </div>
                                 </div>
                             </li>

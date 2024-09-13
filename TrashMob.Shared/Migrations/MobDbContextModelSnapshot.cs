@@ -60,7 +60,7 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("LastUpdatedByUserId");
 
-                    b.ToTable("ContactRequests");
+                    b.ToTable("ContactRequests", (string)null);
                 });
 
             modelBuilder.Entity("TrashMob.Models.Event", b =>
@@ -160,7 +160,7 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("LastUpdatedByUserId");
 
-                    b.ToTable("Events");
+                    b.ToTable("Events", (string)null);
                 });
 
             modelBuilder.Entity("TrashMob.Models.EventAttendee", b =>
@@ -197,7 +197,7 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("EventAttendees");
+                    b.ToTable("EventAttendees", (string)null);
                 });
 
             modelBuilder.Entity("TrashMob.Models.EventAttendeeRoute", b =>
@@ -243,7 +243,7 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("EventAttendeeRoutes");
+                    b.ToTable("EventAttendeeRoutes", (string)null);
                 });
 
             modelBuilder.Entity("TrashMob.Models.EventLitterReport", b =>
@@ -277,7 +277,7 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("LitterReportId");
 
-                    b.ToTable("EventLitterReports");
+                    b.ToTable("EventLitterReports", (string)null);
                 });
 
             modelBuilder.Entity("TrashMob.Models.EventPartnerLocationService", b =>
@@ -318,7 +318,7 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("ServiceTypeId");
 
-                    b.ToTable("EventPartnerLocationServices");
+                    b.ToTable("EventPartnerLocationServices", (string)null);
                 });
 
             modelBuilder.Entity("TrashMob.Models.EventPartnerLocationServiceStatus", b =>
@@ -342,7 +342,7 @@ namespace TrashMob.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EventPartnerLocationServiceStatuses");
+                    b.ToTable("EventPartnerLocationServiceStatuses", (string)null);
 
                     b.HasData(
                         new
@@ -400,7 +400,7 @@ namespace TrashMob.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EventStatuses");
+                    b.ToTable("EventStatuses", (string)null);
 
                     b.HasData(
                         new
@@ -476,7 +476,7 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("LastUpdatedByUserId");
 
-                    b.ToTable("EventSummaries");
+                    b.ToTable("EventSummaries", (string)null);
                 });
 
             modelBuilder.Entity("TrashMob.Models.EventType", b =>
@@ -500,7 +500,7 @@ namespace TrashMob.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EventTypes");
+                    b.ToTable("EventTypes", (string)null);
 
                     b.HasData(
                         new
@@ -676,7 +676,7 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("LastUpdatedByUserId");
 
-                    b.ToTable("IftttTriggers");
+                    b.ToTable("IftttTriggers", (string)null);
                 });
 
             modelBuilder.Entity("TrashMob.Models.InvitationStatus", b =>
@@ -700,7 +700,7 @@ namespace TrashMob.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("InvitationStatuses");
+                    b.ToTable("InvitationStatuses", (string)null);
 
                     b.HasData(
                         new
@@ -795,7 +795,7 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("LitterReportId");
 
-                    b.ToTable("LitterImages");
+                    b.ToTable("LitterImages", (string)null);
                 });
 
             modelBuilder.Entity("TrashMob.Models.LitterReport", b =>
@@ -836,7 +836,7 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("LitterReportStatusId");
 
-                    b.ToTable("LitterReports");
+                    b.ToTable("LitterReports", (string)null);
                 });
 
             modelBuilder.Entity("TrashMob.Models.LitterReportStatus", b =>
@@ -860,7 +860,7 @@ namespace TrashMob.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("LitterReportStatuses");
+                    b.ToTable("LitterReportStatuses", (string)null);
 
                     b.HasData(
                         new
@@ -929,7 +929,7 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("LastUpdatedByUserId");
 
-                    b.ToTable("MessageRequests");
+                    b.ToTable("MessageRequests", (string)null);
                 });
 
             modelBuilder.Entity("TrashMob.Models.NonEventUserNotification", b =>
@@ -968,7 +968,7 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("UserNotificationTypeId");
 
-                    b.ToTable("NonEventUserNotifications");
+                    b.ToTable("NonEventUserNotifications", (string)null);
                 });
 
             modelBuilder.Entity("TrashMob.Models.Partner", b =>
@@ -1021,7 +1021,7 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("PartnerTypeId");
 
-                    b.ToTable("Partners");
+                    b.ToTable("Partners", (string)null);
                 });
 
             modelBuilder.Entity("TrashMob.Models.PartnerAdmin", b =>
@@ -1052,7 +1052,7 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PartnerAdmins");
+                    b.ToTable("PartnerAdmins", (string)null);
                 });
 
             modelBuilder.Entity("TrashMob.Models.PartnerAdminInvitation", b =>
@@ -1092,7 +1092,7 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("LastUpdatedByUserId");
 
-                    b.ToTable("PartnerAdminInvitation");
+                    b.ToTable("PartnerAdminInvitation", (string)null);
                 });
 
             modelBuilder.Entity("TrashMob.Models.PartnerContact", b =>
@@ -1143,7 +1143,7 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("PartnerId");
 
-                    b.ToTable("PartnerContacts");
+                    b.ToTable("PartnerContacts", (string)null);
                 });
 
             modelBuilder.Entity("TrashMob.Models.PartnerDocument", b =>
@@ -1184,7 +1184,7 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("PartnerId");
 
-                    b.ToTable("PartnerDocuments");
+                    b.ToTable("PartnerDocuments", (string)null);
                 });
 
             modelBuilder.Entity("TrashMob.Models.PartnerLocation", b =>
@@ -1262,7 +1262,7 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("PartnerId");
 
-                    b.ToTable("PartnerLocations");
+                    b.ToTable("PartnerLocations", (string)null);
                 });
 
             modelBuilder.Entity("TrashMob.Models.PartnerLocationContact", b =>
@@ -1313,7 +1313,7 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("PartnerLocationId");
 
-                    b.ToTable("PartnerLocationContacts");
+                    b.ToTable("PartnerLocationContacts", (string)null);
                 });
 
             modelBuilder.Entity("TrashMob.Models.PartnerLocationService", b =>
@@ -1353,7 +1353,7 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("ServiceTypeId");
 
-                    b.ToTable("PartnerLocationServices");
+                    b.ToTable("PartnerLocationServices", (string)null);
                 });
 
             modelBuilder.Entity("TrashMob.Models.PartnerRequest", b =>
@@ -1436,7 +1436,7 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("PartnerTypeId");
 
-                    b.ToTable("PartnerRequests");
+                    b.ToTable("PartnerRequests", (string)null);
                 });
 
             modelBuilder.Entity("TrashMob.Models.PartnerRequestStatus", b =>
@@ -1460,7 +1460,7 @@ namespace TrashMob.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PartnerRequestStatus");
+                    b.ToTable("PartnerRequestStatus", (string)null);
 
                     b.HasData(
                         new
@@ -1537,7 +1537,7 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("SocialMediaAccountTypeId");
 
-                    b.ToTable("PartnerSocialMediaAccounts");
+                    b.ToTable("PartnerSocialMediaAccounts", (string)null);
                 });
 
             modelBuilder.Entity("TrashMob.Models.PartnerStatus", b =>
@@ -1561,7 +1561,7 @@ namespace TrashMob.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PartnerStatus");
+                    b.ToTable("PartnerStatus", (string)null);
 
                     b.HasData(
                         new
@@ -1603,7 +1603,7 @@ namespace TrashMob.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PartnerTypes");
+                    b.ToTable("PartnerTypes", (string)null);
 
                     b.HasData(
                         new
@@ -1701,7 +1701,7 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("LastUpdatedByUserId");
 
-                    b.ToTable("PickupLocations");
+                    b.ToTable("PickupLocations", (string)null);
                 });
 
             modelBuilder.Entity("TrashMob.Models.ServiceType", b =>
@@ -1725,7 +1725,7 @@ namespace TrashMob.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ServiceTypes");
+                    b.ToTable("ServiceTypes", (string)null);
 
                     b.HasData(
                         new
@@ -1796,7 +1796,7 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("LastUpdatedByUserId");
 
-                    b.ToTable("SiteMetrics");
+                    b.ToTable("SiteMetrics", (string)null);
                 });
 
             modelBuilder.Entity("TrashMob.Models.SocialMediaAccountType", b =>
@@ -1820,7 +1820,7 @@ namespace TrashMob.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SocialMediaAccountTypes");
+                    b.ToTable("SocialMediaAccountTypes", (string)null);
 
                     b.HasData(
                         new
@@ -1941,7 +1941,7 @@ namespace TrashMob.Migrations
                         .IsUnique()
                         .HasFilter("[UserName] IS NOT NULL");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
 
                     b.HasData(
                         new
@@ -2002,7 +2002,7 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("UserNotificationTypeId");
 
-                    b.ToTable("UserNotifications");
+                    b.ToTable("UserNotifications", (string)null);
                 });
 
             modelBuilder.Entity("TrashMob.Models.UserNotificationType", b =>
@@ -2029,7 +2029,7 @@ namespace TrashMob.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserNotificationTypes");
+                    b.ToTable("UserNotificationTypes", (string)null);
 
                     b.HasData(
                         new
@@ -2133,7 +2133,7 @@ namespace TrashMob.Migrations
 
                     b.HasIndex("LastUpdatedByUserId");
 
-                    b.ToTable("WaiverStatuses");
+                    b.ToTable("WaiverStatuses", (string)null);
 
                     b.HasData(
                         new

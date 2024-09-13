@@ -34,7 +34,9 @@ public partial class CreateLitterReportViewModel : BaseViewModel
     [ObservableProperty]
     private bool reportIsValid;
 
-    public CreateLitterReportViewModel(ILitterReportManager litterReportManager, IMapRestService mapRestService)
+    public CreateLitterReportViewModel(ILitterReportManager litterReportManager, IMapRestService mapRestService,
+        INotificationService notificationService)
+        : base(notificationService)
     {
         this.litterReportManager = litterReportManager;
         this.mapRestService = mapRestService;
@@ -80,7 +82,7 @@ public partial class CreateLitterReportViewModel : BaseViewModel
         {
             if (SelectedLitterImageViewModel == null)
             {
-                SelectedLitterImageViewModel = new LitterImageViewModel();
+                SelectedLitterImageViewModel = new LitterImageViewModel(NotificationService);
             }
 
             var address = await mapRestService.GetAddressAsync(location.Latitude, location.Longitude);
@@ -104,11 +106,11 @@ public partial class CreateLitterReportViewModel : BaseViewModel
         }
         else
         {
-            await NotifyError("Could not get location for image");
+            await NotificationService.NotifyError("Could not get location for image");
         }
     }
 
-    public static async Task<Location?> GetCurrentLocation()
+    public async Task<Location?> GetCurrentLocation()
     {
         try
         {
@@ -130,9 +132,10 @@ public partial class CreateLitterReportViewModel : BaseViewModel
         //{
         //    // Handle permission exception
         //}
-        catch
+        catch (Exception ex)
         {
-            // Unable to get location
+            SentrySdk.CaptureException(ex);
+            await NotificationService.NotifyError($"An error has occurred while gettign your location. Please wait and try again in a moment.");
         }
 
         return null;
@@ -143,44 +146,53 @@ public partial class CreateLitterReportViewModel : BaseViewModel
     {
         IsBusy = true;
 
-        if (!ReportIsValid)
+        try
         {
-            IsBusy = false;
-            return;
-        }
-
-        var litterReport = LitterReportViewModel.ToLitterReport();
-        litterReport.Name = Name;
-        litterReport.Description = Description;
-
-        foreach (var litterImageViewModel in LitterImageViewModels)
-        {
-            var litterImage = new LitterImage
+            if (!ReportIsValid)
             {
-                Id = Guid.NewGuid(),
-                City = litterImageViewModel.Address.City,
-                Country = litterImageViewModel.Address.Country,
-                LitterReportId = litterImageViewModel.LitterReportId,
-                Latitude = litterImageViewModel.Address.Latitude,
-                Longitude = litterImageViewModel.Address.Longitude,
-                PostalCode = litterImageViewModel.Address.PostalCode,
-                Region = litterImageViewModel.Address.Region,
-                StreetAddress = litterImageViewModel.Address.StreetAddress,
+                IsBusy = false;
+                return;
+            }
 
-                // Use the Azure Blob Url as local file on create
-                AzureBlobURL = litterImageViewModel.FilePath,
-            };
+            var litterReport = LitterReportViewModel.ToLitterReport();
+            litterReport.Name = Name;
+            litterReport.Description = Description;
 
-            litterReport.LitterImages.Add(litterImage);
+            foreach (var litterImageViewModel in LitterImageViewModels)
+            {
+                var litterImage = new LitterImage
+                {
+                    Id = Guid.NewGuid(),
+                    City = litterImageViewModel.Address.City,
+                    Country = litterImageViewModel.Address.Country,
+                    LitterReportId = litterImageViewModel.LitterReportId,
+                    Latitude = litterImageViewModel.Address.Latitude,
+                    Longitude = litterImageViewModel.Address.Longitude,
+                    PostalCode = litterImageViewModel.Address.PostalCode,
+                    Region = litterImageViewModel.Address.Region,
+                    StreetAddress = litterImageViewModel.Address.StreetAddress,
+
+                    // Use the Azure Blob Url as local file on create
+                    AzureBlobURL = litterImageViewModel.FilePath,
+                };
+
+                litterReport.LitterImages.Add(litterImage);
+            }
+
+            await litterReportManager.AddLitterReportAsync(litterReport);
+
+            IsBusy = false;
+
+            await NotificationService.Notify("Litter Report has been submitted.");
+
+            await Navigation.PopAsync();
         }
-
-        await litterReportManager.AddLitterReportAsync(litterReport);
-
-        IsBusy = false;
-
-        await Notify("Litter Report has been submitted.");
-
-        await Navigation.PopAsync();
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            IsBusy = false;
+            await NotificationService.NotifyError($"An error has occurred while saving the litter report. Please wait and try again in a moment.");
+        }
     }
 
     public void ValidateReport()

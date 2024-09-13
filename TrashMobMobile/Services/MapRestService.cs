@@ -11,22 +11,14 @@ public class MapRestService(IHttpClientFactory httpClientFactory) : RestServiceB
     public async Task<Address> GetAddressAsync(double latitude, double longitude,
         CancellationToken cancellationToken = default)
     {
-        try
-        {
-            var requestUri = Controller + $"/GetAddress?latitude={latitude}&longitude={longitude}";
+        var requestUri = Controller + $"/GetAddress?latitude={latitude}&longitude={longitude}";
 
-            using (var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken))
-            {
-                response.EnsureSuccessStatusCode();
-                var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
-
-                return JsonConvert.DeserializeObject<Address>(responseString);
-            }
-        }
-        catch (Exception ex)
+        using (var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken))
         {
-            Debug.WriteLine(@"\tERROR {0}", ex.Message);
-            throw;
+            response.EnsureSuccessStatusCode();
+            var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
+
+            return JsonConvert.DeserializeObject<Address>(responseString);
         }
     }
 }

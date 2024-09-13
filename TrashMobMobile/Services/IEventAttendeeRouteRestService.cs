@@ -1,23 +1,23 @@
 ﻿namespace TrashMobMobile.Services
 {
-    using TrashMob.Models;
+    using TrashMob.Models.Poco;
 
     public interface IEventAttendeeRouteRestService
     {
-        Task<IEnumerable<EventAttendeeRoute>> GetEventAttendeeRoutesAsync(Guid eventId,
+        Task<IEnumerable<DisplayEventAttendeeRoute>> GetEventAttendeeRoutesAsync(Guid eventId,
             Guid userId,
             CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<EventAttendeeRoute>> GetEventAttendeeRoutesForEventAsync(Guid eventId,
+        Task<IEnumerable<DisplayEventAttendeeRoute>> GetEventAttendeeRoutesForEventAsync(Guid eventId,
             CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<EventAttendeeRoute>> GetEventAttendeeRoutesForUserAsync(Guid userId,
+        Task<IEnumerable<DisplayEventAttendeeRoute>> GetEventAttendeeRoutesForUserAsync(Guid userId,
             CancellationToken cancellationToken = default);
 
-        Task<EventAttendeeRoute> GetEventAttendeeRouteAsync(Guid id,
+        Task<DisplayEventAttendeeRoute> GetEventAttendeeRouteAsync(Guid id,
             CancellationToken cancellationToken = default);
 
-        Task<EventAttendeeRoute> AddEventAttendeeRouteAsync(EventAttendeeRoute eventAttendeeRoute,
+        Task<DisplayEventAttendeeRoute> AddEventAttendeeRouteAsync(DisplayEventAttendeeRoute eventAttendeeRoute,
             CancellationToken cancellationToken = default);
 
         Task DeleteEventAttendeeRouteAsync(Guid id, CancellationToken cancellationToken = default);

@@ -18,7 +18,7 @@
 
                 <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
-                <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" RowSpacing="3"
+                <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" RowSpacing="3"
                       ColumnDefinitions="1*, 2*">
                     <Label Grid.Row="0" Grid.Column="0" Text="{Binding SelectedEventType}" FontSize="Small"
                            Margin="10, 0, 10,0" Grid.ColumnSpan="2" />
@@ -58,6 +58,10 @@
                     <Button Grid.Row="10" Grid.Column="1" Text="View Event Summary"
                             Command="{Binding ViewEventSummaryCommand}" IsVisible="{Binding EnableViewEventSummary}"
                             Margin="10" />
+                    <Button Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="2" Text="Start Tracking" Command="{Binding RealTimeLocationTrackerCommand}"
+                            IsVisible="{Binding EnableStartTrackEventRoute}" Margin="10" IsEnabled="{Binding EnableStartTrackEventRoute}" />
+                    <Button Grid.Row="11" Grid.Column="1" Text="Stop Tracking" Command="{Binding RealTimeLocationTrackerCancelCommand}"
+                            IsVisible="{Binding EnableStopTrackEventRoute}" IsEnabled="{Binding EnableStopTrackEventRoute}" Margin="10" />
                 </Grid>
 
             </VerticalStackLayout>

@@ -2,9 +2,9 @@
 
 using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
-using Syncfusion.Maui.Core.Hosting;
 using TrashMobMobile.Authentication;
 using TrashMobMobile.Extensions;
+using TrashMobMobile.Services;
 
 public static class MauiProgram
 {
@@ -12,10 +12,9 @@ public static class MauiProgram
     {
         var builder = MauiApp.CreateBuilder();
         builder
-            .ConfigureSyncfusionCore()
             .UseMauiApp<App>()
             .UseMauiMaps()
-            .UseMauiCommunityToolkit()
+            .UseMauiCommunityToolkit(options => { options.SetShouldSuppressExceptionsInBehaviors(true); })
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -23,6 +22,7 @@ public static class MauiProgram
                 fonts.AddFont("Lexend-Regular.ttf", "LexendRegular");
                 fonts.AddFont("Lexend-SemiBold.ttf", "LexendSemibold");
                 fonts.AddFont("feather.ttf", "Icons");
+                fonts.AddFont("googlematerialdesignicons-webfont.ttf", "GoogleMaterialFontFamily");
             });
 
         builder.UseSentry(options =>
@@ -42,16 +42,12 @@ public static class MauiProgram
             options.TracesSampleRate = 1.0;
 
             // Other Sentry options can be set here.
+            options.CaptureFailedRequests = true;
         });
 
         // Services
         builder.Services.AddSingleton<AuthHandler>();
-
-        builder.Services
-            .AddHttpClient(AuthConstants.AuthenticatedClient,
-                client => { client.BaseAddress = new Uri(AuthConstants.ApiBaseUri); })
-            .AddHttpMessageHandler<AuthHandler>();
-
+        builder.Services.AddTransient<SentryHttpMessageHandler>();
         builder.Services.AddTrashMobServices();
         builder.Services.AddRestClientServices(builder.Configuration);
 
@@ -60,6 +56,7 @@ public static class MauiProgram
         builder.Services.AddTransient<CancelEventPage>();
         builder.Services.AddTransient<ContactUsPage>();
         builder.Services.AddTransient<CreateEventPage>();
+        builder.Services.AddTransient<CreateEventPageNew>();
         builder.Services.AddTransient<CreateLitterReportPage>();
         builder.Services.AddTransient<EditEventPage>();
         builder.Services.AddTransient<EditEventPartnerLocationServicesPage>();
@@ -85,6 +82,7 @@ public static class MauiProgram
         builder.Services.AddTransient<CancelEventViewModel>();
         builder.Services.AddTransient<ContactUsViewModel>();
         builder.Services.AddTransient<CreateEventViewModel>();
+        builder.Services.AddTransient<CreateEventViewModelNew>();
         builder.Services.AddTransient<CreateLitterReportViewModel>();
         builder.Services.AddTransient<EditEventViewModel>();
         builder.Services.AddTransient<EditEventPartnerLocationServicesViewModel>();
@@ -109,7 +107,13 @@ public static class MauiProgram
 
 #if USETEST
         builder.Logging.AddDebug();
+        builder.Services.AddSingleton<ILoggingService, DebugLoggingService>();
+#else
+		builder.Services.AddSingleton<ILoggingService, DebugLoggingService>();
+		// use the following for Sentry builds
+		//builder.Services.AddSingleton<ILoggingService, LoggingService>();
 #endif
+
         return builder.Build();
     }
 }

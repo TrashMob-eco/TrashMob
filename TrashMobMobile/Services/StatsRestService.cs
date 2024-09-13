@@ -10,41 +10,25 @@ public class StatsRestService(IHttpClientFactory httpClientFactory) : RestServic
 
     public async Task<Stats> GetStatsAsync(CancellationToken cancellationToken = default)
     {
-        try
+        using (var response = await AnonymousHttpClient.GetAsync(Controller, cancellationToken))
         {
-            using (var response = await AnonymousHttpClient.GetAsync(Controller, cancellationToken))
-            {
-                response.EnsureSuccessStatusCode();
-                var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
+            response.EnsureSuccessStatusCode();
+            var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
-                return JsonConvert.DeserializeObject<Stats>(responseString);
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(@"\tERROR {0}", ex.Message);
-            throw;
+            return JsonConvert.DeserializeObject<Stats>(responseString);
         }
     }
 
     public async Task<Stats> GetUserStatsAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        try
-        {
-            var requestUri = Controller + "/" + userId;
+        var requestUri = Controller + "/" + userId;
 
-            using (var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken))
-            {
-                response.EnsureSuccessStatusCode();
-                var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
-
-                return JsonConvert.DeserializeObject<Stats>(responseString);
-            }
-        }
-        catch (Exception ex)
+        using (var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken))
         {
-            Debug.WriteLine(@"\tERROR {0}", ex.Message);
-            throw;
+            response.EnsureSuccessStatusCode();
+            var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
+
+            return JsonConvert.DeserializeObject<Stats>(responseString);
         }
     }
 }
