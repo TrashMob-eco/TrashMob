@@ -103,26 +103,39 @@ const Home: FC<HomeProps> = ({
         <Container>
           <Row className="py-4 px-2">
             <Col
-              md={6}
-              className="order-md-1 order-2 d-flex flex-column text-center"
+              lg={6}
+              className="order-2 order-lg-1 d-flex flex-column text-center"
             >
-              <h1 className="fs-sm-6 mt-4 font-weight-bold">
+              <h1 className="d-md-none d-lg-block text-md-left mt-4 font-weight-bold">
                 What is a TrashMob?
               </h1>
-              <h4 className="my-5">
+              <h4 className="text-md-left">
                 A TrashMob is a group of citizens who are willing to take an
                 hour or two out of their lives to get together and clean up
                 their communities. Start your impact today.
               </h4>
-              <Link
-                className="mt-5 btn btn-primary btn-128"
-                to="/aboutus"
-                role="button"
-              >
-                Learn more
-              </Link>
+
+              <div className="d-flex flex-column flex-md-row">
+                <Link
+                  className="mx-auto mr-md-2 ml-md-0 my-2 btn btn-primary btn-128 h-auto w-auto"
+                  to="/aboutus"
+                  role="button"
+                >
+                  Learn more
+                </Link>
+                <Link
+                  className="mx-auto ml-md-0 my-2 btn btn-primary btn-128 w-auto"
+                  to="/events"
+                  role="button"
+                >
+                  View Upcoming Events
+                </Link>
+              </div>
             </Col>
-            <Col md={6} className="order-md-2 order-1">
+            <Col lg={6} className="order-1 order-lg-2 align-content-center">
+              <h1 className="d-none d-md-block d-lg-none my-4 font-weight-bold">
+                What is a TrashMob?
+              </h1>
               <div className="embed-responsive embed-responsive-16by9">
                 <iframe
                   className="embed-responsive-item"

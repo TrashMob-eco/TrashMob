@@ -366,7 +366,7 @@ export const EventsSection: FC<EventsSectionProps> = ({
 
   return (
     <>
-      <Container fluid className="bg-white p-md-5" id="events" ref={divRef}>
+      <Container fluid className="bg-white p-4 p-md-5" id="events" ref={divRef}>
         <div className="max-width-container mx-auto">
           <div className="d-none d-md-flex align-items-center mt-4">
             <label className="mb-0">
@@ -446,7 +446,7 @@ export const EventsSection: FC<EventsSectionProps> = ({
               >
                 Create a New Event
               </Button>
-              <div className="w-100 m-0">
+              <div className="w-100 h-50 m-0">
                 <AzureMapsProvider>
                   <>
                     <MapControllerPointCollection
