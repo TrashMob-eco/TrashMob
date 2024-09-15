@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { FC, useState, useEffect } from 'react'
 import UserData from './Models/UserData';
 import { Button, Col, Dropdown, Form, OverlayTrigger, ToggleButton, Tooltip } from 'react-bootstrap';
 import * as ToolTips from ".././store/ToolTips";
@@ -23,35 +23,35 @@ export interface PickupLocationsDataProps {
     currentUser: UserData;
 };
 
-export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
+export const PickupLocations: FC<PickupLocationsDataProps> = (props) => {
 
-    const [pickupLocationId, setPickupLocationId] = React.useState<string>(Guid.EMPTY)
-    const [haulingPartnerLocation, setHaulingPartnerLocation] = React.useState<PartnerLocationData>();
-    const [name, setName] = React.useState<string>("");
-    const [notes, setNotes] = React.useState<string>("");
-    const [hasBeenPickedUp, setHasBeenPickedUp] = React.useState<boolean>(true);
-    const [hasBeenSubmitted, setHasBeenSubmitted] = React.useState<boolean>(false);
-    const [streetAddress, setStreetAddress] = React.useState<string>("");
-    const [city, setCity] = React.useState<string>("");
-    const [country, setCountry] = React.useState<string>("");
-    const [region, setRegion] = React.useState<string>("");
-    const [postalCode, setPostalCode] = React.useState<string>("");
-    const [latitude, setLatitude] = React.useState<number>(0);
-    const [longitude, setLongitude] = React.useState<number>(0);
-    const [createdByUserId, setCreatedByUserId] = React.useState<string>();
-    const [createdDate, setCreatedDate] = React.useState<Date>(new Date());
-    const [lastUpdatedDate, setLastUpdatedDate] = React.useState<Date>(new Date());
-    const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
-    const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
-    const [center, setCenter] = React.useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
-    const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
-    const [pickupLocationsData, setPickupLocationsData] = React.useState<PickupLocationData[]>([]);
-    const [isPickupLocationsDataLoaded, setIsPickupLocationsDataLoaded] = React.useState<boolean>(false);
-    const [isPartnerLocationsDataLoaded, setIsPartnerLocationsDataLoaded] = React.useState<boolean>(false);
-    const [isAddEnabled, setIsAddEnabled] = React.useState<boolean>(true);
-    const [isSubmitEnabled, setIsSubmitEnabled] = React.useState<boolean>(false);
-    const [isEditOrAdd, setIsEditOrAdd] = React.useState<boolean>(false);
-    const [statusMessage, setStatusMessage] = React.useState<string>("Loading...");
+    const [pickupLocationId, setPickupLocationId] = useState<string>(Guid.EMPTY)
+    const [haulingPartnerLocation, setHaulingPartnerLocation] = useState<PartnerLocationData>();
+    const [name, setName] = useState<string>("");
+    const [notes, setNotes] = useState<string>("");
+    const [hasBeenPickedUp, setHasBeenPickedUp] = useState<boolean>(true);
+    const [hasBeenSubmitted, setHasBeenSubmitted] = useState<boolean>(false);
+    const [streetAddress, setStreetAddress] = useState<string>("");
+    const [city, setCity] = useState<string>("");
+    const [country, setCountry] = useState<string>("");
+    const [region, setRegion] = useState<string>("");
+    const [postalCode, setPostalCode] = useState<string>("");
+    const [latitude, setLatitude] = useState<number>(0);
+    const [longitude, setLongitude] = useState<number>(0);
+    const [createdByUserId, setCreatedByUserId] = useState<string>();
+    const [createdDate, setCreatedDate] = useState<Date>(new Date());
+    const [lastUpdatedDate, setLastUpdatedDate] = useState<Date>(new Date());
+    const [isMapKeyLoaded, setIsMapKeyLoaded] = useState<boolean>(false);
+    const [mapOptions, setMapOptions] = useState<IAzureMapOptions>();
+    const [center, setCenter] = useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
+    const [isSaveEnabled, setIsSaveEnabled] = useState<boolean>(false);
+    const [pickupLocationsData, setPickupLocationsData] = useState<PickupLocationData[]>([]);
+    const [isPickupLocationsDataLoaded, setIsPickupLocationsDataLoaded] = useState<boolean>(false);
+    const [isPartnerLocationsDataLoaded, setIsPartnerLocationsDataLoaded] = useState<boolean>(false);
+    const [isAddEnabled, setIsAddEnabled] = useState<boolean>(true);
+    const [isSubmitEnabled, setIsSubmitEnabled] = useState<boolean>(false);
+    const [isEditOrAdd, setIsEditOrAdd] = useState<boolean>(false);
+    const [statusMessage, setStatusMessage] = useState<string>("Loading...");
 
     const getHaulingPartnerLocation = useQuery({ 
         queryKey: GetHaulingPartnerLocation({ eventId: props.eventId }).key,
@@ -97,7 +97,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
         mutationFn: DeleteEventPickupLocationById().service
     })
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (props.isUserLoaded && props.eventId && props.eventId !== Guid.EMPTY) {
             getHaulingPartnerLocation.refetch().then((partnerLocationRes) => {
                 setHaulingPartnerLocation(partnerLocationRes.data?.data);
@@ -534,7 +534,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
         ? renderPickupLocationsTable(pickupLocationsData)
         : renderManageEventPartners()
 
-    var partnerLocationsContents = isPartnerLocationsDataLoaded && props.eventId !== Guid.EMPTY
+    var partnerLocationsContents = isPartnerLocationsDataLoaded && props.eventId !== Guid.EMPTY && haulingPartnerLocation !== undefined && haulingPartnerLocation.partnerLocationContacts !== undefined && haulingPartnerLocation.partnerLocationContacts.length > 0
         ? renderPartnerLocationContacts()
         : ""
 
