@@ -173,7 +173,7 @@ export const PickupLocations: FC<PickupLocationsDataProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.PickupLocationLastUpdatedDate}</Tooltip>
     }
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (country === "") {
             setIsSaveEnabled(false);
         }
