@@ -240,6 +240,14 @@ If the app loads, but data does not, it is likely that the firewall rule is not 
 
 As the site's feature set has grown, so have the scenarios that need to be tested after large changes have been made. Please see the [Test Scenarios](./TestScenarios.md) document for a list of checks that should be run. At some point we will need to automate these tests.
 
+## To update the UI only (React app):
+
+In the Trashmob/client-app project folder, run the following command:
+1. `npm i` to install the dependencies
+1. `npm start` to start the web app
+
+Instructions to come for the `Sign In` to have access to all pages.
+
 ## To Update the Database Model
 The project uses Entity Framework Core V8 Model-First database updates.
 
