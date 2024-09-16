@@ -54,14 +54,6 @@ const Home: FC<HomeProps> = ({
   return (
     <>
       <Container fluid>
-        <SocialsModal
-          show={showModal}
-          handleShow={handleShowModal}
-          modalTitle="Invite a friend to join TrashMob.eco"
-          eventLink="https://www.trashmob.eco"
-          emailSubject="Join TrashMob.eco to help clean up the planet!"
-          message={SharingMessages.InvitationMessage}
-        />
         <Row className="shadow position-relative">
           <Col
             className="d-flex flex-column px-0 py-4 pl-lg-5"
@@ -74,7 +66,7 @@ const Home: FC<HomeProps> = ({
                 alt="TrashMob.eco logo"
                 className="banner-logo"
               ></img>
-              <h3 className="ml-md-4 mt-4 mb-4 mb-md-5 font-weight-bold font-size-xl banner-heading pl-3">
+              <h3 className="mt-4 mb-4 mb-md-5 ml-md-4 font-weight-bold font-size-xl banner-heading pl-3">
                 Meet up. Clean up. Feel good.
               </h3>
               <Link
@@ -83,18 +75,11 @@ const Home: FC<HomeProps> = ({
               >
                 Join us today
               </Link>
-              <Button
-                className="btn btn-primary ml-5 py-md-3 banner-button"
-                onClick={() => handleShowModal(true)}
-              >
-                <Share className="mr-2" />
-                Invite a friend
-              </Button>
             </div>
           </Col>
           <img
             src={Globe2}
-            className="position-absolute p-0 m-0 h-100 banner-globe"
+            className="position-absolute p-0 pl-5 m-0 h-100 w-auto banner-globe"
             alt="Globe"
           ></img>
         </Row>
@@ -123,13 +108,13 @@ const Home: FC<HomeProps> = ({
                 >
                   Learn more
                 </Link>
-                <Link
+                <a
                   className="mx-auto ml-md-0 my-2 btn btn-primary btn-128 w-auto"
-                  to="/events"
                   role="button"
+                  href={"/#events"}
                 >
                   View Upcoming Events
-                </Link>
+                </a>
               </div>
             </Col>
             <Col lg={6} className="order-1 order-lg-2 align-content-center">
@@ -152,7 +137,7 @@ const Home: FC<HomeProps> = ({
         </Container>
       </div>
       <div className="d-flex justify-content-center m-4">
-        <div className="row row-cols-2 row-cols-sm-4 justify-content-center p-2">
+        <div className="row row-cols-2 row-cols-md-5 justify-content-center">
           {[
             {
               id: 0,
@@ -185,13 +170,15 @@ const Home: FC<HomeProps> = ({
           ].map((item) => (
             <div
               key={item.id}
-              className="col d-flex flex-column bg-light rounded-lg p-4 shadow"
+              style={{ borderRadius: "8px" }}
+              // TODO: Extract to custom class
+              className="m-2 m-sm-3 m-md-3 w-auto col-5 d-flex flex-column bg-light p-3 shadow"
             >
-              <img src={item.icon} alt={item.alt} className="w-25 mb-3" />
+              <img src={item.icon} alt={item.alt} className="w-25 h-25 mb-3" />
               <span className="font-weight-bold font-size-lg">
                 {item.value}
               </span>
-              <span className="font-weight-bold">{item.title}</span>
+              <span className=" font-weight-bold">{item.title}</span>
             </div>
           ))}
         </div>
