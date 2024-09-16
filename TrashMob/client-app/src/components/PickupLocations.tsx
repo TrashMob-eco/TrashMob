@@ -339,7 +339,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {haulingPartnerLocation?.partnerLocationContacts.map(contact =>
+                        {haulingPartnerLocation?.partnerLocationContacts?.map(contact =>
                             <tr key={contact.id}>
                                 <td>{contact.name}</td>
                                 <td>{contact.email}</td>
