@@ -2,7 +2,7 @@ import { FC, useEffect, useState } from "react";
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 import UserData from "../Models/UserData";
 import { Col, Container, Row } from "react-bootstrap";
-import Globe2 from "../assets/globe2.png";
+import Globe2 from "../assets/trashglobe.png";
 import Logo from "../assets/logo.svg";
 import Calendar from "../assets/home/Calendar.svg";
 import NewCalendar from "../assets/home/calendar3.svg";
@@ -56,33 +56,42 @@ const Home: FC<HomeProps> = ({
     <>
       <Container fluid>
         <Row className="shadow position-relative">
-          <Col
-            className="d-flex flex-column px-0 py-4 pl-lg-5"
-            sm={6}
+          <div
+            className="d-flex flex-column px-0 py-4 pl-lg-5 m-auto"
             style={{ zIndex: 1 }}
           >
-            <div className="ml-sm-2 ml-lg-5 pl-sm-3 pl-md-5 mt-md-5 mb-md-2">
+            <Container className="d-flex flex-column flex-sm-row-reverse align-content-center">
               <img
-                src={Logo}
-                alt="TrashMob.eco logo"
-                className="banner-logo"
+                src={Globe2}
+                className="h-50 w-50 m-auto"
+                alt="Globe"
+                style={{ maxHeight: "250px", maxWidth: "250px" }}
               ></img>
-              <h3 className="mt-4 mb-4 mb-md-5 ml-md-4 font-weight-bold font-size-xl banner-heading pl-3">
-                Meet up. Clean up. Feel good.
-              </h3>
-              <Link
-                className="btn btn-primary ml-5 py-md-3 banner-button"
-                to="/gettingstarted"
+              {/* <img
+                src={Globe2}
+                className="h-25 w-25 m-auto d-none d-sm-block"
+                alt="Globe"
+              ></img> */}
+
+              <div
+                className="d-flex flex-column justify-content-center w-75 m-auto"
+                style={{ maxWidth: "400px" }}
               >
-                Join us today
-              </Link>
-            </div>
-          </Col>
-          <img
-            src={Globe2}
-            className="position-absolute p-0 pl-5 m-0 h-100 w-auto banner-globe"
-            alt="Globe"
-          ></img>
+                <h3 className="text-center text-sm-left text-md-left mt-4 ml-sm-4 font-weight-bold">
+                  Get together to clean up your community
+                </h3>
+                <h4 className="text-center text-sm-left mb-4 mb-md-5 ml-md-4 font-weight-bold banner-heading ml-sm-4">
+                  Meet up. Clean up. Feel good.
+                </h4>
+                <Link
+                  className="btn btn-primary ml-5 py-md-3 banner-button m-auto mr-sm-auto ml-sm-4"
+                  to="/gettingstarted"
+                >
+                  Join us today
+                </Link>
+              </div>
+            </Container>
+          </div>
         </Row>
       </Container>
       <div className="bg-white">
