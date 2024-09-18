@@ -5,6 +5,7 @@ import { Col, Container, Row } from "react-bootstrap";
 import Globe2 from "../assets/globe2.png";
 import Logo from "../assets/logo.svg";
 import Calendar from "../assets/home/Calendar.svg";
+import NewCalendar from "../assets/home/calendar3.svg";
 import Trashbag from "../assets/home/Trashbag.svg";
 import Person from "../assets/home/Person.svg";
 import Clock from "../assets/home/Clock.svg";
