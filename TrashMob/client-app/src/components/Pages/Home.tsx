@@ -67,11 +67,6 @@ const Home: FC<HomeProps> = ({
                 alt="Globe"
                 style={{ maxHeight: "250px", maxWidth: "250px" }}
               ></img>
-              {/* <img
-                src={Globe2}
-                className="h-25 w-25 m-auto d-none d-sm-block"
-                alt="Globe"
-              ></img> */}
 
               <div
                 className="d-flex flex-column justify-content-center w-75 m-auto"
@@ -84,7 +79,7 @@ const Home: FC<HomeProps> = ({
                   Meet up. Clean up. Feel good.
                 </h4>
                 <Link
-                  className="btn btn-primary ml-5 py-md-3 banner-button m-auto mr-sm-auto ml-sm-4"
+                  className="btn btn-primary ml-5 banner-button m-auto mr-sm-auto ml-sm-4"
                   to="/gettingstarted"
                 >
                   Join us today
