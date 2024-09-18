@@ -13,7 +13,12 @@ import EventTypeData from "../components/Models/EventTypeData";
 import UserData from "../components/Models/UserData";
 
 export type GetEventTypes_Response = EventTypeData[];
-export const GetEventTypes = () => ({ key: ['/eventtypes'], service: async () => ApiService('public').fetchData<GetEventTypes_Response>({ url: `/eventtypes`, method: 'get' }) });
+export const GetEventTypes = () => ({
+  key: ['/eventtypes'] as const,
+  service: async () => ApiService('public')
+    .fetchData<GetEventTypes_Response>({ url: `/eventtypes`, method: 'get' })
+    .then(res => res.data as EventTypeData[])
+});
 
 export type GetAllEvents_Response = EventData[];
 export const GetAllEvents = () => ({ key: ['/events'], service: async () => ApiService('protected').fetchData<GetAllEvents_Response>({ url: `/events`, method: 'get' }) });

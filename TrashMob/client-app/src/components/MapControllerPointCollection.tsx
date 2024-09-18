@@ -138,7 +138,7 @@ export const MapControllerPointCollection: FC<MapControllerProps> = (props) => {
 
                 getEventTypes.refetch().then(async (res) => {
                     if (res.data === undefined) throw new Error()
-                    const type = getEventType(res.data.data, properties.eventTypeId);
+                    const type = getEventType(res.data, properties.eventTypeId);
                     properties.eventTypeList = type;
                 })
 

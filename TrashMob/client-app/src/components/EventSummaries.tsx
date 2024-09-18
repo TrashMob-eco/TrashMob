@@ -34,7 +34,7 @@ export const EventSummaries: React.FC = () => {
     React.useEffect(() => {
         window.scrollTo(0, 0);
         getEventTypes.refetch().then(res => {
-            setEventTypeList(res.data?.data || [])
+            setEventTypeList(res.data || [])
         })
     }, [])
 
