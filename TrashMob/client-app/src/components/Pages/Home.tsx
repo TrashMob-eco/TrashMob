@@ -25,6 +25,21 @@ export interface HomeProps extends RouteComponentProps<any> {
   onUserUpdated: any;
 }
 
+const useGetHomeStats = () => {
+  return useQuery<StatsData>({
+    queryKey: GetStats().key,
+    queryFn: GetStats().service,
+    initialData: () => ({
+      totalBags: 0,
+      totalEvents: 0,
+      totalHours: 0,
+      totalParticipants: 0,
+    }),
+    initialDataUpdatedAt: 0,
+    staleTime: Services.CACHE.DISABLE,
+  });
+};
+
 const Home: FC<HomeProps> = ({
   isUserLoaded,
   currentUser,
@@ -33,22 +48,14 @@ const Home: FC<HomeProps> = ({
   match,
 }) => {
   const [showModal, setShowSocialsModal] = useState<boolean>(false);
-  const [stats, setStats] = useState<StatsData | null>(null);
-
   const handleShowModal = (showModal: boolean) =>
     setShowSocialsModal(showModal);
-  const getStats = useQuery({
-    queryKey: GetStats().key,
-    queryFn: GetStats().service,
-    staleTime: Services.CACHE.DISABLE,
-    enabled: false,
-  });
+
+  const { data: stats } = useGetHomeStats();
+  const { totalBags, totalEvents, totalHours, totalParticipants } = stats;
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    getStats.refetch().then((res) => {
-      setStats(res.data?.data || null);
-    });
   }, [isUserLoaded, currentUser]);
 
   return (
