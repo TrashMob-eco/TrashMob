@@ -9,11 +9,7 @@ import Trashbag from "../assets/home/Trashbag.svg";
 import Person from "../assets/home/Person.svg";
 import Clock from "../assets/home/Clock.svg";
 import { GettingStartedSection } from "../GettingStartedSection";
-import { Share } from "react-bootstrap-icons";
-import { SocialsModal } from "../EventManagement/ShareToSocialsModal";
-import * as SharingMessages from "../../store/SharingMessages";
 import { EventsSection } from "../EventsSection";
-import { Button } from "reactstrap";
 import { GetStats } from "../../services/stats";
 import { useQuery } from "@tanstack/react-query";
 import { Services } from "../../config/services.config";
@@ -47,12 +43,7 @@ const Home: FC<HomeProps> = ({
   location,
   match,
 }) => {
-  const [showModal, setShowSocialsModal] = useState<boolean>(false);
-  const handleShowModal = (showModal: boolean) =>
-    setShowSocialsModal(showModal);
-
   const { data: stats } = useGetHomeStats();
-  const { totalBags, totalEvents, totalHours, totalParticipants } = stats;
 
   useEffect(() => {
     window.scrollTo(0, 0);

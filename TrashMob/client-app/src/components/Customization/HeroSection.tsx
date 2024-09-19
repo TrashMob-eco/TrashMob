@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Col, Container, Image, Row } from "react-bootstrap";
+import { Col, Image, Row } from "react-bootstrap";
 import globes from "../assets/gettingStarted/globes.png";
 
 interface HeroSectionProps {
