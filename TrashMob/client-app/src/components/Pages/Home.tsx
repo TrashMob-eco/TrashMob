@@ -2,10 +2,9 @@ import { FC, useEffect, useState } from "react";
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 import UserData from "../Models/UserData";
 import { Col, Container, Row } from "react-bootstrap";
-import Globe2 from "../assets/trashglobe.png";
+import Globe2 from "../assets/globe2.png";
 import Logo from "../assets/logo.svg";
 import Calendar from "../assets/home/Calendar.svg";
-import NewCalendar from "../assets/home/calendar3.svg";
 import Trashbag from "../assets/home/Trashbag.svg";
 import Person from "../assets/home/Person.svg";
 import Clock from "../assets/home/Clock.svg";
@@ -57,35 +56,47 @@ const Home: FC<HomeProps> = ({
       <Container fluid>
         <Row className="shadow position-relative">
           <div
-            className="d-flex flex-column px-0 py-4 pl-lg-5 m-auto"
-            style={{ zIndex: 1 }}
+            className="d-flex flex-column px-0 py-0 pl-lg-5 m-auto w-100"
+            style={{ zIndex: 10 }}
           >
-            <Container className="d-flex flex-column flex-sm-row-reverse align-content-center">
+            <div className="d-flex flex-row-reverse align-content-center mx-0 px-0">
               <img
                 src={Globe2}
-                className="h-50 w-50 m-auto"
+                className="h-100 w-auto d-none d-sm-block mt-0"
                 alt="Globe"
-                style={{ maxHeight: "250px", maxWidth: "250px" }}
+                style={{
+                  maxHeight: "300px",
+                  maxWidth: "300px",
+                }}
+              ></img>
+              <img
+                src={Globe2}
+                className="d-block d-sm-none h-100 w-auto m-auto position-absolute"
+                alt="Globe"
+                style={{
+                  opacity: "30%",
+                  zIndex: "-1",
+                }}
               ></img>
 
-              <div
-                className="d-flex flex-column justify-content-center w-75 m-auto"
-                style={{ maxWidth: "400px" }}
-              >
-                <h3 className="text-center text-sm-left text-md-left mt-4 ml-sm-4 font-weight-bold">
-                  Get together to clean up your community
-                </h3>
-                <h4 className="text-center text-sm-left mb-4 mb-md-5 ml-md-4 font-weight-bold banner-heading ml-sm-4">
+              <div className="d-flex flex-column justify-content-center w-75 m-auto z-10 pl-sm-2 px-md-5">
+                <img
+                  src={Logo}
+                  className="w-100 mx-auto mt-4 ml-sm-3"
+                  alt="Trashmob.eco logo"
+                  style={{ maxWidth: "550px" }}
+                ></img>
+                <h4 className="text-center text-sm-left mb-4 ml-sm-5 font-weight-bold banner-heading ml-sm-4">
                   Meet up. Clean up. Feel good.
                 </h4>
                 <Link
-                  className="btn btn-primary ml-5 banner-button m-auto mr-sm-auto ml-sm-4"
+                  className="mb-3 mb-sm-4 btn btn-primary mx-auto ml-sm-5 banner-button mr-sm-auto ml-sm-4"
                   to="/gettingstarted"
                 >
                   Join us today
                 </Link>
               </div>
-            </Container>
+            </div>
           </div>
         </Row>
       </Container>
