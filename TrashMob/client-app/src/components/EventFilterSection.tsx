@@ -121,7 +121,7 @@ export const EventFilterSection:FC<EventFilterSectionProps> = ({
                 />
                 <button className="ml-1 btn-withoutline" hidden={!isEventFiltering} onClick={onResetFilters}>Reset</button>
             </div>
-            <div className="my-4"><code>{JSON.stringify(filterParams)}</code></div>
+            <div className="my-4 hidden"><code>{JSON.stringify(filterParams)}</code></div>
         </>
     );
 }
