@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect } from "react";
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 import UserData from "../Models/UserData";
 import { Col, Container, Row } from "react-bootstrap";
