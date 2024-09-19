@@ -25,23 +25,30 @@ export interface HomeProps extends RouteComponentProps<any> {
     onUserUpdated: any;
 }
 
-const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, match }) => {    
-    const [showModal, setShowSocialsModal] = useState<boolean>(false);
-    const [stats, setStats] = useState<StatsData | null>(null);
-
-    const handleShowModal = (showModal: boolean) => setShowSocialsModal(showModal);
-    const getStats = useQuery({ 
+const useGetHomeStats = () => {
+    return useQuery<StatsData>({ 
         queryKey: GetStats().key, 
         queryFn: GetStats().service,
+        initialData:() => ({
+            totalBags: 0,
+            totalEvents: 0,
+            totalHours: 0,
+            totalParticipants: 0,
+        }),
+        initialDataUpdatedAt: 0,
         staleTime: Services.CACHE.DISABLE,
-        enabled: false
     });
+}
+
+const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, match }) => {    
+    const [showModal, setShowSocialsModal] = useState<boolean>(false);
+    const handleShowModal = (showModal: boolean) => setShowSocialsModal(showModal);
+
+    const { data: stats } = useGetHomeStats()
+    const { totalBags, totalEvents, totalHours, totalParticipants } = stats
 
     useEffect(() => {
         window.scrollTo(0, 0);
-        getStats.refetch().then(res => {
-            setStats(res.data?.data || null)
-        });
     }, [isUserLoaded, currentUser])
 
     return (
@@ -79,10 +86,10 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, mat
             </div>
             <Container className="d-flex justify-content-around my-5 py-5 flex-column flex-md-row">
                 {[
-                    { id: 0, title: 'Events Hosted', value: stats?.totalEvents || 0, icon: Calendar, alt: 'Calendar icon' },
-                    { id: 1, title: 'Bags Collected', value: stats?.totalBags || 0, icon: Trashbag, alt: 'Trashbag icon' },
-                    { id: 2, title: 'Participants', value: stats?.totalParticipants || 0, icon: Person, alt: 'Person icon' },
-                    { id: 3, title: 'Hours Spent', value: stats?.totalHours || 0, icon: Clock, alt: 'Clock icon' },
+                    { id: 0, title: 'Events Hosted', value: totalEvents, icon: Calendar, alt: 'Calendar icon' },
+                    { id: 1, title: 'Bags Collected', value: totalBags, icon: Trashbag, alt: 'Trashbag icon' },
+                    { id: 2, title: 'Participants', value: totalParticipants, icon: Person, alt: 'Person icon' },
+                    { id: 3, title: 'Hours Spent', value: totalHours, icon: Clock, alt: 'Clock icon' },
                 ].map(item => (
                     <div key={item.id} className="d-flex flex-column justify-content-center text-center">
                         <img src={item.icon} alt={item.alt} className="w-auto mx-auto mb-3" />

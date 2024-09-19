@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { FC, useState, useEffect } from 'react'
 import UserData from './Models/UserData';
 import { Button, Col, Container, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import * as ToolTips from "./../store/ToolTips";
@@ -23,26 +23,26 @@ export interface EventSummaryDashboardProps extends RouteComponentProps<EventSum
 }
 
 
-const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
-    const [actualNumberOfAttendees, setActualNumberOfAttendees] = React.useState<number>(0);
-    const [numberOfBuckets, setNumberOfBuckets] = React.useState<number>(0);
-    const [numberOfBags, setNumberOfBags] = React.useState<number>(0);
-    const [durationInMinutes, setDurationInMinutes] = React.useState<number>(0);
-    const [createdByUserId, setCreatedByUserId] = React.useState<string>();
-    const [createdDate, setCreatedDate] = React.useState<Date>(new Date());
-    const [notes, setNotes] = React.useState<string>("");
-    const [notesErrors, setNotesErrors] = React.useState<string>("");
-    const [actualNumberOfAttendeesErrors, setactualNumberOfAttendeesErrors] = React.useState<string>("");
-    const [numberOfBagsErrors, setNumberOfBagsErrors] = React.useState<string>("");
-    const [numberOfBucketsErrors, setNumberOfBucketsErrors] = React.useState<string>("");
-    const [durationInMinutesErrors, setDurationInMinutesErrors] = React.useState<string>("");
-    const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
-    const [loadedEventId] = React.useState<string>(props.match.params["eventId"]);
-    const [isOwner, setIsOwner] = React.useState<boolean>(false);
-    const [eventName, setEventName] = React.useState<string>("New Event");
-    const [eventDate, setEventDate] = React.useState<Date>(new Date());
-    const [showModal, setShowSocialsModal] = React.useState<boolean>(false);
-    const [eventToShare, setEventToShare] = React.useState<EventData>();
+export const EventSummary: FC<EventSummaryDashboardProps> = (props) => {
+    const [actualNumberOfAttendees, setActualNumberOfAttendees] = useState<number>(0);
+    const [numberOfBuckets, setNumberOfBuckets] = useState<number>(0);
+    const [numberOfBags, setNumberOfBags] = useState<number>(0);
+    const [durationInMinutes, setDurationInMinutes] = useState<number>(0);
+    const [createdByUserId, setCreatedByUserId] = useState<string>();
+    const [createdDate, setCreatedDate] = useState<Date>(new Date());
+    const [notes, setNotes] = useState<string>("");
+    const [notesErrors, setNotesErrors] = useState<string>("");
+    const [actualNumberOfAttendeesErrors, setactualNumberOfAttendeesErrors] = useState<string>("");
+    const [numberOfBagsErrors, setNumberOfBagsErrors] = useState<string>("");
+    const [numberOfBucketsErrors, setNumberOfBucketsErrors] = useState<string>("");
+    const [durationInMinutesErrors, setDurationInMinutesErrors] = useState<string>("");
+    const [isSaveEnabled, setIsSaveEnabled] = useState<boolean>(false);
+    const [loadedEventId] = useState<string>(props.match.params["eventId"]);
+    const [isOwner, setIsOwner] = useState<boolean>(false);
+    const [eventName, setEventName] = useState<string>("New Event");
+    const [eventDate, setEventDate] = useState<Date>(new Date());
+    const [showModal, setShowSocialsModal] = useState<boolean>(false);
+    const [eventToShare, setEventToShare] = useState<EventData>();
 
     const getEventById = useQuery({
         queryKey: GetEventById({ eventId: loadedEventId }).key,
@@ -68,29 +68,38 @@ const EventSummary: React.FC<EventSummaryDashboardProps> = (props) => {
         mutationFn: UpdateEventSummary().service,
     });
 
-    React.useEffect(() => {
+    useEffect(() => {
         window.scrollTo(0, 0);
         getEventById.refetch().then(res => {
             if (res.data === undefined) return;
             setEventName(res.data.data.name);
             setEventDate(new Date(res.data.data.eventDate));
             setEventToShare(res.data.data)
+            setCreatedByUserId(res.data.data.createdByUserId);
             if (res.data.data.createdByUserId === props.currentUser.id) setIsOwner(true);
         });
 
         getEventSummaryById.refetch().then(res => {
-            if (res.data === undefined) return;
-            setActualNumberOfAttendees(res.data.data.actualNumberOfAttendees);
-            setCreatedByUserId(res.data.data.createdByUserId);
-            setCreatedDate(new Date(res.data.data.createdDate));
-            setDurationInMinutes(res.data.data.durationInMinutes);
-            setNotes(res.data.data.notes);
-            setNumberOfBags(res.data.data.numberOfBags);
-            setNumberOfBuckets(res.data.data.numberOfBuckets);
+            if (res.data === undefined) {
+                setActualNumberOfAttendees(0);
+                setDurationInMinutes(0);
+                setNotes("");
+                setNumberOfBags(0);
+                setNumberOfBuckets(0);
+            }
+            else {
+                setActualNumberOfAttendees(res.data.data.actualNumberOfAttendees);
+                setCreatedByUserId(res.data.data.createdByUserId);
+                setCreatedDate(new Date(res.data.data.createdDate));
+                setDurationInMinutes(res.data.data.durationInMinutes);
+                setNotes(res.data.data.notes);
+                setNumberOfBags(res.data.data.numberOfBags);
+                setNumberOfBuckets(res.data.data.numberOfBuckets);
+            }
         })
     }, [loadedEventId, props.currentUser.id]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (notesErrors !== "" || actualNumberOfAttendeesErrors !== "" || numberOfBagsErrors !== "" || numberOfBucketsErrors !== "" || durationInMinutesErrors !== "") {
             setIsSaveEnabled(false);
         }
