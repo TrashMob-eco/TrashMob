@@ -35,6 +35,7 @@ const useGetHomeStats = () => {
             totalHours: 0,
             totalParticipants: 0,
         }),
+        initialDataUpdatedAt: 0,
         staleTime: Services.CACHE.DISABLE,
     });
 }
