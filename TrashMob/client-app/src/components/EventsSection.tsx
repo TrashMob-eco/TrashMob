@@ -368,7 +368,10 @@ export const EventsSection: FC<EventsSectionProps> = ({
     <>
       <Container fluid className="bg-white p-4 p-md-5" id="events" ref={divRef}>
         <div className="max-width-container mx-auto">
-          <div className="d-none d-md-flex align-items-center mt-4">
+          <div
+            className="d-flex flex-column flex-sm-row my-4"
+            style={{ gap: ".5em" }}
+          >
             <label className="mb-0">
               <input
                 type="radio"
@@ -441,7 +444,7 @@ export const EventsSection: FC<EventsSectionProps> = ({
             <>
               <Button
                 color="primary"
-                className="mb-2"
+                className="mb-4"
                 onClick={() => history.push("/manageeventdashboard")}
               >
                 Create a New Event
