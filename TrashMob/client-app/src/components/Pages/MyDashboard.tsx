@@ -907,8 +907,8 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
             )}
           />
         )}
-        <Row className="pt-5">
-          <Col>
+        <Row className="pt-5 justify-content-lg-center">
+          <Col xs="6" md="4" xl="3">
             <div className="d-flex bg-white">
               <Col className="ml-3">
                 <p className="card-title">Events</p>
@@ -925,7 +925,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
               </Col>
             </div>
           </Col>
-          <Col>
+          <Col xs="6" md="4" xl="3">
             <div className="d-flex bg-white">
               <Col className="ml-3">
                 <p className="card-title">Hours</p>
@@ -942,7 +942,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
               </Col>
             </div>
           </Col>
-          <Col>
+          <Col xs="6" md="4" xl="3" className="mt-4 mt-md-0">
             <div className="d-flex bg-white">
               <Col className="ml-3">
                 <p className="card-title">Bags</p>
