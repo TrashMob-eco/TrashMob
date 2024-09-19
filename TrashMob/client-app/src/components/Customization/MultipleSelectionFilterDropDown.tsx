@@ -1,5 +1,5 @@
 import React, {FC, useState, useEffect, useRef} from 'react';
-import { Button, Dropdown} from 'react-bootstrap';
+import { Button, Dropdown } from 'react-bootstrap';
 
 interface MenuItem {
     value: string
@@ -85,12 +85,13 @@ export const MultipleSelectionFilterDropDown:FC<MultipleSelectionFilterDropDownP
 
     const displayLabel = selectedItems.length === 1 ? menuItems.find(item => item.value === selectedItems[0])?.label : name
     return (
-        <Dropdown show={isOpen} className={className} ref={dropdownRef} hidden={menuItems.length === 0}>
+        <Dropdown show={isOpen} className={className} ref={dropdownRef} style={{ opacity: menuItems.length === 0 ? 0.5 : 1 }}>
             <Dropdown.Toggle variant={isFiltering ? 'primary' : 'outline'} onClick={()=>setIsOpen(!isOpen)}>
                 {displayLabel}
                 <span className='circle mx-1' hidden={!isFiltering}>{selectNumber}</span>
             </Dropdown.Toggle>
             <Dropdown.Menu>
+                <div style={{ maxHeight: 400, overflowY: 'scroll' }}>
                 {menuItems.map((menuItem, index)=>{
                     return (
                     <div key={index} className='ml-2'>
@@ -105,16 +106,15 @@ export const MultipleSelectionFilterDropDown:FC<MultipleSelectionFilterDropDownP
                         </label>
                     </div>)
                 })}
-                {
-                    <div >
-                        <Dropdown.Divider/>
-                        <div className='d-flex'>
-                            <Button className='mx-2 btn' hidden={selectedItems.length === 0} onClick={onResetClick}>Reset</Button>
-                            <Button className='mx-2' hidden={selectedItems.length > 0} onClick={onCancelClick}>Cancel</Button>
-                            <Button className='text-nowrap mr-2' onClick={()=>{onShowResultClick()}}>Show Results</Button>
-                        </div>
+                </div>
+                <div>
+                    <Dropdown.Divider/>
+                    <div className='d-flex'>
+                        <Button className='mx-2 btn' hidden={selectedItems.length === 0} onClick={onResetClick}>Reset</Button>
+                        <Button className='mx-2' hidden={selectedItems.length > 0} onClick={onCancelClick}>Cancel</Button>
+                        <Button className='text-nowrap mr-2' onClick={()=>{onShowResultClick()}}>Show Results</Button>
                     </div>
-                }
+                </div>
             </Dropdown.Menu>
         </Dropdown>
     )

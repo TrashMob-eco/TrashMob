@@ -691,7 +691,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                     {upcomingEventsMapView ?
                         <>
                             <AzureMapsProvider>
-                                <MapControllerPointCollection forceReload={false} center={center} multipleEvents={myEventList.filter(event => new Date(event.eventDate) >= new Date())} isEventDataLoaded={isEventDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} onAttendanceChanged={handleAttendanceChanged} myAttendanceList={myEventList} isUserEventDataLoaded={isEventDataLoaded} onDetailsSelected={handleDetailsSelected} history={props.history} location={props.location} match={props.match} />
+                                <MapControllerPointCollection center={center} multipleEvents={myEventList.filter(event => new Date(event.eventDate) >= new Date())} isEventDataLoaded={isEventDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} onAttendanceChanged={handleAttendanceChanged} myAttendanceList={myEventList} isUserEventDataLoaded={isEventDataLoaded} onDetailsSelected={handleDetailsSelected} history={props.history} location={props.location} match={props.match} />
                             </AzureMapsProvider>
                         </>
                         : <UpcomingEventsTable />}
@@ -712,7 +712,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                     </div>
                     {pastEventsMapView ?
                         <AzureMapsProvider>
-                            <MapControllerPointCollection forceReload={false} center={center} multipleEvents={myEventList.filter(event => new Date(event.eventDate) < new Date())} isEventDataLoaded={isEventDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} onAttendanceChanged={handleAttendanceChanged} myAttendanceList={myEventList} isUserEventDataLoaded={isEventDataLoaded} onDetailsSelected={handleDetailsSelected} history={props.history} location={props.location} match={props.match} />
+                            <MapControllerPointCollection center={center} multipleEvents={myEventList.filter(event => new Date(event.eventDate) < new Date())} isEventDataLoaded={isEventDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={""} latitude={0} longitude={0} onLocationChange={handleLocationChange} currentUser={currentUser} isUserLoaded={isUserLoaded} onAttendanceChanged={handleAttendanceChanged} myAttendanceList={myEventList} isUserEventDataLoaded={isEventDataLoaded} onDetailsSelected={handleDetailsSelected} history={props.history} location={props.location} match={props.match} />
                         </AzureMapsProvider>
                         : <PastEventsTable />}
                 </div>

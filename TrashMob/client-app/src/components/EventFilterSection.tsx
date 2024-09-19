@@ -5,126 +5,99 @@ import {FilterDropDown} from './Customization/FilterDropDown';
 import {MultipleSelectionFilterDropDown} from './Customization/MultipleSelectionFilterDropDown';
 import EventTypeData from './Models/EventTypeData';
 import { EventTimeFrame, EventTimeLine } from '../enums';
-import { defaultFilterParams, EventFilterParams } from './EventsSection';
+import { defaultFilterParams } from './EventsSection';
+import { GetEventsParams } from '../services/events';
+
+const pastTimeFrames = Object.values(EventTimeFrame).filter((t)=> t.startsWith('Any') || t.startsWith('Past'));
+const futureTimeFrames = Object.values(EventTimeFrame).filter((t)=> t.startsWith('Any') || t.startsWith('Next'));
+const allTimeFrames = Object.values(EventTimeFrame)
+
+const getTimeFrameOptions = (eventTimeLine: EventTimeLine) => {
+    switch (eventTimeLine){
+        case EventTimeLine.Upcoming: return futureTimeFrames
+        case EventTimeLine.Completed: return pastTimeFrames
+        default: return allTimeFrames
+    }
+}
 
 export interface EventFilterSectionProps {
-    locationMap : Map<string, Map<string, Set<string>>>;
-    eventTypeList : EventTypeData[];
-    updateEventsByFilters : any;
 
-    filterParams: EventFilterParams
-    defaultFilterParams: EventFilterParams
+    countryOptions: string[]
+    regionOptions: string[]
+    cityOptions: string[]
+    
+    eventTypeList : EventTypeData[];
+    onFiltersChange : (filters: GetEventsParams) => void
+
+    filterParams: GetEventsParams
+    defaultFilterParams: GetEventsParams
     onResetFilters: () => void
 }
 
-export const EventFilterSection:FC<EventFilterSectionProps> = ({ filterParams, locationMap, eventTypeList, updateEventsByFilters, onResetFilters })=>{
-    const eventTimeLine = filterParams.type
-    const countries = Array.from(locationMap.keys()) || []
-    const [selectedCountry, setSelectedCountry] = useState<string>("");
-    const [states, setStates] = useState<string[]>([]);
-    const [selectedState, setSelectedState] = useState<string>("");
-    const [cities, setCities] = useState<string[]>([]);
-    const [selectedCities, setSelectedCities] = useState<string[]>([]);
-    const [selectedCleanTypes, setSelectedCleanTypes] = useState<string[]>([]);
-    const [passTimeFrame] = useState<string[]>(Object.values(EventTimeFrame).filter((t)=> t.startsWith('Any') || t.startsWith('Past')));
-    const [futureTimeFrame] = useState<string[]>(Object.values(EventTimeFrame).filter((t)=> t.startsWith('Any') || t.startsWith('Next')));
-    const [allTimeFrame] = useState<string[]>(Object.values(EventTimeFrame));
-    const [timeFrame, setTimeFrame] = useState<string[]>(futureTimeFrame);
-    const [selectedTimeFrame, setSelectedTimeFrame] = useState<string>(EventTimeFrame.AnyTime);
-    
-    useEffect(()=>{
-        updateEventsByFilters(selectedCountry, selectedState, selectedCities, selectedCleanTypes, selectedTimeFrame);
-    }, [selectedCountry, selectedState, selectedCities, selectedCleanTypes, selectedTimeFrame, updateEventsByFilters])
+export const EventFilterSection:FC<EventFilterSectionProps> = ({
+    filterParams,
+    countryOptions,
+    regionOptions,
+    cityOptions,
+    eventTypeList,
+    onFiltersChange,
+    onResetFilters
+}) => {
 
-    useEffect(()=>{
-        if(eventTimeLine === EventTimeLine.Upcoming)
-        {
-            setTimeFrame(futureTimeFrame);
-        }
-        else if(eventTimeLine === EventTimeLine.Completed)
-        {
-            setTimeFrame(passTimeFrame);
-        }
-        else
-        {
-            setTimeFrame(allTimeFrame);
-        }
-    }, [eventTimeLine, allTimeFrame, futureTimeFrame, passTimeFrame])
+    const { type: eventTimeLine } = filterParams
+    const timeFrames = getTimeFrameOptions(eventTimeLine)
+ 
+    const handleCountryChange = useCallback((selectedCountry: string) => {
+        onFiltersChange({
+            ...filterParams,
+            country: selectedCountry,
+            state: '', // also reset state & cities
+            cities: [],
+        })
+    }, [filterParams])
 
-    const handleCountryChange = useCallback((selectedCountry:string) => {
-        if(selectedCountry === "" || !locationMap.has(selectedCountry)) {
-            setSelectedCountry("");
-            setStates([]);
-            setCities([]);
-        } else {
-            setSelectedCountry(selectedCountry);
-            const states:Map<string, Set<string>> = locationMap.get(selectedCountry) || new Map<string, Set<string>>();
-            setStates(Array.from(states.keys()));
-            setCities([]);
-        }
+    const handleStateChange = useCallback((selectedState: string)=>{
+        onFiltersChange({
+            ...filterParams,
+            state: selectedState,
+            cities: [],  // also reset cities
+        })
+    }, [filterParams])
 
-        setSelectedState("");
-        setSelectedCities([]);
-    },[locationMap])
+    const handleCityChange = useCallback((cities: string[])=>{
+        onFiltersChange({ ...filterParams, cities })
+    }, [filterParams])
 
-    const handleStateChange = useCallback((selectedState:string)=>{
-        var stateMap = locationMap.get(selectedCountry);
-        if(stateMap)
-        {
-            if(selectedState === "")
-            {
-                setSelectedState("");
-                setCities([]);
-            }
-            else
-            {
-                setSelectedState(selectedState);
-                const citiesForSelectedState = stateMap.get(selectedState);
-                if(citiesForSelectedState)
-                {
-                    setCities(Array.from(citiesForSelectedState.values()));
-                }
-            }
-        }
-        
-        setSelectedCities([]);
-    },[locationMap, selectedCountry])
+    const handleCleanTypeChange = useCallback((cleanTypes: string[]) => {
+        onFiltersChange({ ...filterParams, cleanTypes })
+    }, [filterParams]);
 
-    const handleCityChange = useCallback((selectedItems:string[])=>{
-        setSelectedCities(selectedItems);
-    },[])
-
-    const handleCleanTypeChange = useCallback((selectedItems:string[]) => {
-        setSelectedCleanTypes(selectedItems);
-    },[]);
-
-    const handleTimeFrameChange = useCallback((selectedItem: string)=>{
-        setSelectedTimeFrame(selectedItem);
-    },[])
+    const handleTimeFrameChange = useCallback((timeFrame: EventTimeFrame)=>{
+        onFiltersChange({ ...filterParams, timeFrame })
+    }, [filterParams])
 
     const isEventFiltering = isEqual(filterParams, defaultFilterParams)
-
 
     return (
         <>
             <div className='d-flex'>
                 <FilterDropDown
                     name="Country"
-                    menuItems={countries}
-                    selectedItem={selectedCountry}
+                    menuItems={countryOptions}
+                    selectedItem={filterParams.country}
                     onShowResult={handleCountryChange}
                 />
                 <FilterDropDown
                     name='State'
-                    menuItems={states}
-                    selectedItem={selectedState}
+                    menuItems={regionOptions}
+                    selectedItem={filterParams.state}
                     onShowResult={handleStateChange}
                 />
                 <MultipleSelectionFilterDropDown
                     className="ml-1"
                     name="City"
-                    menuItems={cities.map(city => ({ value: city, label: city }))}
-                    selectedItems={selectedCities}
+                    menuItems={cityOptions.map(city => ({ value: city, label: city }))}
+                    selectedItems={filterParams.cities || []}
                     onShowResult={handleCityChange}
                 />
                 <MultipleSelectionFilterDropDown
@@ -135,14 +108,14 @@ export const EventFilterSection:FC<EventFilterSectionProps> = ({ filterParams, l
                             .sort((a,b)=>(a.displayOrder > b.displayOrder) ? 1 : -1)
                             .map(type => ({ value: `${type.id}`, label: type.name }))
                     }
-                    selectedItems={selectedCleanTypes}
+                    selectedItems={filterParams.cleanTypes || []}
                     onShowResult={handleCleanTypeChange}
                 />
                 <FilterDropDown
                     className='ml-1'
                     name='Time Frame'
-                    menuItems={timeFrame}
-                    selectedItem={selectedTimeFrame}
+                    menuItems={timeFrames}
+                    selectedItem={filterParams.timeFrame}
                     defaultSelection={EventTimeFrame.AnyTime}
                     onShowResult={handleTimeFrameChange}
                 />

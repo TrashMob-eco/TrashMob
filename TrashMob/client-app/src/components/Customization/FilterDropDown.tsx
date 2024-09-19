@@ -5,7 +5,7 @@ interface FilterDropDownProps
 {
     name: string;
     menuItems: string[];
-    selectedItem: string;
+    selectedItem?: string;
     defaultSelection?: string;
     className?: string;
     onShowResult: any;
@@ -29,7 +29,7 @@ export const FilterDropDown:FC<FilterDropDownProps> = ({name, menuItems, selecte
         if(isOpen)
         {
             document.addEventListener('click', handleClickOutside);
-            setSelectedOption(selectedItem);
+            setSelectedOption(selectedItem || '');
         }
 
         return () => {
@@ -44,7 +44,7 @@ export const FilterDropDown:FC<FilterDropDownProps> = ({name, menuItems, selecte
             setIsFiltering(false);
         }
 
-        setSelectedOption(selectedItem);
+        setSelectedOption(selectedItem || '');
 
     },[selectedItem])
 
@@ -70,9 +70,9 @@ export const FilterDropDown:FC<FilterDropDownProps> = ({name, menuItems, selecte
     }
 
     return (
-        <Dropdown show={isOpen} className={className} ref={dropdownRef} hidden={menuItems.length === 0}>
+        <Dropdown show={isOpen} className={className} ref={dropdownRef} style={{ opacity: menuItems.length === 0 ? 0.5 : 1 }}>
             <Dropdown.Toggle variant={isFiltering ? 'primary' : 'outline'} onClick={()=>setIsOpen(!isOpen)}>
-                {isFiltering ? selectedItem : name}
+                {selectedItem || name}
             </Dropdown.Toggle>
             <Dropdown.Menu>
                 {menuItems.map((menuItem, index)=>{
