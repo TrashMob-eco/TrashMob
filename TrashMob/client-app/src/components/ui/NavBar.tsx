@@ -7,7 +7,7 @@ import {
 } from "../../store/AuthStore";
 import UserData from "../Models/UserData";
 // import logo from "../assets/logo.svg"
-import logo from "../assets/LogoVector_New.png";
+import logo from "../assets/TrashMob_Logo1.png";
 import { Button, Dropdown, Nav } from "react-bootstrap";
 import "../assets/styles/header.css";
 import {
