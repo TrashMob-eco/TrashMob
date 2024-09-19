@@ -1,4 +1,4 @@
-import {FC, useState, useEffect, useCallback} from 'react';
+import {FC, useCallback} from 'react';
 import isEqual from 'lodash/isEqual'
 
 import {FilterDropDown} from './Customization/FilterDropDown';
