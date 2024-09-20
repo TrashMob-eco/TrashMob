@@ -124,7 +124,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
         window.scrollTo(0, 0);
 
         getEventTypes.refetch().then((res) => {
-            setEventTypeList(res.data?.data || []);
+            setEventTypeList(res.data || []);
         })
 
         if (eventId !== null) {
@@ -157,7 +157,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
             }).then(() => {
                 if (!isUserLoaded || !currentUser) return;
                 getAllEventsBeingAttendedByUser.refetch().then((eventsBeingAttendedRes) => {
-                    setMyAttendanceList(eventsBeingAttendedRes.data?.data || []);
+                    setMyAttendanceList(eventsBeingAttendedRes.data || []);
                     setIsUserEventDataLoaded(true);
                 })
             })
@@ -187,7 +187,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
     const handleAttendanceChanged = () => {
         if (!isUserLoaded || !currentUser) return;
         getAllEventsBeingAttendedByUser.refetch().then(res => {
-            setMyAttendanceList(res.data?.data || []);
+            setMyAttendanceList(res.data || []);
             setIsUserEventDataLoaded(true);
         })
     }

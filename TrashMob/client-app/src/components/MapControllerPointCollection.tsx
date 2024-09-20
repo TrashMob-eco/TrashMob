@@ -32,7 +32,6 @@ interface MapControllerProps extends RouteComponentProps {
     myAttendanceList: EventData[];
     isUserEventDataLoaded: boolean;
     onDetailsSelected: any;
-    forceReload: boolean;
 }
 
 export const MapControllerPointCollection: FC<MapControllerProps> = (props) => {
@@ -65,13 +64,6 @@ export const MapControllerPointCollection: FC<MapControllerProps> = (props) => {
             setWaiver(res.data?.data)
         })
     }, [])
-
-    useEffect(() => {
-        if (props.forceReload) {
-            // mapRef?.sources.clear();
-            setIsDataSourceLoaded(false);
-        }
-    }, [props.forceReload]);
 
     useEffect(() => {
         let popup: Popup;
@@ -138,7 +130,7 @@ export const MapControllerPointCollection: FC<MapControllerProps> = (props) => {
 
                 getEventTypes.refetch().then(async (res) => {
                     if (res.data === undefined) throw new Error()
-                    const type = getEventType(res.data.data, properties.eventTypeId);
+                    const type = getEventType(res.data, properties.eventTypeId);
                     properties.eventTypeList = type;
                 })
 

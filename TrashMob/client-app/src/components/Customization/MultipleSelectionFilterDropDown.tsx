@@ -1,17 +1,20 @@
 import React, {FC, useState, useEffect, useRef} from 'react';
-import { Button, Dropdown} from 'react-bootstrap';
-interface MultipleSelectionFilterDropDownProps
-{
-    name: string;
-    menuItems: string[];
-    selectedItems: string[];
-    className?: string;
-    resetFilter?: boolean;
-    onShowResult: any;
-    onIsFilteringChange: any;
+import { Button, Dropdown } from 'react-bootstrap';
+
+interface MenuItem {
+    value: string
+    label: string
 }
 
-export const MultipleSelectionFilterDropDown:FC<MultipleSelectionFilterDropDownProps> = ({name, menuItems, selectedItems, className, resetFilter= false, onShowResult, onIsFilteringChange})=>{
+interface MultipleSelectionFilterDropDownProps {
+    name: string;
+    menuItems: MenuItem[];
+    selectedItems: string[];
+    className?: string;
+    onShowResult: any;
+}
+
+export const MultipleSelectionFilterDropDown:FC<MultipleSelectionFilterDropDownProps> = ({name, menuItems, selectedItems, className, onShowResult })=>{
     const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [isFiltering, setIsFiltering] = useState<boolean>(false);
@@ -36,16 +39,6 @@ export const MultipleSelectionFilterDropDown:FC<MultipleSelectionFilterDropDownP
             document.removeEventListener('click', handleClickOutside);
         };
     }, [isOpen, selectedItems]);
-      
-    useEffect(() => {
-        if(isFiltering && resetFilter)
-        {
-            setSelectedOptions([]);
-            onShowResult([]);
-            setIsFiltering(false);
-            onIsFilteringChange(false);
-        }
-    },[resetFilter, isFiltering, onShowResult, onIsFilteringChange])
 
     useEffect(()=>{
         if(selectedItems.length === 0)
@@ -61,7 +54,6 @@ export const MultipleSelectionFilterDropDown:FC<MultipleSelectionFilterDropDownP
         onShowResult(selectedOptions);
         setIsFiltering(selectedOptions.length > 0);
         setSelectNumber(selectedOptions.length);
-        onIsFilteringChange(selectedOptions.length > 0);
         closeMenu();
     }
 
@@ -74,16 +66,16 @@ export const MultipleSelectionFilterDropDown:FC<MultipleSelectionFilterDropDownP
         setSelectedOptions([]);
     }
 
-    const handleCheckBoxSelectionChange = (event: React.ChangeEvent<HTMLInputElement>, menuItem: string) =>{
+    const handleCheckBoxSelectionChange = (event: React.ChangeEvent<HTMLInputElement>, value: string) =>{
         const isChecked = event.target.checked;
 
         if(isChecked)
         {
-            setSelectedOptions([...selectedOptions, menuItem]);
+            setSelectedOptions([...selectedOptions, value]);
         }
         else
         {
-            setSelectedOptions(selectedOptions.filter((item => item !== menuItem)));
+            setSelectedOptions(selectedOptions.filter((item => item !== value)));
         }
     }
 
@@ -91,33 +83,38 @@ export const MultipleSelectionFilterDropDown:FC<MultipleSelectionFilterDropDownP
         setIsOpen(false);
     }
 
-
+    const displayLabel = selectedItems.length === 1 ? menuItems.find(item => item.value === selectedItems[0])?.label : name
     return (
-        <Dropdown show={isOpen} className={className} ref={dropdownRef} hidden={menuItems.length === 0}>
+        <Dropdown show={isOpen} className={className} ref={dropdownRef} style={{ opacity: menuItems.length === 0 ? 0.5 : 1 }}>
             <Dropdown.Toggle variant={isFiltering ? 'primary' : 'outline'} onClick={()=>setIsOpen(!isOpen)}>
-                {selectedItems.length === 1 ? selectedItems[0] : name}
+                {displayLabel}
                 <span className='circle mx-1' hidden={!isFiltering}>{selectNumber}</span>
             </Dropdown.Toggle>
             <Dropdown.Menu>
+                <div style={{ maxHeight: 400, overflowY: 'scroll' }}>
                 {menuItems.map((menuItem, index)=>{
                     return (
                     <div key={index} className='ml-2'>
                         <label className='d-flex'>
-                            <input type="checkbox" className='mr-1'  checked={selectedOptions.includes(menuItem)} onChange={(event)=>handleCheckBoxSelectionChange(event,menuItem)}></input>
-                            {menuItem}
+                            <input
+                                type="checkbox"
+                                className="mr-1"
+                                checked={selectedOptions.includes(menuItem.value)}
+                                onChange={(event) => handleCheckBoxSelectionChange(event, menuItem.value)}
+                            />
+                            {menuItem.label}
                         </label>
                     </div>)
                 })}
-                {
-                    <div >
-                        <Dropdown.Divider/>
-                        <div className='d-flex'>
-                            <Button className='mx-2 btn' hidden={selectedItems.length === 0} onClick={onResetClick}>Reset</Button>
-                            <Button className='mx-2' hidden={selectedItems.length > 0} onClick={onCancelClick}>Cancel</Button>
-                            <Button className='text-nowrap mr-2' onClick={()=>{onShowResultClick()}}>Show Results</Button>
-                        </div>
+                </div>
+                <div>
+                    <Dropdown.Divider/>
+                    <div className='d-flex'>
+                        <Button className='mx-2 btn' hidden={selectedItems.length === 0} onClick={onResetClick}>Reset</Button>
+                        <Button className='mx-2' hidden={selectedItems.length > 0} onClick={onCancelClick}>Cancel</Button>
+                        <Button className='text-nowrap mr-2' onClick={()=>{onShowResultClick()}}>Show Results</Button>
                     </div>
-                }
+                </div>
             </Dropdown.Menu>
         </Dropdown>
     )
