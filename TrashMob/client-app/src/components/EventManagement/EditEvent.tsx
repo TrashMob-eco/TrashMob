@@ -101,7 +101,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
 
     React.useEffect(() => {
         getEventTypes.refetch().then((res) => {
-            setEventTypeList(res.data || []);
+            setEventTypeList(res.data?.data || []);
             // This will set state for Edit Event  
             if (eventId !== null && eventId !== "" && eventId !== Guid.EMPTY) {
                 getEventById.refetch().then((res) => {

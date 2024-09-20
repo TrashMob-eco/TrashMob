@@ -5,13 +5,15 @@ interface FilterDropDownProps
 {
     name: string;
     menuItems: string[];
-    selectedItem?: string;
+    selectedItem: string;
     defaultSelection?: string;
     className?: string;
+    resetFilter?: boolean;
     onShowResult: any;
+    onIsFilteringChange: any;
 }
 
-export const FilterDropDown:FC<FilterDropDownProps> = ({name, menuItems, selectedItem, defaultSelection='', className, onShowResult })=>{
+export const FilterDropDown:FC<FilterDropDownProps> = ({name, menuItems, selectedItem, defaultSelection='', className, resetFilter='', onShowResult, onIsFilteringChange})=>{
     const [selectedOption, setSelectedOption] = useState<string>("");
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [isFiltering, setIsFiltering] = useState<boolean>(false);
@@ -29,7 +31,7 @@ export const FilterDropDown:FC<FilterDropDownProps> = ({name, menuItems, selecte
         if(isOpen)
         {
             document.addEventListener('click', handleClickOutside);
-            setSelectedOption(selectedItem || '');
+            setSelectedOption(selectedItem);
         }
 
         return () => {
@@ -37,6 +39,15 @@ export const FilterDropDown:FC<FilterDropDownProps> = ({name, menuItems, selecte
         };
     }, [isOpen, selectedItem])
 
+    useEffect(() => {
+        if(isFiltering && resetFilter)
+        {
+            setSelectedOption(defaultSelection);
+            onShowResult(defaultSelection);
+            setIsFiltering(false);
+            onIsFilteringChange(false);
+        }
+    },[isFiltering, resetFilter, defaultSelection, onShowResult, onIsFilteringChange])
 
     useEffect(()=>{
         if(selectedItem === "")
@@ -44,12 +55,14 @@ export const FilterDropDown:FC<FilterDropDownProps> = ({name, menuItems, selecte
             setIsFiltering(false);
         }
 
-        setSelectedOption(selectedItem || '');
+        setSelectedOption(selectedItem);
 
     },[selectedItem])
 
     const onShowResultClick = ()=>{
         onShowResult(selectedOption);
+        setIsFiltering(selectedOption !== defaultSelection);
+        onIsFilteringChange(selectedOption !== defaultSelection);
         closeMenu();
     }
 
@@ -70,9 +83,9 @@ export const FilterDropDown:FC<FilterDropDownProps> = ({name, menuItems, selecte
     }
 
     return (
-        <Dropdown show={isOpen} className={className} ref={dropdownRef} style={{ opacity: menuItems.length === 0 ? 0.5 : 1 }}>
+        <Dropdown show={isOpen} className={className} ref={dropdownRef} hidden={menuItems.length === 0}>
             <Dropdown.Toggle variant={isFiltering ? 'primary' : 'outline'} onClick={()=>setIsOpen(!isOpen)}>
-                {selectedItem || name}
+                {isFiltering ? selectedItem : name}
             </Dropdown.Toggle>
             <Dropdown.Menu>
                 {menuItems.map((menuItem, index)=>{
