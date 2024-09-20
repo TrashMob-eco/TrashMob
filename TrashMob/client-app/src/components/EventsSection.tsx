@@ -36,6 +36,7 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
     const [presentEventList, setPresentEventList] = useState<EventData[]>([]);
     const [locationMap, setLocationMap] = useState(new Map<string, Map<string, Set<string>>>());
     const [isResetFilters, setIsResetFilters] = useState(false);
+
     const divRef = useRef<HTMLDivElement>(null);
 
     const getEventTypes = useQuery({ 

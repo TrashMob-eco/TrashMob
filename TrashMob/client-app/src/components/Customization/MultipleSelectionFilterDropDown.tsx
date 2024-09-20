@@ -8,10 +8,9 @@ interface MultipleSelectionFilterDropDownProps
     className?: string;
     resetFilter?: boolean;
     onShowResult: any;
-    onIsFilteringChange: any;
 }
 
-export const MultipleSelectionFilterDropDown:FC<MultipleSelectionFilterDropDownProps> = ({name, menuItems, selectedItems, className, resetFilter= false, onShowResult, onIsFilteringChange})=>{
+export const MultipleSelectionFilterDropDown:FC<MultipleSelectionFilterDropDownProps> = ({name, menuItems, selectedItems, className, resetFilter= false, onShowResult })=>{
     const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [isFiltering, setIsFiltering] = useState<boolean>(false);
@@ -43,9 +42,8 @@ export const MultipleSelectionFilterDropDown:FC<MultipleSelectionFilterDropDownP
             setSelectedOptions([]);
             onShowResult([]);
             setIsFiltering(false);
-            onIsFilteringChange(false);
         }
-    },[resetFilter, isFiltering, onShowResult, onIsFilteringChange])
+    },[resetFilter, isFiltering, onShowResult])
 
     useEffect(()=>{
         if(selectedItems.length === 0)
@@ -61,7 +59,6 @@ export const MultipleSelectionFilterDropDown:FC<MultipleSelectionFilterDropDownP
         onShowResult(selectedOptions);
         setIsFiltering(selectedOptions.length > 0);
         setSelectNumber(selectedOptions.length);
-        onIsFilteringChange(selectedOptions.length > 0);
         closeMenu();
     }
 
