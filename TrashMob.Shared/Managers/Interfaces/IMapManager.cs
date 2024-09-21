@@ -8,6 +8,8 @@
     {
         string GetMapKey();
 
+        string GetGoogleMapKey();
+
         Task<double> GetDistanceBetweenTwoPointsAsync(Tuple<double, double> pointA, Tuple<double, double> pointB,
             bool IsMetric = true);
 

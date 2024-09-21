@@ -15,6 +15,8 @@
     public class MapManager : IMapManager
     {
         private const string AzureMapKeyName = "AzureMapsKey";
+        private const string GoogleMapKeyName = "GoogleMapsKey";
+
         private const int MetersPerKilometer = 1000;
         private const int MetersPerMile = 1609;
         private readonly IConfiguration configuration;
@@ -29,6 +31,11 @@
         public string GetMapKey()
         {
             return configuration[AzureMapKeyName];
+        }
+
+        public string GetGoogleMapKey()
+        {
+            return configuration[GoogleMapKeyName];
         }
 
         public async Task<double> GetDistanceBetweenTwoPointsAsync(Tuple<double, double> pointA,
