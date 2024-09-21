@@ -23,7 +23,7 @@
             return Ok(mapKey);
         }
 
-        [HttpGet]
+        [HttpGet("googlemapkey")]
         public async Task<IActionResult> GetGoogleMapKey()
         {
             var mapKey = await Task.FromResult(mapRepository.GetGoogleMapKey());
