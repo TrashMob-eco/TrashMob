@@ -11,9 +11,9 @@ $font-family-base: 'Poppins' !default;
 // Importing Bootstrap
 // Has to go below the new variables in order to take effect.
 // =================
-@import "bootstrap/scss/bootstrap.scss";
+@import 'bootstrap/scss/bootstrap.scss';
 
 // =================
 // Importing app styles here so we can reuse bootstrap variables
 // =================
-@import "./app.scss";
+@import './app.scss';

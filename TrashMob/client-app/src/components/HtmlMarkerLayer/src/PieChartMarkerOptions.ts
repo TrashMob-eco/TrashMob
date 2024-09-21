@@ -1,4 +1,4 @@
-﻿import * as azmaps from "azure-maps-control";
+import * as azmaps from 'azure-maps-control';
 import { PieChartMarker } from './PieChartMarker';
 
 /**
@@ -6,25 +6,25 @@ import { PieChartMarker } from './PieChartMarker';
  */
 export interface PieChartMarkerOptions {
     /** The value of each slice of the pie. */
-    values: number[],
+    values: number[];
 
     /** The radius of a pie chart in pixels. Default: `40` */
-    radius?: number,
+    radius?: number;
 
     /** The inner radius of the pie chart in pixels. Default: `0` */
     innerRadius: number;
 
     /** The colors of each category in the pie chart. Should have a length >= to largest values array in data set. Default: `['#d7191c','#fdae61','#ffffbf','#abdda4','#2b83ba']` */
-    colors?: string[],
+    colors?: string[];
 
     /** The color to fill the center of a pie chart when inner radius is greated than 0. Default: `transparent` */
-    fillColor?: string,
+    fillColor?: string;
 
     /** The stroke width in pixels. Default: `0` */
-    strokeWidth?: number,
+    strokeWidth?: number;
 
     /** The color of the stroke line. Default: `#666666` */
-    strokeColor?: string,
+    strokeColor?: string;
 
     /** A CSS class name to append to the `text` tag of the SVG pie chart. */
     textClassName?: string;

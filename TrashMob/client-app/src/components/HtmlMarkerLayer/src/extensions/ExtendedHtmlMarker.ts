@@ -1,4 +1,4 @@
-﻿import * as azmaps from "azure-maps-control";
+import * as azmaps from 'azure-maps-control';
 
 /** An interface for the HtmlMarker class that extends it by adding an `id` and a `properties` property. */
 export interface ExtendedHtmlMarker extends azmaps.HtmlMarker {

@@ -75,7 +75,7 @@
     background-color: unset !important;
     color: #96ba00 !important;
     border: 1px solid #96ba00 !important;
-    transition: all ease .5s;
+    transition: all ease 0.5s;
     margin-right: 9px;
 }
 
@@ -83,18 +83,18 @@
     background-color: #96ba00 !important;
     color: #fff !important;
     border: none;
-    transition: all ease .5s;
+    transition: all ease 0.5s;
 }
 
 #registerBtn {
-    transition: all ease .5s;
+    transition: all ease 0.5s;
 }
 
 #registerBtn:hover {
     background-color: unset !important;
     color: #96ba00 !important;
     border: 1px solid #96ba00 !important;
-    transition: all ease .5s;
+    transition: all ease 0.5s;
 }
 
 .dropdown-menu {
@@ -118,16 +118,16 @@
     background-color: unset !important;
     font-size: 17px !important;
     width: auto !important;
-    color: #6B6F74
+    color: #6b6f74;
 }
 
 #userBtn:focus {
     box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 1);
 }
 
-#userBtn+.dropdown-menu>.dropdown-item {
+#userBtn + .dropdown-menu > .dropdown-item {
     font-weight: 400;
-    color: #6B6F74;
+    color: #6b6f74;
 }
 
 @media (min-width: 992px) {
