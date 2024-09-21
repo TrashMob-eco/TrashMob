@@ -50,11 +50,11 @@ export const AboutUs: React.FC = () => {
                         backgroundPosition: 'center',
                     }}
                 >
-                    <Col xs={8} lg={8} className='px-0 mx-auto'>
+                    <Col xs={11} lg={8} className='px-0 mx-auto'>
                         <div className='text-white bg-black border-rounded-lg my-5 mx-auto' style={{ opacity: 0.95 }}>
-                            <div className='p-5'>
-                                <h1 className='font-weight-bold pl-5'>Benefits of joining TrashMob</h1>
-                                <ol className='list-unstyled mt-5 p-5'>
+                            <div className='p-4 p-sm-5'>
+                                <h1 className='font-weight-bold text-center'>Benefits of joining TrashMob</h1>
+                                <ol className='list-unstyled mt-5 p-sm-5'>
                                     <li className='mb-4'>
                                         <div className='d-flex align-top'>
                                             <span className='mr-3 font-weight-bold font-size-lg'>1</span>

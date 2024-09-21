@@ -472,7 +472,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     function UpcomingEventsTable() {
         const headerTitles = ['Name', 'Role', 'Date', 'Time', 'Location', 'Actions'];
         return (
-            <div className='bg-white p-3 px-4'>
+            <div className='bg-white p-3 px-4 overflow-auto'>
                 <Table columnHeaders={headerTitles}>
                     {myEventList
                         .sort((a, b) => (a.eventDate < b.eventDate ? 1 : -1))
@@ -520,7 +520,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     function PastEventsTable() {
         const headerTitles = ['Name', 'Role', 'Date', 'Time', 'Location', 'Actions'];
         return (
-            <div className='bg-white p-3 px-4'>
+            <div className='bg-white p-3 px-4 overflow-auto'>
                 <Table columnHeaders={headerTitles}>
                     {myEventList
                         .sort((a, b) => (a.eventDate < b.eventDate ? 1 : -1))
@@ -569,7 +569,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         const headerTitles = ['Name', 'Status', 'Actions'];
         if (myPartners) {
             return (
-                <div className='bg-white p-3 px-4'>
+                <div className='bg-white p-3 px-4 overflow-auto'>
                     <Table columnHeaders={headerTitles}>
                         {myPartners
                             .sort((a, b) => (a.name < b.name ? 1 : -1))
@@ -607,7 +607,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
             );
         }
         return (
-            <div className='bg-white p-3 px-4'>
+            <div className='bg-white p-3 px-4 overflow-auto'>
                 <Table columnHeaders={headerTitles}>
                     <></>
                 </Table>
@@ -619,7 +619,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         const headerTitles = ['Street Address', 'City', 'Notes', 'Actions'];
         if (isPickupRequestsDataLoaded && myPickupRequests) {
             return (
-                <div className='bg-white p-3 px-4'>
+                <div className='bg-white p-3 px-4 overflow-auto'>
                     <Table columnHeaders={headerTitles}>
                         {myPickupRequests.map((displayPickup) => (
                             <tr key={displayPickup.id.toString()}>
@@ -644,7 +644,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
             );
         }
         return (
-            <div className='bg-white p-3 px-4'>
+            <div className='bg-white p-3 px-4 overflow-auto'>
                 <Table columnHeaders={headerTitles}>
                     <></>
                 </Table>
@@ -656,7 +656,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         const headerTitles = ['Name', 'Status', 'Actions'];
         if (myPartnerRequests) {
             return (
-                <div className='bg-white p-3 px-4'>
+                <div className='bg-white p-3 px-4 overflow-auto'>
                     <Table columnHeaders={headerTitles}>
                         {myPartnerRequests
                             .sort((a, b) => (a.name < b.name ? 1 : -1))
@@ -692,7 +692,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
             );
         }
         return (
-            <div className='bg-white p-3 px-4'>
+            <div className='bg-white p-3 px-4 overflow-auto'>
                 <Table columnHeaders={headerTitles}>
                     <></>
                 </Table>
@@ -704,7 +704,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         const headerTitles = ['Partner Name', 'Actions'];
         if (isPartnerAdminInvitationsDataLoaded && myPartnerAdminInvitations) {
             return (
-                <div className='bg-white p-3 px-4'>
+                <div className='bg-white p-3 px-4 overflow-auto'>
                     <Table columnHeaders={headerTitles}>
                         {myPartnerAdminInvitations.map((displayInvitation) => (
                             <tr key={displayInvitation.id.toString()}>
@@ -726,7 +726,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
             );
         }
         return (
-            <div className='bg-white p-3 px-4'>
+            <div className='bg-white p-3 px-4 overflow-auto'>
                 <Table columnHeaders={headerTitles}>
                     <></>
                 </Table>
@@ -747,8 +747,8 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                         message={SharingMessages.getEventShareMessage(eventToShare, props.currentUser.id)}
                     />
                 ) : null}
-                <Row className='pt-5'>
-                    <Col>
+                <Row className='pt-5 justify-content-lg-center'>
+                    <Col xs='6' md='4' xl='3'>
                         <div className='d-flex bg-white'>
                             <Col className='ml-3'>
                                 <p className='card-title'>Events</p>
@@ -758,12 +758,12 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                                 <Image
                                     src={twofigure}
                                     alt='person silouhette icons'
-                                    className='card-icon align-self-end mr-3'
+                                    className='card-icon align-self-end mr-3 '
                                 />
                             </Col>
                         </div>
                     </Col>
-                    <Col>
+                    <Col xs='6' md='4' xl='3'>
                         <div className='d-flex bg-white'>
                             <Col className='ml-3'>
                                 <p className='card-title'>Hours</p>
@@ -778,7 +778,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                             </Col>
                         </div>
                     </Col>
-                    <Col>
+                    <Col xs='6' md='4' xl='3' className='mt-4 mt-md-0'>
                         <div className='d-flex bg-white'>
                             <Col className='ml-3'>
                                 <p className='card-title'>Bags</p>
@@ -922,14 +922,20 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                         <PastEventsTable />
                     )}
                 </div>
-                <div className='d-flex my-5 mb-4 justify-content-between'>
+                <div className='d-flex flex-column mt-5 mb-3'>
                     <h4 className='font-weight-bold mr-2 mt-0 active-line pb-2'>
                         My Partnerships ({myPartnerRequests.length + myPartners.length})
                     </h4>
-                    <Link className='d-flex align-items-center btn btn-primary banner-button' to='/inviteapartner'>
+                    <Link
+                        className='d-flex align-items-center btn btn-primary banner-button mx-auto mr-sm-auto ml-sm-0 mt-2'
+                        to='/inviteapartner'
+                    >
                         Send invitation to join TrashMob.eco as a partner
                     </Link>
-                    <Link className='d-flex align-items-center btn btn-primary banner-button' to='/becomeapartner'>
+                    <Link
+                        className='d-flex align-items-center btn btn-primary banner-button mx-auto mr-sm-auto ml-sm-0 mt-2'
+                        to='/becomeapartner'
+                    >
                         Apply to become a partner
                     </Link>
                 </div>
@@ -979,3 +985,4 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
 };
 
 export default withRouter(MyDashboard);
+
