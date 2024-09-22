@@ -17,6 +17,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { GetUserById, UpdateUser } from '../../services/users';
 import { Services } from '../../config/services.config';
 import { AzureMapSearchAddressReverse } from '../../services/maps';
+import { AzureSearchAddressInput, GoogleMap, MarkerWithInfoWindow } from '../Map';
 
 interface LocationPreferenceProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -43,7 +44,10 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
     const [prefersMetric, setPrefersMetric] = useState<boolean>(false);
     const [travelLimitForLocalEvents, setTravelLimitForLocalEvents] = useState<number>(10);
     const [travelLimitForLocalEventsErrors, setTravelLimitForLocalEventsErrors] = useState<string>("");
-    const [center, setCenter] = useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
+
+    const [center, setCenter] = useState<google.maps.LatLngLiteral>({ lat: MapStore.defaultLongitude, lng: MapStore.defaultLatitude });
+    const azureCenterPosition = new data.Position(center.lng, center.lat)
+
     const [isMapKeyLoaded, setIsMapKeyLoaded] = useState<boolean>(false);
     const [mapOptions, setMapOptions] = useState<IAzureMapOptions>();
     const [eventName, setEventName] = useState<string>("User's Base Location");
@@ -73,7 +77,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
         window.scrollTo(0, 0);
         setUnits(["mi", "km"]);
         if (props.isUserLoaded && !isDataLoaded) {
-            setEventName("User's Base Location");
+            // setEventName("User's Base Location");
             getUserById.refetch().then((res) => {
                 if (res.data === undefined || res.data.data === null) return;
                 setUserName(res.data.data.userName);
@@ -105,8 +109,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
 
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(position => {
-                const point = new data.Position(position.coords.longitude, position.coords.latitude);
-                setCenter(point)
+                setCenter({ lat: position.coords.latitude, lng: position.coords.longitude })
             });
         }
     }, [userId, props.isUserLoaded, isDataLoaded])
@@ -204,7 +207,25 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.LocationPreferenceTravelLimitForLocalEvents}</Tooltip>
     }
 
-    const handleLocationChange = async (point: data.Position) => {
+    const handleLocationChange = async (e: google.maps.MapMouseEvent) => {
+        if (e.latLng) {
+            const lat = e.latLng.lat()
+            const lng = e.latLng.lng()
+            setLatitude(lat)
+            setLongitude(lng)
+
+            const azureKey = await getKey();
+            azureMapSearchAddressReverse.mutateAsync({ azureKey, lat, long: lng }).then((res) => {
+                console.log(res.data)
+                setCity(res.data.addresses[0].address.municipality);
+                setCountry(res.data.addresses[0].address.country);
+                setRegion(res.data.addresses[0].address.countrySubdivisionName);
+                setPostalCode(res.data.addresses[0].address.postalCode);
+            })
+        }
+    }
+
+    const handleAzureMarkerLocationChange = async (point: data.Position) => {
         setLatitude(point[1]);
         setLongitude(point[0]);
         const azureKey = await getKey();
@@ -216,6 +237,11 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
         })
     }
 
+    // console.log({ center, azureCenterPosition, isDataLoaded, mapOptions, isMapKeyLoaded, eventName, latitude, longitude, currentUser: props.currentUser, isUserLoaded: props.isUserLoaded })
+
+    const date = new Date().toLocaleDateString([], { month: "long", day: "2-digit", year: "numeric" });
+    const time = new Date().toLocaleTimeString([], { timeZoneName: 'short' });
+                        
     return (
         !isDataLoaded ? <div>Loading</div> :
             <div>
@@ -224,9 +250,56 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                     <h4 className='fw-600 color-primary my-3 main-header'>Location preferences</h4>
                     <Form onSubmit={handleSave}>
                         <Form.Row>
+                            <div style={{ position: 'relative', width: '100%' }}>
+                                <GoogleMap
+                                    style={{ width: '100%', height: '500px' }}
+                                    defaultCenter={center}
+                                    defaultZoom={MapStore.defaultUserLocationZoom}
+                                >
+                                    <MarkerWithInfoWindow
+                                        position={center}
+                                        draggable={true}
+                                        onDragEnd={handleLocationChange}
+                                        infoWindowTrigger="hover"
+                                        infoWindowProps={{
+                                            headerDisabled: true 
+                                        }}
+                                        infoWindowContent={(
+                                            <>
+                                                <h5 className="font-weight-bold" style={{ fontSize: '18px', marginTop: '0.5rem' }}>User's Base Location</h5>
+                                                <p>
+                                                    <span className="font-weight-bold">Event Date:</span> {date}<br />
+                                                    <span className="font-weight-bold">Time: </span> {time}
+                                                </p>
+                                            </>
+                                        )}
+                                    />
+                                </GoogleMap>
+                                {/* {mapOptions?.subscriptionKey && (
+                                    <div style={{ position: 'absolute', top: 8, left: 8 }}>
+                                        <AzureSearchAddressInput
+                                            azureKey={mapOptions?.subscriptionKey}
+                                            onSelectLocation={handleAzureMarkerLocationChange}
+                                        />
+                                    </div>
+                                )} */}
+                            </div>
                             <AzureMapsProvider>
                                 <>
-                                    <MapControllerSinglePoint center={center} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} isDraggable={true} eventDate={new Date()} />
+                                    <MapControllerSinglePoint
+                                        center={azureCenterPosition} 
+                                        isEventDataLoaded={isDataLoaded}
+                                        mapOptions={mapOptions}
+                                        isMapKeyLoaded={isMapKeyLoaded}
+                                        eventName={eventName}
+                                        latitude={latitude}
+                                        longitude={longitude}
+                                        onLocationChange={handleAzureMarkerLocationChange}
+                                        currentUser={props.currentUser}
+                                        isUserLoaded={props.isUserLoaded}
+                                        isDraggable={true}
+                                        eventDate={new Date()}
+                                    />
                                 </>
                             </AzureMapsProvider>
                         </Form.Row>
@@ -238,7 +311,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                                     </OverlayTrigger>
                                     <Row>
                                         <Col xs={8}>
-                                            <Form.Control type="number" className='border-0 bg-light p-18 h-60' w-100 name="maxEventsRadius" defaultValue={travelLimitForLocalEvents} onChange={(val) => handleTravelLimitForLocalEventsChanged(val.target.value)} maxLength={parseInt('32')} />
+                                            <Form.Control type="number" className='border-0 bg-light p-18 h-60 w-100' name="maxEventsRadius" defaultValue={travelLimitForLocalEvents} onChange={(val) => handleTravelLimitForLocalEventsChanged(val.target.value)} maxLength={parseInt('32')} />
                                         </Col>
                                         <Col xs={4}>
                                             <select data-val="true" className='bg-light border-0 p-18 h-60 w-100 rounded p-2' name="radiusType" value={radiusType} onChange={(val) => handleRadiusTypeChanged(val.target.value)} required>
