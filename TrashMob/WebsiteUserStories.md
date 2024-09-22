@@ -178,3 +178,24 @@
 
 ## TrashMob.eco Staff Stories
 1. As a member of the TrashMob.eco staff/board, I want to be able to easily view the site usage statistics so that I can track the impact of the organization.
+
+## Email Notification Stories
+1. As a user, I want to receive an email notification when I sign up for the site so that I know my account was created successfully.
+1. As a user, I want to receive an email notification when I sign up for an event so that I know my registration was successful.
+1. As a user, I want to receive an email notification when an event I signed up for is cancelled so that I can adjust my plans.
+1. As an event lead, I want to receive an email notification when someone signs up for my event so that I can plan accordingly.
+1. As a user, I want to receive an email notification when a new event is created in my area.
+1. As a user, I want to receive an email notification when a new litter report is created in my area.
+1. As a user, I want to receive an email notification when a new partner is added in my area.
+1. As a user, I want to receive an email notification when an event I am signed up for is 7 days away.
+1. As a user, I want to receive an email notification when an event I am signed up for is 1 day away.
+1. As a user, I want to receive an email notification when an event in my area that I am not signed up for is 7 days away.
+1. As a user, I want to receive an email notification when an event in my area that I am not signed up for is 1 day away.
+1. As an admin, I want to receive a weekly summary of the site's activity so that I can track the impact of the organization.
+1. As an admin, I want to receive an email notification when a new partner request is submitted so that I can approve or deny it.
+1. As an admin, I want to receive an email notification when a new litter report is submitted so that I can review it.
+1. As an admin, I want to receive an email notification when a new event is created so that I can review it.
+1. As an admin, I want to receive an email notification when a new user signs up so that I can review their account.
+1. As an admin, I want to receive an email notification when a user deletes their account so that I can validate that their data has been removed from the site.
+1. As an admin, I want to receive an email notification when a user reports an issue or sends a contact request so that I can address it.
+1. As an admin, I want to receive an email notification when system errors occur so that I can address them.
