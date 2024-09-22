@@ -52,7 +52,6 @@
     "start": "vite",
     "build": "vite build",
     "test": "vite test",
-    "eject": "vite eject"
   },
   "eslintConfig": {
     "extends": [
