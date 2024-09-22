@@ -9,7 +9,20 @@
 1. As a user, I want to be able to sign in to the site so that I can participate in events.
 	1. When clicking the sign in button, I want to return to the page I was on after the sign in is complete	.
 1. As a user, I want see a list of all upcoming events so that I can participate in them.
+	1. The list should include a card for each event that shows:
+		1. Event name
+		1. Date
+		1. Time
+		1. A button to take the user to the Event Details Page
+		1. A button to register for the event
 1. As a user, I want see a map of all upcoming events so that I can participate in them.
+	1. The map should include a custom pin for each event that shows:
+		1. Event name
+		1. Date
+		1. Time
+		1. A button to take the user to the Event Details Page
+		1. A button to register for the event
+	1. The map pin color for upcoming events should be different from the map pin color for past events.
 1. As a user, I want to be able to filter the list of all upcoming events so that I can participate in them.
 	1. Filters should include:
 		1. Date Range
@@ -22,7 +35,6 @@
 		1. Country
 		1. State
 		1. City
-1. As a user, I want see a map of all upcoming events so that I can participate in them.
 1. As a user, I want see a list of all past events so that I can see what the organization has done.
 1. As a user, I want see a map of all past events so that I can see what the organization has done.
 1. As a user, I want to be able to filter the list of all past events so that I can see what the organization has done.
@@ -37,10 +49,10 @@
 		1. Country
 		1. State
 		1. City
-1. As a user, I want see a map of all past events so that I can see what the organization has done.
 1. As a user, I want to be able to share upcoming events on social media so that I can encourage others to participate.
 1. As a user, I want to be able to share event summaries for completed events on social media so I can encourage others to participate.
 1. As a user, I want to be able to see a list of partners so that I can see who is supporting the events and what services they provide.
+1. As a user, I want to be able to click on the logo of a partner so that I can see more information about them.
 1. As a user, I want to be able to see a list of litter reports so that I can see where litter is accumulating.
 1. As a user, I want to be able to see a map of litter reports so that I can see where litter is accumulating.
 1. As a user, I want to be able to view the details of a litter report so that I can see what is being reported.
@@ -98,15 +110,19 @@
 		1. Date
 		1. Start Time
 		1. Expected Duration in Hours + Minutes
+			1. Duration cannot be longer than 10 hours
 		1. Whether or not the event is Public/Private
+			1. If an event is public, the date must be in the future
+			1. If an event is private, the date can be in the past
 	1. An event has the following optional fields:
 		1. Services
 		1. Maximum Participants
 		1. Minimum Age
 		1. Associated Litter Report(s)
 		1. Hauling Partner
+			1. There can be only 1 hauling partner per event
 		1. Other services partners
-		1. Map of Litter Reports
+		1. Map of Litter Reports associated with the event
 1. As an event lead, I want to be able to create and event based on a selected litter report with the details pre-populated.
 	1. Details should include:
 		1. Event Name = Litter Report Name
@@ -121,8 +137,14 @@
 1. As an event lead, I want changes to an event I created to be sent to all attendees.
 1. As an event lead, I want to be able to see a list of attendees for my event so that I can plan accordingly.
 1. As an event lead, I want to be able to enter a summary of the event after it is completed so that I can track participation and impact.
-1. As an event lead, I want to be able to see a map of where attendees picked litter for my event so that I can track what areas have been cleaned.
+	1. A summary includes:
+		1. Number of attendees
+		1. Number of bags of litter collected
+		1. Total actual duration of the event
 1. As an event lead, I want to be able to record where the bags of litter were left for a hauling partner to pick up.
+	1. This can be done via geotagged photos by using the mobile app
+1. As an event lead, I want to be able to notify the hauling partner that the bags are ready to be picked up 
+1. As an event lead, I want to be able to see a map of where attendees picked litter for my event so that I can track what areas have been cleaned.
 1. As an event lead, I want to be able to add events from the past to the site so I can track my impact, but not have them show up in the list of upcoming events or have notifications going out.
 1. As an event lead, I want to mark associated litter reports as resolved so that they are no longer shown as needing attention.
 
@@ -151,4 +173,8 @@
 1. As an administrator, I want to be able to see a list of requests to become a partner so that I can approve or deny them.
 1. As an administrator, I want to be able to see a list of litter reports so that I can manage the site.
 1. As an administrator, I want to be able to generate a report of participation by city so I can forward that information to the city as requested.
-1. 
+1. As an administrator, I want to be able to see all images that have been uploaded for events so that I can manage the site.
+1. As an administrator, I want to be able to delete an images that has been uploaded to the site if it violates the site's terms and conditions
+
+## TrashMob.eco Staff Stories
+1. As a member of the TrashMob.eco staff/board, I want to be able to easily view the site usage statistics so that I can track the impact of the organization.
