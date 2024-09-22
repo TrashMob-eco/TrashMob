@@ -6,7 +6,6 @@
 
 1. As a user, I want to be able to sign up for the site using my email and a new password so that I can participate in events.
 1. As a user, I want to be able to sign up for the site using a third party auth provider like Google, LinkedIn, Facebook, Microsoft, or Apple so that I can participate in events.
-1. **As a user, when I sign up, I want to receive a welcome email so that I know my account was created successfully.**
 1. As a user, when I sign up, I want to be able to set a user name so that I can be identified on the site.
 1. As a user, I want to be able to sign in to the site so that I can participate in events.
 	1. When clicking the sign in button, I want to return to the page I was on after the sign in is complete	.
