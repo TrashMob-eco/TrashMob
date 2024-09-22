@@ -199,3 +199,10 @@
 1. As an admin, I want to receive an email notification when a user deletes their account so that I can validate that their data has been removed from the site.
 1. As an admin, I want to receive an email notification when a user reports an issue or sends a contact request so that I can address it.
 1. As an admin, I want to receive an email notification when system errors occur so that I can address them.
+
+## IFTTT Integration
+1. As an administrator, I want to be able to integrate with IFTTT so that I can automatically posting new events to social media with the correct tags.
+1. As an administrator, I want to be able to integrate with IFTTT so that I can automatically posting new litter reports to social media with the correct tags.
+1. As an administrator, I want to be able to integrate with IFTTT so that I can automatically posting new partners to social media with the correct tags.
+1. As an administrator, I want to be able to integrate with IFTTT so that I can automatically post event summaries to social media with the correct tags.
+1. As an administrator, I want to be able to integrate with IFTTT so that I can automatically post event reminders to social media with the correct tags.
