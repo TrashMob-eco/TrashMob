@@ -6,7 +6,7 @@ This project contains the code for the TrashMob.eco website.
 
 The client-side of the site is written in ReactJS using the Bootstrap UX Framework. The code for this part of the project is in the client-app folder.
 
-The server side of the site is written in ASP.NET Core 6.0. 
+The server side of the site is written in ASP.NET Core 8.0. 
 
 ## Components and Integrations
 

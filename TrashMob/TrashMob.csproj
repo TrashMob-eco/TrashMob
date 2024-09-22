@@ -70,6 +70,7 @@
     <None Remove="Docusign\TrashMob_Volunteer_Waiver_V2.docx" />
     <None Remove="README.md" />
     <None Remove="robots.txt" />
+    <None Remove="WebsiteUserStories.md" />
   </ItemGroup>
 
   <ItemGroup>
@@ -94,6 +95,7 @@
     <Content Include="Docusign\TrashMob_Volunteer_Waiver_V2.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="WebsiteUserStories.md" />
     <Content Include="README.md" />
     <Content Include="robots.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
