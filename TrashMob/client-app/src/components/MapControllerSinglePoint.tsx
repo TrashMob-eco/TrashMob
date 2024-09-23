@@ -9,6 +9,7 @@ import { HtmlMarkerLayer } from './HtmlMarkerLayer/src/layer/HtmlMarkerLayer'
 import { AsyncTypeahead } from 'react-bootstrap-typeahead';
 import { useMutation } from '@tanstack/react-query';
 import { AzureMapSearchAddress } from '../services/maps';
+import { SearchLocationInput } from './Map/SearchLocationInput/SearchLocationInput';
 
 interface MapControllerProps {
     mapOptions: IAzureMapOptions | undefined
@@ -38,7 +39,7 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
     const [isPrevLoaded, setIsPrevLoaded] = React.useState<boolean>(false);
 
     const azureMapSearchAddress = useMutation({
-        mutationKey: AzureMapSearchAddress().key,
+        mutationKey: AzureMapSearchAddress().key(query),
         mutationFn: AzureMapSearchAddress().service,
     });
 
@@ -242,6 +243,7 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
     }
 
     function handleSelectedChanged(val: any) {
+        console.log({ val })
         if (val && val.length > 0) {
             var position = val[0].position;
             var point = new data.Position(position.lon, position.lat)
@@ -251,7 +253,13 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
 
     return (
         <>
-            {props.isDraggable ? <div >
+            {props.isDraggable ? <div>
+                {props.mapOptions?.subscriptionKey && (
+                    <SearchLocationInput
+                        azureKey={props.mapOptions.subscriptionKey}
+                        onSelectLocation={handleLocationChange}
+                    />
+                )}
                 <AsyncTypeahead
                     id="async-pagination-example"
                     isLoading={isLoading}

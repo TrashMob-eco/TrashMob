@@ -35,7 +35,7 @@ export const MapControllerSinglePointNoEvent: React.FC<MapControllerProps> = (pr
     const [isPrevLoaded, setIsPrevLoaded] = React.useState<boolean>(false);
 
     const azureMapSearchAddress = useMutation({
-        mutationKey: AzureMapSearchAddress().key,
+        mutationKey: AzureMapSearchAddress().key(query),
         mutationFn: AzureMapSearchAddress().service,
     });
 
