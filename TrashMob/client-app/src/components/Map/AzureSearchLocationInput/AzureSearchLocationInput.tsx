@@ -71,7 +71,6 @@ export const AzureSearchLocationInput = (props: AzureSearchLocationInputProps) =
       onSearch={handleSearch}
       onChange={handleSelectedChanged}
       options={searchResult.options}
-      paginate
       placeholder="Search for a location..."
       renderMenuItemChildren={(option: Option) => {
         const locationOption = option as SearchLocationOption
