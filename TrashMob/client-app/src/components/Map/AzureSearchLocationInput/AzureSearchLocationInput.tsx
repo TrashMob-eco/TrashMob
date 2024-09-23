@@ -2,23 +2,22 @@ import React from 'react'
 import { useQuery } from '@tanstack/react-query';
 import { AsyncTypeahead } from 'react-bootstrap-typeahead';
 import { Option } from 'react-bootstrap-typeahead/types/types';
-import { data } from 'azure-maps-control';
 import { AzureMapSearchAddress } from '../../../services/maps';
 
 const PER_PAGE = 50
 
-export type AzureSearchLocationInputProps = {
-  azureKey: string
-  onSelectLocation: (position: data.Position) => void
-}
- 
-type SearchLocationOption = {
+export type SearchLocationOption = {
   id: string
   displayAddress: string
   position: {
     lat: number
     lon: number
   }
+}
+
+export type AzureSearchLocationInputProps = {
+  azureKey: string
+  onSelectLocation: (position: SearchLocationOption) => void
 }
 
 export const AzureSearchLocationInput = (props: AzureSearchLocationInputProps) => {
@@ -54,9 +53,7 @@ export const AzureSearchLocationInput = (props: AzureSearchLocationInputProps) =
   function handleSelectedChanged(selected: Option[]) {
     if (selected && selected.length > 0) {
         const item = selected[0] as SearchLocationOption
-        var position = item.position;
-        var point = new data.Position(position.lon, position.lat)
-        onSelectLocation(point);
+        onSelectLocation(item);
     }
   }
 
