@@ -6,7 +6,7 @@ import MapComponent from './MapComponent';
 import * as MapStore from '../store/MapStore'
 import UserData from './Models/UserData';
 import { HtmlMarkerLayer } from './HtmlMarkerLayer/src/layer/HtmlMarkerLayer'
-import { AzureSearchLocationInput } from './Map/AzureSearchLocationInput';
+import { AzureSearchLocationInput, SearchLocationOption } from './Map/AzureSearchLocationInput';
 
 interface MapControllerProps {
     mapOptions: IAzureMapOptions | undefined
@@ -172,13 +172,19 @@ export const MapControllerSinglePoint: React.FC<MapControllerProps> = (props) =>
         props.onLocationChange(e);
     }
 
+    function handleSelectSearchLocation(location: SearchLocationOption) {
+        const position = location.position;
+        const point = new data.Position(position.lon, position.lat)
+        props.onLocationChange(point)
+    }
+
     return (
         <>
             {props.isDraggable && props.mapOptions?.subscriptionKey && (
                 <div>
                     <AzureSearchLocationInput
                         azureKey={props.mapOptions.subscriptionKey}
-                        onSelectLocation={handleLocationChange}
+                        onSelectLocation={handleSelectSearchLocation}
                     />
                 </div>
             )}
