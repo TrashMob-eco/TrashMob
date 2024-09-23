@@ -7,11 +7,11 @@ import { AzureMapSearchAddress } from '../../../services/maps';
 
 const PER_PAGE = 50
 
-export type SearchLocationInputProps = {
+export type AzureSearchLocationInputProps = {
   azureKey: string
   onSelectLocation: (position: data.Position) => void
 }
-
+ 
 type SearchLocationOption = {
   id: string
   displayAddress: string
@@ -21,7 +21,7 @@ type SearchLocationOption = {
   }
 }
 
-export const SearchLocationInput = (props: SearchLocationInputProps) => {
+export const AzureSearchLocationInput = (props: AzureSearchLocationInputProps) => {
   const { azureKey, onSelectLocation } = props
   const [query, setQuery] = React.useState('');
 
@@ -73,11 +73,14 @@ export const SearchLocationInput = (props: SearchLocationInputProps) => {
       options={searchResult.options}
       paginate
       placeholder="Search for a location..."
-      renderMenuItemChildren={(option: any) => (
-          <div key={option.id}>
-              <span>{option.displayAddress}</span>
+      renderMenuItemChildren={(option: Option) => {
+        const locationOption = option as SearchLocationOption
+        return (
+          <div key={locationOption.id}>
+            <span>{locationOption.displayAddress}</span>
           </div>
-      )}
+        )
+      }}
       useCache={false}
     />
   )
