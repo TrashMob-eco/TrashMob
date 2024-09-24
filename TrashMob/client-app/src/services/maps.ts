@@ -2,7 +2,7 @@
 // maps
 
 import axios from "axios";
-import SearchAddressData from "../components/Models/SearchAddressData";
+import { AzureMapSearchAddressResult } from "../components/Models/AzureMapSearchAddress";
 import AddressData from "../components/Models/AddressData";
 import { ApiService } from ".";
 
@@ -13,8 +13,11 @@ export type GetGoogleMapApiKey_Response = string;
 export const GetGoolgeMapApiKey = () => ({ key: ['/googlemaps/apikey'], service: async () => ApiService('public').fetchData<GetGoogleMapApiKey_Response>({ url: `/maps/googlemapkey`, method: 'get' }) });
 
 export type AzureMapSearchAddress_Params = { azureKey: string; query: string; }
-export type AzureMapSearchAddress_Response = SearchAddressData;
-export const AzureMapSearchAddress = () => ({ key: ['AzureMapSearchAddress'], service: async (params: AzureMapSearchAddress_Params) => axios.get<AzureMapSearchAddress_Response>(`https://atlas.microsoft.com/search/address/json?typeahead=true&subscription-key=${params.azureKey}&api-version=1.0&query=${params.query}`) });
+export type AzureMapSearchAddress_Response = AzureMapSearchAddressResult;
+export const AzureMapSearchAddress = () => ({
+  key: (query: string) => ['AzureMapSearchAddress', query],
+  service: async (params: AzureMapSearchAddress_Params) => axios.get<AzureMapSearchAddress_Response>(`https://atlas.microsoft.com/search/address/json?typeahead=true&subscription-key=${params.azureKey}&api-version=1.0&query=${params.query}`)
+});
 
 export type AzureMapSearchAddressReverse_Params = { azureKey: string; lat: number; long: number; }
 export type AzureMapSearchAddressReverse_Response = AddressData;
