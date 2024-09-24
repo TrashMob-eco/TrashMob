@@ -236,6 +236,10 @@ If the app loads, but data does not, it is likely that the firewall rule is not 
 1. Add a new Rule with your email address as the name, with the start and end ip address set as your Client IP Address (see the line above the form for what Azure thinks your IP address is)
 1. **Save** changes
 
+## User Stories for the TrashMob.eco Website
+
+See the [User Stories](./WebsiteUserStories.md) document for a list of user stories that have been implemented in the site.
+
 ## Testing the Web App
 
 As the site's feature set has grown, so have the scenarios that need to be tested after large changes have been made. Please see the [Test Scenarios](./TestScenarios.md) document for a list of checks that should be run. At some point we will need to automate these tests.

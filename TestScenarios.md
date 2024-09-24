@@ -1,6 +1,5 @@
 # TrashMob.eco Test Scenarios
 
-
 ## General UI Requirements:
 
 - Required fields should be visually tagged as required
