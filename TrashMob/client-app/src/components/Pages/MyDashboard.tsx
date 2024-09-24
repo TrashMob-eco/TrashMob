@@ -400,34 +400,26 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         return (
             <div className="bg-white p-3 px-4">
                 <Table columnHeaders={headerTitles} >
-                    {myEventList.sort((a, b) => (a.eventDate < b.eventDate) ? 1 : -1).map(event => {
-                        if (new Date(event.eventDate) >= new Date()) {
-                            return (
-                                <tr key={event.id.toString()}>
-                                    <td>{event.name}</td>
-                                    <td>{event.createdByUserId === props.currentUser.id ? 'Lead' : ' Attendee'}</td>
-                                    <td>{new Date(event.eventDate).toLocaleDateString("en-us", {
-                                        year: "numeric",
-                                        month: "2-digit",
-                                        day: "2-digit"
-                                    })}</td>
-                                    <td>{new Date(event.eventDate).toLocaleTimeString("en-us", { hour12: true, hour: 'numeric', minute: '2-digit' })}</td>
-                                    <td>{event.streetAddress}, {event.city}</td>
-                                    <td className="btn py-0">
-                                        <Dropdown role="menuitem">
-                                            <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
-                                            <Dropdown.Menu id="share-menu">
-                                                {event.createdByUserId === props.currentUser.id ? eventOwnerActionDropdownList(event) : attendeeActionDropdownList(event)}
-                                            </Dropdown.Menu>
-                                        </Dropdown>
-                                    </td>
-                                </tr>
-                            )
-                        } else {
-                            return (<></>)
-                        }
-                    }
-                    )}
+                    {myEventList
+                        .sort((a, b) => (a.eventDate < b.eventDate) ? 1 : -1)
+                        .filter(({ eventDate }) => new Date(eventDate) >= new Date())
+                        .map(event => (
+                            <tr key={event.id.toString()}>
+                                <td>{event.name}</td>
+                                <td>{event.createdByUserId === props.currentUser.id ? 'Lead' : ' Attendee'}</td>
+                                <td>{new Date(event.eventDate).toLocaleDateString("en-us", { year: "numeric", month: "2-digit", day: "2-digit" })}</td>
+                                <td>{new Date(event.eventDate).toLocaleTimeString("en-us", { hour12: true, hour: 'numeric', minute: '2-digit' })}</td>
+                                <td>{event.streetAddress}, {event.city}</td>
+                                <td className="btn py-0">
+                                    <Dropdown role="menuitem">
+                                        <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
+                                        <Dropdown.Menu id="share-menu">
+                                            {event.createdByUserId === props.currentUser.id ? eventOwnerActionDropdownList(event) : attendeeActionDropdownList(event)}
+                                        </Dropdown.Menu>
+                                    </Dropdown>
+                                </td>
+                            </tr>
+                        ))}
                 </Table>
             </div >
         );
@@ -438,34 +430,26 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         return (
             <div className="bg-white p-3 px-4">
                 <Table columnHeaders={headerTitles}>
-                    {myEventList.sort((a, b) => (a.eventDate < b.eventDate) ? 1 : -1).map(event => {
-                            if (new Date(event.eventDate) < new Date()) {
-                                return (
-                                    <tr key={event.id.toString()}>
-                                        <td>{event.name}</td>
-                                        <td>{event.createdByUserId === props.currentUser.id ? 'Lead' : ' Attendee'}</td>
-                                        <td>{new Date(event.eventDate).toLocaleDateString("en-us", {
-                                            year: "numeric",
-                                            month: "2-digit",
-                                            day: "2-digit"
-                                        })}</td>
-                                        <td>{new Date(event.eventDate).toLocaleTimeString("en-us", { hour12: true, hour: 'numeric', minute: '2-digit' })}</td>
-                                        <td>{event.streetAddress}, {event.city}</td>
-                                        <td className="btn py-0">
-                                            <Dropdown role="menuitem">
-                                                <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
-                                                <Dropdown.Menu id="share-menu">
-                                                    {event.createdByUserId === props.currentUser.id ? completedEventOwnerActionDropdownList(event.id) : completedAttendeeActionDropdownList(event.id)}
-                                                </Dropdown.Menu>
-                                            </Dropdown>
-                                        </td>
-                                    </tr>
-                                )
-                            } else {
-                                return (<></>)
-                            }
-                        }
-                        )}
+                    {myEventList
+                        .sort((a, b) => (a.eventDate < b.eventDate) ? 1 : -1)
+                        .filter(({ eventDate }) => new Date(eventDate) < new Date())
+                        .map(({ id, name, createdByUserId, eventDate, streetAddress, city}) => (
+                            <tr key={id.toString()}>
+                                <td>{name}</td>
+                                <td>{createdByUserId === props.currentUser.id ? 'Lead' : ' Attendee'}</td>
+                                <td>{new Date(eventDate).toLocaleDateString("en-us", { year: "numeric", month: "2-digit", day: "2-digit" })}</td>
+                                <td>{new Date(eventDate).toLocaleTimeString("en-us", { hour12: true, hour: 'numeric', minute: '2-digit' })}</td>
+                                <td>{streetAddress}, {city}</td>
+                                <td className="btn py-0">
+                                    <Dropdown role="menuitem">
+                                        <Dropdown.Toggle id="share-toggle" variant="outline" className="h-100 border-0">...</Dropdown.Toggle>
+                                        <Dropdown.Menu id="share-menu">
+                                            {createdByUserId === props.currentUser.id ? completedEventOwnerActionDropdownList(id) : completedAttendeeActionDropdownList(id)}
+                                        </Dropdown.Menu>
+                                    </Dropdown>
+                                </td>
+                            </tr>
+                        ))}
                 </Table>
             </div >
         )
@@ -504,8 +488,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         else {
             return (
                 <div className="bg-white p-3 px-4">
-                    <Table columnHeaders={headerTitles} >
-                    </Table>
+                    <Table columnHeaders={headerTitles}><></></Table>
                 </div >
             )
         }
@@ -543,8 +526,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         else {
             return (
                 <div className="bg-white p-3 px-4">
-                    <Table columnHeaders={headerTitles} >
-                    </Table>
+                    <Table columnHeaders={headerTitles}><></></Table>
                 </div >
             )
         }
@@ -580,8 +562,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         else {
             return (
                 <div className="bg-white p-3 px-4">
-                    <Table columnHeaders={headerTitles} >
-                    </Table>
+                    <Table columnHeaders={headerTitles}><></></Table>
                 </div >
             )
         }
@@ -617,8 +598,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         else {
             return (
                 <div className="bg-white p-3 px-4">
-                    <Table columnHeaders={headerTitles} >
-                    </Table>
+                    <Table columnHeaders={headerTitles}><></></Table>
                 </div >
             )
         }
