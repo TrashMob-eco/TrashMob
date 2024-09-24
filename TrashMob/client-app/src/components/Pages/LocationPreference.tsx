@@ -208,7 +208,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
         setLatitude(point[1]);
         setLongitude(point[0]);
         const azureKey = await getKey();
-        azureMapSearchAddressReverse.mutateAsync({ azureKey, lat: point[0], long: point[1] }).then((res) => {
+        azureMapSearchAddressReverse.mutateAsync({ azureKey, lat: point[1], long: point[0] }).then((res) => {
             setCity(res.data.addresses[0].address.municipality);
             setCountry(res.data.addresses[0].address.country);
             setRegion(res.data.addresses[0].address.countrySubdivisionName);
