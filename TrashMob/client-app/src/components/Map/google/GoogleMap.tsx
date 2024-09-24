@@ -9,7 +9,7 @@ export const GoogleMap = (props: PropsWithChildren<MapProps>) => {
     queryKey: GetGoolgeMapApiKey().key,
     queryFn: GetGoolgeMapApiKey().service,
     select: (res) => res.data,
-    initialData: () => ({ data: 'AIzaSyCJxRNZLC-MM9EBpOec8VcepJ4B5pbvSTU' })
+    initialData: () => ({ data: '' })
   })
 
   return (
