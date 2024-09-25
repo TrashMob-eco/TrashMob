@@ -1,6 +1,7 @@
 class EnvelopeResponse {
-    envelopeId: string = "";
-    redirectUrl: string = "";
+    envelopeId: string = '';
+
+    redirectUrl: string = '';
 }
 
 export default EnvelopeResponse;

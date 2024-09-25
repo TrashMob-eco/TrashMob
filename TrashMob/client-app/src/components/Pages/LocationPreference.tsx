@@ -1,16 +1,16 @@
 import { ChangeEvent, FC, FormEvent, useEffect, useState, useCallback } from 'react';
-import UserData from '../Models/UserData';
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import Tooltip from "react-bootstrap/Tooltip";
-import * as ToolTips from "../../store/ToolTips";
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
-import * as MapStore from '../../store/MapStore';
 import { IAzureMapOptions } from 'react-azure-maps';
-import infoCycle from '../assets/info-circle.svg';
-import React from 'react';
-import { HeroSection } from '../Customization/HeroSection';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import UserData from '../Models/UserData';
+import * as ToolTips from '../../store/ToolTips';
+import * as MapStore from '../../store/MapStore';
+import infoCycle from '../assets/info-circle.svg';
+
+import { HeroSection } from '../Customization/HeroSection';
 import { GetUserById, UpdateUser } from '../../services/users';
 import { Services } from '../../config/services.config';
 import { MarkerWithInfoWindow } from '../Map';
@@ -28,17 +28,17 @@ interface LocationPreferenceProps extends RouteComponentProps<any> {
 const LocationPreference: FC<LocationPreferenceProps> = (props) => {
     const userId = props.currentUser.id;
     const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
-    const [userName, setUserName] = useState<string>("");
+    const [userName, setUserName] = useState<string>('');
     const [email, setEmail] = useState<string>();
     const [city, setCity] = useState<string>();
-    const [radiusType, setRadiusType] = useState<string>("");
+    const [radiusType, setRadiusType] = useState<string>('');
     const [country, setCountry] = useState<string>();
     const [region, setRegion] = useState<string>();
     const [postalCode, setPostalCode] = useState<string>();
     const [dateAgreedToTrashMobWaiver, setDateAgreedToTrashMobWaiver] = useState<Date>(new Date());
-    const [trashMobWaiverVersion, setTrashMobWaiverVersion] = useState<string>("");
+    const [trashMobWaiverVersion, setTrashMobWaiverVersion] = useState<string>('');
     const [memberSince, setMemberSince] = useState<Date>(new Date());
-    const [maxEventsRadiusErrors, setMaxEventsRadiusErrors] = useState<string>("");
+    const [maxEventsRadiusErrors, setMaxEventsRadiusErrors] = useState<string>('');
     const [longitude, setLongitude] = useState<number>(0);
     const [latitude, setLatitude] = useState<number>(0);
     const [prefersMetric, setPrefersMetric] = useState<boolean>(false);
@@ -49,17 +49,17 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
     const [mapOptions, setMapOptions] = useState<IAzureMapOptions>();
     const [isSaveEnabled, setIsSaveEnabled] = useState<boolean>(false);
     const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
-    const [formSubmitErrors, setFormSubmitErrors] = useState<string>("");
+    const [formSubmitErrors, setFormSubmitErrors] = useState<string>('');
     const [units, setUnits] = useState<string[]>([]);
 
-    const getUserById = useQuery({ 
-        queryKey: GetUserById({ userId: userId }).key,
-        queryFn: GetUserById({ userId: userId }).service,
+    const getUserById = useQuery({
+        queryKey: GetUserById({ userId }).key,
+        queryFn: GetUserById({ userId }).service,
         staleTime: Services.CACHE.DISABLE,
-        enabled: false
+        enabled: false,
     });
 
-    const updateUser = useMutation({ 
+    const updateUser = useMutation({
         mutationKey: UpdateUser().key,
         mutationFn: UpdateUser().service,
     });
@@ -72,7 +72,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
 
     useEffect(() => {
         window.scrollTo(0, 0);
-        setUnits(["mi", "km"]);
+        setUnits(['mi', 'km']);
         if (props.isUserLoaded && !isDataLoaded) {
             getUserById.refetch().then((res) => {
                 if (res.data === undefined || res.data.data === null) return;
@@ -89,16 +89,16 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                 setLongitude(res.data.data.longitude);
                 setPrefersMetric(res.data.data.prefersMetric);
                 setTravelLimitForLocalEvents(res.data.data.travelLimitForLocalEvents);
-                setMaxEventsRadiusErrors("");
-                setTravelLimitForLocalEventsErrors("");
-                setRadiusType(res.data.data.prefersMetric ? 'km' : 'mi')
+                setMaxEventsRadiusErrors('');
+                setTravelLimitForLocalEventsErrors('');
+                setRadiusType(res.data.data.prefersMetric ? 'km' : 'mi');
                 setIsDataLoaded(true);
-            })
+            });
 
             setIsDataLoaded(true);
         }
 
-        MapStore.getOption().then(opts => {
+        MapStore.getOption().then((opts) => {
             setMapOptions(opts);
             // setIsMapKeyLoaded(true);
         })
@@ -108,24 +108,23 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                 setCenter({ lat: position.coords.latitude, lng: position.coords.longitude })
             });
         }
-    }, [userId, props.isUserLoaded, isDataLoaded])
+    }, [userId, props.isUserLoaded, isDataLoaded]);
 
-    // This will handle Cancel button click event.  
+    // This will handle Cancel button click event.
     const handleCancel = (event: FormEvent<HTMLElement>) => {
         event.preventDefault();
-        props.history.push("/");
-    }
+        props.history.push('/');
+    };
 
-    React.useEffect(() => {
-        if (travelLimitForLocalEventsErrors !== "") {
+    useEffect(() => {
+        if (travelLimitForLocalEventsErrors !== '') {
             setIsSaveEnabled(false);
-        }
-        else {
+        } else {
             setIsSaveEnabled(true);
         }
     }, [travelLimitForLocalEventsErrors]);
 
-    // This will handle the submit form event.  
+    // This will handle the submit form event.
     const handleSave = (event: ChangeEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (!isSaveEnabled) return;
@@ -133,12 +132,12 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
         setIsSaveEnabled(false);
         const body = new UserData();
         body.id = userId;
-        body.userName = userName ?? "";
-        body.email = email ?? "";
-        body.city = city ?? "";
-        body.region = region ?? "";
-        body.country = country ?? "";
-        body.postalCode = postalCode ?? "";
+        body.userName = userName ?? '';
+        body.email = email ?? '';
+        body.city = city ?? '';
+        body.region = region ?? '';
+        body.country = country ?? '';
+        body.postalCode = postalCode ?? '';
         body.dateAgreedToTrashMobWaiver = new Date(dateAgreedToTrashMobWaiver);
         body.memberSince = new Date(memberSince);
         body.latitude = latitude;
@@ -147,14 +146,17 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
         body.travelLimitForLocalEvents = travelLimitForLocalEvents;
         body.trashMobWaiverVersion = trashMobWaiverVersion;
 
-        updateUser.mutateAsync(body).then(res => {
-            if (res.status !== 200) setFormSubmitErrors("Unknown error occured while checking user name. Please try again. Error Code: " + res.status);
-            else {
+        updateUser.mutateAsync(body).then((res) => {
+            if (res.status !== 200) {
+                setFormSubmitErrors(
+                    `Unknown error occured while checking user name. Please try again. Error Code: ${res.status}`,
+                );
+            } else {
                 setFormSubmitted(true);
                 props.onUserUpdated();
             }
-        })
-    }
+        });
+    };
 
     const handleTravelLimitForLocalEventsChanged = (val: string) => {
         try {
@@ -162,24 +164,23 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                 const intVal = parseInt(val);
 
                 if (intVal <= 0 || intVal > 1000) {
-                    setTravelLimitForLocalEventsErrors("Travel limit must be greater than or equal to 0 and less than 1000.")
-                }
-                else {
+                    setTravelLimitForLocalEventsErrors(
+                        'Travel limit must be greater than or equal to 0 and less than 1000.',
+                    );
+                } else {
                     setTravelLimitForLocalEvents(intVal);
-                    setTravelLimitForLocalEventsErrors("");
+                    setTravelLimitForLocalEventsErrors('');
                 }
-            }
-            else {
+            } else {
                 setTravelLimitForLocalEvents(1);
             }
+        } catch {
+            setTravelLimitForLocalEventsErrors('Travel limit must be a valid number.');
         }
-        catch {
-            setTravelLimitForLocalEventsErrors("Travel limit must be a valid number.");
-        }
-    }
+    };
 
     const handleRadiusTypeChanged = (val: string) => {
-        if (val === "mi") {
+        if (val === 'mi') {
             setPrefersMetric(false);
             setRadiusType('mi')
         }
@@ -188,23 +189,19 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
             setRadiusType('km')
 
         }
-    }
+    };
 
-    const renderCityToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.LocationPreferenceCity}</Tooltip>
-    }
+    const renderCityToolTip = (props: any) => <Tooltip {...props}>{ToolTips.LocationPreferenceCity}</Tooltip>;
 
-    const renderRegionToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.LocationPreferenceRegion}</Tooltip>
-    }
+    const renderRegionToolTip = (props: any) => <Tooltip {...props}>{ToolTips.LocationPreferenceRegion}</Tooltip>;
 
-    const renderPostalCodeToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.LocationPreferencePostalCode}</Tooltip>
-    }
+    const renderPostalCodeToolTip = (props: any) => (
+        <Tooltip {...props}>{ToolTips.LocationPreferencePostalCode}</Tooltip>
+    );
 
-    const renderTravelLimitForLocalEventsToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.LocationPreferenceTravelLimitForLocalEvents}</Tooltip>
-    }
+    const renderTravelLimitForLocalEventsToolTip = (props: any) => (
+        <Tooltip {...props}>{ToolTips.LocationPreferenceTravelLimitForLocalEvents}</Tooltip>
+    );
 
     const map = useMap()
 
@@ -356,7 +353,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                 </Container>
             </div >
     );
-}
+};
 
 const LocationPreferenceWrapper = (props: LocationPreferenceProps) => {
     const { data: googleApiKey, isLoading } = useQuery({

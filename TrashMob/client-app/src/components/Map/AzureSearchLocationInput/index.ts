@@ -1,1 +1,1 @@
-export * from './AzureSearchLocationInput'
+export * from './AzureSearchLocationInput';
