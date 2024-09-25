@@ -77,7 +77,6 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
             getUserById.refetch().then((res) => {
                 if (res.data === undefined || res.data.data === null) return;
 
-                console.log(`user`, res.data.data)
                 setUserName(res.data.data.userName);
                 setEmail(res.data.data.email);
                 setCity(res.data.data.city);
@@ -218,15 +217,15 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
             fillOpacity: 0.20,
             map,
         });
-        console.log(`create radiusCircle`, radiusCircle)
         radiusRef.current = radiusCircle
     }, [map]);
 
     useEffect(() => {
         if (map && radiusRef.current) {
-            console.log(`set radiusCircle`, { latitude, longitude, travelLimitForLocalEvents })
 
             radiusRef.current.setCenter({ lat: latitude, lng: longitude })
+
+            // Note: radius unit is meter.
             radiusRef.current.setRadius(travelLimitForLocalEvents * (radiusType === 'km' ? 1000 : 1600))
         }
     }, [map, radiusRef, latitude, longitude, travelLimitForLocalEvents, radiusType])
@@ -247,6 +246,8 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
             const lng = e.latLng.lng()
             setLatitude(lat)
             setLongitude(lng)
+
+            // Note: Map center does not move, only save new marker position
         }
     }, [map])
 
@@ -306,10 +307,10 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                                     />
                                 </Map>
                                
-                                {mapOptions?.subscriptionKey && (
+                                {azureSubscriptionKey && (
                                     <div style={{ position: 'absolute', top: 8, left: 8 }}>
                                         <AzureSearchLocationInput
-                                            azureKey={mapOptions?.subscriptionKey}
+                                            azureKey={azureSubscriptionKey}
                                             onSelectLocation={handleSelectSearchLocation}
                                         />
                                     </div>
