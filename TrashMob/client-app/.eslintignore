@@ -1,0 +1,6 @@
+node_modules
+public
+coverage
+build
+dist
+vite.config.ts

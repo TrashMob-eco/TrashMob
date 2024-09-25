@@ -1,16 +1,16 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 
-import * as azmaps from "azure-maps-control";
+import * as azmaps from 'azure-maps-control';
 import { PieChartMarkerOptions } from './PieChartMarkerOptions';
 import { ExtendedHtmlMarker } from './extensions/ExtendedHtmlMarker';
 
 /**
- * A class for creating Pie Charts as HTML Markers on a map. 
+ * A class for creating Pie Charts as HTML Markers on a map.
  */
 export class PieChartMarker extends azmaps.HtmlMarker implements ExtendedHtmlMarker {
-    /********************
-    * Private Properties
-    ********************/
+    /** ******************
+     * Private Properties
+     ******************* */
 
     private _options = <PieChartMarkerOptions>{
         values: [],
@@ -19,7 +19,7 @@ export class PieChartMarker extends azmaps.HtmlMarker implements ExtendedHtmlMar
         fillColor: 'transparent',
         strokeWidth: 0,
         strokeColor: '#666666',
-        innerRadius: 0
+        innerRadius: 0,
     };
 
     /** The total of all values. */
@@ -28,9 +28,9 @@ export class PieChartMarker extends azmaps.HtmlMarker implements ExtendedHtmlMar
     /** Additional colors to use when enough haven't been specified. */
     public static _moreColors = [];
 
-    /********************
-    * Constructor
-    ********************/
+    /** ******************
+     * Constructor
+     ******************* */
 
     /**
      * Creates an HTML Marker in the shape of a pie chart.
@@ -41,15 +41,15 @@ export class PieChartMarker extends azmaps.HtmlMarker implements ExtendedHtmlMar
         super.setOptions({
             htmlContent: document.createElement('div'),
             pixelOffset: [0, 0],
-            anchor: 'center'
+            anchor: 'center',
         });
 
         this.setOptions(options);
     }
 
-    /********************
-    * Public Methods
-    ********************/
+    /** ******************
+     * Public Methods
+     ******************* */
 
     /** ID of the marker. */
     public id: string;
@@ -72,17 +72,17 @@ export class PieChartMarker extends azmaps.HtmlMarker implements ExtendedHtmlMar
      */
     public getSliceValue(idx: number): number {
         const vals = this._options.values;
-        return (idx >= 0 && idx < vals.length) ? vals[idx] : 0;
+        return idx >= 0 && idx < vals.length ? vals[idx] : 0;
     }
 
     /**
-     * Gets the percentage value of a slice of the pie based on it's index. 
+     * Gets the percentage value of a slice of the pie based on it's index.
      * @param idx The index of the slice.
      * @returns The percentage value of a slice of the pie based on it's index.
      */
     public getSlicePercentage(idx: number): number {
         const self = this;
-        return (self._total > 0) ? Math.round(self.getSliceValue(idx) / self._total * 10000) / 100 : 0;
+        return self._total > 0 ? Math.round((self.getSliceValue(idx) / self._total) * 10000) / 100 : 0;
     }
 
     /**
@@ -90,7 +90,7 @@ export class PieChartMarker extends azmaps.HtmlMarker implements ExtendedHtmlMar
      * @returns The options of the pie chart marker.
      */
     public getOptions(): PieChartMarkerOptions {
-        return Object.assign({}, super.getOptions(), this._options);
+        return { ...super.getOptions(), ...this._options };
     }
 
     /**
@@ -100,7 +100,7 @@ export class PieChartMarker extends azmaps.HtmlMarker implements ExtendedHtmlMar
     public setOptions(options: PieChartMarkerOptions): void {
         const self = this;
         const opt = self._options;
-        const stringify = JSON.stringify;
+        const { stringify } = JSON;
         let rerender = false;
 
         if (options.radius && options.radius > 0 && options.radius != opt.radius) {
@@ -143,7 +143,7 @@ export class PieChartMarker extends azmaps.HtmlMarker implements ExtendedHtmlMar
         }
 
         if (options.text !== undefined && options.text !== opt.text) {
-            //opt.text = options.text;
+            // opt.text = options.text;
             super.setOptions({ text: options.text });
             rerender = true;
         }
@@ -160,9 +160,9 @@ export class PieChartMarker extends azmaps.HtmlMarker implements ExtendedHtmlMar
         super.setOptions(options);
     }
 
-    /********************
-    * Private Methods
-    ********************/
+    /** ******************
+     * Private Methods
+     ******************* */
 
     /**
      * Method that generates the SVG pie chart for the marker.
@@ -171,33 +171,34 @@ export class PieChartMarker extends azmaps.HtmlMarker implements ExtendedHtmlMar
         const self = this;
         const opt = self._options;
         const data = opt.values;
-        const radius = opt.radius;
+        const { radius } = opt;
 
-        let startAngle = 0, angle = 0;
+        let startAngle = 0;
+        let angle = 0;
 
         if (data) {
-            self._total = data.reduce((a, b) => {
-                return a + b;
-            }, 0);
+            self._total = data.reduce((a, b) => a + b, 0);
 
-            //Ensure that there are enough colors defined.
+            // Ensure that there are enough colors defined.
             const moreColors = PieChartMarker._moreColors;
-            const random = Math.random;
-            const round = Math.round;
+            const { random } = Math;
+            const { round } = Math;
             let mIdx = 0;
 
             while (data.length > opt.colors.length) {
-                //Generate additional random colors, but try and stagger them such that there is a good variation between agenct colors.
+                // Generate additional random colors, but try and stagger them such that there is a good variation between agenct colors.
                 if (moreColors.length < data.length) {
-                    moreColors.push(`hsl(${round(random() * 360)},${round(random() * 20) + 70}%,${round(random() * 40) + 30}%)`);
+                    moreColors.push(
+                        `hsl(${round(random() * 360)},${round(random() * 20) + 70}%,${round(random() * 40) + 30}%)`,
+                    );
                 }
 
-                //Grab the next additional color from the global pallet.
+                // Grab the next additional color from the global pallet.
                 opt.colors.push(moreColors[mIdx]);
                 mIdx++;
             }
 
-            //Origin for cx/cy
+            // Origin for cx/cy
             const o = radius + opt.strokeWidth;
             const svg = [`<svg xmlns="http://www.w3.org/2000/svg" width="${2 * o}px" height="${2 * o}px">`];
 
@@ -205,7 +206,7 @@ export class PieChartMarker extends azmaps.HtmlMarker implements ExtendedHtmlMar
             let maskId: string;
 
             if (opt.innerRadius > 0 && opt.innerRadius <= opt.radius) {
-                maskId = 'piechart-innercircle-' + round(random() * 10000000);
+                maskId = `piechart-innercircle-${round(random() * 10000000)}`;
 
                 svg.push(`<defs><mask id="${maskId}"><rect width="100%" height="100%" fill="white"/><circle r="${opt.innerRadius}" cx="${o}" cy="${o}" fill="black"/></mask></defs>
                     <circle r="${opt.innerRadius}" cx="${o}" cy="${o}" style="fill:${opt.fillColor};stroke:${opt.strokeColor};stroke-width:${opt.strokeWidth * 2}px;"/>`);
@@ -213,7 +214,7 @@ export class PieChartMarker extends azmaps.HtmlMarker implements ExtendedHtmlMar
 
             if (self._total > 0) {
                 const ttc = opt.tooltipCallback;
-                const ratio = Math.PI * 2 / self._total;
+                const ratio = (Math.PI * 2) / self._total;
                 for (let i = 0; i < data.length; i++) {
                     angle = ratio * data[i];
 
@@ -221,16 +222,18 @@ export class PieChartMarker extends azmaps.HtmlMarker implements ExtendedHtmlMar
                         tooltip = ttc(self, i);
                     }
 
-                    const c = (i < opt.colors.length) ? opt.colors[i] : moreColors[i];
+                    const c = i < opt.colors.length ? opt.colors[i] : moreColors[i];
 
                     svg.push(self._createSlice(o, o, radius, startAngle, angle, c, tooltip, maskId));
                     startAngle += angle;
                 }
             }
 
-            const text = self.getOptions().text;
+            const { text } = self.getOptions();
             if (text) {
-                svg.push(`<text x="${o}" y="${(o + 7)}" style="font-size:16px;font-family:arial;fill:#000;font-weight:bold;" class="${opt.textClassName || ''}" text-anchor="middle">${text}</text>`);
+                svg.push(
+                    `<text x="${o}" y="${o + 7}" style="font-size:16px;font-family:arial;fill:#000;font-weight:bold;" class="${opt.textClassName || ''}" text-anchor="middle">${text}</text>`,
+                );
             }
 
             svg.push('</svg>');
@@ -249,7 +252,16 @@ export class PieChartMarker extends azmaps.HtmlMarker implements ExtendedHtmlMar
      * @param fillColor The fill color of the path.
      * @param tooltip The tooltip text to display when hovered.
      */
-    private _createSlice(cx: number, cy: number, r: number, startAngle: number, angle: number, fillColor: string, tooltip: string, maskId: string): string {
+    private _createSlice(
+        cx: number,
+        cy: number,
+        r: number,
+        startAngle: number,
+        angle: number,
+        fillColor: string,
+        tooltip: string,
+        maskId: string,
+    ): string {
         const opt = this._options;
         const pi = Math.PI;
         let mask = '';
@@ -259,12 +271,12 @@ export class PieChartMarker extends azmaps.HtmlMarker implements ExtendedHtmlMar
         }
 
         if (angle > 2 * pi * 0.99) {
-            //If the shape is nearly a complete circle, create a circle instead of an arc.
+            // If the shape is nearly a complete circle, create a circle instead of an arc.
             return `<circle r="${r}" cx="${cx}" cy="${cy}" style="fill:${fillColor};stroke:${opt.strokeColor};stroke-width:${opt.strokeWidth}px;"${mask}><title>${tooltip}</title></circle>`;
         }
 
-        const sin = Math.sin;
-        const cos = Math.cos;
+        const { sin } = Math;
+        const { cos } = Math;
 
         const x1 = cx + r * sin(startAngle);
         const y1 = cy - r * cos(startAngle);
@@ -276,7 +288,7 @@ export class PieChartMarker extends azmaps.HtmlMarker implements ExtendedHtmlMar
         const x22 = cx + opt.innerRadius * sin(startAngle + angle);
         const y22 = cy - opt.innerRadius * cos(startAngle + angle);
 
-        //Flag for when arcs are larger than 180 degrees in radians.
+        // Flag for when arcs are larger than 180 degrees in radians.
         let big = 0;
         if (angle > pi) {
             big = 1;

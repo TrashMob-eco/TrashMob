@@ -1,6 +1,7 @@
 class DisplayPartnerAdminInvitationData {
-    id: string = "";
-    partnerName: string = "";
+    id: string = '';
+
+    partnerName: string = '';
 }
 
 export default DisplayPartnerAdminInvitationData;

@@ -1,4 +1,4 @@
-﻿import * as azmaps from "azure-maps-control";
+import * as azmaps from 'azure-maps-control';
 
 /**
  * Options for the HTML Marker Layer class.
@@ -17,9 +17,9 @@ export interface HtmlMarkerLayerOptions {
     sourceLayer?: string;
 
     /**
-     * Specifies if the layer should update while the map is moving. When set to false, rendering in the map view will 
-     * occur after the map has finished moving. New data is not rendered until the moveend event fires. When set to true, 
-     * the layer will constantly re-render as the map is moving which ensures new data is always rendered right away, 
+     * Specifies if the layer should update while the map is moving. When set to false, rendering in the map view will
+     * occur after the map has finished moving. New data is not rendered until the moveend event fires. When set to true,
+     * the layer will constantly re-render as the map is moving which ensures new data is always rendered right away,
      * but may reduce overall performance. Default: `false`
      */
     updateWhileMoving?: boolean;
@@ -28,7 +28,11 @@ export interface HtmlMarkerLayerOptions {
      * A callback function that generates a HtmlMarker for a given data point.
      * The `id` and `properties` values will be added to the marker as properties within the layer after being created by this callback function.
      */
-    markerCallback?: (id: string, position: azmaps.data.Position, properties: any) => azmaps.HtmlMarker | Promise<azmaps.HtmlMarker>;
+    markerCallback?: (
+        id: string,
+        position: azmaps.data.Position,
+        properties: any,
+    ) => azmaps.HtmlMarker | Promise<azmaps.HtmlMarker>;
 
     /**
      * An expression specifying conditions on source features.
