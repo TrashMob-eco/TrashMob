@@ -1,9 +1,12 @@
-import { Guid } from "guid-typescript";
+import { Guid } from 'guid-typescript';
 
 class DisplayPartnershipData {
     id: string = Guid.createEmpty().toString();
-    name: string = "";
+
+    name: string = '';
+
     partnerRequestStatusId: number = 0;
+
     partnerStatusId: number = 0;
 }
 

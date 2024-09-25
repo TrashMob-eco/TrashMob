@@ -1,6 +1,7 @@
 class EmailTemplateData {
-    name: string = "";
-    content: string = "";
+    name: string = '';
+
+    content: string = '';
 }
 
 export default EmailTemplateData;

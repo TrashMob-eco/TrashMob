@@ -1,11 +1,11 @@
-import * as React from 'react'
+import * as React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { ButtonGroup, Col, Container, Row, ToggleButton } from 'react-bootstrap';
+import { Guid } from 'guid-typescript';
 import UserData from '../Models/UserData';
 import { PartnerEdit } from './PartnerEdit';
 import { PartnerAdmins } from './PartnerAdmins';
 import { PartnerLocations } from './PartnerLocations';
-import { ButtonGroup, Col, Container, Row, ToggleButton } from 'react-bootstrap';
-import { Guid } from 'guid-typescript';
 import { PartnerDocuments } from './PartnerDocuments';
 import { PartnerSocialMediaAccounts } from './PartnerSocialMediaAccounts';
 import { PartnerContacts } from './PartnerContacts';
@@ -21,9 +21,9 @@ export interface PartnerDashboardProps extends RouteComponentProps<PartnerDashbo
 
 const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
     const [radioValue, setRadioValue] = React.useState('1');
-    const [partnerId, setPartnerId] = React.useState<string>("");
+    const [partnerId, setPartnerId] = React.useState<string>('');
     const [isPartnerIdReady, setIsPartnerIdReady] = React.useState<boolean>();
-    const [loadedPartnerId, setLoadedPartnerId] = React.useState<string | undefined>(props.match?.params["partnerId"]);
+    const [loadedPartnerId, setLoadedPartnerId] = React.useState<string | undefined>(props.match?.params.partnerId);
 
     const radios = [
         { name: 'Manage Partner', value: '1' },
@@ -35,112 +35,135 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
     ];
 
     React.useEffect(() => {
-        var partId = loadedPartnerId;
+        const partId = loadedPartnerId;
         if (!partId) {
             setPartnerId(Guid.createEmpty().toString());
-            setLoadedPartnerId(Guid.createEmpty().toString())
-        }
-        else {
+            setLoadedPartnerId(Guid.createEmpty().toString());
+        } else {
             setPartnerId(partId);
         }
 
         setIsPartnerIdReady(true);
-
     }, [loadedPartnerId]);
-
 
     function renderEditPartner() {
         return (
             <div>
                 <PartnerEdit partnerId={partnerId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
-            </div >
-        )
+            </div>
+        );
     }
 
     function renderPartnerAdmins() {
         return (
             <div>
-                <PartnerAdmins partnerId={partnerId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
+                <PartnerAdmins
+                    partnerId={partnerId}
+                    currentUser={props.currentUser}
+                    isUserLoaded={props.isUserLoaded}
+                />
             </div>
-        )
+        );
     }
 
     function renderPartnerLocations() {
         return (
             <div>
-                <PartnerLocations partnerId={partnerId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
-            </div >
-        )
+                <PartnerLocations
+                    partnerId={partnerId}
+                    currentUser={props.currentUser}
+                    isUserLoaded={props.isUserLoaded}
+                />
+            </div>
+        );
     }
 
     function renderPartnerContacts() {
         return (
             <div>
-                <PartnerContacts partnerId={partnerId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
-            </div >
-        )
+                <PartnerContacts
+                    partnerId={partnerId}
+                    currentUser={props.currentUser}
+                    isUserLoaded={props.isUserLoaded}
+                />
+            </div>
+        );
     }
 
     function renderPartnerDocuments() {
         return (
             <div>
-                <PartnerDocuments partnerId={partnerId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
-            </div >
-        )
+                <PartnerDocuments
+                    partnerId={partnerId}
+                    currentUser={props.currentUser}
+                    isUserLoaded={props.isUserLoaded}
+                />
+            </div>
+        );
     }
 
     function renderPartnerSocialMediaAccounts() {
         return (
             <div>
-                <PartnerSocialMediaAccounts partnerId={partnerId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
-            </div >
-        )
+                <PartnerSocialMediaAccounts
+                    partnerId={partnerId}
+                    currentUser={props.currentUser}
+                    isUserLoaded={props.isUserLoaded}
+                />
+            </div>
+        );
     }
 
     function renderPartnerDashboard() {
         return (
             <Container>
                 <Col>
-                <Row className="gx-2 py-5">
-                    <div className="bg-white p-5 shadow-sm rounded">
-                        <ButtonGroup>
-                            {radios.map((radio, idx) => (
-                                <ToggleButton
-                                    key={idx}
-                                    id={`radio-${idx}`}
-                                    type="radio"
-                                    variant={idx % 2 ? 'outline-success' : 'outline-danger'}
-                                    name="radio"
-                                    value={radio.value}
-                                    checked={radioValue === radio.value}
-                                    onChange={(e) => setRadioValue(e.currentTarget.value)}
-                                >
-                                    {radio.name}
-                                </ToggleButton>
-                            ))}
-                        </ButtonGroup>
+                    <Row className='gx-2 py-5'>
+                        <div className='bg-white p-5 shadow-sm rounded'>
+                            <ButtonGroup>
+                                {radios.map((radio, idx) => (
+                                    <ToggleButton
+                                        key={idx}
+                                        id={`radio-${idx}`}
+                                        type='radio'
+                                        variant={idx % 2 ? 'outline-success' : 'outline-danger'}
+                                        name='radio'
+                                        value={radio.value}
+                                        checked={radioValue === radio.value}
+                                        onChange={(e) => setRadioValue(e.currentTarget.value)}
+                                    >
+                                        {radio.name}
+                                    </ToggleButton>
+                                ))}
+                            </ButtonGroup>
 
-                        {radioValue === '1' && renderEditPartner()}
-                        {radioValue === '2' && renderPartnerLocations()}
-                        {radioValue === '3' && renderPartnerContacts()}
-                        {radioValue === '4' && renderPartnerAdmins()}
-                        {radioValue === '5' && renderPartnerDocuments()}
-                        {radioValue === '6' && renderPartnerSocialMediaAccounts()}
-                    </div>
+                            {radioValue === '1' && renderEditPartner()}
+                            {radioValue === '2' && renderPartnerLocations()}
+                            {radioValue === '3' && renderPartnerContacts()}
+                            {radioValue === '4' && renderPartnerAdmins()}
+                            {radioValue === '5' && renderPartnerDocuments()}
+                            {radioValue === '6' && renderPartnerSocialMediaAccounts()}
+                        </div>
                     </Row>
                 </Col>
             </Container>
         );
     }
 
-    let contents = isPartnerIdReady
-        ? renderPartnerDashboard()
-        : <p><em>Loading...</em></p>;
+    const contents = isPartnerIdReady ? (
+        renderPartnerDashboard()
+    ) : (
+        <p>
+            <em>Loading...</em>
+        </p>
+    );
 
-    return <div>
-        <hr />
-        {contents}
-    </div>;
-}
+    return (
+        <div>
+            <hr />
+            {contents}
+        </div>
+    );
+};
 
 export default withRouter(PartnerDashboard);

@@ -15,7 +15,6 @@ interface SiteAdminProps extends RouteComponentProps<any> {
 }
 
 const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
-
     const [currentUser, setCurrentUser] = React.useState<UserData>(props.currentUser);
     const [isUserLoaded, setIsUserLoaded] = React.useState<boolean>(props.isUserLoaded);
     const [isSiteAdmin, setIsSiteAdmin] = React.useState<boolean>(false);
@@ -35,62 +34,94 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
         setIsSiteAdmin(props.currentUser.isSiteAdmin);
         setCurrentUser(props.currentUser);
         setIsUserLoaded(props.isUserLoaded);
-    }, [props.currentUser, props.currentUser.isSiteAdmin, props.isUserLoaded])
+    }, [props.currentUser, props.currentUser.isSiteAdmin, props.isUserLoaded]);
 
     function renderManageEvents() {
         return (
             <div>
-                <AdminEvents history={props.history} location={props.location} match={props.match} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                <AdminEvents
+                    history={props.history}
+                    location={props.location}
+                    match={props.match}
+                    currentUser={currentUser}
+                    isUserLoaded={isUserLoaded}
+                />
             </div>
-        )
+        );
     }
 
     function renderManageUsers() {
         return (
             <div>
-                <AdminUsers history={props.history} location={props.location} match={props.match} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                <AdminUsers
+                    history={props.history}
+                    location={props.location}
+                    match={props.match}
+                    currentUser={currentUser}
+                    isUserLoaded={isUserLoaded}
+                />
             </div>
-        )
+        );
     }
 
     function renderManagePartners() {
         return (
             <div>
-                <AdminPartners history={props.history} location={props.location} match={props.match} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                <AdminPartners
+                    history={props.history}
+                    location={props.location}
+                    match={props.match}
+                    currentUser={currentUser}
+                    isUserLoaded={isUserLoaded}
+                />
             </div>
-        )
+        );
     }
 
     function renderManagePartnerRequests() {
         return (
             <div>
-                <AdminPartnerRequests history={props.history} location={props.location} match={props.match} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                <AdminPartnerRequests
+                    history={props.history}
+                    location={props.location}
+                    match={props.match}
+                    currentUser={currentUser}
+                    isUserLoaded={isUserLoaded}
+                />
             </div>
-        )
+        );
     }
 
     function renderSendNotifications() {
         return (
             <div>
-                <AdminSendNotifications history={props.history} location={props.location} match={props.match} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                <AdminSendNotifications
+                    history={props.history}
+                    location={props.location}
+                    match={props.match}
+                    currentUser={currentUser}
+                    isUserLoaded={isUserLoaded}
+                />
             </div>
-        )
+        );
     }
 
     function renderEmailTemplates() {
         return (
             <div>
-                <AdminEmailTemplates history={props.history} location={props.location} match={props.match} currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                <AdminEmailTemplates
+                    history={props.history}
+                    location={props.location}
+                    match={props.match}
+                    currentUser={currentUser}
+                    isUserLoaded={isUserLoaded}
+                />
             </div>
-        )
+        );
     }
 
     function renderExecutiveSummary() {
-        return (
-            <div>
-                Executive Summary
-            </div>
-        )
+        return <div>Executive Summary</div>;
     }
 
     function renderAdminTable() {
@@ -101,9 +132,9 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
                         <ToggleButton
                             key={idx}
                             id={`radio-${idx}`}
-                            type="radio"
+                            type='radio'
                             variant={idx % 2 ? 'outline-success' : 'outline-danger'}
-                            name="radio"
+                            name='radio'
                             value={radio.value}
                             checked={radioValue === radio.value}
                             onChange={(e) => setRadioValue(e.currentTarget.value)}
@@ -120,7 +151,6 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
                 {radioValue === '5' && renderExecutiveSummary()}
                 {radioValue === '6' && renderSendNotifications()}
                 {radioValue === '7' && renderEmailTemplates()}
-
             </div>
         );
     }
@@ -128,16 +158,20 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
     return (
         <Container>
             <h1 className='font-weight-bold'>Site Administration</h1>
-            <Row className="gx-2 py-5" lg={2}>
+            <Row className='gx-2 py-5' lg={2}>
                 <Col lg={12}>
                     <div>
-                        {!isSiteAdmin && <p><em>Access Denied</em></p>}
-                        {isSiteAdmin && renderAdminTable()}
+                        {!isSiteAdmin && (
+                            <p>
+                                <em>Access Denied</em>
+                            </p>
+                        )}
+                        {isSiteAdmin ? renderAdminTable() : null}
                     </div>
                 </Col>
             </Row>
-        </Container >
-    )
-}
+        </Container>
+    );
+};
 
 export default withRouter(SiteAdmin);
