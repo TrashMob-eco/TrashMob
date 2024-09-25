@@ -14,7 +14,7 @@ import infoCycle from '../assets/info-circle.svg';
 import { HeroSection } from '../Customization/HeroSection';
 import { GetUserById, UpdateUser } from '../../services/users';
 import { Services } from '../../config/services.config';
-import { MarkerWithInfoWindow } from '../Map/GoogleMarkerWithInfoWindow/GoogleMarkerWithInfoWindow';
+import { MarkerWithInfoWindow } from '../Map';
 import { AzureSearchLocationInput, SearchLocationOption } from '../Map/AzureSearchLocationInput';
 import { GetGoogleMapApiKey } from '../../services/maps';
 import { useAzureMapSearchAddressReverse } from '../../hooks/useAzureMapSearchAddressReverse';
@@ -210,6 +210,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
     const map = useMap();
     const radiusRef = useRef<google.maps.Circle>();
 
+    // On Map Initialized, add circle polygon
     useEffect(() => {
         if (!map) return;
 
@@ -224,6 +225,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
         radiusRef.current = radiusCircle;
     }, [map]);
 
+    // On radius, lat, lng changed, update radius polygon
     useEffect(() => {
         if (map && radiusRef.current) {
             radiusRef.current.setCenter({ lat: latitude, lng: longitude });
@@ -259,7 +261,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
         [map],
     );
 
-    /** on Marker moved (latitude + longitude changed), do reverse search lat,lng to address */
+    // on Marker moved (latitude + longitude changed), do reverse search lat,lng to address
     useEffect(() => {
         const searchAddressReverse = async () => {
             const { data } = await refetchAddressReverse();

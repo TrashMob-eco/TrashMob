@@ -82,7 +82,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
     });
 
     const azureMapSearchAddressReverse = useMutation({
-        mutationKey: AzureMapSearchAddressReverse(),
+        mutationKey: AzureMapSearchAddressReverse().key,
         mutationFn: AzureMapSearchAddressReverse().service,
     });
 
