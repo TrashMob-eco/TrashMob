@@ -105,7 +105,7 @@ jobs:
               Set-Content TrashMobMobile/Platforms/Android/AndroidManifest.xml -Value $newContent
   
         - name: Setup DotNet ${{ inputs.dotnet_version }} Environment
-          uses: actions/setup-dotnet@v3
+          uses: actions/setup-dotnet@v4
           with:
             dotnet-version: ${{ inputs.dotnet_version }}
 
