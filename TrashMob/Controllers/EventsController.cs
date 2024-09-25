@@ -145,7 +145,7 @@
             return Ok(mobEvent);
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("filteredevents")]
         public async Task<IActionResult> GetFilteredEvents([FromBody] EventFilter filter,
             CancellationToken cancellationToken)
@@ -162,7 +162,7 @@
             return Ok(result);
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("pagedfilteredevents")]
         public async Task<IActionResult> GetPagedFilteredEvents([FromBody] EventFilter filter,
             CancellationToken cancellationToken)
