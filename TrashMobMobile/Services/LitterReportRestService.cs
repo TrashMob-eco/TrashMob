@@ -163,14 +163,15 @@
 
         public async Task<PaginatedList<LitterReport>> GetLitterReportsAsync(LitterReportFilter filter, CancellationToken cancellationToken = default)
         {
+            var content = JsonContent.Create(filter, typeof(LitterReportFilter), null, SerializerOptions);
             var requestUri = Controller + "/pagedfilteredlitterreports";
 
-            using (var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken))
+            using (var response = await AnonymousHttpClient.PostAsync(requestUri, content, cancellationToken))
             {
                 response.EnsureSuccessStatusCode();
-                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                var returnContent = await response.Content.ReadAsStringAsync(cancellationToken);
 
-                return JsonConvert.DeserializeObject<PaginatedList<LitterReport>>(content);
+                return JsonConvert.DeserializeObject<PaginatedList<LitterReport>>(returnContent);
             }
         }
 

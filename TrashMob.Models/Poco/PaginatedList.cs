@@ -3,13 +3,16 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
 
     public class PaginatedList<T> : List<T>
     {
         public int PageIndex { get; private set; }
         
         public int TotalPages { get; private set; }
+
+        public PaginatedList()
+        {
+        }
 
         public PaginatedList(List<T> items, int count, int pageIndex, int pageSize)
         {
