@@ -5,12 +5,13 @@ import { GetGoolgeMapApiKey } from '../../../services/maps';
 
 export const GoogleMap = (props: PropsWithChildren<MapProps>) => {
 
-  const { data: apiKey } = useQuery({
+  const { data: apiKey, isSuccess } = useQuery({
     queryKey: GetGoolgeMapApiKey().key,
     queryFn: GetGoolgeMapApiKey().service,
     select: (res) => res.data,
-    initialData: () => ({ data: '' })
   })
+
+  if (!isSuccess) return <div>Fail to get key</div>
 
   return (
     <APIProvider apiKey={apiKey}>

@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, FormEvent, useEffect, useState } from 'react';
+import { ChangeEvent, FC, FormEvent, useEffect, useState, useCallback } from 'react';
 import UserData from '../Models/UserData';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
@@ -6,18 +6,18 @@ import * as ToolTips from "../../store/ToolTips";
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import * as MapStore from '../../store/MapStore';
-import { getKey } from '../../store/MapStore';
-import { data } from 'azure-maps-control';
-import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
-import MapControllerSinglePoint from '../MapControllerSinglePoint';
+import { IAzureMapOptions } from 'react-azure-maps';
 import infoCycle from '../assets/info-circle.svg';
 import React from 'react';
 import { HeroSection } from '../Customization/HeroSection';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { GetUserById, UpdateUser } from '../../services/users';
 import { Services } from '../../config/services.config';
-import { AzureMapSearchAddressReverse } from '../../services/maps';
-import { AzureSearchAddressInput, GoogleMap, MarkerWithInfoWindow } from '../Map';
+import { MarkerWithInfoWindow } from '../Map';
+import { AzureSearchLocationInput, SearchLocationOption } from '../Map/AzureSearchLocationInput';
+import { APIProvider, Map, useMap } from '@vis.gl/react-google-maps';
+import { GetGoolgeMapApiKey } from '../../services/maps';
+import { useAzureMapSearchAddressReverse } from '../../hooks/useAzureMapSearchAddressReverse';
 
 interface LocationPreferenceProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -46,11 +46,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
     const [travelLimitForLocalEventsErrors, setTravelLimitForLocalEventsErrors] = useState<string>("");
 
     const [center, setCenter] = useState<google.maps.LatLngLiteral>({ lat: MapStore.defaultLongitude, lng: MapStore.defaultLatitude });
-    const azureCenterPosition = new data.Position(center.lng, center.lat)
-
-    const [isMapKeyLoaded, setIsMapKeyLoaded] = useState<boolean>(false);
     const [mapOptions, setMapOptions] = useState<IAzureMapOptions>();
-    const [eventName, setEventName] = useState<string>("User's Base Location");
     const [isSaveEnabled, setIsSaveEnabled] = useState<boolean>(false);
     const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
     const [formSubmitErrors, setFormSubmitErrors] = useState<string>("");
@@ -68,16 +64,16 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
         mutationFn: UpdateUser().service,
     });
     
-    const azureMapSearchAddressReverse = useMutation({ 
-        mutationKey: AzureMapSearchAddressReverse().key,
-        mutationFn: AzureMapSearchAddressReverse().service,
-    });
+    const { refetch: refetchAddressReverse } = useAzureMapSearchAddressReverse({
+        lat: latitude,
+        long: longitude,
+        azureKey: mapOptions?.subscriptionKey || '',
+    }, { enabled: false });
 
     useEffect(() => {
         window.scrollTo(0, 0);
         setUnits(["mi", "km"]);
         if (props.isUserLoaded && !isDataLoaded) {
-            // setEventName("User's Base Location");
             getUserById.refetch().then((res) => {
                 if (res.data === undefined || res.data.data === null) return;
                 setUserName(res.data.data.userName);
@@ -104,7 +100,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
 
         MapStore.getOption().then(opts => {
             setMapOptions(opts);
-            setIsMapKeyLoaded(true);
+            // setIsMapKeyLoaded(true);
         })
 
         if ("geolocation" in navigator) {
@@ -185,9 +181,12 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
     const handleRadiusTypeChanged = (val: string) => {
         if (val === "mi") {
             setPrefersMetric(false);
+            setRadiusType('mi')
         }
         else {
             setPrefersMetric(true);
+            setRadiusType('km')
+
         }
     }
 
@@ -207,37 +206,41 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
         return <Tooltip {...props}>{ToolTips.LocationPreferenceTravelLimitForLocalEvents}</Tooltip>
     }
 
-    const handleLocationChange = async (e: google.maps.MapMouseEvent) => {
+    const map = useMap()
+
+    const handleSelectSearchLocation = useCallback(async (location: SearchLocationOption) => {
+        const { lat, lon } = location.position
+        setLatitude(lat)
+        setLongitude(lon)
+
+        // side effect: Move Map Center
+        if (map) map.panTo({ lat, lng: lon })
+    }, [map])
+
+    const handleMarkerDragEnd = useCallback(async (e: google.maps.MapMouseEvent) => {
         if (e.latLng) {
             const lat = e.latLng.lat()
             const lng = e.latLng.lng()
             setLatitude(lat)
             setLongitude(lng)
-
-            const azureKey = await getKey();
-            azureMapSearchAddressReverse.mutateAsync({ azureKey, lat, long: lng }).then((res) => {
-                console.log(res.data)
-                setCity(res.data.addresses[0].address.municipality);
-                setCountry(res.data.addresses[0].address.country);
-                setRegion(res.data.addresses[0].address.countrySubdivisionName);
-                setPostalCode(res.data.addresses[0].address.postalCode);
-            })
         }
-    }
+    }, [map])
 
-    const handleAzureMarkerLocationChange = async (point: data.Position) => {
-        setLatitude(point[1]);
-        setLongitude(point[0]);
-        const azureKey = await getKey();
-        azureMapSearchAddressReverse.mutateAsync({ azureKey, lat: point[1], long: point[0] }).then((res) => {
-            setCity(res.data.addresses[0].address.municipality);
-            setCountry(res.data.addresses[0].address.country);
-            setRegion(res.data.addresses[0].address.countrySubdivisionName);
-            setPostalCode(res.data.addresses[0].address.postalCode);
-        })
-    }
-
-    // console.log({ center, azureCenterPosition, isDataLoaded, mapOptions, isMapKeyLoaded, eventName, latitude, longitude, currentUser: props.currentUser, isUserLoaded: props.isUserLoaded })
+    /** on Marker moved (latitude + longitude changed), do reverse search lat,lng to address */
+    useEffect(() => {
+        const searchAddressReverse = async () => {
+            const { data } = await refetchAddressReverse()
+            
+            const firstResult = data?.addresses[0]
+            if (firstResult) {
+                setCity(firstResult.address.municipality);
+                setCountry(firstResult.address.country);
+                setRegion(firstResult.address.countrySubdivisionName);
+                setPostalCode(firstResult.address.postalCode);
+            }
+        }
+        if (latitude && longitude) searchAddressReverse()
+    }, [latitude, longitude])
 
     const date = new Date().toLocaleDateString([], { month: "long", day: "2-digit", year: "numeric" });
     const time = new Date().toLocaleTimeString([], { timeZoneName: 'short' });
@@ -251,15 +254,18 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                     <Form onSubmit={handleSave}>
                         <Form.Row>
                             <div style={{ position: 'relative', width: '100%' }}>
-                                <GoogleMap
+                                <Map
+                                    mapId="6f295631d841c617"
+                                    gestureHandling={'greedy'}
+                                    disableDefaultUI={true}
                                     style={{ width: '100%', height: '500px' }}
                                     defaultCenter={center}
                                     defaultZoom={MapStore.defaultUserLocationZoom}
                                 >
                                     <MarkerWithInfoWindow
-                                        position={center}
+                                        position={{ lat: latitude, lng: longitude }}
                                         draggable={true}
-                                        onDragEnd={handleLocationChange}
+                                        onDragEnd={handleMarkerDragEnd}
                                         infoWindowTrigger="hover"
                                         infoWindowProps={{
                                             headerDisabled: true 
@@ -274,34 +280,17 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                                             </>
                                         )}
                                     />
-                                </GoogleMap>
-                                {/* {mapOptions?.subscriptionKey && (
+                                </Map>
+                               
+                                {mapOptions?.subscriptionKey && (
                                     <div style={{ position: 'absolute', top: 8, left: 8 }}>
-                                        <AzureSearchAddressInput
+                                        <AzureSearchLocationInput
                                             azureKey={mapOptions?.subscriptionKey}
-                                            onSelectLocation={handleAzureMarkerLocationChange}
+                                            onSelectLocation={handleSelectSearchLocation}
                                         />
                                     </div>
-                                )} */}
+                                )}
                             </div>
-                            <AzureMapsProvider>
-                                <>
-                                    <MapControllerSinglePoint
-                                        center={azureCenterPosition} 
-                                        isEventDataLoaded={isDataLoaded}
-                                        mapOptions={mapOptions}
-                                        isMapKeyLoaded={isMapKeyLoaded}
-                                        eventName={eventName}
-                                        latitude={latitude}
-                                        longitude={longitude}
-                                        onLocationChange={handleAzureMarkerLocationChange}
-                                        currentUser={props.currentUser}
-                                        isUserLoaded={props.isUserLoaded}
-                                        isDraggable={true}
-                                        eventDate={new Date()}
-                                    />
-                                </>
-                            </AzureMapsProvider>
                         </Form.Row>
                         <Form.Row className='mt-4'>
                             <Col lg={6}>
@@ -369,4 +358,20 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
     );
 }
 
-export default withRouter(LocationPreference);
+const LocationPreferenceWrapper = (props: LocationPreferenceProps) => {
+    const { data: googleApiKey, isLoading } = useQuery({
+        queryKey: GetGoolgeMapApiKey().key,
+        queryFn: GetGoolgeMapApiKey().service,
+        select: (res) => res.data,
+    })
+
+    if (isLoading) return null
+
+    return (
+        <APIProvider apiKey={googleApiKey || ''}>
+            <LocationPreference {...props} />
+        </APIProvider>
+    )
+}
+
+export default withRouter(LocationPreferenceWrapper);
