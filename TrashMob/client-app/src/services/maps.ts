@@ -12,7 +12,6 @@ export const GetMaps = () => ({
     service: async () => ApiService('public').fetchData<GetMaps_Response>({ url: `/maps`, method: 'get' }),
 });
 
-
 export type GetGoogleMapApiKey_Response = string;
 export const GetGoogleMapApiKey = () => ({
     key: ['/maps/googlemapkey'],
@@ -33,7 +32,7 @@ export type AzureMapSearchAddressReverse_Params = { azureKey: string; lat: numbe
 export type AzureMapSearchAddressReverse_Response = AzureMapSearchAddressReverseResult;
 export const AzureMapSearchAddressReverse = () => ({
     key: ['AzureMapSearchAddressReverse'],
-    service: async (params: AzureMapSearchAddressReverse_Params) => 
+    service: async (params: AzureMapSearchAddressReverse_Params) =>
         axios.get<AzureMapSearchAddressReverse_Response>(
             `https://atlas.microsoft.com/search/address/reverse/json?subscription-key=${params.azureKey}&api-version=1.0&query=${params.lat},${params.long}`,
         ),
