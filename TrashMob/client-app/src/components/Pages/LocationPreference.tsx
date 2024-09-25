@@ -1,10 +1,11 @@
-import { ChangeEvent, FC, FormEvent, useEffect, useState, useCallback } from 'react';
+import { ChangeEvent, FC, FormEvent, useEffect, useState, useCallback, useRef } from 'react';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
-import { IAzureMapOptions } from 'react-azure-maps';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { APIProvider, Map, useMap } from '@vis.gl/react-google-maps';
+
 import UserData from '../Models/UserData';
 import * as ToolTips from '../../store/ToolTips';
 import * as MapStore from '../../store/MapStore';
@@ -13,10 +14,9 @@ import infoCycle from '../assets/info-circle.svg';
 import { HeroSection } from '../Customization/HeroSection';
 import { GetUserById, UpdateUser } from '../../services/users';
 import { Services } from '../../config/services.config';
-import { MarkerWithInfoWindow } from '../Map';
+import { MarkerWithInfoWindow } from '../Map/google/MarkerWithInfoWindow';
 import { AzureSearchLocationInput, SearchLocationOption } from '../Map/AzureSearchLocationInput';
-import { APIProvider, Map, useMap } from '@vis.gl/react-google-maps';
-import { GetGoolgeMapApiKey } from '../../services/maps';
+import { GetGoogleMapApiKey } from '../../services/maps';
 import { useAzureMapSearchAddressReverse } from '../../hooks/useAzureMapSearchAddressReverse';
 
 interface LocationPreferenceProps extends RouteComponentProps<any> {
@@ -46,7 +46,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
     const [travelLimitForLocalEventsErrors, setTravelLimitForLocalEventsErrors] = useState<string>("");
 
     const [center, setCenter] = useState<google.maps.LatLngLiteral>({ lat: MapStore.defaultLongitude, lng: MapStore.defaultLatitude });
-    const [mapOptions, setMapOptions] = useState<IAzureMapOptions>();
+    const [azureSubscriptionKey, setAzureSubscriptionKey] = useState<string>();
     const [isSaveEnabled, setIsSaveEnabled] = useState<boolean>(false);
     const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
     const [formSubmitErrors, setFormSubmitErrors] = useState<string>('');
@@ -67,7 +67,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
     const { refetch: refetchAddressReverse } = useAzureMapSearchAddressReverse({
         lat: latitude,
         long: longitude,
-        azureKey: mapOptions?.subscriptionKey || '',
+        azureKey: azureSubscriptionKey || '',
     }, { enabled: false });
 
     useEffect(() => {
@@ -76,6 +76,8 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
         if (props.isUserLoaded && !isDataLoaded) {
             getUserById.refetch().then((res) => {
                 if (res.data === undefined || res.data.data === null) return;
+
+                console.log(`user`, res.data.data)
                 setUserName(res.data.data.userName);
                 setEmail(res.data.data.email);
                 setCity(res.data.data.city);
@@ -88,7 +90,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                 setLatitude(res.data.data.latitude);
                 setLongitude(res.data.data.longitude);
                 setPrefersMetric(res.data.data.prefersMetric);
-                setTravelLimitForLocalEvents(res.data.data.travelLimitForLocalEvents);
+                setTravelLimitForLocalEvents(Math.max(res.data.data.travelLimitForLocalEvents, 1));
                 setMaxEventsRadiusErrors('');
                 setTravelLimitForLocalEventsErrors('');
                 setRadiusType(res.data.data.prefersMetric ? 'km' : 'mi');
@@ -99,8 +101,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
         }
 
         MapStore.getOption().then((opts) => {
-            setMapOptions(opts);
-            // setIsMapKeyLoaded(true);
+            setAzureSubscriptionKey(opts.subscriptionKey);
         })
 
         if ("geolocation" in navigator) {
@@ -204,6 +205,32 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
     );
 
     const map = useMap()
+    const radiusRef = useRef<google.maps.Circle>()
+    
+    useEffect(() => {
+        if (!map) return;
+    
+        const radiusCircle = new google.maps.Circle({
+            strokeColor: "#96ba00",
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: "#96ba00",
+            fillOpacity: 0.20,
+            map,
+        });
+        console.log(`create radiusCircle`, radiusCircle)
+        radiusRef.current = radiusCircle
+    }, [map]);
+
+    useEffect(() => {
+        if (map && radiusRef.current) {
+            console.log(`set radiusCircle`, { latitude, longitude, travelLimitForLocalEvents })
+
+            radiusRef.current.setCenter({ lat: latitude, lng: longitude })
+            radiusRef.current.setRadius(travelLimitForLocalEvents * (radiusType === 'km' ? 1000 : 1600))
+        }
+    }, [map, radiusRef, latitude, longitude, travelLimitForLocalEvents, radiusType])
+    
 
     const handleSelectSearchLocation = useCallback(async (location: SearchLocationOption) => {
         const { lat, lon } = location.position
@@ -297,7 +324,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                                     </OverlayTrigger>
                                     <Row>
                                         <Col xs={8}>
-                                            <Form.Control type="number" className='border-0 bg-light p-18 h-60 w-100' name="maxEventsRadius" defaultValue={travelLimitForLocalEvents} onChange={(val) => handleTravelLimitForLocalEventsChanged(val.target.value)} maxLength={parseInt('32')} />
+                                            <Form.Control type="number" className='border-0 bg-light p-18 h-60 w-100' name="maxEventsRadius" value={travelLimitForLocalEvents} onChange={(val) => handleTravelLimitForLocalEventsChanged(val.target.value)} maxLength={parseInt('32')} />
                                         </Col>
                                         <Col xs={4}>
                                             <select data-val="true" className='bg-light border-0 p-18 h-60 w-100 rounded p-2' name="radiusType" value={radiusType} onChange={(val) => handleRadiusTypeChanged(val.target.value)} required>
@@ -357,8 +384,8 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
 
 const LocationPreferenceWrapper = (props: LocationPreferenceProps) => {
     const { data: googleApiKey, isLoading } = useQuery({
-        queryKey: GetGoolgeMapApiKey().key,
-        queryFn: GetGoolgeMapApiKey().service,
+        queryKey: GetGoogleMapApiKey().key,
+        queryFn: GetGoogleMapApiKey().service,
         select: (res) => res.data,
     })
 

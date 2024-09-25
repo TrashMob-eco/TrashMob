@@ -1,14 +1,14 @@
 import { useState } from "react"
-import { Marker, InfoWindow, MarkerProps, useMarkerRef, InfoWindowProps } from "@vis.gl/react-google-maps"
+import { AdvancedMarker, AdvancedMarkerProps, InfoWindow, useAdvancedMarkerRef, InfoWindowProps, Pin } from "@vis.gl/react-google-maps"
 
-type MarkerWithInfoWindowProps = MarkerProps & {
+type MarkerWithInfoWindowProps = AdvancedMarkerProps & {
   infoWindowTrigger: "click" | "hover"
   infoWindowProps: InfoWindowProps
   infoWindowContent: JSX.Element
 }
 export const MarkerWithInfoWindow = (props: MarkerWithInfoWindowProps) => {
   const { infoWindowTrigger, infoWindowProps, infoWindowContent, ...markerProps } = props
-  const [markerRef, marker] = useMarkerRef();
+  const [markerRef, marker] = useAdvancedMarkerRef();
   const [infoWindowShown, setInfoWindowShown] = useState<boolean>(false);
 
   const triggerProps = infoWindowTrigger === "click" ? {
@@ -20,12 +20,11 @@ export const MarkerWithInfoWindow = (props: MarkerWithInfoWindowProps) => {
                         
   return (
     <>
-      <Marker
+      <AdvancedMarker
         ref={markerRef}
         {...markerProps}
         {...triggerProps}
       />
-
       {infoWindowShown && (
         <InfoWindow anchor={marker} {...infoWindowProps}>
           {infoWindowContent}

@@ -1,13 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { APIProvider, Map, MapProps } from '@vis.gl/react-google-maps';
 import { PropsWithChildren } from 'react';
-import { GetGoolgeMapApiKey } from '../../../services/maps';
+import { GetGoogleMapApiKey } from '../../../services/maps';
 
 export const GoogleMap = (props: PropsWithChildren<MapProps>) => {
 
   const { data: apiKey, isSuccess } = useQuery({
-    queryKey: GetGoolgeMapApiKey().key,
-    queryFn: GetGoolgeMapApiKey().service,
+    queryKey: GetGoogleMapApiKey().key,
+    queryFn: GetGoogleMapApiKey().service,
     select: (res) => res.data,
   })
 

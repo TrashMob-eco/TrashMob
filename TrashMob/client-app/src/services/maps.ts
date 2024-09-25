@@ -12,6 +12,13 @@ export const GetMaps = () => ({
     service: async () => ApiService('public').fetchData<GetMaps_Response>({ url: `/maps`, method: 'get' }),
 });
 
+
+export type GetGoogleMapApiKey_Response = string;
+export const GetGoogleMapApiKey = () => ({
+    key: ['/maps/googlemapkey'],
+    service: async () => ApiService('public').fetchData<GetMaps_Response>({ url: `/maps/googlemapkey`, method: 'get' }),
+});
+
 export type AzureMapSearchAddress_Params = { azureKey: string; query: string };
 export type AzureMapSearchAddress_Response = AzureMapSearchAddressResult;
 export const AzureMapSearchAddress = () => ({
