@@ -14,7 +14,7 @@ import infoCycle from '../assets/info-circle.svg';
 import { HeroSection } from '../Customization/HeroSection';
 import { GetUserById, UpdateUser } from '../../services/users';
 import { Services } from '../../config/services.config';
-import { MarkerWithInfoWindow } from '../Map/google/MarkerWithInfoWindow';
+import { MarkerWithInfoWindow } from '../Map/GoogleMarkerWithInfoWindow/GoogleMarkerWithInfoWindow';
 import { AzureSearchLocationInput, SearchLocationOption } from '../Map/AzureSearchLocationInput';
 import { GetGoogleMapApiKey } from '../../services/maps';
 import { useAzureMapSearchAddressReverse } from '../../hooks/useAzureMapSearchAddressReverse';

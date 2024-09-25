@@ -13,7 +13,7 @@ type MarkerWithInfoWindowProps = AdvancedMarkerProps & {
     infoWindowProps: InfoWindowProps;
     infoWindowContent: JSX.Element;
 };
-export const MarkerWithInfoWindow = (props: MarkerWithInfoWindowProps) => {
+export const GoogleMarkerWithInfoWindow = (props: MarkerWithInfoWindowProps) => {
     const { infoWindowTrigger, infoWindowProps, infoWindowContent, ...markerProps } = props;
     const [markerRef, marker] = useAdvancedMarkerRef();
     const [infoWindowShown, setInfoWindowShown] = useState<boolean>(false);
