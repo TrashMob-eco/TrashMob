@@ -32,7 +32,7 @@ export const AzureMapSearchAddress = () => ({
 export type AzureMapSearchAddressReverse_Params = { azureKey: string; lat: number; long: number };
 export type AzureMapSearchAddressReverse_Response = AzureMapSearchAddressReverseResult;
 export const AzureMapSearchAddressReverse = () => ({
-    key: (lat: number, lng: number) => ['AzureMapSearchAddressReverse', { lat, lng }],
+    key: ['AzureMapSearchAddressReverse'],
     service: async (params: AzureMapSearchAddressReverse_Params) => 
         axios.get<AzureMapSearchAddressReverse_Response>(
             `https://atlas.microsoft.com/search/address/reverse/json?subscription-key=${params.azureKey}&api-version=1.0&query=${params.lat},${params.long}`,

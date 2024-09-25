@@ -97,7 +97,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     });
 
     const azureMapSearchAddressReverse = useMutation({
-        mutationKey: AzureMapSearchAddressReverse().key(0, 0),
+        mutationKey: AzureMapSearchAddressReverse(),
         mutationFn: AzureMapSearchAddressReverse().service
     })
 
