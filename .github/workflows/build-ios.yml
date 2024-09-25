@@ -82,7 +82,7 @@ jobs:
           run: sed -i '' "s|<DefineConstants>USETEST</DefineConstants>|<DefineConstants>${{ inputs.define_constants }}</DefineConstants>|g" TrashMobMobile/TrashMobMobile.csproj
 
         - name: Setup DotNet ${{ inputs.dotnet_version }} Environment
-          uses: actions/setup-dotnet@v3
+          uses: actions/setup-dotnet@v4
           with:
             dotnet-version: ${{ inputs.dotnet_version }}
 
