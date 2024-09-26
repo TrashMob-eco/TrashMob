@@ -82,6 +82,22 @@
 1. As a signed-in user, I want to be able to sign a waiver so that I can participate in events.
 1. **As a signed-in user, I want to be able to create a litter report so that others know where litter is accumulating.**
 1. As a signed-in user, I want to be able to set my preferred location so that I can see events near me and be notified of new events near me.
+	1. I should be able to go to a page that allows me to specify my preferred location
+	1. The page should default to my current location if I have allowed the site to access my location. If not, it should default to the center of the United States.
+	1. If I have already set my preferred location, it should show my preferred location.
+	1. The map should be centered on the preferred location
+	1. The user should be able to zoom in and out on the map
+	1. The user should be able to move the map around
+	1. The user should be able to click on the map to drop a pin
+	1. The user should be able to search for a location in the search bar and have the map center on that location
+	1. A pin should be dropped on the preferred position
+	1. Once the pin has been set, use the lat-long to call the Azure Api to get the exact address
+	1. Update the address below the map with the location retrieved from the api
+	1. Allow the user to move the pin to a new location
+	1. Allow the user to choose a maximum radius from the preferred location to show events (must be greater than 0)
+	1. Allow the user the select the preferred units of measurement for the radius (miles or kilometers)
+	1. The used should see the location details below the map
+	1. Allow the user to save the preferred location
 1. **As a signed-in user, I want to be able to send an invite to a potential partner so that they can provide services to events.**
 1. As a signed-in user, I want to be able to delete my account so that my data is removed from the site.
 1. As a signed-in user, I want to be able to view a dashboard of all my activities so that I can track my participation.
