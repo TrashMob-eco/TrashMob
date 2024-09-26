@@ -5,36 +5,68 @@
 ## User Stories
 
 1. As a user, I want to be able to download and install the Mobile App for Google Play or the Apple Store so that I can participate in events.
-1. As a user, when I open the Mobile App, I want to be taken to the home screen so that I can see what I can do.
-1. As a user, I want to be able to sign up for the Mobile App using my email and a new password so that I can participate in events.
-1. As a user, I want to be able to sign up for the Mobile App using a third party auth provider like Google, LinkedIn, Facebook, Microsoft, or Apple so that I can participate in events.
-1. As a user, when I sign up, I want to be able to set a user name so that I can be identified on the site.
-1. As a user, I want to be able to sign in to the Mobile App so that I can participate in events.
-1. As a user, I want to review the privacy policy and terms of service so that I can understand how my data will be used.
-1. **As a user, I want to be able to view guides for how to use the mobile apps so that I can get the most out of them.**
-1. As a user, I want to be able to view the TrashMob.eco safety video so I can be safe while picking litter.
-1. As a user, I want to be able to view the statistics of the organization so that I can see the impact of the organization.
+1. As a user, when I open the Mobile App, I want to see a splash screen so that I can see the app is loading.
+1. As a user, when I open the Mobile App, I want to be taken to a welcome screen so that I can see what I can do.
+1. On the welcome screen, I want to see the following options:
+	1. As a user, I want to be able to sign up for the Mobile App using my email and a new password so that I can participate in events.
+	1. As a user, I want to be able to sign up for the Mobile App using a third party auth provider like Google, LinkedIn, Facebook, Microsoft, or Apple so that I can participate in events.
+	1. As a user, when I sign up, I want to be able to set a user name so that I can be identified on the site.
+	1. As a user, I want to be able to sign in to the Mobile App so that I can participate in events.
+	1. As a user, I want to review the privacy policy and terms of service so that I can understand how my data will be used.
+	1. **As a user, I want to be able to view guides for how to use the mobile apps so that I can get the most out of them.**
+	1. As a user, I want to be able to view the TrashMob.eco safety video so I can be safe while picking litter.
+		1. The video is hosted on YouTube.
+	1. As a user, I want to be able to view the statistics of the organization so that I can see the impact of the organization.
+		1. The Statistics should include:
+			1. Number of events
+			1. Number of attendees
+			1. Number of bags of litter collected
+			1. Total number of hours spent cleaning by all volunteers
 
 ## Signed-In User Stories
 
 1. As a signed-in user, I want to be able to sign out of the Mobile App when I am done using it.
+1. As a signed-in user, I want to review the privacy policy and terms of service so that I can understand how my data will be used.
+1. **As a signed-in user, I want to be able to view guides for how to use the mobile apps so that I can get the most out of them.**
+1. As a signed-in user, I want to be able to view the TrashMob.eco safety video so I can be safe while picking litter.
+	1. The video is hosted on YouTube
+1. As a signed-in user, I want to be able to view my statistics so that I can see my impact of the organization.
+		1. The Statistics should include:
+			1. Number of events I have attended
+			1. Number of bags of litter collected at events I have attended
+			1. Total number of hours I have spent cleaning
 1. As a signed-in user, I want to be able to contact the site administrator so that I can ask questions or report issues.
 1. As a signed-in user, I want to be able to see a list of events near me so that I can participate in them.
 	1. The list should include a card for each event that shows:
 		1. Event name
 		1. Date
 		1. Time
-		1. A button to take the user to the Event Details Page
-		1. A button to register for the event
-1. **As a signed-in user, I want to be able to see a map of events near me so that I can participate in them.**
+		1. A method to take the user to the Event Details Page
+1. As a signed-in user, I want to be able to see a map of events near me so that I can participate in them.
 	1. The map should include a custom pin for each event that shows:
 		1. Event name
 		1. Date
 		1. Time
-		1. A button to take the user to the Event Details Page
-		1. A button to register for the event
-1. As a signed-in user, I want to be able to register for an event so that I can participate in it.
+		1. A method to take the user to the Event Details Page
+1. As a signed in user, I want to be able to view the details of an event I have selected so that I can see what is involved.
+	1. The details should include:
+		1. Event name
+		1. Date
+		1. Time
+		1. Description
+		1. Location
+		1. Services provided
+		1. Maximum Participants
+		1. Associated Litter Report(s)
+		1. Hauling Partner
+		1. Other services partners
+		1. **Map of Litter Reports associated with the event**
+		1. A method to register for the event
+		1. A method to view the event on a map
 1. As a signed-in user, I want to be able to sign a waiver so that I can participate in events.
+	1. I should only have to sign the waiver once unless the waiver has changed.
+	1. I should not be able to register for an event until I have signed the waiver.
+	1. I should not be able to create an event until I have signed the waiver.
 1. **As a signed-in user, I want to be able to create a litter report so that others know where litter is accumulating.**
 	1. I click the Create Litter Report button
 	1. I am taken to a page where I can enter the following information:
