@@ -2,7 +2,6 @@
 
 using System.Globalization;
 using System.Net.Http.Json;
-using Android.Mtp;
 using Newtonsoft.Json;
 using TrashMob.Models;
 using TrashMob.Models.Poco;
