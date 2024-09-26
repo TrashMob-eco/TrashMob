@@ -68,6 +68,7 @@
     <None Remove="client-app\src\components\Customization\HeroSection.tsx" />
     <None Remove="Docusign\TrashMob_Volunteer_Waiver_V1.docx" />
     <None Remove="Docusign\TrashMob_Volunteer_Waiver_V2.docx" />
+    <None Remove="MobileAppUserStories.md" />
     <None Remove="README.md" />
     <None Remove="robots.txt" />
     <None Remove="WebsiteUserStories.md" />
@@ -95,6 +96,7 @@
     <Content Include="Docusign\TrashMob_Volunteer_Waiver_V2.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="MobileAppUserStories.md" />
     <Content Include="WebsiteUserStories.md" />
     <Content Include="README.md" />
     <Content Include="robots.txt">
