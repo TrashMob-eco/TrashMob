@@ -193,6 +193,10 @@
 	    <DependentUpon>Step6.xaml</DependentUpon>
 	    <SubType>Code</SubType>
 	  </Compile>
+	  <Compile Update="Controls\TMPicker.xaml.cs">
+	    <DependentUpon>TMPicker.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -280,6 +284,10 @@
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\CreateEvent\Step6.xaml">
 	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="Controls\TMPicker.xaml">
+	    <SubType>Designer</SubType>
+	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>
 
