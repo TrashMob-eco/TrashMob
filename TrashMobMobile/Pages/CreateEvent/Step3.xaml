@@ -12,6 +12,8 @@
         <HorizontalStackLayout Spacing="10">
             <Label Text="Max Attendees" Style="{StaticResource FieldLabel}" />
             <controls:TMEntry Keyboard="Numeric"
+                              WidthRequest="35"
+                              HeightRequest="40"
                      Text="{Binding EventViewModel.MaxNumberOfParticipants}">
                 <controls:TMEntry.Behaviors>
                     <toolkit:NumericValidationBehavior Flags="ValidateOnValueChanged"
