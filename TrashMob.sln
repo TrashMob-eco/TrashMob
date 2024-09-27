@@ -18,11 +18,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		CONTRIBUTING.md = CONTRIBUTING.md
 		GitVersion.yml = GitVersion.yml
 		LICENSE = LICENSE
+		MobileAppUserStories.md = MobileAppUserStories.md
 		NuGet.Config = NuGet.Config
 		README.md = README.md
 		TestScenarios.md = TestScenarios.md
 		TrashMobArchitecture.png = TrashMobArchitecture.png
 		TrashMob_Logo1.svg = TrashMob_Logo1.svg
+		WebsiteUserStories.md = WebsiteUserStories.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{63452333-3221-4570-B976-B5861E90C603}"
