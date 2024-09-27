@@ -1,15 +1,15 @@
-import * as React from 'react'
-import EventData from '../Models/EventData';
-import UserData from '../Models/UserData';
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import Tooltip from "react-bootstrap/Tooltip";
-import * as ToolTips from "../../store/ToolTips";
+import * as React from 'react';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 import { Button, Col, Container, Form } from 'react-bootstrap';
 import { RouteComponentProps } from 'react-router-dom';
-import { SocialsModal } from './ShareToSocialsModal';
-import * as SharingMessages from "../../store/SharingMessages";
-import { DeleteEvent, GetEventById } from '../../services/events';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import EventData from '../Models/EventData';
+import UserData from '../Models/UserData';
+import * as ToolTips from '../../store/ToolTips';
+import { SocialsModal } from './ShareToSocialsModal';
+import * as SharingMessages from '../../store/SharingMessages';
+import { DeleteEvent, GetEventById } from '../../services/events';
 import { Services } from '../../config/services.config';
 
 export interface CancelEventMatchParams {
@@ -23,40 +23,39 @@ export interface CancelEventProps extends RouteComponentProps<CancelEventMatchPa
 
 export const CancelEvent: React.FC<CancelEventProps> = (props) => {
     const [isDataLoaded, setIsDataLoaded] = React.useState<boolean>(false);
-    const [eventId, setEventId] = React.useState<string>(props.match.params["eventId"]);
-    const [eventName, setEventName] = React.useState<string>("New Event");
-    const [cancellationReason, setCancellationReason] = React.useState<string>("");
+    const [eventId, setEventId] = React.useState<string>(props.match.params.eventId);
+    const [eventName, setEventName] = React.useState<string>('New Event');
+    const [cancellationReason, setCancellationReason] = React.useState<string>('');
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
     const [showModal, setShowSocialsModal] = React.useState<boolean>(false);
     const [eventToShare, setEventToShare] = React.useState<EventData>();
 
-    const getEventById = useQuery({ 
+    const getEventById = useQuery({
         queryKey: GetEventById({ eventId }).key,
         queryFn: GetEventById({ eventId }).service,
         staleTime: Services.CACHE.DISABLE,
-        enabled: false
+        enabled: false,
     });
 
     const deleteEvent = useMutation({
         mutationKey: DeleteEvent().key,
-        mutationFn: DeleteEvent().service
-    })
-    
+        mutationFn: DeleteEvent().service,
+    });
+
     React.useEffect(() => {
-        getEventById.refetch().then(res => {
+        getEventById.refetch().then((res) => {
             if (res.data === undefined) return;
             setEventId(res.data.data.id);
             setEventName(res.data.data.name);
-            setEventToShare(res.data.data)
+            setEventToShare(res.data.data);
             setIsDataLoaded(true);
-        })
-    }, [eventId])
+        });
+    }, [eventId]);
 
     React.useEffect(() => {
-        if (cancellationReason === "") {
+        if (cancellationReason === '') {
             setIsSaveEnabled(false);
-        }
-        else {
+        } else {
             setIsSaveEnabled(true);
         }
     }, [cancellationReason]);
@@ -66,7 +65,7 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
     }
 
     function renderCancellationReasonToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.EventCancellationReason}</Tooltip>
+        return <Tooltip {...props}>{ToolTips.EventCancellationReason}</Tooltip>;
     }
 
     // This will handle Cancel button click event.
@@ -75,31 +74,40 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
         props.history.goBack();
     }
 
-    // This will handle the submit form event.  
+    // This will handle the submit form event.
     function handleSave(event: any) {
         event.preventDefault();
         if (!isSaveEnabled) return;
         setIsSaveEnabled(false);
         return deleteEvent.mutateAsync({ eventId, cancellationReason }).then((res) => {
-            if (eventToShare) handleShowModal(true)
-        })
+            if (eventToShare) handleShowModal(true);
+        });
     }
 
-    // Returns the HTML Form to the render() method.  
+    // Returns the HTML Form to the render() method.
     function renderCancelForm() {
         return (
-            <div className="container-fluid" >
+            <div className='container-fluid'>
                 <Form onSubmit={handleSave}>
                     <Form.Row>
-                        <input type="hidden" name="Id" value={eventId.toString()} />
+                        <input type='hidden' name='Id' value={eventId.toString()} />
                     </Form.Row>
                     <Form.Row>
                         <Col>
-                            <Form.Group className="required" >
-                                <OverlayTrigger placement="top" overlay={renderCancellationReasonToolTip}>
-                                    <Form.Label className="control-label font-weight-bold h5" htmlFor="Name">Reason for Cancelling the Event?</Form.Label>
+                            <Form.Group className='required'>
+                                <OverlayTrigger placement='top' overlay={renderCancellationReasonToolTip}>
+                                    <Form.Label className='control-label font-weight-bold h5' htmlFor='Name'>
+                                        Reason for Cancelling the Event?
+                                    </Form.Label>
                                 </OverlayTrigger>
-                                <Form.Control type="text" name="cancellationReason" defaultValue={cancellationReason} onChange={(val) => handleCancellationReasonChanged(val.target.value)} maxLength={parseInt('200')} required />
+                                <Form.Control
+                                    type='text'
+                                    name='cancellationReason'
+                                    defaultValue={cancellationReason}
+                                    onChange={(val) => handleCancellationReasonChanged(val.target.value)}
+                                    maxLength={parseInt('200')}
+                                    required
+                                />
                             </Form.Group>
                         </Col>
                     </Form.Row>
@@ -108,35 +116,52 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
                     </Form.Row>
                     <Form.Row>
                         <Form.Group>
-                            <Button disabled={!isSaveEnabled} type="submit" className="btn btn-default">Yes</Button>
-                            <Button className="action" onClick={(e: any) => handleCancel(e)}>No</Button>
+                            <Button disabled={!isSaveEnabled} type='submit' className='btn btn-default'>
+                                Yes
+                            </Button>
+                            <Button className='action' onClick={(e: any) => handleCancel(e)}>
+                                No
+                            </Button>
                         </Form.Group>
                     </Form.Row>
-                </Form >
+                </Form>
             </div>
-        )
+        );
     }
 
     const handleShowModal = (showModal: boolean) => {
         // if modal is being dismissed, route user back to previous page
-        if (!showModal)
-            props.history.goBack();
-        else
-            setShowSocialsModal(showModal);
-    }
+        if (!showModal) props.history.goBack();
+        else setShowSocialsModal(showModal);
+    };
 
-    var contents = isDataLoaded && eventId
-        ? renderCancelForm()
-        : <p><em>Loading...</em></p>;
+    const contents =
+        isDataLoaded && eventId ? (
+            renderCancelForm()
+        ) : (
+            <p>
+                <em>Loading...</em>
+            </p>
+        );
 
-    return <div>
-        <Container className='p-4 bg-white rounded my-5'>
-            { isDataLoaded &&
-                <SocialsModal eventToShare={eventToShare} show={showModal} handleShow={handleShowModal} modalTitle='Share Event Cancellation' message={SharingMessages.getCancellationMessage(eventToShare, cancellationReason)} eventLink='https://www.trashmob.eco' emailSubject='TrashMob Event Cancellation' />
-            }
-            <h2>Cancel Event</h2>
-            <hr />
-            {contents}
-        </Container>
-    </div>;
-}
+    return (
+        <div>
+            <Container className='p-4 bg-white rounded my-5'>
+                {isDataLoaded ? (
+                    <SocialsModal
+                        eventToShare={eventToShare}
+                        show={showModal}
+                        handleShow={handleShowModal}
+                        modalTitle='Share Event Cancellation'
+                        message={SharingMessages.getCancellationMessage(eventToShare, cancellationReason)}
+                        eventLink='https://www.trashmob.eco'
+                        emailSubject='TrashMob Event Cancellation'
+                    />
+                ) : null}
+                <h2>Cancel Event</h2>
+                <hr />
+                {contents}
+            </Container>
+        </div>
+    );
+};

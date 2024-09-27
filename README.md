@@ -238,7 +238,11 @@ If the app loads, but data does not, it is likely that the firewall rule is not 
 
 ## User Stories for the TrashMob.eco Website
 
-See the [User Stories](./WebsiteUserStories.md) document for a list of user stories that have been implemented in the site.
+See the [Website User Stories](./WebsiteUserStories.md) document for a list of user stories that have been implemented in the site.
+
+## User Stories for the TrashMob.eco Mobile App
+
+See the [Mobile App User Stories](./MobileAppUserStories.md) document for a list of user stories that have been implemented in the mobile apps.
 
 ## Testing the Web App
 

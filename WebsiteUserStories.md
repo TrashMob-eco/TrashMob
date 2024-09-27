@@ -6,61 +6,81 @@
 
 1. As a user, I want to be able to sign up for the site using my email and a new password so that I can participate in events.
 1. As a user, I want to be able to sign up for the site using a third party auth provider like Google, LinkedIn, Facebook, Microsoft, or Apple so that I can participate in events.
-1. **As a user, when I sign up, I want to receive a welcome email so that I know my account was created successfully.**
 1. As a user, when I sign up, I want to be able to set a user name so that I can be identified on the site.
 1. As a user, I want to be able to sign in to the site so that I can participate in events.
-	1. When clicking the sign in button, I want to return to the page I was on after the sign in is complete	.
-1. As a user, I want see a list of all upcoming events so that I can participate in them.
-	1. The list should include a card for each event that shows:
-		1. Event name
-		1. Date
-		1. Time
-		1. A button to take the user to the Event Details Page
-		1. A button to register for the event
-1. As a user, I want see a map of all upcoming events so that I can participate in them.
-	1. The map should include a custom pin for each event that shows:
-		1. Event name
-		1. Date
-		1. Time
-		1. A button to take the user to the Event Details Page
-		1. A button to register for the event
-	1. **The map pin color for upcoming events should be different from the map pin color for past events.**
-1. As a user, I want to be able to filter the list of all upcoming events so that I can participate in them.
-	1. Filters should include:
-		1. Date Range
-		1. Country
-		1. State
-		1. City
-1. As a user, I want to be able to filter the map of all upcoming events so that I can participate in them.
-	1. Filters should include:
-		1. Date Range
-		1. Country
-		1. State
-		1. City
-1. As a user, I want see a list of all past events so that I can see what the organization has done.
-1. As a user, I want see a map of all past events so that I can see what the organization has done.
-1. As a user, I want to be able to filter the list of all past events so that I can see what the organization has done.
-	1. Filters should include:
-		1. Date Range
-		1. Country
-		1. State
-		1. City
-1. As a user, I want to be able to filter the map of all past events so that I can see what the organization has done.
-	1. Filters should include:
-		1. Date Range
-		1. Country
-		1. State
-		1. City
-1. As a user, I want to be able to share upcoming events on social media so that I can encourage others to participate.
-1. As a user, I want to be able to share event summaries for completed events on social media so I can encourage others to participate.
+	1. When clicking the sign in button, I want to return to the page I was on after the sign in is complete.
+1. As a user, I want see a list of all upcoming events so that I can participate in them. The list should include a card for each event that shows:
+	1. Event name
+	1. Date
+	1. Time
+	1. A button to take me to the Event Details Page
+	1. A button to allow me to register for the event
+1. As a user, I want see a map of all upcoming events so that I can participate in them. The map should include a custom pin for each event that shows:
+	1. Event name
+	1. Date
+	1. Time
+	1. A button to take me to the Event Details Page
+	1. A button to allow me to register for the event
+1. As a user, I want to be able to filter the list of all upcoming events so that I can easily find ones near me. Filters should include:
+	1. Date Range
+	1. Country
+	1. State
+	1. City
+1. As a user, I want to be able to filter the map of all upcoming events so that I can easily find ones near me. Filters should include:
+	1. Date Range
+	1. Country
+	1. State
+	1. City
+1. As a user, I want see a list of all past events so that I can see what the organization has done. The list should include a card for each event that shows:
+	1. Event name
+	1. Date
+	1. Time
+	1. A button to take me to the Event Details Page
+	1. A button to allow me to view the event summary
+1. As a user, I want see a map of all past events so that I can see what the organization has done. The map pins should include the following information:
+	1. Event name
+	1. Date
+	1. Time
+	1. A button to take me to the Event Details Page
+	1. A button to allow me to view the event summary
+1. As a user, I want to be able to filter the list of all past events so that I can see what the organization has done. Filters should include:
+	1. Date Range
+	1. Country
+	1. State
+	1. City
+1. As a user, I want to be able to filter the map of all past events so that I can see what the organization has done. Filters should include:
+	1. Date Range
+	1. Country
+	1. State
+	1. City
+1. As a user, I want to be able to share upcoming events on social media providers so that I can encourage others to participate.
+1. As a user, I want to be able to share event summaries for completed events on social media providers so I can encourage others to participate.
 1. **As a user, I want to be able to see a list of partners so that I can see who is supporting the events and what services they provide.**
 1. **As a user, I want to be able to click on the logo of a partner so that I can see more information about them.**
-1. **As a user, I want to be able to see a list of litter reports so that I can see where litter is accumulating.**
-1. **As a user, I want to be able to see a map of litter reports so that I can see where litter is accumulating.**
-1. **As a user, I want to be able to view the details of a litter report so that I can see what is being reported.**
+1. **As a user, I want to be able to see a list of litter reports so that I can see where litter is accumulating. The list should include the following details:**
+	1. **The Name of the litter report**
+	1. **The Date the litter report was created**
+	1. **The Location of the litter report's first image**
+	1. **A button to take me to the Litter Report Details Page**
+1. **As a user, I want to be able to see a map of litter reports so that I can see where litter is accumulating. The map pins should include the following details for each image:**
+	1. **The Name of the litter report**
+	1. **The Date the litter report was created**
+	1. **The Location of the litter report image**
+	1. **A button to take me to the Litter Report Details Page**
+1. **As a user, I want to be able to view the details of a litter report so that I can see what is being reported. The details should include:**
+	1. **The Name of the litter report**
+	1. **The Date the litter report was created**
+	1. **The Locations of all the litter reports images**
+	1. **A map of all the image locations**
+	1. **An image browser to view all the images**
 1. **As a user, I want to see anonymized tracking reports of other events so I can know which areas have been cleaned recently and which areas need attention.**
-1. As a user, I want to review the privacy policy and terms of service so that I can understand how my data will be used.
-1. As a user, I want to view a frequently asked questions page so that I can get answers to common questions.
+	1. **I should be able to toggle the display of the tracking reports on and off on the home page map.**
+	1. **Only tracking reports associated with the event I am filtering for should be displayed.**
+	1. **Tracking reports should be displayed as a heat map with the intensity of the color indicating the number of bags of litter collected.**
+	1. **I should be able to click on a tracking report to see the event summary.**
+	1. **When I view the event summary, I should see a map of all the tracking reports associated with the event.**
+1. As a user, I want to be able to review the privacy policy and terms of service so that I can understand how my data will be used.
+1. As a user, I want to be able to view a frequently asked questions page so that I can get answers to common questions.
 1. As a user, I want to be able to contact the site administrator so that I can ask questions or report issues.
 1. As a user, I want to be able to view a list of board members so that I can see who is running the organization.
 1. **As a user, I want to be able to view a list of sponsors so that I can see who is supporting the organization.**
@@ -83,6 +103,22 @@
 1. As a signed-in user, I want to be able to sign a waiver so that I can participate in events.
 1. **As a signed-in user, I want to be able to create a litter report so that others know where litter is accumulating.**
 1. As a signed-in user, I want to be able to set my preferred location so that I can see events near me and be notified of new events near me.
+	1. I should be able to go to a page that allows me to specify my preferred location
+	1. The page should default to my current location if I have allowed the site to access my location. If not, it should default to the center of the United States.
+	1. If I have already set my preferred location, it should show my preferred location.
+	1. The map should be centered on the preferred location
+	1. The user should be able to zoom in and out on the map
+	1. The user should be able to move the map around
+	1. The user should be able to click on the map to drop a pin
+	1. The user should be able to search for a location in the search bar and have the map center on that location
+	1. A pin should be dropped on the preferred position
+	1. Once the pin has been set, use the lat-long to call the Azure Api to get the exact address
+	1. Update the address below the map with the location retrieved from the api
+	1. Allow the user to move the pin to a new location
+	1. Allow the user to choose a maximum radius from the preferred location to show events (must be greater than 0)
+	1. Allow the user the select the preferred units of measurement for the radius (miles or kilometers)
+	1. The used should see the location details below the map
+	1. Allow the user to save the preferred location
 1. **As a signed-in user, I want to be able to send an invite to a potential partner so that they can provide services to events.**
 1. As a signed-in user, I want to be able to delete my account so that my data is removed from the site.
 1. As a signed-in user, I want to be able to view a dashboard of all my activities so that I can track my participation.

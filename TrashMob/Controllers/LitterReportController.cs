@@ -110,7 +110,7 @@ namespace TrashMob.Controllers
             return Ok(fullLitterReports);
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("filteredlitterreports")]
         public async Task<IActionResult> GetFilteredLitterReports([FromBody] LitterReportFilter filter,
             CancellationToken cancellationToken)
@@ -128,7 +128,7 @@ namespace TrashMob.Controllers
             return Ok(result);
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("pagedfilteredlitterreports")]
         public async Task<IActionResult> GetPagedFilteredLitterReports([FromBody] LitterReportFilter filter,
             CancellationToken cancellationToken)
