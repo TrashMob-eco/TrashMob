@@ -82,7 +82,7 @@ jobs:
           run: sed -i '' "s|<DefineConstants>USETEST</DefineConstants>|<DefineConstants>${{ inputs.define_constants }}</DefineConstants>|g" TrashMobMobile/TrashMobMobile.csproj
 
         - name: Setup DotNet ${{ inputs.dotnet_version }} Environment
-          uses: actions/setup-dotnet@v4
+          uses: actions/setup-dotnet@v3
           with:
             dotnet-version: ${{ inputs.dotnet_version }}
 
@@ -96,8 +96,8 @@ jobs:
           if: runner.os == 'macOS'
           shell: bash
           run: |
-            sudo xcode-select -s "/Applications/Xcode_15.4.app"
-            echo "MD_APPLE_SDK_ROOT=/Applications/Xcode_15.4.app" >> $GITHUB_ENV
+            sudo xcode-select -s "/Applications/Xcode_15.1.app"
+            echo "MD_APPLE_SDK_ROOT=/Applications/Xcode_15.1.app" >> $GITHUB_ENV
 
         - name: Import Code-Signing Certificates
           uses: Apple-Actions/import-codesign-certs@v3
