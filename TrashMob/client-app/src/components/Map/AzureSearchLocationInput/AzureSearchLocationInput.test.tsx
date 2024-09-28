@@ -1,13 +1,14 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { vi } from 'vitest'
 import userEvent from '@testing-library/user-event';
 import { AzureSearchLocationInput } from './AzureSearchLocationInput';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // Mock AzureMapSearchAddress API
-jest.mock('../../../services/maps', () => ({
-  AzureMapSearchAddress: jest.fn().mockReturnValue({
-    key: jest.fn(() => ['mock-query-key']),
-    service: jest.fn(() => Promise.resolve({
+vi.mock('../../../services/maps', () => ({
+  AzureMapSearchAddress: vi.fn().mockReturnValue({
+    key: vi.fn(() => ['mock-query-key']),
+    service: vi.fn(() => Promise.resolve({
       data: {
         results: [
           {
@@ -25,7 +26,7 @@ jest.mock('../../../services/maps', () => ({
 const queryClient = new QueryClient();
 
 describe('AzureSearchLocationInput', () => {
-  const mockOnSelectLocation = jest.fn();
+  const mockOnSelectLocation = vi.fn();
   const azureKey = 'test-azure-key';
 
   const renderComponent = () => {
