@@ -1,13 +1,24 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { AzureSearchLocationInput } from './AzureSearchLocationInput';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AzureMapSearchAddress } from '../../../services/maps';
 
-// Mock the AzureMapSearchAddress service
+// Mock AzureMapSearchAddress API
 jest.mock('../../../services/maps', () => ({
-  AzureMapSearchAddress: () => ({
-    key: jest.fn().mockReturnValue(['mocked-key']),
-    service: jest.fn()
+  AzureMapSearchAddress: jest.fn().mockReturnValue({
+    key: jest.fn(() => ['mock-query-key']),
+    service: jest.fn(() => Promise.resolve({
+      data: {
+        results: [
+          {
+            id: '_KludoWnjF3yEhF0O5LEfA',
+            address: { freeformAddress: 'Cali, Dumangas' },
+            position: { lat: 10.83077, lon: 122.70239 }
+          }
+        ],
+        summary: { totalResults: 1 }
+      }
+    }))
   })
 }));
 
@@ -16,10 +27,6 @@ const queryClient = new QueryClient();
 describe('AzureSearchLocationInput', () => {
   const mockOnSelectLocation = jest.fn();
   const azureKey = 'test-azure-key';
-
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
 
   const renderComponent = () => {
     render(
@@ -35,32 +42,24 @@ describe('AzureSearchLocationInput', () => {
   });
 
   it('handles input change and triggers search', async () => {
-    (AzureMapSearchAddress().service as jest.Mock).mockResolvedValueOnce({
-      data: {
-        results: [
-          { id: '1', address: { freeformAddress: 'Foo Address' }, position: { lat: 1, lon: 1 } }
-        ],
-        summary: { totalResults: 1 }
-      }
-    });
-
+   
     renderComponent();
 
+    const inputElement = screen.getByPlaceholderText('Search for a location...');
+
     // Simulate typing in the input
-    fireEvent.change(screen.getByPlaceholderText('Search for a location...'), {
-      target: { value: 'Some Place' }
-    });
+    await userEvent.type(inputElement, 'cali');
 
-    // Wait for results to be displayed
-    await waitFor(() => expect(AzureMapSearchAddress().service).toHaveBeenCalledTimes(1))
+    await waitFor(() => expect(screen.getByText('Cali, Dumangas')).toBeInTheDocument());
 
-  //   // Simulate selecting the location
-    fireEvent.click(screen.getByText('Foo Address'));
-
+    // Simulate selecting the option
+    const option = screen.getByText('Cali, Dumangas');
+    fireEvent.click(option);
+    
     expect(mockOnSelectLocation).toHaveBeenCalledWith({
-      id: '1',
-      displayAddress: 'Foo Address',
-      position: { lat: 1, lon: 1 }
+      id: '_KludoWnjF3yEhF0O5LEfA',
+      displayAddress: 'Cali, Dumangas',
+      position: { lat: 10.83077, lon: 122.70239 }
     });
   });
 })
