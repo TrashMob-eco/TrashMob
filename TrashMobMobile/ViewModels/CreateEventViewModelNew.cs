@@ -25,7 +25,6 @@ public partial class CreateEventViewModelNew : BaseViewModel
     private readonly ILitterReportManager litterReportManager;
     private readonly IEventLitterReportRestService eventLitterReportRestService;
     private readonly INotificationService notificationService;
-    private readonly IEventPartnerLocationServiceStatusRestService eventPartnerLocationServiceStatusRestService;
     private IEnumerable<LitterReport> RawLitterReports { get; set; } = [];
 
     public ICommand PreviousCommand { get; set; }
@@ -567,7 +566,7 @@ public partial class CreateEventViewModelNew : BaseViewModel
         foreach (var litterReport in RawLitterReports.OrderByDescending(l => l.CreatedDate))
         {
             var vm = litterReport.ToEventLitterReportViewModel(NotificationService, eventLitterReportRestService,
-                eventViewModel.Id);
+                EventViewModel.Id);
 
             foreach (var litterImage in litterReport.LitterImages)
             {
