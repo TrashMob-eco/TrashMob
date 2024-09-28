@@ -197,6 +197,10 @@
 	    <DependentUpon>TMPicker.xaml</DependentUpon>
 	    <SubType>Code</SubType>
 	  </Compile>
+	  <Compile Update="Controls\TMDatePicker.xaml.cs">
+	    <DependentUpon>TMDatePicker.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -286,6 +290,10 @@
 	    <SubType>Designer</SubType>
 	  </MauiXaml>
 	  <MauiXaml Update="Controls\TMPicker.xaml">
+	    <SubType>Designer</SubType>
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Controls\TMDatePicker.xaml">
 	    <SubType>Designer</SubType>
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

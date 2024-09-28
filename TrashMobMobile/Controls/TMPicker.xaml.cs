@@ -47,7 +47,7 @@ public class BorderlessPicker : Picker
             {
 #if ANDROID
                 handler.PlatformView.Background = null;
-#elif!IOS
+#elif IOS
                 handler.PlatformView.BackgroundColor = UIKit.UIColor.Clear;
                 handler.PlatformView.Layer.BorderWidth = 0;
                 handler.PlatformView.BorderStyle = UIKit.UITextBorderStyle.None;
