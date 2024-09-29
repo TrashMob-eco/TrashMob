@@ -67,8 +67,8 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
 
     const azureMapSearchAddressReverse = useMutation({
         mutationKey: AzureMapSearchAddressReverse().key,
-        mutationFn: AzureMapSearchAddressReverse().service,
-    });
+        mutationFn: AzureMapSearchAddressReverse().service
+    })
 
     React.useEffect(() => {
         if (props.isUserLoaded && props.partnerLocationId === Guid.EMPTY) setIsPartnerLocationDataLoaded(true);

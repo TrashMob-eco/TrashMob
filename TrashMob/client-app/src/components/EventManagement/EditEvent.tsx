@@ -737,3 +737,4 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
 
     return <div>{contents}</div>;
 };
+
