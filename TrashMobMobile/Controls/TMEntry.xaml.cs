@@ -65,7 +65,7 @@ public class BorderlessEntry : Entry
 {
     public BorderlessEntry()
     {
-        Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping("Borderless", (handler, view) =>
+        Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping(nameof(BorderlessEntry), (handler, view) =>
         {
             if (view is BorderlessEntry)
             {
