@@ -45,7 +45,6 @@ import './custom.css';
 import 'react-phone-input-2/lib/style.css';
 import DeleteMyData from './components/Pages/DeleteMyData';
 import Waivers from './components/Waivers/Waivers';
-import WaiversReturn, { WaiversReturnMatchParams } from './components/Waivers/WaiversReturn';
 import PartnerRequestDetails, { PartnerRequestDetailsMatchParams } from './components/Partners/PartnerRequestDetails';
 import { Partnerships } from './components/Partners/Partnerships';
 import { Help } from './components/Pages/Help';
@@ -60,8 +59,6 @@ interface CancelProps extends RouteComponentProps<CancelEventMatchParams> {}
 interface DetailsProps extends RouteComponentProps<DetailsMatchParams> {}
 
 interface PartnerRequestDetailsProps extends RouteComponentProps<PartnerRequestDetailsMatchParams> {}
-
-interface WaiversReturnProps extends RouteComponentProps<WaiversReturnMatchParams> {}
 
 interface DeleteMyDataProps extends RouteComponentProps {}
 
@@ -168,23 +165,6 @@ export const App: FC = () => {
         );
     }
 
-    function renderWaiversReturn(inp: WaiversReturnProps) {
-        return (
-            <MsalAuthenticationTemplate
-                interactionType={InteractionType.Redirect}
-                errorComponent={ErrorComponent}
-                loadingComponent={LoadingComponent}
-            >
-                <WaiversReturn
-                    {...inp}
-                    currentUser={currentUser}
-                    isUserLoaded={isUserLoaded}
-                    onUserUpdated={handleUserUpdated}
-                />
-            </MsalAuthenticationTemplate>
-        );
-    }
-
     function renderDeleteMyData(inp: DeleteMyDataProps) {
         return (
             <MsalAuthenticationTemplate
@@ -275,10 +255,6 @@ export const App: FC = () => {
                                     render={(props: CancelProps) => renderCancelEvent(props)}
                                 />
                                 <Route
-                                    path='/waiversreturn/:envelopeId'
-                                    render={(props: WaiversReturnProps) => renderWaiversReturn(props)}
-                                />
-                                <Route
                                     path='/deletemydata'
                                     render={(props: DeleteMyDataProps) => renderDeleteMyData(props)}
                                 />
@@ -345,7 +321,7 @@ export const App: FC = () => {
                                         errorComponent={ErrorComponent}
                                         loadingComponent={LoadingComponent}
                                     >
-                                        <Waivers currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                                        {isUserLoaded && <Waivers currentUser={currentUser} />}
                                     </MsalAuthenticationTemplate>
                                 </Route>
                                 <Route exact path='/partnerships'>
