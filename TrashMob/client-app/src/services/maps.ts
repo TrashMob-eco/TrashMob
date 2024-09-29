@@ -3,13 +3,19 @@
 
 import axios from 'axios';
 import { AzureMapSearchAddressResult } from '../components/Models/AzureMapSearchAddress';
-import AddressData from '../components/Models/AddressData';
+import { AzureMapSearchAddressReverseResult } from '../components/Models/AzureMapSearchAddressReverse';
 import { ApiService } from '.';
 
 export type GetMaps_Response = string;
 export const GetMaps = () => ({
     key: ['/maps'],
     service: async () => ApiService('public').fetchData<GetMaps_Response>({ url: `/maps`, method: 'get' }),
+});
+
+export type GetGoogleMapApiKey_Response = string;
+export const GetGoogleMapApiKey = () => ({
+    key: ['/maps/googlemapkey'],
+    service: async () => ApiService('public').fetchData<GetMaps_Response>({ url: `/maps/googlemapkey`, method: 'get' }),
 });
 
 export type AzureMapSearchAddress_Params = { azureKey: string; query: string };
@@ -23,7 +29,7 @@ export const AzureMapSearchAddress = () => ({
 });
 
 export type AzureMapSearchAddressReverse_Params = { azureKey: string; lat: number; long: number };
-export type AzureMapSearchAddressReverse_Response = AddressData;
+export type AzureMapSearchAddressReverse_Response = AzureMapSearchAddressReverseResult;
 export const AzureMapSearchAddressReverse = () => ({
     key: ['AzureMapSearchAddressReverse'],
     service: async (params: AzureMapSearchAddressReverse_Params) =>

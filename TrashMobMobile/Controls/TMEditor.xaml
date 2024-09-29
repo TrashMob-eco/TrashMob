@@ -7,7 +7,7 @@
     <Border Padding="5,0"
             Style="{StaticResource InputStyle}">
         <Border.Triggers>
-            <DataTrigger Binding="{Binding Source={x:Reference Entry}, Path=IsFocused}"
+            <DataTrigger Binding="{Binding Source={x:Reference WrappedEditor}, Path=IsFocused}"
                          TargetType="Border"
                          Value="True">
                 <Setter Property="Stroke" Value="{StaticResource InputBorderActive}" />
