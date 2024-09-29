@@ -3,17 +3,15 @@ import { useForm, SubmitHandler } from "react-hook-form"
 import { useHistory } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
-import { Col, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
-import { useQueryClient, useQuery, useMutation } from '@tanstack/react-query';
+import { Col, Form, Row } from 'react-bootstrap';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
 import UserData from '../Models/UserData';
 import logo from '../assets/logo.svg';
-import * as ToolTips from '../../store/ToolTips';
 import { HeroSection } from '../Customization/HeroSection';
 import { GetUserById, UpdateUser } from '../../services/users';
 
 type WaiverFormInputs = {
-    fullName: string
-    email: string
+    userId: string
     accepted: boolean
 }
   
@@ -38,16 +36,9 @@ const Waivers: React.FC<WaiversProps> = ({ currentUser }) => {
         formState: { isValid, errors },
     } = useForm<WaiverFormInputs>({
         defaultValues: {
-            fullName: '',
-            email: currentUser.email,
+            userId: currentUser.id,
             accepted: false
         }
-    })
-
-    const { data: userData } = useQuery({
-        queryKey: GetUserById({ userId }).key,
-        queryFn: GetUserById({ userId }).service,
-        select: res => res.data,
     })
 
     const { mutate } = useMutation({
@@ -69,8 +60,6 @@ const Waivers: React.FC<WaiversProps> = ({ currentUser }) => {
             trashMobWaiverVersion: CurrentTrashMobWaiverVersion.versionId,
         })
     }
-
-    const renderFullNameToolTip = (props: any) => <Tooltip {...props}>{ToolTips.WaiverFullName}</Tooltip>;
 
     return (
         <>
@@ -114,7 +103,7 @@ const Waivers: React.FC<WaiversProps> = ({ currentUser }) => {
                         <li>Other:  I, the Volunteer, expressly agrees that this Release is intended to be as broad and inclusive as permitted by law. I agree that in the event that any clause or provision of this Release shall be held to be invalid by any court of competent jurisdiction, the validity of the remaining provisions of this Release shall continue to be enforceable.</li>
                     </ol>
                 </div>
-                <Form onSubmit={handleSubmit(onSubmit)} style={{ marginTop: '40px' }}>
+                <Form onSubmit={handleSubmit(onSubmit)} className="mt-4">
                     <Form.Group>
                         <Form.Check
                             type="checkbox"
@@ -129,19 +118,6 @@ const Waivers: React.FC<WaiversProps> = ({ currentUser }) => {
                             <Form.Check.Label>I HAVE READ THIS RELEASE AND WAIVER FORM</Form.Check.Label>
                         </Form.Check>
                     </Form.Group>
-                    <Form.Group className='required'>
-                        <OverlayTrigger placement='top' overlay={renderFullNameToolTip}>
-                            <Form.Label className='control-label font-weight-bold h5'>Full Name</Form.Label>
-                        </OverlayTrigger>
-                        <Form.Control
-                            type='text'
-                            {...register('fullName', { required: true })}
-                            maxLength={100}
-                            required
-                        />
-                        {errors.fullName && <Form.Control.Feedback type="invalid">{errors.fullName.message}</Form.Control.Feedback>}
-                    </Form.Group>
-                    
                     <Button
                         disabled={!isValid}
                         type="submit"
