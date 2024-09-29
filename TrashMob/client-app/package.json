@@ -10,6 +10,7 @@
         "@material-ui/core": "^4.11.4",
         "@tanstack/react-query": "^4.36.1",
         "@uifabric/icons": "^7.5.23",
+        "@vis.gl/react-google-maps": "^1.2.0",
         "@vitejs/plugin-react": "^4.3.1",
         "@vitejs/plugin-react-swc": "^3.7.0",
         "axios": "^1.7.2",
