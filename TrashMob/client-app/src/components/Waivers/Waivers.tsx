@@ -67,16 +67,9 @@ const Waivers: React.FC<WaiversProps> = ({ currentUser }) => {
             <Container className='bodyMargin'>
                 <h2 className='fw-500 font-size-xl'>TrashMob.eco Waiver</h2>
                 <p className='p-18'>
-                    In order to participate in TrashMob.eco events, you must agree to a liability waiver. Please click
-                    the
-                    <span className='color-primary'> Sign Waiver</span> button below. This will take you to a screen
-                    which will ask you to view and sign the waiver. Once that is done, you will be redirected back to
-                    TrashMob.eco.
-                </p>
-                <p className='p-18'>
                     You will only need to sign this waiver once unless we have to change the legalese.
                 </p>
-
+                
                 <hr />
                 <div>
                     <style type="text/css">
