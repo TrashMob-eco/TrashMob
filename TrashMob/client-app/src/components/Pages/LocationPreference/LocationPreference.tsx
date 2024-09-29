@@ -1,32 +1,33 @@
 import { ChangeEvent, FC, FormEvent, useEffect, useState, useCallback, useRef } from 'react';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { APIProvider, Map, useMap } from '@vis.gl/react-google-maps';
 
-import UserData from '../Models/UserData';
-import * as ToolTips from '../../store/ToolTips';
-import * as MapStore from '../../store/MapStore';
-import infoCycle from '../assets/info-circle.svg';
+import UserData from '../../Models/UserData';
+import * as ToolTips from '../../../store/ToolTips';
+import * as MapStore from '../../../store/MapStore';
+import infoCycle from '../../assets/info-circle.svg';
 
-import { HeroSection } from '../Customization/HeroSection';
-import { GetUserById, UpdateUser } from '../../services/users';
-import { Services } from '../../config/services.config';
-import { MarkerWithInfoWindow } from '../Map';
-import { AzureSearchLocationInput, SearchLocationOption } from '../Map/AzureSearchLocationInput';
-import { GetGoogleMapApiKey } from '../../services/maps';
-import { useAzureMapSearchAddressReverse } from '../../hooks/useAzureMapSearchAddressReverse';
+import { HeroSection } from '../../Customization/HeroSection';
+import { GetUserById, UpdateUser } from '../../../services/users';
+import { Services } from '../../../config/services.config';
+import { MarkerWithInfoWindow } from '../../Map';
+import { AzureSearchLocationInput, SearchLocationOption } from '../../Map/AzureSearchLocationInput';
+import { GetGoogleMapApiKey } from '../../../services/maps';
+import { useAzureMapSearchAddressReverse } from '../../../hooks/useAzureMapSearchAddressReverse';
 
-interface LocationPreferenceProps extends RouteComponentProps<any> {
+export interface LocationPreferenceProps {
     isUserLoaded: boolean;
     currentUser: UserData;
     onUserUpdated: any;
 }
 
-const LocationPreference: FC<LocationPreferenceProps> = (props) => {
+export const LocationPreference: FC<LocationPreferenceProps> = (props) => {
     const userId = props.currentUser.id;
+    const history = useHistory()
     const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
     const [userName, setUserName] = useState<string>('');
     const [email, setEmail] = useState<string>();
@@ -119,7 +120,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
     // This will handle Cancel button click event.
     const handleCancel = (event: FormEvent<HTMLElement>) => {
         event.preventDefault();
-        props.history.push('/');
+        history.push('/');
     };
 
     useEffect(() => {
@@ -466,5 +467,5 @@ const LocationPreferenceWrapper = (props: LocationPreferenceProps) => {
     );
 };
 
-export default withRouter(LocationPreferenceWrapper);
+export default LocationPreferenceWrapper;
 
