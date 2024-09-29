@@ -84,7 +84,7 @@ jobs:
         - name: Setup DotNet ${{ inputs.dotnet_version }} Environment
           uses: actions/setup-dotnet@v3
           with:
-            dotnet-version: ${{ inputs.dotnet_version }}
+            dotnet-version: '8.0.303'
 
         - name: Install MAUI Workload
           run: |
