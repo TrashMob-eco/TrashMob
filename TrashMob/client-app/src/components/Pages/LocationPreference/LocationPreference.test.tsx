@@ -24,7 +24,7 @@
  *  - Allow the user to save the preferred location
  */
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, beforeEach, vi } from 'vitest'; // vitest imports
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -32,6 +32,7 @@ import LocationPreference, { LocationPreferenceProps } from './LocationPreferenc
 import { Map } from '@vis.gl/react-google-maps';
 
 import UserData from '../../Models/UserData';
+import * as MapStore from '../../../store/MapStore';
 
 const renderPage = () => {
   const props: LocationPreferenceProps = {
@@ -47,9 +48,29 @@ const renderPage = () => {
     </QueryClientProvider>)
 }
 
+vi.stubGlobal('google', {
+  maps: {
+    LatLng: class {},
+    Marker: class {},
+    MapTypeId: {
+      ROADMAP: 'roadmap',
+    },
+    Circle: vi.fn(),
+    // Mock the panTo function
+    Map: vi.fn().mockImplementation(() => ({
+      panTo: vi.fn(),
+    })),
+  },
+});
+
+const googleMapPanTo = vi.fn()
+
 vi.mock('@vis.gl/react-google-maps', async (importOriginal) => {
   return {
     ...await importOriginal<typeof import('@vis.gl/react-google-maps')>(),
+    useMap: () => ({
+      panTo: googleMapPanTo,
+    }),
     Map: vi.fn((props) => {
       return <div>Mocked Map</div>
     })
@@ -60,6 +81,8 @@ describe('LocationPreference Page', () => {
   beforeEach(() => {
     // Mocking window.scrollTo
     window.scrollTo = vi.fn(); 
+
+    vi.spyOn(MapStore, 'getOption').mockImplementation(() => Promise.resolve({ authType: 'subscriptionKey', subscriptionKey: 'mock-azure-key' }));
 
     vi.mock('../../../services/users', () => ({
       GetUserById: vi.fn().mockReturnValue({
@@ -93,6 +116,30 @@ describe('LocationPreference Page', () => {
       GetGoogleMapApiKey: vi.fn().mockReturnValue({
         key: ['mock-get-googlemap-apikey'],
         service: vi.fn(() => Promise.resolve('mock_googlemap_apikey'))
+      }),
+      AzureMapSearchAddress: vi.fn().mockReturnValue({
+        key: vi.fn(() => ['mock-azure-map-search-address']),
+        service: vi.fn(() => Promise.resolve({
+          data: {
+            summary: {
+              queryTime: 0,
+              numResults: 1,
+              totalResults: 1,
+            },
+            results: [
+              {
+                id: 'mock-london',
+                address: {
+                  freeformAddress: 'London',
+                },
+                position: {
+                  lat: 51.5,
+                  lon: -0.14
+                }
+              }
+            ]
+          }
+        }))
       }),
       AzureMapSearchAddressReverse: vi.fn().mockReturnValue({
         key: vi.fn(() => ['mock-azure-map-search-address-reverse']),
@@ -213,7 +260,27 @@ describe('LocationPreference Page', () => {
   })
 
   test.todo('The user should be able to click on the map to drop a pin')
-  test.todo('The user should be able to search for a location in the search bar and have the map center on that location')
+  
+  test.only('The user should be able to search for a location in the search bar and have the map center on that location', async () => {
+    renderPage()
+    
+    // Spy on the panTo method of the map
+    const searchInput = await screen.findByPlaceholderText('Search for a location...')
+    expect(searchInput).toBeInTheDocument();
+
+    // Simulate typing in the input
+    await userEvent.type(searchInput, 'lond');
+
+    const londonOption = await screen.findByText('London')
+    expect(londonOption).toBeInTheDocument()
+
+    // Simulate selecting the option
+    const option = screen.getByText('London');
+    fireEvent.click(option);
+    
+    expect(googleMapPanTo).toBeCalledWith({ lat: 51.5, lng: -0.14 });
+  })
+
   test.todo('A pin should be dropped on the preferred position')
 	test.todo('Once the pin has been set, use the lat-long to call the Azure Api to get the exact address')
 	test.todo('Update the address below the map with the location retrieved from the api')
