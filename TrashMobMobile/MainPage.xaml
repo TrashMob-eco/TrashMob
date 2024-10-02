@@ -33,7 +33,7 @@
                         <Image Grid.Row="1"
                                Grid.Column="0"
                                MaximumWidthRequest="25"
-                               Source="calendar.svg" />
+                               Source="calendar" />
                         <Label Grid.Row="2"
                                Grid.Column="0"
                                FontSize="Micro"
@@ -67,7 +67,7 @@
                                Text="Participants" />
                         <Image Grid.Row="1"
                                Grid.Column="2"
-                               Source="trashbag.svg"
+                               Source="trashbag"
                                WidthRequest="25" />
                         <Label Grid.Row="2"
                                Grid.Column="2"
@@ -81,7 +81,7 @@
                                Text="Bags Collected" />
                         <Image Grid.Row="1"
                                Grid.Column="3"
-                               Source="clock.svg"
+                               Source="clock"
                                WidthRequest="25" />
                         <Label Grid.Row="2"
                                Grid.Column="3"
