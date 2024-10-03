@@ -284,7 +284,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
         <div>Loading</div>
     ) : (
         <div>
-            <HeroSection Title='Set your location' Description='Get notified for events near you!'></HeroSection>
+            <HeroSection Title='Set your location' Description='Get notified for events near you!' />
             <Container className='p-4 bg-white mt-5 rounded'>
                 <h4 className='fw-600 color-primary my-3 main-header'>Location preferences</h4>
                 <Form onSubmit={handleSave}>
@@ -292,15 +292,15 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                         <div style={{ position: 'relative', width: '100%' }}>
                             <Map
                                 mapId='6f295631d841c617'
-                                gestureHandling={'greedy'}
-                                disableDefaultUI={true}
+                                gestureHandling='greedy'
+                                disableDefaultUI
                                 style={{ width: '100%', height: '500px' }}
                                 defaultCenter={center}
                                 defaultZoom={MapStore.defaultUserLocationZoom}
                             >
                                 <MarkerWithInfoWindow
                                     position={{ lat: latitude, lng: longitude }}
-                                    draggable={true}
+                                    draggable
                                     onDragEnd={handleMarkerDragEnd}
                                     infoWindowTrigger='hover'
                                     infoWindowProps={{
@@ -324,14 +324,14 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                                 />
                             </Map>
 
-                            {azureSubscriptionKey && (
+                            {azureSubscriptionKey ? (
                                 <div style={{ position: 'absolute', top: 8, left: 8 }}>
                                     <AzureSearchLocationInput
                                         azureKey={azureSubscriptionKey}
                                         onSelectLocation={handleSelectSearchLocation}
                                     />
                                 </div>
-                            )}
+                            ) : null}
                         </div>
                     </Form.Row>
                     <Form.Row className='mt-4'>
@@ -441,7 +441,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                                 </Button>
                             </Form.Group>
                             <span>{formSubmitted ? 'Saved!' : ''}</span>
-                            <span>{formSubmitErrors ? formSubmitErrors : ''}</span>
+                            <span>{formSubmitErrors || ''}</span>
                         </Col>
                     </Form.Row>
                 </Form>
@@ -467,4 +467,3 @@ const LocationPreferenceWrapper = (props: LocationPreferenceProps) => {
 };
 
 export default withRouter(LocationPreferenceWrapper);
-

@@ -198,4 +198,3 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, mat
 };
 
 export default withRouter(Home);
-
