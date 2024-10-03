@@ -128,7 +128,7 @@ export const Partnerships: FC<any> = () => {
                             Supplied services from a given partner may vary by location/branch.{' '}
                         </p>
                     </Col>
-                    <Col sm={5} className='d-flex align-items-middle'>
+                    <Col sm={5} className='d-flex'>
                         <Image src={Garbage} alt='garbage bags being picked up' className='mh-100 mt-0 m-auto' />
                     </Col>
                 </Row>
@@ -136,3 +136,4 @@ export const Partnerships: FC<any> = () => {
         </>
     );
 };
+

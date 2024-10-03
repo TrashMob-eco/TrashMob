@@ -1,8 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
-import { Col, Container, Row } from 'react-bootstrap';
-import { Share } from 'react-bootstrap-icons';
-import { Button } from 'reactstrap';
+import { Button, Col, Container, Row } from 'react-bootstrap';
 import { useQuery } from '@tanstack/react-query';
 import UserData from '../Models/UserData';
 import Globe2 from '../assets/globe2.png';
@@ -12,12 +10,13 @@ import Trashbag from '../assets/home/Trashbag.svg';
 import Person from '../assets/home/Person.svg';
 import Clock from '../assets/home/Clock.svg';
 import { GettingStartedSection } from '../GettingStartedSection';
-import { SocialsModal } from '../EventManagement/ShareToSocialsModal';
-import * as SharingMessages from '../../store/SharingMessages';
 import EventsSection from '../EventsSection';
 import { GetStats } from '../../services/stats';
 import { Services } from '../../config/services.config';
 import StatsData from '../Models/StatsData';
+import { Share } from 'react-bootstrap-icons';
+import { SocialsModal } from '../EventManagement/ShareToSocialsModal';
+import * as SharingMessages from '../../store/SharingMessages';
 
 export interface HomeProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -53,6 +52,16 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, mat
     return (
         <>
             <Container fluid>
+                <div className='position-absolute'>
+                    <SocialsModal
+                        show={showModal}
+                        handleShow={handleShowModal}
+                        modalTitle='Invite a friend to join TrashMob.eco'
+                        eventLink='https://www.trashmob.eco'
+                        emailSubject='Join TrashMob.eco to help clean up the planet!'
+                        message={SharingMessages.InvitationMessage}
+                    />
+                </div>
                 <Row className='shadow position-relative'>
                     <div className='d-flex flex-column px-0 py-0 pl-lg-5 m-auto w-100' style={{ zIndex: 10 }}>
                         <div className='d-flex flex-row-reverse align-content-center mx-0 px-0'>
@@ -84,12 +93,22 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, mat
                                 <h4 className='text-center text-sm-left mb-4 ml-sm-5 font-weight-bold banner-heading ml-sm-4'>
                                     Meet up. Clean up. Feel good.
                                 </h4>
-                                <Link
-                                    className='mb-3 mb-sm-4 btn btn-primary mx-auto ml-sm-5 banner-button mr-sm-auto ml-sm-4'
-                                    to='/gettingstarted'
-                                >
-                                    Join us today
-                                </Link>
+                                <div className='d-flex'>
+                                    {' '}
+                                    <Link
+                                        className='mb-3 mb-sm-4 btn btn-primary mx-auto ml-sm-5 banner-button mr-sm-auto ml-sm-4'
+                                        to='/gettingstarted'
+                                    >
+                                        Join us today
+                                    </Link>
+                                    <Button
+                                        className='mb-3 mb-sm-4 btn btn-primary mx-auto ml-sm-5 banner-button mr-sm-auto ml-sm-4'
+                                        onClick={() => handleShowModal(true)}
+                                    >
+                                        <Share className='mr-2' />
+                                        Invite a friend
+                                    </Button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -198,3 +217,4 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, mat
 };
 
 export default withRouter(Home);
+
