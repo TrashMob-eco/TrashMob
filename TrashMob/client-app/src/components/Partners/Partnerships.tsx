@@ -35,18 +35,18 @@ export const Partnerships: FC<any> = () => {
                         </p>
                     </Col>
                     <Col sm={5}>
-                        <Row>
+                        <Row className='pl-3'>
                             <h1 className='fw-600'>Our Partners</h1>
                         </Row>
-                        <Row>
-                            <a href='https://issaquahhighlands.com/' target='_blank' rel='noreferrer'>
+                        <Row className='pl-3'>
+                            <a href='https://issaquahhighlands.com/' target='_blank' rel='noreferrer' className='m-2'>
                                 <Image
                                     src={Ihca}
                                     alt='Issaquah Highlands Community Association'
                                     className='graphic-large mx-auto'
                                 />
                             </a>
-                            <a href='https://troutunlimited.org' target='_blank' rel='noreferrer'>
+                            <a href='https://troutunlimited.org' target='_blank' rel='noreferrer' className='m-2'>
                                 <Image src={TroutUnlimited} alt='Trout Unlimited' className='graphic-large mx-auto' />
                             </a>
                         </Row>
@@ -85,22 +85,22 @@ export const Partnerships: FC<any> = () => {
                 <h2 className='font-weight-bold mb-3'>Partnerships support the volunteers</h2>
                 <span>Services and supplies offered can include:</span>
                 <Row className='justify-content-center'>
-                    <Row className='w-50 mt-5 mx-auto justify-content-around    '>
-                        <Col className='d-flex flex-column align-items-center'>
+                    <Row xs={1} sm={2} md={4} className='w-50 mt-5 mx-auto justify-content-around    '>
+                        <Col className='d-flex flex-column align-items-center mb-5 mb-md-0'>
                             <Image src={Safetykits} alt='Safety kits' className='graphic-large mt-0' />
                             <span className='font-weight-bold mt-2'>Safety gear and roadside signs</span>
                         </Col>
-                        <Col className='d-flex flex-column align-items-center'>
+                        <Col className='d-flex flex-column align-items-center mb-5 mb-md-0'>
                             <Image src={Supplies} alt='Supplies' className='graphic-large mt-0' />
                             <span className='font-weight-bold mt-2'>Pickup supplies such as garbage bags</span>
                         </Col>
-                        <Col className='d-flex flex-column align-items-center'>
+                        <Col className='d-flex flex-column align-items-center mb-5 mb-md-0'>
                             <Image src={TrashDisposal} alt='Trash Disposal & Hauling' className='graphic-large mt-0' />
                             <span className='font-weight-bold mt-2'>
                                 Use of existing dumpsters and hauling of trash to disposal site
                             </span>
                         </Col>
-                        <Col className='d-flex flex-column align-items-center'>
+                        <Col className='d-flex flex-column align-items-center mb-5 mb-md-0'>
                             <Image src={Dollarsign} alt='Dollar sign' className='graphic-large mt-0' />
                             <span className='font-weight-bold mt-2'>
                                 <a href='https://www.trashmob.eco/donate'>Donations</a> to TrashMob.eco fund development
@@ -128,8 +128,8 @@ export const Partnerships: FC<any> = () => {
                             Supplied services from a given partner may vary by location/branch.{' '}
                         </p>
                     </Col>
-                    <Col sm={5}>
-                        <Image src={Garbage} alt='garbage bags being picked up' className='mh-100 mt-0' />
+                    <Col sm={5} className='d-flex align-items-middle'>
+                        <Image src={Garbage} alt='garbage bags being picked up' className='mh-100 mt-0 m-auto' />
                     </Col>
                 </Row>
             </Container>

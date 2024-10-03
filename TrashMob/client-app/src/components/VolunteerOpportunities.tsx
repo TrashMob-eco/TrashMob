@@ -28,24 +28,19 @@ export const VolunteerOpportunities: React.FC = () => {
         <>
             <HeroSection Title='Recruiting' Description='We’d love to have you join us.' />
             <Container>
-                <Row>
-                    <Col md={8} className='mb-2'>
+                <Row className='my-4'>
+                    <Col md={6} className='mb-2 text-center'>
                         <h1 className='m-0'>Open volunteer positions (4)</h1>
                     </Col>
                     <Col md={2} />
-                    <Col md={2} className='m-0 text-right mb-2'>
-                        <Link className='btn btn-primary ml-5 py-md-3 banner-button' to='/contactus'>
+                    <Col md={4} className='m-0 text-center mb-2 align-middle d-flex'>
+                        <Link className='btn btn-primary m-auto py-md-3 banner-button' to='/contactus'>
                             Contact us
                         </Link>
                     </Col>
                 </Row>
-                {/* <div className='d-flex justify-content-between align-items-center mt-5'>
-                    <h1 className='m-0'>Open volunteer positions (6)</h1>
-                    <Button variant="primary" className='text-center p-18 fw-600 px-3 h-49'>
-                        Contact us
-                    </Button>
-                </div> */}
-                <Row className='my-5'>
+
+                <Row className='my-4'>
                     <Col className='mb-2' lg={4}>
                         <div className='card-shadow bg-white rounded p-4 h-100'>
                             <h3 className='font-size-xl color-primary fw-500'>
