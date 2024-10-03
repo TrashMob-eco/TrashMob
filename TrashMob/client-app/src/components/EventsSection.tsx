@@ -327,9 +327,9 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
     };
 
     return (
-        <Container fluid className='bg-white p-md-5' id='events' ref={divRef}>
+        <Container fluid className='bg-white p-4 p-md-5' id='events' ref={divRef}>
             <div className='max-width-container mx-auto'>
-                <div className='d-flex align-items-center mt-4'>
+                <div className='d-flex flex-column flex-sm-row my-4' style={{ gap: '.5em' }}>
                     <label className='mb-0'>
                         <input
                             type='radio'
@@ -400,10 +400,10 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
                 </div>
                 {eventView === 'map' ? (
                     <>
-                        <Button color='primary' className='mb-2' onClick={() => history.push('/manageeventdashboard')}>
+                        <Button color='primary' className='mb-4' onClick={() => history.push('/manageeventdashboard')}>
                             Create a New Event
                         </Button>
-                        <div className='w-100 m-0'>
+                        <div className='w-100 h-50 m-0'>
                             <AzureMapsProvider>
                                 <>
                                     <MapControllerPointCollection

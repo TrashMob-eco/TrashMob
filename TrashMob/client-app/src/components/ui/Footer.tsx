@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import logo from './assets/logowhite.svg';
+import logo from '../assets/logowhite.svg';
 // import twitter from './assets/twitter.svg'
 // import facebook from './assets/facebook.svg'
 

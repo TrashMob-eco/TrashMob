@@ -31,11 +31,11 @@ export const GoogleMarkerWithInfoWindow = (props: MarkerWithInfoWindowProps) => 
     return (
         <>
             <AdvancedMarker ref={markerRef} {...markerProps} {...triggerProps} />
-            {infoWindowShown && (
+            {infoWindowShown ? (
                 <InfoWindow anchor={marker} {...infoWindowProps}>
                     {infoWindowContent}
                 </InfoWindow>
-            )}
+            ) : null}
         </>
     );
 };
