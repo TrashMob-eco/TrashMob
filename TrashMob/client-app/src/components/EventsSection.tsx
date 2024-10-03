@@ -403,7 +403,7 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
                         <Button color='primary' className='mb-4' onClick={() => history.push('/manageeventdashboard')}>
                             Create a New Event
                         </Button>
-                        <div className='w-100 h-50 m-0'>
+                        <div className='w-100 m-0'>
                             <AzureMapsProvider>
                                 <>
                                     <MapControllerPointCollection
@@ -453,3 +453,4 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
         </Container>
     );
 };
+
