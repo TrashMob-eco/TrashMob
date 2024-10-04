@@ -94,6 +94,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                 setMemberSince(res.data.data.memberSince);
                 setLatitude(res.data.data.latitude);
                 setLongitude(res.data.data.longitude);
+                setCenter({ lat: res.data.data.latitude, lng: res.data.data.longitude })
                 setPrefersMetric(res.data.data.prefersMetric);
                 setTravelLimitForLocalEvents(Math.max(res.data.data.travelLimitForLocalEvents, 1));
                 setMaxEventsRadiusErrors('');
