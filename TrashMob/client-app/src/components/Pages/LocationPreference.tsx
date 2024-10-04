@@ -18,6 +18,7 @@ import { MarkerWithInfoWindow } from '../Map';
 import { AzureSearchLocationInput, SearchLocationOption } from '../Map/AzureSearchLocationInput';
 import { GetGoogleMapApiKey } from '../../services/maps';
 import { useAzureMapSearchAddressReverse } from '../../hooks/useAzureMapSearchAddressReverse';
+import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
 
 interface LocationPreferenceProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -451,11 +452,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
 };
 
 const LocationPreferenceWrapper = (props: LocationPreferenceProps) => {
-    const { data: googleApiKey, isLoading } = useQuery({
-        queryKey: GetGoogleMapApiKey().key,
-        queryFn: GetGoogleMapApiKey().service,
-        select: (res) => res.data,
-    });
+    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey()
 
     if (isLoading) return null;
 
