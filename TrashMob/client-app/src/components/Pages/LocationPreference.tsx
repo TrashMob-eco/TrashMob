@@ -14,9 +14,8 @@ import infoCycle from '../assets/info-circle.svg';
 import { HeroSection } from '../Customization/HeroSection';
 import { GetUserById, UpdateUser } from '../../services/users';
 import { Services } from '../../config/services.config';
-import { MarkerWithInfoWindow } from '../Map';
+import { MarkerWithInfoWindow, EventInfoWindowContent } from '../Map';
 import { AzureSearchLocationInput, SearchLocationOption } from '../Map/AzureSearchLocationInput';
-import { GetGoogleMapApiKey } from '../../services/maps';
 import { useAzureMapSearchAddressReverse } from '../../hooks/useAzureMapSearchAddressReverse';
 import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
 
@@ -95,6 +94,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                 setMemberSince(res.data.data.memberSince);
                 setLatitude(res.data.data.latitude);
                 setLongitude(res.data.data.longitude);
+                setCenter({ lat: res.data.data.latitude, lng: res.data.data.longitude })
                 setPrefersMetric(res.data.data.prefersMetric);
                 setTravelLimitForLocalEvents(Math.max(res.data.data.travelLimitForLocalEvents, 1));
                 setMaxEventsRadiusErrors('');
@@ -112,6 +112,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
 
         if ('geolocation' in navigator) {
             navigator.geolocation.getCurrentPosition((position) => {
+                console.log({ position })
                 setCenter({ lat: position.coords.latitude, lng: position.coords.longitude });
             });
         }
@@ -308,19 +309,11 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                                         headerDisabled: true,
                                     }}
                                     infoWindowContent={
-                                        <>
-                                            <h5
-                                                className='font-weight-bold'
-                                                style={{ fontSize: '18px', marginTop: '0.5rem' }}
-                                            >
-                                                User's Base Location
-                                            </h5>
-                                            <p>
-                                                <span className='font-weight-bold'>Event Date:</span> {date}
-                                                <br />
-                                                <span className='font-weight-bold'>Time: </span> {time}
-                                            </p>
-                                        </>
+                                        <EventInfoWindowContent
+                                            title="User's Base Location"
+                                            date={date}
+                                            time={time}
+                                        />
                                     }
                                 />
                             </Map>

@@ -11,12 +11,11 @@ import UserData from '../Models/UserData';
 import EventTypeData from '../Models/EventTypeData';
 import { getEventType } from '../../store/eventTypeHelper';
 import * as MapStore from '../../store/MapStore';
-import { MarkerWithInfoWindow } from '../Map';
+import { MarkerWithInfoWindow, EventInfoWindowContent } from '../Map';
 import { SocialsModal } from '../EventManagement/ShareToSocialsModal';
 import { RegisterBtn } from '../Customization/RegisterBtn';
 import { HeroSection } from '../Customization/HeroSection';
 import * as SharingMessages from '../../store/SharingMessages';
-import { GetGoogleMapApiKey } from '../../services/maps';
 import {
     GetAllEventsBeingAttendedByUser,
     GetEventAttendees,
@@ -316,19 +315,11 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                                 infoWindowTrigger='hover'
                                 infoWindowProps={{ headerDisabled: true }}
                                 infoWindowContent={
-                                    <>
-                                        <h5
-                                            className='font-weight-bold'
-                                            style={{ fontSize: '18px', marginTop: '0.5rem' }}
-                                        >
-                                            {eventName}
-                                        </h5>
-                                        <p>
-                                            <span className='font-weight-bold'>Event Date:</span> {moment(startDateTime).local().format('LL')}
-                                            <br />
-                                            <span className='font-weight-bold'>Time: </span> {moment(startDateTime).local().format('LTS Z')}
-                                        </p>
-                                    </>
+                                    <EventInfoWindowContent
+                                        title={eventName}
+                                        date={moment(startDateTime).local().format('LL')}
+                                        time={moment(startDateTime).local().format('LTS Z')}
+                                    />
                                 }
                             />
                         </Map>
