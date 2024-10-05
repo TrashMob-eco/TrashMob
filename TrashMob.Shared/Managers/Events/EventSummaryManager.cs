@@ -17,6 +17,7 @@
         private readonly IEventAttendeeManager eventAttendeeManager;
         private readonly IEventManager eventManager;
         private readonly IKeyedRepository<Event> eventRepository;
+        private const int CancelledEventStatusId = 3;
 
         public EventSummaryManager(IBaseRepository<EventSummary> repository,
             IKeyedRepository<Event> eventRepository,
@@ -32,7 +33,7 @@
         {
             var stats = new Stats();
             var events = eventRepository.Get();
-            stats.TotalEvents = await events.CountAsync(e => e.EventStatusId != 3, cancellationToken);
+            stats.TotalEvents = await events.CountAsync(e => e.EventStatusId != CancelledEventStatusId, cancellationToken);
 
             var eventSummaries = await Repository.Get().ToListAsync(cancellationToken);
             stats.TotalBags = eventSummaries.Sum(es => es.NumberOfBags) +
@@ -52,8 +53,8 @@
 
             var allResults = result1.Union(result2, new EventComparer());
 
-            stats.TotalEvents = allResults.Count();
-            var eventIds = allResults.Select(e => e.Id);
+            stats.TotalEvents = allResults.Where(e => e.EventStatusId != CancelledEventStatusId).Count();
+            var eventIds = allResults.Where(e => e.EventStatusId != CancelledEventStatusId).Select(e => e.Id);
 
             var eventSummaries =
                 await Repository.Get(es => eventIds.Contains(es.EventId)).ToListAsync(cancellationToken);
