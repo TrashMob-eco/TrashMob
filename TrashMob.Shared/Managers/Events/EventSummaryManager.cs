@@ -32,7 +32,7 @@
         {
             var stats = new Stats();
             var events = eventRepository.Get();
-            stats.TotalEvents = await events.CountAsync(cancellationToken);
+            stats.TotalEvents = await events.CountAsync(e => e.EventStatusId != 3, cancellationToken);
 
             var eventSummaries = await Repository.Get().ToListAsync(cancellationToken);
             stats.TotalBags = eventSummaries.Sum(es => es.NumberOfBags) +
