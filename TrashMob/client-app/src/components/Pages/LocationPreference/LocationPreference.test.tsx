@@ -30,14 +30,16 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'; // vitest imports
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import LocationPreference, { LocationPreferenceProps } from './LocationPreference';
 import { Map } from '@vis.gl/react-google-maps';
-
+import { MarkerWithInfoWindow } from '../../Map';
 import UserData from '../../Models/UserData';
 import * as MapStore from '../../../store/MapStore';
 
-const renderPage = () => {
+const defaultUser = { id: 'mock_user' } as UserData
+
+const renderPage = (currentUser: UserData = defaultUser) => {
   const props: LocationPreferenceProps = {
     isUserLoaded: true,
-    currentUser: { id: 'integration_test_user', latitude: 10, longitude: 100 } as UserData,
+    currentUser,
     onUserUpdated: vi.fn(),
   }
   const queryClient = new QueryClient();
@@ -55,7 +57,10 @@ vi.stubGlobal('google', {
     MapTypeId: {
       ROADMAP: 'roadmap',
     },
-    Circle: vi.fn(),
+    Circle: vi.fn().mockImplementation(() => ({
+      setCenter: vi.fn(),
+      setRadius: vi.fn(),
+    })),
     // Mock the panTo function
     Map: vi.fn().mockImplementation(() => ({
       panTo: vi.fn(),
@@ -72,15 +77,19 @@ vi.mock('@vis.gl/react-google-maps', async (importOriginal) => {
       panTo: googleMapPanTo,
     }),
     Map: vi.fn((props) => {
-      return <div>Mocked Map</div>
+      return (
+        <div>
+          <div>Mocked Map</div>
+          <div>defaultCenter = {props.defaultCenter.lat}, {props.defaultCenter.lng}</div>
+          <div>defaultZoom = {props.defaultZoom}</div>
+        </div>
+      )
     })
   }
 })
 
 describe('LocationPreference Page', () => {  
   beforeEach(() => {
-    // Mocking window.scrollTo
-    window.scrollTo = vi.fn(); 
 
     vi.spyOn(MapStore, 'getOption').mockImplementation(() => Promise.resolve({ authType: 'subscriptionKey', subscriptionKey: 'mock-azure-key' }));
 
@@ -191,16 +200,10 @@ describe('LocationPreference Page', () => {
 
   test('If I have not allowed the site to access my location, it should default to the center of the United States.', async () => {
 
-    renderPage()
+    renderPage({ id: 'mock_user', latitude: 0, longitude: 0 } as UserData)
     expect(await screen.findByText('Set your location')).toBeInTheDocument();
-    const mockMap = vi.mocked(Map);
-
-    const lastCall = mockMap.mock.calls[mockMap.mock.calls.length - 1]
-    const lastCallProps = lastCall[0]
-    expect(lastCallProps).toMatchObject({
-      defaultZoom: 10,
-      defaultCenter: { lat: -100.01, lng: 45.01 }
-    })
+    expect(await screen.findByText('defaultZoom = 10')).toBeInTheDocument();
+    expect(await screen.findByText('defaultCenter = -100.01, 45.01')).toBeInTheDocument();
   });
 
 
@@ -261,27 +264,42 @@ describe('LocationPreference Page', () => {
 
   test.todo('The user should be able to click on the map to drop a pin')
   
-  test.only('The user should be able to search for a location in the search bar and have the map center on that location', async () => {
-    renderPage()
+  describe('The user should be able to search for a location in the search bar', () => {
+
+    vi.mock('MarkerWithInfoWindow', () => {
+      return vi.fn(() => null)
+    })
+
+    beforeAll(async () => {
+      renderPage()
     
-    // Spy on the panTo method of the map
-    const searchInput = await screen.findByPlaceholderText('Search for a location...')
-    expect(searchInput).toBeInTheDocument();
+      // Spy on the panTo method of the map
+      const searchInput = await screen.findByPlaceholderText('Search for a location...')
+      expect(searchInput).toBeInTheDocument();
+  
+      // Simulate typing in the input
+      await userEvent.type(searchInput, 'lond');
+  
+      const londonOption = await screen.findByText('London')
+      expect(londonOption).toBeInTheDocument()
+    })
 
-    // Simulate typing in the input
-    await userEvent.type(searchInput, 'lond');
+    test('should have the map center on that location', async () => {
+      // Simulate selecting the option
+      const option = screen.getByText('London');
+      fireEvent.click(option);
+      
+      expect(googleMapPanTo).toBeCalledWith({ lat: 51.5, lng: -0.14 });
+    })
 
-    const londonOption = await screen.findByText('London')
-    expect(londonOption).toBeInTheDocument()
+    test('A pin should be dropped on the preferred position', async () => {
+      expect(MarkerWithInfoWindow).toHaveBeenLastCalledWith({ position: { lat: 51.5, lng: -0.14 } })
 
-    // Simulate selecting the option
-    const option = screen.getByText('London');
-    fireEvent.click(option);
+    })
+
     
-    expect(googleMapPanTo).toBeCalledWith({ lat: 51.5, lng: -0.14 });
   })
 
-  test.todo('A pin should be dropped on the preferred position')
 	test.todo('Once the pin has been set, use the lat-long to call the Azure Api to get the exact address')
 	test.todo('Update the address below the map with the location retrieved from the api')
 	test.todo('Allow the user to move the pin to a new location')

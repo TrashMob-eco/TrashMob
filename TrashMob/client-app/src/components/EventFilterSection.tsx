@@ -195,7 +195,7 @@ export const EventFilterSection: FC<EventFilterSectionProps> = ({
     };
 
     return (
-        <div className='d-flex'>
+        <div className='d-flex flex-column flex-sm-row flex-wrap' style={{ gap: '.5em' }}>
             <FilterDropDown
                 name='Country'
                 menuItems={countries}
@@ -213,7 +213,6 @@ export const EventFilterSection: FC<EventFilterSectionProps> = ({
                 onIsFilteringChange={handleIsStateFilteringChange}
             />
             <MultipleSelectionFilterDropDown
-                className='ml-1'
                 name='City'
                 menuItems={cities}
                 selectedItems={selectedCities}
@@ -222,7 +221,6 @@ export const EventFilterSection: FC<EventFilterSectionProps> = ({
                 onIsFilteringChange={handleIsCityFilteringChange}
             />
             <MultipleSelectionFilterDropDown
-                className='ml-1'
                 name='Cleanup Type'
                 menuItems={eventTypeList
                     .sort((a, b) => (a.displayOrder > b.displayOrder ? 1 : -1))
@@ -233,7 +231,6 @@ export const EventFilterSection: FC<EventFilterSectionProps> = ({
                 onIsFilteringChange={handleIsCleanupTypeFilteringChange}
             />
             <FilterDropDown
-                className='ml-1'
                 name='Time Frame'
                 menuItems={timeFrame}
                 selectedItem={selectedTimeFrame}

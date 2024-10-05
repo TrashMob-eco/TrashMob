@@ -77,7 +77,7 @@ export const EventSummaries: React.FC = () => {
             <div className='container-fluid'>
                 <Form>
                     <Form.Row>
-                        <Col>
+                        <Col xs='6' md='3'>
                             <Form.Group>
                                 <Form.Label className='control-label font-weight-bold h5' htmlFor='Country'>
                                     Country
@@ -87,11 +87,12 @@ export const EventSummaries: React.FC = () => {
                                         name='country'
                                         value={country ?? ''}
                                         onChange={(val) => selectCountry(val)}
+                                        classes='w-100'
                                     />
                                 </div>
                             </Form.Group>
                         </Col>
-                        <Col>
+                        <Col xs='6' md='3'>
                             <Form.Group>
                                 <Form.Label className='control-label font-weight-bold h5' htmlFor='Region'>
                                     Region
@@ -105,7 +106,7 @@ export const EventSummaries: React.FC = () => {
                                 </div>
                             </Form.Group>
                         </Col>
-                        <Col>
+                        <Col xs='6' md='3'>
                             <Form.Group>
                                 <Form.Label className='control-label font-weight-bold h5' htmlFor='City'>
                                     City
@@ -120,7 +121,7 @@ export const EventSummaries: React.FC = () => {
                                 />
                             </Form.Group>
                         </Col>
-                        <Col>
+                        <Col xs='6' md='3'>
                             <Form.Group>
                                 <Form.Label className='control-label font-weight-bold h5' htmlFor='PostalCode'>
                                     Postal Code
@@ -142,8 +143,8 @@ export const EventSummaries: React.FC = () => {
 
     function renderEventSummariesTable(events: DisplayEventSummary[]) {
         return (
-            <div>
-                <table className='table table-striped' aria-labelledby='tableLabel' width='100%'>
+            <div className='overflow-auto'>
+                <table className='table table-striped' aria-labelledby='tableLabel'>
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -194,8 +195,8 @@ export const EventSummaries: React.FC = () => {
     }
 
     return (
-        <div>
-            <h1>Summary of Events</h1>
+        <div className='w-100'>
+            <h1 className='pl-sm-3 text-center text-sm-left'>Summary of Events</h1>
             {renderSearchForm()}
             {isEventSummaryDataLoaded ? renderEventSummariesTable(displaySummaries) : null}
         </div>
