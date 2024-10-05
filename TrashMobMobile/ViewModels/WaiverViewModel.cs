@@ -1,17 +1,12 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
-using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMobMobile.Config;
-using TrashMobMobile.Models;
 using TrashMobMobile.Services;
 
-public partial class WaiverViewModel(IWaiverManager waiverManager, INotificationService notificationService) : BaseViewModel(notificationService)
+public partial class WaiverViewModel(INotificationService notificationService, IUserManager userManager) : BaseViewModel(notificationService)
 {
-    private readonly IWaiverManager waiverManager = waiverManager;
-
-    [ObservableProperty]
-    private string name;
+    private readonly IUserManager userManager = userManager;
 
     [RelayCommand]
     private async Task SignWaiver()
@@ -20,17 +15,19 @@ public partial class WaiverViewModel(IWaiverManager waiverManager, INotification
 
         try
         {
-            var envelopeRequest = new EnvelopeRequest();
-            envelopeRequest.SignerEmail = App.CurrentUser.Email;
-            envelopeRequest.CreatedByUserId = App.CurrentUser.Id;
-            envelopeRequest.SignerName = Name;
-            envelopeRequest.ReturnUrl = $"{Settings.SiteBaseUrl}/waiversreturn";
+            var user = await userManager.GetUserAsync(App.CurrentUser.Id.ToString()); 
+            if (user == null)
+            {
+                throw new Exception("User not found.");
+            }
 
-            var response = await waiverManager.GetWaiverEnvelopeAsync(envelopeRequest);
+            user.DateAgreedToTrashMobWaiver = DateTime.UtcNow;
+            user.TrashMobWaiverVersion = Settings.CurrentTrashMobWaiverVersion.VersionId;
 
-            var uri = new Uri(response.RedirectUrl);
-            await Browser.Default.OpenAsync(uri, BrowserLaunchMode.SystemPreferred);
-
+            await userManager.UpdateUserAsync(user);
+            
+            App.CurrentUser = user;
+            
             await Navigation.PopAsync();
 
             IsBusy = false;

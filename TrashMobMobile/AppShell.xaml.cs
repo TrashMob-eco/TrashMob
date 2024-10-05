@@ -52,6 +52,12 @@ public partial class AppShell : Shell
         await Browser.Default.OpenAsync(uri, BrowserLaunchMode.SystemPreferred);
     }
 
+    public async void OnSignWaiverClicked(object sender, EventArgs e)
+    {
+        Current.FlyoutIsPresented = false;
+        await Current.GoToAsync($"{nameof(WaiverPage)}");
+    }
+
     public async void OnContactUsClicked(object sender, EventArgs e)
     {
         Current.FlyoutIsPresented = false;

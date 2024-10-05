@@ -81,7 +81,7 @@ const Waivers: React.FC<WaiversProps> = ({ currentUser }) => {
                     <h2 className='fw-500 font-size-xl'>TrashMob.eco</h2>
                     <h5>Volunteer Release and Waiver of Liability Form</h5>
                     <p>
-                        The Volunteer Release and Waiver of Liability Form (“Release”) executed on /ds1/ by /fn1/
+                        The Volunteer Release and Waiver of Liability Form (“Release”).
                         (“Volunteer”) hereby releases TRASHMOB.ECO, ITS OFFICERS AND DIRECTORS, ANY LAND OWNERS AND
                         MANAGERS, AND ALL RELATED SPONSORS (“PARTIES”) JOINTLY AND SEVERALLY, AND INDIVIDUALLY.
                     </p>
