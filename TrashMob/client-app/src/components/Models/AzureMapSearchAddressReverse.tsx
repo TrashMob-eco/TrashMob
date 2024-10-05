@@ -35,4 +35,3 @@ export type AzureMapSearchAddressReverseResult = {
     };
     addresses: AzureMapSearchAddressReverseResultItem[];
 };
-

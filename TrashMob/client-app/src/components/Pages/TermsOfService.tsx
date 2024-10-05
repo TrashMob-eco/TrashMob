@@ -54,7 +54,8 @@ export const TermsOfService: FC = () => {
                     your viewing right will also be terminated and you should destroy any downloaded materials in your
                     possession whether it is printed or electronic format. These Terms of Service has been created with
                     the help of the <a href='https://www.termsofservicegenerator.net'>Terms Of Service Generator</a> and
-                    the <a href='https://www.generateprivacypolicy.com'>Privacy Policy Generator</a>.
+                    the
+                    <a href='https://www.generateprivacypolicy.com'>Privacy Policy Generator</a>.
                 </p>
 
                 <h5 className='font-weight-bold mt-5'>3. Disclaimer</h5>

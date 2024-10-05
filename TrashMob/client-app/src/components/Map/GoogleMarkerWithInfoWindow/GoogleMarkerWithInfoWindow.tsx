@@ -17,25 +17,24 @@ export const GoogleMarkerWithInfoWindow = (props: MarkerWithInfoWindowProps) => 
     const { infoWindowTrigger, infoWindowProps, infoWindowContent, ...markerProps } = props;
     const [markerRef, marker] = useAdvancedMarkerRef();
     const [infoWindowShown, setInfoWindowShown] = useState<boolean>(false);
-
     const triggerProps =
         infoWindowTrigger === 'click'
             ? {
                   onClick: () => setInfoWindowShown(!infoWindowShown),
               }
             : {
-                  onMouseOver: () => setInfoWindowShown(true),
-                  onMouseOut: () => setInfoWindowShown(false),
+                  onMouseEnter: () => setInfoWindowShown(true),
+                  onMouseLeave: () => setInfoWindowShown(false),
               };
 
     return (
         <>
             <AdvancedMarker ref={markerRef} {...markerProps} {...triggerProps} />
-            {infoWindowShown && (
+            {infoWindowShown ? (
                 <InfoWindow anchor={marker} {...infoWindowProps}>
                     {infoWindowContent}
                 </InfoWindow>
-            )}
+            ) : null}
         </>
     );
 };

@@ -1,1 +1,1 @@
-export * from './GoogleMarkerWithInfoWindow'
+export * from './GoogleMarkerWithInfoWindow';

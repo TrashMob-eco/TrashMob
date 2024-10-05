@@ -118,13 +118,7 @@ export const SocialsModal: React.FC<ModalProps> = (props) => {
                             </div>
 
                             <div className='d-flex flex-row align-items-center'>
-                                <Clock
-                                    className='mr-2'
-                                    style={{
-                                        fontSize: '14px',
-                                        marginLeft: '2px',
-                                    }}
-                                />
+                                <Clock className='mr-2' style={{ fontSize: '14px', marginLeft: '2px' }} />
                                 {eventDate} at
                                 {eventTime}
                             </div>

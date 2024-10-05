@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Button, Dropdown, Nav } from 'react-bootstrap';
-import { getApiConfig, getB2CPolicies, msalClient } from '../store/AuthStore';
-import UserData from './Models/UserData';
-import logo from './assets/logo.svg';
-import './assets/styles/header.css';
+import { getApiConfig, getB2CPolicies, msalClient } from '../../store/AuthStore';
+import UserData from '../Models/UserData';
+// import logo from "../assets/logo.svg"
+import logo from '../assets/TrashMob_Logo1.png';
+import '../assets/styles/header.css';
 import {
     BoxArrowLeft,
     Map,
@@ -79,12 +80,12 @@ const TopMenu: React.FC<TopMenuProps> = (props) => {
     return (
         <header className='tm-header'>
             <div className='container bg-light tm-mainNav'>
-                <div className='navbar navbar-expand-lg navbar-light navbar-static-top px-0' id='navbar'>
+                <div className='navbar  navbar-expand-lg navbar-light navbar-static-top px-0' id='navbar'>
                     <a className='navbar-brand' href='/' id='navbarBrand'>
-                        <img src={logo} alt='TrashMob Logo' className='logo m-0' />
+                        <img src={logo} alt='TrashMob Logo' className='logo m-0 h-100' />
                     </a>
                     <button
-                        className='navbar-toggler'
+                        className='navbar-toggler p-2'
                         type='button'
                         data-toggle='collapse'
                         data-target='#navbarNav'

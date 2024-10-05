@@ -13,13 +13,13 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import Home from './components/Pages/Home';
 
 // Layout
-import TopMenu from './components/TopMenu';
+import TopMenu from './components/ui/NavBar';
 
 import { AboutUs } from './components/Pages/AboutUs';
 import ContactUs from './components/Pages/ContactUs';
 import EventSummary from './components/EventSummary';
 import { Faq } from './components/Faq';
-import { Footer } from './components/Footer';
+import { Footer } from './components/ui/Footer';
 import { GettingStarted } from './components/Pages/GettingStarted';
 import MyDashboard from './components/Pages/MyDashboard';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
@@ -321,7 +321,7 @@ export const App: FC = () => {
                                         errorComponent={ErrorComponent}
                                         loadingComponent={LoadingComponent}
                                     >
-                                        {isUserLoaded && <Waivers currentUser={currentUser} />}
+                                        {isUserLoaded ? <Waivers currentUser={currentUser} /> : null}
                                     </MsalAuthenticationTemplate>
                                 </Route>
                                 <Route exact path='/partnerships'>

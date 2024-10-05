@@ -57,8 +57,8 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
 
     const azureMapSearchAddressReverse = useMutation({
         mutationKey: AzureMapSearchAddressReverse().key,
-        mutationFn: AzureMapSearchAddressReverse().service
-    }); 
+        mutationFn: AzureMapSearchAddressReverse().service,
+    });
 
     React.useEffect(() => {
         setIsGovernmentPartner(true);

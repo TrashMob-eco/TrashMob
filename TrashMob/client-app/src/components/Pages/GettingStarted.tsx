@@ -17,16 +17,15 @@ export const GettingStarted: React.FC = () => {
     return (
         <>
             <HeroSection Title='Getting Started' Description='Tips and tricks to get you out there.' />
-            <Container fluid className='bg-white mt-5'>
+            <Container fluid className='bg-white'>
                 <Row className='text-center py-5 '>
                     <Col md>
                         <h2 className='font-weight-bold'>The Basics</h2>
                     </Col>
                 </Row>
-                <Row className='text-center mt-3'>
-                    <Col md={2} />
-                    <Col md={2}>
-                        <div className='d-flex flex-column'>
+                <Row className='w-100 text-center d-flex justify-content-center m-auto'>
+                    <Col md={3} className='d-flex justify-content-center'>
+                        <div className='d-flex flex-column w-100 mb-5' style={{ maxWidth: '300px' }}>
                             <img src={workgloves} className='graphic-large mx-auto' alt='Work gloves' />
                             <h6 className='font-weight-bold mt-2'>Work gloves</h6>
                             <span className='mt-4'>
@@ -38,8 +37,8 @@ export const GettingStarted: React.FC = () => {
                             </span>
                         </div>
                     </Col>
-                    <Col md={2}>
-                        <div className='d-flex flex-column'>
+                    <Col md={3} className='d-flex justify-content-center'>
+                        <div className='d-flex flex-column w-100 mb-5' style={{ maxWidth: '300px' }}>
                             <img src={bucket} className='graphic-large mx-auto' alt='bucket' />
                             <h6 className='font-weight-bold mt-2'>A bucket</h6>
                             <span className='mt-4'>
@@ -49,8 +48,8 @@ export const GettingStarted: React.FC = () => {
                             </span>
                         </div>
                     </Col>
-                    <Col md={2}>
-                        <div className='d-flex flex-column'>
+                    <Col md={3} className='d-flex justify-content-center'>
+                        <div className='d-flex flex-column w-100 mb-5' style={{ maxWidth: '300px' }}>
                             <img src={picker} className='graphic-large mx-auto' alt='picker' />
                             <h6 className='font-weight-bold mt-2'>A grabber tool</h6>
                             <span className='mt-4'>
@@ -61,8 +60,8 @@ export const GettingStarted: React.FC = () => {
                             </span>
                         </div>
                     </Col>
-                    <Col md={2}>
-                        <div className='d-flex flex-column'>
+                    <Col md={3} className='d-flex justify-content-center'>
+                        <div className='d-flex flex-column w-100 mb-5' style={{ maxWidth: '300px' }}>
                             <img src={attitude} className='graphic-large mx-auto' alt='attitude' />
                             <h6 className='font-weight-bold mt-2'>A good attitude</h6>
                             <span className='mt-4'>
@@ -72,7 +71,6 @@ export const GettingStarted: React.FC = () => {
                             </span>
                         </div>
                     </Col>
-                    <Col md={2} />
                 </Row>
                 <Row className='mt-4'>
                     <Col md>
@@ -86,10 +84,10 @@ export const GettingStarted: React.FC = () => {
                             }}
                         >
                             <div
-                                className='text-white bg-black w-50 border-rounded-lg my-5 mx-auto'
+                                className='container text-white bg-black border-rounded-lg my-3 my-sm-5 mx-4 mx-sm-auto px-4'
                                 style={{ opacity: 0.95 }}
                             >
-                                <div className='p-5'>
+                                <div className='p-md-5'>
                                     <h4>TrashMob tips</h4>
                                     <ol className='list-unstyled mt-5'>
                                         <li className='mb-4'>
@@ -156,23 +154,26 @@ export const GettingStarted: React.FC = () => {
                                 </h4>
                             </div>
                         </Col>
-                        <Col md={6}>
-                            <iframe
-                                width='560'
-                                height='315'
-                                src='https://www.youtube.com/embed/naMY0kfyERc'
-                                title='YouTube video player'
-                                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
-                                allowFullScreen
-                            />
+                        <Col md={6} className='align-content-center mt-4'>
+                            <div className='embed-responsive embed-responsive-16by9'>
+                                <iframe
+                                    className='embed-responsive-item'
+                                    width='560'
+                                    height='315'
+                                    src='https://www.youtube.com/embed/naMY0kfyERc'
+                                    title='YouTube video player'
+                                    allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+                                    allowFullScreen
+                                />
+                            </div>
                         </Col>
                     </Row>
                 </Container>
             </div>
             <Container className='py-5'>
-                <Row className='py-5'>
+                <Row className='py-5 align-items-center'>
                     <Col md={6}>
-                        <div className='px-5'>
+                        <div>
                             <h1 className='fw-600'>But what about the highways?</h1>
                             <h4 className='mt-5'>
                                 Please check with your Department of Transportation before creating a highway cleanup
@@ -190,7 +191,7 @@ export const GettingStarted: React.FC = () => {
                         </div>
                     </Col>
                     <Col md={6}>
-                        <Image src={highways} alt='highway overpasses' className='m-0 h-100' />
+                        <Image src={highways} alt='highway overpasses' className='img-fluid' />
                     </Col>
                 </Row>
             </Container>
