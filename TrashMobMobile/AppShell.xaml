@@ -155,6 +155,11 @@
               Clicked="OnTermsOfUseClicked"
               IconImageSource="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconFileBox}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}" />
 
+    <MenuItem x:Name="SignWaiver"
+              Text="Sign Waiver"
+              Clicked="OnSignWaiverClicked"
+              IconImageSource="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconCheck}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}" />
+
     <MenuItem x:Name="Contact"
               Text="Contact us"
               Clicked="OnContactUsClicked"
