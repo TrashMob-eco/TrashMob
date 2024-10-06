@@ -75,7 +75,6 @@
 
             // Non-patterned
             services.AddScoped<IActiveDirectoryManager, ActiveDirectoryManager>();
-            services.AddScoped<IDocusignManager, DocusignManager>();
             services.AddScoped<IEmailManager, EmailManager>();
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<IImageManager, ImageManager>();
