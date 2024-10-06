@@ -105,7 +105,7 @@ Add the following launchsettings.json file (may need to create it if you don't h
     },
     "TrashMob": {
       "commandName": "Project",
-      "launchBrowser": true
+      "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
