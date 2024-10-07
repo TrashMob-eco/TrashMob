@@ -14,10 +14,10 @@ import infoCycle from '../assets/info-circle.svg';
 import { HeroSection } from '../Customization/HeroSection';
 import { GetUserById, UpdateUser } from '../../services/users';
 import { Services } from '../../config/services.config';
-import { MarkerWithInfoWindow } from '../Map';
+import { MarkerWithInfoWindow, EventInfoWindowContent } from '../Map';
 import { AzureSearchLocationInput, SearchLocationOption } from '../Map/AzureSearchLocationInput';
-import { GetGoogleMapApiKey } from '../../services/maps';
 import { useAzureMapSearchAddressReverse } from '../../hooks/useAzureMapSearchAddressReverse';
+import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
 
 interface LocationPreferenceProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -314,19 +314,11 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                                         headerDisabled: true,
                                     }}
                                     infoWindowContent={
-                                        <>
-                                            <h5
-                                                className='font-weight-bold'
-                                                style={{ fontSize: '18px', marginTop: '0.5rem' }}
-                                            >
-                                                User's Base Location
-                                            </h5>
-                                            <p>
-                                                <span className='font-weight-bold'>Event Date:</span> {date}
-                                                <br />
-                                                <span className='font-weight-bold'>Time: </span> {time}
-                                            </p>
-                                        </>
+                                        <EventInfoWindowContent
+                                            title="User's Base Location"
+                                            date={date}
+                                            time={time}
+                                        />
                                     }
                                 />
                             </Map>
@@ -458,11 +450,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
 };
 
 const LocationPreferenceWrapper = (props: LocationPreferenceProps) => {
-    const { data: googleApiKey, isLoading } = useQuery({
-        queryKey: GetGoogleMapApiKey().key,
-        queryFn: GetGoogleMapApiKey().service,
-        select: (res) => res.data,
-    });
+    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey()
 
     if (isLoading) return null;
 
