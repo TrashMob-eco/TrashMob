@@ -305,7 +305,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                         target='_blank'
                         rel='noopener noreferrer'
                     >
-                        {streetAddress},{city},{region} -{postalCode} {country}
+                        {[streetAddress, city, region].filter(n => !!n).join(', ')} - {country} {postalCode}
                     </a>
                 </p>
 
