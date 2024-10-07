@@ -41,7 +41,7 @@
 6. Update event
     a. If location or time changes, notify all attendees
 7. Sign Waiver
-    a. User is taken to docusign to sign waiver
+    a. User is taken to a page to sign a waiver
     b. If user signs waiver, they can register for events or create events
     c. If user does not sign waiver, user cannot register for or create events
 8. Register for event

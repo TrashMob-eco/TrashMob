@@ -155,7 +155,6 @@ namespace TrashMob
             if (builder.Environment.IsDevelopment())
             {
                 builder.Services.AddScoped<IKeyVaultManager, LocalKeyVaultManager>();
-                builder.Services.AddScoped<IDocusignAuthenticator, DocusignStringAuthenticator>();
                 builder.Services.AddAzureClients(azureClientFactoryBuilder =>
                 {
                     azureClientFactoryBuilder.UseCredential(new DefaultAzureCredential(new DefaultAzureCredentialOptions
@@ -176,7 +175,6 @@ namespace TrashMob
                 });
 
                 builder.Services.AddScoped<IKeyVaultManager, KeyVaultManager>();
-                builder.Services.AddScoped<IDocusignAuthenticator, DocusignStringAuthenticator>();
             }
 
             builder.Services.AddSwaggerGen(options =>
