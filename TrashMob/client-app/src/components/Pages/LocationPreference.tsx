@@ -1,22 +1,23 @@
-import { ChangeEvent, FC, FormEvent, useEffect, useState } from 'react';
-import UserData from '../Models/UserData';
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import Tooltip from "react-bootstrap/Tooltip";
-import * as ToolTips from "../../store/ToolTips";
+import { ChangeEvent, FC, FormEvent, useEffect, useState, useCallback, useRef } from 'react';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
-import * as MapStore from '../../store/MapStore';
-import { getKey } from '../../store/MapStore';
-import { data } from 'azure-maps-control';
-import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
-import MapControllerSinglePoint from '../MapControllerSinglePoint';
-import infoCycle from '../assets/info-circle.svg';
-import React from 'react';
-import { HeroSection } from '../Customization/HeroSection';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { APIProvider, Map, MapMouseEvent, useMap } from '@vis.gl/react-google-maps';
+
+import UserData from '../Models/UserData';
+import * as ToolTips from '../../store/ToolTips';
+import * as MapStore from '../../store/MapStore';
+import infoCycle from '../assets/info-circle.svg';
+
+import { HeroSection } from '../Customization/HeroSection';
 import { GetUserById, UpdateUser } from '../../services/users';
 import { Services } from '../../config/services.config';
-import { AzureMapSearchAddressReverse } from '../../services/maps';
+import { MarkerWithInfoWindow } from '../Map';
+import { AzureSearchLocationInput, SearchLocationOption } from '../Map/AzureSearchLocationInput';
+import { GetGoogleMapApiKey } from '../../services/maps';
+import { useAzureMapSearchAddressReverse } from '../../hooks/useAzureMapSearchAddressReverse';
 
 interface LocationPreferenceProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -27,55 +28,61 @@ interface LocationPreferenceProps extends RouteComponentProps<any> {
 const LocationPreference: FC<LocationPreferenceProps> = (props) => {
     const userId = props.currentUser.id;
     const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
-    const [userName, setUserName] = useState<string>("");
+    const [userName, setUserName] = useState<string>('');
     const [email, setEmail] = useState<string>();
     const [city, setCity] = useState<string>();
-    const [radiusType, setRadiusType] = useState<string>("");
+    const [radiusType, setRadiusType] = useState<string>('');
     const [country, setCountry] = useState<string>();
     const [region, setRegion] = useState<string>();
     const [postalCode, setPostalCode] = useState<string>();
     const [dateAgreedToTrashMobWaiver, setDateAgreedToTrashMobWaiver] = useState<Date>(new Date());
-    const [trashMobWaiverVersion, setTrashMobWaiverVersion] = useState<string>("");
+    const [trashMobWaiverVersion, setTrashMobWaiverVersion] = useState<string>('');
     const [memberSince, setMemberSince] = useState<Date>(new Date());
-    const [maxEventsRadiusErrors, setMaxEventsRadiusErrors] = useState<string>("");
+    const [maxEventsRadiusErrors, setMaxEventsRadiusErrors] = useState<string>('');
     const [longitude, setLongitude] = useState<number>(0);
     const [latitude, setLatitude] = useState<number>(0);
     const [prefersMetric, setPrefersMetric] = useState<boolean>(false);
     const [travelLimitForLocalEvents, setTravelLimitForLocalEvents] = useState<number>(10);
-    const [travelLimitForLocalEventsErrors, setTravelLimitForLocalEventsErrors] = useState<string>("");
-    const [center, setCenter] = useState<data.Position>(new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude));
-    const [isMapKeyLoaded, setIsMapKeyLoaded] = useState<boolean>(false);
-    const [mapOptions, setMapOptions] = useState<IAzureMapOptions>();
-    const [eventName, setEventName] = useState<string>("User's Base Location");
+    const [travelLimitForLocalEventsErrors, setTravelLimitForLocalEventsErrors] = useState<string>('');
+
+    const [center, setCenter] = useState<google.maps.LatLngLiteral>({
+        lat: MapStore.defaultLongitude,
+        lng: MapStore.defaultLatitude,
+    });
+    const [azureSubscriptionKey, setAzureSubscriptionKey] = useState<string>();
     const [isSaveEnabled, setIsSaveEnabled] = useState<boolean>(false);
     const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
-    const [formSubmitErrors, setFormSubmitErrors] = useState<string>("");
+    const [formSubmitErrors, setFormSubmitErrors] = useState<string>('');
     const [units, setUnits] = useState<string[]>([]);
 
-    const getUserById = useQuery({ 
-        queryKey: GetUserById({ userId: userId }).key,
-        queryFn: GetUserById({ userId: userId }).service,
+    const getUserById = useQuery({
+        queryKey: GetUserById({ userId }).key,
+        queryFn: GetUserById({ userId }).service,
         staleTime: Services.CACHE.DISABLE,
-        enabled: false
+        enabled: false,
     });
 
-    const updateUser = useMutation({ 
+    const updateUser = useMutation({
         mutationKey: UpdateUser().key,
         mutationFn: UpdateUser().service,
     });
-    
-    const azureMapSearchAddressReverse = useMutation({ 
-        mutationKey: AzureMapSearchAddressReverse().key,
-        mutationFn: AzureMapSearchAddressReverse().service,
-    });
+
+    const { refetch: refetchAddressReverse } = useAzureMapSearchAddressReverse(
+        {
+            lat: latitude,
+            long: longitude,
+            azureKey: azureSubscriptionKey || '',
+        },
+        { enabled: false },
+    );
 
     useEffect(() => {
         window.scrollTo(0, 0);
-        setUnits(["mi", "km"]);
+        setUnits(['mi', 'km']);
         if (props.isUserLoaded && !isDataLoaded) {
-            setEventName("User's Base Location");
             getUserById.refetch().then((res) => {
                 if (res.data === undefined || res.data.data === null) return;
+
                 setUserName(res.data.data.userName);
                 setEmail(res.data.data.email);
                 setCity(res.data.data.city);
@@ -87,46 +94,44 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                 setMemberSince(res.data.data.memberSince);
                 setLatitude(res.data.data.latitude);
                 setLongitude(res.data.data.longitude);
+                setCenter({ lat: res.data.data.latitude, lng: res.data.data.longitude })
                 setPrefersMetric(res.data.data.prefersMetric);
-                setTravelLimitForLocalEvents(res.data.data.travelLimitForLocalEvents);
-                setMaxEventsRadiusErrors("");
-                setTravelLimitForLocalEventsErrors("");
-                setRadiusType(res.data.data.prefersMetric ? 'km' : 'mi')
+                setTravelLimitForLocalEvents(Math.max(res.data.data.travelLimitForLocalEvents, 1));
+                setMaxEventsRadiusErrors('');
+                setTravelLimitForLocalEventsErrors('');
+                setRadiusType(res.data.data.prefersMetric ? 'km' : 'mi');
                 setIsDataLoaded(true);
-            })
+            });
 
             setIsDataLoaded(true);
         }
 
-        MapStore.getOption().then(opts => {
-            setMapOptions(opts);
-            setIsMapKeyLoaded(true);
-        })
+        MapStore.getOption().then((opts) => {
+            setAzureSubscriptionKey(opts.subscriptionKey);
+        });
 
-        if ("geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition(position => {
-                const point = new data.Position(position.coords.longitude, position.coords.latitude);
-                setCenter(point)
+        if ('geolocation' in navigator) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                setCenter({ lat: position.coords.latitude, lng: position.coords.longitude });
             });
         }
-    }, [userId, props.isUserLoaded, isDataLoaded])
+    }, [userId, props.isUserLoaded, isDataLoaded]);
 
-    // This will handle Cancel button click event.  
+    // This will handle Cancel button click event.
     const handleCancel = (event: FormEvent<HTMLElement>) => {
         event.preventDefault();
-        props.history.push("/");
-    }
+        props.history.push('/');
+    };
 
-    React.useEffect(() => {
-        if (travelLimitForLocalEventsErrors !== "") {
+    useEffect(() => {
+        if (travelLimitForLocalEventsErrors !== '') {
             setIsSaveEnabled(false);
-        }
-        else {
+        } else {
             setIsSaveEnabled(true);
         }
     }, [travelLimitForLocalEventsErrors]);
 
-    // This will handle the submit form event.  
+    // This will handle the submit form event.
     const handleSave = (event: ChangeEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (!isSaveEnabled) return;
@@ -134,12 +139,12 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
         setIsSaveEnabled(false);
         const body = new UserData();
         body.id = userId;
-        body.userName = userName ?? "";
-        body.email = email ?? "";
-        body.city = city ?? "";
-        body.region = region ?? "";
-        body.country = country ?? "";
-        body.postalCode = postalCode ?? "";
+        body.userName = userName ?? '';
+        body.email = email ?? '';
+        body.city = city ?? '';
+        body.region = region ?? '';
+        body.country = country ?? '';
+        body.postalCode = postalCode ?? '';
         body.dateAgreedToTrashMobWaiver = new Date(dateAgreedToTrashMobWaiver);
         body.memberSince = new Date(memberSince);
         body.latitude = latitude;
@@ -148,14 +153,17 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
         body.travelLimitForLocalEvents = travelLimitForLocalEvents;
         body.trashMobWaiverVersion = trashMobWaiverVersion;
 
-        updateUser.mutateAsync(body).then(res => {
-            if (res.status !== 200) setFormSubmitErrors("Unknown error occured while checking user name. Please try again. Error Code: " + res.status);
-            else {
+        updateUser.mutateAsync(body).then((res) => {
+            if (res.status !== 200) {
+                setFormSubmitErrors(
+                    `Unknown error occured while checking user name. Please try again. Error Code: ${res.status}`,
+                );
+            } else {
                 setFormSubmitted(true);
                 props.onUserUpdated();
             }
-        })
-    }
+        });
+    };
 
     const handleTravelLimitForLocalEventsChanged = (val: string) => {
         try {
@@ -163,137 +171,306 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                 const intVal = parseInt(val);
 
                 if (intVal <= 0 || intVal > 1000) {
-                    setTravelLimitForLocalEventsErrors("Travel limit must be greater than or equal to 0 and less than 1000.")
-                }
-                else {
+                    setTravelLimitForLocalEventsErrors(
+                        'Travel limit must be greater than or equal to 0 and less than 1000.',
+                    );
+                } else {
                     setTravelLimitForLocalEvents(intVal);
-                    setTravelLimitForLocalEventsErrors("");
+                    setTravelLimitForLocalEventsErrors('');
                 }
-            }
-            else {
+            } else {
                 setTravelLimitForLocalEvents(1);
             }
+        } catch {
+            setTravelLimitForLocalEventsErrors('Travel limit must be a valid number.');
         }
-        catch {
-            setTravelLimitForLocalEventsErrors("Travel limit must be a valid number.");
-        }
-    }
+    };
 
     const handleRadiusTypeChanged = (val: string) => {
-        if (val === "mi") {
+        if (val === 'mi') {
             setPrefersMetric(false);
-        }
-        else {
+            setRadiusType('mi');
+        } else {
             setPrefersMetric(true);
+            setRadiusType('km');
         }
-    }
+    };
 
-    const renderCityToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.LocationPreferenceCity}</Tooltip>
-    }
+    const renderCityToolTip = (props: any) => <Tooltip {...props}>{ToolTips.LocationPreferenceCity}</Tooltip>;
 
-    const renderRegionToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.LocationPreferenceRegion}</Tooltip>
-    }
+    const renderRegionToolTip = (props: any) => <Tooltip {...props}>{ToolTips.LocationPreferenceRegion}</Tooltip>;
 
-    const renderPostalCodeToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.LocationPreferencePostalCode}</Tooltip>
-    }
+    const renderPostalCodeToolTip = (props: any) => (
+        <Tooltip {...props}>{ToolTips.LocationPreferencePostalCode}</Tooltip>
+    );
 
-    const renderTravelLimitForLocalEventsToolTip = (props: any) => {
-        return <Tooltip {...props}>{ToolTips.LocationPreferenceTravelLimitForLocalEvents}</Tooltip>
-    }
+    const renderTravelLimitForLocalEventsToolTip = (props: any) => (
+        <Tooltip {...props}>{ToolTips.LocationPreferenceTravelLimitForLocalEvents}</Tooltip>
+    );
 
-    const handleLocationChange = async (point: data.Position) => {
-        setLatitude(point[1]);
-        setLongitude(point[0]);
-        const azureKey = await getKey();
-        azureMapSearchAddressReverse.mutateAsync({ azureKey, lat: point[0], long: point[1] }).then((res) => {
-            setCity(res.data.addresses[0].address.municipality);
-            setCountry(res.data.addresses[0].address.country);
-            setRegion(res.data.addresses[0].address.countrySubdivisionName);
-            setPostalCode(res.data.addresses[0].address.postalCode);
-        })
-    }
+    const map = useMap();
+    const radiusRef = useRef<google.maps.Circle>();
+
+    // On Map Initialized, add circle polygon
+    useEffect(() => {
+        if (!map || radiusRef.current) return;
+
+        const radiusCircle = new google.maps.Circle({
+            strokeColor: '#96ba00',
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: '#96ba00',
+            fillOpacity: 0.2,
+            clickable: false,
+            map
+        });
+        radiusRef.current = radiusCircle;
+    }, [map]);
+
+    // On radius, lat, lng changed, update radius polygon
+    useEffect(() => {
+        if (map && radiusRef.current) {
+            radiusRef.current.setCenter({ lat: latitude, lng: longitude });
+
+            // Note: radius unit is meter.
+            radiusRef.current.setRadius(travelLimitForLocalEvents * (radiusType === 'km' ? 1000 : 1600));
+        }
+    }, [map, radiusRef, latitude, longitude, travelLimitForLocalEvents, radiusType]);
+
+    const handleSelectSearchLocation = useCallback(
+        async (location: SearchLocationOption) => {
+            const { lat, lon } = location.position;
+            setLatitude(lat);
+            setLongitude(lon);
+
+            // side effect: Move Map Center
+            if (map) map.panTo({ lat, lng: lon });
+        },
+        [map],
+    );
+
+    const handleClickMap = useCallback((e: MapMouseEvent) => {
+        if (e.detail.latLng) {
+            const lat = e.detail.latLng.lat;
+            const lng = e.detail.latLng.lng;
+            setLatitude(lat);
+            setLongitude(lng);
+        }
+    }, [])
+
+    const handleMarkerDragEnd = useCallback((e: google.maps.MapMouseEvent) => {
+        if (e.latLng) {
+            const lat = e.latLng.lat();
+            const lng = e.latLng.lng();
+            setLatitude(lat);
+            setLongitude(lng);
+        }
+    }, [])
+
+    // on Marker moved (latitude + longitude changed), do reverse search lat,lng to address
+    useEffect(() => {
+        const searchAddressReverse = async () => {
+            const { data } = await refetchAddressReverse();
+
+            const firstResult = data?.addresses[0];
+            if (firstResult) {
+                setCity(firstResult.address.municipality);
+                setCountry(firstResult.address.country);
+                setRegion(firstResult.address.countrySubdivisionName);
+                setPostalCode(firstResult.address.postalCode);
+            }
+        };
+        if (latitude && longitude) searchAddressReverse();
+    }, [latitude, longitude]);
+
+    const date = new Date().toLocaleDateString([], { month: 'long', day: '2-digit', year: 'numeric' });
+    const time = new Date().toLocaleTimeString([], { timeZoneName: 'short' });
+
+    return !isDataLoaded ? (
+        <div>Loading</div>
+    ) : (
+        <div>
+            <HeroSection Title='Set your location' Description='Get notified for events near you!' />
+            <Container className='p-4 bg-white mt-5 rounded'>
+                <h4 className='fw-600 color-primary my-3 main-header'>Location preferences</h4>
+                <Form onSubmit={handleSave}>
+                    <Form.Row>
+                        <div style={{ position: 'relative', width: '100%' }}>
+                            <Map
+                                mapId='6f295631d841c617'
+                                gestureHandling='greedy'
+                                disableDefaultUI
+                                style={{ width: '100%', height: '500px' }}
+                                defaultCenter={center}
+                                defaultZoom={MapStore.defaultUserLocationZoom}
+                                onClick={handleClickMap}
+                            >
+                                <MarkerWithInfoWindow
+                                    position={{ lat: latitude, lng: longitude }}
+                                    draggable
+                                    onDragEnd={handleMarkerDragEnd}
+                                    infoWindowTrigger='hover'
+                                    infoWindowProps={{
+                                        headerDisabled: true,
+                                    }}
+                                    infoWindowContent={
+                                        <>
+                                            <h5
+                                                className='font-weight-bold'
+                                                style={{ fontSize: '18px', marginTop: '0.5rem' }}
+                                            >
+                                                User's Base Location
+                                            </h5>
+                                            <p>
+                                                <span className='font-weight-bold'>Event Date:</span> {date}
+                                                <br />
+                                                <span className='font-weight-bold'>Time: </span> {time}
+                                            </p>
+                                        </>
+                                    }
+                                />
+                            </Map>
+
+                            {azureSubscriptionKey ? (
+                                <div style={{ position: 'absolute', top: 8, left: 8 }}>
+                                    <AzureSearchLocationInput
+                                        azureKey={azureSubscriptionKey}
+                                        onSelectLocation={handleSelectSearchLocation}
+                                    />
+                                </div>
+                            ) : null}
+                        </div>
+                    </Form.Row>
+                    <Form.Row className='mt-4'>
+                        <Col lg={6}>
+                            <Form.Group>
+                                <OverlayTrigger placement='top' overlay={renderTravelLimitForLocalEventsToolTip}>
+                                    <Form.Label className='control-label font-weight-bold h5' htmlFor='maxEventsRadius'>
+                                        Maximum event radius <img className='m-0 ml-2' src={infoCycle} alt='info' />
+                                    </Form.Label>
+                                </OverlayTrigger>
+                                <Row>
+                                    <Col xs={8}>
+                                        <Form.Control
+                                            type='number'
+                                            className='border-0 bg-light p-18 h-60 w-100'
+                                            name='maxEventsRadius'
+                                            value={travelLimitForLocalEvents}
+                                            onChange={(val) => handleTravelLimitForLocalEventsChanged(val.target.value)}
+                                            maxLength={parseInt('32')}
+                                        />
+                                    </Col>
+                                    <Col xs={4}>
+                                        <select
+                                            data-val='true'
+                                            className='bg-light border-0 p-18 h-60 w-100 rounded p-2'
+                                            name='radiusType'
+                                            value={radiusType}
+                                            onChange={(val) => handleRadiusTypeChanged(val.target.value)}
+                                            required
+                                        >
+                                            <option value=''>-- Select Units --</option>
+                                            {units.map((unit) => (
+                                                <option key={unit} value={unit}>
+                                                    {unit}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </Col>
+                                </Row>
+                                <span style={{ color: 'red' }}>{maxEventsRadiusErrors}</span>
+                            </Form.Group>
+                        </Col>
+                        <Col lg={6}>
+                            <Form.Group>
+                                <OverlayTrigger placement='top' overlay={renderCityToolTip}>
+                                    <Form.Label className='control-label font-weight-bold h5' htmlFor='City'>
+                                        City
+                                    </Form.Label>
+                                </OverlayTrigger>
+                                <Form.Control
+                                    type='text'
+                                    className='border-0 bg-light p-18 h-60'
+                                    disabled
+                                    name='city'
+                                    defaultValue={city}
+                                />
+                            </Form.Group>
+                        </Col>
+                    </Form.Row>
+                    <Form.Row>
+                        <Col lg={6}>
+                            <Form.Group>
+                                <OverlayTrigger placement='top' overlay={renderRegionToolTip}>
+                                    <Form.Label className='control-label font-weight-bold h5' htmlFor='region'>
+                                        State
+                                    </Form.Label>
+                                </OverlayTrigger>
+                                <Form.Control
+                                    type='text'
+                                    className='border-0 bg-light p-18 h-60'
+                                    disabled
+                                    name='region'
+                                    defaultValue={region}
+                                />
+                            </Form.Group>
+                        </Col>
+                        <Col lg={6}>
+                            <Form.Group>
+                                <OverlayTrigger placement='top' overlay={renderPostalCodeToolTip}>
+                                    <Form.Label className='control-label font-weight-bold h5' htmlFor='PostalCode'>
+                                        Postal Code
+                                    </Form.Label>
+                                </OverlayTrigger>
+                                <Form.Control
+                                    type='text'
+                                    className='border-0 bg-light p-18 h-60'
+                                    disabled
+                                    name='postalCode'
+                                    defaultValue={postalCode}
+                                />
+                            </Form.Group>
+                        </Col>
+                    </Form.Row>
+                    <Form.Row>
+                        <Col>
+                            <Form.Group className='text-right'>
+                                <Button className='action h-49 p-18' onClick={(e) => handleCancel(e)}>
+                                    Discard
+                                </Button>
+                                <Button
+                                    disabled={!isSaveEnabled}
+                                    type='submit'
+                                    className='action btn-outline ml-2 h-49'
+                                    variant='outline-primary'
+                                >
+                                    Save
+                                </Button>
+                            </Form.Group>
+                            <span>{formSubmitted ? 'Saved!' : ''}</span>
+                            <span>{formSubmitErrors || ''}</span>
+                        </Col>
+                    </Form.Row>
+                </Form>
+            </Container>
+        </div>
+    );
+};
+
+const LocationPreferenceWrapper = (props: LocationPreferenceProps) => {
+    const { data: googleApiKey, isLoading } = useQuery({
+        queryKey: GetGoogleMapApiKey().key,
+        queryFn: GetGoogleMapApiKey().service,
+        select: (res) => res.data,
+    });
+
+    if (isLoading) return null;
 
     return (
-        !isDataLoaded ? <div>Loading</div> :
-            <div>
-                <HeroSection Title='Set your location' Description='Get notified for events near you!'></HeroSection>
-                <Container className='p-4 bg-white mt-5 rounded'>
-                    <h4 className='fw-600 color-primary my-3 main-header'>Location preferences</h4>
-                    <Form onSubmit={handleSave}>
-                        <Form.Row>
-                            <AzureMapsProvider>
-                                <>
-                                    <MapControllerSinglePoint center={center} isEventDataLoaded={isDataLoaded} mapOptions={mapOptions} isMapKeyLoaded={isMapKeyLoaded} eventName={eventName} latitude={latitude} longitude={longitude} onLocationChange={handleLocationChange} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} isDraggable={true} eventDate={new Date()} />
-                                </>
-                            </AzureMapsProvider>
-                        </Form.Row>
-                        <Form.Row className='mt-4'>
-                            <Col lg={6}>
-                                <Form.Group>
-                                    <OverlayTrigger placement="top" overlay={renderTravelLimitForLocalEventsToolTip}>
-                                        <Form.Label className="control-label font-weight-bold h5" htmlFor="maxEventsRadius">Maximum event radius <img className='m-0 ml-2' src={infoCycle} alt="info" /></Form.Label>
-                                    </OverlayTrigger>
-                                    <Row>
-                                        <Col xs={8}>
-                                            <Form.Control type="number" className='border-0 bg-light p-18 h-60' w-100 name="maxEventsRadius" defaultValue={travelLimitForLocalEvents} onChange={(val) => handleTravelLimitForLocalEventsChanged(val.target.value)} maxLength={parseInt('32')} />
-                                        </Col>
-                                        <Col xs={4}>
-                                            <select data-val="true" className='bg-light border-0 p-18 h-60 w-100 rounded p-2' name="radiusType" value={radiusType} onChange={(val) => handleRadiusTypeChanged(val.target.value)} required>
-                                                <option value="">-- Select Units --</option>
-                                                {
-                                                    units.map(unit =>
-                                                        <option key={unit} value={unit}>{unit}</option>
-                                                )}
-                                            </select>
-                                        </Col>
-                                    </Row>
-                                    <span style={{ color: "red" }}>{maxEventsRadiusErrors}</span>
-                                </Form.Group>
-                            </Col>
-                            <Col lg={6}>
-                                <Form.Group>
-                                    <OverlayTrigger placement="top" overlay={renderCityToolTip}>
-                                        <Form.Label className="control-label font-weight-bold h5" htmlFor="City">City</Form.Label>
-                                    </OverlayTrigger>
-                                    <Form.Control type="text" className='border-0 bg-light p-18 h-60' disabled name="city" defaultValue={city} />
-                                </Form.Group>
-                            </Col>
-                        </Form.Row>
-                        <Form.Row>
-                            <Col lg={6}>
-                                <Form.Group>
-                                    <OverlayTrigger placement="top" overlay={renderRegionToolTip}>
-                                        <Form.Label className="control-label font-weight-bold h5" htmlFor="region">State</Form.Label>
-                                    </OverlayTrigger>
-                                    <Form.Control type="text" className='border-0 bg-light p-18 h-60' disabled name="region" defaultValue={region} />
-                                </Form.Group>
-                            </Col>
-                            <Col lg={6}>
-                                <Form.Group>
-                                    <OverlayTrigger placement="top" overlay={renderPostalCodeToolTip}>
-                                        <Form.Label className="control-label font-weight-bold h5" htmlFor="PostalCode">Postal Code</Form.Label>
-                                    </OverlayTrigger>
-                                    <Form.Control type="text" className='border-0 bg-light p-18 h-60' disabled name="postalCode" defaultValue={postalCode} />
-                                </Form.Group>
-                            </Col>
-                        </Form.Row>
-                        <Form.Row>
-                            <Col>
-                                <Form.Group className='text-right'>
-                                    <Button className="action h-49 p-18" onClick={(e) => handleCancel(e)}>Discard</Button>
-                                    <Button disabled={!isSaveEnabled} type="submit" className="action btn-outline ml-2 h-49" variant="outline-primary">Save</Button>
-                                </Form.Group>
-                                <span>{formSubmitted ? 'Saved!' : ''}</span>
-                                <span>{formSubmitErrors ? formSubmitErrors : ''}</span>
-                            </Col>
-                        </Form.Row>
-                    </Form>
-                </Container>
-            </div >
+        <APIProvider apiKey={googleApiKey || ''}>
+            <LocationPreference {...props} />
+        </APIProvider>
     );
-}
+};
 
-export default withRouter(LocationPreference);
+export default withRouter(LocationPreferenceWrapper);

@@ -1,7 +1,7 @@
-import React, {FC, useState, useEffect, useRef} from 'react';
-import { Button, Dropdown} from 'react-bootstrap';
-interface MultipleSelectionFilterDropDownProps
-{
+import React, { FC, useState, useEffect, useRef } from 'react';
+import { Button, Dropdown } from 'react-bootstrap';
+
+interface MultipleSelectionFilterDropDownProps {
     name: string;
     menuItems: string[];
     selectedItems: string[];
@@ -11,7 +11,15 @@ interface MultipleSelectionFilterDropDownProps
     onIsFilteringChange: any;
 }
 
-export const MultipleSelectionFilterDropDown:FC<MultipleSelectionFilterDropDownProps> = ({name, menuItems, selectedItems, className, resetFilter= false, onShowResult, onIsFilteringChange})=>{
+export const MultipleSelectionFilterDropDown: FC<MultipleSelectionFilterDropDownProps> = ({
+    name,
+    menuItems,
+    selectedItems,
+    className,
+    resetFilter = false,
+    onShowResult,
+    onIsFilteringChange,
+}) => {
     const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [isFiltering, setIsFiltering] = useState<boolean>(false);
@@ -20,106 +28,111 @@ export const MultipleSelectionFilterDropDown:FC<MultipleSelectionFilterDropDownP
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-          if (isOpen && dropdownRef.current &&!dropdownRef.current.contains(event.target as Node))
-          {
-            setIsOpen(false);
-          }
+            if (isOpen && dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
         };
-        
-        if(isOpen)
-        {
+
+        if (isOpen) {
             document.addEventListener('click', handleClickOutside);
             setSelectedOptions(selectedItems);
         }
-        
+
         return () => {
             document.removeEventListener('click', handleClickOutside);
         };
     }, [isOpen, selectedItems]);
-      
+
     useEffect(() => {
-        if(isFiltering && resetFilter)
-        {
+        if (isFiltering && resetFilter) {
             setSelectedOptions([]);
             onShowResult([]);
             setIsFiltering(false);
             onIsFilteringChange(false);
         }
-    },[resetFilter, isFiltering, onShowResult, onIsFilteringChange])
+    }, [resetFilter, isFiltering, onShowResult, onIsFilteringChange]);
 
-    useEffect(()=>{
-        if(selectedItems.length === 0)
-        {
+    useEffect(() => {
+        if (selectedItems.length === 0) {
             setIsFiltering(false);
         }
 
         setSelectedOptions(selectedItems);
+    }, [selectedItems]);
 
-    },[selectedItems])
-
-    const onShowResultClick = ()=>{
+    const onShowResultClick = () => {
         onShowResult(selectedOptions);
         setIsFiltering(selectedOptions.length > 0);
         setSelectNumber(selectedOptions.length);
         onIsFilteringChange(selectedOptions.length > 0);
         closeMenu();
-    }
+    };
 
-    const onCancelClick = ()=>{
+    const onCancelClick = () => {
         setSelectedOptions(selectedItems);
         closeMenu();
-    }
+    };
 
-    const onResetClick = ()=>{
+    const onResetClick = () => {
         setSelectedOptions([]);
-    }
+    };
 
-    const handleCheckBoxSelectionChange = (event: React.ChangeEvent<HTMLInputElement>, menuItem: string) =>{
+    const handleCheckBoxSelectionChange = (event: React.ChangeEvent<HTMLInputElement>, menuItem: string) => {
         const isChecked = event.target.checked;
 
-        if(isChecked)
-        {
+        if (isChecked) {
             setSelectedOptions([...selectedOptions, menuItem]);
+        } else {
+            setSelectedOptions(selectedOptions.filter((item) => item !== menuItem));
         }
-        else
-        {
-            setSelectedOptions(selectedOptions.filter((item => item !== menuItem)));
-        }
-    }
+    };
 
-    const closeMenu = ()=>{
+    const closeMenu = () => {
         setIsOpen(false);
-    }
-
+    };
 
     return (
         <Dropdown show={isOpen} className={className} ref={dropdownRef} hidden={menuItems.length === 0}>
-            <Dropdown.Toggle variant={isFiltering ? 'primary' : 'outline'} onClick={()=>setIsOpen(!isOpen)}>
+            <Dropdown.Toggle variant={isFiltering ? 'primary' : 'outline'} onClick={() => setIsOpen(!isOpen)}>
                 {selectedItems.length === 1 ? selectedItems[0] : name}
-                <span className='circle mx-1' hidden={!isFiltering}>{selectNumber}</span>
+                <span className='circle mx-1' hidden={!isFiltering}>
+                    {selectNumber}
+                </span>
             </Dropdown.Toggle>
             <Dropdown.Menu>
-                {menuItems.map((menuItem, index)=>{
-                    return (
+                {menuItems.map((menuItem, index) => (
                     <div key={index} className='ml-2'>
                         <label className='d-flex'>
-                            <input type="checkbox" className='mr-1'  checked={selectedOptions.includes(menuItem)} onChange={(event)=>handleCheckBoxSelectionChange(event,menuItem)}></input>
+                            <input
+                                type='checkbox'
+                                className='mr-1'
+                                checked={selectedOptions.includes(menuItem)}
+                                onChange={(event) => handleCheckBoxSelectionChange(event, menuItem)}
+                            />
                             {menuItem}
                         </label>
-                    </div>)
-                })}
-                {
-                    <div >
-                        <Dropdown.Divider/>
-                        <div className='d-flex'>
-                            <Button className='mx-2 btn' hidden={selectedItems.length === 0} onClick={onResetClick}>Reset</Button>
-                            <Button className='mx-2' hidden={selectedItems.length > 0} onClick={onCancelClick}>Cancel</Button>
-                            <Button className='text-nowrap mr-2' onClick={()=>{onShowResultClick()}}>Show Results</Button>
-                        </div>
                     </div>
-                }
+                ))}
+                <div>
+                    <Dropdown.Divider />
+                    <div className='d-flex'>
+                        <Button className='mx-2 btn' hidden={selectedItems.length === 0} onClick={onResetClick}>
+                            Reset
+                        </Button>
+                        <Button className='mx-2' hidden={selectedItems.length > 0} onClick={onCancelClick}>
+                            Cancel
+                        </Button>
+                        <Button
+                            className='text-nowrap mr-2'
+                            onClick={() => {
+                                onShowResultClick();
+                            }}
+                        >
+                            Show Results
+                        </Button>
+                    </div>
+                </div>
             </Dropdown.Menu>
         </Dropdown>
-    )
-
-}
+    );
+};

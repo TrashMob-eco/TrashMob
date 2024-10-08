@@ -1,1 +1,1 @@
-﻿export * from "./HtmlMarkerLayer";
+export * from './HtmlMarkerLayer';

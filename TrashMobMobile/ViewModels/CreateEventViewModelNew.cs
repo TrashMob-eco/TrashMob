@@ -10,6 +10,7 @@ using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 using TrashMobMobile.Pages.CreateEvent;
+using TrashMob.Models.Poco;
 
 public partial class CreateEventViewModelNew : BaseViewModel
 {
@@ -524,15 +525,14 @@ public partial class CreateEventViewModelNew : BaseViewModel
         AreLitterReportsAvailable = false;
         AreNoLitterReportsAvailable = true;
 
-        // Todo: Fix this
-        //var filter = new LitterReportFilter()
-        //{
-        //    City = EventViewModel.Address.City,
-        //    Country = EventViewModel.Address.Country,
-        //    LitterReportStatusId = NewLitterReportStatus,
-        //};
+        var filter = new LitterReportFilter()
+        {
+            City = EventViewModel.Address.City,
+            Country = EventViewModel.Address.Country,
+            LitterReportStatusId = NewLitterReportStatus,
+        };
 
-        RawLitterReports = await litterReportManager.GetNewLitterReportsAsync();
+        RawLitterReports = await litterReportManager.GetLitterReportsAsync(filter);
 
         UpdateLitterReportViewModels();
 

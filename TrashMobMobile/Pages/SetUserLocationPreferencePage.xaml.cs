@@ -1,7 +1,5 @@
 namespace TrashMobMobile.Pages;
 
-using CommunityToolkit.Maui.Alerts;
-using CommunityToolkit.Maui.Core;
 using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Maps;
 
@@ -17,11 +15,11 @@ public partial class SetUserLocationPreferencePage : ContentPage
         BindingContext = this.viewModel;
     }
 
-    protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
 
-        viewModel.Init();
+        await viewModel.Init();
 
         if (viewModel?.Address?.Latitude != null && viewModel?.Address?.Longitude != null)
         {

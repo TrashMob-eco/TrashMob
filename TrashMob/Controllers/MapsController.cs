@@ -23,6 +23,13 @@
             return Ok(mapKey);
         }
 
+        [HttpGet("googlemapkey")]
+        public async Task<IActionResult> GetGoogleMapKey()
+        {
+            var mapKey = await Task.FromResult(mapRepository.GetGoogleMapKey());
+            return Ok(mapKey);
+        }
+
         [HttpGet("GetAddress")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> GetAddressForPoint([FromQuery] double latitude, [FromQuery] double longitude)

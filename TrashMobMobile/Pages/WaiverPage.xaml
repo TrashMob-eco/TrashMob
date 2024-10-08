@@ -11,7 +11,7 @@
         <Grid>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
                 <Label Margin="10"
-                    Text="In order to create or participate in TrashMob.eco events, you must agree to a liability waiver. Please click the Sign Waiver button below. This will open a browser which will ask you to view and sign the waiver.&#10;&#10;Once that is done, you will be redirected to the TrashMob.eco website to sign in and complete the waiver signing experience there. If you don't complete that last step, you will need to repeat the process."
+                    Text="In order to create or participate in TrashMob.eco events, you must agree to a liability waiver. Please click the Sign Waiver button below."
                     FontSize="Micro"
                     VerticalOptions="Center"
                     HorizontalOptions="Start"
@@ -23,6 +23,24 @@
                     VerticalOptions="Center"
                     HorizontalOptions="Center"
                     HorizontalTextAlignment="Center" />
+                
+                <Label 
+                    Text="TrashMob.eco Volunteer Release" FontSize="Large" HorizontalTextAlignment="Center" HorizontalOptions="Center" />
+                <Label Text="and Waiver of Liability Form" FontSize="Large" HorizontalTextAlignment="Center" HorizontalOptions="Center" />
+                <Label Text="THE VOLUNTEER RELEASE AND WAIVER OF LIABILITY FORM (“RELEASE”)" FontSize="Medium" Margin="5, 5, 5, 5" />
+                <Label Text="(“VOLUNTEER”) HEREBY RELEASES TRASHMOB.ECO, ITS OFFICERS AND DIRECTORS, ANY LAND OWNERS AND MANAGERS, AND ALL RELATED SPONSORS (“PARTIES”) JOINTLY AND SEVERALLY, AND INDIVIDUALLY." FontSize="Medium" Margin="5, 5, 5, 5" />
+                <Label Text="The Volunteer desires to provide volunteer services and to participate in activities related to serving as a volunteer for events facilitated by TrashMob.eco.  Volunteer services (“Services”) will be broadly defined as picking up trash at TrashMob.eco facilitated events (“Events”). The above Volunteer hereby agrees as follows: " FontSize="Body" Margin="5, 5, 5, 5" />
+                <Label Text="1.	WAIVER AND RELEASE:  I, the Volunteer, release and forever discharge and hold harmless the Parties from any and all liability, claims, and demands of whatever kind or nature, either in law or in equity, which arise or may hereafter arise as result of my participation in such Events.  I understand and acknowledge that this Release discharges from any liability or claim that I may have with respect to bodily injury, personal injury, illness, death, or property damage that may result from the Services I am providing by participating in the Event." FontSize="Body" Margin="5, 5, 5, 5" />
+                <Label Text="2.	INSURANCE:  I, the Volunteer, understand that none of the Parties assume any responsibility for or obligation to provide me with financial or other assistance, including but not limited to medical, health, or disability benefits or insurance of any nature in the event of my injury, illness, death or damage to my property.  I expressly waive any such claim for compensation or liability from the Parties." FontSize="Body" Margin="5, 5, 5, 5" />
+                <Label Text="3.	MEDICAL TREATMENT:  I, the Volunteer, do hereby release and forever discharge the Parties from any claim whatsoever which arises or may hereafter arise on account of any first aid, treatment, or service rendered by any person in connection with an emergency during my tenure as a volunteer during the course of an Event." FontSize="Body" Margin="5, 5, 5, 5" />
+                <Label Text="4.	ASSUMPTION OF THE RISK:  I, the Volunteer, acknowledge that there are potential hazards (“Hazards”), known and unknown, involved in the Event. The term “Hazards” is intended to be used in its broadest sense and includes, but is not limited to natural hazards (land, weather, etc.) and man-made hazards (concrete, steel, etc.). I understand and acknowledge that participation may include Hazards that could harm me, and that such Hazards may or may not always be obvious.  I hereby expressly and specifically assume the risk of injury or harm for all such Hazards." FontSize="Body" Margin="5, 5, 5, 5" />
+                <Label Text="5.	PHOTOGRAPHIC RELEASE: I, the Volunteer, grant and convey to the Parties all right, title, and interest in any and all photographs, images, video, and audio in connection with my providing volunteer services at Events." FontSize="Body" />
+                <Label Text="6.	OTHER:  I, the Volunteer, expressly agrees that this Release is intended to be as broad and inclusive as permitted by law. I agree that in the event that any clause or provision of this Release shall be held to be invalid by any court of competent jurisdiction, the validity of the remaining provisions of this Release shall continue to be enforceable." FontSize="Body" Margin="5, 5, 5, 5" />
+
+                <HorizontalStackLayout Grid.Row="1" Grid.Column="1" Padding="10,10,0,0">
+                    <CheckBox x:Name="Agreed" IsChecked="False"  />
+                    <Label Text="I HAVE READ THIS RELEASE AND WAIVER FORM" Style="{StaticResource FieldLabel}" />
+                </HorizontalStackLayout>
 
                 <Label
                     Text="Thank you!" FontSize="Micro"
@@ -30,51 +48,7 @@
                     HorizontalOptions="Center"
                     HorizontalTextAlignment="Center" />
 
-                <VerticalStackLayout>
-                    <Label Text="Full Name" Style="{StaticResource FieldLabel}" />
-
-                    <Border Style="{x:StaticResource RoundBorder}">
-                        <Entry Text="{Binding Name}">
-                            <Entry.Behaviors>
-                                <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5"
-                                                            x:Name="nameValidator" />
-                            </Entry.Behaviors>
-                        </Entry>
-                    </Border>
-                </VerticalStackLayout>
-
-                <Button Text="Sign Waiver" Command="{Binding SignWaiverCommand}">
-                    <Button.Triggers>
-                        <MultiTrigger TargetType="Button">
-                            <MultiTrigger.Conditions>
-                                <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}"
-                                                  Value="True" />
-                            </MultiTrigger.Conditions>
-                            <Setter Property="IsEnabled" Value="True" />
-                        </MultiTrigger>
-                    </Button.Triggers>
-                </Button>
-
-                <Label
-                    FontSize="Micro"
-                    VerticalOptions="Center"
-                    HorizontalOptions="Center"
-                    HorizontalTextAlignment="Center"
-                    TextColor="Red">
-                    <Label.Triggers>
-                        <MultiTrigger TargetType="Label">
-                            <MultiTrigger.Conditions>
-                                <BindingCondition Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}"
-                                                  Value="True" />
-                            </MultiTrigger.Conditions>
-                            <Setter Property="IsVisible" Value="False" />
-                        </MultiTrigger>
-                        <DataTrigger TargetType="Label"
-                                     Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}" Value="False">
-                            <Setter Property="Text" Value="Name is required and must be at least 5 characters." />
-                        </DataTrigger>
-                    </Label.Triggers>
-                </Label>
+                <Button Text="Sign Waiver" Command="{Binding SignWaiverCommand}" IsEnabled="{Binding Source={x:Reference Agreed}, Path=IsChecked }" />
             </VerticalStackLayout>
             <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
                      VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />

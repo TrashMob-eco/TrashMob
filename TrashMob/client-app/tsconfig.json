@@ -1,43 +1,28 @@
 {
-  "compilerOptions": {
-    "experimentalDecorators": true,
-    "target": "es6",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": true,
-    "declaration": true,
-    "declarationDir": "./js/typings",
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "importHelpers": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "sourceMap": false,
-    "jsx": "react-jsx",
-    "ignoreDeprecations": "5.0",
-    "suppressImplicitAnyIndexErrors": true,
-    "typeRoots": [
-      "./node_modules/@types/",
-      "./types",
-      "./global.d.ts"
-    ]
-  },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "node_modules",
-    "typings",
-    "types"
-  ]
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "target": "es6",
+        "lib": ["dom", "dom.iterable", "esnext"],
+        "allowJs": true,
+        "declaration": true,
+        "declarationDir": "./js/typings",
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "strict": true,
+        "forceConsistentCasingInFileNames": true,
+        "noFallthroughCasesInSwitch": true,
+        "module": "esnext",
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "importHelpers": true,
+        "isolatedModules": true,
+        "noEmit": true,
+        "sourceMap": false,
+        "jsx": "react-jsx",
+        "ignoreDeprecations": "5.0",
+        "typeRoots": ["./node_modules/@types/", "./types", "./global.d.ts"]
+    },
+    "include": ["src", "tests"],
+    "exclude": ["node_modules", "typings", "types"]
 }

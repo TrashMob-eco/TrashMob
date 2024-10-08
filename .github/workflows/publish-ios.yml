@@ -18,11 +18,11 @@ on:
 jobs:
     deploy-ios:
         name: Deploy iOS to TestFlight
-        runs-on: macos-13
+        runs-on: macos-14
         environment: production
         steps:
             - name: Download artifact
-              uses: actions/download-artifact@v2
+              uses: actions/download-artifact@v3
               with:
                     name: ${{ inputs.artifact_name }}
 

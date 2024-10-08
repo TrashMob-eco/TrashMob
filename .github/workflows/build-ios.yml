@@ -50,7 +50,7 @@ on:
 
 jobs:
     build:
-        runs-on: macos-13
+        runs-on: macos-14
         environment: ${{ inputs.environment }}
         name: iOS Build
 
@@ -82,7 +82,7 @@ jobs:
           run: sed -i '' "s|<DefineConstants>USETEST</DefineConstants>|<DefineConstants>${{ inputs.define_constants }}</DefineConstants>|g" TrashMobMobile/TrashMobMobile.csproj
 
         - name: Setup DotNet ${{ inputs.dotnet_version }} Environment
-          uses: actions/setup-dotnet@v3
+          uses: actions/setup-dotnet@v4
           with:
             dotnet-version: ${{ inputs.dotnet_version }}
 
@@ -90,23 +90,23 @@ jobs:
           run: |
             dotnet nuget locals all --clear
             dotnet workload install maui --ignore-failed-sources
-            dotnet workload install ios maui wasm-tools --source https://api.nuget.org/v3/index.json --ignore-failed-sources
+            dotnet workload install maui-ios --version 8.0.401 --source https://api.nuget.org/v3/index.json
 
         - name: Set XCode Version
           if: runner.os == 'macOS'
           shell: bash
           run: |
-            sudo xcode-select -s "/Applications/Xcode_15.1.app"
-            echo "MD_APPLE_SDK_ROOT=/Applications/Xcode_15.1.app" >> $GITHUB_ENV
+            sudo xcode-select -s "/Applications/Xcode_15.4.app"
+            echo "MD_APPLE_SDK_ROOT=/Applications/Xcode_15.4.app" >> $GITHUB_ENV
 
         - name: Import Code-Signing Certificates
-          uses: Apple-Actions/import-codesign-certs@v1
+          uses: Apple-Actions/import-codesign-certs@v3
           with:
             p12-file-base64: ${{ secrets.ios_signing_certificate }}
             p12-password: ${{ secrets.ios_signing_certificate_password }}
 
         - name: Download Apple Provisioning Profiles
-          uses: Apple-Actions/download-provisioning-profiles@v1
+          uses: Apple-Actions/download-provisioning-profiles@v3
           with:
             bundle-id: ${{ inputs.bundle_id }}
             profile-type: ${{ inputs.ios_provisioning_profile_type }}
@@ -118,7 +118,7 @@ jobs:
           run: dotnet publish TrashMobMobile/TrashMobMobile.csproj -c ${{ inputs.configuration }} -f net8.0-ios -r ios-arm64 --self-contained /p:buildForSimulator=False /p:packageApp=True /p:ArchiveOnBuild=true /p:EnableAssemblyILStripping=true /p:PublishTrimmed=true
 
         - name: Upload iOS Artifact
-          uses: actions/upload-artifact@v3.1.3
+          uses: actions/upload-artifact@v3.2.1
           with:
             name: artifacts-ios-${{ inputs.build_number }}
             path: TrashMobMobile/bin/${{ inputs.configuration }}/net8.0-ios/ios-arm64/publish//*.ipa
