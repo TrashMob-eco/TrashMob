@@ -76,7 +76,7 @@ export const PrivacyPolicy: React.FC = () => {
 
                 <ul>
                     <li>Provide, operate, and maintain our website and mobile app</li>
-                    <li>Provide anonymized reports of what areas have been cleaned up, and where bagged garbage has been left for pickup</li>
+                    <li>Provide anonymized reports of what areas have been cleaned up, where bagged garbage has been left for pickup, or to record the location of litter reports</li>
                     <li>Improve, personalize, and expand our website and mobile app</li>
                     <li>Understand and analyze how you use our website and mobile app</li>
                     <li>Develop new products, services, features, and functionality</li>
