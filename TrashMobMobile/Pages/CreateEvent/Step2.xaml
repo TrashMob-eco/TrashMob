@@ -5,7 +5,7 @@
                            xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
                            xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
                            xmlns:createEvent="clr-namespace:TrashMobMobile.Pages.CreateEvent"
-                           x:DataType="viewModels:CreateEventViewModelNew"
+                           x:DataType="viewModels:CreateEventViewModel"
                            x:Class="TrashMobMobile.Pages.CreateEvent.Step2">
     <VerticalStackLayout Margin="0,10">
         <Label

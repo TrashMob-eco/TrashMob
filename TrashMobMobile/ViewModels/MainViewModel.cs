@@ -156,11 +156,7 @@ public partial class MainViewModel(IAuthService authService,
     [RelayCommand]
     private async Task CreateEvent()
     {
-#if USETEST
-        await Shell.Current.GoToAsync(nameof(CreateEventPageNew));
-#else
-        await Shell.Current.GoToAsync(nameof(CreateEventPage));        
-#endif
+        await Shell.Current.GoToAsync(nameof(CreateEventPage));
     }
 
     [RelayCommand]

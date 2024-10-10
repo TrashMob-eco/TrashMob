@@ -2,7 +2,7 @@ namespace TrashMobMobile.Pages.CreateEvent;
 
 public class BaseStepClass : ContentView
 {
-    public CreateEventViewModelNew ViewModel { get; set; }
+    public CreateEventViewModel ViewModel { get; set; }
 
     public event EventHandler NavigatedEvent;
 
