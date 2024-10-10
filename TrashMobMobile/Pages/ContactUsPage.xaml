@@ -40,7 +40,7 @@
                                                                         MinimumLength="5"
                                                                         toolkit:MultiValidationBehavior.Error="Email is required and must be at least 5 characters." />
                                         <toolkit:EmailValidationBehavior Flags="ValidateOnValueChanged"
-                                                                         toolkit:MultiValidationBehavior.Error="Email format is invalid." />
+                                                                         toolkit:MultiValidationBehavior.Error="Email format is not valid." />
                                     </toolkit:MultiValidationBehavior>
                                 </Entry.Behaviors>
                             </Entry>
