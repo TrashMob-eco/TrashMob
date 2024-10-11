@@ -1,7 +1,5 @@
 import * as React from 'react';
-import { data } from 'azure-maps-control';
-import { IAzureMapOptions } from 'react-azure-maps';
-import { APIProvider, Map } from '@vis.gl/react-google-maps';
+import { APIProvider, Map, MapMouseEvent } from '@vis.gl/react-google-maps';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { Button, Col, Container, Form, ToggleButton } from 'react-bootstrap';
@@ -19,9 +17,9 @@ import { EventStatusActive } from '../Models/Constants';
 import { CreateEvent, GetEventById, GetEventTypes, UpdateEvent } from '../../services/events';
 import { Services } from '../../config/services.config';
 import { GetTrashMobWaivers } from '../../services/waivers';
-import { GetGoogleMapApiKey } from '../../services/maps';
-import { MarkerWithInfoWindow } from '../Map';
+import { EventInfoWindowContent, MarkerWithInfoWindow } from '../Map';
 import { useAzureMapSearchAddressReverse } from '../../hooks/useAzureMapSearchAddressReverse';
+import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
 
 export interface EditEventProps extends RouteComponentProps {
     eventId: string;
@@ -244,6 +242,15 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
             setMaxNumberOfParticipantsErrors('Invalid value specified for Max Number of Participants.');
         }
     }
+
+    const handleClickMap = React.useCallback((e: MapMouseEvent) => {
+        if (e.detail.latLng) {
+            const lat = e.detail.latLng.lat;
+            const lng = e.detail.latLng.lng;
+            setLatitude(lat);
+            setLongitude(lng);
+        }
+    }, [])
 
     const handleMarkerDragEnd = React.useCallback(
         async (e: google.maps.MapMouseEvent) => {
@@ -632,6 +639,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                 style={{ width: '100%', height: '500px' }}
                                 defaultCenter={center}
                                 defaultZoom={MapStore.defaultUserLocationZoom}
+                                onClick={handleClickMap}
                             >
                                 <MarkerWithInfoWindow
                                     position={{ lat: latitude, lng: longitude }}
@@ -642,19 +650,11 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                         headerDisabled: true,
                                     }}
                                     infoWindowContent={
-                                        <>
-                                            <h5
-                                                className='font-weight-bold'
-                                                style={{ fontSize: '18px', marginTop: '0.5rem' }}
-                                            >
-                                                {eventName}
-                                            </h5>
-                                            <p>
-                                                <span className='font-weight-bold'>Event Date:</span> {moment(absTime).format('LL')}
-                                                <br />
-                                                <span className='font-weight-bold'>Time: </span> {moment(absTime).format('LTS Z')}
-                                            </p>
-                                        </>
+                                        <EventInfoWindowContent 
+                                            title={eventName}
+                                            date={moment(absTime).format('LL')}
+                                            time={moment(absTime).format('LTS Z')}
+                                        />
                                     }
                                 />
                             </Map>
@@ -782,11 +782,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
 };
 
 const EditEventWrapper = (props: EditEventProps) => {
-    const { data: googleApiKey, isLoading } = useQuery({
-        queryKey: GetGoogleMapApiKey().key,
-        queryFn: GetGoogleMapApiKey().service,
-        select: (res) => res.data,
-    });
+    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey();
     
     if (isLoading) return null;
 
