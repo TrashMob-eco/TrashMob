@@ -81,10 +81,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             EnableEditEvent = mobEvent.IsEventLead();
             EnableViewEventSummary = mobEvent.IsCompleted();
 
-#if USETEST
             EnableStartTrackEventRoute = mobEvent.IsEventLead();
             EnableStopTrackEventRoute = false;
-#endif
 
             WhatToExpect =
                 "What to Expect: \n\tCleanup supplies provided\n\tMeet fellow community members\n\tContribute to a cleaner environment.";
