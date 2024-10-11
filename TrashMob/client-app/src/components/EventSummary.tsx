@@ -27,7 +27,7 @@ export const EventSummary: FC<EventSummaryDashboardProps> = (props) => {
     const [numberOfBuckets, setNumberOfBuckets] = useState<number>(0);
     const [numberOfBags, setNumberOfBags] = useState<number>(0);
     const [durationInMinutes, setDurationInMinutes] = useState<number>(0);
-    const [createdByUserId, setCreatedByUserId] = useState<string>();
+    const [createdByUserId, setCreatedByUserId] = useState<string>(Guid.EMPTY);
     const [createdDate, setCreatedDate] = useState<Date>(new Date());
     const [notes, setNotes] = useState<string>('');
     const [notesErrors, setNotesErrors] = useState<string>('');
@@ -74,7 +74,6 @@ export const EventSummary: FC<EventSummaryDashboardProps> = (props) => {
             setEventName(res.data.data.name);
             setEventDate(new Date(res.data.data.eventDate));
             setEventToShare(res.data.data);
-            setCreatedByUserId(res.data.data.createdByUserId);
             if (res.data.data.createdByUserId === props.currentUser.id) setIsOwner(true);
         });
 
@@ -131,11 +130,14 @@ export const EventSummary: FC<EventSummaryDashboardProps> = (props) => {
         body.numberOfBuckets = numberOfBuckets;
         body.durationInMinutes = durationInMinutes;
         body.notes = notes ?? '';
-        body.createdByUserId = createdByUserId ?? props.currentUser.id;
+        body.createdByUserId = createdByUserId;
         body.createdDate = createdDate;
 
-        if (createdByUserId && createdByUserId !== Guid.EMPTY) updateEventSummary.mutateAsync(body);
+        if (createdByUserId && createdByUserId !== Guid.EMPTY) {
+            updateEventSummary.mutateAsync(body);
+        }
         else {
+            body.createdByUserId = props.currentUser.id;
             createEventSummary.mutateAsync(body).then(() => handleShowModal(true));
         }
     }

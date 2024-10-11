@@ -10,7 +10,6 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(CancelEventPage), typeof(CancelEventPage));
         Routing.RegisterRoute(nameof(ContactUsPage), typeof(ContactUsPage));
         Routing.RegisterRoute(nameof(CreateEventPage), typeof(CreateEventPage));
-        Routing.RegisterRoute(nameof(CreateEventPageNew), typeof(CreateEventPageNew));
         Routing.RegisterRoute(nameof(CreateLitterReportPage), typeof(CreateLitterReportPage));
         Routing.RegisterRoute(nameof(EditEventPage), typeof(EditEventPage));
         Routing.RegisterRoute(nameof(EditEventPartnerLocationServicesPage),
@@ -50,6 +49,12 @@ public partial class AppShell : Shell
         Current.FlyoutIsPresented = false;
         var uri = new Uri("https://www.trashmob.eco/termsofservice");
         await Browser.Default.OpenAsync(uri, BrowserLaunchMode.SystemPreferred);
+    }
+
+    public async void OnSignWaiverClicked(object sender, EventArgs e)
+    {
+        Current.FlyoutIsPresented = false;
+        await Current.GoToAsync($"{nameof(WaiverPage)}");
     }
 
     public async void OnContactUsClicked(object sender, EventArgs e)

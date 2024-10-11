@@ -4,7 +4,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { APIProvider, Map, useMap } from '@vis.gl/react-google-maps';
+import { APIProvider, Map, MapMouseEvent, useMap } from '@vis.gl/react-google-maps';
 
 import UserData from '../Models/UserData';
 import * as ToolTips from '../../store/ToolTips';
@@ -213,7 +213,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
 
     // On Map Initialized, add circle polygon
     useEffect(() => {
-        if (!map) return;
+        if (!map || radiusRef.current) return;
 
         const radiusCircle = new google.maps.Circle({
             strokeColor: '#96ba00',
@@ -221,7 +221,8 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
             strokeWeight: 2,
             fillColor: '#96ba00',
             fillOpacity: 0.2,
-            map,
+            clickable: false,
+            map
         });
         radiusRef.current = radiusCircle;
     }, [map]);
@@ -248,19 +249,23 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
         [map],
     );
 
-    const handleMarkerDragEnd = useCallback(
-        async (e: google.maps.MapMouseEvent) => {
-            if (e.latLng) {
-                const lat = e.latLng.lat();
-                const lng = e.latLng.lng();
-                setLatitude(lat);
-                setLongitude(lng);
+    const handleClickMap = useCallback((e: MapMouseEvent) => {
+        if (e.detail.latLng) {
+            const lat = e.detail.latLng.lat;
+            const lng = e.detail.latLng.lng;
+            setLatitude(lat);
+            setLongitude(lng);
+        }
+    }, [])
 
-                // Note: Map center does not move, only save new marker position
-            }
-        },
-        [map],
-    );
+    const handleMarkerDragEnd = useCallback((e: google.maps.MapMouseEvent) => {
+        if (e.latLng) {
+            const lat = e.latLng.lat();
+            const lng = e.latLng.lng();
+            setLatitude(lat);
+            setLongitude(lng);
+        }
+    }, [])
 
     // on Marker moved (latitude + longitude changed), do reverse search lat,lng to address
     useEffect(() => {
@@ -298,6 +303,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                                 style={{ width: '100%', height: '500px' }}
                                 defaultCenter={center}
                                 defaultZoom={MapStore.defaultUserLocationZoom}
+                                onClick={handleClickMap}
                             >
                                 <MarkerWithInfoWindow
                                     position={{ lat: latitude, lng: longitude }}

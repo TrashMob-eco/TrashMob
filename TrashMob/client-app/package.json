@@ -40,7 +40,7 @@
     "scripts": {
         "start": "vite",
         "build": "vite build",
-        "test": "vite test",
+        "test": "vitest",
         "lint": "eslint . --fix",
         "format": "prettier . --write"
     },
@@ -58,7 +58,7 @@
     },
     "devDependencies": {
         "@tanstack/react-query-devtools": "^4.36.1",
-        "@testing-library/jest-dom": "^5.12.0",
+        "@testing-library/jest-dom": "^5.17.0",
         "@testing-library/react": "^11.2.7",
         "@testing-library/user-event": "^12.8.3",
         "@types/google.maps": "^3.58.1",
@@ -81,6 +81,7 @@
         "lint-staged": "^15.2.10",
         "node-gyp": "^9.3.1",
         "prettier": "3.3.3",
-        "typescript": "^4.2.4"
+        "typescript": "^4.2.4",
+        "vitest": "^2.1.1"
     }
 }
