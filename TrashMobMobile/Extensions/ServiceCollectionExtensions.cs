@@ -18,7 +18,6 @@
 
             services.AddSingleton<IContactRequestManager, ContactRequestManager>();
             services.AddSingleton<IContactRequestRestService, ContactRequestRestService>();
-            services.AddSingleton<IDocusignRestService, DocusignRestService>();
             services.AddSingleton<IEventAttendeeRestService, EventAttendeeRestService>();
             services.AddSingleton<IEventAttendeeRouteRestService, EventAttendeeRouteRestService>();
             services.AddSingleton<IEventLitterReportRestService, EventLitterReportRestService>();

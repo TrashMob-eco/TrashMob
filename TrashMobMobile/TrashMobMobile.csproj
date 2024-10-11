@@ -133,9 +133,6 @@
     <Compile Update="Pages\CancelEventPage.xaml.cs">
       <DependentUpon>CancelEventPage.xaml</DependentUpon>
     </Compile>
-    <Compile Update="Pages\CreateEventPage.xaml.cs">
-	    <DependentUpon>%(Filename)</DependentUpon>
-	  </Compile>
     <Compile Update="Pages\CreateLitterReportPage.xaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
@@ -181,8 +178,8 @@
 	  <Compile Update="Pages\WelcomePage.xaml.cs">
 	    <DependentUpon>%(Filename)</DependentUpon>
 	  </Compile>
-	  <Compile Update="Pages\CreateEventPageNew.xaml.cs">
-	    <DependentUpon>CreateEventPageNew.xaml</DependentUpon>
+	  <Compile Update="Pages\CreateEventPage.xaml.cs">
+	    <DependentUpon>CreateEventPage.xaml</DependentUpon>
 	    <SubType>Code</SubType>
 	  </Compile>
 	  <Compile Update="Pages\CreateEvent\Step5.xaml.cs">
@@ -228,9 +225,6 @@
     <MauiXaml Update="Pages\CancelEventPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
-    <MauiXaml Update="Pages\CreateEventPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
     <MauiXaml Update="Pages\CreateLitterReportPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
@@ -279,7 +273,7 @@
 	  <MauiXaml Update="Resources\Styles\Icons.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Pages\CreateEventPageNew.xaml">
+	  <MauiXaml Update="Pages\CreateEventPage.xaml">
 	    <SubType>Designer</SubType>
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

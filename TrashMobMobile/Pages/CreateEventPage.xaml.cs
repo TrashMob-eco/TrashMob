@@ -1,9 +1,6 @@
 namespace TrashMobMobile.Pages;
 
-using CommunityToolkit.Maui.Alerts;
-using CommunityToolkit.Maui.Core;
-using Microsoft.Maui.Controls.Maps;
-using Microsoft.Maui.Maps;
+using TrashMobMobile.Pages.CreateEvent;
 
 public partial class CreateEventPage : ContentPage
 {
@@ -14,6 +11,17 @@ public partial class CreateEventPage : ContentPage
         InitializeComponent();
         this.viewModel = viewModel;
         this.viewModel.Navigation = Navigation;
+
+        viewModel.Steps = new IContentView[]
+        {
+            new Step1(),
+            new Step2(),
+            new Step3(),
+            new Step4(),
+            new Step5(),
+            new Step6()
+        };
+
         BindingContext = this.viewModel;
     }
 
@@ -21,19 +29,5 @@ public partial class CreateEventPage : ContentPage
     {
         base.OnNavigatedTo(args);
         await viewModel.Init();
-
-        if (viewModel?.UserLocation?.Location != null)
-        {
-            var mapSpan =
-                new MapSpan(
-                    new Location(viewModel.UserLocation.Location.Latitude, viewModel.UserLocation.Location.Longitude),
-                    0.05, 0.05);
-            eventLocationMap.MoveToRegion(mapSpan);
-        }
-    }
-
-    private async void OnMapClicked(object sender, MapClickedEventArgs e)
-    {
-        await viewModel.ChangeLocation(e.Location);
     }
 }

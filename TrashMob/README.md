@@ -22,7 +22,6 @@ The site integrates with the following backend components as seen in the diagram
 | Application Insights | Metrics Tracking | |
 | Azure KeyVault | Secrets Management | |
 | Log Analytics | Logging | |
-| Docusign | Allows users to sign liability waivers online | |
 
 ## General Notes
 
