@@ -27,7 +27,7 @@ import { TermsOfService } from './components/Pages/TermsOfService';
 import { Board } from './components/Board';
 import { VolunteerOpportunities } from './components/VolunteerOpportunities';
 import { msalClient } from './store/AuthStore';
-import { EventDetails, DetailsMatchParams } from './components/Pages/EventDetails';
+import EventDetails, { DetailsMatchParams } from './components/Pages/EventDetails';
 import { NoMatch } from './components/NoMatch';
 import UserData from './components/Models/UserData';
 import LocationPreference from './components/Pages/LocationPreference';
