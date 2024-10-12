@@ -41,7 +41,7 @@ export const GoogleMarkerWithInfoWindow = (props: MarkerWithInfoWindowProps) => 
         <>
             <AdvancedMarker ref={markerRef} {...markerProps} {...triggerProps} />
             {infoWindowShown ? (
-                <InfoWindow anchor={marker} style={{ fontFamily: 'Poppins'}} {...infoWindowProps}>
+                <InfoWindow anchor={marker} {...infoWindowProps}>
                     {infoWindowContent}
                 </InfoWindow>
             ) : null}
