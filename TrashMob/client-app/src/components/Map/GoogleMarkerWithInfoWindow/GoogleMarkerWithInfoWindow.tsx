@@ -5,34 +5,43 @@ import {
     InfoWindow,
     useAdvancedMarkerRef,
     InfoWindowProps,
-    Pin,
 } from '@vis.gl/react-google-maps';
 
 type MarkerWithInfoWindowProps = AdvancedMarkerProps & {
-    infoWindowTrigger: 'click' | 'hover';
-    infoWindowProps: InfoWindowProps;
-    infoWindowContent: JSX.Element;
+    infoWindowTrigger: 'click' | 'hover' | 'hover-persist'
+    infoWindowProps?: InfoWindowProps
+    infoWindowContent: JSX.Element
 }
 
 export const GoogleMarkerWithInfoWindow = (props: MarkerWithInfoWindowProps) => {
-    const { infoWindowTrigger, infoWindowProps, infoWindowContent, ...markerProps } = props;
+    const { infoWindowTrigger, infoWindowProps = {}, infoWindowContent, ...markerProps } = props;
     const [markerRef, marker] = useAdvancedMarkerRef();
     const [infoWindowShown, setInfoWindowShown] = useState<boolean>(false);
-    const triggerProps =
-        infoWindowTrigger === 'click'
-            ? {
-                  onClick: () => setInfoWindowShown(!infoWindowShown),
-              }
-            : {
-                  onMouseEnter: () => setInfoWindowShown(true),
-                  onMouseLeave: () => setInfoWindowShown(false),
-              };
+
+    let triggerProps
+    switch (infoWindowTrigger) {
+        case 'click': 
+            triggerProps = {
+                onClick: () => setInfoWindowShown(!infoWindowShown)
+            }
+            break
+        case 'hover': 
+            triggerProps = {
+                onMouseEnter: () => setInfoWindowShown(true),
+                onMouseLeave: () => setInfoWindowShown(false),
+            }
+            break
+        case 'hover-persist':
+            triggerProps = {
+                onMouseEnter: () => setInfoWindowShown(true)
+            }
+    }
 
     return (
         <>
             <AdvancedMarker ref={markerRef} {...markerProps} {...triggerProps} />
             {infoWindowShown ? (
-                <InfoWindow anchor={marker} {...infoWindowProps}>
+                <InfoWindow anchor={marker} style={{ fontFamily: 'Poppins'}} {...infoWindowProps}>
                     {infoWindowContent}
                 </InfoWindow>
             ) : null}
