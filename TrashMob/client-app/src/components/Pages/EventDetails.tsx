@@ -1,7 +1,6 @@
 import { FC, useEffect, useState } from 'react';
-import { RouteComponentProps } from 'react-router';
-import { data } from 'azure-maps-control';
-import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
+import { RouteComponentProps, withRouter } from 'react-router';
+import { APIProvider, Map } from '@vis.gl/react-google-maps';
 import { Button, Container } from 'react-bootstrap';
 import { Calendar, GeoAlt, Share, Stopwatch } from 'react-bootstrap-icons';
 import AddToCalendar from '@culturehq/add-to-calendar';
@@ -12,8 +11,8 @@ import UserData from '../Models/UserData';
 import EventTypeData from '../Models/EventTypeData';
 import { getEventType } from '../../store/eventTypeHelper';
 import * as MapStore from '../../store/MapStore';
+import { MarkerWithInfoWindow, EventInfoWindowContent } from '../Map';
 import { SocialsModal } from '../EventManagement/ShareToSocialsModal';
-import MapControllerSinglePoint from '../MapControllerSinglePoint';
 import { RegisterBtn } from '../Customization/RegisterBtn';
 import { HeroSection } from '../Customization/HeroSection';
 import * as SharingMessages from '../../store/SharingMessages';
@@ -28,6 +27,7 @@ import { Services } from '../../config/services.config';
 import WaiverData from '../Models/WaiverData';
 
 import { GetTrashMobWaivers } from '../../services/waivers';
+import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
 
 export interface DetailsMatchParams {
     eventId: string;
@@ -56,11 +56,11 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
     const [longitude, setLongitude] = useState<number>(0);
     const [maxNumberOfParticipants, setMaxNumberOfParticipants] = useState<number>(0);
     const [eventTypeList, setEventTypeList] = useState<EventTypeData[]>([]);
-    const [center, setCenter] = useState<data.Position>(
-        new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude),
-    );
-    const [isMapKeyLoaded, setIsMapKeyLoaded] = useState<boolean>(false);
-    const [mapOptions, setMapOptions] = useState<IAzureMapOptions>();
+    const [center, setCenter] = useState<google.maps.LatLngLiteral>({
+        lat: MapStore.defaultLongitude,
+        lng: MapStore.defaultLatitude,
+    });
+
     const [userList, setUserList] = useState<UserData[]>([]);
     const [createdById, setCreatedById] = useState<string>('');
     const [isAttending, setIsAttending] = useState<string>('No');
@@ -160,7 +160,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                     setLongitude(res.data.data.longitude);
                     setCreatedById(res.data.data.createdByUserId);
                     setMaxNumberOfParticipants(res.data.data.maxNumberOfParticipants);
-                    setCenter(new data.Position(res.data.data.longitude, res.data.data.latitude));
+                    setCenter({ lat: res.data.data.latitude, lng: res.data.data.longitude })
                     setEventToShare(res.data.data);
                     setIsDataLoaded(true);
                     setIsEventCompleted(new Date(res.data.data.eventDate) < new Date());
@@ -174,10 +174,6 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                 });
         }
 
-        MapStore.getOption().then((opts) => {
-            setMapOptions(opts);
-            setIsMapKeyLoaded(true);
-        });
     }, [eventId, currentUser, isUserLoaded]);
 
     useEffect(() => {
@@ -201,10 +197,6 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
             setMyAttendanceList(res.data?.data || []);
             setIsUserEventDataLoaded(true);
         });
-    };
-
-    const handleLocationChange = (point: data.Position) => {
-        // do nothing
     };
 
     const handleShowModal = (showModal: boolean) => {
@@ -245,113 +237,120 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
         );
     }
 
-    const renderEvent = () => (
-        <>
-            <Container className='my-5'>
-                {isDataLoaded ? (
-                    <SocialsModal
-                        eventToShare={eventToShare}
-                        show={showModal}
-                        handleShow={handleShowModal}
-                        modalTitle='Share Event'
-                        message={SharingMessages.getEventDetailsMessage(eventDate, city, createdById, currentUser.id)}
-                    />
-                ) : null}
-                <div className='d-flex justify-content-between align-items-md-end flex-column flex-md-row'>
-                    <h2 className='font-weight-bold m-0'>{eventName}</h2>
-                    <div className='d-flex my-3'>
-                        <RegisterBtn
-                            eventId={eventId}
-                            isAttending={isAttending}
-                            isEventCompleted={isEventCompleted!}
-                            currentUser={currentUser}
-                            onAttendanceChanged={handleAttendanceChanged}
-                            isUserLoaded={isUserLoaded}
-                            history={history}
-                            location={location}
-                            match={match}
-                            addEventAttendee={addEventAttendee}
-                            waiverData={waiver}
-                        />
-                        <div id='addToCalendarBtn' className='ml-2 p-18' hidden={isEventCompleted}>
-                            <AddToCalendar event={event} />
-                        </div>
-                        <Button
-                            variant='outline'
-                            className='p-18'
-                            onClick={() => {
-                                handleShowModal(true);
-                            }}
-                        >
-                            <Share className='mr-2' />
-                            Share
-                        </Button>
-                    </div>
-                </div>
-                <p className='mt-2 color-grey'>{getEventType(eventTypeList, eventTypeId)}</p>
-                <p className='mt-4 color-grey'>{description}</p>
-                <p>
-                    <Calendar size={24} className='mr-2' />
-                    <span> {moment(startDateTime).local().format('L')}</span>
-                </p>
-                <p>
-                    <Stopwatch size={24} className='mr-2' />
-                    <span> {moment(startDateTime).local().format('LT')}</span>
-                </p>
-                <p>
-                    <GeoAlt size={24} className='mr-2' />
-                    <a
-                        href={`https://google.com/maps/place/${streetAddress}+${city}+${region}+${postalCode}+${country}`}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                    >
-                        {[streetAddress, city, region].filter(n => !!n).join(', ')} - {country} {postalCode}
-                    </a>
-                </p>
-
-                <AzureMapsProvider>
-                    <MapControllerSinglePoint
-                        center={center}
-                        isEventDataLoaded={isDataLoaded}
-                        mapOptions={mapOptions}
-                        isMapKeyLoaded={isMapKeyLoaded}
-                        eventName={eventName}
-                        eventDate={eventDate}
-                        latitude={latitude}
-                        longitude={longitude}
-                        onLocationChange={handleLocationChange}
-                        currentUser={currentUser}
-                        isUserLoaded={isUserLoaded}
-                        isDraggable={false}
-                    />
-                </AzureMapsProvider>
-            </Container>
-            <Container>
-                <hr />
-                <h2 className='font-weight-bold font-size-xl mr-2 mt-5 mb-4'>
-                    <span>Attendees ({userList.length})</span>
-                </h2>
-                <p className='font-weight-bold m-0 mr-2 my-4'>
-                    Max Number of Participants:
-                    <span className='ml-2 color-grey'>{maxNumberOfParticipants}</span>
-                </p>
-                <UsersTable />
-            </Container>
-        </>
-    );
-
-    const contents = isDataLoaded ? (
-        renderEvent()
-    ) : (
-        <p>
-            <em>Loading...</em>
-        </p>
-    );
-
     return (
         <div>
             <HeroSection Title='View Events' Description='Learn, join, and inspire.' />
-            {contents}
+            {!isDataLoaded ? (<p><em>Loding...</em></p>) : (
+                <>
+                    <Container className='my-5'>
+                        <SocialsModal
+                            eventToShare={eventToShare}
+                            show={showModal}
+                            handleShow={handleShowModal}
+                            modalTitle='Share Event'
+                            message={SharingMessages.getEventDetailsMessage(eventDate, city, createdById, currentUser.id)}
+                        />
+                        <div className='d-flex justify-content-between align-items-md-end flex-column flex-md-row'>
+                            <h2 className='font-weight-bold m-0'>{eventName}</h2>
+                            <div className='d-flex my-3'>
+                                <RegisterBtn
+                                    eventId={eventId}
+                                    isAttending={isAttending}
+                                    isEventCompleted={isEventCompleted!}
+                                    currentUser={currentUser}
+                                    onAttendanceChanged={handleAttendanceChanged}
+                                    isUserLoaded={isUserLoaded}
+                                    history={history}
+                                    location={location}
+                                    match={match}
+                                    addEventAttendee={addEventAttendee}
+                                    waiverData={waiver}
+                                />
+                                <div id='addToCalendarBtn' className='ml-2 p-18' hidden={isEventCompleted}>
+                                    <AddToCalendar event={event} />
+                                </div>
+                                <Button
+                                    variant='outline'
+                                    className='p-18'
+                                    onClick={() => {
+                                        handleShowModal(true);
+                                    }}
+                                >
+                                    <Share className='mr-2' />
+                                    Share
+                                </Button>
+                            </div>
+                        </div>
+                        <p className='mt-2 color-grey'>{getEventType(eventTypeList, eventTypeId)}</p>
+                        <p className='mt-4 color-grey'>{description}</p>
+                        <p>
+                            <Calendar size={24} className='mr-2' />
+                            <span> {moment(startDateTime).local().format('L')}</span>
+                        </p>
+                        <p>
+                            <Stopwatch size={24} className='mr-2' />
+                            <span> {moment(startDateTime).local().format('LT')}</span>
+                        </p>
+                        <p>
+                            <GeoAlt size={24} className='mr-2' />
+                            <a
+                                href={`https://google.com/maps/place/${streetAddress}+${city}+${region}+${postalCode}+${country}`}
+                                target='_blank'
+                                rel='noopener noreferrer'
+                            >
+                                {streetAddress},{city},{region} -{postalCode} {country}
+                            </a>
+                        </p>
+
+                        <Map
+                            mapId='6f295631d841c617'
+                            gestureHandling='greedy'
+                            disableDefaultUI
+                            style={{ width: '100%', height: '500px' }}
+                            defaultCenter={center}
+                            defaultZoom={MapStore.defaultUserLocationZoom}
+                        >
+                            <MarkerWithInfoWindow
+                                position={{ lat: latitude, lng: longitude }}
+                                infoWindowTrigger='hover'
+                                infoWindowProps={{ headerDisabled: true }}
+                                infoWindowContent={
+                                    <EventInfoWindowContent
+                                        title={eventName}
+                                        date={moment(startDateTime).local().format('LL')}
+                                        time={moment(startDateTime).local().format('LTS Z')}
+                                    />
+                                }
+                            />
+                        </Map>
+                    </Container>
+                    <Container>
+                        <hr />
+                        <h2 className='font-weight-bold font-size-xl mr-2 mt-5 mb-4'>
+                            <span>Attendees ({userList.length})</span>
+                        </h2>
+                        <p className='font-weight-bold m-0 mr-2 my-4'>
+                            Max Number of Participants:
+                            <span className='ml-2 color-grey'>{maxNumberOfParticipants}</span>
+                        </p>
+                        <UsersTable />
+                    </Container>
+                </>
+            )}
         </div>
     );
 };
+
+const EventDetailWrapper = (props: EventDetailsProps) => {
+    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey()
+
+    if (isLoading) return null;
+
+    return (
+        <APIProvider apiKey={googleApiKey || ''}>
+            <EventDetails {...props} />
+        </APIProvider>
+    );
+};
+
+export default withRouter(EventDetailWrapper);
