@@ -41,7 +41,7 @@ export const EventDetailInfoWindowContent = (props: EventDetailInfoWindowContent
 					{createdByUserName}
 				</span>
 				<button className='btn btn-outline mr-0'>
-					<a id='viewDetails' type='button' href={`/eventdetails/${id}`}>
+					<a href={`/eventdetails/${id}`}>
 						View Details
 					</a>
 				</button>

@@ -50,7 +50,6 @@ import {
     EventDetailInfoWindowHeader as InfoWindowHeader,
     EventDetailInfoWindowContent as InfoWindowContent
 } from '../Map/EventInfoWindowContent';
-import { useGetDefaultMapCenter } from '../../hooks/useGetDefaultMapCenter';
 
 const isUpcomingEvent = (event: EventData) => new Date(event.eventDate) >= new Date()
 const isPastEvent = (event: EventData) => new Date(event.eventDate) < new Date()
@@ -81,7 +80,6 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const state = props.history.location.state as { newEventCreated: boolean };
     const [eventToShare, setEventToShare] = useState<EventData>();
     const [showModal, setShowSocialsModal] = useState<boolean>(false);
-    const defaultCenter = useGetDefaultMapCenter()
 
     const getUserEvents = useQuery({
         queryKey: GetUserEvents({ userId: props.currentUser.id }).key,
@@ -841,15 +839,13 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                         </div>
                     </div>
                     {upcomingEventsMapView ? (
-                        <GoogleMap id="upcoming-events-map" defaultCenter={defaultCenter}>
+                        <GoogleMap id="upcoming-events-map">
                             {upcomingEvents.map(event => (
                                 <MarkerWithInfoWindow
                                     key={event.id}
                                     position={{ lat: event.latitude, lng: event.longitude }}
-                                    infoWindowProps={{
-                                        headerContent: <InfoWindowHeader {...event} />
-                                    }}
                                     infoWindowTrigger="hover-persist"
+                                    infoWindowProps={{ headerContent: <InfoWindowHeader {...event} /> }}
                                     infoWindowContent={<InfoWindowContent {...event} hideTitle />}
                                 />
                             ))}
@@ -889,15 +885,13 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                         </div>
                     </div>
                     {pastEventsMapView ? (
-                        <GoogleMap id="past-events-map" defaultCenter={defaultCenter}>
+                        <GoogleMap id="past-events-map">
                             {pastEvents.map(event => (
                                 <MarkerWithInfoWindow
                                     key={event.id}
                                     position={{ lat: event.latitude, lng: event.longitude }}
-                                    infoWindowProps={{
-                                        headerContent: <InfoWindowHeader {...event} />
-                                    }}
                                     infoWindowTrigger="hover-persist"
+                                    infoWindowProps={{ headerContent: <InfoWindowHeader {...event} />}}
                                     infoWindowContent={<InfoWindowContent {...event} hideTitle />}
                                 />
                             ))}
