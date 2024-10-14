@@ -20,6 +20,15 @@ import {
     GetEventTypes,
 } from '../services/events';
 import { Services } from '../config/services.config';
+import { GoogleMap } from './Map/GoogleMap';
+import { useGetGoogleMapApiKey } from '../hooks/useGetGoogleMapApiKey';
+import { APIProvider, useMap } from '@vis.gl/react-google-maps';
+import { MarkerWithInfoWindow } from './Map';
+import {
+    EventDetailInfoWindowHeader as InfoWindowHeader,
+    EventDetailInfoWindowContent as InfoWindowContent
+} from './Map/EventInfoWindowContent';
+
 
 export interface EventsSectionProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -326,6 +335,26 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
         }
     };
 
+
+    // Add user's attendance to presentEventList
+    const presentEventListWithAttendance = presentEventList.map(event => {
+        const isAttending: boolean = myAttendanceList.some(ev => ev.id === event.id)
+        return { ...event, isAttending }
+    })
+    /** Map hooks */
+    const map = useMap()
+
+    // Zoom Map to show all Markers: upcomingEventsMap
+    useEffect(() => {
+        if (map && presentEventList.length) {
+            let bounds = new google.maps.LatLngBounds();
+            for (let event of presentEventList) {
+                bounds.extend({ lat: event.latitude, lng: event.longitude })
+            }
+            map.fitBounds(bounds);
+        }
+    }, [map, presentEventList])
+
     return (
         <Container fluid className='bg-white p-4 p-md-5' id='events' ref={divRef}>
             <div className='max-width-container mx-auto'>
@@ -404,6 +433,17 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
                             Create a New Event
                         </Button>
                         <div className='w-100 h-50 m-0'>
+                            <GoogleMap>
+                                {presentEventListWithAttendance.map(event => (
+                                    <MarkerWithInfoWindow
+                                        key={event.id}
+                                        position={{ lat: event.latitude, lng: event.longitude }}
+                                        infoWindowTrigger="hover-persist"
+                                        infoWindowProps={{ headerContent: <InfoWindowHeader {...event} />}}
+                                        infoWindowContent={<InfoWindowContent {...event} hideTitle />}
+                                    />
+                                ))}
+                            </GoogleMap>
                             <AzureMapsProvider>
                                 <>
                                     <MapControllerPointCollection
@@ -453,3 +493,18 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
         </Container>
     );
 };
+
+
+const EventSectionWrapper = (props: EventsSectionProps) => {
+    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey()
+    if (isLoading) return null;
+
+    return (
+        <APIProvider apiKey={googleApiKey || ''}>
+            <EventsSection {...props} />
+        </APIProvider>
+    );
+};
+
+
+export default EventSectionWrapper;

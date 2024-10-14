@@ -14,7 +14,7 @@ import Clock from '../assets/home/Clock.svg';
 import { GettingStartedSection } from '../GettingStartedSection';
 import { SocialsModal } from '../EventManagement/ShareToSocialsModal';
 import * as SharingMessages from '../../store/SharingMessages';
-import { EventsSection } from '../EventsSection';
+import EventsSection from '../EventsSection';
 import { GetStats } from '../../services/stats';
 import { Services } from '../../config/services.config';
 import StatsData from '../Models/StatsData';

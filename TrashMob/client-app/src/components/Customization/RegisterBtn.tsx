@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react';
 import { Button } from 'react-bootstrap';
-import { RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, useHistory } from 'react-router-dom';
 import { getApiConfig, msalClient } from '../../store/AuthStore';
 import EventAttendeeData from '../Models/EventAttendeeData';
 import UserData from '../Models/UserData';
@@ -27,13 +27,12 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
     isUserLoaded,
     isEventCompleted,
     onAttendanceChanged,
-    history,
     waiverData,
     addEventAttendee,
 }) => {
+    const history = useHistory()
     const [registered, setRegistered] = useState<boolean>(false);
     const [waiver] = useState<WaiverData>(waiverData);
-
     const addAttendee = async (eventId: string) => {
         const body = new EventAttendeeData();
         body.userId = currentUser.id;
