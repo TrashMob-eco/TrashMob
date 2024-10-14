@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
     AdvancedMarker,
     AdvancedMarkerProps,
@@ -17,6 +17,23 @@ export const GoogleMarkerWithInfoWindow = (props: MarkerWithInfoWindowProps) => 
     const { infoWindowTrigger, infoWindowProps = {}, infoWindowContent, ...markerProps } = props;
     const [markerRef, marker] = useAdvancedMarkerRef();
     const [infoWindowShown, setInfoWindowShown] = useState<boolean>(false);
+    const closeInfoWindow = useCallback(() => setInfoWindowShown(false), []);
+    const clickOutsideHandlerRef = useRef<google.maps.MapsEventListener>()
+
+    // on "hover-persist", add Click on map to close infoWindow
+    useEffect(() => {
+        if (!marker) return
+        if (infoWindowTrigger !== 'hover-persist') return
+
+        if (infoWindowShown) {
+            clickOutsideHandlerRef.current = marker.map!.addListener('click', closeInfoWindow)
+        } else {
+            clickOutsideHandlerRef.current?.remove()
+        }
+        return () => {
+            clickOutsideHandlerRef.current?.remove();
+        };
+    }, [marker, infoWindowShown])
 
     let triggerProps
     switch (infoWindowTrigger) {
@@ -41,7 +58,7 @@ export const GoogleMarkerWithInfoWindow = (props: MarkerWithInfoWindowProps) => 
         <>
             <AdvancedMarker ref={markerRef} {...markerProps} {...triggerProps} />
             {infoWindowShown ? (
-                <InfoWindow anchor={marker} {...infoWindowProps}>
+                <InfoWindow anchor={marker} {...infoWindowProps} onClose={closeInfoWindow}>
                     {infoWindowContent}
                 </InfoWindow>
             ) : null}

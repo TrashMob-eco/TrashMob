@@ -33,7 +33,6 @@ export interface MainEventsDataProps extends RouteComponentProps {
     isUserEventDataLoaded: boolean;
     isUserLoaded: boolean;
     currentUser: UserData;
-    onAttendanceChanged: any;
     backToTop: any;
 }
 
@@ -50,7 +49,6 @@ export const MainEvents: FC<MainEventsDataProps> = ({
     isUserLoaded,
     eventTypeList,
     currentUser,
-    onAttendanceChanged,
     backToTop,
     history,
     location,
@@ -185,13 +183,7 @@ export const MainEvents: FC<MainEventsDataProps> = ({
                                     isAttending={mobEvent.isAttending}
                                     isEventCompleted={new Date(mobEvent.eventDate) < new Date()}
                                     currentUser={currentUser}
-                                    onAttendanceChanged={onAttendanceChanged}
                                     isUserLoaded={isUserLoaded}
-                                    history={history}
-                                    location={location}
-                                    match={match}
-                                    addEventAttendee={addEventAttendee}
-                                    waiverData={waiver}
                                 />
                             </div>
                         </div>

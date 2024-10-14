@@ -222,17 +222,6 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
         setIsResetFilters(true);
     };
 
-    function handleAttendanceChanged() {
-        setMyAttendanceList([]);
-        setIsUserEventDataLoaded(false);
-        if (!isUserLoaded || !currentUser) return;
-        // If the user is logged in, get the events they are attending
-        getEventsBeingAttendedByUser.refetch().then((res) => {
-            setMyAttendanceList(res.data?.data || []);
-            setIsUserEventDataLoaded(true);
-        });
-    }
-
     const updateFilterEvents = useCallback(
         (
             selectedCountry: string,
@@ -440,11 +429,18 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
                                         position={{ lat: event.latitude, lng: event.longitude }}
                                         infoWindowTrigger="hover-persist"
                                         infoWindowProps={{ headerContent: <InfoWindowHeader {...event} />}}
-                                        infoWindowContent={<InfoWindowContent {...event} hideTitle />}
+                                        infoWindowContent={
+                                            <InfoWindowContent
+                                                event={event}
+                                                hideTitle
+                                                isUserLoaded={isUserLoaded}
+                                                currentUser={currentUser}
+                                            />
+                                        }
                                     />
                                 ))}
                             </GoogleMap>
-                            <AzureMapsProvider>
+                            {/* <AzureMapsProvider>
                                 <>
                                     <MapControllerPointCollection
                                         forceReload={forceReload}
@@ -461,14 +457,14 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
                                         onLocationChange={handleLocationChange}
                                         currentUser={currentUser}
                                         isUserLoaded={isUserLoaded}
-                                        onAttendanceChanged={handleAttendanceChanged}
+                                        // onAttendanceChanged={handleAttendanceChanged}
                                         onDetailsSelected={handleDetailsSelected}
                                         history={history}
                                         location={location}
                                         match={match}
                                     />
                                 </>
-                            </AzureMapsProvider>
+                            </AzureMapsProvider> */}
                         </div>
                     </>
                 ) : (
@@ -481,7 +477,6 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
                             isUserEventDataLoaded={isUserEventDataLoaded}
                             isUserLoaded={isUserLoaded}
                             currentUser={currentUser}
-                            onAttendanceChanged={handleAttendanceChanged}
                             history={history}
                             location={location}
                             match={match}

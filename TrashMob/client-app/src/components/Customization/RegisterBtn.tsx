@@ -7,17 +7,16 @@ import UserData from '../Models/UserData';
 import { DisplayEvent } from '../MainEvents';
 import { CurrentTrashMobWaiverVersion } from '../Waivers/Waivers';
 
-import WaiverData from '../Models/WaiverData';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { GetTrashMobWaivers } from '../../services/waivers';
+import { AddEventAttendee, GetAllEventsBeingAttendedByUser } from "../../services/events";
 
-interface RegisterBtnProps extends RouteComponentProps {
+interface RegisterBtnProps {
     currentUser: UserData;
     eventId: DisplayEvent['id'];
     isAttending: DisplayEvent['isAttending'];
     isUserLoaded: boolean;
     isEventCompleted: boolean;
-    onAttendanceChanged: any;
-    addEventAttendee: any;
-    waiverData: any;
 }
 
 export const RegisterBtn: FC<RegisterBtnProps> = ({
@@ -26,22 +25,39 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
     isAttending,
     isUserLoaded,
     isEventCompleted,
-    onAttendanceChanged,
-    waiverData,
-    addEventAttendee,
 }) => {
+    const userId = currentUser.id
     const history = useHistory()
     const [registered, setRegistered] = useState<boolean>(false);
-    const [waiver] = useState<WaiverData>(waiverData);
+    const queryClient = useQueryClient()
+
+    const { data: waiver } = useQuery({
+        queryKey: GetTrashMobWaivers().key,
+        queryFn: GetTrashMobWaivers().service,
+        select: res => res.data,
+    });
+
+    const addEventAttendee = useMutation({
+        mutationKey: AddEventAttendee().key,
+        mutationFn: AddEventAttendee().service,
+        onSuccess: () => {
+            console.log(`addEventAttendee onSuccess`)
+            // Invalidate user's list of attended events, triggerring refetch
+            queryClient.invalidateQueries(GetAllEventsBeingAttendedByUser({ userId }).key)
+
+            // re-direct user to event details page once they are registered
+            history.push(`/eventdetails/${eventId}`); 
+
+        }
+    });
+
     const addAttendee = async (eventId: string) => {
         const body = new EventAttendeeData();
         body.userId = currentUser.id;
         body.eventId = eventId;
 
         await addEventAttendee.mutateAsync(body);
-        await onAttendanceChanged(eventId);
         setRegistered(true);
-        history.push(`/eventdetails/${eventId}`); // re-direct user to event details page once they are registered
     };
 
     const handleAttend = (eventId: string) => {
