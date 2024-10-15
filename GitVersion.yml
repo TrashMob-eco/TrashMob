@@ -7,11 +7,9 @@ branches:
     regex: ^main$
     increment: Patch
     is-release-branch: true
-    tag: ''
   release:
     regex: ^release$
     increment: Patch
-    tag: ''
     is-release-branch: true
     pre-release-weight: 1590664954
     source-branches: ['main']
