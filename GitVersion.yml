@@ -5,12 +5,17 @@ continuous-delivery-fallback-tag: ''
 branches:
   main:
     regex: ^main$
+    increment: Patch
+    label: 'beta'
+    is-release-branch: true
     tag: ''
   release:
     regex: ^release$
     increment: Patch
+    label: ''
     tag: ''
     is-release-branch: true
+    is-main-branch: false
     pre-release-weight: 1590664954
     source-branches: ['main']
 ignore:
