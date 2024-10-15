@@ -1,15 +1,11 @@
 import { FC, useEffect, useState, useCallback, useRef } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { data } from 'azure-maps-control';
-import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import { Button } from 'reactstrap';
 import { Container } from 'react-bootstrap';
 import { useQuery } from '@tanstack/react-query';
 import { MainEvents } from './MainEvents';
 import EventData from './Models/EventData';
 import EventTypeData from './Models/EventTypeData';
-import * as MapStore from '../store/MapStore';
-import MapControllerPointCollection from './MapControllerPointCollection';
 import UserData from './Models/UserData';
 import { EventFilterSection, EventTimeFrame, EventTimeLine } from './EventFilterSection';
 import {
@@ -20,14 +16,9 @@ import {
     GetEventTypes,
 } from '../services/events';
 import { Services } from '../config/services.config';
-import { GoogleMap } from './Map/GoogleMap';
+import { APIProvider } from '@vis.gl/react-google-maps';
+import { EventsMap } from './Map';
 import { useGetGoogleMapApiKey } from '../hooks/useGetGoogleMapApiKey';
-import { APIProvider, useMap } from '@vis.gl/react-google-maps';
-import { MarkerWithInfoWindow } from './Map';
-import {
-    EventDetailInfoWindowHeader as InfoWindowHeader,
-    EventDetailInfoWindowContent as InfoWindowContent
-} from './Map/EventInfoWindowContent';
 
 
 export interface EventsSectionProps extends RouteComponentProps<any> {
@@ -39,16 +30,10 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
     const [eventList, setEventList] = useState<EventData[]>([]);
     const [eventTypeList, setEventTypeList] = useState<EventTypeData[]>([]);
     const [isEventDataLoaded, setIsEventDataLoaded] = useState(false);
-    const [isMapKeyLoaded, setIsMapKeyLoaded] = useState(false);
-    const [center, setCenter] = useState<data.Position>(
-        new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude),
-    );
-    const [mapOptions, setMapOptions] = useState<IAzureMapOptions>();
     const [eventView, setEventView] = useState<string>('map');
     const [whichEvents, setWhichEvents] = useState<EventTimeLine>(EventTimeLine.Upcoming);
     const [myAttendanceList, setMyAttendanceList] = useState<EventData[]>([]);
     const [isUserEventDataLoaded, setIsUserEventDataLoaded] = useState(false);
-    const [forceReload, setForceReload] = useState(false);
     const [eventHeader, setEventHeader] = useState('Upcoming Events');
     const [presentEventList, setPresentEventList] = useState<EventData[]>([]);
     const [locationMap, setLocationMap] = useState(new Map<string, Map<string, Set<string>>>());
@@ -91,10 +76,6 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
     });
 
     useEffect(() => {
-        setForceReload(false);
-    }, [presentEventList]);
-
-    useEffect(() => {
         if (isResetFilters) {
             setIsResetFilters(false);
         }
@@ -107,14 +88,12 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
         });
 
         getActiveEvents.refetch().then((res) => {
-            setForceReload(true);
             setIsEventDataLoaded(false);
             setEventList(res.data?.data || []);
             updateLocationMap(res.data?.data || []);
             setPresentEventList(res.data?.data || []);
             setEventHeader('Upcoming Events');
             setIsEventDataLoaded(true);
-            setForceReload(false);
         });
 
         if (isUserLoaded && currentUser) {
@@ -127,19 +106,6 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
             });
         }
 
-        MapStore.getOption().then((opts) => {
-            setMapOptions(opts);
-            setIsMapKeyLoaded(true);
-        });
-
-        if ('geolocation' in navigator) {
-            navigator.geolocation.getCurrentPosition((position) => {
-                const point = new data.Position(position.coords.longitude, position.coords.latitude);
-                setCenter(point);
-            });
-        } else {
-            console.log('Not Available');
-        }
     }, [isUserLoaded, currentUser]);
 
     const updateLocationMap = (eventList: EventData[]) => {
@@ -168,14 +134,6 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
         setLocationMap(updatedMap);
     };
 
-    const handleLocationChange = (point: data.Position) => {
-        // do nothing
-    };
-
-    const handleDetailsSelected = (eventId: string) => {
-        history.push(`eventdetails/${eventId}`);
-    };
-
     const handleEventView = (view: string) => {
         setEventView(view);
     };
@@ -184,38 +142,32 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
         if (events === EventTimeLine.Upcoming) {
             setWhichEvents(EventTimeLine.Upcoming);
             getActiveEvents.refetch().then((res) => {
-                setForceReload(true);
                 setIsEventDataLoaded(false);
                 setEventList(res.data?.data || []);
                 updateLocationMap(res.data?.data || []);
                 setPresentEventList(res.data?.data || []);
                 setEventHeader('Upcoming Events');
                 setIsEventDataLoaded(true);
-                setForceReload(false);
             });
         } else if (events === EventTimeLine.Completed) {
             setWhichEvents(EventTimeLine.Completed);
             getCompletedEvents.refetch().then((res) => {
-                setForceReload(true);
                 setIsEventDataLoaded(false);
                 setEventList(res.data?.data || []);
                 updateLocationMap(res.data?.data || []);
                 setPresentEventList(res.data?.data || []);
                 setEventHeader('Completed Events');
                 setIsEventDataLoaded(true);
-                setForceReload(false);
             });
         } else {
             setWhichEvents(EventTimeLine.All);
             getNotCancelledEvents.refetch().then((res) => {
-                setForceReload(true);
                 setIsEventDataLoaded(false);
                 setEventList(res.data?.data || []);
                 updateLocationMap(res.data?.data || []);
                 setPresentEventList(res.data?.data || []);
                 setEventHeader('All Events');
                 setIsEventDataLoaded(true);
-                setForceReload(false);
             });
         }
 
@@ -311,7 +263,6 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
             selectedTimeFrame: EventTimeFrame,
         ) => {
             setIsEventDataLoaded(false);
-            setForceReload(true);
             updateFilterEvents(selectedCountry, selectedState, selectedCities, selectedCleanTypes, selectedTimeFrame);
             setIsEventDataLoaded(true);
         },
@@ -323,27 +274,7 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
             divRef.current.scrollIntoView();
         }
     };
-
-
-    // Add user's attendance to presentEventList
-    const presentEventListWithAttendance = presentEventList.map(event => {
-        const isAttending: boolean = myAttendanceList.some(ev => ev.id === event.id)
-        return { ...event, isAttending }
-    })
-    /** Map hooks */
-    const map = useMap()
-
-    // Zoom Map to show all Markers: upcomingEventsMap
-    useEffect(() => {
-        if (map && presentEventList.length) {
-            let bounds = new google.maps.LatLngBounds();
-            for (let event of presentEventList) {
-                bounds.extend({ lat: event.latitude, lng: event.longitude })
-            }
-            map.fitBounds(bounds);
-        }
-    }, [map, presentEventList])
-
+    
     return (
         <Container fluid className='bg-white p-4 p-md-5' id='events' ref={divRef}>
             <div className='max-width-container mx-auto'>
@@ -422,49 +353,7 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
                             Create a New Event
                         </Button>
                         <div className='w-100 h-50 m-0'>
-                            <GoogleMap>
-                                {presentEventListWithAttendance.map(event => (
-                                    <MarkerWithInfoWindow
-                                        key={event.id}
-                                        position={{ lat: event.latitude, lng: event.longitude }}
-                                        infoWindowTrigger="hover-persist"
-                                        infoWindowProps={{ headerContent: <InfoWindowHeader {...event} />}}
-                                        infoWindowContent={
-                                            <InfoWindowContent
-                                                event={event}
-                                                hideTitle
-                                                isUserLoaded={isUserLoaded}
-                                                currentUser={currentUser}
-                                            />
-                                        }
-                                    />
-                                ))}
-                            </GoogleMap>
-                            {/* <AzureMapsProvider>
-                                <>
-                                    <MapControllerPointCollection
-                                        forceReload={forceReload}
-                                        center={center}
-                                        multipleEvents={presentEventList}
-                                        myAttendanceList={myAttendanceList}
-                                        isUserEventDataLoaded={isUserEventDataLoaded}
-                                        isEventDataLoaded={isEventDataLoaded}
-                                        mapOptions={mapOptions}
-                                        isMapKeyLoaded={isMapKeyLoaded}
-                                        eventName=''
-                                        latitude={0}
-                                        longitude={0}
-                                        onLocationChange={handleLocationChange}
-                                        currentUser={currentUser}
-                                        isUserLoaded={isUserLoaded}
-                                        // onAttendanceChanged={handleAttendanceChanged}
-                                        onDetailsSelected={handleDetailsSelected}
-                                        history={history}
-                                        location={location}
-                                        match={match}
-                                    />
-                                </>
-                            </AzureMapsProvider> */}
+                            <EventsMap events={presentEventList} isUserLoaded={isUserLoaded} currentUser={currentUser} />
                         </div>
                     </>
                 ) : (
