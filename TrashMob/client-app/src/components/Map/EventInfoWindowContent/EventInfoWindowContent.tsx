@@ -21,4 +21,3 @@ export const EventInfoWindowContent = ({ title, date, time }: EventInfoWindowCon
       </>
   )
 }
-
