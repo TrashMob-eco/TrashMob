@@ -6,13 +6,11 @@ branches:
   main:
     regex: ^main$
     increment: Patch
-    label: 'beta'
     is-release-branch: true
     tag: ''
   release:
     regex: ^release$
     increment: Patch
-    label: ''
     tag: ''
     is-release-branch: true
     is-main-branch: false
