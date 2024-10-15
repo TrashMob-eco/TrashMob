@@ -1,6 +1,8 @@
 assembly-versioning-scheme: MajorMinorPatch
 mode: ContinuousDelivery
 tag-pre-release-weight: 1590664954
+strategies:
+  - TaggedCommit
 branches:
   main:
     regex: ^main$
