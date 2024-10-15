@@ -13,7 +13,6 @@ branches:
     increment: Patch
     tag: ''
     is-release-branch: true
-    is-main-branch: false
     pre-release-weight: 1590664954
     source-branches: ['main']
 ignore:
