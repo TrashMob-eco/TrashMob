@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { data } from 'azure-maps-control';
-import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
+import { APIProvider, Map, MapMouseEvent } from '@vis.gl/react-google-maps';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { Button, Col, Container, Form, ToggleButton } from 'react-bootstrap';
@@ -10,17 +9,17 @@ import moment from 'moment';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import EventData from '../Models/EventData';
 import EventTypeData from '../Models/EventTypeData';
-import { getKey } from '../../store/MapStore';
 import * as MapStore from '../../store/MapStore';
 import UserData from '../Models/UserData';
 import * as ToolTips from '../../store/ToolTips';
-import MapControllerSinglePoint from '../MapControllerSinglePoint';
 import { CurrentTrashMobWaiverVersion } from '../Waivers/Waivers';
 import { EventStatusActive } from '../Models/Constants';
 import { CreateEvent, GetEventById, GetEventTypes, UpdateEvent } from '../../services/events';
 import { Services } from '../../config/services.config';
 import { GetTrashMobWaivers } from '../../services/waivers';
-import { AzureMapSearchAddressReverse } from '../../services/maps';
+import { EventInfoWindowContent, MarkerWithInfoWindow } from '../Map';
+import { useAzureMapSearchAddressReverse } from '../../hooks/useAzureMapSearchAddressReverse';
+import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
 
 export interface EditEventProps extends RouteComponentProps {
     eventId: string;
@@ -41,7 +40,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     const [durationHours, setDurationHours] = React.useState<number>(1);
     const [durationMinutes, setDurationMinutes] = React.useState<number>(0);
     const [eventTypeId, setEventTypeId] = React.useState<number>(0);
-    const [streetAddress, setStreetAddress] = React.useState<string>();
+    const [streetAddress, setStreetAddress] = React.useState<string>('');
     const [city, setCity] = React.useState<string>('');
     const [country, setCountry] = React.useState<string>('');
     const [region, setRegion] = React.useState<string>('');
@@ -57,12 +56,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     const [maxNumberOfParticipantsErrors, setMaxNumberOfParticipantsErrors] = React.useState<string>('');
     const [durationHoursErrors, setDurationHoursErrors] = React.useState<string>('');
     const [durationMinutesErrors, setDurationMinutesErrors] = React.useState<string>('');
-    const [center, setCenter] = React.useState<data.Position>(
-        new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude),
-    );
-    const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
-    const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
-    // const [title, setTitle] = React.useState<string>("Create Event");
+    const [center, setCenter] = React.useState<google.maps.LatLngLiteral>({ lat: MapStore.defaultLatitude, lng: MapStore.defaultLongitude })
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
 
     const getEventTypes = useQuery({
@@ -96,10 +90,36 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         mutationFn: UpdateEvent().service,
     });
 
-    const azureMapSearchAddressReverse = useMutation({
-        mutationKey: AzureMapSearchAddressReverse().key,
-        mutationFn: AzureMapSearchAddressReverse().service,
-    });
+    const [azureSubscriptionKey, setAzureSubscriptionKey] = React.useState<string>();
+
+    const { refetch: refetchAddressReverse } = useAzureMapSearchAddressReverse(
+        {
+            lat: latitude,
+            long: longitude,
+            azureKey: azureSubscriptionKey || '',
+        },
+        { enabled: false },
+    );
+
+    /** On Page Load 
+     * - Key AzureSubscription key
+     * - get user location and set map center 
+     */
+
+    React.useEffect(() => {
+        MapStore.getOption().then((opts) => {
+            setAzureSubscriptionKey(opts.subscriptionKey);
+        });
+
+        if ('geolocation' in navigator) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                setCenter({
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                });
+            });
+        }
+    }, [])
 
     React.useEffect(() => {
         getEventTypes.refetch().then((res) => {
@@ -128,7 +148,10 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                     setIsEventPublic(res.data.data.isEventPublic);
                     setCreatedByUserId(res.data.data.createdByUserId);
                     setEventStatusId(res.data.data.eventStatusId);
-                    setCenter(new data.Position(res.data.data.longitude, res.data.data.latitude));
+                    setCenter({
+                        lat: res.data.data.latitude,
+                        lng: res.data.data.longitude
+                    })
                     setIsDataLoaded(true);
                 });
             }
@@ -151,19 +174,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
             });
         }
 
-        MapStore.getOption().then((opts) => {
-            setMapOptions(opts);
-            setIsMapKeyLoaded(true);
-        });
-
-        if ('geolocation' in navigator) {
-            navigator.geolocation.getCurrentPosition((position) => {
-                const point = new data.Position(position.coords.longitude, position.coords.latitude);
-                setCenter(point);
-            });
-        } else {
-            console.log('Not Available');
-        }
     }, [eventId, props.currentUser.dateAgreedToTrashMobWaiver, props.currentUser.trashMobWaiverVersion, props.history]);
 
     React.useEffect(() => {
@@ -233,18 +243,43 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         }
     }
 
-    async function handleLocationChange(point: data.Position) {
-        setLatitude(point[1]);
-        setLongitude(point[0]);
-        const azureKey = await getKey();
-        azureMapSearchAddressReverse.mutateAsync({ azureKey, lat: point[1], long: point[0] }).then((res) => {
-            setStreetAddress(res.data.addresses[0].address.streetNameAndNumber);
-            setCity(res.data.addresses[0].address.municipality);
-            setCountry(res.data.addresses[0].address.country);
-            setRegion(res.data.addresses[0].address.countrySubdivisionName);
-            setPostalCode(res.data.addresses[0].address.postalCode);
-        });
-    }
+    const handleClickMap = React.useCallback((e: MapMouseEvent) => {
+        if (e.detail.latLng) {
+            const lat = e.detail.latLng.lat;
+            const lng = e.detail.latLng.lng;
+            setLatitude(lat);
+            setLongitude(lng);
+        }
+    }, [])
+
+    const handleMarkerDragEnd = React.useCallback(
+        async (e: google.maps.MapMouseEvent) => {
+            if (e.latLng) {
+                const lat = e.latLng.lat();
+                const lng = e.latLng.lng();
+                setLatitude(lat);
+                setLongitude(lng);
+            }
+        },
+        [],
+    );
+
+    // on Marker moved (latitude + longitude changed), do reverse search lat,lng to address
+    React.useEffect(() => {
+        const searchAddressReverse = async () => {
+            const { data } = await refetchAddressReverse();
+
+            const firstResult = data?.addresses[0];
+            if (firstResult) {
+                setStreetAddress(firstResult.address.streetNameAndNumber)
+                setCity(firstResult.address.municipality);
+                setCountry(firstResult.address.country);
+                setRegion(firstResult.address.countrySubdivisionName);
+                setPostalCode(firstResult.address.postalCode);
+            }
+        };
+        if (latitude && longitude) searchAddressReverse();
+    }, [latitude, longitude]);
 
     function handleEventDateChanged(passedDate: string) {
         const abTime = new Date(`${passedDate} ${eventTime}`);
@@ -597,24 +632,32 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                     <Container className='p-4 bg-white rounded my-5'>
                         <h4 className='fw-600 color-primary my-4'>Event location</h4>
                         <Form.Row>
-                            <AzureMapsProvider>
-                                <>
-                                    <MapControllerSinglePoint
-                                        center={center}
-                                        isEventDataLoaded={isDataLoaded}
-                                        mapOptions={mapOptions}
-                                        isMapKeyLoaded={isMapKeyLoaded}
-                                        eventName={eventName}
-                                        eventDate={absTime}
-                                        latitude={latitude}
-                                        longitude={longitude}
-                                        onLocationChange={handleLocationChange}
-                                        currentUser={props.currentUser}
-                                        isUserLoaded={props.isUserLoaded}
-                                        isDraggable
-                                    />
-                                </>
-                            </AzureMapsProvider>
+                            <Map
+                                mapId='6f295631d841c617'
+                                gestureHandling='greedy'
+                                disableDefaultUI
+                                style={{ width: '100%', height: '500px' }}
+                                defaultCenter={center}
+                                defaultZoom={MapStore.defaultUserLocationZoom}
+                                onClick={handleClickMap}
+                            >
+                                <MarkerWithInfoWindow
+                                    position={{ lat: latitude, lng: longitude }}
+                                    draggable
+                                    onDragEnd={handleMarkerDragEnd}
+                                    infoWindowTrigger='hover'
+                                    infoWindowProps={{
+                                        headerDisabled: true,
+                                    }}
+                                    infoWindowContent={
+                                        <EventInfoWindowContent 
+                                            title={eventName}
+                                            date={moment(absTime).format('LL')}
+                                            time={moment(absTime).format('LTS Z')}
+                                        />
+                                    }
+                                />
+                            </Map>
                         </Form.Row>
                         <Form.Row className='mt-5'>
                             <Col lg={4}>
@@ -737,3 +780,17 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
 
     return <div>{contents}</div>;
 };
+
+const EditEventWrapper = (props: EditEventProps) => {
+    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey();
+    
+    if (isLoading) return null;
+
+    return (
+        <APIProvider apiKey={googleApiKey || ''}>
+            <EditEvent {...props} />
+        </APIProvider>
+    );
+};
+
+export default EditEventWrapper;

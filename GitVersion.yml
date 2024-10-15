@@ -1,15 +1,14 @@
 assembly-versioning-scheme: MajorMinorPatch
-mode: Mainline
+mode: ContinuousDelivery
 tag-pre-release-weight: 1590664954
-continuous-delivery-fallback-tag: ''
 branches:
   main:
     regex: ^main$
-    tag: ''
+    increment: Patch
+    is-release-branch: true
   release:
     regex: ^release$
     increment: Patch
-    tag: ''
     is-release-branch: true
     pre-release-weight: 1590664954
     source-branches: ['main']
