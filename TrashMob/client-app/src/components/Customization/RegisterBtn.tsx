@@ -41,7 +41,6 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
         mutationKey: AddEventAttendee().key,
         mutationFn: AddEventAttendee().service,
         onSuccess: () => {
-            console.log(`addEventAttendee onSuccess`)
             // Invalidate user's list of attended events, triggerring refetch
             queryClient.invalidateQueries(GetAllEventsBeingAttendedByUser({ userId }).key)
 

@@ -1,8 +1,8 @@
 import { AdvancedMarker, InfoWindow, useMap } from "@vis.gl/react-google-maps"
 import { GoogleMap } from "./GoogleMap"
 import {
-    EventDetailInfoWindowHeader,
-    EventDetailInfoWindowContent
+	EventDetailInfoWindowHeader,
+	EventDetailInfoWindowContent
 } from './EventInfoWindowContent';
 import EventData from "../Models/EventData";
 import { useEffect, useRef, useState } from "react";
@@ -23,10 +23,10 @@ export const EventsMap = (props: EventsMapProps) => {
 
 	// Load and add user's attendance to events
 	const { data: myAttendanceList } = useQuery({
-        queryKey: GetAllEventsBeingAttendedByUser({ userId: currentUser.id }).key,
-        queryFn: GetAllEventsBeingAttendedByUser({ userId: currentUser.id }).service,
+		queryKey: GetAllEventsBeingAttendedByUser({ userId: currentUser.id }).key,
+		queryFn: GetAllEventsBeingAttendedByUser({ userId: currentUser.id }).service,
 		select: res => res.data,
-    });
+	});
 
 	const eventsWithAttendance = events.map(event => {
 		const isAttending: boolean = (myAttendanceList || []).some(ev => ev.id === event.id)
