@@ -64,9 +64,8 @@ export const EventDetailInfoWindowContent = (props: EventDetailInfoWindowContent
 						View Details
 					</a>
 				</button>
-				{/* Todo: RegisterBtn */}
 				<RegisterBtn
-                    eventId={id}
+					eventId={id}
 					isAttending={isAttending ? 'Yes' : 'No'}
 					isEventCompleted={new Date(eventDate) < new Date()}
 					currentUser={currentUser}

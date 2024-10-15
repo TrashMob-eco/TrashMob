@@ -18,7 +18,7 @@ export const GoogleMarkerWithInfoWindow = (props: MarkerWithInfoWindowProps) => 
     const [markerRef, marker] = useAdvancedMarkerRef();
     const [infoWindowShown, setInfoWindowShown] = useState<boolean>(false);
     const closeInfoWindow = useCallback(() => setInfoWindowShown(false), []);
-    const clickOutsideHandlerRef = useRef<google.maps.MapsEventListener>()
+    const clickMapHandler = useRef<google.maps.MapsEventListener>()
 
     // on "hover-persist", add Click on map to close infoWindow
     useEffect(() => {
@@ -26,12 +26,12 @@ export const GoogleMarkerWithInfoWindow = (props: MarkerWithInfoWindowProps) => 
         if (infoWindowTrigger !== 'hover-persist') return
 
         if (infoWindowShown) {
-            clickOutsideHandlerRef.current = marker.map!.addListener('click', closeInfoWindow)
+            clickMapHandler.current = marker.map!.addListener('click', closeInfoWindow)
         } else {
-            clickOutsideHandlerRef.current?.remove()
+            clickMapHandler.current?.remove()
         }
         return () => {
-            clickOutsideHandlerRef.current?.remove();
+            clickMapHandler.current?.remove();
         };
     }, [marker, infoWindowShown])
 
