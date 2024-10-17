@@ -1,6 +1,6 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
-import { APIProvider, useMap } from '@vis.gl/react-google-maps';
+import { APIProvider } from '@vis.gl/react-google-maps';
 import { Col, Container, Dropdown, Image, Row } from 'react-bootstrap';
 import {
     Eye,
@@ -44,12 +44,7 @@ import { GetPartnerRequestByUserId, GetPartnerRequestStatuses, GetPartnerStatuse
 import { GetPartnerAdminsForUser } from '../../services/admin';
 import { GetStatsForUser } from '../../services/stats';
 import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
-import { MarkerWithInfoWindow } from '../Map';
-import { GoogleMap } from '../Map/GoogleMap';
-import {
-    EventDetailInfoWindowHeader as InfoWindowHeader,
-    EventDetailInfoWindowContent as InfoWindowContent
-} from '../Map/EventInfoWindowContent';
+import { EventsMap } from '../Map';
 
 const isUpcomingEvent = (event: EventData) => new Date(event.eventDate) >= new Date()
 const isPastEvent = (event: EventData) => new Date(event.eventDate) < new Date()
@@ -60,6 +55,7 @@ interface MyDashboardProps extends RouteComponentProps<any> {
 }
 
 const MyDashboard: FC<MyDashboardProps> = (props) => {
+    const { isUserLoaded, currentUser } = props
     const [myEventList, setMyEventList] = useState<EventData[]>([]);
     const [partnerStatusList, setPartnerStatusList] = useState<PartnerStatusData[]>([]);
     const [partnerRequestStatusList, setPartnerRequestStatusList] = useState<PartnerRequestStatusData[]>([]);
@@ -81,9 +77,12 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const [eventToShare, setEventToShare] = useState<EventData>();
     const [showModal, setShowSocialsModal] = useState<boolean>(false);
 
+    const upcomingEvents = myEventList.filter(isUpcomingEvent)
+    const pastEvents = myEventList.filter(isPastEvent)
+
     const getUserEvents = useQuery({
-        queryKey: GetUserEvents({ userId: props.currentUser.id }).key,
-        queryFn: GetUserEvents({ userId: props.currentUser.id }).service,
+        queryKey: GetUserEvents({ userId: currentUser.id }).key,
+        queryFn: GetUserEvents({ userId: currentUser.id }).service,
         staleTime: Services.CACHE.DISABLE,
         enabled: false,
     });
@@ -706,36 +705,6 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         );
     }
 
-    /** Map hooks */
-    const upcomingEventsMap = useMap('upcoming-events-map')
-    const upcomingEvents = myEventList.filter(isUpcomingEvent)
-
-    // Zoom Map to show all Markers: upcomingEventsMap
-    useEffect(() => {
-        if (upcomingEventsMap && upcomingEvents.length) {
-            let bounds = new google.maps.LatLngBounds();
-            for (let event of upcomingEvents) {
-                bounds.extend({ lat: event.latitude, lng: event.longitude })
-            }
-            upcomingEventsMap.fitBounds(bounds);
-        }
-    }, [upcomingEventsMap, upcomingEvents])
-
-    const pastEventsMap = useMap('past-events-map')
-    const pastEvents = myEventList.filter(isPastEvent)
-
-    // Zoom Map to show all Markers: pastEventsMap
-    useEffect(() => {
-        if (pastEventsMap && pastEvents.length) {
-            let bounds = new google.maps.LatLngBounds();
-            for (let event of pastEvents) {
-                bounds.extend({ lat: event.latitude, lng: event.longitude })
-            }
-            pastEventsMap.fitBounds(bounds);
-        }
-    }, [pastEventsMap, pastEvents])
-    /** End of Map hooks */
-
     return (
         <>
             <HeroSection Title='Dashboard' Description="See how much you've done!" />
@@ -839,17 +808,12 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                         </div>
                     </div>
                     {upcomingEventsMapView ? (
-                        <GoogleMap id="upcoming-events-map">
-                            {upcomingEvents.map(event => (
-                                <MarkerWithInfoWindow
-                                    key={event.id}
-                                    position={{ lat: event.latitude, lng: event.longitude }}
-                                    infoWindowTrigger="hover-persist"
-                                    infoWindowProps={{ headerContent: <InfoWindowHeader {...event} /> }}
-                                    infoWindowContent={<InfoWindowContent {...event} hideTitle />}
-                                />
-                            ))}
-                        </GoogleMap>
+                        <EventsMap
+                            id="upcomingEventsMap"
+                            events={upcomingEvents}
+                            isUserLoaded={isUserLoaded}
+                            currentUser={currentUser} 
+                        />
                     ) : (
                         <UpcomingEventsTable />
                     )}
@@ -885,17 +849,12 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                         </div>
                     </div>
                     {pastEventsMapView ? (
-                        <GoogleMap id="past-events-map">
-                            {pastEvents.map(event => (
-                                <MarkerWithInfoWindow
-                                    key={event.id}
-                                    position={{ lat: event.latitude, lng: event.longitude }}
-                                    infoWindowTrigger="hover-persist"
-                                    infoWindowProps={{ headerContent: <InfoWindowHeader {...event} />}}
-                                    infoWindowContent={<InfoWindowContent {...event} hideTitle />}
-                                />
-                            ))}
-                        </GoogleMap>
+                         <EventsMap
+                            id="pastEventsMap"
+                            events={pastEvents}
+                            isUserLoaded={isUserLoaded}
+                            currentUser={currentUser} 
+                        />
                     ) : (
                         <PastEventsTable />
                     )}

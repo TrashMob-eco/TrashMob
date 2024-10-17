@@ -1,15 +1,34 @@
 import { useGetEventType } from "../../../hooks/useGetEventType"
+import { RegisterBtn } from "../../Customization/RegisterBtn"
 import EventData from "../../Models/EventData"
+import UserData from "../../Models/UserData"
 
-type EventDetailInfoWindowContentProps = EventData & {
+type EventDetailInfoWindowContentProps = {
+	event: EventData & {
+		isAttending?: boolean
+	}
 	hideTitle?: boolean
+	isUserLoaded: boolean
+	currentUser: UserData
 }
 
-export const EventDetailInfoWindowHeader = (props: EventDetailInfoWindowContentProps) => 
+export const EventDetailInfoWindowHeader = (props: EventData) => 
 	<h5 className='mt-1 font-weight-bold' style={{ fontFamily: 'Poppins' }}>{props.name}</h5>
 
 export const EventDetailInfoWindowContent = (props: EventDetailInfoWindowContentProps) => {
-	const { id, name, eventTypeId, eventDate, city, region, country, postalCode, createdByUserName, hideTitle = false } = props
+	const { event, hideTitle, isUserLoaded, currentUser } = props
+	const {
+		id,
+		name,
+		eventTypeId,
+		eventDate,
+		city,
+		region,
+		country,
+		postalCode,
+		createdByUserName,
+		isAttending = ''
+	} = event
 
 	const { data: eventType } = useGetEventType(eventTypeId)
 
@@ -45,7 +64,13 @@ export const EventDetailInfoWindowContent = (props: EventDetailInfoWindowContent
 						View Details
 					</a>
 				</button>
-				{/* Todo: RegisterBtn */}
+				<RegisterBtn
+					eventId={id}
+					isAttending={isAttending ? 'Yes' : 'No'}
+					isEventCompleted={new Date(eventDate) < new Date()}
+					currentUser={currentUser}
+					isUserLoaded={isUserLoaded}
+				/>
 			</div>
 		</div>
   	)

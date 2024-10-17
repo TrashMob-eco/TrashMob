@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
     AdvancedMarker,
     AdvancedMarkerProps,
@@ -17,6 +17,7 @@ export const GoogleMarkerWithInfoWindow = (props: MarkerWithInfoWindowProps) => 
     const { infoWindowTrigger, infoWindowProps = {}, infoWindowContent, ...markerProps } = props;
     const [markerRef, marker] = useAdvancedMarkerRef();
     const [infoWindowShown, setInfoWindowShown] = useState<boolean>(false);
+    const closeInfoWindow = useCallback(() => setInfoWindowShown(false), []);
 
     let triggerProps
     switch (infoWindowTrigger) {
@@ -31,17 +32,13 @@ export const GoogleMarkerWithInfoWindow = (props: MarkerWithInfoWindowProps) => 
                 onMouseLeave: () => setInfoWindowShown(false),
             }
             break
-        case 'hover-persist':
-            triggerProps = {
-                onMouseEnter: () => setInfoWindowShown(true)
-            }
     }
 
     return (
         <>
             <AdvancedMarker ref={markerRef} {...markerProps} {...triggerProps} />
             {infoWindowShown ? (
-                <InfoWindow anchor={marker} {...infoWindowProps}>
+                <InfoWindow anchor={marker} {...infoWindowProps} onClose={closeInfoWindow}>
                     {infoWindowContent}
                 </InfoWindow>
             ) : null}
