@@ -231,7 +231,7 @@ public partial class CreateEventViewModel : BaseViewModel
                 break;
             //Step 2 validation 
             case 1:
-                if (!string.IsNullOrEmpty(EventViewModel.Address.City))
+                if (!string.IsNullOrEmpty(EventViewModel.Address.City) && !string.IsNullOrEmpty(EventViewModel.Address.Region))
                 {
                     IsStepValid = true;
                 }
@@ -305,7 +305,7 @@ public partial class CreateEventViewModel : BaseViewModel
         }
         else
         {
-            if (CurrentStep < Steps.Length - 1)
+            if (CurrentStep < Steps.Length)
             {
                 switch (CurrentStep)
                 {
@@ -318,13 +318,13 @@ public partial class CreateEventViewModel : BaseViewModel
 
                         await LoadPartners();
                         await LoadLitterReports();
-                        
+
                         break;
                     }
-                    case 6:
+                    case 5:
                         //Evaluate displaying a confirmation text
                         CloseCommand.Execute(null);
-                        break;
+                        return;
                 }
 
                 CurrentStep++;
@@ -333,7 +333,7 @@ public partial class CreateEventViewModel : BaseViewModel
             }
         }
 
-        CanGoBack = CurrentStep != 0 && CurrentStep != 4;
+        CanGoBack = CurrentStep != 0 && CurrentStep != 4 && CurrentStep != 5;
     }
 
     // This is only for the map point
