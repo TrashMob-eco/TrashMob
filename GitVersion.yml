@@ -6,12 +6,14 @@ branches:
     regex: ^main$
     increment: Patch
     is-release-branch: true
+    pre-release-weight: 1590664955
+    source-branches: ['main']
   release:
     regex: ^release$
     increment: Patch
     is-release-branch: true
     pre-release-weight: 1590664954
-    source-branches: ['main']
+    source-branches: ['main', 'release']
 ignore:
   sha: []
 merge-message-formats: {}
