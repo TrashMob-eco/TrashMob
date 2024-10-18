@@ -8,7 +8,6 @@ import PartnerLocationData from '../Models/PartnerLocationData';
 import * as MapStore from '../../store/MapStore';
 import { CreatePartnerLocations, GetPartnerLocations, UpdatePartnerLocations } from '../../services/locations';
 import { Services } from '../../config/services.config';
-import { AzureMapSearchAddressReverse } from '../../services/maps';
 import { GoogleMap } from '../Map/GoogleMap';
 import { APIProvider, MapMouseEvent, Marker, useMap } from '@vis.gl/react-google-maps';
 import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
@@ -60,11 +59,6 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
     const updatePartnerLocations = useMutation({
         mutationKey: UpdatePartnerLocations().key,
         mutationFn: UpdatePartnerLocations().service,
-    });
-
-    const azureMapSearchAddressReverse = useMutation({
-        mutationKey: AzureMapSearchAddressReverse().key,
-        mutationFn: AzureMapSearchAddressReverse().service,
     });
 
     React.useEffect(() => {
