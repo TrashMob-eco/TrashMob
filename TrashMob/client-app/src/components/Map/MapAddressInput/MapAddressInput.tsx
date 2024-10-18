@@ -1,11 +1,10 @@
 import { ReactChild, useCallback, useEffect, useState } from "react";
-import { APIProvider, MapMouseEvent, Marker, MarkerProps, useMap } from '@vis.gl/react-google-maps';
+import { MapMouseEvent, Marker, MarkerProps, useMap } from '@vis.gl/react-google-maps';
 import { GoogleMap } from "../GoogleMap"
 import * as MapStore from '../../../store/MapStore';
 import { useAzureMapSearchAddressReverse } from "../../../hooks/useAzureMapSearchAddressReverse";
 import { AzureMapSearchAddressReverseResultItem } from "../../Models/AzureMapSearchAddressReverse";
 import { AzureSearchLocationInput, SearchLocationOption } from "../AzureSearchLocationInput";
-import { useGetGoogleMapApiKey } from "../../../hooks/useGetGoogleMapApiKey";
 
 export type RenderMarkerProps = {
 	position: google.maps.LatLngLiteral
@@ -20,14 +19,19 @@ export type MapAddressInputValue = {
 }
 
 export type MapAddressInputProps = {
-	defaultCenter?: google.maps.LatLngLiteral
 	value: MapAddressInputValue
 	onChange: (value: MapAddressInputValue) => void
+	disableSearch: boolean
 	customRenderMarker: (markerProps: RenderMarkerProps) => ReactChild
 }
 
 export const MapAddressInput = (props: MapAddressInputProps) => {
-	const { value, onChange, customRenderMarker } = props
+	const {
+		value,
+		onChange,
+		disableSearch = false,
+		customRenderMarker
+	} = props
 	const [azureSubscriptionKey, setAzureSubscriptionKey] = useState<string>();
 	const [latitude, setLatitude] = useState<number>(0)
 	const [longitude, setLongitude] = useState<number>(0)
@@ -43,7 +47,6 @@ export const MapAddressInput = (props: MapAddressInputProps) => {
 	useEffect(() => {
 		setLatitude(value.lat)
 		setLongitude(value.lng)
-		if (map) map.panTo({ lat: value.lat, lng: value.lng });
 	}, [value])
 
 	const { refetch: refetchAddressReverse } = useAzureMapSearchAddressReverse(
@@ -123,7 +126,7 @@ export const MapAddressInput = (props: MapAddressInputProps) => {
 					</>
 				)}				
 			</GoogleMap>
-			{azureSubscriptionKey ? (
+			{!disableSearch && azureSubscriptionKey ? (
 				<div style={{ position: 'absolute', top: 8, left: 8 }}>
 					<AzureSearchLocationInput
 						azureKey={azureSubscriptionKey}

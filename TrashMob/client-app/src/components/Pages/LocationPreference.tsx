@@ -13,7 +13,7 @@ import infoCycle from '../assets/info-circle.svg';
 import { HeroSection } from '../Customization/HeroSection';
 import { GetUserById, UpdateUser } from '../../services/users';
 import { Services } from '../../config/services.config';
-import { MarkerWithInfoWindow, EventInfoWindowContent, MapAddressInput } from '../Map';
+import { MarkerWithInfoWindow, EventInfoWindowContent, MapAddressInput, MapAddressInputValue } from '../Map';
 import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
 
 interface LocationPreferenceProps extends RouteComponentProps<any> {
