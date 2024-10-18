@@ -5,7 +5,7 @@ import { Button, Container } from 'react-bootstrap';
 import { Calendar, GeoAlt, Share, Stopwatch } from 'react-bootstrap-icons';
 import AddToCalendar from '@culturehq/add-to-calendar';
 import moment from 'moment';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import EventData from '../Models/EventData';
 import UserData from '../Models/UserData';
 import EventTypeData from '../Models/EventTypeData';
@@ -21,12 +21,8 @@ import {
     GetEventAttendees,
     GetEventById,
     GetEventTypes,
-    AddEventAttendee,
 } from '../../services/events';
 import { Services } from '../../config/services.config';
-import WaiverData from '../Models/WaiverData';
-
-import { GetTrashMobWaivers } from '../../services/waivers';
 import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
 
 export interface DetailsMatchParams {
@@ -69,7 +65,6 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
     const [isEventCompleted, setIsEventCompleted] = useState<boolean>();
     const [showModal, setShowSocialsModal] = useState<boolean>(false);
     const [eventToShare, setEventToShare] = useState<EventData>();
-    const [waiver, setWaiver] = useState<WaiverData>();
 
     const startDateTime = moment(eventDate);
     const endDateTime = moment(startDateTime).add(durationHours, 'hours').add(durationMinutes, 'minutes');
@@ -109,24 +104,6 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
         staleTime: Services.CACHE.DISABLE,
         enabled: false,
     });
-
-    const getTrashMobWaivers = useQuery({
-        queryKey: GetTrashMobWaivers().key,
-        queryFn: GetTrashMobWaivers().service,
-        staleTime: Services.CACHE.DISABLE,
-        enabled: false,
-    });
-
-    const addEventAttendee = useMutation({
-        mutationKey: AddEventAttendee().key,
-        mutationFn: AddEventAttendee().service,
-    });
-
-    useEffect(() => {
-        getTrashMobWaivers.refetch().then((res) => {
-            setWaiver(res.data?.data);
-        });
-    }, []);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -191,14 +168,6 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
         });
     }, [eventId, myAttendanceList]);
 
-    const handleAttendanceChanged = () => {
-        if (!isUserLoaded || !currentUser) return;
-        getAllEventsBeingAttendedByUser.refetch().then((res) => {
-            setMyAttendanceList(res.data?.data || []);
-            setIsUserEventDataLoaded(true);
-        });
-    };
-
     const handleShowModal = (showModal: boolean) => {
         setShowSocialsModal(showModal);
     };
@@ -258,13 +227,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                                     isAttending={isAttending}
                                     isEventCompleted={isEventCompleted!}
                                     currentUser={currentUser}
-                                    onAttendanceChanged={handleAttendanceChanged}
-                                    isUserLoaded={isUserLoaded}
-                                    history={history}
-                                    location={location}
-                                    match={match}
-                                    addEventAttendee={addEventAttendee}
-                                    waiverData={waiver}
+                                    isUserLoaded={isUserLoaded}                                    
                                 />
                                 <div id='addToCalendarBtn' className='ml-2 p-18' hidden={isEventCompleted}>
                                     <AddToCalendar event={event} />

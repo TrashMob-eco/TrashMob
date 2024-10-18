@@ -1,8 +1,7 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
-import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
+import { APIProvider } from '@vis.gl/react-google-maps';
 import { Col, Container, Dropdown, Image, Row } from 'react-bootstrap';
-import { data } from 'azure-maps-control';
 import {
     Eye,
     PersonX,
@@ -17,8 +16,6 @@ import {
 import { Guid } from 'guid-typescript';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import EventData from '../Models/EventData';
-import * as MapStore from '../../store/MapStore';
-import MapControllerPointCollection from '../MapControllerPointCollection';
 import UserData from '../Models/UserData';
 import { Table } from '../Customization/Table';
 import twofigure from '../assets/card/twofigure.svg';
@@ -46,6 +43,11 @@ import { GetEventPickupLocationsByUser, PickupLocationMarkAsPickedUp } from '../
 import { GetPartnerRequestByUserId, GetPartnerRequestStatuses, GetPartnerStatuses } from '../../services/partners';
 import { GetPartnerAdminsForUser } from '../../services/admin';
 import { GetStatsForUser } from '../../services/stats';
+import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
+import { EventsMap } from '../Map';
+
+const isUpcomingEvent = (event: EventData) => new Date(event.eventDate) >= new Date()
+const isPastEvent = (event: EventData) => new Date(event.eventDate) < new Date()
 
 interface MyDashboardProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -53,6 +55,7 @@ interface MyDashboardProps extends RouteComponentProps<any> {
 }
 
 const MyDashboard: FC<MyDashboardProps> = (props) => {
+    const { isUserLoaded, currentUser } = props
     const [myEventList, setMyEventList] = useState<EventData[]>([]);
     const [partnerStatusList, setPartnerStatusList] = useState<PartnerStatusData[]>([]);
     const [partnerRequestStatusList, setPartnerRequestStatusList] = useState<PartnerRequestStatusData[]>([]);
@@ -63,13 +66,6 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const [isEventDataLoaded, setIsEventDataLoaded] = useState<boolean>(false);
     const [isPartnerAdminInvitationsDataLoaded, setIsPartnerAdminInvitationsDataLoaded] = useState<boolean>(false);
     const [isPickupRequestsDataLoaded, setIsPickupRequestsDataLoaded] = useState<boolean>(false);
-    const [center, setCenter] = useState<data.Position>(
-        new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude),
-    );
-    const [isMapKeyLoaded, setIsMapKeyLoaded] = useState<boolean>(false);
-    const [mapOptions, setMapOptions] = useState<IAzureMapOptions>();
-    const [currentUser, setCurrentUser] = useState<UserData>(props.currentUser);
-    const [isUserLoaded, setIsUserLoaded] = useState<boolean>(props.isUserLoaded);
     const [reloadEvents, setReloadEvents] = useState<number>(0);
     const [upcomingEventsMapView, setUpcomingEventsMapView] = useState<boolean>(false);
     const [pastEventsMapView, setPastEventsMapView] = useState<boolean>(false);
@@ -81,9 +77,12 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const [eventToShare, setEventToShare] = useState<EventData>();
     const [showModal, setShowSocialsModal] = useState<boolean>(false);
 
+    const upcomingEvents = myEventList.filter(isUpcomingEvent)
+    const pastEvents = myEventList.filter(isPastEvent)
+
     const getUserEvents = useQuery({
-        queryKey: GetUserEvents({ userId: props.currentUser.id }).key,
-        queryFn: GetUserEvents({ userId: props.currentUser.id }).service,
+        queryKey: GetUserEvents({ userId: currentUser.id }).key,
+        queryFn: GetUserEvents({ userId: currentUser.id }).service,
         staleTime: Services.CACHE.DISABLE,
         enabled: false,
     });
@@ -165,26 +164,10 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
 
     useEffect(() => {
         window.scrollTo(0, 0);
-
-        MapStore.getOption().then((opts) => {
-            setMapOptions(opts);
-            setIsMapKeyLoaded(true);
-        });
-
-        if ('geolocation' in navigator) {
-            navigator.geolocation.getCurrentPosition((position) => {
-                const point = new data.Position(position.coords.longitude, position.coords.latitude);
-                setCenter(point);
-            });
-        } else {
-            console.log('Not Available');
-        }
     }, []);
 
     useEffect(() => {
         if (props.isUserLoaded) {
-            setCurrentUser(props.currentUser);
-            setIsUserLoaded(props.isUserLoaded);
             setIsEventDataLoaded(false);
 
             getUserEvents.refetch().then((res) => {
@@ -253,18 +236,6 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
             props.history.replace({ ...props.history.location, state });
         }
     }, [state, isEventDataLoaded, props.currentUser.id, props.history, myEventList, setSharingEvent]);
-
-    const handleLocationChange = (point: data.Position) => {
-        // do nothing
-    };
-
-    const handleAttendanceChanged = (point: data.Position) => {
-        // do nothing
-    };
-
-    const handleDetailsSelected = (eventId: string) => {
-        props.history.push(`eventdetails/${eventId}`);
-    };
 
     const handleReloadEvents = () => {
         // A trick to force the reload as needed.
@@ -837,29 +808,12 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                         </div>
                     </div>
                     {upcomingEventsMapView ? (
-                        <AzureMapsProvider>
-                            <MapControllerPointCollection
-                                forceReload={false}
-                                center={center}
-                                multipleEvents={myEventList.filter((event) => new Date(event.eventDate) >= new Date())}
-                                isEventDataLoaded={isEventDataLoaded}
-                                mapOptions={mapOptions}
-                                isMapKeyLoaded={isMapKeyLoaded}
-                                eventName=''
-                                latitude={0}
-                                longitude={0}
-                                onLocationChange={handleLocationChange}
-                                currentUser={currentUser}
-                                isUserLoaded={isUserLoaded}
-                                onAttendanceChanged={handleAttendanceChanged}
-                                myAttendanceList={myEventList}
-                                isUserEventDataLoaded={isEventDataLoaded}
-                                onDetailsSelected={handleDetailsSelected}
-                                history={props.history}
-                                location={props.location}
-                                match={props.match}
-                            />
-                        </AzureMapsProvider>
+                        <EventsMap
+                            id="upcomingEventsMap"
+                            events={upcomingEvents}
+                            isUserLoaded={isUserLoaded}
+                            currentUser={currentUser} 
+                        />
                     ) : (
                         <UpcomingEventsTable />
                     )}
@@ -895,29 +849,12 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                         </div>
                     </div>
                     {pastEventsMapView ? (
-                        <AzureMapsProvider>
-                            <MapControllerPointCollection
-                                forceReload={false}
-                                center={center}
-                                multipleEvents={myEventList.filter((event) => new Date(event.eventDate) < new Date())}
-                                isEventDataLoaded={isEventDataLoaded}
-                                mapOptions={mapOptions}
-                                isMapKeyLoaded={isMapKeyLoaded}
-                                eventName=''
-                                latitude={0}
-                                longitude={0}
-                                onLocationChange={handleLocationChange}
-                                currentUser={currentUser}
-                                isUserLoaded={isUserLoaded}
-                                onAttendanceChanged={handleAttendanceChanged}
-                                myAttendanceList={myEventList}
-                                isUserEventDataLoaded={isEventDataLoaded}
-                                onDetailsSelected={handleDetailsSelected}
-                                history={props.history}
-                                location={props.location}
-                                match={props.match}
-                            />
-                        </AzureMapsProvider>
+                         <EventsMap
+                            id="pastEventsMap"
+                            events={pastEvents}
+                            isUserLoaded={isUserLoaded}
+                            currentUser={currentUser} 
+                        />
                     ) : (
                         <PastEventsTable />
                     )}
@@ -984,4 +921,18 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     );
 };
 
-export default withRouter(MyDashboard);
+
+const MyDashboardWrapper = (props: MyDashboardProps) => {
+    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey()
+
+    if (isLoading) return null;
+
+    return (
+        <APIProvider apiKey={googleApiKey || ''}>
+            <MyDashboard {...props} />
+        </APIProvider>
+    );
+};
+
+
+export default withRouter(MyDashboardWrapper);
