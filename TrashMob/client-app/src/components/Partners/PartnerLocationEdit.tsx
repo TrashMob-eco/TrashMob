@@ -1,17 +1,19 @@
 import * as React from 'react';
 import { Button, Col, Form, OverlayTrigger, ToggleButton, Tooltip } from 'react-bootstrap';
-import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
-import { data } from 'azure-maps-control';
 import { Guid } from 'guid-typescript';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import UserData from '../Models/UserData';
 import * as ToolTips from '../../store/ToolTips';
 import PartnerLocationData from '../Models/PartnerLocationData';
 import * as MapStore from '../../store/MapStore';
-import MapControllerSinglePointNoEvent from '../MapControllerSinglePointNoEvent';
 import { CreatePartnerLocations, GetPartnerLocations, UpdatePartnerLocations } from '../../services/locations';
 import { Services } from '../../config/services.config';
 import { AzureMapSearchAddressReverse } from '../../services/maps';
+import { GoogleMap } from '../Map/GoogleMap';
+import { APIProvider, MapMouseEvent, Marker, useMap } from '@vis.gl/react-google-maps';
+import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
+import { useAzureMapSearchAddressReverse } from '../../hooks/useAzureMapSearchAddressReverse';
+import { AzureSearchLocationInput, SearchLocationOption } from '../Map/AzureSearchLocationInput';
 
 export interface PartnerLocationEditDataProps {
     partnerId: string;
@@ -40,11 +42,6 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
     const [createdByUserId, setCreatedByUserId] = React.useState<string>();
     const [createdDate, setCreatedDate] = React.useState<Date>(new Date());
     const [lastUpdatedDate, setLastUpdatedDate] = React.useState<Date>(new Date());
-    const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
-    const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
-    const [center, setCenter] = React.useState<data.Position>(
-        new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude),
-    );
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
     const [isPartnerLocationDataLoaded, setIsPartnerLocationDataLoaded] = React.useState<boolean>(false);
 
@@ -94,18 +91,9 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
         }
 
         MapStore.getOption().then((opts) => {
-            setMapOptions(opts);
-            setIsMapKeyLoaded(true);
+            setAzureSubscriptionKey(opts.subscriptionKey);
         });
 
-        if ('geolocation' in navigator) {
-            navigator.geolocation.getCurrentPosition((position) => {
-                const point = new data.Position(position.coords.longitude, position.coords.latitude);
-                setCenter(point);
-            });
-        } else {
-            console.log('Not Available');
-        }
     }, [props.currentUser, props.partnerLocationId, props.isUserLoaded, props.partnerId]);
 
     function handleLocationNameChanged(locationName: string) {
@@ -215,18 +203,66 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
         props.onSave();
     }
 
-    async function handleLocationChange(point: data.Position) {
-        setLatitude(point[1]);
-        setLongitude(point[0]);
-        const azureKey = await MapStore.getKey();
-        azureMapSearchAddressReverse.mutateAsync({ azureKey, lat: point[1], long: point[0] }).then((res) => {
-            setStreetAddress(res.data.addresses[0].address.streetNameAndNumber);
-            setCity(res.data.addresses[0].address.municipality);
-            setCountry(res.data.addresses[0].address.country);
-            setRegion(res.data.addresses[0].address.countrySubdivisionName);
-            setPostalCode(res.data.addresses[0].address.postalCode);
-        });
-    }
+    const map = useMap()
+
+    const handleSelectSearchLocation = React.useCallback(
+        async (location: SearchLocationOption) => {
+            const { lat, lon } = location.position;
+            setLatitude(lat);
+            setLongitude(lon);
+
+            // side effect: Move Map Center
+            if (map) map.panTo({ lat, lng: lon });
+        },
+        [map],
+    );
+
+    const handleClickMap = React.useCallback((e: MapMouseEvent) => {
+        if (e.detail.latLng) {
+            const lat = e.detail.latLng.lat;
+            const lng = e.detail.latLng.lng;
+            setLatitude(lat);
+            setLongitude(lng);
+        }
+    }, [])
+
+    const handleMarkerDragEnd = React.useCallback((e: google.maps.MapMouseEvent) => {
+        if (e.latLng) {
+            const lat = e.latLng.lat();
+            const lng = e.latLng.lng();
+            setLatitude(lat);
+            setLongitude(lng);
+        }
+    }, [])
+
+    const [azureSubscriptionKey, setAzureSubscriptionKey] = React.useState<string>();
+    const { refetch: refetchAddressReverse } = useAzureMapSearchAddressReverse(
+        {
+            lat: latitude,
+            long: longitude,
+            azureKey: azureSubscriptionKey || '',
+        },
+        { enabled: false },
+    );
+
+    // on Marker moved (latitude + longitude changed), do reverse search lat,lng to address
+    React.useEffect(() => {
+        const searchAddressReverse = async () => {
+            const { data } = await refetchAddressReverse();
+
+            const firstResult = data?.addresses[0];
+            if (firstResult) {
+                setStreetAddress(firstResult.address.streetNameAndNumber)
+                setCity(firstResult.address.municipality);
+                setCountry(firstResult.address.country);
+                setRegion(firstResult.address.countrySubdivisionName);
+                setPostalCode(firstResult.address.postalCode);
+            }
+        };
+        if (latitude && longitude) searchAddressReverse();
+    }, [latitude, longitude]);
+
+    const defaultCenter = { lat: MapStore.defaultLatitude, lng: MapStore.defaultLongitude }
 
     // This will handle Cancel button click event.
     function handleCancel(event: any) {
@@ -421,21 +457,26 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                         </Form.Label>
                     </Form.Row>
                     <Form.Row>
-                        <AzureMapsProvider>
-                            <>
-                                <MapControllerSinglePointNoEvent
-                                    center={center}
-                                    mapOptions={mapOptions}
-                                    isMapKeyLoaded={isMapKeyLoaded}
-                                    latitude={latitude}
-                                    longitude={longitude}
-                                    onLocationChange={handleLocationChange}
-                                    currentUser={props.currentUser}
-                                    isUserLoaded={props.isUserLoaded}
-                                    isDraggable
+                        <div style={{ position: 'relative', width: '100%' }}>
+                            <GoogleMap defaultCenter={defaultCenter} onClick={handleClickMap}>
+                                <Marker
+                                    position={(latitude && longitude) ? {
+                                        lat: latitude,
+                                        lng: longitude
+                                    } : defaultCenter}
+                                    draggable
+                                    onDragEnd={handleMarkerDragEnd}
                                 />
-                            </>
-                        </AzureMapsProvider>
+                            </GoogleMap>
+                            {azureSubscriptionKey ? (
+                                <div style={{ position: 'absolute', top: 8, left: 8 }}>
+                                    <AzureSearchLocationInput
+                                        azureKey={azureSubscriptionKey}
+                                        onSelectLocation={handleSelectSearchLocation}
+                                    />
+                                </div>
+                            ) : null}
+                        </div>
                     </Form.Row>
                     <Form.Row>
                         <Col>
@@ -487,3 +528,17 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
         </div>
     );
 };
+
+const PartnerLocationEditWrapper = (props: PartnerLocationEditDataProps) => {
+    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey()
+
+    if (isLoading) return null;
+
+    return (
+        <APIProvider apiKey={googleApiKey || ''}>
+            <PartnerLocationEdit {...props} />
+        </APIProvider>
+    );
+};
+
+export default PartnerLocationEditWrapper
