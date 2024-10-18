@@ -1,7 +1,5 @@
 import * as React from 'react';
 import { Button, Col, Dropdown, Form, OverlayTrigger, ToggleButton, Tooltip } from 'react-bootstrap';
-import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
-import { data } from 'azure-maps-control';
 import { Guid } from 'guid-typescript';
 import { Pencil, XSquare } from 'react-bootstrap-icons';
 import PhoneInput from 'react-phone-input-2';
@@ -10,7 +8,6 @@ import UserData from './Models/UserData';
 import * as ToolTips from '../store/ToolTips';
 import PartnerLocationData from './Models/PartnerLocationData';
 import * as MapStore from '../store/MapStore';
-import MapControllerSinglePointNoEvent from './MapControllerSinglePointNoEvent';
 import PickupLocationData from './Models/PickupLocationData';
 import { ManageEventPartners } from './EventManagement/ManageEventPartners';
 import {
@@ -24,6 +21,11 @@ import {
 } from '../services/locations';
 import { Services } from '../config/services.config';
 import { AzureMapSearchAddressReverse } from '../services/maps';
+import { GoogleMap } from './Map/GoogleMap';
+import { useGetGoogleMapApiKey } from '../hooks/useGetGoogleMapApiKey';
+import { APIProvider, MapMouseEvent, Marker, useMap } from '@vis.gl/react-google-maps';
+import { useAzureMapSearchAddressReverse } from '../hooks/useAzureMapSearchAddressReverse';
+import { AzureSearchLocationInput, SearchLocationOption } from './Map/AzureSearchLocationInput';
 
 export interface PickupLocationsDataProps {
     eventId: string;
@@ -48,11 +50,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
     const [createdByUserId, setCreatedByUserId] = React.useState<string>();
     const [createdDate, setCreatedDate] = React.useState<Date>(new Date());
     const [lastUpdatedDate, setLastUpdatedDate] = React.useState<Date>(new Date());
-    const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
-    const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
-    const [center, setCenter] = React.useState<data.Position>(
-        new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude),
-    );
+    const [azureSubscriptionKey, setAzureSubscriptionKey] = React.useState<string>();
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
     const [pickupLocationsData, setPickupLocationsData] = React.useState<PickupLocationData[]>([]);
     const [isPickupLocationsDataLoaded, setIsPickupLocationsDataLoaded] = React.useState<boolean>(false);
@@ -61,6 +59,9 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
     const [isSubmitEnabled, setIsSubmitEnabled] = React.useState<boolean>(false);
     const [isEditOrAdd, setIsEditOrAdd] = React.useState<boolean>(false);
     const [statusMessage, setStatusMessage] = React.useState<string>('Loading...');
+   
+    const defaultCenter = { lat: MapStore.defaultLatitude, lng: MapStore.defaultLongitude }
+    const markerPosition = (latitude && longitude) ? { lat: latitude, lng: longitude} : defaultCenter
 
     const getHaulingPartnerLocation = useQuery({
         queryKey: GetHaulingPartnerLocation({ eventId: props.eventId }).key,
@@ -128,18 +129,9 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
         }
 
         MapStore.getOption().then((opts) => {
-            setMapOptions(opts);
-            setIsMapKeyLoaded(true);
+            setAzureSubscriptionKey(opts.subscriptionKey)
         });
 
-        if ('geolocation' in navigator) {
-            navigator.geolocation.getCurrentPosition((position) => {
-                const point = new data.Position(position.coords.longitude, position.coords.latitude);
-                setCenter(point);
-            });
-        } else {
-            console.log('Not Available');
-        }
     }, [props.currentUser, props.eventId, props.isUserLoaded]);
 
     function handleNameChanged(val: string) {
@@ -273,20 +265,64 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
         });
     }
 
-    async function handleLocationChange(point: data.Position) {
-        // In an Azure Map point, the longitude is the first position, and latitude is second
-        setLatitude(point[1]);
-        setLongitude(point[0]);
-        const azureKey = await MapStore.getKey();
-        azureMapSearchAddressReverse.mutateAsync({ azureKey, lat: point[1], long: point[0] }).then((res) => {
-            setStreetAddress(res.data.addresses[0].address.streetNameAndNumber);
-            setCity(res.data.addresses[0].address.municipality);
-            setCountry(res.data.addresses[0].address.country);
-            setRegion(res.data.addresses[0].address.countrySubdivisionName);
-            setPostalCode(res.data.addresses[0].address.postalCode);
-            setIsSaveEnabled(true);
-        });
-    }
+    const { refetch: refetchAddressReverse } = useAzureMapSearchAddressReverse(
+        {
+            lat: latitude,
+            long: longitude,
+            azureKey: azureSubscriptionKey || '',
+        },
+        { enabled: false },
+    );
+
+    const map = useMap()
+
+    const handleSelectSearchLocation = React.useCallback(
+        async (location: SearchLocationOption) => {
+            const { lat, lon } = location.position;
+            setLatitude(lat);
+            setLongitude(lon);
+
+            // side effect: Move Map Center
+            if (map) map.panTo({ lat, lng: lon });
+        },
+        [map],
+    );
+
+    const handleClickMap = React.useCallback((e: MapMouseEvent) => {
+        if (e.detail.latLng) {
+            const lat = e.detail.latLng.lat;
+            const lng = e.detail.latLng.lng;
+            setLatitude(lat);
+            setLongitude(lng);
+        }
+    }, [])
+
+    const handleMarkerDragEnd = React.useCallback((e: google.maps.MapMouseEvent) => {
+        if (e.latLng) {
+            const lat = e.latLng.lat();
+            const lng = e.latLng.lng();
+            setLatitude(lat);
+            setLongitude(lng);
+        }
+    }, [])
+
+    // on Marker moved (latitude + longitude changed), do reverse search lat,lng to address
+    React.useEffect(() => {
+        const searchAddressReverse = async () => {
+            const { data } = await refetchAddressReverse();
+
+            const firstResult = data?.addresses[0];
+            if (firstResult) {
+                setStreetAddress(firstResult.address.streetNameAndNumber)
+                setCity(firstResult.address.municipality);
+                setCountry(firstResult.address.country);
+                setRegion(firstResult.address.countrySubdivisionName);
+                setPostalCode(firstResult.address.postalCode);
+                setIsSaveEnabled(true);
+            }
+        };
+        if (latitude && longitude) searchAddressReverse();
+    }, [latitude, longitude]);
 
     function editPickupLocation(locationId: string) {
         getEventPickupLocationById.mutateAsync({ locationId }).then((res) => {
@@ -577,21 +613,25 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                     </Form.Label>
                 </Form.Row>
                 <Form.Row>
-                    <AzureMapsProvider>
-                        <>
-                            <MapControllerSinglePointNoEvent
-                                center={center}
-                                mapOptions={mapOptions}
-                                isMapKeyLoaded={isMapKeyLoaded}
-                                latitude={latitude}
-                                longitude={longitude}
-                                onLocationChange={handleLocationChange}
-                                currentUser={props.currentUser}
-                                isUserLoaded={props.isUserLoaded}
-                                isDraggable
+                    <div style={{ position: 'relative', width: '100%' }}>
+                        <GoogleMap
+                            onClick={handleClickMap}
+                        >
+                            <Marker 
+                                position={markerPosition}
+                                draggable
+                                onDragEnd={handleMarkerDragEnd}
                             />
-                        </>
-                    </AzureMapsProvider>
+                        </GoogleMap>
+                        {azureSubscriptionKey ? (
+                            <div style={{ position: 'absolute', top: 8, left: 8 }}>
+                                <AzureSearchLocationInput
+                                    azureKey={azureSubscriptionKey}
+                                    onSelectLocation={handleSelectSearchLocation}
+                                />  
+                            </div>
+                        ) : null}
+                    </div>
                 </Form.Row>
                 <Form.Row>
                     <Col>
@@ -663,3 +703,17 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
         </div>
     );
 };
+
+const PickupLocationWrapper = (props: PickupLocationsDataProps) => {
+    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey()
+
+    if (isLoading) return null;
+
+    return (
+        <APIProvider apiKey={googleApiKey || ''}>
+            <PickupLocations {...props} />
+        </APIProvider>
+    );
+};
+
+export default PickupLocationWrapper;

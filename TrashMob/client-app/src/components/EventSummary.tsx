@@ -7,7 +7,7 @@ import UserData from './Models/UserData';
 import * as ToolTips from '../store/ToolTips';
 import EventSummaryData from './Models/EventSummaryData';
 import EventData from './Models/EventData';
-import { PickupLocations } from './PickupLocations';
+import PickupLocations from './PickupLocations';
 import { SocialsModal } from './EventManagement/ShareToSocialsModal';
 import * as SharingMessages from '../store/SharingMessages';
 import { CreateEventSummary, GetEventById, GetEventSummaryById, UpdateEventSummary } from '../services/events';
