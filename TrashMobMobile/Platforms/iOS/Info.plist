@@ -57,7 +57,7 @@
     <key>NSPhotoLibraryAddUsageDescription</key>
     <string>TrashMob needs access to the photo gallery for uploading photos and videos of litter.</string>
     <key>NSPhotoLibraryUsageDescription</key>
-    <string>v needs access to photos gallery for  for uploading photos and videos of litter.</string>
+    <string>TrashMob needs access to photos gallery for uploading photos and videos of litter.</string>
     <key>NSLocationAlwaysUsageDescription</key>
     <string>TrashMob needs your location when the app is running in the background when you have turned on route tracking.</string>
     <key>UIBackgroundModes</key>
