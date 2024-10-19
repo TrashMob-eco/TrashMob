@@ -8,7 +8,6 @@ branches:
     is-release-branch: true
     pre-release-weight: 1590664955
     source-branches: ['main']
-    label: ''
     tag: ''
     prevent-increment-of-merged-branch-version: true
     tracks-release-branches: false
@@ -19,7 +18,6 @@ branches:
     is-release-branch: true
     pre-release-weight: 1590664954
     source-branches: ['main', 'release']
-    label: ''
     tag: ''
     prevent-increment-of-merged-branch-version: true
     tracks-release-branches: false
