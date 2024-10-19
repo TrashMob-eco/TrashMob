@@ -8,20 +8,14 @@ branches:
     is-release-branch: true
     pre-release-weight: 1590664955
     source-branches: ['main']
-    tag: ''
-    prevent-increment-of-merged-branch-version: true
     tracks-release-branches: false
-    is-mainline: true
   release:
     regex: ^release$
     increment: Patch
     is-release-branch: true
     pre-release-weight: 1590664954
     source-branches: ['main', 'release']
-    tag: ''
-    prevent-increment-of-merged-branch-version: true
     tracks-release-branches: false
-    is-mainline: true
 ignore:
   sha: []
 merge-message-formats: {}
