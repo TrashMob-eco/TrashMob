@@ -1,5 +1,5 @@
 assembly-versioning-scheme: MajorMinorPatch
-mode: ContinuousDelivery
+mode: Mainline
 tag-pre-release-weight: 1590664954
 branches:
   main:
@@ -9,6 +9,10 @@ branches:
     pre-release-weight: 1590664955
     source-branches: ['main']
     label: ''
+    tag: ''
+    prevent-increment-of-merged-branch-version: true
+    tracks-release-branches: false
+    is-mainline: true
   release:
     regex: ^release$
     increment: Patch
@@ -16,6 +20,10 @@ branches:
     pre-release-weight: 1590664954
     source-branches: ['main', 'release']
     label: ''
+    tag: ''
+    prevent-increment-of-merged-branch-version: true
+    tracks-release-branches: false
+    is-mainline: true
 ignore:
   sha: []
 merge-message-formats: {}
