@@ -1,6 +1,6 @@
 assembly-versioning-scheme: MajorMinorPatch
 mode: Mainline
-tag-pre-release-weight: 15906652867
+tag-pre-release-weight: 1590665287
 branches:
   main:
     regex: ^main$
