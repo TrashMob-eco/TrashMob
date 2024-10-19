@@ -1,0 +1,3 @@
+﻿{
+  "extends": "./client-app/tsconfig"
+}
