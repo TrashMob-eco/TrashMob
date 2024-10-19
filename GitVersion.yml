@@ -8,12 +8,14 @@ branches:
     is-release-branch: true
     pre-release-weight: 1590664955
     source-branches: ['main']
+    label: ''
   release:
     regex: ^release$
     increment: Patch
     is-release-branch: true
     pre-release-weight: 1590664954
     source-branches: ['main', 'release']
+    label: ''
 ignore:
   sha: []
 merge-message-formats: {}
