@@ -9,6 +9,7 @@ branches:
     pre-release-weight: 1590665287
     source-branches: ['main']
     tracks-release-branches: false
+    tag: ''
   release:
     regex: ^release$
     increment: Patch
@@ -16,6 +17,7 @@ branches:
     pre-release-weight: 1590665287
     source-branches: ['main', 'release']
     tracks-release-branches: false
+    tag: ''
 ignore:
   sha: []
 merge-message-formats: {}
