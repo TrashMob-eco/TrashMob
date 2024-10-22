@@ -130,8 +130,6 @@ export const PartnerRequestDetails: React.FC<PartnerRequestDetailsParams> = (pro
                                 : new Date(),
                         );
                         setIsPartnerRequestDataLoaded(true);
-                    }).catch(err => {
-                        console.log(err)
                     });
                 });
             });
