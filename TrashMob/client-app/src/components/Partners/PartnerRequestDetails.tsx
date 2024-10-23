@@ -3,7 +3,6 @@ import { RouteComponentProps, withRouter } from 'react-router-dom';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
-import { data } from 'azure-maps-control';
 import { Guid } from 'guid-typescript';
 import PhoneInput from 'react-phone-input-2';
 import { useMutation, useQuery } from '@tanstack/react-query';
