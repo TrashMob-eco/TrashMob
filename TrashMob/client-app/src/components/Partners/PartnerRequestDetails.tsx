@@ -104,7 +104,6 @@ export const PartnerRequestDetails: React.FC<PartnerRequestDetailsParams> = (pro
                 getPartnerTypes.refetch().then((partnerTypesRes) => {
                     setPartnerTypeList(partnerTypesRes.data?.data || []);
                     getPartnerRequestById.mutateAsync({ id: partnerRequestId }).then((partnerRequestByIdRes) => {
-                        console.log({ partnerRequestByIdRes })
                         setName(partnerRequestByIdRes.data.name);
                         setEmail(partnerRequestByIdRes.data.email);
                         setWebsite(partnerRequestByIdRes.data.website);
