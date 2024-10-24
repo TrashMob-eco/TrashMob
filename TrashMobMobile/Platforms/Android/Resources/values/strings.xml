@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+  <string name="CameraPermission">TrashMob uses your camera when you report litter, or add a location for a hauling partner to pick up from.</string>
+  <string name="LocationPermission">TrashMob uses your location when you report litter, add locations for hauling partners to pick up, or turn on route tracking.</string>
+</resources>
