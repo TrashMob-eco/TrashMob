@@ -8,15 +8,15 @@
   </application>
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
   <uses-permission android:name="android.permission.INTERNET" />
-  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-  <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-  <uses-permission android:name="android.permission.CAMERA" />
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" android:description="@string/LocationPermission" />
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" android:description="@string/LocationPermission" />
+  <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" android:description="@string/LocationPermission" />
+  <uses-permission android:name="android.permission.CAMERA" android:description="@string/CameraPermission" />
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
-  <uses-feature android:name="android.hardware.location" android:required="false" />
-  <uses-feature android:name="android.hardware.location.gps" android:required="false" />
-  <uses-feature android:name="android.hardware.location.network" android:required="false" />
+  <uses-feature android:name="android.hardware.location" android:required="false" android:description="@string/LocationPermission" />
+  <uses-feature android:name="android.hardware.location.gps" android:required="false" android:description="@string/LocationPermission" />
+  <uses-feature android:name="android.hardware.location.network" android:required="false" android:description="@string/LocationPermission" />
   <queries>
     <intent>
       <action android:name="android.support.customtabs.action.CustomTabsService" />

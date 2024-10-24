@@ -70,6 +70,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Platforms\Android\Resources\values\strings.xml" />
 	  <None Remove="Resources\AppIcon\appicon.svg" />
 	  <None Remove="Resources\AppIcon\appiconfg.svg" />
 	  <None Remove="Resources\Fonts\feather.ttf" />
