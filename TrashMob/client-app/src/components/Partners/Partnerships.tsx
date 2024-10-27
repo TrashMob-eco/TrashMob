@@ -10,6 +10,7 @@ import Dollarsign from '../assets/partnerships/dollarsign.svg';
 import Garbage from '../assets/partnerships/garbage.png';
 
 import { HeroSection } from '../Customization/HeroSection';
+import { BootstrapThemeProvider } from '@/theme-providers/bootstrap/BootstrapThemeProvider';
 
 export const Partnerships: FC<any> = () => {
     React.useEffect(() => {
@@ -17,7 +18,7 @@ export const Partnerships: FC<any> = () => {
     });
 
     return (
-        <>
+        <BootstrapThemeProvider>
             <HeroSection Title='Partnerships' Description='Connecting you with volunteers.' />
             <Container className='py-5'>
                 <Row>
@@ -133,6 +134,6 @@ export const Partnerships: FC<any> = () => {
                     </Col>
                 </Row>
             </Container>
-        </>
+        </BootstrapThemeProvider>
     );
 };

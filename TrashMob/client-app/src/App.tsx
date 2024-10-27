@@ -46,8 +46,9 @@ import PartnerRequestDetails, { PartnerRequestDetailsMatchParams } from './compo
 import { Partnerships } from './components/Partners/Partnerships';
 import { Help } from './components/Pages/Help';
 import { GetUserByEmail, GetUserById } from './services/users';
-
-import { BootStrapProvider } from './theme-providers/bootstrap/BootstrapThemeProvider';
+import { TailwindThemeProvider } from './theme-providers/tailwind/TailwindThemeProvider';
+import { Button } from "@/components/ui/button"
+import { Mail } from "lucide-react"
 
 interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> {}
 
@@ -230,6 +231,36 @@ export const App: FC = () => {
                         <TopMenu isUserLoaded={isUserLoaded} currentUser={currentUser} />
                         <div className='container-fluid px-0'>
                             <Switch>
+                                <Route
+                                    path='/tw'
+                                    render={props => (
+                                        <TailwindThemeProvider>
+                                            <div className="mx-auto my-4 w-[400px]">
+                                                <figure className="bg-slate-100 rounded-xl p-8 dark:bg-slate-800">
+                                                    <img className="w-24 h-24 rounded-full mx-auto" src="/TrashMobEco_CircleLogo.png" alt="" />
+                                                    <div className="pt-6 text-center space-y-4">
+                                                        <blockquote>
+                                                        <p className="text-lg font-medium">
+                                                            “Tailwind CSS is the only framework that I've seen scale
+                                                            on large teams. It’s easy to customize, adapts to any design,
+                                                            and the build size is tiny.”
+                                                        </p>
+                                                        </blockquote>
+                                                        <figcaption className="font-medium">
+                                                        <div className="text-sky-500 dark:text-sky-400">
+                                                            Sarah Dayan
+                                                        </div>
+                                                        <div className="text-slate-700 dark:text-slate-500">
+                                                            Staff Engineer, Algolia
+                                                        </div>
+                                                        </figcaption>
+                                                    </div>
+                                                </figure>
+                                                <Button variant="outline"><Mail /> Shadcn Button</Button>
+                                            </div>
+                                        </TailwindThemeProvider>
+                                    )}
+                                />
                                 <Route
                                     path='/manageeventdashboard/:eventId?'
                                     render={(props: AppProps) => renderEditEvent(props)}

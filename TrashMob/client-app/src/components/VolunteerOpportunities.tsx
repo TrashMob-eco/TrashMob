@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Button, Col, Container, Row } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { HeroSection } from './Customization/HeroSection';
+import { BootstrapThemeProvider } from '@/theme-providers/bootstrap/BootstrapThemeProvider';
 
 function ReadMore({ children }: any) {
     const text = children;
@@ -25,7 +26,7 @@ export const VolunteerOpportunities: React.FC = () => {
     });
 
     return (
-        <>
+        <BootstrapThemeProvider>
             <HeroSection Title='Recruiting' Description='We’d love to have you join us.' />
             <Container>
                 <Row className='my-4'>
@@ -166,6 +167,6 @@ export const VolunteerOpportunities: React.FC = () => {
                     </Col>
                 </Row>
             </Container>
-        </>
+        </BootstrapThemeProvider>
     );
 };

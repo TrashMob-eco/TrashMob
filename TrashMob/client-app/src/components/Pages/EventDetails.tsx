@@ -24,6 +24,7 @@ import {
 } from '../../services/events';
 import { Services } from '../../config/services.config';
 import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
+import { BootstrapThemeProvider } from '@/theme-providers/bootstrap/BootstrapThemeProvider';
 
 export interface DetailsMatchParams {
     eventId: string;
@@ -207,7 +208,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
     }
 
     return (
-        <div>
+        <BootstrapThemeProvider>
             <HeroSection Title='View Events' Description='Learn, join, and inspire.' />
             {!isDataLoaded ? (<p><em>Loding...</em></p>) : (
                 <>
@@ -300,7 +301,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                     </Container>
                 </>
             )}
-        </div>
+        </BootstrapThemeProvider>
     );
 };
 

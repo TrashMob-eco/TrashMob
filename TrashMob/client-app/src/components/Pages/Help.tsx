@@ -3,6 +3,7 @@ import { Col, Container, Image, Row } from 'react-bootstrap';
 import { HeroSection } from '../Customization/HeroSection';
 import gloves from '../assets/gloves.svg';
 import events from '../assets/faq/Event.svg';
+import { BootstrapThemeProvider } from '@/theme-providers/bootstrap/BootstrapThemeProvider';
 
 const tabs = [
     {
@@ -239,7 +240,7 @@ export const Help: React.FC = () => {
     const [selectedTab, setSelectedTab] = React.useState(0);
 
     return (
-        <>
+        <BootstrapThemeProvider>
             <HeroSection Title='Site Help' Description='Answering your questions!' />
             <Container className='my-5 pt-5'>
                 <div className='faq-tabs-wrapper'>
@@ -259,6 +260,6 @@ export const Help: React.FC = () => {
                 {selectedTab === 1 && <Events />}
                 {selectedTab === 2 && <Parnterships />}
             </Container>
-        </>
+        </BootstrapThemeProvider>
     );
 };

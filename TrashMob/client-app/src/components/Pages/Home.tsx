@@ -18,6 +18,7 @@ import EventsSection from '../EventsSection';
 import { GetStats } from '../../services/stats';
 import { Services } from '../../config/services.config';
 import StatsData from '../Models/StatsData';
+import { BootstrapThemeProvider } from '@/theme-providers/bootstrap/BootstrapThemeProvider';
 
 export interface HomeProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -51,7 +52,7 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, mat
     }, [isUserLoaded, currentUser]);
 
     return (
-        <>
+        <BootstrapThemeProvider>
             <Container fluid>
                 <Row className='shadow position-relative'>
                     <div className='d-flex flex-column px-0 py-0 pl-lg-5 m-auto w-100' style={{ zIndex: 10 }}>
@@ -193,7 +194,7 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, mat
                 match={match}
             />
             <GettingStartedSection />
-        </>
+        </BootstrapThemeProvider>
     );
 };
 

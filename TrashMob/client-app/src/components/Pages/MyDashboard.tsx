@@ -45,6 +45,7 @@ import { GetPartnerAdminsForUser } from '../../services/admin';
 import { GetStatsForUser } from '../../services/stats';
 import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
 import { EventsMap } from '../Map';
+import { BootstrapThemeProvider } from '@/theme-providers/bootstrap/BootstrapThemeProvider';
 
 const isUpcomingEvent = (event: EventData) => new Date(event.eventDate) >= new Date()
 const isPastEvent = (event: EventData) => new Date(event.eventDate) < new Date()
@@ -706,7 +707,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     }
 
     return (
-        <>
+        <BootstrapThemeProvider>
             <HeroSection Title='Dashboard' Description="See how much you've done!" />
             <Container className='mt-5 pb-5'>
                 {eventToShare ? (
@@ -917,7 +918,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                     <PartnerAdminInvitationsTable />
                 </div>
             </Container>
-        </>
+        </BootstrapThemeProvider>
     );
 };
 

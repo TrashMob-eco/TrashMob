@@ -4,6 +4,7 @@ import { Button, Container } from 'react-bootstrap';
 import UserData from '../Models/UserData';
 import { getApiConfig, getB2CPolicies, msalClient } from '../../store/AuthStore';
 import { HeroSection } from '../Customization/HeroSection';
+import { BootstrapThemeProvider } from '@/theme-providers/bootstrap/BootstrapThemeProvider';
 
 interface DeleteMyDataProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -58,13 +59,13 @@ const DeleteMyData: FC<DeleteMyDataProps> = (props) => {
     const contents = renderDeleteYourAccount();
 
     return (
-        <div>
+        <BootstrapThemeProvider>
             <HeroSection
                 Title='Delete your account?'
                 Description='TrashMob members are making the world a better place!'
             />
             {contents}
-        </div>
+        </BootstrapThemeProvider>
     );
 };
 

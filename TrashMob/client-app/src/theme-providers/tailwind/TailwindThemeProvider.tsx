@@ -1,6 +1,11 @@
-import { PropsWithChildren } from "react"
-import './index.css'
+import { PropsWithChildren, useEffect } from "react"
 
 export const TailwindThemeProvider = ({ children}: PropsWithChildren<{}>) => {
-  return <>{children}</>
+	useEffect(() => {
+		const loadCss = async () => {
+			await import('./index.css')
+		}
+		loadCss()
+	}, [])
+	return <>{children}</>
 }

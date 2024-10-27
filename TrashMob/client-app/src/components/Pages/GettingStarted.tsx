@@ -8,6 +8,7 @@ import picker from '../assets/gettingStarted/picker.png';
 import trashcangroup from '../assets/gettingStarted/trashcangroup.png';
 import workgloves from '../assets/gettingStarted/workgloves.png';
 import { HeroSection } from '../Customization/HeroSection';
+import { BootstrapThemeProvider } from '@/theme-providers/bootstrap/BootstrapThemeProvider';
 
 export const GettingStarted: React.FC = () => {
     React.useEffect(() => {
@@ -15,7 +16,7 @@ export const GettingStarted: React.FC = () => {
     });
 
     return (
-        <>
+        <BootstrapThemeProvider>
             <HeroSection Title='Getting Started' Description='Tips and tricks to get you out there.' />
             <Container fluid className='bg-white'>
                 <Row className='text-center py-5 '>
@@ -210,6 +211,6 @@ export const GettingStarted: React.FC = () => {
                     </Col>
                 </Row>
             </Container>
-        </>
+        </BootstrapThemeProvider>
     );
 };

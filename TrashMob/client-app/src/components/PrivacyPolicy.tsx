@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Col, Row } from 'react-bootstrap';
 import logo from './assets/logo.svg';
 import { HeroSection } from './Customization/HeroSection';
+import { BootstrapThemeProvider } from '@/theme-providers/bootstrap/BootstrapThemeProvider';
 
 export const CurrentPrivacyPolicyVersion: PrivacyPolicyVersion = {
     versionId: '0.3',
@@ -21,7 +22,7 @@ export const PrivacyPolicy: React.FC = () => {
     });
 
     return (
-        <>
+        <BootstrapThemeProvider>
             <HeroSection Title='Privacy policy' Description='Making your privacy a priority.' />
             <div className='container my-5'>
                 <h2 className='fw-500 font-size-xl'>Privacy Policy for TrashMob</h2>
@@ -213,6 +214,6 @@ export const PrivacyPolicy: React.FC = () => {
                     </Col>
                 </Row>
             </div>
-        </>
+        </BootstrapThemeProvider>
     );
 };

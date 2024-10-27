@@ -6,6 +6,7 @@ import { useMutation } from '@tanstack/react-query';
 import * as Constants from '../Models/Constants';
 import ContactRequestData from '../Models/ContactRequestData';
 import { CreateContactRequest } from '../../services/contact';
+import { BootstrapThemeProvider } from '@/theme-providers/bootstrap/BootstrapThemeProvider';
 
 interface ContactUsProps extends RouteComponentProps<any> {}
 
@@ -114,102 +115,104 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
     }, []);
 
     return (
-        <Container>
-            <Row className='gx-2 py-5' lg={2}>
-                <Col lg={4} className='d-flex'>
-                    <div className='bg-white py-2 px-5 shadow-sm rounded'>
-                        <h2 className='color-primary mt-4 mb-5'>Contact Us</h2>
-                        <p>
-                            Have a question for the TrashMob team, want to submit a suggestion for improving the
-                            website, or just want to tell us you love us? Drop us a note here and we'll be sure to read
-                            it.
-                        </p>
-                        <p>Can't wait to hear from you!</p>
-                    </div>
-                </Col>
-                <Col lg={8}>
-                    <div className='bg-white p-5 shadow-sm rounded'>
-                        <Form onSubmit={handleSave}>
-                            <Form.Group className='required'>
-                                <Form.Label className='control-label font-weight-bold h5'>Name</Form.Label>
-                                <Form.Control
-                                    type='text'
-                                    defaultValue={name}
-                                    maxLength={parseInt('64')}
-                                    onChange={(val) => handleNameChanged(val.target.value)}
-                                    required
-                                    placeholder='Enter Name'
-                                />
-                                <span style={{ color: 'red' }}>{nameErrors}</span>
-                            </Form.Group>
+        <BootstrapThemeProvider>
+            <Container>
+                <Row className='gx-2 py-5' lg={2}>
+                    <Col lg={4} className='d-flex'>
+                        <div className='bg-white py-2 px-5 shadow-sm rounded'>
+                            <h2 className='color-primary mt-4 mb-5'>Contact Us</h2>
+                            <p>
+                                Have a question for the TrashMob team, want to submit a suggestion for improving the
+                                website, or just want to tell us you love us? Drop us a note here and we'll be sure to read
+                                it.
+                            </p>
+                            <p>Can't wait to hear from you!</p>
+                        </div>
+                    </Col>
+                    <Col lg={8}>
+                        <div className='bg-white p-5 shadow-sm rounded'>
+                            <Form onSubmit={handleSave}>
+                                <Form.Group className='required'>
+                                    <Form.Label className='control-label font-weight-bold h5'>Name</Form.Label>
+                                    <Form.Control
+                                        type='text'
+                                        defaultValue={name}
+                                        maxLength={parseInt('64')}
+                                        onChange={(val) => handleNameChanged(val.target.value)}
+                                        required
+                                        placeholder='Enter Name'
+                                    />
+                                    <span style={{ color: 'red' }}>{nameErrors}</span>
+                                </Form.Group>
 
-                            <Form.Group className='required'>
-                                <Form.Label className='control-label font-weight-bold h5'>Email</Form.Label>
-                                <Form.Control
-                                    type='text'
-                                    defaultValue={email}
-                                    maxLength={parseInt('64')}
-                                    onChange={(val) => handleEmailChanged(val.target.value)}
-                                    required
-                                    placeholder='Enter Email'
-                                />
-                                <span style={{ color: 'red' }}>{emailErrors}</span>
-                            </Form.Group>
+                                <Form.Group className='required'>
+                                    <Form.Label className='control-label font-weight-bold h5'>Email</Form.Label>
+                                    <Form.Control
+                                        type='text'
+                                        defaultValue={email}
+                                        maxLength={parseInt('64')}
+                                        onChange={(val) => handleEmailChanged(val.target.value)}
+                                        required
+                                        placeholder='Enter Email'
+                                    />
+                                    <span style={{ color: 'red' }}>{emailErrors}</span>
+                                </Form.Group>
 
-                            <Form.Group className='required'>
-                                <Form.Label className='control-label font-weight-bold h5'>Message</Form.Label>
-                                <Form.Control
-                                    as='textarea'
-                                    defaultValue={message}
-                                    maxLength={parseInt('2048')}
-                                    rows={5}
-                                    cols={5}
-                                    onChange={(val) => handleMessageChanged(val.target.value)}
-                                    required
-                                    placeholder='Enter Message'
-                                />
-                                <span style={{ color: 'red' }}>{messageErrors}</span>
-                            </Form.Group>
-                            <Form.Group>
-                                <LoadCanvasTemplateNoReload className='border' />
-                            </Form.Group>
-                            <Form.Group className='required'>
-                                <Form.Label className='control-label font-weight-bold h5'>CAPTCHA Value</Form.Label>
-                                <Form.Control
-                                    type='text'
-                                    required
-                                    name='user_captcha_input'
-                                    placeholder='Enter Captcha'
-                                />
-                            </Form.Group>
-                            <Form.Group className='form-group d-flex justify-content-end'>
-                                <ButtonGroup className='justify-content-between'>
-                                    <Button
-                                        className='action mr-2 event-list-event-type'
-                                        onClick={(e) => handleCancel(e)}
-                                    >
-                                        Cancel
-                                    </Button>
-                                    <Button disabled={!isSaveEnabled} type='submit' className='action btn-default'>
-                                        Submit
-                                    </Button>
-                                </ButtonGroup>
-                            </Form.Group>
-                        </Form>
-                    </div>
-                </Col>
-            </Row>
-            <Modal show={show} onHide={handleClose}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Confirmation</Modal.Title>
-                </Modal.Header>
-                <Modal.Body className='text-center'>
-                    <b>Message was successfully sent!</b>
-                    <br />
-                    <small>You'll now be redirected to the TrashMob.eco home page...</small>
-                </Modal.Body>
-            </Modal>
-        </Container>
+                                <Form.Group className='required'>
+                                    <Form.Label className='control-label font-weight-bold h5'>Message</Form.Label>
+                                    <Form.Control
+                                        as='textarea'
+                                        defaultValue={message}
+                                        maxLength={parseInt('2048')}
+                                        rows={5}
+                                        cols={5}
+                                        onChange={(val) => handleMessageChanged(val.target.value)}
+                                        required
+                                        placeholder='Enter Message'
+                                    />
+                                    <span style={{ color: 'red' }}>{messageErrors}</span>
+                                </Form.Group>
+                                <Form.Group>
+                                    <LoadCanvasTemplateNoReload className='border' />
+                                </Form.Group>
+                                <Form.Group className='required'>
+                                    <Form.Label className='control-label font-weight-bold h5'>CAPTCHA Value</Form.Label>
+                                    <Form.Control
+                                        type='text'
+                                        required
+                                        name='user_captcha_input'
+                                        placeholder='Enter Captcha'
+                                    />
+                                </Form.Group>
+                                <Form.Group className='form-group d-flex justify-content-end'>
+                                    <ButtonGroup className='justify-content-between'>
+                                        <Button
+                                            className='action mr-2 event-list-event-type'
+                                            onClick={(e) => handleCancel(e)}
+                                        >
+                                            Cancel
+                                        </Button>
+                                        <Button disabled={!isSaveEnabled} type='submit' className='action btn-default'>
+                                            Submit
+                                        </Button>
+                                    </ButtonGroup>
+                                </Form.Group>
+                            </Form>
+                        </div>
+                    </Col>
+                </Row>
+                <Modal show={show} onHide={handleClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Confirmation</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body className='text-center'>
+                        <b>Message was successfully sent!</b>
+                        <br />
+                        <small>You'll now be redirected to the TrashMob.eco home page...</small>
+                    </Modal.Body>
+                </Modal>
+            </Container>
+        </BootstrapThemeProvider>
     );
 };
 

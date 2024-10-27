@@ -12,6 +12,7 @@ import { SocialsModal } from './EventManagement/ShareToSocialsModal';
 import * as SharingMessages from '../store/SharingMessages';
 import { CreateEventSummary, GetEventById, GetEventSummaryById, UpdateEventSummary } from '../services/events';
 import { Services } from '../config/services.config';
+import { BootstrapThemeProvider } from '@/theme-providers/bootstrap/BootstrapThemeProvider';
 
 export interface EventSummaryMatchParams {
     eventId: string;
@@ -394,45 +395,47 @@ export const EventSummary: FC<EventSummaryDashboardProps> = (props) => {
     };
 
     return (
-        <Container>
-            {eventToShare ? (
-                <SocialsModal
-                    eventToShare={eventToShare}
-                    show={showModal}
-                    handleShow={handleShowModal}
-                    modalTitle='Event Summary Saved'
-                    eventLink='https://www.trashmob.eco'
-                    message={SharingMessages.getEventSummaryMessage(
-                        eventToShare.city,
-                        actualNumberOfAttendees,
-                        numberOfBags,
-                    )}
-                    emailSubject='TrashMob Event Summary'
-                />
-            ) : null}
-            <Row className='gx-2 py-5' lg={2}>
-                <Col lg={4} className='d-flex'>
-                    <div className='bg-white py-2 px-5 shadow-sm rounded'>
-                        <h2 className='color-primary mt-4 mb-5'>Enter Event Summary Information</h2>
-                        <p>Please enter information about how the event went.</p>
-                        <p>
-                            If you have garbage that needs to be hauled, and have previously requested help from a
-                            partner with hauling, enter the locations as accurately as possible of the piles you need
-                            hauled. Leave additional notes as needed to help the partner locate the trash. You can add
-                            as many locations as needed, but the request will not be sent until you have saved the
-                            entries and then hit the Submit button!
-                        </p>
-                    </div>
-                </Col>
-                <Col lg={8}>
-                    <div className='bg-white p-5 shadow-sm rounded'>
-                        <h2 className='color-primary mt-4 mb-5'>Event Summary</h2>
-                        {renderSummary()}
-                        {renderPickupLocations()}
-                    </div>
-                </Col>
-            </Row>
-        </Container>
+        <BootstrapThemeProvider>
+            <Container>
+                {eventToShare ? (
+                    <SocialsModal
+                        eventToShare={eventToShare}
+                        show={showModal}
+                        handleShow={handleShowModal}
+                        modalTitle='Event Summary Saved'
+                        eventLink='https://www.trashmob.eco'
+                        message={SharingMessages.getEventSummaryMessage(
+                            eventToShare.city,
+                            actualNumberOfAttendees,
+                            numberOfBags,
+                        )}
+                        emailSubject='TrashMob Event Summary'
+                    />
+                ) : null}
+                <Row className='gx-2 py-5' lg={2}>
+                    <Col lg={4} className='d-flex'>
+                        <div className='bg-white py-2 px-5 shadow-sm rounded'>
+                            <h2 className='color-primary mt-4 mb-5'>Enter Event Summary Information</h2>
+                            <p>Please enter information about how the event went.</p>
+                            <p>
+                                If you have garbage that needs to be hauled, and have previously requested help from a
+                                partner with hauling, enter the locations as accurately as possible of the piles you need
+                                hauled. Leave additional notes as needed to help the partner locate the trash. You can add
+                                as many locations as needed, but the request will not be sent until you have saved the
+                                entries and then hit the Submit button!
+                            </p>
+                        </div>
+                    </Col>
+                    <Col lg={8}>
+                        <div className='bg-white p-5 shadow-sm rounded'>
+                            <h2 className='color-primary mt-4 mb-5'>Event Summary</h2>
+                            {renderSummary()}
+                            {renderPickupLocations()}
+                        </div>
+                    </Col>
+                </Row>
+            </Container>
+        </BootstrapThemeProvider>
     );
 };
 

@@ -9,6 +9,7 @@ import UserData from '../Models/UserData';
 import logo from '../assets/logo.svg';
 import { HeroSection } from '../Customization/HeroSection';
 import { GetUserById, UpdateUser } from '../../services/users';
+import { BootstrapThemeProvider } from '@/theme-providers/bootstrap/BootstrapThemeProvider';
 
 type WaiverFormInputs = {
     userId: string;
@@ -61,7 +62,7 @@ const Waivers: React.FC<WaiversProps> = ({ currentUser }) => {
     };
 
     return (
-        <>
+        <BootstrapThemeProvider>
             <HeroSection Title='Waiver' Description='Safety first!' />
             <Container className='bodyMargin'>
                 <h2 className='fw-500 font-size-xl'>TrashMob.eco Waiver</h2>
@@ -159,7 +160,7 @@ const Waivers: React.FC<WaiversProps> = ({ currentUser }) => {
                     </Col>
                 </Row>
             </Container>
-        </>
+        </BootstrapThemeProvider>
     );
 };
 

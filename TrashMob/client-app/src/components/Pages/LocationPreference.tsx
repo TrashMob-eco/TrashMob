@@ -19,6 +19,7 @@ import { AzureSearchLocationInput, SearchLocationOption } from '../Map/AzureSear
 import { useAzureMapSearchAddressReverse } from '../../hooks/useAzureMapSearchAddressReverse';
 import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
 import { GoogleMap } from '../Map/GoogleMap';
+import { BootstrapThemeProvider } from '@/theme-providers/bootstrap/BootstrapThemeProvider';
 
 interface LocationPreferenceProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -285,7 +286,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
     return !isDataLoaded ? (
         <div>Loading</div>
     ) : (
-        <div>
+        <BootstrapThemeProvider>
             <HeroSection Title='Set your location' Description='Get notified for events near you!' />
             <Container className='p-4 bg-white mt-5 rounded'>
                 <h4 className='fw-600 color-primary my-3 main-header'>Location preferences</h4>
@@ -436,7 +437,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                     </Form.Row>
                 </Form>
             </Container>
-        </div>
+        </BootstrapThemeProvider>
     );
 };
 

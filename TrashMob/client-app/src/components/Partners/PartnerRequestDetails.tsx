@@ -17,6 +17,7 @@ import { Services } from '../../config/services.config';
 import { APIProvider, Marker } from '@vis.gl/react-google-maps';
 import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
 import { GoogleMap } from '../Map/GoogleMap';
+import { BootstrapThemeProvider } from '@/theme-providers/bootstrap/BootstrapThemeProvider';
 
 export interface PartnerRequestDetailsMatchParams {
     partnerRequestId: string;
@@ -470,10 +471,10 @@ export const PartnerRequestDetails: React.FC<PartnerRequestDetailsParams> = (pro
         );
 
     return (
-        <div>
+        <BootstrapThemeProvider>
             <hr />
             {contents}
-        </div>
+        </BootstrapThemeProvider>
     );
 };
 

@@ -11,6 +11,7 @@ import { SocialsModal } from './ShareToSocialsModal';
 import * as SharingMessages from '../../store/SharingMessages';
 import { DeleteEvent, GetEventById } from '../../services/events';
 import { Services } from '../../config/services.config';
+import { BootstrapThemeProvider } from '@/theme-providers/bootstrap/BootstrapThemeProvider';
 
 export interface CancelEventMatchParams {
     eventId: string;
@@ -145,7 +146,7 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
         );
 
     return (
-        <div>
+        <BootstrapThemeProvider>
             <Container className='p-4 bg-white rounded my-5'>
                 {isDataLoaded ? (
                     <SocialsModal
@@ -162,6 +163,6 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
                 <hr />
                 {contents}
             </Container>
-        </div>
+        </BootstrapThemeProvider>
     );
 };

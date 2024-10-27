@@ -8,6 +8,7 @@ import { AdminPartnerRequests } from './AdminPartnerRequests';
 import { AdminPartners } from './AdminPartners';
 import { AdminSendNotifications } from './AdminSendNotifications';
 import { AdminUsers } from './AdminUsers';
+import { BootstrapThemeProvider } from '@/theme-providers/bootstrap/BootstrapThemeProvider';
 
 interface SiteAdminProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -156,21 +157,23 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
     }
 
     return (
-        <Container>
-            <h1 className='font-weight-bold'>Site Administration</h1>
-            <Row className='gx-2 py-5' lg={2}>
-                <Col lg={12}>
-                    <div>
-                        {!isSiteAdmin && (
-                            <p>
-                                <em>Access Denied</em>
-                            </p>
-                        )}
-                        {isSiteAdmin ? renderAdminTable() : null}
-                    </div>
-                </Col>
-            </Row>
-        </Container>
+        <BootstrapThemeProvider>
+            <Container>
+                <h1 className='font-weight-bold'>Site Administration</h1>
+                <Row className='gx-2 py-5' lg={2}>
+                    <Col lg={12}>
+                        <div>
+                            {!isSiteAdmin && (
+                                <p>
+                                    <em>Access Denied</em>
+                                </p>
+                            )}
+                            {isSiteAdmin ? renderAdminTable() : null}
+                        </div>
+                    </Col>
+                </Row>
+            </Container>
+        </BootstrapThemeProvider>
     );
 };
 

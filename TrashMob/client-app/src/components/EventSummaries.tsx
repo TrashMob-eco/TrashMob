@@ -7,6 +7,7 @@ import DisplayEventSummary from './Models/DisplayEventSummary';
 import EventTypeData from './Models/EventTypeData';
 import { GetEventsSummaries, GetEventTypes } from '../services/events';
 import { Services } from '../config/services.config';
+import { BootstrapThemeProvider } from '@/theme-providers/bootstrap/BootstrapThemeProvider';
 
 export const EventSummaries: React.FC = () => {
     const [displaySummaries, setDisplaySummaries] = React.useState<DisplayEventSummary[]>([]);
@@ -195,10 +196,12 @@ export const EventSummaries: React.FC = () => {
     }
 
     return (
-        <div className='w-100'>
-            <h1 className='pl-sm-3 text-center text-sm-left'>Summary of Events</h1>
-            {renderSearchForm()}
-            {isEventSummaryDataLoaded ? renderEventSummariesTable(displaySummaries) : null}
-        </div>
+        <BootstrapThemeProvider>
+            <div className='w-100'>
+                <h1 className='pl-sm-3 text-center text-sm-left'>Summary of Events</h1>
+                {renderSearchForm()}
+                {isEventSummaryDataLoaded ? renderEventSummariesTable(displaySummaries) : null}
+            </div>
+        </BootstrapThemeProvider>
     );
 };

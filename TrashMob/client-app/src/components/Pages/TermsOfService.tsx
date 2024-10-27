@@ -3,6 +3,7 @@ import React, { FC } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 import logo from '../assets/logo.svg';
 import { HeroSection } from '../Customization/HeroSection';
+import { BootstrapThemeProvider } from '@/theme-providers/bootstrap/BootstrapThemeProvider';
 
 export const CurrentTermsOfServiceVersion: TermsOfServiceVersion = {
     versionId: '0.3',
@@ -21,7 +22,7 @@ export const TermsOfService: FC = () => {
     });
 
     return (
-        <>
+        <BootstrapThemeProvider>
             <HeroSection Title='Terms of Service' Description='Transparency matters to us.' />
             <Container className='py-5'>
                 <h5 className='font-weight-bold mt-5'>1. Terms</h5>
@@ -120,6 +121,6 @@ export const TermsOfService: FC = () => {
                     </Col>
                 </Row>
             </Container>
-        </>
+        </BootstrapThemeProvider>
     );
 };

@@ -17,6 +17,7 @@ import { Marker } from '@vis.gl/react-google-maps';
 import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
 import { AzureSearchLocationInput, SearchLocationOption } from '../Map/AzureSearchLocationInput';
 import { useAzureMapSearchAddressReverse } from '../../hooks/useAzureMapSearchAddressReverse';
+import { BootstrapThemeProvider } from '@/theme-providers/bootstrap/BootstrapThemeProvider';
 
 interface PartnerRequestProps extends RouteComponentProps<any> {
     mode: string;
@@ -496,7 +497,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
 
     const contents = renderCreateForm();
 
-    return <div>{contents}</div>;
+    return <BootstrapThemeProvider>{contents}</BootstrapThemeProvider>;
 };
 
 

@@ -5,6 +5,7 @@ import events from './assets/faq/Event.svg';
 import attendees from './assets/faq/Attendees.svg';
 import volunteer from './assets/faq/volunteer.svg';
 import { HeroSection } from './Customization/HeroSection';
+import { BootstrapThemeProvider } from '@/theme-providers/bootstrap/BootstrapThemeProvider';
 
 const tabs = [
     {
@@ -174,7 +175,7 @@ export const Faq: React.FC = () => {
     const [selectedTab, setSelectedTab] = React.useState(0);
 
     return (
-        <>
+        <BootstrapThemeProvider>
             <HeroSection Title='FAQ' Description='We’ve got you covered.' />
             <Container className='my-5 pt-5'>
                 <div className='faq-tabs-wrapper'>
@@ -202,6 +203,6 @@ export const Faq: React.FC = () => {
                     Contact Us
                 </Link>
             </Container>
-        </>
+        </BootstrapThemeProvider>
     );
 };

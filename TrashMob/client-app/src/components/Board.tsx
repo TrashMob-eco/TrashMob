@@ -10,6 +10,7 @@ import SandraMau from './assets/boardOfDirectors/SandraMau.png';
 import CynthiaMitchell from './assets/boardOfDirectors/CynthiaMitchell.jpg';
 import ValerieWilden from './assets/boardOfDirectors/ValerieWilden.svg';
 import { HeroSection } from './Customization/HeroSection';
+import { BootstrapThemeProvider } from '@/theme-providers/bootstrap/BootstrapThemeProvider';
 
 export const Board: React.FC = () => {
     React.useEffect(() => {
@@ -17,7 +18,7 @@ export const Board: React.FC = () => {
     });
 
     return (
-        <>
+        <BootstrapThemeProvider>
             <HeroSection Title='Board of Directors' Description='Meet our team!' />
             <Container className='my-5 pb-5'>
                 <div className='p-4 directorCard'>
@@ -319,6 +320,6 @@ export const Board: React.FC = () => {
                     </Row>
                 </div>
             </Container>
-        </>
+        </BootstrapThemeProvider>
     );
 };
