@@ -40,14 +40,14 @@ import { Shop } from './components/Shop';
 import { EventSummaries } from './components/EventSummaries';
 import { CancelEvent, CancelEventMatchParams } from './components/EventManagement/CancelEvent';
 
-import './custom.css';
-import 'react-phone-input-2/lib/style.css';
 import DeleteMyData from './components/Pages/DeleteMyData';
 import Waivers from './components/Waivers/Waivers';
 import PartnerRequestDetails, { PartnerRequestDetailsMatchParams } from './components/Partners/PartnerRequestDetails';
 import { Partnerships } from './components/Partners/Partnerships';
 import { Help } from './components/Pages/Help';
 import { GetUserByEmail, GetUserById } from './services/users';
+
+import { BootStrapProvider } from './theme-providers/bootstrap/BootstrapThemeProvider';
 
 interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> {}
 

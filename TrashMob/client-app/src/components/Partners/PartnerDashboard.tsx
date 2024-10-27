@@ -9,6 +9,7 @@ import { PartnerLocations } from './PartnerLocations';
 import { PartnerDocuments } from './PartnerDocuments';
 import { PartnerSocialMediaAccounts } from './PartnerSocialMediaAccounts';
 import { PartnerContacts } from './PartnerContacts';
+import { BootstrapThemeProvider } from '@/theme-providers/bootstrap/BootstrapThemeProvider';
 
 export interface PartnerDashboardMatchParams {
     partnerId?: string;
@@ -159,10 +160,10 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
     );
 
     return (
-        <div>
+        <BootstrapThemeProvider>
             <hr />
             {contents}
-        </div>
+        </BootstrapThemeProvider>
     );
 };
 

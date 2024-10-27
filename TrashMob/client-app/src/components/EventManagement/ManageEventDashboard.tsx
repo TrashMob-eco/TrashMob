@@ -11,6 +11,7 @@ import { ManageEventAttendees } from './ManageEventAttendees';
 import { HeroSection } from '../Customization/HeroSection';
 import { GetEventById } from '../../services/events';
 import { Services } from '../../config/services.config';
+import { BootstrapThemeProvider } from '@/theme-providers/bootstrap/BootstrapThemeProvider';
 
 export interface ManageEventDashboardMatchParams {
     eventId?: string;
@@ -100,7 +101,7 @@ const ManageEventDashboard: React.FC<ManageEventDashboardProps> = (props) => {
     );
 
     return (
-        <div>
+        <BootstrapThemeProvider>
             <HeroSection Title='Manage Event' Description='We can’t wait to see the results.' />
             <Container>
                 <Row className='gx-2 py-5' lg={2}>
@@ -119,7 +120,7 @@ const ManageEventDashboard: React.FC<ManageEventDashboardProps> = (props) => {
                     </Col>
                 </Row>
             </Container>
-        </div>
+        </BootstrapThemeProvider>
     );
 };
 

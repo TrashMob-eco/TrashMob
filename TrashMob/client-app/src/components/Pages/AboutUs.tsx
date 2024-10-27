@@ -4,6 +4,7 @@ import { Col, Container, Image, Row } from 'react-bootstrap';
 import trashbin from '../assets/the-blowup-t06aN6vewaQ-unsplash1.png';
 import trashcans from '../assets/trashcan-artwork.png';
 import { GettingStartedSection } from '../GettingStartedSection';
+import { BootStrapProvider } from '@/theme-providers/bootstrap/BootstrapThemeProvider';
 
 export const AboutUs: React.FC = () => {
     React.useEffect(() => {
@@ -11,7 +12,7 @@ export const AboutUs: React.FC = () => {
     });
 
     return (
-        <>
+        <BootStrapProvider>
             <Container fluid className='mt-1 bg-white p-5'>
                 <Row className='mb-4 px-md-5' xs={1} lg={2}>
                     <Col className='mb-5 pl-lg-5'>
@@ -205,6 +206,6 @@ export const AboutUs: React.FC = () => {
                 </Row>
             </Container>
             <GettingStartedSection />
-        </>
+        </BootStrapProvider>
     );
 };
