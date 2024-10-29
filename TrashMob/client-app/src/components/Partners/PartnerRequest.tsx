@@ -3,8 +3,7 @@ import { RouteComponentProps, withRouter } from 'react-router-dom';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { Button, Col, Container, Form } from 'react-bootstrap';
-import { data } from 'azure-maps-control';
-import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
+import { APIProvider, MapMouseEvent, useMap } from '@vis.gl/react-google-maps';
 import PhoneInput from 'react-phone-input-2';
 import { useMutation } from '@tanstack/react-query';
 import * as ToolTips from '../../store/ToolTips';
@@ -12,9 +11,12 @@ import PartnerRequestData from '../Models/PartnerRequestData';
 import UserData from '../Models/UserData';
 import * as Constants from '../Models/Constants';
 import * as MapStore from '../../store/MapStore';
-import MapControllerSinglePointNoEvents from '../MapControllerSinglePointNoEvent';
 import { CreatePartnerRequest } from '../../services/partners';
-import { AzureMapSearchAddressReverse } from '../../services/maps';
+import { GoogleMap } from '../Map/GoogleMap';
+import { Marker } from '@vis.gl/react-google-maps';
+import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
+import { AzureSearchLocationInput, SearchLocationOption } from '../Map/AzureSearchLocationInput';
+import { useAzureMapSearchAddressReverse } from '../../hooks/useAzureMapSearchAddressReverse';
 
 interface PartnerRequestProps extends RouteComponentProps<any> {
     mode: string;
@@ -41,11 +43,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     const [country, setCountry] = React.useState<string>('');
     const [region, setRegion] = React.useState<string>();
     const [postalCode, setPostalCode] = React.useState<string>();
-    const [center, setCenter] = React.useState<data.Position>(
-        new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude),
-    );
-    const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
-    const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
     const [title, setTitle] = React.useState<string>('Apply to become a partner');
     const [mode, setMode] = React.useState<string>('');
@@ -53,11 +50,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     const createPartnerRequest = useMutation({
         mutationKey: CreatePartnerRequest().key,
         mutationFn: CreatePartnerRequest().service,
-    });
-
-    const azureMapSearchAddressReverse = useMutation({
-        mutationKey: AzureMapSearchAddressReverse().key,
-        mutationFn: AzureMapSearchAddressReverse().service,
     });
 
     React.useEffect(() => {
@@ -71,18 +63,9 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         }
 
         MapStore.getOption().then((opts) => {
-            setMapOptions(opts);
-            setIsMapKeyLoaded(true);
+            setAzureSubscriptionKey(opts.subscriptionKey);
         });
 
-        if ('geolocation' in navigator) {
-            navigator.geolocation.getCurrentPosition((position) => {
-                const point = new data.Position(position.coords.longitude, position.coords.latitude);
-                setCenter(point);
-            });
-        } else {
-            console.log('Not Available');
-        }
     }, [props.currentUser, props.isUserLoaded, props.mode]);
 
     React.useEffect(() => {
@@ -92,6 +75,71 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
             setIsSaveEnabled(true);
         }
     }, [nameErrors, emailErrors, websiteErrors, phoneErrors, region]);
+
+    const [azureSubscriptionKey, setAzureSubscriptionKey] = React.useState<string>();
+
+    const { refetch: refetchAddressReverse } = useAzureMapSearchAddressReverse(
+        {
+            lat: latitude,
+            long: longitude,
+            azureKey: azureSubscriptionKey || '',
+        },
+        { enabled: false },
+    );
+
+
+    const map = useMap();
+
+    const handleSelectSearchLocation = React.useCallback(
+        async (location: SearchLocationOption) => {
+            const { lat, lon } = location.position;
+            setLatitude(lat);
+            setLongitude(lon);
+
+            // side effect: Move Map Center
+            if (map) map.panTo({ lat, lng: lon });
+        },
+        [map],
+    );
+
+    const handleClickMap = React.useCallback((e: MapMouseEvent) => {
+        if (e.detail.latLng) {
+            const lat = e.detail.latLng.lat;
+            const lng = e.detail.latLng.lng;
+            setLatitude(lat);
+            setLongitude(lng);
+        }
+    }, [])
+
+    const handleMarkerDragEnd = React.useCallback((e: google.maps.MapMouseEvent) => {
+        if (e.latLng) {
+            const lat = e.latLng.lat();
+            const lng = e.latLng.lng();
+            setLatitude(lat);
+            setLongitude(lng);
+        }
+    }, [])
+
+    // on Marker moved (latitude + longitude changed), do reverse search lat,lng to address
+    React.useEffect(() => {
+        const searchAddressReverse = async () => {
+
+            const { data } = await refetchAddressReverse();
+
+            const firstResult = data?.addresses[0];
+
+            if (firstResult) {
+                setStreetAddress(firstResult.address.streetNameAndNumber || firstResult.address.streetName);
+                setCity(firstResult.address.municipality);
+                setCountry(firstResult.address.country);
+                setRegion(firstResult.address.countrySubdivisionName);
+                setPostalCode(firstResult.address.postalCode);
+            }
+        };
+        if (latitude && longitude) searchAddressReverse();
+    }, [latitude, longitude]);
+
+
 
     // This will handle the submit form event.
     function handleSave(event: any) {
@@ -213,19 +261,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         } else {
             setPartnerTypeId(Constants.PartnerTypeBusiness);
         }
-    }
-
-    async function handleLocationChange(point: data.Position) {
-        setLatitude(point[1]);
-        setLongitude(point[0]);
-        const azureKey = await MapStore.getKey();
-        azureMapSearchAddressReverse.mutateAsync({ azureKey, lat: point[1], long: point[0] }).then((res) => {
-            setStreetAddress(res.data.addresses[0].address.streetNameAndNumber);
-            setCity(res.data.addresses[0].address.municipality);
-            setCountry(res.data.addresses[0].address.country);
-            setRegion(res.data.addresses[0].address.countrySubdivisionName);
-            setPostalCode(res.data.addresses[0].address.postalCode);
-        });
     }
 
     function createFormDescriptionContent() {
@@ -375,21 +410,23 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                             </div>
                         </Form.Row>
                         <Form.Row>
-                            <AzureMapsProvider>
-                                <>
-                                    <MapControllerSinglePointNoEvents
-                                        center={center}
-                                        mapOptions={mapOptions}
-                                        isMapKeyLoaded={isMapKeyLoaded}
-                                        latitude={latitude}
-                                        longitude={longitude}
-                                        onLocationChange={handleLocationChange}
-                                        currentUser={props?.currentUser}
-                                        isUserLoaded={props?.isUserLoaded}
-                                        isDraggable
+                            <div style={{ position: 'relative', width: '100%' }}>
+                                <GoogleMap onClick={handleClickMap}>
+                                    <Marker
+                                        position={{ lat: latitude, lng: longitude }}
+                                        draggable
+                                        onDragEnd={handleMarkerDragEnd}
                                     />
-                                </>
-                            </AzureMapsProvider>
+                                </GoogleMap>
+                                {azureSubscriptionKey ? (
+                                    <div style={{ position: 'absolute', top: 8, left: 8 }}>
+                                        <AzureSearchLocationInput
+                                            azureKey={azureSubscriptionKey}
+                                            onSelectLocation={handleSelectSearchLocation}
+                                        />
+                                    </div>
+                                ) : null}
+                            </div>
                         </Form.Row>
 
                         <Form.Row className='mt-4'>
@@ -462,4 +499,17 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     return <div>{contents}</div>;
 };
 
-export default withRouter(PartnerRequest);
+
+const PartnerRequestWrapper = (props: PartnerRequestProps) => {
+    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey()
+
+    if (isLoading) return null;
+
+    return (
+        <APIProvider apiKey={googleApiKey || ''}>
+            <PartnerRequest {...props} />
+        </APIProvider>
+    );
+};
+
+export default withRouter(PartnerRequestWrapper);
