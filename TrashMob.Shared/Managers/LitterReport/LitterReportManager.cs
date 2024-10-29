@@ -293,6 +293,7 @@ namespace TrashMob.Shared.Managers.LitterReport
                                         (filter.Region == null ||
                                          lr.LitterImages.Any(li => li.Region == filter.Region)) &&
                                         (filter.City == null || lr.LitterImages.Any(li => li.City == filter.City)))
+                .Include(lr => lr.LitterImages)
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
         }
 
