@@ -47,8 +47,8 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
     const [travelLimitForLocalEventsErrors, setTravelLimitForLocalEventsErrors] = useState<string>('');
 
     const [center, setCenter] = useState<google.maps.LatLngLiteral>({
-        lat: MapStore.defaultLongitude,
-        lng: MapStore.defaultLatitude,
+        lat: MapStore.defaultLatitude,
+        lng: MapStore.defaultLongitude,
     });
     const [azureSubscriptionKey, setAzureSubscriptionKey] = useState<string>();
     const [isSaveEnabled, setIsSaveEnabled] = useState<boolean>(false);
