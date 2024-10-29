@@ -4,6 +4,6 @@
     {
         public int? LitterReportStatusId { get; set; }
 
-        public bool includeLitterImages { get; set; } = false;
+        public bool IncludeLitterImages { get; set; } = false;
     }
 }
