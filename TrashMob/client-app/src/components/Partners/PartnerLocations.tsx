@@ -5,7 +5,7 @@ import { Pencil, XSquare } from 'react-bootstrap-icons';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import UserData from '../Models/UserData';
 import PartnerLocationData from '../Models/PartnerLocationData';
-import { PartnerLocationEdit } from './PartnerLocationEdit';
+import PartnerLocationEdit from './PartnerLocationEdit';
 import { PartnerLocationServices } from './PartnerLocationServices';
 import { PartnerLocationContacts } from './PartnerLocationContacts';
 import { PartnerLocationEventRequests } from './PartnerLocationEventRequests';
