@@ -1,0 +1,151 @@
+/* #main_wrapper, #navbar {
+    height: 114px;
+} */
+
+.tm-header {
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.collapse:is(.show) {
+  z-index: 1000;
+}
+
+#navbar a {
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 27px;
+  font-style: normal;
+}
+
+.logo {
+  width: 200px;
+  height: 30px;
+}
+
+#navbarBrand {
+  margin-right: 0 !important;
+}
+
+#basic-nav-dropdown {
+  background-color: unset !important;
+  color: #212529 !important;
+}
+
+#basic-nav-dropdown:hover {
+  color: #96ba00 !important;
+}
+
+#basic-nav-dropdown::after {
+  border-top: 0.3em solid #96ba00 !important;
+}
+
+#loginBtn,
+#registerBtn,
+#userBtn {
+  width: 115px;
+  height: fit-content;
+  border-radius: 5px !important;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 22.5px;
+}
+
+#welcomeBtn {
+  width: auto;
+  height: 45px;
+  border-radius: 5px !important;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 22.5px;
+  padding: 0 !important;
+  text-decoration: none;
+}
+
+#helpBtn {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#loginBtn,
+#helpBtn,
+#welcomeBtn,
+#contactFormCancelBtn {
+  background-color: unset !important;
+  color: #96ba00 !important;
+  border: 1px solid #96ba00 !important;
+  transition: all ease 0.5s;
+  margin-right: 9px;
+}
+
+#loginBtn:hover {
+  background-color: #96ba00 !important;
+  color: #fff !important;
+  border: none;
+  transition: all ease 0.5s;
+}
+
+#registerBtn {
+  transition: all ease 0.5s;
+}
+
+#registerBtn:hover {
+  background-color: unset !important;
+  color: #96ba00 !important;
+  border: 1px solid #96ba00 !important;
+  transition: all ease 0.5s;
+}
+
+.dropdown-menu {
+  border: 1px solid #96ba00 !important;
+  margin-left: -8px !important;
+}
+
+.dropdown-menu a:hover {
+  color: #96ba00 !important;
+  background-color: unset !important;
+}
+
+.dropdown-menu a {
+  font-weight: 500;
+  font-size: 17px;
+  line-height: 25px;
+  font-style: normal;
+}
+
+#userBtn {
+  background-color: unset !important;
+  font-size: 17px !important;
+  width: auto !important;
+  color: #6b6f74;
+}
+
+#userBtn:focus {
+  box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 1);
+}
+
+#userBtn + .dropdown-menu > .dropdown-item {
+  font-weight: 400;
+  color: #6b6f74;
+}
+
+@media (min-width: 992px) {
+  #navbar a {
+      font-size: medium;
+  }
+
+  .navbar-expand-lg .navbar-collapse {
+      width: 100%;
+  }
+}
+
+@media (min-width: 1200px) {
+  #navbar a {
+      font-size: 18px;
+  }
+
+  .navbar-expand-lg .navbar-collapse {
+      width: auto;
+  }
+}

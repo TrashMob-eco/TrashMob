@@ -12,7 +12,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import Home from './components/Pages/Home';
 
 // Layout
-import TopMenu from './components/ui/NavBar';
+import TopMenu from './components/NavBar/NavBar';
 
 import { AboutUs } from './components/Pages/AboutUs';
 import ContactUs from './components/Pages/ContactUs';
@@ -49,6 +49,7 @@ import { GetUserByEmail, GetUserById } from './services/users';
 import { TailwindThemeProvider } from './theme-providers/tailwind/TailwindThemeProvider';
 import { Button } from "@/components/ui/button"
 import { Mail } from "lucide-react"
+import { SiteHeader } from './components/SiteHeader/SiteHeader';
 
 interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> {}
 
@@ -228,7 +229,8 @@ export const App: FC = () => {
             <MsalProvider instance={msalClient}>
                 <div className='d-flex flex-column h-100'>
                     <BrowserRouter>
-                        <TopMenu isUserLoaded={isUserLoaded} currentUser={currentUser} />
+                        <SiteHeader />
+                        {/* <TopMenu isUserLoaded={isUserLoaded} currentUser={currentUser} /> */}
                         <div className='container-fluid px-0'>
                             <Switch>
                                 <Route
