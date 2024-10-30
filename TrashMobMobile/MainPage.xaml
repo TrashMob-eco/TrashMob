@@ -5,6 +5,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
              xmlns:vm="clr-namespace:TrashMobMobile.ViewModels"
+             xmlns:controls="clr-namespace:TrashMobMobile.Controls"
              x:DataType="vm:MainViewModel">
 
     <Grid>
@@ -134,10 +135,11 @@
                           ItemsSource="{Binding UpcomingEvents}">
                     <maps:Map.ItemTemplate>
                         <DataTemplate x:DataType="vm:EventViewModel">
-                            <maps:Pin Address="{Binding Address.StreetAddress}"
+                            <controls:CustomPin Address="{Binding Address.StreetAddress}"
                                       AutomationId="{Binding Id}"
                                       InfoWindowClicked="Pin_InfoWindowClicked"
                                       Label="{Binding Name}"
+                                      ImageSource="trashbag"
                                       Location="{Binding Address.Location}" />
                         </DataTemplate>
                     </maps:Map.ItemTemplate>
