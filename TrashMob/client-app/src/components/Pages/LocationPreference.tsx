@@ -4,7 +4,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { APIProvider, Map, MapMouseEvent, useMap } from '@vis.gl/react-google-maps';
+import { APIProvider, MapMouseEvent, useMap } from '@vis.gl/react-google-maps';
 
 import UserData from '../Models/UserData';
 import * as ToolTips from '../../store/ToolTips';
@@ -18,6 +18,7 @@ import { MarkerWithInfoWindow, EventInfoWindowContent } from '../Map';
 import { AzureSearchLocationInput, SearchLocationOption } from '../Map/AzureSearchLocationInput';
 import { useAzureMapSearchAddressReverse } from '../../hooks/useAzureMapSearchAddressReverse';
 import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
+import { GoogleMap } from '../Map/GoogleMap';
 
 interface LocationPreferenceProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -46,8 +47,8 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
     const [travelLimitForLocalEventsErrors, setTravelLimitForLocalEventsErrors] = useState<string>('');
 
     const [center, setCenter] = useState<google.maps.LatLngLiteral>({
-        lat: MapStore.defaultLongitude,
-        lng: MapStore.defaultLatitude,
+        lat: MapStore.defaultLatitude,
+        lng: MapStore.defaultLongitude,
     });
     const [azureSubscriptionKey, setAzureSubscriptionKey] = useState<string>();
     const [isSaveEnabled, setIsSaveEnabled] = useState<boolean>(false);
@@ -110,11 +111,6 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
             setAzureSubscriptionKey(opts.subscriptionKey);
         });
 
-        if ('geolocation' in navigator) {
-            navigator.geolocation.getCurrentPosition((position) => {
-                setCenter({ lat: position.coords.latitude, lng: position.coords.longitude });
-            });
-        }
     }, [userId, props.isUserLoaded, isDataLoaded]);
 
     // This will handle Cancel button click event.
@@ -296,13 +292,8 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                 <Form onSubmit={handleSave}>
                     <Form.Row>
                         <div style={{ position: 'relative', width: '100%' }}>
-                            <Map
-                                mapId='6f295631d841c617'
-                                gestureHandling='greedy'
-                                disableDefaultUI
-                                style={{ width: '100%', height: '500px' }}
+                            <GoogleMap
                                 defaultCenter={center}
-                                defaultZoom={MapStore.defaultUserLocationZoom}
                                 onClick={handleClickMap}
                             >
                                 <MarkerWithInfoWindow
@@ -321,7 +312,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                                         />
                                     }
                                 />
-                            </Map>
+                            </GoogleMap>
 
                             {azureSubscriptionKey ? (
                                 <div style={{ position: 'absolute', top: 8, left: 8 }}>

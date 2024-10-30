@@ -3,21 +3,20 @@ import { RouteComponentProps, withRouter } from 'react-router-dom';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
-import { data } from 'azure-maps-control';
-import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
 import { Guid } from 'guid-typescript';
 import PhoneInput from 'react-phone-input-2';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import * as ToolTips from '../../store/ToolTips';
 import UserData from '../Models/UserData';
-import * as MapStore from '../../store/MapStore';
-import MapControllerSinglePointNoEvents from '../MapControllerSinglePointNoEvent';
 import PartnerRequestStatusData from '../Models/PartnerRequestStatusData';
 import PartnerTypeData from '../Models/PartnerTypeData';
 import { getPartnerRequestStatus } from '../../store/partnerRequestStatusHelper';
 import { getPartnerType } from '../../store/partnerTypeHelper';
 import { GetPartnerRequestById, GetPartnerRequestStatuses, GetPartnerTypes } from '../../services/partners';
 import { Services } from '../../config/services.config';
+import { APIProvider, Marker } from '@vis.gl/react-google-maps';
+import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
+import { GoogleMap } from '../Map/GoogleMap';
 
 export interface PartnerRequestDetailsMatchParams {
     partnerRequestId: string;
@@ -46,12 +45,6 @@ export const PartnerRequestDetails: React.FC<PartnerRequestDetailsParams> = (pro
     const [lastUpdatedDate, setLastUpdatedDate] = React.useState<Date>(new Date());
     const [partnerRequestStatusId, setPartnerRequestStatusId] = React.useState<number>(0);
     const [partnerTypeId, setPartnerTypeId] = React.useState<number>(0);
-
-    const [center, setCenter] = React.useState<data.Position>(
-        new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude),
-    );
-    const [mapOptions, setMapOptions] = React.useState<IAzureMapOptions>();
-    const [isMapKeyLoaded, setIsMapKeyLoaded] = React.useState<boolean>(false);
     const [partnerRequestStatusList, setPartnerRequestStatusList] = React.useState<PartnerRequestStatusData[]>([]);
     const [partnerTypeList, setPartnerTypeList] = React.useState<PartnerTypeData[]>([]);
     const [isPartnerRequestDataLoaded, setIsPartnerRequestDataLoaded] = React.useState<boolean>(false);
@@ -139,19 +132,7 @@ export const PartnerRequestDetails: React.FC<PartnerRequestDetailsParams> = (pro
                 });
             });
         }
-        MapStore.getOption().then((opts) => {
-            setMapOptions(opts);
-            setIsMapKeyLoaded(true);
-        });
-
-        if ('geolocation' in navigator) {
-            navigator.geolocation.getCurrentPosition((position) => {
-                const point = new data.Position(position.coords.longitude, position.coords.latitude);
-                setCenter(point);
-            });
-        } else {
-            console.log('Not Available');
-        }
+        
     }, [props.currentUser, props.isUserLoaded, partnerRequestId]);
 
     // This will handle Cancel button click event.
@@ -202,10 +183,6 @@ export const PartnerRequestDetails: React.FC<PartnerRequestDetailsParams> = (pro
 
     function renderLastUpdatedDateToolTip(props: any) {
         return <Tooltip {...props}>{ToolTips.PartnerRequestLastUpdatedDate}</Tooltip>;
-    }
-
-    function handleLocationChange(point: data.Position) {
-        // Do nothing. This is a read-only form
     }
 
     // Returns the HTML Form to the render() method.
@@ -421,21 +398,15 @@ export const PartnerRequestDetails: React.FC<PartnerRequestDetailsParams> = (pro
                                     </Col>
                                 </Form.Row>
                                 <Form.Row>
-                                    <AzureMapsProvider>
-                                        <>
-                                            <MapControllerSinglePointNoEvents
-                                                center={center}
-                                                mapOptions={mapOptions}
-                                                isMapKeyLoaded={isMapKeyLoaded}
-                                                latitude={latitude}
-                                                longitude={longitude}
-                                                onLocationChange={handleLocationChange}
-                                                currentUser={props.currentUser}
-                                                isUserLoaded={props.isUserLoaded}
-                                                isDraggable={false}
-                                            />
-                                        </>
-                                    </AzureMapsProvider>
+                                    <GoogleMap 
+                                        defaultCenter={{ lat: latitude, lng: longitude }}
+                                        defaultZoom={11}
+                                    >
+                                        <Marker 
+                                            position={{ lat: latitude, lng: longitude }}
+                                            draggable={false}
+                                        />
+                                    </GoogleMap>
                                 </Form.Row>
                                 <Form.Group className='form-group'>
                                     <Button className='action' onClick={(e) => handleCancel(e)}>
@@ -506,4 +477,17 @@ export const PartnerRequestDetails: React.FC<PartnerRequestDetailsParams> = (pro
     );
 };
 
-export default withRouter(PartnerRequestDetails);
+const PartnerRequestDetailsWrapper = (props: PartnerRequestDetailsParams) => {
+    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey()
+
+    if (isLoading) return null;
+
+    return (
+        <APIProvider apiKey={googleApiKey || ''}>
+            <PartnerRequestDetails {...props} />
+        </APIProvider>
+    );
+};
+
+
+export default withRouter(PartnerRequestDetailsWrapper);

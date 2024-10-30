@@ -122,10 +122,13 @@ namespace TrashMob.Controllers
             {
                 var pagedResults = result.OrderByDescending(e => e.CreatedDate).Skip(filter.PageIndex.GetValueOrDefault(0) * filter.PageSize.GetValueOrDefault(10))
                     .Take(filter.PageSize.GetValueOrDefault(10)).ToList();
-                return Ok(pagedResults);
+
+                var pagedFullLitterReports = await ToFullLitterReport(pagedResults, cancellationToken);
+                return Ok(pagedFullLitterReports);
             }
 
-            return Ok(result);
+            var fullResult = await ToFullLitterReport(result, cancellationToken);
+            return Ok(fullResult);
         }
 
         [HttpPost]
