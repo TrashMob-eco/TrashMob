@@ -7,6 +7,10 @@ module.exports = {
 	content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
 	important: ".tailwind",
 	theme: {
+		fontFamily: {
+			sans: ['Poppins', 'sans-serif'],
+			serif: ['Montserrat', 'serif'],
+		},
 		extend: {
 			borderRadius: {
 				lg: 'var(--radius)',
