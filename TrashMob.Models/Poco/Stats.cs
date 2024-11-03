@@ -9,5 +9,9 @@
         public int TotalEvents { get; set; }
 
         public int TotalParticipants { get; set; }
+
+        public int TotalLitterReportsSubmitted { get; set; }
+
+        public int TotalLitterReportsClosed { get; set; }
     }
 }
