@@ -7,6 +7,15 @@ public partial class AddressViewModel : ObservableObject
     private string city = string.Empty;
 
     [ObservableProperty]
+    private Guid parentId;
+
+    [ObservableProperty]
+    private string displayName;
+
+    [ObservableProperty]
+    private AddressType addressType;
+
+    [ObservableProperty]
     private string country;
 
     [ObservableProperty]
@@ -67,5 +76,13 @@ public partial class AddressViewModel : ObservableObject
     private void UpdateDisplayAddress()
     {
         DisplayAddress = $"{StreetAddress}, {City}, {Region}";
+    }
+
+    public string AutomationId
+    {
+        get
+        {
+            return $"{AddressType}:{ParentId}";
+        }
     }
 }

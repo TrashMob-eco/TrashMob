@@ -575,6 +575,8 @@ public partial class CreateEventViewModel : BaseViewModel
 
                 if (litterImageViewModel != null)
                 {
+                    litterImageViewModel.Address.DisplayName = litterReport.Name;
+                    litterImageViewModel.Address.ParentId = litterReport.Id;
                     LitterImages.Add(litterImageViewModel);
                 }
             }

@@ -121,6 +121,8 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager, ISta
             TotalBags = stats.TotalBags,
             TotalEvents = stats.TotalEvents,
             TotalHours = stats.TotalHours,
+            TotalLitterReportsSubmitted = stats.TotalLitterReportsSubmitted,
+            TotalLitterReportsClosed = stats.TotalLitterReportsClosed,
         };
     }
 

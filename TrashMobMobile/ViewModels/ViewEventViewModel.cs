@@ -14,9 +14,11 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     IWaiverManager waiverManager,
     IEventAttendeeRestService eventAttendeeRestService,
     IEventAttendeeRouteRestService eventAttendeeRouteRestService,
-    INotificationService notificationService) : BaseViewModel(notificationService)
+    INotificationService notificationService,
+    IEventLitterReportRestService eventLitterReportRestService) : BaseViewModel(notificationService)
 {
     private readonly IEventAttendeeRestService eventAttendeeRestService = eventAttendeeRestService;
+    private readonly IEventLitterReportRestService eventLitterReportRestService = eventLitterReportRestService;
     private readonly IEventTypeRestService eventTypeRestService = eventTypeRestService;
     private readonly IMobEventManager mobEventManager = mobEventManager;
     private readonly IWaiverManager waiverManager = waiverManager;
@@ -61,6 +63,12 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
     public ObservableCollection<EventViewModel> Events { get; set; } = [];
 
+    public ObservableCollection<AddressViewModel> Addresses { get; set; } = [];
+
+    public ObservableCollection<LitterReportViewModel> LitterReports { get; set; } = [];
+
+    public ObservableCollection<LitterImageViewModel> LitterImages { get; set; } = [];
+
     public async Task Init(Guid eventId)
     {
         IsBusy = true;
@@ -68,6 +76,25 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
         try
         {
             mobEvent = await mobEventManager.GetEventAsync(eventId);
+            var eventLitterReports = await eventLitterReportRestService.GetEventLitterReportsAsync(mobEvent.Id);
+
+            foreach (var eventLitterReport in eventLitterReports)
+            {
+                LitterReports.Add(eventLitterReport.LitterReport.ToEventLitterReportViewModel(notificationService, eventLitterReportRestService, eventId));
+
+                foreach (var litterImage in eventLitterReport.LitterReport.LitterImages)
+                {
+                    var litterImageViewModel = litterImage.ToLitterImageViewModel(NotificationService);
+
+                    if (litterImageViewModel != null)
+                    {
+                        litterImageViewModel.Address.DisplayName = eventLitterReport.LitterReport.Name;
+                        litterImageViewModel.Address.ParentId = eventLitterReport.LitterReport.Id;
+                        LitterImages.Add(litterImageViewModel);
+                        Addresses.Add(litterImageViewModel.Address);
+                    }
+                }
+            }
 
             EventViewModel = mobEvent.ToEventViewModel();
 
@@ -77,6 +104,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
             Events.Clear();
             Events.Add(EventViewModel);
+
+            Addresses.Add(EventViewModel.Address);
 
             EnableEditEvent = mobEvent.IsEventLead();
             EnableViewEventSummary = mobEvent.IsCompleted();

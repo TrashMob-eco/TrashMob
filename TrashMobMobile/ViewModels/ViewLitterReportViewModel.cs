@@ -86,6 +86,8 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
 
                 if (litterImageViewModel != null)
                 {
+                    litterImageViewModel.Address.DisplayName = LitterReport.Name;
+                    litterImageViewModel.Address.ParentId = LitterReport.Id;
                     LitterImageViewModels.Add(litterImageViewModel);
                 }
             }

@@ -115,6 +115,10 @@
                 UserRoleForEvent = mobEvent.IsEventLead() ? "Lead" : "Attendee",
             };
 
+            eventViewModel.Address.ParentId = eventViewModel.Id;
+            eventViewModel.Address.DisplayName = eventViewModel.Name;
+            eventViewModel.Address.AddressType = AddressType.Event;
+
             return eventViewModel;
         }
 
