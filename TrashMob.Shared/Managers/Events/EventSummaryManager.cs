@@ -76,7 +76,15 @@
             var litterReports = await litterReportManager.GetAsync(cancellationToken);
             var eventLitterReports = await eventLitterReportManager.GetAsync(cancellationToken);
 
-            stats.TotalLitterReportsClosed = eventLitterReports.Count(elr => eventIds.Contains(elr.EventId) && elr.LitterReport.LitterReportStatusId == (int)LitterReportStatusEnum.Cleaned);
+            if (eventLitterReports == null)
+            {
+                stats.TotalLitterReportsClosed = 0;
+            }
+            else
+            {
+                stats.TotalLitterReportsClosed = eventLitterReports.Count(elr => eventIds.Contains(elr.EventId) && elr.LitterReport != null && elr.LitterReport.LitterReportStatusId == (int)LitterReportStatusEnum.Cleaned);
+            }
+
             stats.TotalLitterReportsSubmitted = litterReports.Count(lr => lr.CreatedByUserId == userId);
 
             return stats;
