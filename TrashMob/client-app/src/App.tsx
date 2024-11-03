@@ -7,27 +7,26 @@ import { initializeIcons } from '@uifabric/icons';
 import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
 import { InteractionType } from '@azure/msal-browser';
 import * as msal from '@azure/msal-browser';
-import { Guid } from 'guid-typescript';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import Home from './components/Pages/Home';
 
 // Layout
-import TopMenu from './components/TopMenu';
+import TopMenu from './components/ui/NavBar';
 
 import { AboutUs } from './components/Pages/AboutUs';
 import ContactUs from './components/Pages/ContactUs';
 import EventSummary from './components/EventSummary';
 import { Faq } from './components/Faq';
-import { Footer } from './components/Footer';
+import { Footer } from './components/ui/Footer';
 import { GettingStarted } from './components/Pages/GettingStarted';
 import MyDashboard from './components/Pages/MyDashboard';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { TermsOfService } from './components/Pages/TermsOfService';
 import { Board } from './components/Board';
 import { VolunteerOpportunities } from './components/VolunteerOpportunities';
-import { msalClient } from './store/AuthStore';
-import { EventDetails, DetailsMatchParams } from './components/Pages/EventDetails';
+import { getApiConfig, msalClient } from './store/AuthStore';
+import EventDetails, { DetailsMatchParams } from './components/Pages/EventDetails';
 import { NoMatch } from './components/NoMatch';
 import UserData from './components/Models/UserData';
 import LocationPreference from './components/Pages/LocationPreference';
@@ -45,7 +44,6 @@ import './custom.css';
 import 'react-phone-input-2/lib/style.css';
 import DeleteMyData from './components/Pages/DeleteMyData';
 import Waivers from './components/Waivers/Waivers';
-import WaiversReturn, { WaiversReturnMatchParams } from './components/Waivers/WaiversReturn';
 import PartnerRequestDetails, { PartnerRequestDetailsMatchParams } from './components/Partners/PartnerRequestDetails';
 import { Partnerships } from './components/Partners/Partnerships';
 import { Help } from './components/Pages/Help';
@@ -61,43 +59,87 @@ interface DetailsProps extends RouteComponentProps<DetailsMatchParams> {}
 
 interface PartnerRequestDetailsProps extends RouteComponentProps<PartnerRequestDetailsMatchParams> {}
 
-interface WaiversReturnProps extends RouteComponentProps<WaiversReturnMatchParams> {}
-
 interface DeleteMyDataProps extends RouteComponentProps {}
 
 const queryClient = new QueryClient();
 
-export const App: FC = () => {
-    const [isUserLoaded, setIsUserLoaded] = useState(false);
+const useInitializeApp = () => {
+    const [isInitialized, setIsInitialized] = useState(false);
+    useEffect(() => {
+        if (isInitialized) {
+            return;
+        }
+        setIsInitialized(true);
+        initializeIcons();
+    }, [isInitialized]);
+};
+
+const useLogin = () => {
+    const [callbackId, setCallbackId] = useState('');
     const [currentUser, setCurrentUser] = useState<UserData>(new UserData());
+    const isUserLoaded = !!currentUser.email;
 
-    useEffect(
-        () => {
-            initializeIcons();
-
-            msalClient.addEventCallback((message: msal.EventMessage) => {
-                if (message.eventType === msal.EventType.LOGIN_SUCCESS) {
-                    verifyAccount(message.payload as msal.AuthenticationResult);
-                }
-                if (message.eventType === msal.EventType.LOGOUT_SUCCESS) {
-                    clearUser();
-                }
-            });
-
-            const userStr = sessionStorage.getItem('user');
-            if (userStr) {
-                const user = JSON.parse(userStr);
-                setCurrentUser(user);
-                if (user.id === Guid.EMPTY) {
-                    setIsUserLoaded(false);
-                } else {
-                    setIsUserLoaded(true);
-                }
+    useEffect(() => {
+        if (callbackId) {
+            return;
+        }
+        const id = msalClient.addEventCallback((message: msal.EventMessage) => {
+            if (message.eventType === msal.EventType.LOGIN_SUCCESS) {
+                verifyAccount(message.payload as msal.AuthenticationResult);
             }
-        },
-        // eslint-disable-next-line
-        [],
-    );
+            if (message.eventType === msal.EventType.LOGOUT_SUCCESS) {
+                clearUser();
+            }
+        });
+        setCallbackId(id ?? '');
+        initialLogin();
+        return () => msalClient.removeEventCallback(callbackId);
+    }, [callbackId]);
+
+    async function initialLogin() {
+        const accounts = msalClient.getAllAccounts();
+        if (accounts === null || accounts.length <= 0) {
+            return;
+        }
+        const tokenResponse = await msalClient.acquireTokenSilent({
+            scopes: getApiConfig().b2cScopes,
+            account: accounts[0],
+        });
+        verifyAccount(tokenResponse);
+    }
+
+    function clearUser() {
+        setCurrentUser(new UserData());
+    }
+
+    async function handleUserUpdated() {
+        const { data: user } = await GetUserById({ userId: currentUser?.id }).service();
+        setCurrentUser(user || new UserData());
+    }
+
+    async function verifyAccount(result: msal.AuthenticationResult) {
+        const { userDeleted } = result.idTokenClaims as Record<string, any>;
+        if (userDeleted && userDeleted === true) {
+            clearUser();
+            return;
+        }
+        const { email } = result.idTokenClaims as Record<string, any>;
+        const { data: user } = await GetUserByEmail({ email }).service();
+        if (!user) {
+            return;
+        }
+        setCurrentUser(user);
+    }
+    return {
+        isUserLoaded,
+        currentUser,
+        handleUserUpdated,
+    };
+};
+
+export const App: FC = () => {
+    useInitializeApp();
+    const { currentUser, isUserLoaded, handleUserUpdated } = useLogin();
 
     function ErrorComponent(error: MsalAuthenticationResult) {
         return (
@@ -168,23 +210,6 @@ export const App: FC = () => {
         );
     }
 
-    function renderWaiversReturn(inp: WaiversReturnProps) {
-        return (
-            <MsalAuthenticationTemplate
-                interactionType={InteractionType.Redirect}
-                errorComponent={ErrorComponent}
-                loadingComponent={LoadingComponent}
-            >
-                <WaiversReturn
-                    {...inp}
-                    currentUser={currentUser}
-                    isUserLoaded={isUserLoaded}
-                    onUserUpdated={handleUserUpdated}
-                />
-            </MsalAuthenticationTemplate>
-        );
-    }
-
     function renderDeleteMyData(inp: DeleteMyDataProps) {
         return (
             <MsalAuthenticationTemplate
@@ -195,51 +220,6 @@ export const App: FC = () => {
                 <DeleteMyData {...inp} currentUser={currentUser} isUserLoaded={isUserLoaded} />
             </MsalAuthenticationTemplate>
         );
-    }
-
-    function clearUser() {
-        const user = new UserData();
-        setCurrentUser(user);
-        sessionStorage.setItem('user', JSON.stringify(user));
-        setIsUserLoaded(false);
-    }
-
-    function handleUserUpdated() {
-        setIsUserLoaded(false);
-        GetUserById({ userId: currentUser.id })
-            .service()
-            .then((res) => {
-                setCurrentUser(res.data || new UserData());
-                setIsUserLoaded(true);
-                sessionStorage.setItem('user', JSON.stringify(res.data));
-            });
-    }
-
-    function verifyAccount(result: msal.AuthenticationResult) {
-        const { userDeleted } = result.idTokenClaims as Record<string, any>;
-        if (userDeleted && userDeleted === true) {
-            clearUser();
-            return;
-        }
-
-        const { email } = result.idTokenClaims as Record<string, any>;
-        GetUserByEmail({ email })
-            .service()
-            .then((res) => {
-                const user = new UserData();
-                if (res.data) {
-                    user.id = res.data.id;
-                    user.userName = res.data.userName;
-                    user.dateAgreedToTrashMobWaiver = res.data.dateAgreedToTrashMobWaiver;
-                    user.memberSince = res.data.memberSince;
-                    user.trashMobWaiverVersion = res.data.trashMobWaiverVersion;
-                    user.isSiteAdmin = res.data.isSiteAdmin;
-                    user.email = res.data.email;
-                }
-                setCurrentUser(user);
-                setIsUserLoaded(true);
-                sessionStorage.setItem('user', JSON.stringify(user));
-            });
     }
 
     return (
@@ -273,10 +253,6 @@ export const App: FC = () => {
                                 <Route
                                     path='/cancelevent/:eventId'
                                     render={(props: CancelProps) => renderCancelEvent(props)}
-                                />
-                                <Route
-                                    path='/waiversreturn/:envelopeId'
-                                    render={(props: WaiversReturnProps) => renderWaiversReturn(props)}
                                 />
                                 <Route
                                     path='/deletemydata'
@@ -345,7 +321,7 @@ export const App: FC = () => {
                                         errorComponent={ErrorComponent}
                                         loadingComponent={LoadingComponent}
                                     >
-                                        <Waivers currentUser={currentUser} isUserLoaded={isUserLoaded} />
+                                        {isUserLoaded ? <Waivers currentUser={currentUser} /> : null}
                                     </MsalAuthenticationTemplate>
                                 </Route>
                                 <Route exact path='/partnerships'>

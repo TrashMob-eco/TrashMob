@@ -5,7 +5,7 @@ import { Col, Container, Row } from 'react-bootstrap';
 import { Guid } from 'guid-typescript';
 import { useQuery } from '@tanstack/react-query';
 import UserData from '../Models/UserData';
-import { EditEvent } from './EditEvent';
+import EditEvent from './EditEvent';
 import { ManageEventPartners } from './ManageEventPartners';
 import { ManageEventAttendees } from './ManageEventAttendees';
 import { HeroSection } from '../Customization/HeroSection';

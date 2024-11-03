@@ -47,19 +47,19 @@
       <string>msauthv3</string>
     </array>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>Can we use your location at all times?</string>
+    <string>TrashMob uses your location when you report litter, leave bags to be picked up by a partner, or turn on route tracking.</string>
     <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Can we use your location when your app is being used?</string>
+    <string>TrashMob uses your location when you report litter, leave bags to be picked up by a partner, or turn on route tracking.</string>
     <key>NSCameraUsageDescription</key>
-    <string>This app needs access to the camera to take photos.</string>
+    <string>TrashMob needs access to the camera to take photos of litter or bagged garbage to be picked up.</string>
     <key>NSMicrophoneUsageDescription</key>
-    <string>This app needs access to microphone for taking videos.</string>
+    <string>TrashMob needs access to microphone for taking videos of picked litter.</string>
     <key>NSPhotoLibraryAddUsageDescription</key>
-    <string>This app needs access to the photo gallery for picking photos and videos.</string>
+    <string>TrashMob needs access to the photo gallery for uploading photos and videos of litter.</string>
     <key>NSPhotoLibraryUsageDescription</key>
-    <string>This app needs access to photos gallery for picking photos and videos.</string>
+    <string>TrashMob needs access to photos gallery for uploading photos and videos of litter.</string>
     <key>NSLocationAlwaysUsageDescription</key>
-    <string>Can we use your location when your app is running in the background?</string>
+    <string>TrashMob needs your location when the app is running in the background when you have turned on route tracking.</string>
     <key>UIBackgroundModes</key>
     <array>
       <string>location</string>

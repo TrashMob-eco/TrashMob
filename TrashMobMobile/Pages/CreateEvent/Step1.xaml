@@ -7,7 +7,8 @@
                            xmlns:createEvent="clr-namespace:TrashMobMobile.Pages.CreateEvent"
                            xmlns:createEvent1="clr-namespace:TrashMobMobile.Pages.CreateEvent"
                            xmlns:converters="clr-namespace:TrashMobMobile.Converters"
-                           x:DataType="viewModels:CreateEventViewModelNew"
+                           xmlns:controls="clr-namespace:TrashMobMobile.Controls"
+                           x:DataType="viewModels:CreateEventViewModel"
                            x:Class="TrashMobMobile.Pages.CreateEvent.Step1">
     <createEvent1:Step1.Resources>
         <ResourceDictionary>
@@ -25,32 +26,35 @@
                                          Margin="0,10"
                                          Spacing="5">
                         <Label Text="Name" Style="{StaticResource FieldLabel}" />
-                        <Entry Text="{Binding EventViewModel.Name}" />
+                        <controls:TMEntry HeightRequest="40"
+                            Text="{Binding EventViewModel.Name}" />
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="1" Margin="0,10">
                         <Label Text="Event Type" Style="{StaticResource FieldLabel}" />
-                        <Picker Title="Event Type"
-                                ItemsSource="{Binding ETypes}"
-                                SelectedItem="{Binding SelectedEventType}" />
+                        <controls:TMPicker Title="Event Type"
+                                           HeightRequest="40"
+                                           Margin="0,0,10,0"
+                                           ItemsSource="{Binding ETypes}"
+                                           SelectedItem="{Binding SelectedEventType}" />
                     </VerticalStackLayout>
-                    <HorizontalStackLayout Grid.Row="1" Grid.Column="1">
+                    <HorizontalStackLayout Grid.Row="1" Grid.Column="1" Padding="10,10,0,0">
                         <Label Text="Is Event Public?" Style="{StaticResource FieldLabel}" />
                         <CheckBox IsChecked="{Binding EventViewModel.IsEventPublic}" />
                     </HorizontalStackLayout>
                     <VerticalStackLayout Grid.Row="2"
                                          Grid.Column="0"
-                                         Margin="0,10"
+                                         Margin="0,5,0,10"
                                          Spacing="5">
                         <Label Text="Event Date" Style="{StaticResource FieldLabel}" />
-                        <DatePicker
-                            Date="{Binding EventViewModel.EventDateOnly}" />
+                        <controls:TMDatePicker HeightRequest="45" Margin="0,0,5,0"
+                                   Date="{Binding EventViewModel.EventDateOnly}" />
                     </VerticalStackLayout>
                     <Grid Grid.Row="2" Grid.Column="1"
                           Margin="0,10"
                           ColumnDefinitions="*,*"
                           RowDefinitions="Auto,Auto,Auto">
                         <Label Text="Start time" Style="{StaticResource FieldLabel}" />
-                        <TimePicker Grid.Row="1" Time="{Binding StartTime}">
+                        <TimePicker Grid.Row="1" Time="{Binding StartTime}" Margin="0,0,5,0">
                         </TimePicker>
                         <Label Grid.Column="1" Text="End time" Style="{StaticResource FieldLabel}" />
                         <TimePicker Grid.Row="1" Grid.Column="1" Time="{Binding EndTime}">
@@ -69,7 +73,10 @@
 
                     <VerticalStackLayout Grid.Row="5" Grid.ColumnSpan="2" Margin="0,10">
                         <Label Text="Description" Style="{StaticResource FieldLabel}" />
-                        <Editor Placeholder="Describe your event here" Text="{Binding EventViewModel.Description}" />
+                        <controls:TMEditor
+                            Placeholder="Describe your event here"
+                            MinimumHeightRequest="100"
+                            Text="{Binding EventViewModel.Description}" />
                         <Label Style="{StaticResource ErrorLabel}"
                                IsVisible="{Binding DescriptionRequiredError, Converter={StaticResource StringToBoolConverter}}"
                                Text="{Binding DescriptionRequiredError}">

@@ -28,16 +28,26 @@
                     new MapSpan(
                         new Location(viewModel.UserLocation.Location.Latitude,
                             viewModel.UserLocation.Location.Longitude), 0.05, 0.05);
-                upcomingEventsMap.MoveToRegion(mapSpan);
+                mainMap.MoveToRegion(mapSpan);
             }
         }
 
         private async void Pin_InfoWindowClicked(object sender, PinClickedEventArgs e)
         {
             var p = (Pin)sender;
+            var automationId = p.AutomationId;
+            var addressParts = automationId.Split(':');
+            var addressType = addressParts[0];
+            var parentId = addressParts[1];
 
-            var eventId = p.AutomationId;
-            await Shell.Current.GoToAsync($"{nameof(ViewEventPage)}?EventId={eventId}");
+            if (addressType == AddressType.Event.ToString())
+            {
+                await Shell.Current.GoToAsync($"{nameof(ViewEventPage)}?EventId={parentId}");
+            }
+            else if (addressType == AddressType.LitterImage.ToString())
+            {
+                await Shell.Current.GoToAsync($"{nameof(ViewLitterReportPage)}?UserId={parentId}");
+            }
         }
     }
 }

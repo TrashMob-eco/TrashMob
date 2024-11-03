@@ -1,8 +1,7 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
-import { AzureMapsProvider, IAzureMapOptions } from 'react-azure-maps';
+import { APIProvider } from '@vis.gl/react-google-maps';
 import { Col, Container, Dropdown, Image, Row } from 'react-bootstrap';
-import { data } from 'azure-maps-control';
 import {
     Eye,
     PersonX,
@@ -17,8 +16,6 @@ import {
 import { Guid } from 'guid-typescript';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import EventData from '../Models/EventData';
-import * as MapStore from '../../store/MapStore';
-import MapControllerPointCollection from '../MapControllerPointCollection';
 import UserData from '../Models/UserData';
 import { Table } from '../Customization/Table';
 import twofigure from '../assets/card/twofigure.svg';
@@ -46,6 +43,11 @@ import { GetEventPickupLocationsByUser, PickupLocationMarkAsPickedUp } from '../
 import { GetPartnerRequestByUserId, GetPartnerRequestStatuses, GetPartnerStatuses } from '../../services/partners';
 import { GetPartnerAdminsForUser } from '../../services/admin';
 import { GetStatsForUser } from '../../services/stats';
+import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
+import { EventsMap } from '../Map';
+
+const isUpcomingEvent = (event: EventData) => new Date(event.eventDate) >= new Date()
+const isPastEvent = (event: EventData) => new Date(event.eventDate) < new Date()
 
 interface MyDashboardProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -53,6 +55,7 @@ interface MyDashboardProps extends RouteComponentProps<any> {
 }
 
 const MyDashboard: FC<MyDashboardProps> = (props) => {
+    const { isUserLoaded, currentUser } = props
     const [myEventList, setMyEventList] = useState<EventData[]>([]);
     const [partnerStatusList, setPartnerStatusList] = useState<PartnerStatusData[]>([]);
     const [partnerRequestStatusList, setPartnerRequestStatusList] = useState<PartnerRequestStatusData[]>([]);
@@ -63,13 +66,6 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const [isEventDataLoaded, setIsEventDataLoaded] = useState<boolean>(false);
     const [isPartnerAdminInvitationsDataLoaded, setIsPartnerAdminInvitationsDataLoaded] = useState<boolean>(false);
     const [isPickupRequestsDataLoaded, setIsPickupRequestsDataLoaded] = useState<boolean>(false);
-    const [center, setCenter] = useState<data.Position>(
-        new data.Position(MapStore.defaultLongitude, MapStore.defaultLatitude),
-    );
-    const [isMapKeyLoaded, setIsMapKeyLoaded] = useState<boolean>(false);
-    const [mapOptions, setMapOptions] = useState<IAzureMapOptions>();
-    const [currentUser, setCurrentUser] = useState<UserData>(props.currentUser);
-    const [isUserLoaded, setIsUserLoaded] = useState<boolean>(props.isUserLoaded);
     const [reloadEvents, setReloadEvents] = useState<number>(0);
     const [upcomingEventsMapView, setUpcomingEventsMapView] = useState<boolean>(false);
     const [pastEventsMapView, setPastEventsMapView] = useState<boolean>(false);
@@ -81,9 +77,12 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const [eventToShare, setEventToShare] = useState<EventData>();
     const [showModal, setShowSocialsModal] = useState<boolean>(false);
 
+    const upcomingEvents = myEventList.filter(isUpcomingEvent)
+    const pastEvents = myEventList.filter(isPastEvent)
+
     const getUserEvents = useQuery({
-        queryKey: GetUserEvents({ userId: props.currentUser.id }).key,
-        queryFn: GetUserEvents({ userId: props.currentUser.id }).service,
+        queryKey: GetUserEvents({ userId: currentUser.id }).key,
+        queryFn: GetUserEvents({ userId: currentUser.id }).service,
         staleTime: Services.CACHE.DISABLE,
         enabled: false,
     });
@@ -165,26 +164,10 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
 
     useEffect(() => {
         window.scrollTo(0, 0);
-
-        MapStore.getOption().then((opts) => {
-            setMapOptions(opts);
-            setIsMapKeyLoaded(true);
-        });
-
-        if ('geolocation' in navigator) {
-            navigator.geolocation.getCurrentPosition((position) => {
-                const point = new data.Position(position.coords.longitude, position.coords.latitude);
-                setCenter(point);
-            });
-        } else {
-            console.log('Not Available');
-        }
     }, []);
 
     useEffect(() => {
         if (props.isUserLoaded) {
-            setCurrentUser(props.currentUser);
-            setIsUserLoaded(props.isUserLoaded);
             setIsEventDataLoaded(false);
 
             getUserEvents.refetch().then((res) => {
@@ -253,18 +236,6 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
             props.history.replace({ ...props.history.location, state });
         }
     }, [state, isEventDataLoaded, props.currentUser.id, props.history, myEventList, setSharingEvent]);
-
-    const handleLocationChange = (point: data.Position) => {
-        // do nothing
-    };
-
-    const handleAttendanceChanged = (point: data.Position) => {
-        // do nothing
-    };
-
-    const handleDetailsSelected = (eventId: string) => {
-        props.history.push(`eventdetails/${eventId}`);
-    };
 
     const handleReloadEvents = () => {
         // A trick to force the reload as needed.
@@ -472,7 +443,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     function UpcomingEventsTable() {
         const headerTitles = ['Name', 'Role', 'Date', 'Time', 'Location', 'Actions'];
         return (
-            <div className='bg-white p-3 px-4'>
+            <div className='bg-white p-3 px-4 overflow-auto'>
                 <Table columnHeaders={headerTitles}>
                     {myEventList
                         .sort((a, b) => (a.eventDate < b.eventDate ? 1 : -1))
@@ -520,7 +491,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     function PastEventsTable() {
         const headerTitles = ['Name', 'Role', 'Date', 'Time', 'Location', 'Actions'];
         return (
-            <div className='bg-white p-3 px-4'>
+            <div className='bg-white p-3 px-4 overflow-auto'>
                 <Table columnHeaders={headerTitles}>
                     {myEventList
                         .sort((a, b) => (a.eventDate < b.eventDate ? 1 : -1))
@@ -569,7 +540,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         const headerTitles = ['Name', 'Status', 'Actions'];
         if (myPartners) {
             return (
-                <div className='bg-white p-3 px-4'>
+                <div className='bg-white p-3 px-4 overflow-auto'>
                     <Table columnHeaders={headerTitles}>
                         {myPartners
                             .sort((a, b) => (a.name < b.name ? 1 : -1))
@@ -607,7 +578,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
             );
         }
         return (
-            <div className='bg-white p-3 px-4'>
+            <div className='bg-white p-3 px-4 overflow-auto'>
                 <Table columnHeaders={headerTitles}>
                     <></>
                 </Table>
@@ -619,7 +590,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         const headerTitles = ['Street Address', 'City', 'Notes', 'Actions'];
         if (isPickupRequestsDataLoaded && myPickupRequests) {
             return (
-                <div className='bg-white p-3 px-4'>
+                <div className='bg-white p-3 px-4 overflow-auto'>
                     <Table columnHeaders={headerTitles}>
                         {myPickupRequests.map((displayPickup) => (
                             <tr key={displayPickup.id.toString()}>
@@ -644,7 +615,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
             );
         }
         return (
-            <div className='bg-white p-3 px-4'>
+            <div className='bg-white p-3 px-4 overflow-auto'>
                 <Table columnHeaders={headerTitles}>
                     <></>
                 </Table>
@@ -656,7 +627,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         const headerTitles = ['Name', 'Status', 'Actions'];
         if (myPartnerRequests) {
             return (
-                <div className='bg-white p-3 px-4'>
+                <div className='bg-white p-3 px-4 overflow-auto'>
                     <Table columnHeaders={headerTitles}>
                         {myPartnerRequests
                             .sort((a, b) => (a.name < b.name ? 1 : -1))
@@ -692,7 +663,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
             );
         }
         return (
-            <div className='bg-white p-3 px-4'>
+            <div className='bg-white p-3 px-4 overflow-auto'>
                 <Table columnHeaders={headerTitles}>
                     <></>
                 </Table>
@@ -704,7 +675,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         const headerTitles = ['Partner Name', 'Actions'];
         if (isPartnerAdminInvitationsDataLoaded && myPartnerAdminInvitations) {
             return (
-                <div className='bg-white p-3 px-4'>
+                <div className='bg-white p-3 px-4 overflow-auto'>
                     <Table columnHeaders={headerTitles}>
                         {myPartnerAdminInvitations.map((displayInvitation) => (
                             <tr key={displayInvitation.id.toString()}>
@@ -726,7 +697,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
             );
         }
         return (
-            <div className='bg-white p-3 px-4'>
+            <div className='bg-white p-3 px-4 overflow-auto'>
                 <Table columnHeaders={headerTitles}>
                     <></>
                 </Table>
@@ -747,8 +718,8 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                         message={SharingMessages.getEventShareMessage(eventToShare, props.currentUser.id)}
                     />
                 ) : null}
-                <Row className='pt-5'>
-                    <Col>
+                <Row className='pt-5 justify-content-lg-center'>
+                    <Col xs='6' md='4' xl='3'>
                         <div className='d-flex bg-white'>
                             <Col className='ml-3'>
                                 <p className='card-title'>Events</p>
@@ -758,12 +729,12 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                                 <Image
                                     src={twofigure}
                                     alt='person silouhette icons'
-                                    className='card-icon align-self-end mr-3'
+                                    className='card-icon align-self-end mr-3 '
                                 />
                             </Col>
                         </div>
                     </Col>
-                    <Col>
+                    <Col xs='6' md='4' xl='3'>
                         <div className='d-flex bg-white'>
                             <Col className='ml-3'>
                                 <p className='card-title'>Hours</p>
@@ -778,7 +749,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                             </Col>
                         </div>
                     </Col>
-                    <Col>
+                    <Col xs='6' md='4' xl='3' className='mt-4 mt-md-0'>
                         <div className='d-flex bg-white'>
                             <Col className='ml-3'>
                                 <p className='card-title'>Bags</p>
@@ -837,29 +808,12 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                         </div>
                     </div>
                     {upcomingEventsMapView ? (
-                        <AzureMapsProvider>
-                            <MapControllerPointCollection
-                                forceReload={false}
-                                center={center}
-                                multipleEvents={myEventList.filter((event) => new Date(event.eventDate) >= new Date())}
-                                isEventDataLoaded={isEventDataLoaded}
-                                mapOptions={mapOptions}
-                                isMapKeyLoaded={isMapKeyLoaded}
-                                eventName=''
-                                latitude={0}
-                                longitude={0}
-                                onLocationChange={handleLocationChange}
-                                currentUser={currentUser}
-                                isUserLoaded={isUserLoaded}
-                                onAttendanceChanged={handleAttendanceChanged}
-                                myAttendanceList={myEventList}
-                                isUserEventDataLoaded={isEventDataLoaded}
-                                onDetailsSelected={handleDetailsSelected}
-                                history={props.history}
-                                location={props.location}
-                                match={props.match}
-                            />
-                        </AzureMapsProvider>
+                        <EventsMap
+                            id="upcomingEventsMap"
+                            events={upcomingEvents}
+                            isUserLoaded={isUserLoaded}
+                            currentUser={currentUser} 
+                        />
                     ) : (
                         <UpcomingEventsTable />
                     )}
@@ -895,41 +849,30 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                         </div>
                     </div>
                     {pastEventsMapView ? (
-                        <AzureMapsProvider>
-                            <MapControllerPointCollection
-                                forceReload={false}
-                                center={center}
-                                multipleEvents={myEventList.filter((event) => new Date(event.eventDate) < new Date())}
-                                isEventDataLoaded={isEventDataLoaded}
-                                mapOptions={mapOptions}
-                                isMapKeyLoaded={isMapKeyLoaded}
-                                eventName=''
-                                latitude={0}
-                                longitude={0}
-                                onLocationChange={handleLocationChange}
-                                currentUser={currentUser}
-                                isUserLoaded={isUserLoaded}
-                                onAttendanceChanged={handleAttendanceChanged}
-                                myAttendanceList={myEventList}
-                                isUserEventDataLoaded={isEventDataLoaded}
-                                onDetailsSelected={handleDetailsSelected}
-                                history={props.history}
-                                location={props.location}
-                                match={props.match}
-                            />
-                        </AzureMapsProvider>
+                         <EventsMap
+                            id="pastEventsMap"
+                            events={pastEvents}
+                            isUserLoaded={isUserLoaded}
+                            currentUser={currentUser} 
+                        />
                     ) : (
                         <PastEventsTable />
                     )}
                 </div>
-                <div className='d-flex my-5 mb-4 justify-content-between'>
+                <div className='d-flex flex-column mt-5 mb-3'>
                     <h4 className='font-weight-bold mr-2 mt-0 active-line pb-2'>
                         My Partnerships ({myPartnerRequests.length + myPartners.length})
                     </h4>
-                    <Link className='d-flex align-items-center btn btn-primary banner-button' to='/inviteapartner'>
+                    <Link
+                        className='d-flex align-items-center btn btn-primary banner-button mx-auto mr-sm-auto ml-sm-0 mt-2'
+                        to='/inviteapartner'
+                    >
                         Send invitation to join TrashMob.eco as a partner
                     </Link>
-                    <Link className='d-flex align-items-center btn btn-primary banner-button' to='/becomeapartner'>
+                    <Link
+                        className='d-flex align-items-center btn btn-primary banner-button mx-auto mr-sm-auto ml-sm-0 mt-2'
+                        to='/becomeapartner'
+                    >
                         Apply to become a partner
                     </Link>
                 </div>
@@ -978,4 +921,18 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     );
 };
 
-export default withRouter(MyDashboard);
+
+const MyDashboardWrapper = (props: MyDashboardProps) => {
+    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey()
+
+    if (isLoading) return null;
+
+    return (
+        <APIProvider apiKey={googleApiKey || ''}>
+            <MyDashboard {...props} />
+        </APIProvider>
+    );
+};
+
+
+export default withRouter(MyDashboardWrapper);

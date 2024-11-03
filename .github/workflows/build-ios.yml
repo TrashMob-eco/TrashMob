@@ -61,13 +61,13 @@ jobs:
             fetch-depth: 0
 
         - name: Install GitVersion
-          uses: gittools/actions/gitversion/setup@v1.1.1
+          uses: gittools/actions/gitversion/setup@v3.0.0
           with:
             versionSpec: '5.x'
-  
+    
         - name: Determine Version
           id: version_step # step id used as reference for output values
-          uses: gittools/actions/gitversion/execute@v1.1.1
+          uses: gittools/actions/gitversion/execute@v3.0.0
 
         - name: Update Build Number
           run: sed -i '' "s|<ApplicationVersion>.*</ApplicationVersion>|<ApplicationVersion>${{ env.semVer }}</ApplicationVersion>|g" TrashMobMobile/TrashMobMobile.csproj
@@ -90,14 +90,14 @@ jobs:
           run: |
             dotnet nuget locals all --clear
             dotnet workload install maui --ignore-failed-sources
-            dotnet workload install ios maui wasm-tools --source https://api.nuget.org/v3/index.json --ignore-failed-sources
+            dotnet workload install maui-ios --version 8.0.401 --source https://api.nuget.org/v3/index.json
 
         - name: Set XCode Version
           if: runner.os == 'macOS'
           shell: bash
           run: |
-            sudo xcode-select -s "/Applications/Xcode_15.1.app"
-            echo "MD_APPLE_SDK_ROOT=/Applications/Xcode_15.1.app" >> $GITHUB_ENV
+            sudo xcode-select -s "/Applications/Xcode_15.4.app"
+            echo "MD_APPLE_SDK_ROOT=/Applications/Xcode_15.4.app" >> $GITHUB_ENV
 
         - name: Import Code-Signing Certificates
           uses: Apple-Actions/import-codesign-certs@v3

@@ -21,9 +21,12 @@
         "sourceMap": false,
         "jsx": "react-jsx",
         "ignoreDeprecations": "5.0",
-        "suppressImplicitAnyIndexErrors": true,
-        "typeRoots": ["./node_modules/@types/", "./types", "./global.d.ts"]
+        "typeRoots": ["./node_modules/@types/", "./types", "./global.d.ts"],
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["./src/*"]
+        }
     },
-    "include": ["src"],
+    "include": ["src", "tests"],
     "exclude": ["node_modules", "typings", "types"]
 }

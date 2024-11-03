@@ -41,7 +41,7 @@ public class BorderlessEditor : Editor
 {
     public BorderlessEditor()
     {
-        Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping("Borderless", (handler, view) =>
+        Microsoft.Maui.Handlers.EditorHandler.Mapper.AppendToMapping(nameof(BorderlessEditor), (handler, view) =>
         {
             if (view is BorderlessEditor)
             {
@@ -53,7 +53,6 @@ public class BorderlessEditor : Editor
 #elif IOS
                 handler.PlatformView.BackgroundColor = UIKit.UIColor.Clear;
                 handler.PlatformView.Layer.BorderWidth = 0;
-                handler.PlatformView.BorderStyle = UIKit.UITextBorderStyle.None;
 #endif
             }
         });

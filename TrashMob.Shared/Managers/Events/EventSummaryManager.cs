@@ -6,6 +6,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
+    using TrashMob.Migrations;
     using TrashMob.Models;
     using TrashMob.Models.Poco;
     using TrashMob.Shared.Extensions;
@@ -15,30 +16,42 @@
     public class EventSummaryManager : BaseManager<EventSummary>, IEventSummaryManager
     {
         private readonly IEventAttendeeManager eventAttendeeManager;
+        private readonly ILitterReportManager litterReportManager;
+        private readonly IEventLitterReportManager eventLitterReportManager;
         private readonly IEventManager eventManager;
         private readonly IKeyedRepository<Event> eventRepository;
+        private const int CancelledEventStatusId = 3;
 
         public EventSummaryManager(IBaseRepository<EventSummary> repository,
             IKeyedRepository<Event> eventRepository,
             IEventManager eventManager,
-            IEventAttendeeManager eventAttendeeManager) : base(repository)
+            IEventAttendeeManager eventAttendeeManager,
+            ILitterReportManager litterReportManager,
+            IEventLitterReportManager eventLitterReportManager) 
+            : base(repository)
         {
             this.eventRepository = eventRepository;
             this.eventManager = eventManager;
             this.eventAttendeeManager = eventAttendeeManager;
+            this.litterReportManager = litterReportManager;
+            this.eventLitterReportManager = eventLitterReportManager;
         }
 
         public async Task<Stats> GetStatsAsync(CancellationToken cancellationToken)
         {
             var stats = new Stats();
             var events = eventRepository.Get();
-            stats.TotalEvents = await events.CountAsync(cancellationToken);
+            stats.TotalEvents = await events.CountAsync(e => e.EventStatusId != CancelledEventStatusId, cancellationToken);
 
             var eventSummaries = await Repository.Get().ToListAsync(cancellationToken);
             stats.TotalBags = eventSummaries.Sum(es => es.NumberOfBags) +
                               eventSummaries.Sum(es => es.NumberOfBuckets) / 3;
             stats.TotalHours = eventSummaries.Sum(es => es.DurationInMinutes * es.ActualNumberOfAttendees / 60);
             stats.TotalParticipants = eventSummaries.Sum(es => es.ActualNumberOfAttendees);
+
+            var litterReports = await litterReportManager.GetAsync(cancellationToken);
+            stats.TotalLitterReportsClosed = litterReports.Count(lr => lr.LitterReportStatusId == (int)LitterReportStatusEnum.Cleaned);
+            stats.TotalLitterReportsSubmitted = litterReports.Count();
 
             return stats;
         }
@@ -52,14 +65,27 @@
 
             var allResults = result1.Union(result2, new EventComparer());
 
-            stats.TotalEvents = allResults.Count();
-            var eventIds = allResults.Select(e => e.Id);
+            stats.TotalEvents = allResults.Where(e => e.EventStatusId != CancelledEventStatusId).Count();
+            var eventIds = allResults.Where(e => e.EventStatusId != CancelledEventStatusId).Select(e => e.Id);
 
             var eventSummaries =
                 await Repository.Get(es => eventIds.Contains(es.EventId)).ToListAsync(cancellationToken);
             stats.TotalBags = eventSummaries.Sum(es => es.NumberOfBags) +
                               eventSummaries.Sum(es => es.NumberOfBuckets) / 3;
             stats.TotalHours = eventSummaries.Sum(es => es.DurationInMinutes) / 60;
+            var litterReports = await litterReportManager.GetAsync(cancellationToken);
+            var eventLitterReports = await eventLitterReportManager.GetAsync(cancellationToken);
+
+            if (eventLitterReports == null)
+            {
+                stats.TotalLitterReportsClosed = 0;
+            }
+            else
+            {
+                stats.TotalLitterReportsClosed = eventLitterReports.Count(elr => eventIds.Contains(elr.EventId) && elr.LitterReport != null && elr.LitterReport.LitterReportStatusId == (int)LitterReportStatusEnum.Cleaned);
+            }
+
+            stats.TotalLitterReportsSubmitted = litterReports.Count(lr => lr.CreatedByUserId == userId);
 
             return stats;
         }
