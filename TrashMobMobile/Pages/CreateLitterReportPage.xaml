@@ -5,6 +5,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
              x:DataType="viewModels:CreateLitterReportViewModel"
+             xmlns:converters="clr-namespace:TrashMobMobile.Converters"
+             xmlns:controls="clr-namespace:TrashMobMobile.Controls"
              Title="Submit Litter Report">
     <ScrollView>
         <Grid>
@@ -14,17 +16,11 @@
                 <Grid RowDefinitions="Auto, *, Auto">
                     <VerticalStackLayout Grid.Row="0">
                         <Label Text="Name" Style="{StaticResource FieldLabel}" />
-
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Entry Text="{Binding Name}" />
-                        </Border>
+                        <controls:TMEntry Text="{Binding Name}" />
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="1">
                         <Label Text="Description" Style="{StaticResource FieldLabel}" />
-
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Editor Text="{Binding Description}" />
-                        </Border>
+                        <controls:TMEditor Text="{Binding Description}"  HeightRequest="100"/>
                     </VerticalStackLayout>
 
                     <Button Grid.Row="2"

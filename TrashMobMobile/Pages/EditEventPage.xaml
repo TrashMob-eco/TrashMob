@@ -7,6 +7,8 @@
              xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
              x:DataType="viewModels:EditEventViewModel"
              x:Class="TrashMobMobile.Pages.EditEventPage"
+             xmlns:converters="clr-namespace:TrashMobMobile.Converters"
+             xmlns:controls="clr-namespace:TrashMobMobile.Controls"
              Title="Edit Event">
     <ScrollView>
         <Grid>
@@ -17,104 +19,86 @@
                     <VerticalStackLayout Grid.Row="0" Grid.ColumnSpan="4">
                         <Label Text="Name" Style="{StaticResource FieldLabel}" />
 
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Entry Text="{Binding EventViewModel.Name}">
-                                <Entry.Behaviors>
-                                    <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5"
+                        <controls:TMEntry Text="{Binding EventViewModel.Name}">
+                            <controls:TMEntry.Behaviors>
+                                <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5"
                                                                     x:Name="nameValidator" />
-                                </Entry.Behaviors>
-                            </Entry>
-                        </Border>
+                            </controls:TMEntry.Behaviors>
+                        </controls:TMEntry>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
                         <Label Text="Event Date" Style="{StaticResource FieldLabel}" />
 
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <DatePicker Date="{Binding EventViewModel.EventDateOnly}" />
-                        </Border>
+                        <controls:TMDatePicker Date="{Binding EventViewModel.EventDateOnly}" />
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2">
                         <Label Text="Event Time" Style="{StaticResource FieldLabel}" />
 
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <TimePicker Time="{Binding EventViewModel.EventTime}" />
-                        </Border>
+                        <TimePicker Time="{Binding EventViewModel.EventTime}" />
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
                         <Label Text="Duration Hours" Style="{StaticResource FieldLabel}" />
 
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Entry Keyboard="Numeric" Text="{Binding EventViewModel.DurationHours}">
-                                <Entry.Behaviors>
-                                    <toolkit:NumericValidationBehavior Flags="ValidateOnValueChanged"
+                        <controls:TMEntry Keyboard="Numeric" Text="{Binding EventViewModel.DurationHours}">
+                            <controls:TMEntry.Behaviors>
+                                <toolkit:NumericValidationBehavior Flags="ValidateOnValueChanged"
                                                                        x:Name="durationHoursValidator" MinimumValue="1"
                                                                        MaximumValue="10" MaximumDecimalPlaces="0" />
-                                </Entry.Behaviors>
-                            </Entry>
-                        </Border>
+                            </controls:TMEntry.Behaviors>
+                        </controls:TMEntry>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2">
                         <Label Text="Duration Minutes" Style="{StaticResource FieldLabel}" />
 
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Entry Keyboard="Numeric" Text="{Binding EventViewModel.DurationMinutes}">
-                                <Entry.Behaviors>
-                                    <toolkit:NumericValidationBehavior Flags="ValidateOnValueChanged"
+                        <controls:TMEntry Keyboard="Numeric" Text="{Binding EventViewModel.DurationMinutes}">
+                            <controls:TMEntry.Behaviors>
+                                <toolkit:NumericValidationBehavior Flags="ValidateOnValueChanged"
                                                                        x:Name="durationMinutesValidator"
                                                                        MinimumValue="0" MaximumValue="59"
                                                                        MaximumDecimalPlaces="0" />
-                                </Entry.Behaviors>
-                            </Entry>
-                        </Border>
+                            </controls:TMEntry.Behaviors>
+                        </controls:TMEntry>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="3" Grid.ColumnSpan="4">
                         <Label Text="Description" Style="{StaticResource FieldLabel}" />
 
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Editor Text="{Binding EventViewModel.Description}">
-                                <Editor.Behaviors>
-                                    <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="10"
+                        <controls:TMEditor Text="{Binding EventViewModel.Description}">
+                            <controls:TMEditor.Behaviors>
+                                <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="10"
                                                                     x:Name="descriptionValidator" />
-                                </Editor.Behaviors>
-                            </Editor>
-                        </Border>
+                            </controls:TMEditor.Behaviors>
+                        </controls:TMEditor>
                     </VerticalStackLayout>
 
 
                     <VerticalStackLayout Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
                         <Label Text="Event Type" Style="{StaticResource FieldLabel}" />
 
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Picker Title="Event Type" ItemsSource="{Binding ETypes}"
+                        <controls:TMPicker Title="Event Type" ItemsSource="{Binding ETypes}"
                                     SelectedItem="{Binding SelectedEventType}" />
-                        </Border>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="4" Grid.Column="2">
                         <Label Text="Max Attendees" Style="{StaticResource FieldLabel}" />
 
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Entry Keyboard="Numeric" Text="{Binding EventViewModel.MaxNumberOfParticipants}">
-                                <Entry.Behaviors>
-                                    <toolkit:NumericValidationBehavior Flags="ValidateOnValueChanged"
+                        <controls:TMEntry Keyboard="Numeric" Text="{Binding EventViewModel.MaxNumberOfParticipants}">
+                            <controls:TMEntry.Behaviors>
+                                <toolkit:NumericValidationBehavior Flags="ValidateOnValueChanged"
                                                                        x:Name="maxNumberOfParticipantsValidator"
                                                                        MinimumValue="0" MaximumDecimalPlaces="0" />
-                                </Entry.Behaviors>
-                            </Entry>
-                        </Border>
+                            </controls:TMEntry.Behaviors>
+                        </controls:TMEntry>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="4" Grid.Column="3">
                         <Label Text="Is Event Public?" Style="{StaticResource FieldLabel}" />
 
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <CheckBox IsChecked="{Binding EventViewModel.IsEventPublic}" />
-                        </Border>
+                        <CheckBox IsChecked="{Binding EventViewModel.IsEventPublic}" />
                     </VerticalStackLayout>
                 </Grid>
 
@@ -210,14 +194,14 @@
                         </Button.Triggers>
                     </Button>
 
-                     <Button Margin="10" 
+                    <Button Margin="10" 
                              Grid.Row="0" 
                              Grid.Column="2" 
                              Grid.ColumnSpan="2" 
                              Command="{Binding ManageEventPartnersCommand}" 
                              IsEnabled="{Binding IsManageEventPartnersEnabled}" 
                              IsVisible="{Binding IsManageEventPartnersEnabled}" 
-                             Text="Manage Partners" /> 
+                             Text="Manage Partners" />
                 </Grid>
 
                 <Label

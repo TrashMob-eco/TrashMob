@@ -6,6 +6,8 @@
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:DataType="vm:ContactUsViewModel"
              x:Class="TrashMobMobile.Pages.ContactUsPage"
+             xmlns:converters="clr-namespace:TrashMobMobile.Converters"
+             xmlns:controls="clr-namespace:TrashMobMobile.Controls"
              Title="Contact Us">
     <ScrollView>
         <Grid>
@@ -14,56 +16,44 @@
                     <VerticalStackLayout Grid.Row="0">
                         <Label Text="Name" Style="{StaticResource FieldLabel}" />
 
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Entry
-                                Text="{Binding Name}"
-                                FontSize="Small">
-                                <Entry.Behaviors>
-                                    <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5"
+                        <controls:TMEntry Text="{Binding Name}" >
+                            <controls:TMEntry.Behaviors>
+                                <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5"
                                                                     x:Name="nameValidator" />
-                                </Entry.Behaviors>
-                            </Entry>
-                        </Border>
+                            </controls:TMEntry.Behaviors>
+                        </controls:TMEntry>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="1">
                         <Label Text="Email" Style="{StaticResource FieldLabel}" />
 
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Entry
+                        <controls:TMEntry
                                 Text="{Binding Email}"
-                                Keyboard="Email"
-                                FontSize="Small">
-                                <Entry.Behaviors>
-                                    <toolkit:MultiValidationBehavior x:Name="EmailValidator">
-                                        <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged"
+                                Keyboard="Email" >
+                            <controls:TMEntry.Behaviors>
+                                <toolkit:MultiValidationBehavior x:Name="EmailValidator">
+                                    <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged"
                                                                         MinimumLength="5"
                                                                         toolkit:MultiValidationBehavior.Error="Email is required and must be at least 5 characters." />
-                                        <toolkit:EmailValidationBehavior Flags="ValidateOnValueChanged"
+                                    <toolkit:EmailValidationBehavior Flags="ValidateOnValueChanged"
                                                                          toolkit:MultiValidationBehavior.Error="Email format is invalid." />
-                                    </toolkit:MultiValidationBehavior>
-                                </Entry.Behaviors>
-                            </Entry>
-                        </Border>
+                                </toolkit:MultiValidationBehavior>
+                            </controls:TMEntry.Behaviors>
+                        </controls:TMEntry>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="2">
                         <Label Text="Message" Style="{StaticResource FieldLabel}" />
 
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Editor
+                        <controls:TMEditor
                                 Text="{Binding Message}"
-                                FontSize="Small"
-                                VerticalTextAlignment="Start"
                                 VerticalOptions="StartAndExpand"
-                                HorizontalTextAlignment="Start"
                                 MinimumHeightRequest="200">
-                                <Editor.Behaviors>
-                                    <toolkit:TextValidationBehavior x:Name="messageValidator"
+                            <controls:TMEditor.Behaviors>
+                                <toolkit:TextValidationBehavior x:Name="messageValidator"
                                                                     Flags="ValidateOnValueChanged" MinimumLength="10" />
-                                </Editor.Behaviors>
-                            </Editor>
-                        </Border>
+                            </controls:TMEditor.Behaviors>
+                        </controls:TMEditor>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="3">
                         <Button
