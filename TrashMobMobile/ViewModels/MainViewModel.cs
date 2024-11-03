@@ -127,6 +127,8 @@ public partial class MainViewModel(IAuthService authService,
         StatisticsViewModel.TotalBags = stats.TotalBags;
         StatisticsViewModel.TotalEvents = stats.TotalEvents;
         StatisticsViewModel.TotalHours = stats.TotalHours;
+        StatisticsViewModel.TotalLitterReportsSubmitted = stats.TotalLitterReportsSubmitted;
+        StatisticsViewModel.TotalLitterReportsClosed = stats.TotalLitterReportsSubmitted;
     }
 
     private async Task RefreshLitterReports()

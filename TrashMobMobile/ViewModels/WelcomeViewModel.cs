@@ -25,6 +25,8 @@ public partial class WelcomeViewModel(IAuthService authService, IStatsRestServic
             StatisticsViewModel.TotalBags = stats.TotalBags;
             StatisticsViewModel.TotalEvents = stats.TotalEvents;
             StatisticsViewModel.TotalHours = stats.TotalHours;
+            StatisticsViewModel.TotalLitterReportsSubmitted = stats.TotalLitterReportsSubmitted;
+            StatisticsViewModel.TotalLitterReportsClosed = stats.TotalLitterReportsClosed;
 
             IsBusy = false;
         }
