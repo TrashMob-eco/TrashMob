@@ -5,13 +5,18 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using TrashMob.Models;
 using TrashMobMobile.Services;
 
-public partial class ViewPickupLocationViewModel(IPickupLocationManager pickupLocationManager, IMobEventManager mobEventManager, INotificationService notificationService) : BaseViewModel(notificationService)
+public partial class ViewPickupLocationViewModel(IPickupLocationManager pickupLocationManager,
+                                                 IMobEventManager mobEventManager, 
+                                                 INotificationService notificationService,
+                                                 IUserManager userManager) 
+    : BaseViewModel(notificationService)
 {
     private readonly IMobEventManager mobEventManager = mobEventManager;
+    private readonly IUserManager userManager = userManager;
     private readonly IPickupLocationManager pickupLocationManager = pickupLocationManager;
 
     [ObservableProperty]
-    private PickupLocationViewModel pickupLocationViewModel;
+    private PickupLocationViewModel pickupLocationViewModel = new(pickupLocationManager, mobEventManager, notificationService, userManager);
 
     public ObservableCollection<PickupLocationViewModel> PickupLocations { get; set; } = new();
 
@@ -24,16 +29,16 @@ public partial class ViewPickupLocationViewModel(IPickupLocationManager pickupLo
             var pickupLocation =
                 await pickupLocationManager.GetPickupLocationImageAsync(pickupLocationId, ImageSizeEnum.Reduced);
 
-            var pickupLocationViewModel = new PickupLocationViewModel(pickupLocationManager, mobEventManager, NotificationService)
+            var pickupLocationViewModel = new PickupLocationViewModel(pickupLocationManager, mobEventManager, NotificationService, userManager)
             {
                 Address = new AddressViewModel
                 {
                     City = pickupLocation.City,
                     Country = pickupLocation.Country,
                     County = pickupLocation.County,
-                    Location = new Location(pickupLocation.Latitude.Value, pickupLocation.Longitude.Value),
-                    Latitude = pickupLocation.Latitude.Value,
-                    Longitude = pickupLocation.Longitude.Value,
+                    Location = new Location(pickupLocation.Latitude ?? 0, pickupLocation.Longitude ?? 0),
+                    Latitude = pickupLocation.Latitude ?? 0,
+                    Longitude = pickupLocation.Longitude ?? 0,
                     PostalCode = pickupLocation.PostalCode,
                     Region = pickupLocation.Region,
                     StreetAddress = pickupLocation.StreetAddress,

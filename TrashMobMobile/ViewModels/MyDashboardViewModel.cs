@@ -6,17 +6,22 @@ using CommunityToolkit.Mvvm.Input;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class MyDashboardViewModel(IMobEventManager mobEventManager, IStatsRestService statsRestService,
-    ILitterReportManager litterReportManager, INotificationService notificationService) : BaseViewModel(notificationService)
+public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
+                                          IStatsRestService statsRestService,
+                                          ILitterReportManager litterReportManager, 
+                                          INotificationService notificationService,
+                                          IUserManager userManager)
+    : BaseViewModel(notificationService)
 {
     private readonly ILitterReportManager litterReportManager = litterReportManager;
+    private readonly IUserManager userManager = userManager;
     private readonly IMobEventManager mobEventManager = mobEventManager;
     private readonly IStatsRestService statsRestService = statsRestService;
     private EventViewModel? completedSelectedEvent;
     private LitterReportViewModel? selectedLitterReport;
 
     [ObservableProperty]
-    public StatisticsViewModel statisticsViewModel;
+    public StatisticsViewModel statisticsViewModel = new StatisticsViewModel();
 
     private EventViewModel? upcomingSelectedEvent;
 
@@ -114,7 +119,7 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager, ISta
 
     private async Task RefreshStatistics()
     {
-        var stats = await statsRestService.GetUserStatsAsync(App.CurrentUser.Id);
+        var stats = await statsRestService.GetUserStatsAsync(userManager.CurrentUser.Id);
 
         StatisticsViewModel = new StatisticsViewModel
         {
@@ -131,11 +136,11 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager, ISta
         CompletedEvents.Clear();
         UpcomingEvents.Clear();
 
-        var events = await mobEventManager.GetUserEventsAsync(App.CurrentUser.Id, false);
+        var events = await mobEventManager.GetUserEventsAsync(userManager.CurrentUser.Id, false);
 
         foreach (var mobEvent in events.OrderByDescending(e => e.EventDate))
         {
-            var vm = mobEvent.ToEventViewModel();
+            var vm = mobEvent.ToEventViewModel(userManager.CurrentUser.Id);
             vm.IsUserAttending = true;
 
             if (mobEvent.IsCompleted())
@@ -145,7 +150,7 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager, ISta
             }
             else
             {
-                vm.CanCancelEvent = mobEvent.IsCancellable() && mobEvent.IsEventLead();
+                vm.CanCancelEvent = mobEvent.IsCancellable() && mobEvent.IsEventLead(userManager.CurrentUser.Id);
                 UpcomingEvents.Add(vm);
             }
         }
@@ -155,7 +160,7 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager, ISta
     {
         LitterReports.Clear();
 
-        var litterReports = await litterReportManager.GetUserLitterReportsAsync(App.CurrentUser.Id);
+        var litterReports = await litterReportManager.GetUserLitterReportsAsync(userManager.CurrentUser.Id);
 
         foreach (var litterReport in litterReports.OrderByDescending(l => l.CreatedDate))
         {

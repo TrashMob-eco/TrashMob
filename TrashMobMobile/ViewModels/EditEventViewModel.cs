@@ -10,11 +10,13 @@ using TrashMobMobile.Services;
 public partial class EditEventViewModel(IMobEventManager mobEventManager,
     IEventTypeRestService eventTypeRestService,
     IMapRestService mapRestService,
-    INotificationService notificationService)
+    INotificationService notificationService,
+    IUserManager userManager)
     : BaseViewModel(notificationService)
 {
     private readonly IEventTypeRestService eventTypeRestService = eventTypeRestService;
     private readonly IMapRestService mapRestService = mapRestService;
+    private readonly IUserManager userManager = userManager;
     private readonly IMobEventManager mobEventManager = mobEventManager;
 
     [ObservableProperty]
@@ -45,14 +47,14 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
         try
         {
             IsManageEventPartnersEnabled = false;
-            UserLocation = App.CurrentUser.GetAddress();
+            UserLocation = userManager.CurrentUser.GetAddress();
             EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
 
             MobEvent = await mobEventManager.GetEventAsync(eventId);
 
             SelectedEventType = EventTypes.First(et => et.Id == MobEvent.EventTypeId).Name;
 
-            EventViewModel = MobEvent.ToEventViewModel();
+            EventViewModel = MobEvent.ToEventViewModel(userManager.CurrentUser.Id);
 
             Events.Add(EventViewModel);
 
@@ -114,7 +116,7 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
 
             MobEvent = await mobEventManager.UpdateEventAsync(MobEvent);
 
-            EventViewModel = MobEvent.ToEventViewModel();
+            EventViewModel = MobEvent.ToEventViewModel(userManager.CurrentUser.Id);
             Events.Clear();
             Events.Add(EventViewModel);
 

@@ -15,7 +15,8 @@ public partial class MainViewModel(IAuthService authService,
     IStatsRestService statsRestService,
     IMobEventManager mobEventManager,
     ILitterReportManager litterReportManager,
-    INotificationService notificationService) : BaseViewModel(notificationService)
+    INotificationService notificationService,
+    IUserManager userManager) : BaseViewModel(notificationService)
 {
     private readonly IAuthService authService = authService;
     private readonly IMobEventManager mobEventManager = mobEventManager;
@@ -23,7 +24,11 @@ public partial class MainViewModel(IAuthService authService,
     private readonly IStatsRestService statsRestService = statsRestService;
     private readonly IUserRestService userRestService = userRestService;
     private readonly INotificationService notificationService = notificationService;
+    private readonly IUserManager userManager = userManager;
+
+#nullable disable
     private EventViewModel selectedEvent;
+#nullable restore
 
     [ObservableProperty]
     private StatisticsViewModel statisticsViewModel = new();
@@ -31,8 +36,10 @@ public partial class MainViewModel(IAuthService authService,
     [ObservableProperty]
     private int travelDistance;
 
+#nullable disable
     [ObservableProperty]
     private AddressViewModel userLocation;
+#nullable restore
 
     [ObservableProperty]
     private string userLocationDisplay = "Set Your Location Preference";
@@ -159,11 +166,11 @@ public partial class MainViewModel(IAuthService authService,
         UpcomingEvents.Clear();
         var events = await mobEventManager.GetActiveEventsAsync();
 
-        var eventsUserIsAttending = await mobEventManager.GetEventsUserIsAttending(App.CurrentUser.Id);
+        var eventsUserIsAttending = await mobEventManager.GetEventsUserIsAttending(userManager.CurrentUser.Id);
 
         foreach (var mobEvent in events.OrderBy(e => e.EventDate))
         {
-            var vm = mobEvent.ToEventViewModel();
+            var vm = mobEvent.ToEventViewModel(userManager.CurrentUser.Id);
 
             vm.IsUserAttending = eventsUserIsAttending.Any(e => e.Id == mobEvent.Id);
 
