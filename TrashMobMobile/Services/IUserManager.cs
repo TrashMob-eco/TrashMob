@@ -5,6 +5,8 @@
 
     public interface IUserManager
     {
+        User CurrentUser { get; }
+
         Task<User> GetUserAsync(string userId, CancellationToken cancellationToken = default);
 
         Task<User> GetUserByEmailAsync(string email, UserContext userContext,

@@ -24,6 +24,7 @@ public partial class CreateEventViewModel : BaseViewModel
     private readonly IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService;
     private readonly ILitterReportManager litterReportManager;
     private readonly IEventLitterReportRestService eventLitterReportRestService;
+    private readonly IUserManager userManager;
     private readonly INotificationService notificationService;
     private readonly IEventPartnerLocationServiceStatusRestService eventPartnerLocationServiceStatusRestService;
     private IEnumerable<LitterReport> RawLitterReports { get; set; } = [];
@@ -124,7 +125,8 @@ public partial class CreateEventViewModel : BaseViewModel
         INotificationService notificationService,
         IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService,
         ILitterReportManager litterReportManager,
-        IEventLitterReportRestService eventLitterReportRestService)
+        IEventLitterReportRestService eventLitterReportRestService,
+        IUserManager userManager)
         : base(notificationService)
     {
         this.mobEventManager = mobEventManager;
@@ -135,6 +137,7 @@ public partial class CreateEventViewModel : BaseViewModel
         this.eventPartnerLocationServiceRestService = eventPartnerLocationServiceRestService;
         this.litterReportManager = litterReportManager;
         this.eventLitterReportRestService = eventLitterReportRestService;
+        this.userManager = userManager;
 
         NextCommand = new Command(async () =>
         {
@@ -200,7 +203,7 @@ public partial class CreateEventViewModel : BaseViewModel
         }
     }
 
-    private void ValidateCurrentStep(object sender, PropertyChangedEventArgs e)
+    private void ValidateCurrentStep(object? sender, PropertyChangedEventArgs? e)
     {
         if (EventViewModel == null)
             return;
@@ -390,7 +393,7 @@ public partial class CreateEventViewModel : BaseViewModel
                 await Shell.Current.GoToAsync($"{nameof(WaiverPage)}");
             }
 
-            UserLocation = App.CurrentUser.GetAddress();
+            UserLocation = userManager.CurrentUser.GetAddress();
             EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
 
             // Set defaults
@@ -472,7 +475,7 @@ public partial class CreateEventViewModel : BaseViewModel
 
             var updatedEvent = await mobEventManager.AddEventAsync(mobEvent);
 
-            EventViewModel = updatedEvent.ToEventViewModel();
+            EventViewModel = updatedEvent.ToEventViewModel(userManager.CurrentUser.Id);
             Events.Clear();
             Events.Add(EventViewModel);
 
@@ -566,8 +569,7 @@ public partial class CreateEventViewModel : BaseViewModel
 
         foreach (var litterReport in RawLitterReports.OrderByDescending(l => l.CreatedDate))
         {
-            var vm = litterReport.ToEventLitterReportViewModel(NotificationService, eventLitterReportRestService,
-                eventViewModel.Id);
+            var vm = litterReport.ToEventLitterReportViewModel(NotificationService, eventLitterReportRestService, EventViewModel.Id);
 
             foreach (var litterImage in litterReport.LitterImages)
             {

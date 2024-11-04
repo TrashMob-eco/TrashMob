@@ -7,13 +7,16 @@ using TrashMobMobile.Models;
 using TrashMobMobile.Services;
 
 public partial class CancelEventViewModel(IMobEventManager mobEventManager,
-    INotificationService notificationService) : BaseViewModel(notificationService)
+                                          INotificationService notificationService,
+                                          IUserManager userManager) 
+    : BaseViewModel(notificationService)
 {
     private readonly IMobEventManager mobEventManager = mobEventManager;
     private readonly INotificationService notificationService = notificationService;
+    private readonly IUserManager userManager = userManager;
 
     [ObservableProperty]
-    private EventViewModel eventViewModel;
+    private EventViewModel eventViewModel = new();
 
     public async Task Init(Guid eventId)
     {
@@ -23,7 +26,7 @@ public partial class CancelEventViewModel(IMobEventManager mobEventManager,
         {
             var mobEvent = await mobEventManager.GetEventAsync(eventId);
 
-            EventViewModel = mobEvent.ToEventViewModel();
+            EventViewModel = mobEvent.ToEventViewModel(userManager.CurrentUser.Id);
 
             IsBusy = false;
         }

@@ -13,13 +13,13 @@ public partial class UserLocationPreferenceViewModel(IUserManager userManager, I
     private readonly IUserManager userManager = userManager;
 
     [ObservableProperty]
-    private AddressViewModel address = new AddressViewModel();
+    private AddressViewModel address = new();
 
     [ObservableProperty]
     private int travelDistance = Settings.DefaultTravelDistance;
 
     [ObservableProperty]
-    private string units;
+    private string units = string.Empty;
 
     public ObservableCollection<AddressViewModel> Addresses { get; set; } = [];
 
@@ -30,10 +30,10 @@ public partial class UserLocationPreferenceViewModel(IUserManager userManager, I
         try
         {
             Addresses.Clear();
-            Address = App.CurrentUser.GetAddress();
+            Address = userManager.CurrentUser.GetAddress();
             Addresses.Add(Address);
-            TravelDistance = App.CurrentUser.TravelLimitForLocalEvents;
-            Units = App.CurrentUser.PrefersMetric ? "Kilometers" : "Miles";
+            TravelDistance = userManager.CurrentUser.TravelLimitForLocalEvents;
+            Units = userManager.CurrentUser.PrefersMetric ? "Kilometers" : "Miles";
 
             IsBusy = false;
         }
@@ -82,16 +82,16 @@ public partial class UserLocationPreferenceViewModel(IUserManager userManager, I
 
         try
         {
-            App.CurrentUser.City = Address.City;
-            App.CurrentUser.Country = Address.Country;
-            App.CurrentUser.Latitude = Address.Latitude;
-            App.CurrentUser.Longitude = Address.Longitude;
-            App.CurrentUser.Country = Address.Country;
-            App.CurrentUser.PostalCode = Address.PostalCode;
-            App.CurrentUser.TravelLimitForLocalEvents = TravelDistance;
-            App.CurrentUser.PrefersMetric = Units == "Kilometers";
+            userManager.CurrentUser.City = Address.City;
+            userManager.CurrentUser.Country = Address.Country;
+            userManager.CurrentUser.Latitude = Address.Latitude;
+            userManager.CurrentUser.Longitude = Address.Longitude;
+            userManager.CurrentUser.Country = Address.Country;
+            userManager.CurrentUser.PostalCode = Address.PostalCode;
+            userManager.CurrentUser.TravelLimitForLocalEvents = TravelDistance;
+            userManager.CurrentUser.PrefersMetric = Units == "Kilometers";
 
-            await userManager.UpdateUserAsync(App.CurrentUser);
+            await userManager.UpdateUserAsync(userManager.CurrentUser);
 
             IsBusy = false;
 

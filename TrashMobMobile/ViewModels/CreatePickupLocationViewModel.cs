@@ -7,25 +7,28 @@ using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class CreatePickupLocationViewModel(IPickupLocationManager pickupLocationManager, IMapRestService mapRestService,
-    IMobEventManager mobEventManager, INotificationService notificationService) 
+public partial class CreatePickupLocationViewModel(IPickupLocationManager pickupLocationManager,
+                                                   IMapRestService mapRestService,
+                                                   IMobEventManager mobEventManager,
+                                                   INotificationService notificationService,
+                                                   IUserManager userManager) 
     : BaseViewModel(notificationService)
 {
     private readonly IMapRestService mapRestService = mapRestService;
     private readonly IMobEventManager mobEventManager = mobEventManager;
-
+    private readonly IUserManager userManager = userManager;
     private readonly IPickupLocationManager pickupLocationManager = pickupLocationManager;
 
     [ObservableProperty]
-    private EventViewModel eventViewModel;
+    private EventViewModel eventViewModel = new();
 
     [ObservableProperty]
-    private PickupLocationViewModel pickupLocationViewModel;
+    private PickupLocationViewModel pickupLocationViewModel = new(pickupLocationManager, mobEventManager, notificationService, userManager);
 
     // This is only for the map point
-    public ObservableCollection<PickupLocationViewModel> PickupLocations { get; set; } = new();
+    public ObservableCollection<PickupLocationViewModel> PickupLocations { get; set; } = [];
 
-    public string LocalFilePath { get; set; }
+    public string LocalFilePath { get; set; } = string.Empty;
 
     public async Task Init(Guid eventId)
     {
@@ -35,9 +38,9 @@ public partial class CreatePickupLocationViewModel(IPickupLocationManager pickup
         {
             var mobEvent = await mobEventManager.GetEventAsync(eventId);
 
-            EventViewModel = mobEvent.ToEventViewModel();
+            EventViewModel = mobEvent.ToEventViewModel(userManager.CurrentUser.Id);
 
-            PickupLocationViewModel = new PickupLocationViewModel(pickupLocationManager, mobEventManager, NotificationService)
+            PickupLocationViewModel = new PickupLocationViewModel(pickupLocationManager, mobEventManager, NotificationService, userManager)
             {
                 Name = "Pickup",
                 Address = new AddressViewModel(),
