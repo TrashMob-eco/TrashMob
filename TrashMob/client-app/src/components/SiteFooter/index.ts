@@ -1,0 +1,1 @@
+export { SiteHeader as default } from './SiteFooter'
