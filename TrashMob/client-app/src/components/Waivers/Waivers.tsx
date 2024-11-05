@@ -17,6 +17,7 @@ type WaiverFormInputs = {
 
 export interface WaiversProps {
     currentUser: UserData;
+    onUserUpdated: () => void;
 }
 
 export const CurrentTrashMobWaiverVersion = {
@@ -24,7 +25,7 @@ export const CurrentTrashMobWaiverVersion = {
     versionDate: new Date(2023, 6, 1, 0, 0, 0, 0),
 };
 
-const Waivers: React.FC<WaiversProps> = ({ currentUser }) => {
+const Waivers: React.FC<WaiversProps> = ({ currentUser, onUserUpdated }) => {
     const history = useHistory();
     const queryClient = useQueryClient();
     const userId = currentUser.id;
@@ -46,7 +47,8 @@ const Waivers: React.FC<WaiversProps> = ({ currentUser }) => {
         onSuccess: async () => {
             // Invalidate query
             await queryClient.invalidateQueries(GetUserById({ userId }).key);
-
+            onUserUpdated();
+            
             // Then redirect to home
             history.push('/');
         },
