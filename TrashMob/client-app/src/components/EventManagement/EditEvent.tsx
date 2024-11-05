@@ -56,7 +56,10 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
     const [maxNumberOfParticipantsErrors, setMaxNumberOfParticipantsErrors] = React.useState<string>('');
     const [durationHoursErrors, setDurationHoursErrors] = React.useState<string>('');
     const [durationMinutesErrors, setDurationMinutesErrors] = React.useState<string>('');
-    const [center, setCenter] = React.useState<google.maps.LatLngLiteral>({ lat: MapStore.defaultLatitude, lng: MapStore.defaultLongitude })
+    const [center, setCenter] = React.useState<google.maps.LatLngLiteral>({
+        lat: MapStore.defaultLatitude,
+        lng: MapStore.defaultLongitude,
+    });
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
 
     const getEventTypes = useQuery({
@@ -101,9 +104,9 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
         { enabled: false },
     );
 
-    /** On Page Load 
+    /** On Page Load
      * - Key AzureSubscription key
-     * - get user location and set map center 
+     * - get user location and set map center
      */
 
     React.useEffect(() => {
@@ -115,11 +118,11 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
             navigator.geolocation.getCurrentPosition((position) => {
                 setCenter({
                     lat: position.coords.latitude,
-                    lng: position.coords.longitude
+                    lng: position.coords.longitude,
                 });
             });
         }
-    }, [])
+    }, []);
 
     React.useEffect(() => {
         getEventTypes.refetch().then((res) => {
@@ -150,8 +153,8 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                     setEventStatusId(res.data.data.eventStatusId);
                     setCenter({
                         lat: res.data.data.latitude,
-                        lng: res.data.data.longitude
-                    })
+                        lng: res.data.data.longitude,
+                    });
                     setIsDataLoaded(true);
                 });
             }
@@ -173,7 +176,6 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                 setIsDataLoaded(true);
             });
         }
-
     }, [eventId, props.currentUser.dateAgreedToTrashMobWaiver, props.currentUser.trashMobWaiverVersion, props.history]);
 
     React.useEffect(() => {
@@ -250,19 +252,16 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
             setLatitude(lat);
             setLongitude(lng);
         }
-    }, [])
+    }, []);
 
-    const handleMarkerDragEnd = React.useCallback(
-        async (e: google.maps.MapMouseEvent) => {
-            if (e.latLng) {
-                const lat = e.latLng.lat();
-                const lng = e.latLng.lng();
-                setLatitude(lat);
-                setLongitude(lng);
-            }
-        },
-        [],
-    );
+    const handleMarkerDragEnd = React.useCallback(async (e: google.maps.MapMouseEvent) => {
+        if (e.latLng) {
+            const lat = e.latLng.lat();
+            const lng = e.latLng.lng();
+            setLatitude(lat);
+            setLongitude(lng);
+        }
+    }, []);
 
     // on Marker moved (latitude + longitude changed), do reverse search lat,lng to address
     React.useEffect(() => {
@@ -271,7 +270,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
 
             const firstResult = data?.addresses[0];
             if (firstResult) {
-                setStreetAddress(firstResult.address.streetNameAndNumber)
+                setStreetAddress(firstResult.address.streetNameAndNumber);
                 setCity(firstResult.address.municipality);
                 setCountry(firstResult.address.country);
                 setRegion(firstResult.address.countrySubdivisionName);
@@ -650,7 +649,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
                                         headerDisabled: true,
                                     }}
                                     infoWindowContent={
-                                        <EventInfoWindowContent 
+                                        <EventInfoWindowContent
                                             title={eventName}
                                             date={moment(absTime).format('LL')}
                                             time={moment(absTime).format('LTS Z')}
@@ -783,7 +782,7 @@ export const EditEvent: React.FC<EditEventProps> = (props) => {
 
 const EditEventWrapper = (props: EditEventProps) => {
     const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey();
-    
+
     if (isLoading) return null;
 
     return (

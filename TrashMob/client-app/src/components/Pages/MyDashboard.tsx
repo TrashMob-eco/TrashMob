@@ -46,8 +46,8 @@ import { GetStatsForUser } from '../../services/stats';
 import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
 import { EventsMap } from '../Map';
 
-const isUpcomingEvent = (event: EventData) => new Date(event.eventDate) >= new Date()
-const isPastEvent = (event: EventData) => new Date(event.eventDate) < new Date()
+const isUpcomingEvent = (event: EventData) => new Date(event.eventDate) >= new Date();
+const isPastEvent = (event: EventData) => new Date(event.eventDate) < new Date();
 
 interface MyDashboardProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
@@ -55,7 +55,7 @@ interface MyDashboardProps extends RouteComponentProps<any> {
 }
 
 const MyDashboard: FC<MyDashboardProps> = (props) => {
-    const { isUserLoaded, currentUser } = props
+    const { isUserLoaded, currentUser } = props;
     const [myEventList, setMyEventList] = useState<EventData[]>([]);
     const [partnerStatusList, setPartnerStatusList] = useState<PartnerStatusData[]>([]);
     const [partnerRequestStatusList, setPartnerRequestStatusList] = useState<PartnerRequestStatusData[]>([]);
@@ -77,8 +77,8 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const [eventToShare, setEventToShare] = useState<EventData>();
     const [showModal, setShowSocialsModal] = useState<boolean>(false);
 
-    const upcomingEvents = myEventList.filter(isUpcomingEvent)
-    const pastEvents = myEventList.filter(isPastEvent)
+    const upcomingEvents = myEventList.filter(isUpcomingEvent);
+    const pastEvents = myEventList.filter(isPastEvent);
 
     const getUserEvents = useQuery({
         queryKey: GetUserEvents({ userId: currentUser.id }).key,
@@ -809,10 +809,10 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                     </div>
                     {upcomingEventsMapView ? (
                         <EventsMap
-                            id="upcomingEventsMap"
+                            id='upcomingEventsMap'
                             events={upcomingEvents}
                             isUserLoaded={isUserLoaded}
-                            currentUser={currentUser} 
+                            currentUser={currentUser}
                         />
                     ) : (
                         <UpcomingEventsTable />
@@ -849,11 +849,11 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                         </div>
                     </div>
                     {pastEventsMapView ? (
-                         <EventsMap
-                            id="pastEventsMap"
+                        <EventsMap
+                            id='pastEventsMap'
                             events={pastEvents}
                             isUserLoaded={isUserLoaded}
-                            currentUser={currentUser} 
+                            currentUser={currentUser}
                         />
                     ) : (
                         <PastEventsTable />
@@ -921,9 +921,8 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     );
 };
 
-
 const MyDashboardWrapper = (props: MyDashboardProps) => {
-    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey()
+    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey();
 
     if (isLoading) return null;
 
@@ -933,6 +932,5 @@ const MyDashboardWrapper = (props: MyDashboardProps) => {
         </APIProvider>
     );
 };
-
 
 export default withRouter(MyDashboardWrapper);

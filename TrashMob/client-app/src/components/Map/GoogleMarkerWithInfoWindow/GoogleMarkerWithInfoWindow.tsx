@@ -8,10 +8,10 @@ import {
 } from '@vis.gl/react-google-maps';
 
 type MarkerWithInfoWindowProps = AdvancedMarkerProps & {
-    infoWindowTrigger: 'click' | 'hover' | 'hover-persist'
-    infoWindowProps?: InfoWindowProps
-    infoWindowContent: JSX.Element
-}
+    infoWindowTrigger: 'click' | 'hover' | 'hover-persist';
+    infoWindowProps?: InfoWindowProps;
+    infoWindowContent: JSX.Element;
+};
 
 export const GoogleMarkerWithInfoWindow = (props: MarkerWithInfoWindowProps) => {
     const { infoWindowTrigger, infoWindowProps = {}, infoWindowContent, ...markerProps } = props;
@@ -19,19 +19,19 @@ export const GoogleMarkerWithInfoWindow = (props: MarkerWithInfoWindowProps) => 
     const [infoWindowShown, setInfoWindowShown] = useState<boolean>(false);
     const closeInfoWindow = useCallback(() => setInfoWindowShown(false), []);
 
-    let triggerProps
+    let triggerProps;
     switch (infoWindowTrigger) {
-        case 'click': 
+        case 'click':
             triggerProps = {
-                onClick: () => setInfoWindowShown(!infoWindowShown)
-            }
-            break
-        case 'hover': 
+                onClick: () => setInfoWindowShown(!infoWindowShown),
+            };
+            break;
+        case 'hover':
             triggerProps = {
                 onMouseEnter: () => setInfoWindowShown(true),
                 onMouseLeave: () => setInfoWindowShown(false),
-            }
-            break
+            };
+            break;
     }
 
     return (
