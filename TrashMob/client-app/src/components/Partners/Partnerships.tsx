@@ -136,4 +136,3 @@ export const Partnerships: FC<any> = () => {
         </>
     );
 };
-

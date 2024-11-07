@@ -93,11 +93,8 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, mat
                                 <h4 className='text-center text-sm-left mb-4 ml-sm-5 font-weight-bold banner-heading ml-sm-4'>
                                     Meet up. Clean up. Feel good.
                                 </h4>
-                                <div className='d-flex ml-sm-4 flex-wrap' style={{ gap: "8px" }}>
-                                    <Link
-                                        className='btn btn-primary banner-button'
-                                        to='/gettingstarted'
-                                    >
+                                <div className='d-flex ml-sm-4 flex-wrap' style={{ gap: '8px' }}>
+                                    <Link className='btn btn-primary banner-button' to='/gettingstarted'>
                                         Join us today
                                     </Link>
                                     <Button
@@ -216,4 +213,3 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, mat
 };
 
 export default withRouter(Home);
-

@@ -169,4 +169,3 @@ export const VolunteerOpportunities: React.FC = () => {
         </>
     );
 };
-
