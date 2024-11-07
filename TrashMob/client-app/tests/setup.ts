@@ -1,7 +1,7 @@
 import { vi } from 'vitest';
 import '@testing-library/jest-dom';
 
-vi.stubGlobal("scrollTo", vi.fn);
+vi.stubGlobal('scrollTo', vi.fn);
 
 // Mock URL.createObjectURL (used by azure-map-control)
 const mockURL = {
