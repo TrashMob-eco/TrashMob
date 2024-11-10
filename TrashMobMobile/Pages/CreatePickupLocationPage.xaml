@@ -45,8 +45,9 @@
                 <maps:Map x:Name="pickupLocationMap" ItemsSource="{Binding PickupLocations}">
                     <maps:Map.ItemTemplate>
                         <DataTemplate x:DataType="viewModels:PickupLocationViewModel">
-                            <maps:Pin Location="{Binding Address.Location}"
+                            <controls:CustomPin Location="{Binding Address.Location}"
                                       Address="{Binding Address.StreetAddress}"
+                                      ImageSource="eventupcoming"
                                       Label="{Binding Name}" />
                         </DataTemplate>
                     </maps:Map.ItemTemplate>

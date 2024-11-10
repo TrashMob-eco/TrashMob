@@ -156,7 +156,9 @@ public partial class MainViewModel(IAuthService authService,
 
             foreach (var litterImageViewModel in vm.LitterImageViewModels)
             {
-                Addresses.Add(litterImageViewModel.Address);
+                var address = litterImageViewModel.Address;
+                address.IconFile = "litterreportnew";
+                Addresses.Add(address);
             }
         }
     }
@@ -175,6 +177,7 @@ public partial class MainViewModel(IAuthService authService,
             vm.IsUserAttending = eventsUserIsAttending.Any(e => e.Id == mobEvent.Id);
 
             UpcomingEvents.Add(vm);
+            vm.Address.IconFile = "eventupcoming";
             Addresses.Add(vm.Address);
         }
     }

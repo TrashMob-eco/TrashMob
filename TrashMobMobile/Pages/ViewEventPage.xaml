@@ -6,6 +6,7 @@
              xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
              x:DataType="viewModels:ViewEventViewModel"
              x:Class="TrashMobMobile.Pages.ViewEventPage"
+             xmlns:controls="clr-namespace:TrashMobMobile.Controls"
              Title="Event Details">
     <ScrollView>
         <Grid>
@@ -35,8 +36,9 @@
                               ItemsSource="{Binding Addresses}">
                         <maps:Map.ItemTemplate>
                             <DataTemplate x:DataType="viewModels:AddressViewModel">
-                                <maps:Pin Location="{Binding Location}"
+                                <controls:CustomPin Location="{Binding Location}"
                                           Address="{Binding StreetAddress}"
+                                          ImageSource="eventupcoming"
                                           Label="{Binding AddressType}" />
                             </DataTemplate>
                         </maps:Map.ItemTemplate>

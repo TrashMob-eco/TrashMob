@@ -13,7 +13,13 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
-            .UseMauiMaps()
+            .UseMauiMaps();
+            builder.ConfigureMauiHandlers(handlers =>
+            {
+#if ANDROID || IOS || MACCATALYST
+                handlers.AddHandler<Microsoft.Maui.Controls.Maps.Map, CustomMapHandler>();
+#endif
+            })
             .UseMauiCommunityToolkit(options => { options.SetShouldSuppressExceptionsInBehaviors(true); })
             .ConfigureFonts(fonts =>
             {

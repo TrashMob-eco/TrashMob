@@ -25,8 +25,9 @@
                           MapClicked="OnMapClicked">
                     <maps:Map.ItemTemplate>
                         <DataTemplate x:DataType="viewModels:AddressViewModel">
-                            <maps:Pin Location="{Binding Location}"
+                            <controls:CustomPin Location="{Binding Location}"
                                       Address="{Binding StreetAddress}"
+                                      ImageSource="eventupcoming"
                                       Label="Your Preferred Location" />
                         </DataTemplate>
                     </maps:Map.ItemTemplate>
