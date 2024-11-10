@@ -22,6 +22,8 @@ An Event has:
 	- For most events, there is no maximum. Defaults to 0. But in some cases, for safety reasons, or because limited supplies are available, the lead may choose to set a maximum number of attendees.
 - Status
 	- This is inferred from todays date relative the start time of the event. Events which have not yet started, are considered upcoming. Events which have started may be considered completed because the event lead may not be at the meetup location any longer. An event may also be canceled. Canceled is an internal marker only. The event is deleted from the list of available sites and is no longer visible to the perspective attendees or the lead. A completed event cannot be deleted (for legal reasons we need to track who organized and attended the event)
+- Is Public Event
+	- Most events are public, but a lead can create a private event as well if they want to add to their stats but not have others join them. Private events can also be set up in the past, so that if a user has just joined TrashMob, they can record some of their individual efforts from the recent past. A private event does not send out notifications to other users.
 - Lead
 	- The person who creates the event is considered the event lead. (We may allow multiple leads in the future.)
 - Attendees
