@@ -10,16 +10,16 @@ public partial class EventViewModel : ObservableObject
     private DateTimeOffset eventDate;
 
     [ObservableProperty]
-    private AddressViewModel address;
+    private AddressViewModel address = new();
 
     [ObservableProperty]
     private bool canCancelEvent;
 
     [ObservableProperty]
-    private string cancellationReason;
+    private string cancellationReason = string.Empty;
 
     [ObservableProperty]
-    private string description;
+    private string description = string.Empty;
 
     [ObservableProperty]
     private int durationHours;
@@ -45,10 +45,10 @@ public partial class EventViewModel : ObservableObject
     private int maxNumberOfParticipants;
 
     [ObservableProperty]
-    private string name;
+    private string name = string.Empty;
 
     [ObservableProperty]
-    private string userRoleForEvent;
+    private string userRoleForEvent = string.Empty;
 
     public DateTimeOffset EventDate
     {
@@ -106,11 +106,11 @@ public partial class EventViewModel : ObservableObject
         }
     }
 
-    public string ErrorMessage { get; set; }
+    public string ErrorMessage { get; set; } = string.Empty;
 
-    public string GetUserRole(Event mobEvent)
+    public string GetUserRole(Event mobEvent, Guid userId)
     {
-        if (mobEvent.IsEventLead())
+        if (mobEvent.IsEventLead(userId))
         {
             return "Lead";
         }

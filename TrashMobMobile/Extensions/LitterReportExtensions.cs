@@ -18,15 +18,32 @@
                 Name = litterReport.Name,
                 Description = litterReport.Description,
                 LitterReportStatusId = litterReport.LitterReportStatusId,
-                CreatedDate = litterReport.CreatedDate?.GetFormattedLocalDate() ?? string.Empty,
             };
 
-            foreach (var litterImage in litterReport.LitterImages)
+            if (litterReport.CreatedDate != null)
             {
-                var litterImageViewModel = litterImage.ToLitterImageViewModel(notificationService);
-                if (litterImageViewModel != null)
+                litterReportViewModel.CreatedDate = litterReport.CreatedDate.Value.GetFormattedLocalDate();
+            }
+            else
+            {
+                litterReport.CreatedDate = DateTime.MinValue;
+            }
+
+            if (litterReport.LitterImages == null)
+            {
+                litterReport.LitterImages = [];
+            }
+            else
+            {
+                foreach (var litterImage in litterReport.LitterImages)
                 {
-                    litterReportViewModel.LitterImageViewModels.Add(litterImageViewModel);
+                    var litterImageViewModel = litterImage.ToLitterImageViewModel(notificationService);
+                    if (litterImageViewModel != null)
+                    {
+                        litterImageViewModel.Address.DisplayName = litterReport.Name;
+                        litterImageViewModel.Address.ParentId = litterReport.Id;
+                        litterReportViewModel.LitterImageViewModels.Add(litterImageViewModel);
+                    }
                 }
             }
 
@@ -52,11 +69,41 @@
                 var litterImageViewModel = litterImage.ToLitterImageViewModel(notificationService);
                 if (litterImageViewModel != null)
                 {
+                    litterImageViewModel.Address.DisplayName = litterReport.Name;
+                    litterImageViewModel.Address.ParentId = litterReport.Id;
                     litterReportViewModel.LitterImageViewModels.Add(litterImageViewModel);
                 }
             }
 
             return litterReportViewModel;
+        }
+
+        public static EventLitterReportViewModel ToEventLitterReportViewModel(this EventLitterReport eventLitterReport,
+                                                                              INotificationService notificationService,
+                                                                              IEventLitterReportRestService eventLitterReportRestService,
+                                                                              Guid eventId)
+        {
+            var eventLitterReportViewModel = new EventLitterReportViewModel(eventLitterReportRestService, eventId)
+            {
+                Id = eventLitterReport.LitterReportId,
+                Name = eventLitterReport.LitterReport.Name,
+                Description = eventLitterReport.LitterReport.Description,
+                LitterReportStatusId = eventLitterReport.LitterReport.LitterReportStatusId,
+                CreatedDate = eventLitterReport.CreatedDate?.GetFormattedLocalDate() ?? string.Empty,
+            };
+
+            foreach (var litterImage in eventLitterReport.LitterReport.LitterImages)
+            {
+                var litterImageViewModel = litterImage.ToLitterImageViewModel(notificationService);
+                if (litterImageViewModel != null)
+                {
+                    litterImageViewModel.Address.DisplayName = eventLitterReport.LitterReport.Name;
+                    litterImageViewModel.Address.ParentId = eventLitterReport.LitterReport.Id;
+                    eventLitterReportViewModel.LitterImageViewModels.Add(litterImageViewModel);
+                }
+            }
+
+            return eventLitterReportViewModel;
         }
 
         public static LitterReport ToLitterReport(this LitterReportViewModel litterReportViewModel)
@@ -98,6 +145,7 @@
                 LastUpdatedDate = litterImage.LastUpdatedDate,
                 Address = new AddressViewModel
                 {
+                    AddressType = AddressType.LitterImage,
                     City = litterImage.City,
                     Country = litterImage.Country,
                     Latitude = litterImage.Latitude,

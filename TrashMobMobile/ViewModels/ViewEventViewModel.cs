@@ -14,18 +14,22 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     IWaiverManager waiverManager,
     IEventAttendeeRestService eventAttendeeRestService,
     IEventAttendeeRouteRestService eventAttendeeRouteRestService,
-    INotificationService notificationService) : BaseViewModel(notificationService)
+    INotificationService notificationService,
+    IEventLitterReportRestService eventLitterReportRestService,
+    IUserManager userManager) : BaseViewModel(notificationService)
 {
     private readonly IEventAttendeeRestService eventAttendeeRestService = eventAttendeeRestService;
+    private readonly IEventLitterReportRestService eventLitterReportRestService = eventLitterReportRestService;
+    private readonly IUserManager userManager = userManager;
     private readonly IEventTypeRestService eventTypeRestService = eventTypeRestService;
     private readonly IMobEventManager mobEventManager = mobEventManager;
     private readonly IWaiverManager waiverManager = waiverManager;
 
     [ObservableProperty]
-    private string attendeeCount;
+    private string attendeeCount = string.Empty;
 
     [ObservableProperty]
-    private string displayDuration;
+    private string displayDuration = string.Empty;
 
     [ObservableProperty]
     private bool enableEditEvent;
@@ -46,20 +50,26 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     private bool enableViewEventSummary;
 
     [ObservableProperty]
-    private EventViewModel eventViewModel;
+    private EventViewModel eventViewModel = new();
 
-    private Event mobEvent;
-
-    [ObservableProperty]
-    private string selectedEventType;
+    private Event mobEvent = new();
 
     [ObservableProperty]
-    private string spotsLeft;
+    private string selectedEventType = string.Empty;
 
     [ObservableProperty]
-    private string whatToExpect;
+    private string spotsLeft = string.Empty;
+
+    [ObservableProperty]
+    private string whatToExpect = string.Empty;
 
     public ObservableCollection<EventViewModel> Events { get; set; } = [];
+
+    public ObservableCollection<AddressViewModel> Addresses { get; set; } = [];
+
+    public ObservableCollection<LitterReportViewModel> LitterReports { get; set; } = [];
+
+    public ObservableCollection<LitterImageViewModel> LitterImages { get; set; } = [];
 
     public async Task Init(Guid eventId)
     {
@@ -68,8 +78,27 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
         try
         {
             mobEvent = await mobEventManager.GetEventAsync(eventId);
+            var eventLitterReports = await eventLitterReportRestService.GetEventLitterReportsAsync(mobEvent.Id);
 
-            EventViewModel = mobEvent.ToEventViewModel();
+            foreach (var eventLitterReport in eventLitterReports)
+            {
+                LitterReports.Add(eventLitterReport.LitterReport.ToEventLitterReportViewModel(NotificationService, eventLitterReportRestService, eventId));
+
+                foreach (var litterImage in eventLitterReport.LitterReport.LitterImages)
+                {
+                    var litterImageViewModel = litterImage.ToLitterImageViewModel(NotificationService);
+
+                    if (litterImageViewModel != null)
+                    {
+                        litterImageViewModel.Address.DisplayName = eventLitterReport.LitterReport.Name;
+                        litterImageViewModel.Address.ParentId = eventLitterReport.LitterReport.Id;
+                        LitterImages.Add(litterImageViewModel);
+                        Addresses.Add(litterImageViewModel.Address);
+                    }
+                }
+            }
+
+            EventViewModel = mobEvent.ToEventViewModel(userManager.CurrentUser.Id);
 
             var eventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
             SelectedEventType = eventTypes.First(et => et.Id == mobEvent.EventTypeId).Name;
@@ -78,10 +107,12 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             Events.Clear();
             Events.Add(EventViewModel);
 
-            EnableEditEvent = mobEvent.IsEventLead();
+            Addresses.Add(EventViewModel.Address);
+
+            EnableEditEvent = mobEvent.IsEventLead(userManager.CurrentUser.Id);
             EnableViewEventSummary = mobEvent.IsCompleted();
 
-            EnableStartTrackEventRoute = mobEvent.IsEventLead();
+            EnableStartTrackEventRoute = mobEvent.IsEventLead(userManager.CurrentUser.Id);
             EnableStopTrackEventRoute = false;
 
             WhatToExpect =
@@ -194,7 +225,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             await eventAttendeeRouteRestService.AddEventAttendeeRouteAsync(new DisplayEventAttendeeRoute
             {
                 EventId = mobEvent.Id,
-                UserId = App.CurrentUser.Id,
+                UserId = userManager.CurrentUser.Id,
                 Locations = GetSortableLocations()
             });
         }
@@ -246,7 +277,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             var eventAttendee = new EventAttendee
             {
                 EventId = EventViewModel.Id,
-                UserId = App.CurrentUser.Id,
+                UserId = userManager.CurrentUser.Id,
             };
 
             await mobEventManager.AddEventAttendeeAsync(eventAttendee);
@@ -276,7 +307,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             var eventAttendee = new EventAttendee
             {
                 EventId = EventViewModel.Id,
-                UserId = App.CurrentUser.Id,
+                UserId = userManager.CurrentUser.Id,
             };
 
             await mobEventManager.RemoveEventAttendeeAsync(eventAttendee);
@@ -298,9 +329,9 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
     private async Task SetRegistrationOptions()
     {
-        var isAttending = await mobEventManager.IsUserAttendingAsync(mobEvent.Id, App.CurrentUser.Id);
+        var isAttending = await mobEventManager.IsUserAttendingAsync(mobEvent.Id, userManager.CurrentUser.Id);
 
-        EnableRegister = !mobEvent.IsEventLead() && !isAttending && mobEvent.AreNewRegistrationsAllowed();
-        EnableUnregister = !mobEvent.IsEventLead() && isAttending && mobEvent.AreUnregistrationsAllowed();
+        EnableRegister = !mobEvent.IsEventLead(userManager.CurrentUser.Id) && !isAttending && mobEvent.AreNewRegistrationsAllowed();
+        EnableUnregister = !mobEvent.IsEventLead(userManager.CurrentUser.Id) && isAttending && mobEvent.AreUnregistrationsAllowed();
     }
 }

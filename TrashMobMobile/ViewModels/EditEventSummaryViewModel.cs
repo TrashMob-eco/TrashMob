@@ -5,17 +5,17 @@ using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
 using TrashMobMobile.Services;
 
-public partial class EditEventSummaryViewModel(IMobEventManager mobEventManager, INotificationService notificationService) : BaseViewModel(notificationService)
+public partial class EditEventSummaryViewModel(IMobEventManager mobEventManager, INotificationService notificationService, IUserManager userManager) : BaseViewModel(notificationService)
 {
     private readonly IMobEventManager mobEventManager = mobEventManager;
-
+    private readonly IUserManager userManager = userManager;
     [ObservableProperty]
     private bool enableSaveEventSummary;
 
     [ObservableProperty]
-    private EventSummaryViewModel eventSummaryViewModel;
+    private EventSummaryViewModel eventSummaryViewModel = new();
 
-    private EventSummary EventSummary { get; set; }
+    private EventSummary EventSummary { get; set; } = new EventSummary();
 
     public async Task Init(string eventId)
     {
@@ -63,7 +63,7 @@ public partial class EditEventSummaryViewModel(IMobEventManager mobEventManager,
 
             if (EventSummary.CreatedByUserId == Guid.Empty)
             {
-                EventSummary.CreatedByUserId = App.CurrentUser.Id;
+                EventSummary.CreatedByUserId = userManager.CurrentUser.Id;
                 await mobEventManager.AddEventSummaryAsync(EventSummary);
             }
             else

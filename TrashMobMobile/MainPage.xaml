@@ -23,7 +23,7 @@
                 </Grid>
                 <Border Margin="5,0"
                         Style="{x:StaticResource RoundBorder}">
-                    <Grid ColumnDefinitions="1*, 1*, 1*, 1*"
+                    <Grid ColumnDefinitions="1*, 1*, 1*, 1*, 1*"
                           RowDefinitions="Auto, Auto, Auto, Auto">
                         <Label Grid.Row="0"
                                Grid.Column="0"
@@ -94,6 +94,20 @@
                                FontSize="Micro"
                                HorizontalTextAlignment="Center"
                                Text="Hours Spent" />
+                        <Image Grid.Row="1"
+                               Grid.Column="4"
+                               Source="trashbag"
+                               WidthRequest="25" />
+                        <Label Grid.Row="2"
+                               Grid.Column="4"
+                               FontSize="Micro"
+                               HorizontalTextAlignment="Center"
+                               Text="{Binding StatisticsViewModel.TotalLitterReportsSubmitted}" />
+                        <Label Grid.Row="3"
+                               Grid.Column="4"
+                               FontSize="Micro"
+                               HorizontalTextAlignment="Center"
+                               Text="Litter Reports" />
                     </Grid>
                 </Border>
 
@@ -130,17 +144,17 @@
                             Text="{Binding UserLocationDisplay}" />
                 </Grid>
 
-                <maps:Map x:Name="upcomingEventsMap"
+                <maps:Map x:Name="mainMap"
                           IsVisible="{Binding Source={x:Reference viewMap}, Path=IsChecked}"
-                          ItemsSource="{Binding UpcomingEvents}">
+                          ItemsSource="{Binding Addresses}">
                     <maps:Map.ItemTemplate>
-                        <DataTemplate x:DataType="vm:EventViewModel">
-                            <controls:CustomPin Address="{Binding Address.StreetAddress}"
-                                      AutomationId="{Binding Id}"
+                        <DataTemplate x:DataType="vm:AddressViewModel">
+                            <controls:CustomPin Address="{Binding StreetAddress}"
+                                      AutomationId="{Binding AutomationId}"                                      
                                       InfoWindowClicked="Pin_InfoWindowClicked"
-                                      Label="{Binding Name}"
+                                      Label="{Binding DisplayName}"
                                       ImageSource="trashbag"
-                                      Location="{Binding Address.Location}" />
+                                      Location="{Binding Location}" />
                         </DataTemplate>
                     </maps:Map.ItemTemplate>
                 </maps:Map>

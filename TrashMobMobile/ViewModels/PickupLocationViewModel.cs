@@ -6,14 +6,18 @@ using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class PickupLocationViewModel(IPickupLocationManager pickupLocationManager, IMobEventManager mobEventManager, INotificationService notificationService) : BaseViewModel(notificationService)
+public partial class PickupLocationViewModel(IPickupLocationManager pickupLocationManager,
+                                             IMobEventManager mobEventManager, 
+                                             INotificationService notificationService,
+                                             IUserManager userManager)
+    : BaseViewModel(notificationService)
 {
     private readonly IMobEventManager mobEventManager = mobEventManager;
-
+    private readonly IUserManager userManager = userManager;
     private readonly IPickupLocationManager pickupLocationManager = pickupLocationManager;
 
     [ObservableProperty]
-    private AddressViewModel address;
+    private AddressViewModel address = new();
 
     [ObservableProperty]
     private bool canDeletePickupLocation;
@@ -25,17 +29,17 @@ public partial class PickupLocationViewModel(IPickupLocationManager pickupLocati
     private Guid id;
 
     [ObservableProperty]
-    private string imageUrl;
+    private string imageUrl = string.Empty;
 
-    private Event mobEvent;
-
-    [ObservableProperty]
-    private string name;
+    private Event mobEvent = new();
 
     [ObservableProperty]
-    private string notes;
+    private string name = string.Empty;
 
-    public PickupLocation PickupLocation { get; set; }
+    [ObservableProperty]
+    private string notes = string.Empty;
+
+    public PickupLocation PickupLocation { get; set; } = new();
 
     public async Task Init(Guid eventId)
     {
@@ -45,8 +49,8 @@ public partial class PickupLocationViewModel(IPickupLocationManager pickupLocati
         {
             mobEvent = await mobEventManager.GetEventAsync(eventId);
 
-            CanDeletePickupLocation = mobEvent.IsEventLead();
-            CanEditPickupLocation = mobEvent.IsEventLead();
+            CanDeletePickupLocation = mobEvent.IsEventLead(userManager.CurrentUser.Id);
+            CanEditPickupLocation = mobEvent.IsEventLead(userManager.CurrentUser.Id);
 
             IsBusy = false;
         }

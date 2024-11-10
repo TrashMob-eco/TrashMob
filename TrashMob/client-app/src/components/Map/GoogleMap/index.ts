@@ -1,1 +1,1 @@
-export * from './GoogleMap'
+export * from './GoogleMap';

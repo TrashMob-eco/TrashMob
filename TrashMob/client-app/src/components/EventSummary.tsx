@@ -135,8 +135,7 @@ export const EventSummary: FC<EventSummaryDashboardProps> = (props) => {
 
         if (createdByUserId && createdByUserId !== Guid.EMPTY) {
             updateEventSummary.mutateAsync(body);
-        }
-        else {
+        } else {
             body.createdByUserId = props.currentUser.id;
             createEventSummary.mutateAsync(body).then(() => handleShowModal(true));
         }
