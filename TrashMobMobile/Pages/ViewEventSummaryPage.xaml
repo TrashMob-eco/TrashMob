@@ -6,6 +6,7 @@
              xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
              x:DataType="viewModels:ViewEventSummaryViewModel"
              x:Class="TrashMobMobile.Pages.ViewEventSummaryPage"
+             xmlns:controls="clr-namespace:TrashMobMobile.Controls"
              Title="Event Summary">
     <ScrollView>
         <Grid>
@@ -94,10 +95,11 @@
                               Grid.ColumnSpan="2">
                         <maps:Map.ItemTemplate>
                             <DataTemplate x:DataType="viewModels:PickupLocationViewModel">
-                                <maps:Pin Location="{Binding Address.Location}"
+                                <controls:CustomPin Location="{Binding Address.Location}"
                                           Address="{Binding Address.StreetAddress}"
                                           Label="{Binding Id}"
                                           AutomationId="{Binding Id}"
+                                          ImageSource="eventupcoming"
                                           InfoWindowClicked="Pin_InfoWindowClicked" />
                             </DataTemplate>
                         </maps:Map.ItemTemplate>

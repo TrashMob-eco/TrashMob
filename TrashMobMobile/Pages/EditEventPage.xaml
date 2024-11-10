@@ -114,8 +114,9 @@
                           MapClicked="OnMapClicked">
                     <maps:Map.ItemTemplate>
                         <DataTemplate x:DataType="viewModels:EventViewModel">
-                            <maps:Pin Location="{Binding Address.Location}"
+                            <controls:CustomPin Location="{Binding Address.Location}"
                                       Address="{Binding Address.StreetAddress}"
+                                      ImageSource="eventupcoming"
                                       Label="{Binding Name}" />
                         </DataTemplate>
                     </maps:Map.ItemTemplate>
