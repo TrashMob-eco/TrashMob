@@ -13,6 +13,9 @@ public partial class AddressViewModel : ObservableObject
     private string displayName;
 
     [ObservableProperty]
+    private string iconFile;
+
+    [ObservableProperty]
     private AddressType addressType;
 
     [ObservableProperty]

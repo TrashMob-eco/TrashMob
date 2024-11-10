@@ -46,7 +46,7 @@
             }
             else if (addressType == AddressType.LitterImage.ToString())
             {
-                await Shell.Current.GoToAsync($"{nameof(ViewLitterReportPage)}?UserId={parentId}");
+                await Shell.Current.GoToAsync($"{nameof(ViewLitterReportPage)}?LitterReportId={parentId}");
             }
         }
     }
