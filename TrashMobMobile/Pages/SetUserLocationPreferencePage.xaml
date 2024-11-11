@@ -6,6 +6,8 @@
              xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
              x:DataType="viewModels:UserLocationPreferenceViewModel"
              x:Class="TrashMobMobile.Pages.SetUserLocationPreferencePage"
+             xmlns:converters="clr-namespace:TrashMobMobile.Converters"
+             xmlns:controls="clr-namespace:TrashMobMobile.Controls"
              Title="Set Your Location">
     <ScrollView>
         <Grid>
@@ -23,8 +25,9 @@
                           MapClicked="OnMapClicked">
                     <maps:Map.ItemTemplate>
                         <DataTemplate x:DataType="viewModels:AddressViewModel">
-                            <maps:Pin Location="{Binding Location}"
+                            <controls:CustomPin Location="{Binding Location}"
                                       Address="{Binding StreetAddress}"
+                                      ImageSource="eventupcoming"
                                       Label="Your Preferred Location" />
                         </DataTemplate>
                     </maps:Map.ItemTemplate>
@@ -34,46 +37,34 @@
                     <VerticalStackLayout Grid.Row="0" Grid.Column="0">
                         <Label Text="Set the Max Travel Distance you are willing to travel for an event."
                                Style="{StaticResource FieldLabel}" />
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Entry Text="{Binding TravelDistance}" Keyboard="Numeric" FontSize="Small" />
-                        </Border>
+                        <controls:TMEntry Text="{Binding TravelDistance}" Keyboard="Numeric" />
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="0" Grid.Column="1">
                         <Label Text="Set your preferred Units of measure." Style="{StaticResource FieldLabel}" />
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Picker SelectedItem="{Binding Units}" FontSize="Small">
-                                <Picker.ItemsSource>
-                                    <x:Array Type="{x:Type x:String}">
-                                        <x:String>Kilometers</x:String>
-                                        <x:String>Miles</x:String>
-                                    </x:Array>
-                                </Picker.ItemsSource>
-                            </Picker>
-                        </Border>
+                        <controls:TMPicker SelectedItem="{Binding Units}" >
+                            <controls:TMPicker.ItemsSource>
+                                <x:Array Type="{x:Type x:String}">
+                                    <x:String>Kilometers</x:String>
+                                    <x:String>Miles</x:String>
+                                </x:Array>
+                            </controls:TMPicker.ItemsSource>
+                        </controls:TMPicker>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="1" Grid.Column="0">
                         <Label Text="City" Style="{StaticResource FieldLabel}" />
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Label Text="{Binding Address.City }" FontSize="Small" />
-                        </Border>
+                        <Label Text="{Binding Address.City }" FontSize="Small" />
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="1" Grid.Column="1">
                         <Label Text="State/Region" Style="{StaticResource FieldLabel}" />
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Label Text="{Binding Address.Region }" FontSize="Small" />
-                        </Border>
+                        <Label Text="{Binding Address.Region }" FontSize="Small" />
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="2" Grid.Column="0">
                         <Label Text="Country" Style="{StaticResource FieldLabel}" />
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Label Text="{Binding Address.Country }" FontSize="Small" />
-                        </Border>
+                        <Label Text="{Binding Address.Country }" FontSize="Small" />
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="2" Grid.Column="1">
                         <Label Text="Postal Code" Style="{StaticResource FieldLabel}" />
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Label Text="{Binding Address.PostalCode }" FontSize="Small" />
-                        </Border>
+                        <Label Text="{Binding Address.PostalCode }" FontSize="Small" />
                     </VerticalStackLayout>
                 </Grid>
 

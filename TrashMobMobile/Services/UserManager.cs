@@ -12,6 +12,14 @@
             userRestService = service;
         }
 
+        public User CurrentUser
+        {
+            get
+            {
+                return App.CurrentUser;
+            }
+        }
+
         public Task<User> GetUserAsync(string userId, CancellationToken cancellationToken = default)
         {
             return userRestService.GetUserAsync(userId, cancellationToken);

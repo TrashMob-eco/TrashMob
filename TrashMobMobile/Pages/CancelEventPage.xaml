@@ -6,6 +6,8 @@
              xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
              x:DataType="viewModels:CancelEventViewModel"
              x:Class="TrashMobMobile.Pages.CancelEventPage"
+             xmlns:converters="clr-namespace:TrashMobMobile.Converters"
+             xmlns:controls="clr-namespace:TrashMobMobile.Controls"
              Title="Cancel Event">
     <ScrollView>
         <Grid>
@@ -35,12 +37,12 @@
                     <VerticalStackLayout Grid.Row="2">
                         <Label Text="Cancellation Reason" Style="{StaticResource FieldLabel}" />
                         <Border Style="{x:StaticResource RoundBorder}">
-                            <Editor Text="{Binding EventViewModel.CancellationReason}">
-                                <Editor.Behaviors>
+                            <controls:TMEditor Text="{Binding EventViewModel.CancellationReason}">
+                                <controls:TMEditor.Behaviors>
                                     <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="10"
                                                                     x:Name="cancellationReasonValidator" />
-                                </Editor.Behaviors>
-                            </Editor>
+                                </controls:TMEditor.Behaviors>
+                            </controls:TMEditor>
                         </Border>
                     </VerticalStackLayout>
                 </Grid>

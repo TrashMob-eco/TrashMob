@@ -95,7 +95,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                 setMemberSince(res.data.data.memberSince);
                 setLatitude(res.data.data.latitude);
                 setLongitude(res.data.data.longitude);
-                setCenter({ lat: res.data.data.latitude, lng: res.data.data.longitude })
+                setCenter({ lat: res.data.data.latitude, lng: res.data.data.longitude });
                 setPrefersMetric(res.data.data.prefersMetric);
                 setTravelLimitForLocalEvents(Math.max(res.data.data.travelLimitForLocalEvents, 1));
                 setMaxEventsRadiusErrors('');
@@ -110,7 +110,6 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
         MapStore.getOption().then((opts) => {
             setAzureSubscriptionKey(opts.subscriptionKey);
         });
-
     }, [userId, props.isUserLoaded, isDataLoaded]);
 
     // This will handle Cancel button click event.
@@ -218,7 +217,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
             fillColor: '#96ba00',
             fillOpacity: 0.2,
             clickable: false,
-            map
+            map,
         });
         radiusRef.current = radiusCircle;
     }, [map]);
@@ -252,7 +251,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
             setLatitude(lat);
             setLongitude(lng);
         }
-    }, [])
+    }, []);
 
     const handleMarkerDragEnd = useCallback((e: google.maps.MapMouseEvent) => {
         if (e.latLng) {
@@ -261,7 +260,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
             setLatitude(lat);
             setLongitude(lng);
         }
-    }, [])
+    }, []);
 
     // on Marker moved (latitude + longitude changed), do reverse search lat,lng to address
     useEffect(() => {
@@ -292,10 +291,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                 <Form onSubmit={handleSave}>
                     <Form.Row>
                         <div style={{ position: 'relative', width: '100%' }}>
-                            <GoogleMap
-                                defaultCenter={center}
-                                onClick={handleClickMap}
-                            >
+                            <GoogleMap defaultCenter={center} onClick={handleClickMap}>
                                 <MarkerWithInfoWindow
                                     position={{ lat: latitude, lng: longitude }}
                                     draggable
@@ -305,11 +301,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
                                         headerDisabled: true,
                                     }}
                                     infoWindowContent={
-                                        <EventInfoWindowContent
-                                            title="User's Base Location"
-                                            date={date}
-                                            time={time}
-                                        />
+                                        <EventInfoWindowContent title="User's Base Location" date={date} time={time} />
                                     }
                                 />
                             </GoogleMap>
@@ -441,7 +433,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
 };
 
 const LocationPreferenceWrapper = (props: LocationPreferenceProps) => {
-    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey()
+    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey();
 
     if (isLoading) return null;
 

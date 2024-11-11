@@ -6,6 +6,7 @@
              xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
              x:DataType="viewModels:ViewEventViewModel"
              x:Class="TrashMobMobile.Pages.ViewEventPage"
+             xmlns:controls="clr-namespace:TrashMobMobile.Controls"
              Title="Event Details">
     <ScrollView>
         <Grid>
@@ -18,7 +19,7 @@
 
                 <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
-                <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" RowSpacing="3"
+                <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" RowSpacing="3"
                       ColumnDefinitions="1*, 2*">
                     <Label Grid.Row="0" Grid.Column="0" Text="{Binding SelectedEventType}" FontSize="Small"
                            Margin="10, 0, 10,0" Grid.ColumnSpan="2" />
@@ -32,12 +33,13 @@
                            Text="{Binding EventViewModel.Address.DisplayAddress }" FontAttributes="Bold"
                            Margin="10,0,10,0" />
                     <maps:Map Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" x:Name="eventLocationMap"
-                              ItemsSource="{Binding Events}">
+                              ItemsSource="{Binding Addresses}">
                         <maps:Map.ItemTemplate>
-                            <DataTemplate x:DataType="viewModels:EventViewModel">
-                                <maps:Pin Location="{Binding Address.Location}"
-                                          Address="{Binding Address.StreetAddress}"
-                                          Label="{Binding Name}" />
+                            <DataTemplate x:DataType="viewModels:AddressViewModel">
+                                <controls:CustomPin Location="{Binding Location}"
+                                          Address="{Binding StreetAddress}"
+                                          ImageSource="eventupcoming"
+                                          Label="{Binding AddressType}" />
                             </DataTemplate>
                         </maps:Map.ItemTemplate>
                     </maps:Map>
@@ -62,6 +64,38 @@
                             IsVisible="{Binding EnableStartTrackEventRoute}" Margin="10" IsEnabled="{Binding EnableStartTrackEventRoute}" />
                     <Button Grid.Row="11" Grid.Column="1" Text="Stop Tracking" Command="{Binding RealTimeLocationTrackerCancelCommand}"
                             IsVisible="{Binding EnableStopTrackEventRoute}" IsEnabled="{Binding EnableStopTrackEventRoute}" Margin="10" />
+
+                    <CollectionView x:Name="LitterReportsCollection" Grid.Row="13"
+                        ItemsSource="{Binding LitterReports}"
+                        SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="viewModels:LitterReportViewModel">
+                                <StackLayout Margin="5">
+                                    <Border Style="{StaticResource RoundBorder}">
+                                        <Grid ColumnDefinitions="1*, 1*"
+                           RowDefinitions="Auto, Auto, Auto"
+                           x:Name="LitterReportItem">
+                                            <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="1"
+                                FontSize="Small" />
+                                            <Label Text="{Binding CreatedDate}" Grid.Row="0" Grid.ColumnSpan="1"
+                                Grid.Column="1" FontSize="Micro" />
+                                            <Label Text="{Binding Description}" Grid.Row="1" Grid.ColumnSpan="2"
+                                FontSize="Micro" />
+                                            <Label Text="Locations" Grid.Row="2" FontSize="Micro" FontAttributes="Bold" />
+                                            <CollectionView ItemsSource="{Binding LitterImageViewModels}" Grid.Row="2"
+                                         Grid.Column="1">
+                                                <CollectionView.ItemTemplate>
+                                                    <DataTemplate x:DataType="viewModels:LitterImageViewModel">
+                                                        <Label Text="{Binding Address.DisplayAddress}" FontSize="Micro" />
+                                                    </DataTemplate>
+                                                </CollectionView.ItemTemplate>
+                                            </CollectionView>
+                                        </Grid>
+                                    </Border>
+                                </StackLayout>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
                 </Grid>
 
             </VerticalStackLayout>

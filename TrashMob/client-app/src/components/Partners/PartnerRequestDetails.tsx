@@ -132,7 +132,6 @@ export const PartnerRequestDetails: React.FC<PartnerRequestDetailsParams> = (pro
                 });
             });
         }
-        
     }, [props.currentUser, props.isUserLoaded, partnerRequestId]);
 
     // This will handle Cancel button click event.
@@ -398,14 +397,8 @@ export const PartnerRequestDetails: React.FC<PartnerRequestDetailsParams> = (pro
                                     </Col>
                                 </Form.Row>
                                 <Form.Row>
-                                    <GoogleMap 
-                                        defaultCenter={{ lat: latitude, lng: longitude }}
-                                        defaultZoom={11}
-                                    >
-                                        <Marker 
-                                            position={{ lat: latitude, lng: longitude }}
-                                            draggable={false}
-                                        />
+                                    <GoogleMap defaultCenter={{ lat: latitude, lng: longitude }} defaultZoom={11}>
+                                        <Marker position={{ lat: latitude, lng: longitude }} draggable={false} />
                                     </GoogleMap>
                                 </Form.Row>
                                 <Form.Group className='form-group'>
@@ -478,7 +471,7 @@ export const PartnerRequestDetails: React.FC<PartnerRequestDetailsParams> = (pro
 };
 
 const PartnerRequestDetailsWrapper = (props: PartnerRequestDetailsParams) => {
-    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey()
+    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey();
 
     if (isLoading) return null;
 
@@ -488,6 +481,5 @@ const PartnerRequestDetailsWrapper = (props: PartnerRequestDetailsParams) => {
         </APIProvider>
     );
 };
-
 
 export default withRouter(PartnerRequestDetailsWrapper);

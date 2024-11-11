@@ -9,7 +9,7 @@ import { CurrentTrashMobWaiverVersion } from '../Waivers/Waivers';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { GetTrashMobWaivers } from '../../services/waivers';
-import { AddEventAttendee, GetAllEventsBeingAttendedByUser } from "../../services/events";
+import { AddEventAttendee, GetAllEventsBeingAttendedByUser } from '../../services/events';
 
 interface RegisterBtnProps {
     currentUser: UserData;
@@ -26,15 +26,15 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
     isUserLoaded,
     isEventCompleted,
 }) => {
-    const userId = currentUser.id
-    const history = useHistory()
+    const userId = currentUser.id;
+    const history = useHistory();
     const [registered, setRegistered] = useState<boolean>(false);
-    const queryClient = useQueryClient()
+    const queryClient = useQueryClient();
 
     const { data: waiver } = useQuery({
         queryKey: GetTrashMobWaivers().key,
         queryFn: GetTrashMobWaivers().service,
-        select: res => res.data,
+        select: (res) => res.data,
     });
 
     const addEventAttendee = useMutation({
@@ -42,12 +42,11 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
         mutationFn: AddEventAttendee().service,
         onSuccess: () => {
             // Invalidate user's list of attended events, triggerring refetch
-            queryClient.invalidateQueries(GetAllEventsBeingAttendedByUser({ userId }).key)
+            queryClient.invalidateQueries(GetAllEventsBeingAttendedByUser({ userId }).key);
 
             // re-direct user to event details page once they are registered
-            history.push(`/eventdetails/${eventId}`); 
-
-        }
+            history.push(`/eventdetails/${eventId}`);
+        },
     });
 
     const addAttendee = async (eventId: string) => {

@@ -7,15 +7,19 @@ using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
 public partial class ManageEventPartnersViewModel(IMobEventManager mobEventManager,
-    IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService, INotificationService notificationService) : BaseViewModel(notificationService)
+                                                  IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService,
+                                                  INotificationService notificationService,
+                                                  IUserManager userManager) 
+    : BaseViewModel(notificationService)
 {
     private readonly IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService = eventPartnerLocationServiceRestService;
+    private readonly IUserManager userManager = userManager;
     private readonly IMobEventManager mobEventManager = mobEventManager;
 
     [ObservableProperty]
-    private EventViewModel eventViewModel;
+    private EventViewModel eventViewModel = new();
 
-    private EventPartnerLocationViewModel selectedEventPartnerLocation;
+    private EventPartnerLocationViewModel selectedEventPartnerLocation = new();
 
     public ObservableCollection<EventPartnerLocationViewModel> AvailablePartners { get; set; } = new();
 
@@ -37,7 +41,7 @@ public partial class ManageEventPartnersViewModel(IMobEventManager mobEventManag
         }
     }
 
-    private Event MobEvent { get; set; }
+    private Event MobEvent { get; set; } = new();
 
     private async void PerformNavigation(EventPartnerLocationViewModel eventPartnerLocationViewModel)
     {
@@ -71,7 +75,7 @@ public partial class ManageEventPartnersViewModel(IMobEventManager mobEventManag
 
             MobEvent = await mobEventManager.GetEventAsync(eventId);
 
-            EventViewModel = MobEvent.ToEventViewModel();
+            EventViewModel = MobEvent.ToEventViewModel(userManager.CurrentUser.Id);
 
             IsBusy = false;
         }
