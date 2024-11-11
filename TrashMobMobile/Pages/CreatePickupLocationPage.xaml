@@ -7,6 +7,8 @@
              xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
              x:DataType="viewModels:CreatePickupLocationViewModel"
              x:Class="TrashMobMobile.Pages.CreatePickupLocationPage"
+             xmlns:converters="clr-namespace:TrashMobMobile.Converters"
+             xmlns:controls="clr-namespace:TrashMobMobile.Controls"
              Title="Create Pickup Location">
     <ScrollView>
         <Grid>
@@ -20,25 +22,21 @@
                     <Button Text="Take Photo" Clicked="TakePhoto_Clicked" Grid.Row="1" Margin="10" />
                     <VerticalStackLayout Grid.Row="2">
                         <Label Text="Name" Style="{StaticResource FieldLabel}" />
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Entry Text="{Binding PickupLocationViewModel.Name}">
-                                <Entry.Behaviors>
-                                    <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5"
+                        <controls:TMEntry Text="{Binding PickupLocationViewModel.Name}">
+                            <controls:TMEntry.Behaviors>
+                                <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5"
                                                                     x:Name="nameValidator" />
-                                </Entry.Behaviors>
-                            </Entry>
-                        </Border>
+                            </controls:TMEntry.Behaviors>
+                        </controls:TMEntry>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="3">
                         <Label Text="Description" Style="{StaticResource FieldLabel}" />
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Editor Text="{Binding PickupLocationViewModel.Notes}">
-                                <Editor.Behaviors>
+                        <controls:TMEditor Text="{Binding PickupLocationViewModel.Notes}">
+                            <controls:TMEditor.Behaviors>
                                     <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="10"
                                                                     x:Name="notesValidator" />
-                                </Editor.Behaviors>
-                            </Editor>
-                        </Border>
+                                </controls:TMEditor.Behaviors>
+                            </controls:TMEditor>
                     </VerticalStackLayout>
                 </Grid>
 
@@ -47,8 +45,9 @@
                 <maps:Map x:Name="pickupLocationMap" ItemsSource="{Binding PickupLocations}">
                     <maps:Map.ItemTemplate>
                         <DataTemplate x:DataType="viewModels:PickupLocationViewModel">
-                            <maps:Pin Location="{Binding Address.Location}"
+                            <controls:CustomPin Location="{Binding Address.Location}"
                                       Address="{Binding Address.StreetAddress}"
+                                      ImageSource="eventupcoming"
                                       Label="{Binding Name}" />
                         </DataTemplate>
                     </maps:Map.ItemTemplate>
@@ -57,38 +56,23 @@
                 <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="1*, 1*">
                     <VerticalStackLayout Grid.Row="0" Grid.ColumnSpan="2">
                         <Label Text="Address" Style="{StaticResource FieldLabel}" />
-
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Label Text="{Binding PickupLocationViewModel.Address.StreetAddress }" FontSize="Micro" />
-                        </Border>
+                        <Label Text="{Binding PickupLocationViewModel.Address.StreetAddress }" FontSize="Micro" />
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="1" Grid.Column="0">
                         <Label Text="City" Style="{StaticResource FieldLabel}" />
-
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Label Text="{Binding PickupLocationViewModel.Address.City }" FontSize="Micro" />
-                        </Border>
+                        <Label Text="{Binding PickupLocationViewModel.Address.City }" FontSize="Micro" />
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="1" Grid.Column="1">
                         <Label Text="State/Region" Style="{StaticResource FieldLabel}" />
-
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Label Text="{Binding PickupLocationViewModel.Address.Region }" FontSize="Micro" />
-                        </Border>
+                        <Label Text="{Binding PickupLocationViewModel.Address.Region }" FontSize="Micro" />
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="2" Grid.Column="0">
                         <Label Text="Country" Style="{StaticResource FieldLabel}" />
-
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Label Text="{Binding PickupLocationViewModel.Address.Country }" FontSize="Micro" />
-                        </Border>
+                        <Label Text="{Binding PickupLocationViewModel.Address.Country }" FontSize="Micro" />
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="2" Grid.Column="1">
                         <Label Text="Postal Code" Style="{StaticResource FieldLabel}" />
-
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Label Text="{Binding PickupLocationViewModel.Address.PostalCode }" FontSize="Micro" />
-                        </Border>
+                        <Label Text="{Binding PickupLocationViewModel.Address.PostalCode }" FontSize="Micro" />
                     </VerticalStackLayout>
                 </Grid>
 

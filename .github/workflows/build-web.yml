@@ -1,0 +1,70 @@
+name: Build Web (lint, format and test)
+
+on:
+    workflow_dispatch:
+    pull_request:
+        branches:
+            - "main" 
+        types:
+            - opened
+            - reopened
+            - synchronize
+            - ready_for_review        
+        paths:
+            - "TrashMob/client-app/**"
+   
+jobs:
+    eslint-prettier:
+        runs-on: windows-2022
+        if: ${{ !github.event.pull_request.draft }}
+        defaults:
+            run:
+              working-directory: ./TrashMob/client-app
+        steps:
+            -   name: Checkout code
+                uses: actions/checkout@v4
+                
+            -   name: Cache dependencies
+                id: cache-npm
+                uses: actions/cache@v4
+                with:
+                    path: ./TrashMob/client-app/node_modules
+                    key: deps-node-modules-${{ hashFiles('**\package-lock.json') }}
+            -   name: Install dependencies
+                if: steps.cache-npm.outputs.cache-hit != 'true'
+                run: npm ci                   
+
+            -   name: Run linting
+                run: npm run lint                   
+
+            -   name: Run prettier
+                run: npm run format                    
+
+            -   name: Check for modified files                    
+                run: git diff --exit-code || (echo "ESLint fixed some files. Please commit the changes." && exit 1)
+ 
+    tests:
+        runs-on: windows-2022
+        if: ${{ !github.event.pull_request.draft }}
+        defaults:
+            run:
+              working-directory: ./TrashMob/client-app
+        steps:
+            -   name: Checkout code
+                uses: actions/checkout@v4
+                
+            -   name: Cache dependencies
+                id: cache-npm
+                uses: actions/cache@v4
+                with:
+                    path: ./TrashMob/client-app/node_modules
+                    key: deps-node-modules-${{ hashFiles('**\package-lock.json') }}
+            -   name: Install dependencies
+                if: steps.cache-npm.outputs.cache-hit != 'true'
+                run: npm ci                   
+
+            -   name: Run tests
+                run: npm run test                   
+
+                  
+                

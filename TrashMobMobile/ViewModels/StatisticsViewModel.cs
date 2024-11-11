@@ -17,8 +17,8 @@ public partial class StatisticsViewModel : ObservableObject
     private int totalHours;
 
     [ObservableProperty]
-    private int totalLitterReportClosed;
+    private int totalLitterReportsClosed;
 
     [ObservableProperty]
-    private int totalLitterReportSubmitted;
+    private int totalLitterReportsSubmitted;
 }

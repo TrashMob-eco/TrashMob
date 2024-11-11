@@ -7,11 +7,15 @@ using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager, IPickupLocationManager pickupLocationManager, INotificationService notificationService) : BaseViewModel(notificationService)
+public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager, 
+                                               IPickupLocationManager pickupLocationManager, 
+                                               INotificationService notificationService,
+                                               IUserManager userManager) 
+    : BaseViewModel(notificationService)
 {
     private readonly IMobEventManager mobEventManager = mobEventManager;
     private readonly IPickupLocationManager pickupLocationManager = pickupLocationManager;
-
+    private readonly IUserManager userManager = userManager;
     [ObservableProperty]
     private bool enableAddPickupLocation;
 
@@ -19,14 +23,14 @@ public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager,
     private bool enableEditEventSummary;
 
     [ObservableProperty]
-    private EventSummaryViewModel eventSummaryViewModel;
+    private EventSummaryViewModel eventSummaryViewModel = new();
 
     [ObservableProperty]
-    private EventViewModel eventViewModel;
+    private EventViewModel eventViewModel = new();
 
-    private PickupLocationViewModel selectedPickupLocationViewModel;
+    private PickupLocationViewModel selectedPickupLocationViewModel = new(pickupLocationManager, mobEventManager, notificationService, userManager);
 
-    public ObservableCollection<PickupLocationViewModel> PickupLocations { get; set; } = new();
+    public ObservableCollection<PickupLocationViewModel> PickupLocations { get; set; } = [];
 
     public PickupLocationViewModel SelectedPickupLocation
     {
@@ -55,7 +59,7 @@ public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager,
         try
         {
             var mobEvent = await mobEventManager.GetEventAsync(eventId);
-            EventViewModel = mobEvent.ToEventViewModel();
+            EventViewModel = mobEvent.ToEventViewModel(userManager.CurrentUser.Id);
 
             var eventSummary = await mobEventManager.GetEventSummaryAsync(eventId);
 
@@ -71,24 +75,24 @@ public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager,
                 };
             }
 
-            EnableEditEventSummary = mobEvent.IsEventLead();
-            EnableAddPickupLocation = mobEvent.IsEventLead();
+            EnableEditEventSummary = mobEvent.IsEventLead(userManager.CurrentUser.Id);
+            EnableAddPickupLocation = mobEvent.IsEventLead(userManager.CurrentUser.Id);
 
             var pickupLocations = await pickupLocationManager.GetPickupLocationsAsync(eventId, ImageSizeEnum.Thumb);
 
             PickupLocations.Clear();
             foreach (var pickupLocation in pickupLocations)
             {
-                var pickupLocationViewModel = new PickupLocationViewModel(pickupLocationManager, mobEventManager, NotificationService)
+                var pickupLocationViewModel = new PickupLocationViewModel(pickupLocationManager, mobEventManager, NotificationService, userManager)
                 {
                     Address = new AddressViewModel
                     {
                         City = pickupLocation.City,
                         Country = pickupLocation.Country,
                         County = pickupLocation.County,
-                        Location = new Location(pickupLocation.Latitude.Value, pickupLocation.Longitude.Value),
-                        Latitude = pickupLocation.Latitude.Value,
-                        Longitude = pickupLocation.Longitude.Value,
+                        Location = new Location(pickupLocation.Latitude ?? 0, pickupLocation.Longitude ?? 0),
+                        Latitude = pickupLocation.Latitude ?? 0,
+                        Longitude = pickupLocation.Longitude ?? 0,
                         PostalCode = pickupLocation.PostalCode,
                         Region = pickupLocation.Region,
                         StreetAddress = pickupLocation.StreetAddress,

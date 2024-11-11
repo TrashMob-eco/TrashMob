@@ -7,10 +7,13 @@ using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class SearchEventsViewModel(IMobEventManager mobEventManager, INotificationService notificationService) : BaseViewModel(notificationService)
+public partial class SearchEventsViewModel(IMobEventManager mobEventManager, 
+                                           INotificationService notificationService,
+                                           IUserManager userManager) 
+    : BaseViewModel(notificationService)
 {
     private readonly IMobEventManager mobEventManager = mobEventManager;
-
+    private readonly IUserManager userManager = userManager;
     [ObservableProperty]
     private string eventStatus = "Upcoming";
 
@@ -18,11 +21,11 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager, INo
 
     private string? selectedCity;
     private string? selectedCountry;
-    private EventViewModel selectedEvent;
+    private EventViewModel selectedEvent = new();
     private string? selectedRegion;
 
     [ObservableProperty]
-    private AddressViewModel userLocation;
+    private AddressViewModel userLocation = new();
 
     private IEnumerable<Event> RawEvents { get; set; } = [];
 
@@ -92,7 +95,7 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager, INo
 
         try
         {
-            UserLocation = App.CurrentUser.GetAddress();
+            UserLocation = userManager.CurrentUser.GetAddress();
             await RefreshEvents();
 
             IsBusy = false;
@@ -126,7 +129,10 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager, INo
 
         foreach (var country in countries)
         {
-            CountryCollection.Add(country);
+            if (!string.IsNullOrEmpty(country))
+            {
+                CountryCollection.Add(country);
+            }
         }
 
         if (EventStatus == "Upcoming")
@@ -171,7 +177,10 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager, INo
 
         foreach (var region in regions)
         {
-            RegionCollection.Add(region);
+            if (!string.IsNullOrEmpty(region))
+            {
+                RegionCollection.Add(region);
+            }
         }
     }
 
@@ -200,7 +209,10 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager, INo
 
         foreach (var city in cities)
         {
-            CityCollection.Add(city);
+            if (!string.IsNullOrEmpty(city))
+            {
+                CityCollection.Add(city);
+            }
         }
     }
 
@@ -224,7 +236,7 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager, INo
 
         foreach (var mobEvent in RawEvents)
         {
-            var vm = mobEvent.ToEventViewModel();
+            var vm = mobEvent.ToEventViewModel(userManager.CurrentUser.Id);
             Events.Add(vm);
         }
     }

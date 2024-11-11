@@ -54,6 +54,11 @@ public class AuthService : IAuthService
             InitializeClient();
         }
 
+        if (pca == null)
+        {
+            throw new Exception("Unable to initialize authentication client");
+        }
+
         var accounts = await pca.GetAccountsAsync();
 
         try

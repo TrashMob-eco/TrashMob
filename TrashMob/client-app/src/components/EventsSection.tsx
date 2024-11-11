@@ -20,7 +20,6 @@ import { APIProvider } from '@vis.gl/react-google-maps';
 import { EventsMap } from './Map';
 import { useGetGoogleMapApiKey } from '../hooks/useGetGoogleMapApiKey';
 
-
 export interface EventsSectionProps extends RouteComponentProps<any> {
     isUserLoaded: boolean;
     currentUser: UserData;
@@ -105,7 +104,6 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
                 setIsUserEventDataLoaded(true);
             });
         }
-
     }, [isUserLoaded, currentUser]);
 
     const updateLocationMap = (eventList: EventData[]) => {
@@ -274,7 +272,7 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
             divRef.current.scrollIntoView();
         }
     };
-    
+
     return (
         <Container fluid className='bg-white p-4 p-md-5' id='events' ref={divRef}>
             <div className='max-width-container mx-auto'>
@@ -352,8 +350,12 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
                         <Button color='primary' className='mb-4' onClick={() => history.push('/manageeventdashboard')}>
                             Create a New Event
                         </Button>
-                        <div className='w-100 h-50 m-0'>
-                            <EventsMap events={presentEventList} isUserLoaded={isUserLoaded} currentUser={currentUser} />
+                        <div className='w-100 m-0'>
+                            <EventsMap
+                                events={presentEventList}
+                                isUserLoaded={isUserLoaded}
+                                currentUser={currentUser}
+                            />
                         </div>
                     </>
                 ) : (
@@ -378,9 +380,8 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
     );
 };
 
-
 const EventSectionWrapper = (props: EventsSectionProps) => {
-    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey()
+    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey();
     if (isLoading) return null;
 
     return (
@@ -389,6 +390,5 @@ const EventSectionWrapper = (props: EventsSectionProps) => {
         </APIProvider>
     );
 };
-
 
 export default EventSectionWrapper;

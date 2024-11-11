@@ -6,6 +6,7 @@
                            xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
                            xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
                            x:DataType="viewModels:CreateEventViewModel"
+                           xmlns:controls="clr-namespace:TrashMobMobile.Controls"
                            x:Class="TrashMobMobile.Pages.CreateEvent.Step4">
     <ScrollView>
         <Grid>
@@ -35,8 +36,9 @@
                               ItemsSource="{Binding Events}">
                         <maps:Map.ItemTemplate>
                             <DataTemplate x:DataType="viewModels:EventViewModel">
-                                <maps:Pin Location="{Binding Address.Location}"
+                                <controls:CustomPin Location="{Binding Address.Location}"
                                           Address="{Binding Address.StreetAddress}"
+                                          ImageSource="eventupcoming"
                                           Label="{Binding Name}" />
                             </DataTemplate>
                         </maps:Map.ItemTemplate>

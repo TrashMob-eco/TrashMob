@@ -5,6 +5,8 @@
              xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
              x:DataType="viewModels:EditEventSummaryViewModel"
              x:Class="TrashMobMobile.Pages.EditEventSummaryPage"
+             xmlns:converters="clr-namespace:TrashMobMobile.Converters"
+             xmlns:controls="clr-namespace:TrashMobMobile.Controls"
              Title="Event Summary">
     <ScrollView>
         <Grid>
@@ -17,17 +19,17 @@
                                    Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" FontSize="Micro"
                                    Margin="0, 0, 0, 10" />
                             <Image Grid.Row="1" Grid.Column="0" Source="person" MaximumWidthRequest="25" />
-                            <Entry Grid.Row="2" Grid.Column="0"
+                            <controls:TMEntry Grid.Row="2" Grid.Column="0"
                                    Text="{ Binding EventSummaryViewModel.ActualNumberOfAttendees }" Keyboard="Numeric" />
                             <Label Grid.Row="3" Grid.Column="0" Text="Attendees" FontSize="Micro"
                                    HorizontalTextAlignment="Center" />
                             <Image Grid.Row="1" Grid.Column="1" Source="trashbag" WidthRequest="25" />
-                            <Entry Grid.Row="2" Grid.Column="1" Text="{ Binding EventSummaryViewModel.NumberOfBags }"
+                            <controls:TMEntry Grid.Row="2" Grid.Column="1" Text="{ Binding EventSummaryViewModel.NumberOfBags }"
                                    Keyboard="Numeric" />
                             <Label Grid.Row="3" Grid.Column="1" Text="Bags Collected" FontSize="Micro"
                                    HorizontalTextAlignment="Center" />
                             <Image Grid.Row="1" Grid.Column="2" Source="clock" WidthRequest="25" />
-                            <Entry Grid.Row="2" Grid.Column="2"
+                            <controls:TMEntry Grid.Row="2" Grid.Column="2"
                                    Text="{ Binding EventSummaryViewModel.DurationInMinutes }" Keyboard="Numeric" />
                             <Label Grid.Row="3" Grid.Column="2" Text="Duration in Minutes" FontSize="Micro"
                                    HorizontalTextAlignment="Center" />
@@ -37,13 +39,11 @@
 
                 <VerticalStackLayout>
                     <Label Text="Notes" Style="{StaticResource FieldLabel}" />
-                    <Border Style="{x:StaticResource RoundBorder}">
-                        <Entry
+                    <controls:TMEntry
                             Text="{Binding EventSummaryViewModel.Notes}"
                             VerticalOptions="Center"
                             HorizontalOptions="StartAndExpand"
                             HorizontalTextAlignment="Center" />
-                    </Border>
                 </VerticalStackLayout>
 
                 <Button Text="Save Event Summary" Command="{Binding SaveEventSummaryCommand}"

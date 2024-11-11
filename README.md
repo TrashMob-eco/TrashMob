@@ -196,6 +196,10 @@ See the [Website User Stories](./WebsiteUserStories.md) document for a list of u
 
 See the [Mobile App User Stories](./MobileAppUserStories.md) document for a list of user stories that have been implemented in the mobile apps.
 
+## Data Elements and Concepts
+
+See the [Data Elements and Concepts](./DataElements.md) document for a description of all of the core data elements and concepts in the TrashMob.eco Platform.
+
 ## Testing the Web App
 
 As the site's feature set has grown, so have the scenarios that need to be tested after large changes have been made. Please see the [Test Scenarios](./TestScenarios.md) document for a list of checks that should be run. At some point we will need to automate these tests.

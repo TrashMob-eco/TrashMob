@@ -17,6 +17,7 @@ type WaiverFormInputs = {
 
 export interface WaiversProps {
     currentUser: UserData;
+    onUserUpdated: () => void;
 }
 
 export const CurrentTrashMobWaiverVersion = {
@@ -24,7 +25,7 @@ export const CurrentTrashMobWaiverVersion = {
     versionDate: new Date(2023, 6, 1, 0, 0, 0, 0),
 };
 
-const Waivers: React.FC<WaiversProps> = ({ currentUser }) => {
+const Waivers: React.FC<WaiversProps> = ({ currentUser, onUserUpdated }) => {
     const history = useHistory();
     const queryClient = useQueryClient();
     const userId = currentUser.id;
@@ -46,6 +47,7 @@ const Waivers: React.FC<WaiversProps> = ({ currentUser }) => {
         onSuccess: async () => {
             // Invalidate query
             await queryClient.invalidateQueries(GetUserById({ userId }).key);
+            onUserUpdated();
 
             // Then redirect to home
             history.push('/');
@@ -81,9 +83,9 @@ const Waivers: React.FC<WaiversProps> = ({ currentUser }) => {
                     <h2 className='fw-500 font-size-xl'>TrashMob.eco</h2>
                     <h5>Volunteer Release and Waiver of Liability Form</h5>
                     <p>
-                        The Volunteer Release and Waiver of Liability Form (“Release”).
-                        (“Volunteer”) hereby releases TRASHMOB.ECO, ITS OFFICERS AND DIRECTORS, ANY LAND OWNERS AND
-                        MANAGERS, AND ALL RELATED SPONSORS (“PARTIES”) JOINTLY AND SEVERALLY, AND INDIVIDUALLY.
+                        The Volunteer Release and Waiver of Liability Form (“Release”). (“Volunteer”) hereby releases
+                        TRASHMOB.ECO, ITS OFFICERS AND DIRECTORS, ANY LAND OWNERS AND MANAGERS, AND ALL RELATED SPONSORS
+                        (“PARTIES”) JOINTLY AND SEVERALLY, AND INDIVIDUALLY.
                     </p>
                     <p>
                         The Volunteer desires to provide volunteer services and to participate in activities related to

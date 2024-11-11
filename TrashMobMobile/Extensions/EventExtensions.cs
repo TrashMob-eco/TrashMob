@@ -69,10 +69,8 @@
             return "N/A";
         }
 
-        public static bool IsEventLead(this Event mobEvent)
+        public static bool IsEventLead(this Event mobEvent, Guid userId)
         {
-            var userId = App.CurrentUser.Id;
-
             return mobEvent.CreatedByUserId == userId;
         }
 
@@ -96,7 +94,7 @@
             return mobEvent.EventDate.ToUniversalTime() > DateTimeOffset.UtcNow;
         }
 
-        public static EventViewModel ToEventViewModel(this Event mobEvent)
+        public static EventViewModel ToEventViewModel(this Event mobEvent, Guid userId)
         {
             var eventViewModel = new EventViewModel
             {
@@ -112,8 +110,12 @@
                 IsEventPublic = mobEvent.IsEventPublic,
                 MaxNumberOfParticipants = mobEvent.MaxNumberOfParticipants,
                 Name = mobEvent.Name,
-                UserRoleForEvent = mobEvent.IsEventLead() ? "Lead" : "Attendee",
+                UserRoleForEvent = mobEvent.IsEventLead(userId) ? "Lead" : "Attendee",
             };
+
+            eventViewModel.Address.ParentId = eventViewModel.Id;
+            eventViewModel.Address.DisplayName = eventViewModel.Name;
+            eventViewModel.Address.AddressType = AddressType.Event;
 
             return eventViewModel;
         }
