@@ -59,6 +59,9 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
     const [isSubmitEnabled, setIsSubmitEnabled] = React.useState<boolean>(false);
     const [isEditOrAdd, setIsEditOrAdd] = React.useState<boolean>(false);
     const [statusMessage, setStatusMessage] = React.useState<string>('Loading...');
+   
+    const defaultCenter = { lat: MapStore.defaultLatitude, lng: MapStore.defaultLongitude }
+    const markerPosition = (latitude && longitude) ? { lat: latitude, lng: longitude} : defaultCenter
 
     const defaultCenter = { lat: MapStore.defaultLatitude, lng: MapStore.defaultLongitude };
     const markerPosition = latitude && longitude ? { lat: latitude, lng: longitude } : defaultCenter;
@@ -312,7 +315,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
 
             const firstResult = data?.addresses[0];
             if (firstResult) {
-                setStreetAddress(firstResult.address.streetNameAndNumber);
+                setStreetAddress(firstResult.address.streetNameAndNumber)
                 setCity(firstResult.address.municipality);
                 setCountry(firstResult.address.country);
                 setRegion(firstResult.address.countrySubdivisionName);
