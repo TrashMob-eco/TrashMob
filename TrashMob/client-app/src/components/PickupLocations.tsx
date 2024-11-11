@@ -63,9 +63,6 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
     const defaultCenter = { lat: MapStore.defaultLatitude, lng: MapStore.defaultLongitude }
     const markerPosition = (latitude && longitude) ? { lat: latitude, lng: longitude} : defaultCenter
 
-    const defaultCenter = { lat: MapStore.defaultLatitude, lng: MapStore.defaultLongitude };
-    const markerPosition = latitude && longitude ? { lat: latitude, lng: longitude } : defaultCenter;
-
     const getHaulingPartnerLocation = useQuery({
         queryKey: GetHaulingPartnerLocation({ eventId: props.eventId }).key,
         queryFn: GetHaulingPartnerLocation({ eventId: props.eventId }).service,
