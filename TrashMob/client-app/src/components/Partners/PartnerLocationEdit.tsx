@@ -255,7 +255,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
         if (latitude && longitude) searchAddressReverse();
     }, [latitude, longitude]);
 
-    const defaultCenter = { lat: MapStore.defaultLatitude, lng: MapStore.defaultLongitude }
+    const defaultCenter = { lat: MapStore.defaultLatitude, lng: MapStore.defaultLongitude };
 
     // This will handle Cancel button click event.
     function handleCancel(event: any) {
