@@ -74,7 +74,7 @@ export const UserNav = (props: UserNavProps) => {
                     Sign in
                 </Button>
             )}
-            {isUserLoaded && (
+            {isUserLoaded ? (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant='outline'>
@@ -106,14 +106,14 @@ export const UserNav = (props: UserNavProps) => {
                                 <span>My Location Preference</span>
                             </Link>
                         </DropdownMenuItem>
-                        {currentUser.isSiteAdmin && (
+                        {currentUser.isSiteAdmin ? (
                             <DropdownMenuItem asChild>
                                 <Link to='/siteadmin'>
                                     <IdCard />
                                     <span>Site Administration</span>
                                 </Link>
                             </DropdownMenuItem>
-                        )}
+                        ) : null}
                         <DropdownMenuItem asChild>
                             <Link to='/deletemydata'>
                                 <UserRoundX />
@@ -127,7 +127,7 @@ export const UserNav = (props: UserNavProps) => {
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
-            )}
+            ) : null}
             <Button variant='outline' size='icon' className='!ml-3 !mr-2 border-primary' asChild>
                 <Link to='/help'>
                     <CircleHelp />
