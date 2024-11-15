@@ -526,6 +526,8 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
     );
 };
 
+const PartnerLocationEditWrapper = (props: PartnerLocationEditDataProps) => {
+
     const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey();
 
     if (isLoading) return null;
