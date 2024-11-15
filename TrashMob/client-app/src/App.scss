@@ -387,7 +387,6 @@ img {
     line-height: 1.5em;
 }
 
-button,
 .dropdown > a.dropdown-toggle {
     background-color: $primary !important;
     border: none !important;
@@ -400,8 +399,7 @@ button,
     margin-left: 10px;
 }
 
-.dropdown > a:hover,
-button:hover:enabled {
+.dropdown > a:hover {
     background-color: #546900 !important;
 }
 

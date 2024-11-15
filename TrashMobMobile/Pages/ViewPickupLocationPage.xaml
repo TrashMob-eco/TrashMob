@@ -41,9 +41,10 @@
                           IsVisible="{Binding Source={x:Reference viewMap}, Path=IsChecked}">
                     <maps:Map.ItemTemplate>
                         <DataTemplate x:DataType="viewModels:PickupLocationViewModel">
-                            <maps:Pin Location="{Binding Address.Location}"
+                            <controls:CustomPin Location="{Binding Address.Location}"
                                       Address="{Binding Address.StreetAddress}"
                                       Label="{Binding Id}"
+                                      ImageSource="eventupcoming"
                                       AutomationId="{Binding Id}" />
                         </DataTemplate>
                     </maps:Map.ItemTemplate>

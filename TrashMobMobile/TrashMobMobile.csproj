@@ -198,6 +198,9 @@
 	    <DependentUpon>TMDatePicker.xaml</DependentUpon>
 	    <SubType>Code</SubType>
 	  </Compile>
+	  <Compile Update="Platforms\MacCatalyst\CustomMapHandler.cs">
+	    <ExcludeFromCurrentConfiguration>true</ExcludeFromCurrentConfiguration>
+	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>

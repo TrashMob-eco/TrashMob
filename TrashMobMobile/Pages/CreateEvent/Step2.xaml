@@ -6,6 +6,7 @@
                            xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
                            xmlns:createEvent="clr-namespace:TrashMobMobile.Pages.CreateEvent"
                            x:DataType="viewModels:CreateEventViewModel"
+                           xmlns:controls="clr-namespace:TrashMobMobile.Controls"
                            x:Class="TrashMobMobile.Pages.CreateEvent.Step2">
     <VerticalStackLayout Margin="0,10">
         <Label
@@ -20,8 +21,9 @@
                       MapClicked="OnMapClicked">
             <maps:Map.ItemTemplate>
                 <DataTemplate x:DataType="viewModels:EventViewModel">
-                    <maps:Pin Address="{Binding Address.StreetAddress}"
+                    <controls:CustomPin Address="{Binding Address.StreetAddress}"
                                   Label="{Binding Name}"
+                                  ImageSource="eventupcoming"
                                   Location="{Binding Address.Location}" />
                 </DataTemplate>
             </maps:Map.ItemTemplate>
