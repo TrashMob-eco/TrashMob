@@ -1,1 +1,1 @@
-export { SiteFooter as default } from './SiteFooter'
+export * from './SiteFooter'
