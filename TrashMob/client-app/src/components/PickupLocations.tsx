@@ -129,9 +129,8 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
         }
 
         MapStore.getOption().then((opts) => {
-            setAzureSubscriptionKey(opts.subscriptionKey)
+            setAzureSubscriptionKey(opts.subscriptionKey);
         });
-
     }, [props.currentUser, props.eventId, props.isUserLoaded]);
 
     function handleNameChanged(val: string) {
@@ -274,7 +273,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
         { enabled: false },
     );
 
-    const map = useMap()
+    const map = useMap();
 
     const handleSelectSearchLocation = React.useCallback(
         async (location: SearchLocationOption) => {
@@ -295,7 +294,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
             setLatitude(lat);
             setLongitude(lng);
         }
-    }, [])
+    }, []);
 
     const handleMarkerDragEnd = React.useCallback((e: google.maps.MapMouseEvent) => {
         if (e.latLng) {
@@ -304,7 +303,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
             setLatitude(lat);
             setLongitude(lng);
         }
-    }, [])
+    }, []);
 
     // on Marker moved (latitude + longitude changed), do reverse search lat,lng to address
     React.useEffect(() => {
@@ -614,21 +613,15 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                 </Form.Row>
                 <Form.Row>
                     <div style={{ position: 'relative', width: '100%' }}>
-                        <GoogleMap
-                            onClick={handleClickMap}
-                        >
-                            <Marker 
-                                position={markerPosition}
-                                draggable
-                                onDragEnd={handleMarkerDragEnd}
-                            />
+                        <GoogleMap onClick={handleClickMap}>
+                            <Marker position={markerPosition} draggable onDragEnd={handleMarkerDragEnd} />
                         </GoogleMap>
                         {azureSubscriptionKey ? (
                             <div style={{ position: 'absolute', top: 8, left: 8 }}>
                                 <AzureSearchLocationInput
                                     azureKey={azureSubscriptionKey}
                                     onSelectLocation={handleSelectSearchLocation}
-                                />  
+                                />
                             </div>
                         ) : null}
                     </div>
@@ -705,7 +698,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
 };
 
 const PickupLocationWrapper = (props: PickupLocationsDataProps) => {
-    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey()
+    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey();
 
     if (isLoading) return null;
 

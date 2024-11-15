@@ -63,7 +63,8 @@ export const PrivacyPolicy: React.FC = () => {
                     information you may choose to provide.
                 </p>
                 <p className='p-18'>
-                    We may collect precise location information from your device when you use the App. This may include GPS coordinates and other location-based data.
+                    We may collect precise location information from your device when you use the App. This may include
+                    GPS coordinates and other location-based data.
                 </p>
                 <p className='p-18'>
                     When you register for an Account, we may ask for your contact information, including items such as
@@ -76,7 +77,10 @@ export const PrivacyPolicy: React.FC = () => {
 
                 <ul>
                     <li>Provide, operate, and maintain our website and mobile app</li>
-                    <li>Provide anonymized reports of what areas have been cleaned up, where bagged garbage has been left for pickup, or to record the location of litter reports</li>
+                    <li>
+                        Provide anonymized reports of what areas have been cleaned up, where bagged garbage has been
+                        left for pickup, or to record the location of litter reports
+                    </li>
                     <li>Improve, personalize, and expand our website and mobile app</li>
                     <li>Understand and analyze how you use our website and mobile app</li>
                     <li>Develop new products, services, features, and functionality</li>

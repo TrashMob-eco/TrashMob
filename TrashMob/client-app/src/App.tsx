@@ -254,7 +254,9 @@ export const App: FC = () => {
                                         errorComponent={ErrorComponent}
                                         loadingComponent={LoadingComponent}
                                     >
-                                        {isUserLoaded ? <Waivers currentUser={currentUser} /> : null}
+                                        {isUserLoaded ? (
+                                            <Waivers currentUser={currentUser} onUserUpdated={handleUserUpdated} />
+                                        ) : null}
                                     </MsalAuthenticationTemplate>
                                 </Route>
                                 <Route exact path='/partnerships'>

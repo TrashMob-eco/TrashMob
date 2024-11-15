@@ -65,7 +65,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         MapStore.getOption().then((opts) => {
             setAzureSubscriptionKey(opts.subscriptionKey);
         });
-
     }, [props.currentUser, props.isUserLoaded, props.mode]);
 
     React.useEffect(() => {
@@ -86,7 +85,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         },
         { enabled: false },
     );
-
 
     const map = useMap();
 
@@ -109,7 +107,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
             setLatitude(lat);
             setLongitude(lng);
         }
-    }, [])
+    }, []);
 
     const handleMarkerDragEnd = React.useCallback((e: google.maps.MapMouseEvent) => {
         if (e.latLng) {
@@ -118,12 +116,11 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
             setLatitude(lat);
             setLongitude(lng);
         }
-    }, [])
+    }, []);
 
     // on Marker moved (latitude + longitude changed), do reverse search lat,lng to address
     React.useEffect(() => {
         const searchAddressReverse = async () => {
-
             const { data } = await refetchAddressReverse();
 
             const firstResult = data?.addresses[0];
@@ -138,8 +135,6 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         };
         if (latitude && longitude) searchAddressReverse();
     }, [latitude, longitude]);
-
-
 
     // This will handle the submit form event.
     function handleSave(event: any) {
@@ -499,9 +494,8 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     return <div>{contents}</div>;
 };
 
-
-const PartnerRequestWrapper = (props: PartnerRequestProps) => {
-    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey()
+  const PartnerRequestWrapper = (props: PartnerRequestProps) => {
+  const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey();
 
     if (isLoading) return null;
 

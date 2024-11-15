@@ -16,12 +16,7 @@ import { SocialsModal } from '../EventManagement/ShareToSocialsModal';
 import { RegisterBtn } from '../Customization/RegisterBtn';
 import { HeroSection } from '../Customization/HeroSection';
 import * as SharingMessages from '../../store/SharingMessages';
-import {
-    GetAllEventsBeingAttendedByUser,
-    GetEventAttendees,
-    GetEventById,
-    GetEventTypes,
-} from '../../services/events';
+import { GetAllEventsBeingAttendedByUser, GetEventAttendees, GetEventById, GetEventTypes } from '../../services/events';
 import { Services } from '../../config/services.config';
 import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
 
@@ -137,7 +132,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                     setLongitude(res.data.data.longitude);
                     setCreatedById(res.data.data.createdByUserId);
                     setMaxNumberOfParticipants(res.data.data.maxNumberOfParticipants);
-                    setCenter({ lat: res.data.data.latitude, lng: res.data.data.longitude })
+                    setCenter({ lat: res.data.data.latitude, lng: res.data.data.longitude });
                     setEventToShare(res.data.data);
                     setIsDataLoaded(true);
                     setIsEventCompleted(new Date(res.data.data.eventDate) < new Date());
@@ -150,7 +145,6 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                     });
                 });
         }
-
     }, [eventId, currentUser, isUserLoaded]);
 
     useEffect(() => {
@@ -209,7 +203,11 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
     return (
         <div>
             <HeroSection Title='View Events' Description='Learn, join, and inspire.' />
-            {!isDataLoaded ? (<p><em>Loding...</em></p>) : (
+            {!isDataLoaded ? (
+                <p>
+                    <em>Loding...</em>
+                </p>
+            ) : (
                 <>
                     <Container className='my-5'>
                         <SocialsModal
@@ -217,7 +215,12 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                             show={showModal}
                             handleShow={handleShowModal}
                             modalTitle='Share Event'
-                            message={SharingMessages.getEventDetailsMessage(eventDate, city, createdById, currentUser.id)}
+                            message={SharingMessages.getEventDetailsMessage(
+                                eventDate,
+                                city,
+                                createdById,
+                                currentUser.id,
+                            )}
                         />
                         <div className='d-flex justify-content-between align-items-md-end flex-column flex-md-row'>
                             <h2 className='font-weight-bold m-0'>{eventName}</h2>
@@ -227,7 +230,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                                     isAttending={isAttending}
                                     isEventCompleted={isEventCompleted!}
                                     currentUser={currentUser}
-                                    isUserLoaded={isUserLoaded}                                    
+                                    isUserLoaded={isUserLoaded}
                                 />
                                 <div id='addToCalendarBtn' className='ml-2 p-18' hidden={isEventCompleted}>
                                     <AddToCalendar event={event} />
@@ -305,7 +308,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
 };
 
 const EventDetailWrapper = (props: EventDetailsProps) => {
-    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey()
+    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey();
 
     if (isLoading) return null;
 

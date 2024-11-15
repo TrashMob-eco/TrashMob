@@ -87,7 +87,6 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
         MapStore.getOption().then((opts) => {
             setAzureSubscriptionKey(opts.subscriptionKey);
         });
-
     }, [props.currentUser, props.partnerLocationId, props.isUserLoaded, props.partnerId]);
 
     function handleLocationNameChanged(locationName: string) {
@@ -197,7 +196,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
         props.onSave();
     }
 
-    const map = useMap()
+    const map = useMap();
 
     const handleSelectSearchLocation = React.useCallback(
         async (location: SearchLocationOption) => {
@@ -218,7 +217,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
             setLatitude(lat);
             setLongitude(lng);
         }
-    }, [])
+    }, []);
 
     const handleMarkerDragEnd = React.useCallback((e: google.maps.MapMouseEvent) => {
         if (e.latLng) {
@@ -227,7 +226,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
             setLatitude(lat);
             setLongitude(lng);
         }
-    }, [])
+    }, []);
 
     const [azureSubscriptionKey, setAzureSubscriptionKey] = React.useState<string>();
     const { refetch: refetchAddressReverse } = useAzureMapSearchAddressReverse(
@@ -246,7 +245,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
 
             const firstResult = data?.addresses[0];
             if (firstResult) {
-                setStreetAddress(firstResult.address.streetNameAndNumber)
+                setStreetAddress(firstResult.address.streetNameAndNumber);
                 setCity(firstResult.address.municipality);
                 setCountry(firstResult.address.country);
                 setRegion(firstResult.address.countrySubdivisionName);
@@ -454,10 +453,14 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                         <div style={{ position: 'relative', width: '100%' }}>
                             <GoogleMap defaultCenter={defaultCenter} onClick={handleClickMap}>
                                 <Marker
-                                    position={(latitude && longitude) ? {
-                                        lat: latitude,
-                                        lng: longitude
-                                    } : defaultCenter}
+                                    position={
+                                        latitude && longitude
+                                            ? {
+                                                  lat: latitude,
+                                                  lng: longitude,
+                                              }
+                                            : defaultCenter
+                                    }
                                     draggable
                                     onDragEnd={handleMarkerDragEnd}
                                 />
@@ -523,8 +526,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
     );
 };
 
-const PartnerLocationEditWrapper = (props: PartnerLocationEditDataProps) => {
-    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey()
+    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey();
 
     if (isLoading) return null;
 
@@ -535,4 +537,4 @@ const PartnerLocationEditWrapper = (props: PartnerLocationEditDataProps) => {
     );
 };
 
-export default PartnerLocationEditWrapper
+export default PartnerLocationEditWrapper;

@@ -6,6 +6,7 @@
              x:DataType="viewModels:SearchLitterReportsViewModel"
              x:Class="TrashMobMobile.Pages.SearchLitterReportsPage"
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
+             xmlns:controls="clr-namespace:TrashMobMobile.Controls"
              Title="Search Litter Reports">
     <ScrollView>
         <Grid>
@@ -44,10 +45,11 @@
                               IsVisible="{Binding Source={x:Reference viewMap}, Path=IsChecked}">
                         <maps:Map.ItemTemplate>
                             <DataTemplate x:DataType="viewModels:LitterImageViewModel">
-                                <maps:Pin Location="{Binding Address.Location}"
+                                <controls:CustomPin Location="{Binding Address.Location}"
                                           Address="{Binding Address.StreetAddress}"
                                           Label="{Binding Address.StreetAddress}"
                                           AutomationId="{Binding LitterReportId}"
+                                          ImageSource="litterreportnew"
                                           InfoWindowClicked="Pin_InfoWindowClicked" />
                             </DataTemplate>
                         </maps:Map.ItemTemplate>

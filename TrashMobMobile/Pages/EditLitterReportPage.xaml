@@ -6,6 +6,8 @@
              xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
              x:DataType="viewModels:EditLitterReportViewModel"
              x:Class="TrashMobMobile.Pages.EditLitterReportPage"
+             xmlns:converters="clr-namespace:TrashMobMobile.Converters"
+             xmlns:controls="clr-namespace:TrashMobMobile.Controls"
              Title="Edit Litter Report">
     <ScrollView>
         <Grid>
@@ -14,16 +16,12 @@
                 <Grid RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="1*, 1*">
                     <VerticalStackLayout Grid.Row="0" Grid.ColumnSpan="2">
                         <Label Text="Name" Style="{StaticResource FieldLabel}" />
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Entry Text="{Binding Name}" />
-                        </Border>
+                        <controls:TMEntry Text="{Binding Name}" />
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="1" Grid.ColumnSpan="2">
                         <Label Text="Description" Style="{StaticResource FieldLabel}" />
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Editor Text="{Binding Description}" />
-                        </Border>
+                        <controls:TMEditor Text="{Binding Description}" HeightRequest="100"/>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="2" Grid.ColumnSpan="2">
                         <Label Text="Status" Style="{StaticResource FieldLabel}" />
@@ -62,8 +60,9 @@
                               ItemsSource="{Binding LitterImageViewModels}">
                         <maps:Map.ItemTemplate>
                             <DataTemplate x:DataType="viewModels:LitterImageViewModel">
-                                <maps:Pin Location="{Binding Address.Location}"
+                                <controls:CustomPin Location="{Binding Address.Location}"
                                           Address="{Binding Address.StreetAddress}"
+                                          ImageSource="litterreportnew"
                                           Label="Litter Image" />
                             </DataTemplate>
                         </maps:Map.ItemTemplate>

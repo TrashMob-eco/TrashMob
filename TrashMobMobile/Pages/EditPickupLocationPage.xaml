@@ -6,6 +6,8 @@
              xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
              x:DataType="viewModels:EditPickupLocationViewModel"
              x:Class="TrashMobMobile.Pages.EditPickupLocationPage"
+             xmlns:converters="clr-namespace:TrashMobMobile.Converters"
+             xmlns:controls="clr-namespace:TrashMobMobile.Controls"
              Title="Edit Pickup Location">
     <ScrollView>
         <Grid>
@@ -14,23 +16,23 @@
                     <VerticalStackLayout Grid.Row="0">
                         <Label Text="Name" Style="{StaticResource FieldLabel}" />
                         <Border Style="{x:StaticResource RoundBorder}">
-                            <Entry Text="{Binding PickupLocationViewModel.Name}">
-                                <Entry.Behaviors>
+                            <controls:TMEntry Text="{Binding PickupLocationViewModel.Name}">
+                                <controls:TMEntry.Behaviors>
                                     <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5"
                                                                     x:Name="nameValidator" />
-                                </Entry.Behaviors>
-                            </Entry>
+                                </controls:TMEntry.Behaviors>
+                            </controls:TMEntry>
                         </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="1">
                         <Label Text="Description" Style="{StaticResource FieldLabel}" />
                         <Border Style="{x:StaticResource RoundBorder}">
-                            <Editor Text="{Binding PickupLocationViewModel.Notes}">
-                                <Editor.Behaviors>
+                            <controls:TMEditor Text="{Binding PickupLocationViewModel.Notes}">
+                                <controls:TMEditor.Behaviors>
                                     <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="10"
                                                                     x:Name="notesValidator" />
-                                </Editor.Behaviors>
-                            </Editor>
+                                </controls:TMEditor.Behaviors>
+                            </controls:TMEditor>
                         </Border>
                     </VerticalStackLayout>
                 </Grid>

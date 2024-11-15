@@ -7,10 +7,10 @@ using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class SearchLitterReportsViewModel(ILitterReportManager litterReportManager, INotificationService notificationService) : BaseViewModel(notificationService)
+public partial class SearchLitterReportsViewModel(ILitterReportManager litterReportManager, INotificationService notificationService, IUserManager userManager) : BaseViewModel(notificationService)
 {
     private readonly ILitterReportManager litterReportManager = litterReportManager;
-
+    private readonly IUserManager userManager = userManager;
     private IEnumerable<TrashMob.Models.Poco.Location> locations = [];
 
     [ObservableProperty]
@@ -103,7 +103,11 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
                 {
                     var litterReport =
                         RawLitterReports.FirstOrDefault(l => l.LitterImages.Any(i => i.Id == selectedLitterImage.Id));
-                    PerformNavigation(litterReport.Id);
+
+                    if (litterReport != null)
+                    {
+                        PerformNavigation(litterReport.Id);
+                    }
                 }
             }
         }
@@ -115,7 +119,7 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
 
         try
         {
-            UserLocation = App.CurrentUser.GetAddress();
+            UserLocation = userManager.CurrentUser.GetAddress();
             await RefreshLitterReports();
             IsBusy = false;
             await NotificationService.Notify("Litter Report list has been refreshed.");
@@ -147,7 +151,10 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
 
         foreach (var country in countries)
         {
-            CountryCollection.Add(country);
+            if (!string.IsNullOrEmpty(country))
+            {
+                CountryCollection.Add(country);
+            }
         }
 
         if (ReportStatus == "Assigned")
@@ -194,7 +201,10 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
 
         foreach (var region in regions)
         {
-            RegionCollection.Add(region);
+            if (!string.IsNullOrEmpty(region))
+            {
+                RegionCollection.Add(region);
+            }
         }
     }
 
@@ -223,7 +233,10 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
 
         foreach (var city in cities)
         {
-            CityCollection.Add(city);
+            if (!string.IsNullOrEmpty(city))
+            {
+                CityCollection.Add(city);
+            }
         }
     }
 

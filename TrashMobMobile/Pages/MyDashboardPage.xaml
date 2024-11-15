@@ -11,7 +11,7 @@
         <Grid>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
                 <Border Style="{x:StaticResource RoundBorder}" Margin="5,0">
-                    <Grid RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="1*, 1*, 1*">
+                    <Grid RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="1*, 1*, 1*, 1*">
                         <Label Text="Here's what you have done so far!" Grid.Row="0" Grid.Column="0"
                                Grid.ColumnSpan="3" FontSize="Micro" Margin="0, 0, 0, 10" />
                         <Image Grid.Row="1" Grid.Column="0" Source="calendar" MaximumWidthRequest="25" />
@@ -28,6 +28,11 @@
                         <Label Grid.Row="2" Grid.Column="2" Text="{ Binding StatisticsViewModel.TotalHours }"
                                FontSize="Micro" HorizontalTextAlignment="Center" />
                         <Label Grid.Row="3" Grid.Column="2" Text="Hours Spent" FontSize="Micro"
+                               HorizontalTextAlignment="Center" />
+                        <Image Grid.Row="1" Grid.Column="3" Source="trashbag" WidthRequest="25" />
+                        <Label Grid.Row="2" Grid.Column="3" Text="{ Binding StatisticsViewModel.TotalLitterReportsSubmitted }"
+                               FontSize="Micro" HorizontalTextAlignment="Center" />
+                        <Label Grid.Row="3" Grid.Column="3" Text="Litter Reports" FontSize="Micro"
                                HorizontalTextAlignment="Center" />
                     </Grid>
                 </Border>
