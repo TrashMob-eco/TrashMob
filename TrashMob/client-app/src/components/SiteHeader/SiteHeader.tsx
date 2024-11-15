@@ -22,7 +22,7 @@ export const SiteHeader = (props: SiteHeaderProps) => {
         <div className="container"> 
           <div className="flex items-center flex-wrap flex-row">
             <a className="-ml-2 xl:w-[230px] grow lg:grow-0" href="/">
-              <img src={logo} className="w-48" />
+              <img src={logo} className="w-48" alt="Trashmob logo" />
             </a>
             <Button
               className="lg:hidden w-10 h-10 [&_svg]:size-6 bg-primary"
