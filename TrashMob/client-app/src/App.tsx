@@ -14,7 +14,6 @@ import { AboutUs } from './components/Pages/AboutUs';
 import ContactUs from './components/Pages/ContactUs';
 import EventSummary from './components/EventSummary';
 import { Faq } from './components/Faq';
-import { Footer } from './components/ui/Footer';
 import { GettingStarted } from './components/Pages/GettingStarted';
 import MyDashboard from './components/Pages/MyDashboard';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
@@ -42,6 +41,7 @@ import Waivers from './components/Waivers/Waivers';
 import PartnerRequestDetails, { PartnerRequestDetailsMatchParams } from './components/Partners/PartnerRequestDetails';
 import { Partnerships } from './components/Partners/Partnerships';
 import { Help } from './components/Pages/Help';
+import { SiteFooter } from './components/SiteFooter';
 import { SiteHeader } from './components/SiteHeader';
 import { useLogin } from './hooks/useLogin';
 
@@ -307,7 +307,7 @@ export const App: FC = () => {
                                 </Route>
                             </Switch>
                         </div>
-                        <Footer />
+                        <SiteFooter />
                     </BrowserRouter>
                 </div>
             </MsalProvider>
