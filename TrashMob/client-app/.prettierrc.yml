@@ -3,4 +3,4 @@ tabWidth: 4
 singleQuote: true
 semi: true
 jsxSingleQuote: true
-endOfLine: lf
+endOfLine: crlf
