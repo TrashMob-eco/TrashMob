@@ -42,7 +42,7 @@ import Waivers from './components/Waivers/Waivers';
 import PartnerRequestDetails, { PartnerRequestDetailsMatchParams } from './components/Partners/PartnerRequestDetails';
 import { Partnerships } from './components/Partners/Partnerships';
 import { Help } from './components/Pages/Help';
-import SiteHeader from './components/SiteHeader';
+import { SiteHeader } from './components/SiteHeader';
 import { useLogin } from './hooks/useLogin';
 
 interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> {}
