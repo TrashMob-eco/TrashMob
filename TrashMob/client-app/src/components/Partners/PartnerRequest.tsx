@@ -494,8 +494,8 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     return <div>{contents}</div>;
 };
 
-  const PartnerRequestWrapper = (props: PartnerRequestProps) => {
-  const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey();
+const PartnerRequestWrapper = (props: PartnerRequestProps) => {
+    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey();
 
     if (isLoading) return null;
 

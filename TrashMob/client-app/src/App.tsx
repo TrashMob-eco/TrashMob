@@ -6,13 +6,9 @@ import { BrowserRouter, RouteComponentProps } from 'react-router-dom';
 import { initializeIcons } from '@uifabric/icons';
 import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
 import { InteractionType } from '@azure/msal-browser';
-import * as msal from '@azure/msal-browser';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import Home from './components/Pages/Home';
-
-// Layout
-import TopMenu from './components/ui/NavBar';
 
 import { AboutUs } from './components/Pages/AboutUs';
 import ContactUs from './components/Pages/ContactUs';
@@ -25,10 +21,9 @@ import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { TermsOfService } from './components/Pages/TermsOfService';
 import { Board } from './components/Board';
 import { VolunteerOpportunities } from './components/VolunteerOpportunities';
-import { getApiConfig, msalClient } from './store/AuthStore';
+import { msalClient } from './store/AuthStore';
 import EventDetails, { DetailsMatchParams } from './components/Pages/EventDetails';
 import { NoMatch } from './components/NoMatch';
-import UserData from './components/Models/UserData';
 import LocationPreference from './components/Pages/LocationPreference';
 import PartnerDashboard, { PartnerDashboardMatchParams } from './components/Partners/PartnerDashboard';
 import PartnerRequest from './components/Partners/PartnerRequest';
@@ -47,7 +42,8 @@ import Waivers from './components/Waivers/Waivers';
 import PartnerRequestDetails, { PartnerRequestDetailsMatchParams } from './components/Partners/PartnerRequestDetails';
 import { Partnerships } from './components/Partners/Partnerships';
 import { Help } from './components/Pages/Help';
-import { GetUserByEmail, GetUserById } from './services/users';
+import { SiteHeader } from './components/SiteHeader';
+import { useLogin } from './hooks/useLogin';
 
 interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> {}
 
@@ -72,69 +68,6 @@ const useInitializeApp = () => {
         setIsInitialized(true);
         initializeIcons();
     }, [isInitialized]);
-};
-
-const useLogin = () => {
-    const [callbackId, setCallbackId] = useState('');
-    const [currentUser, setCurrentUser] = useState<UserData>(new UserData());
-    const isUserLoaded = !!currentUser.email;
-
-    useEffect(() => {
-        if (callbackId) {
-            return;
-        }
-        const id = msalClient.addEventCallback((message: msal.EventMessage) => {
-            if (message.eventType === msal.EventType.LOGIN_SUCCESS) {
-                verifyAccount(message.payload as msal.AuthenticationResult);
-            }
-            if (message.eventType === msal.EventType.LOGOUT_SUCCESS) {
-                clearUser();
-            }
-        });
-        setCallbackId(id ?? '');
-        initialLogin();
-        return () => msalClient.removeEventCallback(callbackId);
-    }, [callbackId]);
-
-    async function initialLogin() {
-        const accounts = msalClient.getAllAccounts();
-        if (accounts === null || accounts.length <= 0) {
-            return;
-        }
-        const tokenResponse = await msalClient.acquireTokenSilent({
-            scopes: getApiConfig().b2cScopes,
-            account: accounts[0],
-        });
-        verifyAccount(tokenResponse);
-    }
-
-    function clearUser() {
-        setCurrentUser(new UserData());
-    }
-
-    async function handleUserUpdated() {
-        const { data: user } = await GetUserById({ userId: currentUser?.id }).service();
-        setCurrentUser(user || new UserData());
-    }
-
-    async function verifyAccount(result: msal.AuthenticationResult) {
-        const { userDeleted } = result.idTokenClaims as Record<string, any>;
-        if (userDeleted && userDeleted === true) {
-            clearUser();
-            return;
-        }
-        const { email } = result.idTokenClaims as Record<string, any>;
-        const { data: user } = await GetUserByEmail({ email }).service();
-        if (!user) {
-            return;
-        }
-        setCurrentUser(user);
-    }
-    return {
-        isUserLoaded,
-        currentUser,
-        handleUserUpdated,
-    };
 };
 
 export const App: FC = () => {
@@ -227,7 +160,7 @@ export const App: FC = () => {
             <MsalProvider instance={msalClient}>
                 <div className='d-flex flex-column h-100'>
                     <BrowserRouter>
-                        <TopMenu isUserLoaded={isUserLoaded} currentUser={currentUser} />
+                        <SiteHeader currentUser={currentUser} isUserLoaded={isUserLoaded} />
                         <div className='container-fluid px-0'>
                             <Switch>
                                 <Route
