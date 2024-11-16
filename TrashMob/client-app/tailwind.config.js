@@ -7,6 +7,9 @@ module.exports = {
     content: ['./index.html', './src/**/*.{ts,tsx,js,jsx}'],
     important: '.tailwind',
     theme: {
+        fontFamily: {
+            'sans': ['Lexend', 'Arial', 'sans-serif']
+        },
         extend: {
             borderRadius: {
                 lg: 'var(--radius)',
