@@ -45,7 +45,7 @@ const useGetProfile = (account: TrashmobAccountInfo, email: string) => {
                 } else {
                     console.error('Error fetching user profile:', error);
                 }
-                return emptyUser
+                return emptyUser;
             }
         },
         initialData: emptyUser, // Empty UserData
