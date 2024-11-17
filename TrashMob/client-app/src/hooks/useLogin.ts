@@ -1,69 +1,74 @@
+import { AccountInfo, InteractionRequiredAuthError } from '@azure/msal-browser';
+import { GetUserByEmail } from '@/services/users';
+import { useQuery } from '@tanstack/react-query';
+import { useMsal } from '@azure/msal-react';
 import UserData from '@/components/Models/UserData';
-import { useEffect, useState } from 'react';
-import * as msal from '@azure/msal-browser';
-import { getApiConfig, msalClient } from '@/store/AuthStore';
-import { GetUserByEmail, GetUserById } from '@/services/users';
+import { getApiConfig } from '@/store/AuthStore';
+
+type TrashmobTokenClaims = AccountInfo['idTokenClaims'] & {
+    email: string;
+    userDeleted?: boolean;
+};
+
+type TrashmobAccountInfo = AccountInfo & {
+    idTokenClaims?: TrashmobTokenClaims;
+};
+
+const emptyUser = new UserData()
+
+const useGetProfile = (account: TrashmobAccountInfo, email: string) => {
+    const { instance } = useMsal(); // Hook to access MSAL accounts
+
+    return useQuery<UserData>({
+        queryKey: email ? GetUserByEmail({ email }).key : [],
+        queryFn: async () => {
+            if (!email) {
+                throw new Error('No email found in idToken');
+            }
+
+            // Ensure token is valid before making API requests
+            try {
+                const response = await instance.acquireTokenSilent({
+                    account,
+                    scopes: getApiConfig().b2cScopes,
+                });
+
+                if (!response.accessToken) {
+                    throw new Error('No access token retrieved');
+                }
+
+                const { data } = await GetUserByEmail({ email }).service();
+                return data ?? emptyUser;
+            } catch (error) {
+                if (error instanceof InteractionRequiredAuthError) {
+                    console.error('Interactive login required for token refresh.');
+                } else {
+                    console.error('Error fetching user profile:', error);
+                }
+                return emptyUser
+            }
+        },
+        initialData: emptyUser, // Empty UserData
+        initialDataUpdatedAt: 0,
+        enabled: !!email,
+    });
+};
 
 export const useLogin = () => {
-    const [callbackId, setCallbackId] = useState('');
-    const [currentUser, setCurrentUser] = useState<UserData>(new UserData());
-    const isUserLoaded = !!currentUser.email;
+    const { accounts } = useMsal(); // Hook to access MSAL accounts
+    const account = accounts[0] as TrashmobAccountInfo;
 
-    useEffect(() => {
-        if (callbackId) {
-            return;
-        }
-        const id = msalClient.addEventCallback((message: msal.EventMessage) => {
-            if (message.eventType === msal.EventType.LOGIN_SUCCESS) {
-                verifyAccount(message.payload as msal.AuthenticationResult);
-            }
-            if (message.eventType === msal.EventType.LOGOUT_SUCCESS) {
-                clearUser();
-            }
-        });
-        setCallbackId(id ?? '');
-        initialLogin();
-        return () => msalClient.removeEventCallback(callbackId);
-    }, [callbackId]);
+    const email = account?.idTokenClaims?.email ?? '';
 
-    async function initialLogin() {
-        const accounts = msalClient.getAllAccounts();
-        if (accounts === null || accounts.length <= 0) {
-            return;
-        }
-        const tokenResponse = await msalClient.acquireTokenSilent({
-            scopes: getApiConfig().b2cScopes,
-            account: accounts[0],
-        });
-        verifyAccount(tokenResponse);
-    }
-
-    function clearUser() {
-        setCurrentUser(new UserData());
-    }
+    const { data: profile, refetch: refetchProfile } = useGetProfile(account, email);
 
     async function handleUserUpdated() {
-        const { data: user } = await GetUserById({ userId: currentUser?.id }).service();
-        setCurrentUser(user || new UserData());
-    }
-
-    async function verifyAccount(result: msal.AuthenticationResult) {
-        const { userDeleted } = result.idTokenClaims as Record<string, any>;
-        if (userDeleted && userDeleted === true) {
-            clearUser();
-            return;
-        }
-        const { email } = result.idTokenClaims as Record<string, any>;
-        const { data: user } = await GetUserByEmail({ email }).service();
-        if (!user) {
-            return;
-        }
-        setCurrentUser(user);
+        refetchProfile();
     }
 
     return {
-        isUserLoaded,
-        currentUser,
+        isUserLoaded: !!profile?.email,
+        currentUser: profile,
         handleUserUpdated,
     };
 };

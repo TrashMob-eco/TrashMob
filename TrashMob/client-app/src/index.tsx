@@ -1,13 +1,25 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { MsalProvider } from '@azure/msal-react';
+
 import './index.css';
+import { msalClient } from './store/AuthStore';
 import { App } from './App';
 import reportWebVitals from './reportWebVitals';
 import './themed-bootstrap.scss';
 
+const queryClient = new QueryClient();
+
 ReactDOM.render(
     <React.StrictMode>
-        <App />
+        <QueryClientProvider client={queryClient}>
+            <MsalProvider instance={msalClient}>
+                <App />
+            </MsalProvider>
+            <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
     </React.StrictMode>,
     document.getElementById('root'),
 );
