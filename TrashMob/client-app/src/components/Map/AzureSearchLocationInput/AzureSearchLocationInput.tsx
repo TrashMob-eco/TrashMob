@@ -18,7 +18,7 @@ export type SearchLocationOption = {
 export type AzureSearchLocationInputProps = {
     azureKey: string;
     onSelectLocation: (position: SearchLocationOption) => void;
-    renderInput?: TypeaheadComponentProps["renderInput"]
+    renderInput?: TypeaheadComponentProps['renderInput'];
 };
 
 export function AzureSearchLocationInput(props: AzureSearchLocationInputProps) {

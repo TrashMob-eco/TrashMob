@@ -8,7 +8,7 @@ module.exports = {
     important: '.tailwind',
     theme: {
         fontFamily: {
-            'sans': ['Lexend', 'Arial', 'sans-serif']
+            sans: ['Lexend', 'Arial', 'sans-serif'],
         },
         extend: {
             borderRadius: {
