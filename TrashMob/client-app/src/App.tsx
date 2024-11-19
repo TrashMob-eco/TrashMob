@@ -45,6 +45,9 @@ import { SiteFooter } from './components/SiteFooter';
 import { SiteHeader } from './components/SiteHeader';
 import { useLogin } from './hooks/useLogin';
 
+/** 2024 pages */
+import { Home as Home2024 } from './pages/Home';
+
 interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> {}
 
 interface PartnerProps extends RouteComponentProps<PartnerDashboardMatchParams> {}
@@ -301,6 +304,9 @@ export const App: FC = () => {
                                         isUserLoaded={isUserLoaded}
                                         onUserUpdated={handleUserUpdated}
                                     />
+                                </Route>
+                                <Route path='/2024'>
+                                    <Home2024 currentUser={currentUser} isUserLoaded={isUserLoaded} />
                                 </Route>
                                 <Route>
                                     <NoMatch />

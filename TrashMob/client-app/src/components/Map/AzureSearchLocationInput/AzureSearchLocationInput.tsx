@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { AsyncTypeahead } from 'react-bootstrap-typeahead';
+import { AsyncTypeahead, TypeaheadComponentProps } from 'react-bootstrap-typeahead';
 import { Option } from 'react-bootstrap-typeahead/types/types';
 import { AzureMapSearchAddress } from '../../../services/maps';
 
@@ -18,6 +18,7 @@ export type SearchLocationOption = {
 export type AzureSearchLocationInputProps = {
     azureKey: string;
     onSelectLocation: (position: SearchLocationOption) => void;
+    renderInput?: TypeaheadComponentProps['renderInput'];
 };
 
 export function AzureSearchLocationInput(props: AzureSearchLocationInputProps) {
@@ -73,6 +74,7 @@ export function AzureSearchLocationInput(props: AzureSearchLocationInputProps) {
             onChange={handleSelectedChanged}
             options={searchResult.options}
             placeholder='Search for a location...'
+            renderInput={props.renderInput}
             renderMenuItemChildren={(option: Option) => {
                 const locationOption = option as SearchLocationOption;
                 return (
