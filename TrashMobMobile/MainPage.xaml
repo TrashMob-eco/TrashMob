@@ -12,7 +12,8 @@
         <ScrollView>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
                 
-                <Grid ColumnDefinitions="1*, 1*, 1*, 1*"
+                <Grid Margin="0, 20"
+                      ColumnDefinitions="1*, 1*, 1*, 1*"
                       RowDefinitions="Auto">
                     <Button Grid.Row="0"
                             Grid.Column="0"
@@ -35,7 +36,7 @@
                             Style="{StaticResource SecondarySmallButton}"
                             Text="Search Litter" />
                 </Grid>
-                <Border Margin="5,0"
+                <Border Margin="5, 0, 5, 10"
                         Style="{x:StaticResource RoundBorder}">
                     <Grid ColumnDefinitions="1*, 1*, 1*, 1*, 1*"
                           RowDefinitions="Auto, Auto, Auto, Auto">
@@ -126,25 +127,20 @@
                 </Border>
 
                 <Grid Margin="5"
-                      ColumnDefinitions="1*, 1*"
-                      RowDefinitions="Auto, Auto, Auto">
-                    <Label Grid.Row="1"
-                           Grid.Column="0"
-                           FontAttributes="Bold"
-                           Text="Find Nearby Events" />
-                    <HorizontalStackLayout Grid.Row="2">
-                        <RadioButton x:Name="viewMap"
-                                     Content="Map"
-                                     FontSize="Micro"
-                                     IsChecked="True" />
-                        <RadioButton x:Name="viewList"
-                                     Content="List"
-                                     FontSize="Micro" />
-                    </HorizontalStackLayout>
+                      ColumnDefinitions="6*, 1*, 1*"
+                      RowDefinitions="Auto">
+                    <ImageButton Grid.Column="1"
+                                 HeightRequest="24"
+                                 Source="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconMap}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" 
+                                 Command="{Binding MapSelectedCommand}" />
+                    <ImageButton Grid.Column="2" 
+                                 HeightRequest="24"
+                                 Source="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconPage}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" 
+                                 Command="{Binding ListSelectedCommand}" />
                 </Grid>
 
                 <maps:Map x:Name="mainMap"
-                          IsVisible="{Binding Source={x:Reference viewMap}, Path=IsChecked}"
+                          IsVisible="{Binding IsMapSelected}"
                           ItemsSource="{Binding Addresses}">
                     <maps:Map.ItemTemplate>
                         <DataTemplate x:DataType="vm:AddressViewModel">
@@ -160,9 +156,9 @@
 
                 <CollectionView x:Name="EventsCollection"
                                 Margin="5"
-                                IsVisible="{Binding Source={x:Reference viewList}, Path=IsChecked}"
+                                IsVisible="{Binding IsListSelected}"
                                 ItemsSource="{Binding UpcomingEvents}"
-                                MaximumHeightRequest="250"
+                                MaximumHeightRequest="400"
                                 SelectedItem="{Binding SelectedEvent}"
                                 SelectionMode="Single">
                     <CollectionView.ItemTemplate>

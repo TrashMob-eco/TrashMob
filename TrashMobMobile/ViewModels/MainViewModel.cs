@@ -47,6 +47,12 @@ public partial class MainViewModel(IAuthService authService,
     [ObservableProperty]
     private string? welcomeMessage;
 
+    [ObservableProperty]
+    private bool isMapSelected;
+
+    [ObservableProperty]
+    private bool isListSelected;
+
     public ObservableCollection<EventViewModel> UpcomingEvents { get; set; } = [];
     
     public ObservableCollection<LitterReportViewModel> LitterReports { get; set; } = [];
@@ -108,6 +114,9 @@ public partial class MainViewModel(IAuthService authService,
 
                 await RefreshEvents();
                 await RefreshLitterReports();
+
+                IsMapSelected = true;
+                IsListSelected = false;
 
                 IsBusy = false;
             }
@@ -186,6 +195,22 @@ public partial class MainViewModel(IAuthService authService,
     private async Task MyDashboard()
     {
         await Shell.Current.GoToAsync(nameof(MyDashboardPage));
+    }
+
+    [RelayCommand]
+    private Task MapSelected()
+    {
+        IsMapSelected = true;
+        IsListSelected = false;
+        return Task.CompletedTask;
+    }
+
+    [RelayCommand]
+    private Task ListSelected()
+    {
+        IsMapSelected = false;
+        IsListSelected = true;
+        return Task.CompletedTask;
     }
 
     [RelayCommand]
