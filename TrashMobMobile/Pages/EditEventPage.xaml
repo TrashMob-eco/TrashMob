@@ -16,6 +16,38 @@
 
                 <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="1*, 1*, 1*, 1*"
                       MaximumWidthRequest="400">
+                    <Button Margin="10"
+                            Grid.Row="0" 
+                            Grid.Column="0" 
+                            Command="{Binding ManageEventDetailsCommand}" 
+                            Text="Details"
+                            Style="{StaticResource PrimarySmallButton}" />
+
+                    <Button Margin="10"
+                            Grid.Row="0" 
+                            Grid.Column="1" 
+                            Command="{Binding ManageEventLocationCommand}" 
+                            Text="Location"
+                            Style="{StaticResource SecondarySmallButton}" />
+
+                    <Button Margin="10"
+                            Grid.Row="0" 
+                            Grid.Column="2" 
+                            Command="{Binding ManageEventPartnersCommand}" 
+                            Text="Manage Partners" 
+                            Style="{StaticResource SecondarySmallButton}" />
+                    
+                    <Button Margin="10"
+                            Grid.Row="0" 
+                            Grid.Column="3" 
+                            Command="{Binding ManageLitterReportsCommand}" 
+                            Text="Litter Reports" 
+                            Style="{StaticResource SecondarySmallButton}" />
+
+                </Grid>
+                <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="1*, 1*, 1*, 1*"
+                      MaximumWidthRequest="400">
+
                     <VerticalStackLayout Grid.Row="0" Grid.ColumnSpan="4">
                         <Label Text="Name" Style="{StaticResource FieldLabel}" />
 
@@ -194,15 +226,6 @@
                             </MultiTrigger>
                         </Button.Triggers>
                     </Button>
-
-                    <Button Margin="10" 
-                             Grid.Row="0" 
-                             Grid.Column="2" 
-                             Grid.ColumnSpan="2" 
-                             Command="{Binding ManageEventPartnersCommand}" 
-                             IsEnabled="{Binding IsManageEventPartnersEnabled}" 
-                             IsVisible="{Binding IsManageEventPartnersEnabled}" 
-                             Text="Manage Partners" />
                 </Grid>
 
                 <Label

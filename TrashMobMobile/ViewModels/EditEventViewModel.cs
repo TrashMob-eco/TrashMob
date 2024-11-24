@@ -23,9 +23,6 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
     private EventViewModel eventViewModel;
 
     [ObservableProperty]
-    private bool isManageEventPartnersEnabled;
-
-    [ObservableProperty]
     private string selectedEventType;
 
     [ObservableProperty]
@@ -46,7 +43,6 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
 
         try
         {
-            IsManageEventPartnersEnabled = false;
             UserLocation = userManager.CurrentUser.GetAddress();
             EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
 
@@ -63,7 +59,6 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
                 ETypes.Add(eventType.Name);
             }
 
-            IsManageEventPartnersEnabled = true;
             IsBusy = false;
         }
         catch (Exception ex)
@@ -155,6 +150,24 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
 
     [RelayCommand]
     private async Task ManageEventPartners()
+    {
+        await Shell.Current.GoToAsync($"{nameof(ManageEventPartnersPage)}?EventId={EventViewModel.Id}");
+    }
+
+    [RelayCommand]
+    private async Task ManageLitterReports()
+    {
+        await Shell.Current.GoToAsync($"{nameof(ManageEventPartnersPage)}?EventId={EventViewModel.Id}");
+    }
+
+    [RelayCommand]
+    private async Task ManageEventDetails()
+    {
+        await Shell.Current.GoToAsync($"{nameof(ManageEventPartnersPage)}?EventId={EventViewModel.Id}");
+    }
+
+    [RelayCommand]
+    private async Task ManageEventLocation()
     {
         await Shell.Current.GoToAsync($"{nameof(ManageEventPartnersPage)}?EventId={EventViewModel.Id}");
     }

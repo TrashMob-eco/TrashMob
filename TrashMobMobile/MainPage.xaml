@@ -12,14 +12,28 @@
         <ScrollView>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
                 
-                <Grid ColumnDefinitions="1*, 1*"
+                <Grid ColumnDefinitions="1*, 1*, 1*, 1*"
                       RowDefinitions="Auto">
-                    <Button Grid.Column="0"
+                    <Button Grid.Row="0"
+                            Grid.Column="0"
+                            Command="{Binding CreateEventCommand}"
+                            HorizontalOptions="Center"
+                            Style="{StaticResource PrimarySmallButton}"
+                            Text="Create an Event" />
+                    <Button Grid.Row="0"
+                            Grid.Column="1"
+                            Command="{Binding CreateLitterReportCommand}"
+                            HorizontalOptions="Center"
+                            Style="{StaticResource SecondarySmallButton}"
+                            Text="Report Litter" />
+                    <Button Grid.Column="2"
                             Command="{Binding SearchEventsCommand}"
+                            Style="{StaticResource SecondarySmallButton}"
                             Text="Search Events" />
-                    <Button Grid.Column="1"
+                    <Button Grid.Column="3"
                             Command="{Binding SearchLitterReportsCommand}"
-                            Text="Search Litter Reports" />
+                            Style="{StaticResource SecondarySmallButton}"
+                            Text="Search Litter" />
                 </Grid>
                 <Border Margin="5,0"
                         Style="{x:StaticResource RoundBorder}">
@@ -114,20 +128,10 @@
                 <Grid Margin="5"
                       ColumnDefinitions="1*, 1*"
                       RowDefinitions="Auto, Auto, Auto">
-                    <Button Grid.Row="0"
-                            Grid.Column="1"
-                            Style="{StaticResource LinkButton}"
-                            Command="{Binding MyDashboardCommand}"
-                            Text="View My Dashboard" />
                     <Label Grid.Row="1"
                            Grid.Column="0"
                            FontAttributes="Bold"
                            Text="Find Nearby Events" />
-                    <Label Grid.Row="1"
-                           Grid.Column="1"
-                           FontSize="Micro"
-                           HorizontalOptions="Center"
-                           Text="Your Location" />
                     <HorizontalStackLayout Grid.Row="2">
                         <RadioButton x:Name="viewMap"
                                      Content="Map"
@@ -137,11 +141,6 @@
                                      Content="List"
                                      FontSize="Micro" />
                     </HorizontalStackLayout>
-                    <Button Grid.Row="2"
-                            Grid.Column="1"
-                            Style="{StaticResource LinkButton}"
-                            Command="{Binding SetLocationPreferenceCommand}"
-                            Text="{Binding UserLocationDisplay}" />
                 </Grid>
 
                 <maps:Map x:Name="mainMap"
@@ -202,25 +201,6 @@
 
             </VerticalStackLayout>
         </ScrollView>
-        <Grid ColumnDefinitions="1*,1*, 1*, 1*"
-              RowDefinitions="Auto"
-              VerticalOptions="End"
-              Margin="0,0,0,20">
-            <Button Grid.Row="0"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    Command="{Binding CreateEventCommand}"
-                    HorizontalOptions="Center"
-                    Style="{StaticResource RoundButton}"
-                    Text="Create an Event" />
-            <Button Grid.Row="0"
-                    Grid.Column="2"
-                    Grid.ColumnSpan="2"
-                    Command="{Binding CreateLitterReportCommand}"
-                    HorizontalOptions="Center"
-                    Style="{StaticResource RoundButton}"
-                    Text="Report Litter" />
-        </Grid>
         <BoxView BackgroundColor="{StaticResource TransparentBlack}"
                  HorizontalOptions="Fill"
                  IsVisible="{Binding IsBusy}"
