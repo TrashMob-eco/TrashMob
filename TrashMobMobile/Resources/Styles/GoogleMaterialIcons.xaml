@@ -337,7 +337,7 @@
     <!-- <x:String x:Key="IconClipboardArrowDown">&#xf014a;</x:String> -->
     <!-- <x:String x:Key="IconClipboardArrowLeft">&#xf014b;</x:String> -->
     <!-- <x:String x:Key="IconClipboardOutline">&#xf014c;</x:String> -->
-    <!-- <x:String x:Key="IconClipboardText">&#xf014d;</x:String> -->
+    <x:String x:Key="IconClipboardText">&#xf014d;</x:String>
     <!-- <x:String x:Key="IconClipboardCheck">&#xf014e;</x:String> -->
     <!-- <x:String x:Key="IconClippy">&#xf014f;</x:String> -->
     <!-- <x:String x:Key="IconClockOutline">&#xf0150;</x:String> -->
