@@ -20,8 +20,12 @@ export const SiteFooter = () => {
 
     return (
         <footer className='tailwind'>
-            <div className='bg-[#212529] relative !py-10'>
-                <div className='h-full w-full absolute z-0 top-0 left-0 bg-[url(/img/logo-color.png)] bg-[position:200%_28%] bg-[length:80%] opacity-10 bg-no-repeat' />
+            <div className='bg-[#212529] relative !py-10 overflow-hidden'>
+                <Logo
+                    className='w-[80%] absolute z-0 left-[40%] top-[-38%] opacity-10'
+                    showTagline={false}
+                    showBrandName={false}
+                />
                 <div className='container relative z-1'>
                     <div className='w-72 md:w-96 max-w-full mb-5 mx-auto md:!mx-0'>
                         <Logo fill='#fff' className='opacity-40' />
