@@ -34,7 +34,7 @@
                             Grid.Row="0" 
                             Grid.Column="2" 
                             Command="{Binding ManageEventPartnersCommand}" 
-                            Text="Manage Partners" 
+                            Text="Partners" 
                             Style="{StaticResource SecondarySmallButton}" />
                     
                     <Button Margin="10"

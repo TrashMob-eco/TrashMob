@@ -131,11 +131,11 @@
                       RowDefinitions="Auto">
                     <ImageButton Grid.Column="1"
                                  HeightRequest="24"
-                                 Source="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconMap}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" 
+                                 Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconMap}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" 
                                  Command="{Binding MapSelectedCommand}" />
                     <ImageButton Grid.Column="2" 
                                  HeightRequest="24"
-                                 Source="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconPage}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" 
+                                 Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconViewList}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" 
                                  Command="{Binding ListSelectedCommand}" />
                 </Grid>
 

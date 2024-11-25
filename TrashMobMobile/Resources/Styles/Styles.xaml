@@ -579,8 +579,8 @@
     <Style x:Key="OuterVerticalStack" TargetType="VerticalStackLayout">
         <Setter Property="Margin" Value="2" />
     </Style>
-    
-    <OnPlatform x:Key="GoogleMaterialFontFamily" x:TypeArguments="x:String">
+
+    <OnPlatform x:Key="GoogleMaterialIcons" x:TypeArguments="x:String">
         <On Platform="iOS" Value="Material Design Icons" />
         <On Platform="Android" Value="googlematerialdesignicons-webfont.ttf#Material Design Icons" />
     </OnPlatform>
