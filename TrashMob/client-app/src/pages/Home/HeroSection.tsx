@@ -10,7 +10,7 @@ export const HeroSection = () => {
             <div className='container px-8 py-32 lg:min-h-[50vh] lg:max-h-[600px]'>
                 <div className='w-[600px] max-w-full flex flex-col items-center md:items-start'>
                     <div className='w-full my-16'>
-                        <Logo className="w-[600px] max-w-full" showTagline />
+                        <Logo className='w-[600px] max-w-full' showTagline />
                     </div>
                     <Button size='lg'>Join us today</Button>
                     <div className='flex flex-row gap-1 items-center mt-16'>

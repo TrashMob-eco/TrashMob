@@ -21,10 +21,10 @@ export const SiteFooter = () => {
     return (
         <footer className='tailwind'>
             <div className='bg-[#212529] relative !py-10'>
-                <div className="h-full w-full absolute z-0 top-0 left-0 bg-[url(/img/logo-color.png)] bg-[position:200%_28%] bg-[length:80%] opacity-10 bg-no-repeat" />
+                <div className='h-full w-full absolute z-0 top-0 left-0 bg-[url(/img/logo-color.png)] bg-[position:200%_28%] bg-[length:80%] opacity-10 bg-no-repeat' />
                 <div className='container relative z-1'>
-                    <div className="w-72 md:w-96 max-w-full mb-5 mx-auto md:!mx-0">
-                        <Logo fill="#fff" className="opacity-40" />
+                    <div className='w-72 md:w-96 max-w-full mb-5 mx-auto md:!mx-0'>
+                        <Logo fill='#fff' className='opacity-40' />
                     </div>
                     <div className='grid grid-rows-9 grid-cols-1 md:grid-rows-3 md:grid-cols-3 gap-4 gap-x-8 md:grid-flow-col'>
                         {footerNavs.map((nav) => {
@@ -43,8 +43,10 @@ export const SiteFooter = () => {
                         <div className='flex flex-col md:flex-row gap-8'>
                             <div className='basis-3/4'>
                                 <div className='text-[13px] font-[Montserrat] font-serif font-medium'>
-                                    <p className="mb-1 text-sm text-center md:!text-start">Copyright &copy; 2023 TRASHMOB.ECO - All rights reserved.</p>
-                                    <p className="my-2 text-xs text-center md:!text-start">
+                                    <p className='mb-1 text-sm text-center md:!text-start'>
+                                        Copyright &copy; 2023 TRASHMOB.ECO - All rights reserved.
+                                    </p>
+                                    <p className='my-2 text-xs text-center md:!text-start'>
                                         TrashMob is a non-profit, 501(c)(3) organization based in Washington State, USA.
                                     </p>
                                     {/* <p>US Federal Employer Id (EIN): 88-1286026</p> */}
