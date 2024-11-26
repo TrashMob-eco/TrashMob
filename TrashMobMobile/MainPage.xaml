@@ -22,18 +22,20 @@
                             Text="Create an Event" />
                 <Button Grid.Row="0"
                             Grid.Column="1"
+                            Padding="15,5"
                             Command="{Binding CreateLitterReportCommand}"
                             HorizontalOptions="Center"
                             Style="{StaticResource SecondarySmallButton}"
                             Text="Report Litter" />
                 <Button Grid.Column="2"
                             Command="{Binding SearchEventsCommand}"
+                            Padding="15,5"
                             Style="{StaticResource SecondarySmallButton}"
                             Text="Search Events" />
                 <Button Grid.Column="3"
                             Command="{Binding SearchLitterReportsCommand}"
                             Style="{StaticResource SecondarySmallButton}"
-                            Text="Search Litter" />
+                            Text="Search Litter Reports" />
             </Grid>
             <Border Margin="5, 0, 5, 10"
                         Style="{x:StaticResource RoundBorder}">
