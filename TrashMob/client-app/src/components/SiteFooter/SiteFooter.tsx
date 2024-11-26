@@ -53,7 +53,9 @@ export const SiteFooter = () => {
                                     <p className='my-2 text-xs text-center md:!text-start'>
                                         TrashMob is a non-profit, 501(c)(3) organization based in Washington State, USA.
                                     </p>
-                                    <p className='my-2 text-xs text-center md:!text-start'>US Federal Employer Id (EIN): 88-1286026</p>
+                                    <p className='my-2 text-xs text-center md:!text-start'>
+                                        US Federal Employer Id (EIN): 88-1286026
+                                    </p>
                                 </div>
                             </div>
                             <div className='basis-1/4'>
