@@ -57,8 +57,8 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
         {
             UserLocation = userManager.CurrentUser.GetAddress();
             EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
-            IsDetailsVisible = true;
-            IsLocationVisible = false;
+            IsDetailsVisible = false;
+            IsLocationVisible = true;
             IsPartnersVisible = false;
             IsLitterReportsVisible = false;
 

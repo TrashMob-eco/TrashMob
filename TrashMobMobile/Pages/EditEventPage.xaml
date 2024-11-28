@@ -18,30 +18,58 @@
                             Grid.Row="0" 
                             Grid.Column="0" 
                             Command="{Binding ManageEventDetailsCommand}" 
-                            Text="Details"
-                            Style="{StaticResource PrimarySmallButton}" />
-
+                            Text="Details">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsDetailsVisible}" Value="true">
+                            <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
+                        </DataTrigger>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsDetailsVisible}" Value="false">
+                            <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
                 <Button Margin="10"
                             Grid.Row="0" 
                             Grid.Column="1" 
                             Command="{Binding ManageEventLocationCommand}" 
-                            Text="Location"
-                            Style="{StaticResource SecondarySmallButton}" />
-
+                            Text="Location">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsLocationVisible}" Value="true">
+                            <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
+                        </DataTrigger>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsLocationVisible}" Value="false">
+                            <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
                 <Button Margin="10"
                             Grid.Row="0" 
                             Grid.Column="2" 
                             Command="{Binding ManageEventPartnersCommand}" 
-                            Text="Partners" 
-                            Style="{StaticResource SecondarySmallButton}" />
-
+                            Text="Partners">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsPartnersVisible}" Value="true">
+                            <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
+                        </DataTrigger>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsPartnersVisible}" Value="false">
+                            <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
                 <Button Margin="10"
                             Grid.Row="0" 
                             Grid.Column="3" 
                             Command="{Binding ManageLitterReportsCommand}" 
-                            Text="Litter Reports" 
-                            Style="{StaticResource SecondarySmallButton}" />
-
+                            Text="Litter Reports" >
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsLitterReportsVisible}" Value="true">
+                            <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
+                        </DataTrigger>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsLitterReportsVisible}" Value="false">
+                            <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
             </Grid>
             <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="1*, 1*, 1*, 1*"
                       MaximumWidthRequest="400" IsVisible="{Binding IsDetailsVisible}">
@@ -178,7 +206,7 @@
             </VerticalStackLayout>
 
             <Grid IsVisible="{Binding IsPartnersVisible}">
-                
+
             </Grid>
 
             <Grid IsVisible="{Binding IsLitterReportsVisible}">
