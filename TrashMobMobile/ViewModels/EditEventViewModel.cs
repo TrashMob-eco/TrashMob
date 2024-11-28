@@ -49,6 +49,8 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
     [ObservableProperty]
     private bool isLitterReportsVisible;
 
+    public Action UpdateMapLocation { get; set; }
+
     public async Task Init(Guid eventId)
     {
         IsBusy = true;
@@ -57,8 +59,8 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
         {
             UserLocation = userManager.CurrentUser.GetAddress();
             EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
-            IsDetailsVisible = false;
-            IsLocationVisible = true;
+            IsDetailsVisible = true;
+            IsLocationVisible = false;
             IsPartnersVisible = false;
             IsLitterReportsVisible = false;
 
@@ -165,7 +167,7 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
     }
 
     [RelayCommand]
-    private async Task ManageEventPartners()
+    private void ManageEventPartners()
     {
         IsDetailsVisible = false;
         IsLocationVisible = false;
@@ -174,7 +176,7 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
     }
 
     [RelayCommand]
-    private async Task ManageLitterReports()
+    private void ManageLitterReports()
     {
         IsDetailsVisible = false;
         IsLocationVisible = false;
@@ -183,7 +185,7 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
     }
 
     [RelayCommand]
-    private async Task ManageEventDetails()
+    private void ManageEventDetails()
     {
         IsDetailsVisible = true;
         IsLocationVisible = false;
@@ -192,12 +194,13 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
     }
 
     [RelayCommand]
-    private async Task ManageEventLocation()
+    private void ManageEventLocation()
     {
         IsDetailsVisible = false;
         IsLocationVisible = true;
         IsPartnersVisible = false;
         IsLitterReportsVisible = false;
+        UpdateMapLocation();
     }
 
     private async Task<bool> Validate()

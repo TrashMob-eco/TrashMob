@@ -86,7 +86,7 @@
                             <DataTemplate x:DataType="viewModels:AddressViewModel">
                                 <controls:CustomPin Location="{Binding Location}"
                                           Address="{Binding StreetAddress}"
-                                          ImageSource="eventupcoming"
+                                          ImageSource="eventupcoming"                                          
                                           Label="{Binding AddressType}" />
                             </DataTemplate>
                         </maps:Map.ItemTemplate>
