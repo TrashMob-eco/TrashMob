@@ -11,7 +11,55 @@
     <ScrollView>
         <Grid>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
-                
+                <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="1*, 1*, 1*, 1*"
+                      MaximumWidthRequest="400">
+                    <Button Margin="10"
+                            Grid.Row="0" 
+                            Grid.Column="0" 
+                            Text="Register" 
+                            Command="{Binding RegisterCommand}"
+                            IsVisible="{Binding EnableRegister}"
+                            Style="{StaticResource PrimarySmallButton}" />
+                    <Button Margin="10"
+                            Grid.Row="0" 
+                            Grid.Column="0" 
+                            Text="Unregister" 
+                            Command="{Binding UnregisterCommand}"
+                            IsVisible="{Binding EnableUnregister}"
+                            Style="{StaticResource PrimarySmallButton}" />
+                    <Button Margin="10"
+                            Grid.Row="0" 
+                            Grid.Column="0" 
+                            Text="Edit Event" 
+                            Command="{Binding EditEventCommand}"
+                            IsVisible="{Binding EnableEditEvent}"
+                            Style="{StaticResource PrimarySmallButton}" />
+
+                    <Button Margin="10"
+                            Grid.Row="0" 
+                            Grid.Column="1" 
+                            Command="{Binding ViewEventSummaryCommand}" 
+                            Text="View Event Summary"
+                            IsVisible="{Binding EnableViewEventSummary}"
+                            Style="{StaticResource SecondarySmallButton}" />
+
+                    <Button Margin="10"
+                            Grid.Row="0" 
+                            Grid.Column="2" 
+                            Command="{Binding RealTimeLocationTrackerCancelCommand}" 
+                            IsVisible="{Binding EnableStartTrackEventRoute}"
+                            Text="Start Tracking" 
+                            Style="{StaticResource SecondarySmallButton}" />
+
+                    <Button Margin="10"
+                            Grid.Row="0" 
+                            Grid.Column="2" 
+                            Command="{Binding RealTimeLocationTrackerCommand}" 
+                            IsVisible="{Binding EnableStopTrackEventRoute}"
+                            Text="Stop Tracking" 
+                            Style="{StaticResource SecondarySmallButton}" />
+                </Grid>
+
                 <Label
                     Text="{Binding EventViewModel.Name}" Style="{StaticResource Headline}"
                     VerticalOptions="Center"
@@ -51,19 +99,6 @@
                            FontSize="Micro" />
                     <Label Grid.Row="9" Grid.Column="0" Text="Attendees" FontSize="Micro" />
                     <Label Grid.Row="9" Grid.Column="1" Text="{Binding AttendeeCount}" FontSize="Micro" />
-                    <Button Grid.Row="10" Grid.Column="1" Text="Register" Command="{Binding RegisterCommand}"
-                            IsVisible="{Binding EnableRegister}" Margin="10" />
-                    <Button Grid.Row="10" Grid.Column="1" Text="Unregister" Command="{Binding UnregisterCommand}"
-                            IsVisible="{Binding EnableUnregister}" Margin="10" />
-                    <Button Grid.Row="10" Grid.Column="1" Text="Edit Event" Command="{Binding EditEventCommand}"
-                            IsVisible="{Binding EnableEditEvent}" Margin="10" />
-                    <Button Grid.Row="10" Grid.Column="1" Text="View Event Summary"
-                            Command="{Binding ViewEventSummaryCommand}" IsVisible="{Binding EnableViewEventSummary}"
-                            Margin="10" />
-                    <Button Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="2" Text="Start Tracking" Command="{Binding RealTimeLocationTrackerCommand}"
-                            IsVisible="{Binding EnableStartTrackEventRoute}" Margin="10" IsEnabled="{Binding EnableStartTrackEventRoute}" />
-                    <Button Grid.Row="11" Grid.Column="1" Text="Stop Tracking" Command="{Binding RealTimeLocationTrackerCancelCommand}"
-                            IsVisible="{Binding EnableStopTrackEventRoute}" IsEnabled="{Binding EnableStopTrackEventRoute}" Margin="10" />
 
                     <CollectionView x:Name="LitterReportsCollection" Grid.Row="13"
                         ItemsSource="{Binding LitterReports}"

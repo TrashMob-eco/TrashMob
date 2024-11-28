@@ -37,6 +37,18 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
 
     public ObservableCollection<string> ETypes { get; set; } = new();
 
+    [ObservableProperty]
+    private bool isDetailsVisible;
+
+    [ObservableProperty]
+    private bool isLocationVisible;
+
+    [ObservableProperty]
+    private bool isPartnersVisible;
+
+    [ObservableProperty]
+    private bool isLitterReportsVisible;
+
     public async Task Init(Guid eventId)
     {
         IsBusy = true;
@@ -45,6 +57,10 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
         {
             UserLocation = userManager.CurrentUser.GetAddress();
             EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
+            IsDetailsVisible = true;
+            IsLocationVisible = false;
+            IsPartnersVisible = false;
+            IsLitterReportsVisible = false;
 
             MobEvent = await mobEventManager.GetEventAsync(eventId);
 
@@ -151,25 +167,37 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
     [RelayCommand]
     private async Task ManageEventPartners()
     {
-        await Shell.Current.GoToAsync($"{nameof(ManageEventPartnersPage)}?EventId={EventViewModel.Id}");
+        IsDetailsVisible = false;
+        IsLocationVisible = false;
+        IsPartnersVisible = true;
+        IsLitterReportsVisible = false;
     }
 
     [RelayCommand]
     private async Task ManageLitterReports()
     {
-        await Shell.Current.GoToAsync($"{nameof(ManageEventPartnersPage)}?EventId={EventViewModel.Id}");
+        IsDetailsVisible = false;
+        IsLocationVisible = false;
+        IsPartnersVisible = false;
+        IsLitterReportsVisible = true;
     }
 
     [RelayCommand]
     private async Task ManageEventDetails()
     {
-        await Shell.Current.GoToAsync($"{nameof(ManageEventPartnersPage)}?EventId={EventViewModel.Id}");
+        IsDetailsVisible = true;
+        IsLocationVisible = false;
+        IsPartnersVisible = false;
+        IsLitterReportsVisible = false;
     }
 
     [RelayCommand]
     private async Task ManageEventLocation()
     {
-        await Shell.Current.GoToAsync($"{nameof(ManageEventPartnersPage)}?EventId={EventViewModel.Id}");
+        IsDetailsVisible = false;
+        IsLocationVisible = true;
+        IsPartnersVisible = false;
+        IsLitterReportsVisible = false;
     }
 
     private async Task<bool> Validate()
