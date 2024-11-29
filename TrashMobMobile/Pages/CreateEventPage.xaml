@@ -27,7 +27,7 @@
                        VerticalOptions="Center">
                     <Image.Source>
                         <FontImageSource
-                            FontFamily="{StaticResource GoogleMaterialFontIcons}"
+                            FontFamily="{StaticResource GoogleMaterialIcons}"
                             Glyph="{StaticResource IconClose}"
                             Color="Black" />
                     </Image.Source>
