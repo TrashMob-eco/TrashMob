@@ -72,7 +72,6 @@
 	<ItemGroup>
 	  <None Remove="Resources\AppIcon\appicon.svg" />
 	  <None Remove="Resources\AppIcon\appiconfg.svg" />
-	  <None Remove="Resources\Fonts\feather.ttf" />
 	  <None Remove="Resources\Fonts\Lexend-Regular.ttf" />
 	  <None Remove="Resources\Fonts\Lexend-SemiBold.ttf" />
 	  <None Remove="Resources\Fonts\Lexend-VariableFont_wght.ttf" />
@@ -273,7 +272,7 @@
 	  <MauiXaml Update="Pages\WelcomePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Resources\Styles\Icons.xaml">
+	  <MauiXaml Update="Resources\Styles\GoogleMaterialIcons.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\CreateEventPage.xaml">

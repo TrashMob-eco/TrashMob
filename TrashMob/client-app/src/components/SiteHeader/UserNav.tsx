@@ -70,7 +70,7 @@ export const UserNav = (props: UserNavProps) => {
     return (
         <div className={cn('flex flex-row item-center basis-full lg:basis-0', className)}>
             {!isUserLoaded && (
-                <Button variant='outline' className='text-primary border-primary' onClick={signIn}>
+                <Button variant='outline' className='text-current border-primary' onClick={signIn}>
                     Sign in
                 </Button>
             )}
@@ -128,11 +128,6 @@ export const UserNav = (props: UserNavProps) => {
                     </DropdownMenuContent>
                 </DropdownMenu>
             ) : null}
-            <Button variant='outline' size='icon' className='!ml-3 !mr-2 border-primary' asChild>
-                <Link to='/help'>
-                    <CircleHelp />
-                </Link>
-            </Button>
         </div>
     );
 };

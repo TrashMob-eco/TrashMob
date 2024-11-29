@@ -134,44 +134,49 @@
     </Shell.Behaviors>
 
     <FlyoutItem x:Name="Home"
-                Title="Home"
-                
-                Icon="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconHome}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
+                Title="Home"                
+                Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconHome}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
         <ShellContent ContentTemplate="{DataTemplate local:MainPage}" Route="MainPage" />
     </FlyoutItem>
 
     <MenuItem x:Name="Dashboard"
               Text="My Dashboard"
               Clicked="OnMyDashboardClicked"
-              IconImageSource="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconPulse}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}" />
+              IconImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconHeartPulse}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}" />
+
+    <MenuItem x:Name="SetMyLocation"
+              Text="Set My Location"
+              Clicked="OnSetMyLocationClicked"
+              IconImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconHomeMapMarker}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}" />
 
     <MenuItem x:Name="PrivacyPolicy"
               Text="Privacy Policy"
               Clicked="OnPrivacyPolicyClicked"
-              IconImageSource="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconBook}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}" />
+              IconImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconBinoculars}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}" />
 
     <MenuItem x:Name="TermsOfUse"
               Text="Terms of Use"
               Clicked="OnTermsOfUseClicked"
-              IconImageSource="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconFileBox}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}" />
+              IconImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconFileDocument}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}" />
 
     <MenuItem x:Name="SignWaiver"
               Text="Sign Waiver"
               Clicked="OnSignWaiverClicked"
-              IconImageSource="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconCheck}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}" />
+              IconImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconSignatureText}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}" />
 
     <MenuItem x:Name="Contact"
               Text="Contact us"
               Clicked="OnContactUsClicked"
-              IconImageSource="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconInbox}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}" />
+              IconImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconEmail}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}" />
 
     <Shell.FlyoutFooter>
         <VerticalStackLayout Padding="28,48">
-            <Button Style="{StaticResource SecondaryLargeButton}"
+            <Button Style="{StaticResource SecondaryButton}"
                     ContentLayout="Left, 10"
                     Clicked="OnLogoutClicked"
                     Text="Sign out"
-                    ImageSource="{FontImageSource FontFamily=Icons, Glyph={DynamicResource IconSignOut}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />
+                    FontSize="Small"
+                    ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconLogout}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />
         </VerticalStackLayout>
     </Shell.FlyoutFooter>
 

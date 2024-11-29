@@ -13,33 +13,42 @@
                 <Grid RowDefinitions="Auto, Auto">
                     <Label Grid.Row="0"
                            Text="Available Services"
-                           FontSize="Micro"
+                           FontSize="Medium"
                            VerticalOptions="Center"
                            HorizontalOptions="Start"
-                           HorizontalTextAlignment="Center" />
+                           HorizontalTextAlignment="Center"
+                           Margin="10"/>
 
                     <CollectionView Grid.Row="1" x:Name="PartnerLocationServices"
                                     ItemsSource="{Binding EventPartnerLocationServices}"
                                     SelectionMode="None">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="viewModels:EventPartnerLocationServiceViewModel">
-                                <Border Style="{StaticResource RoundBorder}">
-                                    <Grid ColumnDefinitions="1*, 1*, 1*, 1*"
-                                          RowDefinitions="Auto"
+                                <Border Style="{StaticResource RoundBorder}" Margin="5">
+                                    <Grid ColumnDefinitions="*, *"
+                                          RowDefinitions="*, *, *, *, *"
                                           x:Name="PartnerLocationServiceItem">
-                                        <Label Text="{Binding PartnerLocationName}" Grid.Column="0" FontSize="Micro" />
-                                        <Label Text="{Binding ServiceName}" Grid.Column="1" FontSize="Micro" />
-                                        <Label Text="{Binding ServiceStatus}" Grid.Column="2" FontSize="Micro" />
-                                        <Label Text="{Binding PartnerLocationNotes}" Grid.Column="3" FontSize="Micro" /> 
+                                        <Label Text="Partner Name" Grid.Row="0" Grid.Column="0" Style="{StaticResource FieldLabel}" />
+                                        <Label Text="{Binding PartnerLocationName}" Grid.Row="0" Grid.Column="1" />
+                                        <Label Text="Service" Grid.Row="1" Grid.Column="0" Style="{StaticResource FieldLabel}" />
+                                        <Label Text="{Binding ServiceName}" Grid.Row="1" Grid.Column="1" />
+                                        <Label Text="Status" Grid.Row="2" Grid.Column="0" Style="{StaticResource FieldLabel}" />
+                                        <Label Text="{Binding ServiceStatus}" Grid.Row="2" Grid.Column="2" />
+                                        <Label Text="Notes" Grid.Row="3" Grid.Column="0" Style="{StaticResource FieldLabel}" />
+                                        <Label Text="{Binding PartnerLocationNotes}" Grid.Row="3" Grid.Column="3" FontSize="Micro" /> 
                                         <Button Text="Request Service" Command="{Binding RequestServiceCommand}"
                                                 IsEnabled="{Binding CanRequestService}"
-                                                IsVisible="{Binding CanRequestService}" Grid.Column="4"
-                                                FontSize="Micro" Margin="5" />
+                                                IsVisible="{Binding CanRequestService}" 
+                                                Grid.Row="4"
+                                                Grid.Column="0"
+                                                Style="{StaticResource SecondarySmallButton}" />
                                         <Button Text="Cancel Service Request"
                                                 Command="{Binding UnrequestServiceCommand}"
                                                 IsEnabled="{Binding CanUnrequestService}"
-                                                IsVisible="{Binding CanUnrequestService}" Grid.Column="4"
-                                                FontSize="Micro" Margin="5" />
+                                                IsVisible="{Binding CanUnrequestService}"
+                                                Grid.Row="4"
+                                                Grid.Column="4"
+                                                Style="{StaticResource SecondarySmallButton}" />
                                     </Grid>
                                 </Border>
                             </DataTemplate>

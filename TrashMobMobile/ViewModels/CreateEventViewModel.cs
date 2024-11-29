@@ -348,6 +348,7 @@ public partial class CreateEventViewModel : BaseViewModel
     private EventPartnerLocationViewModel selectedEventPartnerLocation;
 
     public ObservableCollection<string> ETypes { get; set; } = [];
+
     public ObservableCollection<EventPartnerLocationViewModel> AvailablePartners { get; set; } = new();
 
     public EventPartnerLocationViewModel SelectedEventPartnerLocation

@@ -20,7 +20,7 @@
                 <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
                 <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto" RowSpacing="3"
-                      ColumnDefinitions="1*, 2*">
+                      ColumnDefinitions="*, 2*">
                     <Label Grid.Row="0" Grid.Column="0" Text="{Binding SelectedEventType}" FontSize="Small"
                            Margin="10, 0, 10,0" Grid.ColumnSpan="2" />
                     <Label Grid.Row="1" Grid.Column="0" Text="{Binding EventViewModel.DisplayDate}"

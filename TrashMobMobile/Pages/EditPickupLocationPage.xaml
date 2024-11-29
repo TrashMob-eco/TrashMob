@@ -12,7 +12,7 @@
     <ScrollView>
         <Grid>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
-                <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="1*">
+                <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*">
                     <VerticalStackLayout Grid.Row="0">
                         <Label Text="Name" Style="{StaticResource FieldLabel}" />
                         <Border Style="{x:StaticResource RoundBorder}">

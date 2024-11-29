@@ -14,7 +14,7 @@
         <Grid>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
 
-                <Grid RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="1*">
+                <Grid RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="*">
                     <Label
                         Text="To add a pickup location, click the Take Photo button. The location will be auto-determined from that."
                         Grid.Row="0" FontSize="Micro" Margin="10" HorizontalTextAlignment="Center"
@@ -53,7 +53,7 @@
                     </maps:Map.ItemTemplate>
                 </maps:Map>
 
-                <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="1*, 1*">
+                <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="*, *">
                     <VerticalStackLayout Grid.Row="0" Grid.ColumnSpan="2">
                         <Label Text="Address" Style="{StaticResource FieldLabel}" />
                         <Label Text="{Binding PickupLocationViewModel.Address.StreetAddress }" FontSize="Micro" />

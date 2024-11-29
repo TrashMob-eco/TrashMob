@@ -1,7 +1,5 @@
 ﻿namespace TrashMobMobile
 {
-    using CommunityToolkit.Maui.Alerts;
-    using CommunityToolkit.Maui.Core;
     using Microsoft.Maui.Controls.Maps;
     using Microsoft.Maui.Maps;
 

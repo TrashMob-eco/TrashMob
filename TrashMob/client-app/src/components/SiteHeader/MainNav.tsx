@@ -16,20 +16,16 @@ export const MainNav = ({
     ];
 
     return (
-        <nav
-            className={cn('flex flex-col flex-1 items-start lg:flex-row lg:items-center lg:justify-evenly', className)}
-            {...props}
-        >
+        <nav className={cn('flex flex-col flex-1 gap-3 items-start lg:flex-row', className)} {...props}>
             {mainNavItems.map((nav) => (
                 <Link
                     to={nav.url}
                     key={nav.name}
-                    className='text-lg lg:text-base xl:text-lg font-medium text-foreground no-underline transition-colors hover:text-[--primary] !p-2 !pl-0 !lg:pl-2'
+                    className='text-sm font-medium text-foreground no-underline transition-colors hover:text-[--primary] !p-2 !pl-0 !lg:pl-2'
                 >
                     {nav.name}
                 </Link>
             ))}
-            <Divider />
         </nav>
     );
 };
