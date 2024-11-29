@@ -249,6 +249,72 @@
 
             <Grid IsVisible="{Binding IsLitterReportsVisible}">
 
+                <Label Grid.Row="0"
+                           Text="Nearby Litter Reports"
+                           FontSize="Medium"
+                           VerticalOptions="Center"
+                           HorizontalOptions="Start"
+                           HorizontalTextAlignment="Center"
+                           IsVisible="{Binding AreLitterReportsAvailable}"
+                           Margin="10" />
+                
+                <Label Text="There are currently no litter reports in the area of your event." IsVisible="{Binding AreNoLitterReportsAvailable}" Margin="10" />
+
+                <Grid RowDefinitions="Auto, Auto, Auto, *" IsVisible="{Binding AreLitterReportsAvailable}">
+                    <HorizontalStackLayout Grid.Row="2">
+                        <RadioButton Content="Map" IsChecked="True" x:Name="viewMap" FontSize="Micro" />
+                        <RadioButton Content="List" x:Name="viewList" FontSize="Micro" />
+                    </HorizontalStackLayout>
+
+                    <maps:Map x:Name="litterImagesMap"
+                              Grid.Row="3"
+                              ItemsSource="{Binding LitterImages}"
+                              IsVisible="{Binding Source={x:Reference viewMap}, Path=IsChecked}">
+                        <maps:Map.ItemTemplate>
+                            <DataTemplate x:DataType="viewModels:LitterImageViewModel">
+                                <controls:CustomPin Location="{Binding Address.Location}"
+                                          Address="{Binding Address.StreetAddress}"
+                                          Label="{Binding Address.StreetAddress}"
+                                          AutomationId="{Binding LitterReportId}"
+                                          ImageSource="eventupcoming"
+                                          InfoWindowClicked="Pin_InfoWindowClicked" />
+                            </DataTemplate>
+                        </maps:Map.ItemTemplate>
+                    </maps:Map>
+
+                    <CollectionView x:Name="LitterReportsCollection" Grid.Row="4"
+                                    ItemsSource="{Binding EventLitterReports}"
+                                    IsVisible="{Binding Source={x:Reference viewList}, Path=IsChecked}"
+                                    SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="viewModels:EventLitterReportViewModel">
+                                <StackLayout Margin="5">
+                                    <Border Style="{StaticResource RoundBorder}">
+                                        <Grid ColumnDefinitions="*, *, *, *, *"
+                                              RowDefinitions="Auto, Auto, Auto"
+                                              x:Name="LitterReportItem">
+                                            <Label Text="{Binding Name}" Grid.Row="0" FontSize="Small" FontAttributes="Bold" Grid.ColumnSpan="2" />
+                                            <Label Text="{Binding CreatedDate}" Grid.Row="0" Grid.Column="2" FontSize="Micro" />
+                                            <Label Text="{Binding Status}" Grid.Row="0" Grid.Column="3" FontSize="Micro" />
+                                            <Button Text="Add" Command="{Binding AddToEventCommand}" IsVisible="{Binding CanAddToEvent}" Grid.Row="0" Grid.Column="5" FontSize="Micro" />
+                                            <Button Text="Remove" Command="{Binding RemoveFromEventCommand}" IsVisible="{Binding CanRemoveFromEvent}" Grid.Row="0" Grid.Column="5" FontSize="Micro" />
+                                            <Label Text="{Binding Description}" Grid.Row="1" Grid.ColumnSpan="4" FontSize="Micro" />
+                                            <Label Text="Locations" Grid.Row="2" FontSize="Micro" FontAttributes="Bold" />
+                                            <CollectionView ItemsSource="{Binding LitterImageViewModels}" Grid.Row="2"
+                                                            Grid.Column="1" Grid.ColumnSpan="4">
+                                                <CollectionView.ItemTemplate>
+                                                    <DataTemplate x:DataType="viewModels:LitterImageViewModel">
+                                                        <Label Text="{Binding Address.DisplayAddress}" FontSize="Micro" />
+                                                    </DataTemplate>
+                                                </CollectionView.ItemTemplate>
+                                            </CollectionView>
+                                        </Grid>
+                                    </Border>
+                                </StackLayout>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
             </Grid>
 
             <Grid ColumnDefinitions="*, *, *, *"

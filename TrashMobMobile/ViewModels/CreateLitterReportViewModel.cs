@@ -135,7 +135,7 @@ public partial class CreateLitterReportViewModel : BaseViewModel
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
-            await NotificationService.NotifyError($"An error has occurred while gettign your location. Please wait and try again in a moment.");
+            await NotificationService.NotifyError($"An error has occurred while getting your location. Please wait and try again in a moment.");
         }
 
         return null;

@@ -12,15 +12,22 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
     IMapRestService mapRestService,
     INotificationService notificationService,
     IUserManager userManager,
-    IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService)
+    IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService,
+    ILitterReportManager litterReportManager,
+    IEventLitterReportRestService eventLitterReportRestService)
     : BaseViewModel(notificationService)
 {
+    private const int NewLitterReportStatus = 1;
     private readonly IEventTypeRestService eventTypeRestService = eventTypeRestService;
     private readonly IMapRestService mapRestService = mapRestService;
     private readonly IUserManager userManager = userManager;
     private readonly IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService = eventPartnerLocationServiceRestService;
+    private readonly ILitterReportManager litterReportManager = litterReportManager;
+    private readonly IEventLitterReportRestService eventLitterReportRestService = eventLitterReportRestService;
     private readonly IMobEventManager mobEventManager = mobEventManager;
     private EventPartnerLocationViewModel selectedEventPartnerLocation;
+    
+    private IEnumerable<LitterReport> RawLitterReports { get; set; } = [];
 
     [ObservableProperty]
     private EventViewModel eventViewModel;
@@ -38,6 +45,12 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
 
     [ObservableProperty] 
     private bool areNoPartnersAvailable;
+
+    [ObservableProperty] 
+    private bool areLitterReportsAvailable;
+
+    [ObservableProperty] 
+    private bool areNoLitterReportsAvailable;
 
     public ObservableCollection<EventPartnerLocationViewModel> AvailablePartners { get; set; } = new();
 
@@ -65,6 +78,10 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
     private List<EventType> EventTypes { get; set; } = new();
 
     public ObservableCollection<string> ETypes { get; set; } = new();
+
+    public ObservableCollection<LitterImageViewModel> LitterImages { get; set; } = [];
+
+    public ObservableCollection<EventLitterReportViewModel> EventLitterReports { get; set; } = [];
 
     [ObservableProperty]
     private bool isDetailsVisible;
@@ -98,7 +115,9 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
             SelectedEventType = EventTypes.First(et => et.Id == MobEvent.EventTypeId).Name;
 
             EventViewModel = MobEvent.ToEventViewModel(userManager.CurrentUser.Id);
+            
             await LoadPartners();
+            await LoadLitterReports();
 
             Events.Add(EventViewModel);
 
@@ -270,6 +289,51 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
 
         ArePartnersAvailable = AvailablePartners.Any();
         AreNoPartnersAvailable = !ArePartnersAvailable;
+    }
+
+    private async Task LoadLitterReports()
+    {
+        AreLitterReportsAvailable = false;
+        AreNoLitterReportsAvailable = true;
+
+        var filter = new TrashMob.Models.Poco.LitterReportFilter()
+        {
+            City = EventViewModel.Address.City,
+            Country = EventViewModel.Address.Country,
+            LitterReportStatusId = NewLitterReportStatus,
+        };
+
+        RawLitterReports = await litterReportManager.GetLitterReportsAsync(filter);
+
+        UpdateLitterReportViewModels();
+
+        AreLitterReportsAvailable = EventLitterReports.Any();
+        AreNoLitterReportsAvailable = !AreLitterReportsAvailable;
+    }
+
+    private void UpdateLitterReportViewModels()
+    {
+        EventLitterReports.Clear();
+        LitterImages.Clear();
+
+        foreach (var litterReport in RawLitterReports.OrderByDescending(l => l.CreatedDate))
+        {
+            var vm = litterReport.ToEventLitterReportViewModel(NotificationService, eventLitterReportRestService, EventViewModel.Id);
+
+            foreach (var litterImage in litterReport.LitterImages)
+            {
+                var litterImageViewModel = litterImage.ToLitterImageViewModel(NotificationService);
+
+                if (litterImageViewModel != null)
+                {
+                    litterImageViewModel.Address.DisplayName = litterReport.Name;
+                    litterImageViewModel.Address.ParentId = litterReport.Id;
+                    LitterImages.Add(litterImageViewModel);
+                }
+            }
+
+            EventLitterReports.Add(vm);
+        }
     }
 
     private async void PerformNavigation(EventPartnerLocationViewModel eventPartnerLocationViewModel)

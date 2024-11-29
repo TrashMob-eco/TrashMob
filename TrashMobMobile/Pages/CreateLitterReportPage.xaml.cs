@@ -23,6 +23,8 @@ public partial class CreateLitterReportPage : ContentPage
 
             if (photo != null)
             {
+                await DisplayAlert("Photo Ok", "The photo was successful.", "Ok");
+
                 // save the file into local storage
                 viewModel.LocalFilePath = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
 
@@ -30,8 +32,13 @@ public partial class CreateLitterReportPage : ContentPage
                 using var localFileStream = File.OpenWrite(viewModel.LocalFilePath);
 
                 await sourceStream.CopyToAsync(localFileStream);
+                await DisplayAlert("Photo Ok", "Adding photo to collection.", "Ok");
                 await viewModel.AddImageToCollection();
                 viewModel.ValidateReport();
+            }
+            else
+            {
+                await DisplayAlert("Photo Error", "The photo did not work.", "Ok");
             }
         }
     }
