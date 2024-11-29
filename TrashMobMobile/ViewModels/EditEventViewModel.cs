@@ -11,13 +11,16 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
     IEventTypeRestService eventTypeRestService,
     IMapRestService mapRestService,
     INotificationService notificationService,
-    IUserManager userManager)
+    IUserManager userManager,
+    IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService)
     : BaseViewModel(notificationService)
 {
     private readonly IEventTypeRestService eventTypeRestService = eventTypeRestService;
     private readonly IMapRestService mapRestService = mapRestService;
     private readonly IUserManager userManager = userManager;
+    private readonly IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService = eventPartnerLocationServiceRestService;
     private readonly IMobEventManager mobEventManager = mobEventManager;
+    private EventPartnerLocationViewModel selectedEventPartnerLocation;
 
     [ObservableProperty]
     private EventViewModel eventViewModel;
@@ -29,6 +32,32 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
     private AddressViewModel userLocation;
 
     private Event MobEvent { get; set; }
+
+    [ObservableProperty] 
+    private bool arePartnersAvailable;
+
+    [ObservableProperty] 
+    private bool areNoPartnersAvailable;
+
+    public ObservableCollection<EventPartnerLocationViewModel> AvailablePartners { get; set; } = new();
+
+    public EventPartnerLocationViewModel SelectedEventPartnerLocation
+    {
+        get => selectedEventPartnerLocation;
+        set
+        {
+            if (selectedEventPartnerLocation != value)
+            {
+                selectedEventPartnerLocation = value;
+                OnPropertyChanged(nameof(selectedEventPartnerLocation));
+
+                if (selectedEventPartnerLocation != null)
+                {
+                    PerformNavigation(selectedEventPartnerLocation);
+                }
+            }
+        }
+    }
 
     // This is only for the map point
     public ObservableCollection<EventViewModel> Events { get; set; } = new();
@@ -69,6 +98,7 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
             SelectedEventType = EventTypes.First(et => et.Id == MobEvent.EventTypeId).Name;
 
             EventViewModel = MobEvent.ToEventViewModel(userManager.CurrentUser.Id);
+            await LoadPartners();
 
             Events.Add(EventViewModel);
 
@@ -212,5 +242,39 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
         }
 
         return true;
+    }
+
+    private async Task LoadPartners()
+    {
+        ArePartnersAvailable = false;
+        AreNoPartnersAvailable = true;
+
+        var eventPartnerLocations =
+            await eventPartnerLocationServiceRestService.GetEventPartnerLocationsAsync(EventViewModel.Id);
+
+        AvailablePartners.Clear();
+
+        foreach (var eventPartnerLocation in eventPartnerLocations)
+        {
+            var eventPartnerLocationViewModel = new EventPartnerLocationViewModel
+            {
+                PartnerLocationId = eventPartnerLocation.PartnerLocationId,
+                PartnerLocationName = eventPartnerLocation.PartnerLocationName,
+                PartnerLocationNotes = eventPartnerLocation.PartnerLocationNotes,
+                PartnerServicesEngaged = eventPartnerLocation.PartnerServicesEngaged,
+                PartnerId = eventPartnerLocation.PartnerId,
+            };
+
+            AvailablePartners.Add(eventPartnerLocationViewModel);
+        }
+
+        ArePartnersAvailable = AvailablePartners.Any();
+        AreNoPartnersAvailable = !ArePartnersAvailable;
+    }
+
+    private async void PerformNavigation(EventPartnerLocationViewModel eventPartnerLocationViewModel)
+    {
+        await Shell.Current.GoToAsync(
+            $"{nameof(EditEventPartnerLocationServicesPage)}?EventId={EventViewModel.Id}&PartnerLocationId={eventPartnerLocationViewModel.PartnerLocationId}");
     }
 }

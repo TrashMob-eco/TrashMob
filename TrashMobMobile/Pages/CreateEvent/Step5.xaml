@@ -10,7 +10,7 @@
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
                 <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
-                <Grid RowDefinitions="Auto, Auto">
+                <Grid RowDefinitions="Auto, Auto, Auto">
                     <Label Grid.Row="0" Text="We're sorry. There are currently no partners available in your area." IsVisible="{Binding AreNoPartnersAvailable}" />
 
                     <Label Grid.Row="0"
@@ -21,6 +21,8 @@
                            HorizontalTextAlignment="Center"
                            IsVisible="{Binding ArePartnersAvailable}"/>
 
+                    <Label Grid.Row="1" Text="Click on a Partner listed below to request services for your event." IsVisible="{Binding ArePartnersAvailable}" FontSize="Micro" />
+
                     <CollectionView Grid.Row="1" x:Name="AvailableEventPartners"
                                     ItemsSource="{Binding AvailablePartners}"
                                     SelectedItem="{Binding SelectedEventPartnerLocation}"
@@ -29,13 +31,15 @@
                         <CollectionView.ItemTemplate>
                             <DataTemplate 
                                 x:DataType="viewModels:EventPartnerLocationViewModel">
-                                <Border Style="{StaticResource RoundBorder}">
-                                    <Grid ColumnDefinitions="*, *, *"
-                                          RowDefinitions="Auto"
+                                <Border Style="{StaticResource RoundBorder}" Margin="5">
+                                    <Grid RowDefinitions="1*, 2*, 1*" ColumnDefinitions="*, *"
                                           x:Name="PartnerLocationItem">
-                                        <Label Text="{Binding PartnerLocationName}" Grid.Column="0" />
-                                        <Label Text="{Binding PartnerLocationNotes}" Grid.Column="1" />
-                                        <Label Text="{Binding PartnerServicesEngaged}" Grid.Column="2" />
+                                        <Label Text="Partner Name" Style="{StaticResource FieldLabel}" Grid.Row="0" />
+                                        <Label Text="{Binding PartnerLocationName}" Grid.Column="1" Grid.Row="0" />
+                                        <Label Text="Info" Style="{StaticResource FieldLabel}" Grid.Row="1" />
+                                        <Label Text="{Binding PartnerLocationNotes}" Grid.Row="1" Grid.Column="1" />
+                                        <Label Text="Services Requested" Style="{StaticResource FieldLabel}" Grid.Row="2" />
+                                        <Label Text="{Binding PartnerServicesEngaged}" Grid.Row="2" Grid.Column="1" />
                                     </Grid>
                                 </Border>
                             </DataTemplate>
