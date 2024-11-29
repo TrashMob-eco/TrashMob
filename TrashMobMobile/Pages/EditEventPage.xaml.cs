@@ -36,6 +36,14 @@ public partial class EditEventPage : ContentPage
         }
     }
 
+    private async void Pin_InfoWindowClicked(object sender, PinClickedEventArgs e)
+    {
+        var p = (Pin)sender;
+
+        var litterReportId = p.AutomationId;
+        await Shell.Current.GoToAsync($"{nameof(ViewLitterReportPage)}?LitterReportId={litterReportId}");
+    }
+
     private async void OnMapClicked(object sender, MapClickedEventArgs e)
     {
         await viewModel.ChangeLocation(e.Location);
