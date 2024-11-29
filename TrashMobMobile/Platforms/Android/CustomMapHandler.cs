@@ -1,17 +1,20 @@
+namespace TrashMobMobile;
+
 using Android.Gms.Maps;
 using Android.Gms.Maps.Model;
 using Android.Graphics.Drawables;
+using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Maps;
 using Microsoft.Maui.Maps.Handlers;
 using Microsoft.Maui.Platform;
+using System.ComponentModel;
 using TrashMobMobile.Controls;
 using IMap = Microsoft.Maui.Maps.IMap;
 
-
-namespace TrashMobMobile;
-
 public class CustomMapHandler : MapHandler
 {
+    private bool _setInitialMapSpan;
+
     public static readonly IPropertyMapper<IMap, IMapHandler> CustomMapper =
         new PropertyMapper<IMap, IMapHandler>(Mapper)
         {
@@ -32,8 +35,59 @@ public class CustomMapHandler : MapHandler
     protected override void ConnectHandler(MapView platformView)
     {
         base.ConnectHandler(platformView);
+        (VirtualView as Map).PropertyChanged += OnPropertyChanged;
         var mapReady = new MapCallbackHandler(this);
         PlatformView.GetMapAsync(mapReady);
+    }
+
+    protected override void DisconnectHandler(MapView platformView)
+    {
+        base.DisconnectHandler(platformView);
+        (VirtualView as Map).PropertyChanged -= OnPropertyChanged;
+    }
+
+    private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        // when map is ready, visible region is initially set by base handler
+        if (e.PropertyName == "VisibleRegion")
+        {
+            UpdateInitialMapSpan();
+        }
+    }
+
+    private void UpdateInitialMapSpan()
+    {
+        if (_setInitialMapSpan)
+        {
+            return;
+        }
+
+        if (Map == null || Map.Projection.VisibleRegion.LatLngBounds.Center.Latitude == 0)
+        {
+            return;
+        }
+
+        if (VirtualView is not CustomMap map)
+        {
+            return;
+        }
+
+        var span = map.InitialMapSpanAndroid;
+        var ne = new LatLng(span.Center.Latitude + span.LatitudeDegrees / 2,
+            span.Center.Longitude + span.LongitudeDegrees / 2);
+        var sw = new LatLng(span.Center.Latitude - span.LatitudeDegrees / 2,
+            span.Center.Longitude - span.LongitudeDegrees / 2);
+        var update = CameraUpdateFactory.NewLatLngBounds(new LatLngBounds(sw, ne), 0);
+
+        try
+        {
+            Map.MoveCamera(update);
+            _setInitialMapSpan = true;
+        }
+        catch (Exception)
+        {
+            // ignored
+        }
     }
 
     private new static void MapPins(IMapHandler handler, IMap map)

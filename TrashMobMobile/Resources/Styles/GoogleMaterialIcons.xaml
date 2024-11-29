@@ -169,7 +169,7 @@
     <!-- <x:String x:Key="IconBookCross">&#xf00a2;</x:String> -->
     <!-- <x:String x:Key="IconBike">&#xf00a3;</x:String> -->
     <!-- <x:String x:Key="IconMicrosoftBing">&#xf00a4;</x:String> -->
-    <!-- <x:String x:Key="IconBinoculars">&#xf00a5;</x:String> -->
+    <x:String x:Key="IconBinoculars">&#xf00a5;</x:String>
     <!-- <x:String x:Key="IconBio">&#xf00a6;</x:String> -->
     <!-- <x:String x:Key="IconBiohazard">&#xf00a7;</x:String> -->
     <!-- <x:String x:Key="IconBitbucket">&#xf00a8;</x:String> -->
@@ -337,7 +337,7 @@
     <!-- <x:String x:Key="IconClipboardArrowDown">&#xf014a;</x:String> -->
     <!-- <x:String x:Key="IconClipboardArrowLeft">&#xf014b;</x:String> -->
     <!-- <x:String x:Key="IconClipboardOutline">&#xf014c;</x:String> -->
-    <!-- <x:String x:Key="IconClipboardText">&#xf014d;</x:String> -->
+    <x:String x:Key="IconClipboardText">&#xf014d;</x:String>
     <!-- <x:String x:Key="IconClipboardCheck">&#xf014e;</x:String> -->
     <!-- <x:String x:Key="IconClippy">&#xf014f;</x:String> -->
     <!-- <x:String x:Key="IconClockOutline">&#xf0150;</x:String> -->
@@ -498,7 +498,7 @@
     <!-- <x:String x:Key="IconElevationDecline">&#xf01eb;</x:String> -->
     <!-- <x:String x:Key="IconElevationRise">&#xf01ec;</x:String> -->
     <!-- <x:String x:Key="IconElevator">&#xf01ed;</x:String> -->
-    <!-- <x:String x:Key="IconEmail">&#xf01ee;</x:String> -->
+    <x:String x:Key="IconEmail">&#xf01ee;</x:String>
     <!-- <x:String x:Key="IconEmailOpen">&#xf01ef;</x:String> -->
     <!-- <x:String x:Key="IconEmailOutline">&#xf01f0;</x:String> -->
     <!-- <x:String x:Key="IconEmailLock">&#xf01f1;</x:String> -->
@@ -541,7 +541,7 @@
     <!-- <x:String x:Key="IconFileCheck">&#xf0216;</x:String> -->
     <!-- <x:String x:Key="IconFileCloud">&#xf0217;</x:String> -->
     <!-- <x:String x:Key="IconFileDelimited">&#xf0218;</x:String> -->
-    <!-- <x:String x:Key="IconFileDocument">&#xf0219;</x:String> -->
+    <x:String x:Key="IconFileDocument">&#xf0219;</x:String>
     <!-- <x:String x:Key="IconTextBox">&#xf021a;</x:String> -->
     <!-- <x:String x:Key="IconFileExcel">&#xf021b;</x:String> -->
     <!-- <x:String x:Key="IconFileExcelBox">&#xf021c;</x:String> -->
@@ -736,7 +736,7 @@
     <!-- <x:String x:Key="IconHexagonOutline">&#xf02d9;</x:String> -->
     <!-- <x:String x:Key="IconHistory">&#xf02da;</x:String> -->
     <!-- <x:String x:Key="IconHololens">&#xf02db;</x:String> -->
-    <!-- <x:String x:Key="IconHome">&#xf02dc;</x:String> -->
+    <x:String x:Key="IconHome">&#xf02dc;</x:String>
     <!-- <x:String x:Key="IconHomeModern">&#xf02dd;</x:String> -->
     <!-- <x:String x:Key="IconHomeVariant">&#xf02de;</x:String> -->
     <!-- <x:String x:Key="IconHops">&#xf02df;</x:String> -->
@@ -839,7 +839,7 @@
     <!-- <x:String x:Key="IconLockOpenOutline">&#xf0340;</x:String> -->
     <!-- <x:String x:Key="IconLockOutline">&#xf0341;</x:String> -->
     <!-- <x:String x:Key="IconLogin">&#xf0342;</x:String> -->
-    <!-- <x:String x:Key="IconLogout">&#xf0343;</x:String> -->
+    <x:String x:Key="IconLogout">&#xf0343;</x:String>
     <!-- <x:String x:Key="IconLooks">&#xf0344;</x:String> -->
     <!-- <x:String x:Key="IconLoupe">&#xf0345;</x:String> -->
     <!-- <x:String x:Key="IconLumx">&#xf0346;</x:String> -->
@@ -849,7 +849,7 @@
     <!-- <x:String x:Key="IconMagnifyMinus">&#xf034a;</x:String> -->
     <!-- <x:String x:Key="IconMagnifyPlus">&#xf034b;</x:String> -->
     <!-- <x:String x:Key="IconPlusCircleMultiple">&#xf034c;</x:String> -->
-    <!-- <x:String x:Key="IconMap">&#xf034d;</x:String> -->
+    <x:String x:Key="IconMap">&#xf034d;</x:String>
     <!-- <x:String x:Key="IconMapMarker">&#xf034e;</x:String> -->
     <!-- <x:String x:Key="IconMapMarkerCircle">&#xf034f;</x:String> -->
     <!-- <x:String x:Key="IconMapMarkerMultiple">&#xf0350;</x:String> -->
@@ -1395,7 +1395,7 @@
     <!-- <x:String x:Key="IconViewDay">&#xf056f;</x:String> -->
     <!-- <x:String x:Key="IconViewGrid">&#xf0570;</x:String> -->
     <!-- <x:String x:Key="IconViewHeadline">&#xf0571;</x:String> -->
-    <!-- <x:String x:Key="IconViewList">&#xf0572;</x:String> -->
+    <x:String x:Key="IconViewList">&#xf0572;</x:String>
     <!-- <x:String x:Key="IconViewModule">&#xf0573;</x:String> -->
     <!-- <x:String x:Key="IconViewQuilt">&#xf0574;</x:String> -->
     <!-- <x:String x:Key="IconViewStream">&#xf0575;</x:String> -->
@@ -1527,9 +1527,9 @@
     <!-- <x:String x:Key="IconFoodOff">&#xf05f3;</x:String> -->
     <!-- <x:String x:Key="IconFormatTitle">&#xf05f4;</x:String> -->
     <!-- <x:String x:Key="IconGoogleMaps">&#xf05f5;</x:String> -->
-    <!-- <x:String x:Key="IconHeartPulse">&#xf05f6;</x:String> -->
+    <x:String x:Key="IconHeartPulse">&#xf05f6;</x:String>
     <!-- <x:String x:Key="IconHighway">&#xf05f7;</x:String> -->
-    <!-- <x:String x:Key="IconHomeMapMarker">&#xf05f8;</x:String> -->
+    <x:String x:Key="IconHomeMapMarker">&#xf05f8;</x:String>
     <!-- <x:String x:Key="IconIncognito">&#xf05f9;</x:String> -->
     <!-- <x:String x:Key="IconKettle">&#xf05fa;</x:String> -->
     <!-- <x:String x:Key="IconLockPlus">&#xf05fb;</x:String> -->
@@ -3576,7 +3576,7 @@
     <!-- <x:String x:Key="IconSignature">&#xf0dfb;</x:String> -->
     <!-- <x:String x:Key="IconSignatureFreehand">&#xf0dfc;</x:String> -->
     <!-- <x:String x:Key="IconSignatureImage">&#xf0dfd;</x:String> -->
-    <!-- <x:String x:Key="IconSignatureText">&#xf0dfe;</x:String> -->
+    <x:String x:Key="IconSignatureText">&#xf0dfe;</x:String>
     <!-- <x:String x:Key="IconSlopeDownhill">&#xf0dff;</x:String> -->
     <!-- <x:String x:Key="IconSlopeUphill">&#xf0e00;</x:String> -->
     <!-- <x:String x:Key="IconThermometerAlert">&#xf0e01;</x:String> -->

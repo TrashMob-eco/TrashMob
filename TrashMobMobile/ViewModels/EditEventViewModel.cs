@@ -23,9 +23,6 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
     private EventViewModel eventViewModel;
 
     [ObservableProperty]
-    private bool isManageEventPartnersEnabled;
-
-    [ObservableProperty]
     private string selectedEventType;
 
     [ObservableProperty]
@@ -40,15 +37,32 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
 
     public ObservableCollection<string> ETypes { get; set; } = new();
 
+    [ObservableProperty]
+    private bool isDetailsVisible;
+
+    [ObservableProperty]
+    private bool isLocationVisible;
+
+    [ObservableProperty]
+    private bool isPartnersVisible;
+
+    [ObservableProperty]
+    private bool isLitterReportsVisible;
+
+    public Action UpdateMapLocation { get; set; }
+
     public async Task Init(Guid eventId)
     {
         IsBusy = true;
 
         try
         {
-            IsManageEventPartnersEnabled = false;
             UserLocation = userManager.CurrentUser.GetAddress();
             EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
+            IsDetailsVisible = true;
+            IsLocationVisible = false;
+            IsPartnersVisible = false;
+            IsLitterReportsVisible = false;
 
             MobEvent = await mobEventManager.GetEventAsync(eventId);
 
@@ -63,7 +77,6 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
                 ETypes.Add(eventType.Name);
             }
 
-            IsManageEventPartnersEnabled = true;
             IsBusy = false;
         }
         catch (Exception ex)
@@ -154,9 +167,40 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
     }
 
     [RelayCommand]
-    private async Task ManageEventPartners()
+    private void ManageEventPartners()
     {
-        await Shell.Current.GoToAsync($"{nameof(ManageEventPartnersPage)}?EventId={EventViewModel.Id}");
+        IsDetailsVisible = false;
+        IsLocationVisible = false;
+        IsPartnersVisible = true;
+        IsLitterReportsVisible = false;
+    }
+
+    [RelayCommand]
+    private void ManageLitterReports()
+    {
+        IsDetailsVisible = false;
+        IsLocationVisible = false;
+        IsPartnersVisible = false;
+        IsLitterReportsVisible = true;
+    }
+
+    [RelayCommand]
+    private void ManageEventDetails()
+    {
+        IsDetailsVisible = true;
+        IsLocationVisible = false;
+        IsPartnersVisible = false;
+        IsLitterReportsVisible = false;
+    }
+
+    [RelayCommand]
+    private void ManageEventLocation()
+    {
+        IsDetailsVisible = false;
+        IsLocationVisible = true;
+        IsPartnersVisible = false;
+        IsLitterReportsVisible = false;
+        UpdateMapLocation();
     }
 
     private async Task<bool> Validate()

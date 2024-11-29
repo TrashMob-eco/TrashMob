@@ -1,6 +1,6 @@
-using Microsoft.Maui.Controls.Maps;
-
 namespace TrashMobMobile.Controls;
+
+using Microsoft.Maui.Controls.Maps;
 
 public class CustomPin : Pin
 {
