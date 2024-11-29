@@ -118,6 +118,7 @@ export const EventSectionComponent = (props: EventSectionProps) => {
                             <TabsList className='bg-transparent gap-2'>
                                 {timeRangeOptions.map((timeRange) => (
                                     <TabsTrigger
+                                        key={timeRange.value}
                                         value={timeRange.value}
                                         className={cn(
                                             'relative !px-2 h-9 rounded-[2px] border-b-2 border-b-transparent bg-transparent font-semibold text-muted-foreground shadow-none transition-none',
