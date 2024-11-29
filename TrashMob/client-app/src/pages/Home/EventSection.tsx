@@ -2,11 +2,7 @@ import * as MapStore from '@/store/MapStore';
 import { AzureSearchLocationInput, SearchLocationOption } from '@/components/Map/AzureSearchLocationInput';
 import { EventsMap } from '@/components/Map';
 import { Button } from '@/components/ui/button';
-import {
-    Tabs,
-    TabsList,
-    TabsTrigger,
-  } from "@/components/ui/tabs"
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
 import { APIProvider } from '@vis.gl/react-google-maps';
 import { useCallback, useEffect, useState } from 'react';
@@ -36,22 +32,22 @@ export const EventSectionComponent = (props: EventSectionProps) => {
         { value: 'today', label: 'Today' },
         { value: 'tomorrow', label: 'Tomorrow' },
         { value: 'this weekend', label: 'This weekend' },
-        { value: 'all', label: 'All' }
-    ]
+        { value: 'all', label: 'All' },
+    ];
 
     /** Event Types */
-    const { data: eventTypes } = useGetEventTypes()
-    const eventTypeOptions = (eventTypes || []).map(et => ({ value: `${et.id}`, label: et.name }))
+    const { data: eventTypes } = useGetEventTypes();
+    const eventTypeOptions = (eventTypes || []).map((et) => ({ value: `${et.id}`, label: et.name }));
 
     /** Statuses */
     const statuses = [
         { value: 'complete', label: 'Complete' },
         { value: 'future', label: 'Future' },
-    ]
+    ];
     /** Filter Parameters */
-    const [selectedTimeRange, setSelectedTimeRange] = useState<string>("today")
-    const [selectedEventTypes, setSelectedEventTypes] = useState<string[]>([])
-    const [selectedStatuses, setSelectedStatuses] = useState<string[]>([])
+    const [selectedTimeRange, setSelectedTimeRange] = useState<string>('today');
+    const [selectedEventTypes, setSelectedEventTypes] = useState<string[]>([]);
+    const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
 
     /** Event List */
     const [events, setEvents] = useState([]);
@@ -114,19 +110,22 @@ export const EventSectionComponent = (props: EventSectionProps) => {
                             onSelectLocation={handleSelectLocation}
                         />
                     </div>
-                    <div className="py-4">
-                        <Tabs defaultValue={selectedTimeRange} className="w-full justify-start rounded-none bg-transparent p-0">
-                            <TabsList className="bg-transparent gap-2">
-                                {timeRangeOptions.map(timeRange => (
+                    <div className='py-4'>
+                        <Tabs
+                            defaultValue={selectedTimeRange}
+                            className='w-full justify-start rounded-none bg-transparent p-0'
+                        >
+                            <TabsList className='bg-transparent gap-2'>
+                                {timeRangeOptions.map((timeRange) => (
                                     <TabsTrigger
                                         value={timeRange.value}
                                         className={cn(
-                                            "relative !px-2 h-9 rounded-[2px] border-b-2 border-b-transparent bg-transparent font-semibold text-muted-foreground shadow-none transition-none", 
+                                            'relative !px-2 h-9 rounded-[2px] border-b-2 border-b-transparent bg-transparent font-semibold text-muted-foreground shadow-none transition-none',
                                             "after:content-[''] after:w-0 after:h-0.5 after:absolute after:left-0 after:-bottom-3",
-                                            "after:data-[state=active]:bg-[#005B4C] after:data-[state=active]:w-full",
-                                            "data-[state=active]:!bg-[#B0CCC8] data-[state=active]:text-foreground",
-                                            "transition-all duration-300 ease-in-out",
-                                            "after:transition-all after:duration-300 after:ease-in-out"
+                                            'after:data-[state=active]:bg-[#005B4C] after:data-[state=active]:w-full',
+                                            'data-[state=active]:!bg-[#B0CCC8] data-[state=active]:text-foreground',
+                                            'transition-all duration-300 ease-in-out',
+                                            'after:transition-all after:duration-300 after:ease-in-out',
                                         )}
                                     >
                                         {timeRange.label}
@@ -135,17 +134,17 @@ export const EventSectionComponent = (props: EventSectionProps) => {
                             </TabsList>
                         </Tabs>
                     </div>
-                    <div className="flex flex-row gap-4 mb-2">
-                        <MultiSelect 
-                            placeholder="Cleanup types"
-                            className="w-48"
+                    <div className='flex flex-row gap-4 mb-2'>
+                        <MultiSelect
+                            placeholder='Cleanup types'
+                            className='w-48'
                             options={eventTypeOptions}
                             selectedOptions={selectedEventTypes}
                             setSelectedOptions={setSelectedEventTypes}
                         />
-                        <MultiSelect 
-                            placeholder="Status"
-                            className="w-36"
+                        <MultiSelect
+                            placeholder='Status'
+                            className='w-36'
                             options={statuses}
                             selectedOptions={selectedStatuses}
                             setSelectedOptions={setSelectedStatuses}

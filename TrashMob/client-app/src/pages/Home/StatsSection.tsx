@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { CountUp } from 'use-count-up'
+import { CountUp } from 'use-count-up';
 import { GetStats } from '@/services/stats';
 import { Services } from '@/config/services.config';
 import StatsData from '@/components/Models/StatsData';
