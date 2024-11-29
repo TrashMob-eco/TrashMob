@@ -2,12 +2,21 @@ import * as MapStore from '@/store/MapStore';
 import { AzureSearchLocationInput, SearchLocationOption } from '@/components/Map/AzureSearchLocationInput';
 import { EventsMap } from '@/components/Map';
 import { Button } from '@/components/ui/button';
+import {
+    Tabs,
+    TabsList,
+    TabsTrigger,
+  } from "@/components/ui/tabs"
 import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
 import { APIProvider } from '@vis.gl/react-google-maps';
 import { useCallback, useEffect, useState } from 'react';
 import UserData from '@/components/Models/UserData';
 import { useQuery } from '@tanstack/react-query';
 import { GetAllActiveEvents } from '@/services/events';
+import { cn } from '@/lib/utils';
+import MultiSelect from '@/components/ui/multi-select';
+import { useGetEventTypes } from '@/hooks/useGetEventTypes';
+import { Plus } from 'lucide-react';
 
 interface EventSectionProps {
     isUserLoaded: boolean;
@@ -21,6 +30,28 @@ export const EventSectionComponent = (props: EventSectionProps) => {
             setAzureSubscriptionKey(opts.subscriptionKey);
         });
     });
+
+    /** Time Ranges */
+    const timeRangeOptions = [
+        { value: 'today', label: 'Today' },
+        { value: 'tomorrow', label: 'Tomorrow' },
+        { value: 'this weekend', label: 'This weekend' },
+        { value: 'all', label: 'All' }
+    ]
+
+    /** Event Types */
+    const { data: eventTypes } = useGetEventTypes()
+    const eventTypeOptions = (eventTypes || []).map(et => ({ value: `${et.id}`, label: et.name }))
+
+    /** Statuses */
+    const statuses = [
+        { value: 'complete', label: 'Complete' },
+        { value: 'future', label: 'Future' },
+    ]
+    /** Filter Parameters */
+    const [selectedTimeRange, setSelectedTimeRange] = useState<string>("today")
+    const [selectedEventTypes, setSelectedEventTypes] = useState<string[]>([])
+    const [selectedStatuses, setSelectedStatuses] = useState<string[]>([])
 
     /** Event List */
     const [events, setEvents] = useState([]);
@@ -47,7 +78,7 @@ export const EventSectionComponent = (props: EventSectionProps) => {
             <div className='container !py-20'>
                 <div className='flex flex-col gap-2'>
                     <div className='flex flex-row items-center gap-4'>
-                        <h3 className='my-0'>Upcoming Events near</h3>
+                        <h3 className='my-0 font-semibold'>Upcoming Events near</h3>
                         <AzureSearchLocationInput
                             azureKey={azureSubscriptionKey}
                             renderInput={({ inputRef, referenceElementRef, ...inputProps }) => (
@@ -82,6 +113,44 @@ export const EventSectionComponent = (props: EventSectionProps) => {
                             )}
                             onSelectLocation={handleSelectLocation}
                         />
+                    </div>
+                    <div className="py-4">
+                        <Tabs defaultValue="today" className="w-full justify-start rounded-none bg-transparent p-0">
+                            <TabsList className="bg-transparent gap-2">
+                                {timeRangeOptions.map(timeRange => (
+                                    <TabsTrigger
+                                        value={timeRange.value}
+                                        className={cn(
+                                            "relative !px-2 h-9 rounded-[2px] border-b-2 border-b-transparent bg-transparent font-semibold text-muted-foreground shadow-none transition-none", 
+                                            "after:content-[''] after:w-full after:h-0.5 after:absolute after:left-0 after:-bottom-3",
+                                            "after:data-[state=active]:bg-[#005B4C]",
+                                            "data-[state=active]:!bg-[#B0CCC8] data-[state=active]:text-foreground"
+                                        )}
+                                    >
+                                        {timeRange.label}
+                                    </TabsTrigger>
+                                ))}
+                            </TabsList>
+                        </Tabs>
+                    </div>
+                    <div className="flex flex-row gap-4 mb-2">
+                        <MultiSelect 
+                            placeholder="Cleanup types"
+                            className="w-48"
+                            options={eventTypeOptions}
+                            selectedOptions={selectedEventTypes}
+                            setSelectedOptions={setSelectedEventTypes}
+                        />
+                        <MultiSelect 
+                            placeholder="Status"
+                            className="w-36"
+                            options={statuses}
+                            selectedOptions={selectedStatuses}
+                            setSelectedOptions={setSelectedStatuses}
+                        />
+                        <Button>
+                            <Plus /> Create Event
+                        </Button>
                     </div>
                     <EventsMap events={events} isUserLoaded={props.isUserLoaded} currentUser={props.currentUser} />
                 </div>
