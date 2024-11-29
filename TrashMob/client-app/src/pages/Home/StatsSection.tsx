@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { CountUp } from 'use-count-up'
 import { GetStats } from '@/services/stats';
 import { Services } from '@/config/services.config';
 import StatsData from '@/components/Models/StatsData';
@@ -8,6 +9,7 @@ import Trashbag from '@/components/assets/home/Trashbag.svg';
 import Person from '@/components/assets/home/Person.svg';
 import Clock from '@/components/assets/home/Clock.svg';
 import LitterReport from '@/components/assets/home/LitterReport.svg';
+import { cn } from '@/lib/utils';
 
 const useGetHomeStats = () =>
     useQuery<StatsData>({
@@ -25,7 +27,7 @@ const useGetHomeStats = () =>
 
 export const StatsSection = () => {
     const { data: stats } = useGetHomeStats();
-    const { totalBags, totalEvents, totalHours, totalParticipants } = stats;
+    const { totalBags, totalEvents, totalHours, totalParticipants, totalLitterReportsSubmitted } = stats;
 
     const statItems = [
         {
@@ -59,7 +61,7 @@ export const StatsSection = () => {
         {
             id: 4,
             title: 'Litter Reports',
-            value: totalHours,
+            value: totalLitterReportsSubmitted,
             icon: LitterReport,
             alt: 'Litter report',
         },
@@ -68,13 +70,15 @@ export const StatsSection = () => {
     return (
         <div className='container !py-20'>
             <div className='flex flex-wrap gap-4 flex-row justify-center lg:justify-between'>
-                {statItems.map((item) => (
+                {statItems.map((item, i) => (
                     <div
                         key={item.id}
                         className='bg-card min-w-[160px] !px-6 !py-4 shadow-sm flex flex-col items-center rounded-[11px]'
                     >
                         <img src={item.icon} alt={item.alt} className='primary w-9 h-9' />
-                        <h4 className='text-[32px] font-semibold	text-primary !mt-2'>{item.value}</h4>
+                        <h4 className='text-[32px] font-semibold text-primary !mt-2'>
+                            <CountUp isCounting end={item.value} duration={3.2} />
+                        </h4>
                         <span className='text-sm font-semibold'>{item.title}</span>
                     </div>
                 ))}

@@ -115,16 +115,18 @@ export const EventSectionComponent = (props: EventSectionProps) => {
                         />
                     </div>
                     <div className="py-4">
-                        <Tabs defaultValue="today" className="w-full justify-start rounded-none bg-transparent p-0">
+                        <Tabs defaultValue={selectedTimeRange} className="w-full justify-start rounded-none bg-transparent p-0">
                             <TabsList className="bg-transparent gap-2">
                                 {timeRangeOptions.map(timeRange => (
                                     <TabsTrigger
                                         value={timeRange.value}
                                         className={cn(
                                             "relative !px-2 h-9 rounded-[2px] border-b-2 border-b-transparent bg-transparent font-semibold text-muted-foreground shadow-none transition-none", 
-                                            "after:content-[''] after:w-full after:h-0.5 after:absolute after:left-0 after:-bottom-3",
-                                            "after:data-[state=active]:bg-[#005B4C]",
-                                            "data-[state=active]:!bg-[#B0CCC8] data-[state=active]:text-foreground"
+                                            "after:content-[''] after:w-0 after:h-0.5 after:absolute after:left-0 after:-bottom-3",
+                                            "after:data-[state=active]:bg-[#005B4C] after:data-[state=active]:w-full",
+                                            "data-[state=active]:!bg-[#B0CCC8] data-[state=active]:text-foreground",
+                                            "transition-all duration-300 ease-in-out",
+                                            "after:transition-all after:duration-300 after:ease-in-out"
                                         )}
                                     >
                                         {timeRange.label}
