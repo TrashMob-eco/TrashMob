@@ -1,6 +1,7 @@
 ﻿namespace TrashMob.Controllers
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -10,28 +11,26 @@
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Models;
     using TrashMob.Models.Extensions;
+    using TrashMob.Models.Poco;
     using TrashMob.Security;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/eventlitterreports")]
-    public class EventLitterReportsController : SecureController
+    public class EventLitterReportsController(IEventLitterReportManager eventLitterReportManager, IUserManager userManager) : SecureController
     {
-        private readonly IEventLitterReportManager eventLitterReportManager;
-
-        public EventLitterReportsController(IEventLitterReportManager eventLitterReportManager)
-        {
-            this.eventLitterReportManager = eventLitterReportManager;
-        }
+        private readonly IEventLitterReportManager eventLitterReportManager = eventLitterReportManager;
+        private readonly IUserManager userManager = userManager;
 
         [HttpGet("{eventId}")]
         public async Task<IActionResult> GetEventLitterReports(Guid eventId)
         {
-            var result =
-                (await eventLitterReportManager.GetByParentIdAsync(eventId, CancellationToken.None).ConfigureAwait(false))
-                .Select(e => e.LitterReport.ToFullLitterReport("Unknown"));
+            var result = await eventLitterReportManager.GetByParentIdAsync(eventId, CancellationToken.None).ConfigureAwait(false);
+
+            var fullEventLitterReports = await ToFullLitterReport(result.Select(e => e.LitterReport), CancellationToken.None);
+
             TelemetryClient.TrackEvent(nameof(GetEventLitterReports));
-            return Ok(result);
+            return Ok(fullEventLitterReports);
         }
 
         [HttpPut]
@@ -98,6 +97,39 @@
                 .GetAsync(ea => ea.EventId == eventId && ea.LitterReportId == litterReportId, cancellationToken).ConfigureAwait(false);
 
             return litterReport?.FirstOrDefault() != null;
+        }
+
+        private async Task<IEnumerable<FullLitterReport>> ToFullLitterReport(IEnumerable<Models.LitterReport> litterReports, CancellationToken cancellationToken)
+        {
+            var fullLitterReports = new List<FullLitterReport>();
+
+            foreach (var litterReport in litterReports)
+            {
+                var fullLitterReport = await ToFullLitterReport(litterReport, cancellationToken);
+                fullLitterReports.Add(fullLitterReport);
+            }
+
+            return fullLitterReports;
+        }
+
+        private async Task<FullEventLitterReport> ToFullEventLitterReport(EventLitterReport eventLitterReport, CancellationToken cancellationToken)
+        {
+            var fullLitterReport = await ToFullLitterReport(eventLitterReport.LitterReport, cancellationToken);
+
+            var fullEventLitterReport = new FullEventLitterReport
+            {
+                EventId = eventLitterReport.EventId,
+                LitterReportId = eventLitterReport.LitterReportId,
+                LitterReport = fullLitterReport
+            };
+
+            return fullEventLitterReport;
+        }
+
+        private async Task<FullLitterReport> ToFullLitterReport(LitterReport litterReport, CancellationToken cancellationToken)
+        {
+            var user = await userManager.GetAsync(litterReport.CreatedByUserId, cancellationToken);
+            return litterReport.ToFullLitterReport(user.UserName);
         }
     }
 }
