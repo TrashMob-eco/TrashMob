@@ -27,7 +27,7 @@
         {
             var result = await eventLitterReportManager.GetByParentIdAsync(eventId, CancellationToken.None).ConfigureAwait(false);
 
-            var fullEventLitterReports = await ToFullLitterReport(result.Select(e => e.LitterReport), CancellationToken.None);
+            var fullEventLitterReports = await ToFullEventLitterReports(result, CancellationToken.None);
 
             TelemetryClient.TrackEvent(nameof(GetEventLitterReports));
             return Ok(fullEventLitterReports);
@@ -99,17 +99,17 @@
             return litterReport?.FirstOrDefault() != null;
         }
 
-        private async Task<IEnumerable<FullLitterReport>> ToFullLitterReport(IEnumerable<Models.LitterReport> litterReports, CancellationToken cancellationToken)
+        private async Task<IEnumerable<FullEventLitterReport>> ToFullEventLitterReports(IEnumerable<EventLitterReport> eventLitterReports, CancellationToken cancellationToken)
         {
-            var fullLitterReports = new List<FullLitterReport>();
+            var fullEventLitterReports = new List<FullEventLitterReport>();
 
-            foreach (var litterReport in litterReports)
+            foreach (var eventLitterReport in eventLitterReports)
             {
-                var fullLitterReport = await ToFullLitterReport(litterReport, cancellationToken);
-                fullLitterReports.Add(fullLitterReport);
+                var fullEventLitterReport = await ToFullEventLitterReport(eventLitterReport, cancellationToken);
+                fullEventLitterReports.Add(fullEventLitterReport);
             }
 
-            return fullLitterReports;
+            return fullEventLitterReports;
         }
 
         private async Task<FullEventLitterReport> ToFullEventLitterReport(EventLitterReport eventLitterReport, CancellationToken cancellationToken)
