@@ -6,6 +6,8 @@ class StatsData {
     totalHours: number = 0;
 
     totalParticipants: number = 0;
+
+    totalLitterReportsSubmitted: number = 0;
 }
 
 export default StatsData;
