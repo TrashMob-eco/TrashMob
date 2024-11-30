@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useIsInViewport } from '@/hooks/useIsInViewport';
 import { cn } from '@/lib/utils';
@@ -137,7 +138,9 @@ export const GettingStartSection = () => {
                             <span className='!mt-4 text-2xl'>A good attitude</span>
                         </div>
                     </div>
-                    <Button size='lg'>Learn more</Button>
+                    <Button size='lg' asChild>
+                        <Link to='/gettingstarted'>Learn more</Link>
+                    </Button>
                 </div>
             </div>
         </div>

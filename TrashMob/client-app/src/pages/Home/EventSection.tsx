@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import * as MapStore from '@/store/MapStore';
 import { AzureSearchLocationInput, SearchLocationOption } from '@/components/Map/AzureSearchLocationInput';
 import { EventsMap } from '@/components/Map';
@@ -75,7 +76,7 @@ export const EventSectionComponent = (props: EventSectionProps) => {
         <section id='event-section' className='bg-[#FCFBF8]'>
             <div className='container !py-20'>
                 <div className='flex flex-col gap-2'>
-                    <div className='flex flex-row items-center gap-4'>
+                    <div className='flex flex-col md:flex-row items-center gap-4'>
                         <h3 className='my-0 font-semibold'>Upcoming Events near</h3>
                         <AzureSearchLocationInput
                             azureKey={azureSubscriptionKey}
@@ -116,9 +117,9 @@ export const EventSectionComponent = (props: EventSectionProps) => {
                         <Tabs
                             defaultValue={selectedTimeRange}
                             onValueChange={setSelectedTimeRange}
-                            className='w-full justify-start rounded-none bg-transparent p-0'
+                            className='w-full rounded-none bg-transparent p-0'
                         >
-                            <TabsList className='bg-transparent gap-2'>
+                            <TabsList className='bg-transparent gap-2 w-full justify-center md:w-auto md:justify-start '>
                                 {timeRangeOptions.map((timeRange) => (
                                     <TabsTrigger
                                         key={timeRange.value}
@@ -153,20 +154,22 @@ export const EventSectionComponent = (props: EventSectionProps) => {
                             selectedOptions={selectedStatuses}
                             setSelectedOptions={setSelectedStatuses}
                         />
-                        <Button>
-                            <Plus /> Create Event
+                        <Button asChild className='hidden md:flex'>
+                            <Link to='/manageeventdashboard'>
+                                <Plus /> Create Event
+                            </Link>
                         </Button>
                         <div className='flex-1' />
                         <ToggleGroup value={view} onValueChange={setView} type='single' variant='outline'>
                             <ToggleGroupItem
                                 value='list'
-                                className='data-[state=on]:!bg-[#96BA00] data-[state=on]:!text-white'
+                                className='data-[state=on]:!bg-[#96BA00] data-[state=on]:text-primary-foreground'
                             >
                                 <List />
                             </ToggleGroupItem>
                             <ToggleGroupItem
                                 value='map'
-                                className='data-[state=on]:!bg-[#96BA00] data-[state=on]:!text-white'
+                                className='data-[state=on]:!bg-[#96BA00] data-[state=on]:text-primary-foreground'
                             >
                                 <Map />
                             </ToggleGroupItem>

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/Logo';
 import { useIsInViewport } from '@/hooks/useIsInViewport';
@@ -30,15 +31,16 @@ export const HeroSection = () => {
                             showTagline
                         />
                     </div>
-                    <Button
-                        size='lg'
+                    <div
                         className={cn('transition-all duration-1000 ease-out delay-1000', {
                             'opacity-100 translate-y-0': isInViewPort,
                             'opacity-0 translate-y-10': !isInViewPort,
                         })}
                     >
-                        Join us today
-                    </Button>
+                        <Button size='lg' asChild>
+                            <Link to='/gettingstarted'>Join us today</Link>
+                        </Button>
+                    </div>
                     <div
                         className={cn(
                             'flex flex-row gap-1 items-center mt-16',

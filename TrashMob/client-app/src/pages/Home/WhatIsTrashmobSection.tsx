@@ -48,25 +48,20 @@ export const WhatIsTrashmobSection = () => {
                             A TrashMob is a group of citizens who are willing to take an hour or two out of their lives
                             to get together and clean up their communities. Start your impact today.
                         </p>
-                        <div className='flex flex-row justify-center md:justify-start gap-4'>
-                            <Button
-                                asChild
-                                size='lg'
-                                className={cn('transition-all duration-1000 delay-700 ease-out', {
+                        <div
+                            className={cn(
+                                'flex flex-row justify-center md:justify-start gap-4',
+                                'transition-all duration-1000 delay-700 ease-out',
+                                {
                                     'opacity-100': isInViewPort,
                                     'opacity-0': !isInViewPort,
-                                })}
-                            >
+                                },
+                            )}
+                        >
+                            <Button asChild size='lg'>
                                 <Link to='/aboutus'>Learn more</Link>
                             </Button>
-                            <Button
-                                asChild
-                                size='lg'
-                                className={cn('transition-all duration-1000 delay-700 ease-out', {
-                                    'opacity-100': isInViewPort,
-                                    'opacity-0': !isInViewPort,
-                                })}
-                            >
+                            <Button asChild size='lg'>
                                 <a href='/#events'>View Upcoming Events</a>
                             </Button>
                         </div>
