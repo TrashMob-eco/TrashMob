@@ -37,7 +37,6 @@
         "react-router-dom": "^5.2.0",
         "react-share": "^4.4.1",
         "react-simple-captcha": "^9.0.2",
-        "reactstrap": "^8.9.0",
         "sass": "^1.79.3",
         "tailwind-merge": "^2.5.4",
         "tailwindcss-animate": "^1.0.7",
