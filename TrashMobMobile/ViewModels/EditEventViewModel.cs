@@ -52,6 +52,12 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
     [ObservableProperty] 
     private bool areNoLitterReportsAvailable;
 
+    [ObservableProperty]
+    private bool isLitterReportMapSelected;
+
+    [ObservableProperty]
+    private bool isLitterReportListSelected;
+
     public ObservableCollection<EventPartnerLocationViewModel> AvailablePartners { get; set; } = new();
 
     public EventPartnerLocationViewModel SelectedEventPartnerLocation
@@ -79,9 +85,9 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
 
     public ObservableCollection<string> ETypes { get; set; } = new();
 
-    public ObservableCollection<LitterImageViewModel> LitterImages { get; set; } = [];
-
     public ObservableCollection<EventLitterReportViewModel> EventLitterReports { get; set; } = [];
+
+    public ObservableCollection<LitterImageViewModel> LitterImages { get; set; } = [];
 
     [ObservableProperty]
     private bool isDetailsVisible;
@@ -295,6 +301,8 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
     {
         AreLitterReportsAvailable = false;
         AreNoLitterReportsAvailable = true;
+        IsLitterReportMapSelected = true;
+        IsLitterReportMapSelected = false;
 
         var filter = new TrashMob.Models.Poco.LitterReportFilter()
         {
@@ -328,6 +336,7 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
                 {
                     litterImageViewModel.Address.DisplayName = litterReport.Name;
                     litterImageViewModel.Address.ParentId = litterReport.Id;
+                    vm.LitterImageViewModels.Add(litterImageViewModel);
                     LitterImages.Add(litterImageViewModel);
                 }
             }
@@ -340,5 +349,21 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
     {
         await Shell.Current.GoToAsync(
             $"{nameof(EditEventPartnerLocationServicesPage)}?EventId={EventViewModel.Id}&PartnerLocationId={eventPartnerLocationViewModel.PartnerLocationId}");
+    }
+
+    [RelayCommand]
+    private Task MapSelected()
+    {
+        IsLitterReportMapSelected = true;
+        IsLitterReportListSelected = false;
+        return Task.CompletedTask;
+    }
+
+    [RelayCommand]
+    private Task ListSelected()
+    {
+        IsLitterReportMapSelected = false;
+        IsLitterReportListSelected = true;
+        return Task.CompletedTask;
     }
 }
