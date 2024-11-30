@@ -2,6 +2,7 @@ import * as MapStore from '@/store/MapStore';
 import { AzureSearchLocationInput, SearchLocationOption } from '@/components/Map/AzureSearchLocationInput';
 import { EventsMap } from '@/components/Map';
 import { Button } from '@/components/ui/button';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
 import { APIProvider } from '@vis.gl/react-google-maps';
@@ -12,7 +13,7 @@ import { GetAllActiveEvents } from '@/services/events';
 import { cn } from '@/lib/utils';
 import MultiSelect from '@/components/ui/multi-select';
 import { useGetEventTypes } from '@/hooks/useGetEventTypes';
-import { Plus } from 'lucide-react';
+import { List, Map, Plus } from 'lucide-react';
 
 interface EventSectionProps {
     isUserLoaded: boolean;
@@ -41,13 +42,14 @@ export const EventSectionComponent = (props: EventSectionProps) => {
 
     /** Statuses */
     const statuses = [
-        { value: 'complete', label: 'Complete' },
-        { value: 'future', label: 'Future' },
+        { value: 'completed', label: 'Completed' },
+        { value: 'upcoming', label: 'Upcoming' },
     ];
     /** Filter Parameters */
     const [selectedTimeRange, setSelectedTimeRange] = useState<string>('today');
     const [selectedEventTypes, setSelectedEventTypes] = useState<string[]>([]);
     const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
+    const [view, setView] = useState<string>('map');
 
     /** Event List */
     const [events, setEvents] = useState([]);
@@ -154,6 +156,21 @@ export const EventSectionComponent = (props: EventSectionProps) => {
                         <Button>
                             <Plus /> Create Event
                         </Button>
+                        <div className='flex-1' />
+                        <ToggleGroup value={view} onValueChange={setView} type='single' variant='outline'>
+                            <ToggleGroupItem
+                                value='list'
+                                className='data-[state=on]:!bg-[#96BA00] data-[state=on]:!text-white'
+                            >
+                                <List />
+                            </ToggleGroupItem>
+                            <ToggleGroupItem
+                                value='map'
+                                className='data-[state=on]:!bg-[#96BA00] data-[state=on]:!text-white'
+                            >
+                                <Map />
+                            </ToggleGroupItem>
+                        </ToggleGroup>
                     </div>
                     <EventsMap
                         events={events}
