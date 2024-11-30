@@ -302,16 +302,17 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
         AreLitterReportsAvailable = false;
         AreNoLitterReportsAvailable = true;
         IsLitterReportMapSelected = true;
-        IsLitterReportMapSelected = false;
+        IsLitterReportListSelected = false;
 
         var filter = new TrashMob.Models.Poco.LitterReportFilter()
         {
             City = EventViewModel.Address.City,
             Country = EventViewModel.Address.Country,
             LitterReportStatusId = NewLitterReportStatus,
+            IncludeLitterImages = true,
         };
 
-        RawLitterReports = await litterReportManager.GetLitterReportsAsync(filter);
+        RawLitterReports = await litterReportManager.GetLitterReportsAsync(filter, ImageSizeEnum.Thumb);
 
         UpdateLitterReportViewModels();
 
@@ -336,7 +337,7 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
                 {
                     litterImageViewModel.Address.DisplayName = litterReport.Name;
                     litterImageViewModel.Address.ParentId = litterReport.Id;
-                    vm.LitterImageViewModels.Add(litterImageViewModel);
+                    litterImageViewModel.Address.IconFile = "litterreportnew";
                     LitterImages.Add(litterImageViewModel);
                 }
             }

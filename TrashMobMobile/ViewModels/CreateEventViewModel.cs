@@ -536,7 +536,7 @@ public partial class CreateEventViewModel : BaseViewModel
             LitterReportStatusId = NewLitterReportStatus,
         };
 
-        RawLitterReports = await litterReportManager.GetLitterReportsAsync(filter);
+        RawLitterReports = await litterReportManager.GetLitterReportsAsync(filter, ImageSizeEnum.Thumb);
 
         UpdateLitterReportViewModels();
 

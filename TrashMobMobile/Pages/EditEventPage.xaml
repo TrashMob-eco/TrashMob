@@ -257,10 +257,10 @@
                            HorizontalTextAlignment="Center"
                            IsVisible="{Binding AreLitterReportsAvailable}"
                            Margin="10" />
-                
+
                 <Label Text="There are currently no litter reports in the area of your event." IsVisible="{Binding AreNoLitterReportsAvailable}" Margin="10" Grid.Row="1" />
 
-                <Grid RowDefinitions="Auto, Auto, Auto, *" IsVisible="{Binding AreLitterReportsAvailable}" Grid.Row="1">
+                <Grid RowDefinitions="*, *, *, *" IsVisible="{Binding AreLitterReportsAvailable}" Grid.Row="1">
                     <Grid Margin="5" Grid.Row="0"
                       ColumnDefinitions="6*, *, *"
                       RowDefinitions="Auto">
@@ -284,7 +284,7 @@
                                           Address="{Binding Address.StreetAddress}"
                                           Label="{Binding Address.StreetAddress}"
                                           AutomationId="{Binding LitterReportId}"
-                                          ImageSource="eventupcoming"
+                                          ImageSource="{Binding Address.IconFile}"
                                           InfoWindowClicked="Pin_InfoWindowClicked" />
                             </DataTemplate>
                         </maps:Map.ItemTemplate>
@@ -297,7 +297,7 @@
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="viewModels:EventLitterReportViewModel">
                                 <StackLayout Margin="5">
-                                    <Border Style="{StaticResource RoundBorder}">
+                                    <Border Style="{StaticResource RoundBorder}" Margin="5">
                                         <Grid ColumnDefinitions="*, *"
                                               RowDefinitions="*, *, *, *, *, *, *"
                                               x:Name="LitterReportItem">
@@ -316,7 +316,12 @@
                                                             Grid.Column="0" Grid.ColumnSpan="2">
                                                 <CollectionView.ItemTemplate>
                                                     <DataTemplate x:DataType="viewModels:LitterImageViewModel">
-                                                        <Label Text="{Binding Address.DisplayAddress}" FontSize="Micro" />
+                                                        <Border Style="{StaticResource RoundBorder}" Margin="0, 3">
+                                                            <Grid ColumnDefinitions="*, *">
+                                                                <Label Text="{Binding Address.DisplayAddress}" Grid.Column="0" LineBreakMode="WordWrap" FontSize="Micro" />
+                                                                <Image Source="{Binding AzureBlobUrl}" MaximumWidthRequest="60" Grid.Column="1" />
+                                                            </Grid>
+                                                        </Border>
                                                     </DataTemplate>
                                                 </CollectionView.ItemTemplate>
                                             </CollectionView>

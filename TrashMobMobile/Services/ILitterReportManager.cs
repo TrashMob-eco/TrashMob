@@ -13,7 +13,7 @@
 
         Task<IEnumerable<LitterReport>> GetCleanedLitterReportsAsync(CancellationToken cancellationToken = default);
 
-        Task<PaginatedList<LitterReport>> GetLitterReportsAsync(LitterReportFilter filter, CancellationToken cancellationToken = default);
+        Task<PaginatedList<LitterReport>> GetLitterReportsAsync(LitterReportFilter filter, ImageSizeEnum imageSize, CancellationToken cancellationToken = default);
 
         Task<IEnumerable<LitterReport>>
             GetNotCancelledLitterReportsAsync(CancellationToken cancellationToken = default);
