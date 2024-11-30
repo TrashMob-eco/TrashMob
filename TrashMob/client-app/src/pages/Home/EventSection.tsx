@@ -113,6 +113,7 @@ export const EventSectionComponent = (props: EventSectionProps) => {
                     <div className='py-4'>
                         <Tabs
                             defaultValue={selectedTimeRange}
+                            onValueChange={setSelectedTimeRange}
                             className='w-full justify-start rounded-none bg-transparent p-0'
                         >
                             <TabsList className='bg-transparent gap-2'>

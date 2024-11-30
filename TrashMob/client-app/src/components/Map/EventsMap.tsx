@@ -6,6 +6,8 @@ import { useEffect, useRef, useState } from 'react';
 import UserData from '../Models/UserData';
 import { useQuery } from '@tanstack/react-query';
 import { GetAllEventsBeingAttendedByUser } from '../../services/events';
+import useIsInViewport from '@/hooks/useIsInViewport';
+import { cn } from '@/lib/utils';
 
 interface EventsMapProps {
     id?: string;
@@ -50,32 +52,40 @@ export const EventsMap = (props: EventsMapProps) => {
     const [showingEventId, setShowingEventId] = useState<string>('');
     const showingEvent = eventsWithAttendance.find((event) => event.id === showingEventId);
 
+    const containerRef = useRef<HTMLDivElement>(null);
+    const isInViewPort = useIsInViewport(containerRef);
+
     return (
-        <GoogleMap id={id}>
-            {eventsWithAttendance.map((event) => (
-                <AdvancedMarker
-                    key={event.id}
-                    ref={(el) => {
-                        markersRef.current[event.id] = el!;
-                    }}
-                    position={{ lat: event.latitude, lng: event.longitude }}
-                    onMouseEnter={(e) => setShowingEventId(event.id)}
-                />
-            ))}
-            {showingEvent ? (
-                <InfoWindow
-                    anchor={markersRef.current[showingEventId]}
-                    headerContent={<EventDetailInfoWindowHeader {...showingEvent} />}
-                    onClose={() => setShowingEventId('')}
-                >
-                    <EventDetailInfoWindowContent
-                        event={showingEvent}
-                        hideTitle
-                        isUserLoaded={isUserLoaded}
-                        currentUser={currentUser}
+        <div ref={containerRef}>
+            <GoogleMap id={id}>
+                {eventsWithAttendance.map((event) => (
+                    <AdvancedMarker
+                        key={event.id}
+                        ref={(el) => {
+                            markersRef.current[event.id] = el!;
+                        }}
+                        className={cn({
+                          "animate-[bounce_1s_forwards_3s]": isInViewPort
+                        })}
+                        position={{ lat: event.latitude, lng: event.longitude }}
+                        onMouseEnter={(e) => setShowingEventId(event.id)}
                     />
-                </InfoWindow>
-            ) : null}
-        </GoogleMap>
+                ))}
+                {showingEvent ? (
+                    <InfoWindow
+                        anchor={markersRef.current[showingEventId]}
+                        headerContent={<EventDetailInfoWindowHeader {...showingEvent} />}
+                        onClose={() => setShowingEventId('')}
+                    >
+                        <EventDetailInfoWindowContent
+                            event={showingEvent}
+                            hideTitle
+                            isUserLoaded={isUserLoaded}
+                            currentUser={currentUser}
+                        />
+                    </InfoWindow>
+                ) : null}
+            </GoogleMap>
+        </div>
     );
 };
