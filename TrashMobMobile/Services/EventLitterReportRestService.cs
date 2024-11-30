@@ -2,17 +2,18 @@
 
 using System.Net.Http.Json;
 using TrashMob.Models;
+using TrashMob.Models.Poco;
 
 public class EventLitterReportRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IEventLitterReportRestService
 {
     protected override string Controller => "eventlitterreports";
 
-    public async Task<IEnumerable<EventLitterReport>> GetEventLitterReportsAsync(Guid eventId,
+    public async Task<IEnumerable<FullEventLitterReport>> GetEventLitterReportsAsync(Guid eventId,
         CancellationToken cancellationToken = default)
     {
         var requestUri = string.Concat(Controller, $"/{eventId}");
         var eventLitterReports =
-            await AuthorizedHttpClient.GetFromJsonAsync<IEnumerable<EventLitterReport>>(requestUri, SerializerOptions,
+            await AuthorizedHttpClient.GetFromJsonAsync<IEnumerable<FullEventLitterReport>>(requestUri, SerializerOptions,
                 cancellationToken);
         return eventLitterReports ?? [];
     }
