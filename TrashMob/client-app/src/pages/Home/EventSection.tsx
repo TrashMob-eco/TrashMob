@@ -155,7 +155,12 @@ export const EventSectionComponent = (props: EventSectionProps) => {
                             <Plus /> Create Event
                         </Button>
                     </div>
-                    <EventsMap events={events} isUserLoaded={props.isUserLoaded} currentUser={props.currentUser} />
+                    <EventsMap
+                        events={events}
+                        isUserLoaded={props.isUserLoaded}
+                        currentUser={props.currentUser}
+                        gestureHandling='cooperative'
+                    />
                 </div>
             </div>
         </section>

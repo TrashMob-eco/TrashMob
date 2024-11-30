@@ -1,14 +1,26 @@
 import { Button } from '@/components/ui/button';
+import { useIsInViewport } from '@/hooks/useIsInViewport';
+import { cn } from '@/lib/utils';
 
 export const GettingStartSection = () => {
+    const { ref: viewportRef, isInViewPort } = useIsInViewport();
+
     return (
         <div className='bg-card'>
             <div className='container'>
                 <div className='flex flex-col items-center py-4'>
                     <h3 className='font-semibold text-[40px]'>Getting Started</h3>
                     <p className='text-2xl text-center'>All you really need to start or join a trash mob are:</p>
-                    <div className='flex flex-col md:flex-row justify-between md:px-32 pb-12 w-full'>
-                        <div className='flex flex-col items-center'>
+                    <div className='flex flex-col md:flex-row justify-between md:px-32 pb-12 w-full' ref={viewportRef}>
+                        <div
+                            className={cn(
+                                'flex flex-col items-center transition-all duration-1000 delay-300 ease-out',
+                                {
+                                    'opacity-100 translate-y-0': isInViewPort,
+                                    'opacity-0 translate-y-14': !isInViewPort,
+                                },
+                            )}
+                        >
                             <svg
                                 width='178'
                                 height='180'
@@ -48,7 +60,15 @@ export const GettingStartSection = () => {
                             </svg>
                             <span className='!mt-4 text-2xl'>Work gloves</span>
                         </div>
-                        <div className='flex flex-col items-center'>
+                        <div
+                            className={cn(
+                                'flex flex-col items-center transition-all duration-1000 delay-500 ease-out',
+                                {
+                                    'opacity-100 translate-y-0': isInViewPort,
+                                    'opacity-0 translate-y-14': !isInViewPort,
+                                },
+                            )}
+                        >
                             <svg
                                 width='178'
                                 height='180'
@@ -90,7 +110,15 @@ export const GettingStartSection = () => {
                             </svg>
                             <span className='!mt-4 text-2xl'>A bucket</span>
                         </div>
-                        <div className='flex flex-col items-center'>
+                        <div
+                            className={cn(
+                                'flex flex-col items-center transition-all duration-1000 delay-700 ease-out',
+                                {
+                                    'opacity-100 translate-y-0': isInViewPort,
+                                    'opacity-0 translate-y-14': !isInViewPort,
+                                },
+                            )}
+                        >
                             <svg
                                 width='178'
                                 height='180'

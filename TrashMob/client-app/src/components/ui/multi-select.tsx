@@ -36,7 +36,7 @@ const MultiSelect = ({
     };
 
     const isOptionSelected = (value: string): boolean => {
-        return selectedItems.includes(value) ? true : false;
+        return !!selectedItems.includes(value);
     };
 
     return (

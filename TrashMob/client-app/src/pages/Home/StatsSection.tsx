@@ -9,8 +9,7 @@ import Trashbag from '@/components/assets/home/Trashbag.svg';
 import Person from '@/components/assets/home/Person.svg';
 import Clock from '@/components/assets/home/Clock.svg';
 import LitterReport from '@/components/assets/home/LitterReport.svg';
-import useIsInViewport from '@/hooks/useIsInViewport';
-import { useRef } from 'react';
+import { useIsInViewport } from '@/hooks/useIsInViewport';
 
 const useGetHomeStats = () =>
     useQuery<StatsData>({
@@ -30,8 +29,7 @@ export const StatsSection = () => {
     const { data: stats } = useGetHomeStats();
     const { totalBags, totalEvents, totalHours, totalParticipants, totalLitterReportsSubmitted } = stats;
 
-    const containerRef = useRef<HTMLDivElement>(null);
-    const isInViewPort = useIsInViewport(containerRef);
+    const { ref: viewportRef, isInViewPort } = useIsInViewport<HTMLDivElement>();
 
     const statItems = [
         {
@@ -72,7 +70,7 @@ export const StatsSection = () => {
     ];
 
     return (
-        <div className='container !py-20' ref={containerRef}>
+        <div className='container !py-20' ref={viewportRef}>
             <div className='flex flex-wrap gap-4 flex-row justify-center lg:justify-between'>
                 {statItems.map((item, i) => (
                     <div
