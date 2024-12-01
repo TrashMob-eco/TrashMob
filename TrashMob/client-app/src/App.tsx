@@ -3,7 +3,6 @@ import { FC, useEffect, useState } from 'react';
 import { Route, Switch } from 'react-router';
 import { BrowserRouter, RouteComponentProps } from 'react-router-dom';
 
-import { initializeIcons } from '@uifabric/icons';
 import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
 import { InteractionType } from '@azure/msal-browser';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -69,7 +68,6 @@ const useInitializeApp = () => {
             return;
         }
         setIsInitialized(true);
-        initializeIcons();
     }, [isInitialized]);
 };
 
