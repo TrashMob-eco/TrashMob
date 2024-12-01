@@ -1,6 +1,6 @@
 import { FC, useEffect, useState, useCallback, useRef } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { Button } from 'reactstrap';
+import { Button } from '@/components/ui/button';
 import { Container } from 'react-bootstrap';
 import { useQuery } from '@tanstack/react-query';
 import { MainEvents } from './MainEvents';
@@ -346,8 +346,8 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
                     </div>
                 </div>
                 {eventView === 'map' ? (
-                    <>
-                        <Button color='primary' className='mb-4' onClick={() => history.push('/manageeventdashboard')}>
+                    <div className='tailwind'>
+                        <Button className='!mb-4' onClick={() => history.push('/manageeventdashboard')}>
                             Create a New Event
                         </Button>
                         <div className='w-100 m-0'>
@@ -357,7 +357,7 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
                                 currentUser={currentUser}
                             />
                         </div>
-                    </>
+                    </div>
                 ) : (
                     <div className='container-lg'>
                         <MainEvents
