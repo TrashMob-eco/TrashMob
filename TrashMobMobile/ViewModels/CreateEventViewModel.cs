@@ -50,6 +50,12 @@ public partial class CreateEventViewModel : BaseViewModel
 
     [ObservableProperty] private bool areNoLitterReportsAvailable;
 
+    [ObservableProperty]
+    private bool isLitterReportMapSelected;
+
+    [ObservableProperty]
+    private bool isLitterReportListSelected;
+
     private string selectedEventType;
 
     public string SelectedEventType
@@ -397,6 +403,8 @@ public partial class CreateEventViewModel : BaseViewModel
             UserLocation = userManager.CurrentUser.GetAddress();
             EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
 
+            await LoadPartners();
+
             // Set defaults
             EventViewModel = new EventViewModel
             {
@@ -501,6 +509,11 @@ public partial class CreateEventViewModel : BaseViewModel
         ArePartnersAvailable = false;
         AreNoPartnersAvailable = true;
 
+        if (EventViewModel == null || EventViewModel.Id == Guid.Empty)
+        {
+            return;
+        }
+
         var eventPartnerLocations =
             await eventPartnerLocationServiceRestService.GetEventPartnerLocationsAsync(EventViewModel.Id);
 
@@ -528,6 +541,8 @@ public partial class CreateEventViewModel : BaseViewModel
     {
         AreLitterReportsAvailable = false;
         AreNoLitterReportsAvailable = true;
+        IsLitterReportMapSelected = true;
+        IsLitterReportListSelected = false;
 
         var filter = new LitterReportFilter()
         {
@@ -537,8 +552,9 @@ public partial class CreateEventViewModel : BaseViewModel
         };
 
         RawLitterReports = await litterReportManager.GetLitterReportsAsync(filter, ImageSizeEnum.Thumb);
+        var assignedLitterReports = await eventLitterReportRestService.GetEventLitterReportsAsync(EventViewModel.Id);
 
-        UpdateLitterReportViewModels();
+        UpdateLitterReportViewModels(assignedLitterReports);
 
         AreLitterReportsAvailable = EventLitterReports.Any();
         AreNoLitterReportsAvailable = !AreLitterReportsAvailable;
@@ -563,7 +579,23 @@ public partial class CreateEventViewModel : BaseViewModel
         ValidateCurrentStep(null, null);
     }
 
-    private void UpdateLitterReportViewModels()
+    [RelayCommand]
+    private Task MapSelected()
+    {
+        IsLitterReportMapSelected = true;
+        IsLitterReportListSelected = false;
+        return Task.CompletedTask;
+    }
+
+    [RelayCommand]
+    private Task ListSelected()
+    {
+        IsLitterReportMapSelected = false;
+        IsLitterReportListSelected = true;
+        return Task.CompletedTask;
+    }
+
+    private void UpdateLitterReportViewModels(IEnumerable<TrashMob.Models.Poco.FullEventLitterReport> assignedLitterReports)
     {
         EventLitterReports.Clear();
         LitterImages.Clear();
@@ -571,6 +603,13 @@ public partial class CreateEventViewModel : BaseViewModel
         foreach (var litterReport in RawLitterReports.OrderByDescending(l => l.CreatedDate))
         {
             var vm = litterReport.ToEventLitterReportViewModel(NotificationService, eventLitterReportRestService, EventViewModel.Id);
+
+            if (assignedLitterReports.Any(l => l.LitterReportId == litterReport.Id))
+            {
+                vm.CanAddToEvent = false;
+                vm.CanRemoveFromEvent = true;
+                vm.Status = "Assigned to this event";
+            }
 
             foreach (var litterImage in litterReport.LitterImages)
             {

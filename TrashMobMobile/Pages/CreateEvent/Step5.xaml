@@ -15,15 +15,20 @@
 
                     <Label Grid.Row="0"
                            Text="Available Event Partners"
-                           FontSize="Micro"
+                           FontSize="Medium"
                            VerticalOptions="Center"
                            HorizontalOptions="Start"
                            HorizontalTextAlignment="Center"
-                           IsVisible="{Binding ArePartnersAvailable}"/>
+                           IsVisible="{Binding ArePartnersAvailable}"
+                           Margin="10" />
 
-                    <Label Grid.Row="1" Text="Click on a Partner listed below to request services for your event." IsVisible="{Binding ArePartnersAvailable}" FontSize="Micro" />
+                    <Label Grid.Row="1" 
+                       Text="Click on a Partner listed below to request services for your event." 
+                       IsVisible="{Binding ArePartnersAvailable}" 
+                       FontSize="Micro" 
+                       Margin="10, 0"/>
 
-                    <CollectionView Grid.Row="1" x:Name="AvailableEventPartners"
+                    <CollectionView Grid.Row="2" x:Name="AvailableEventPartners"
                                     ItemsSource="{Binding AvailablePartners}"
                                     SelectedItem="{Binding SelectedEventPartnerLocation}"
                                     SelectionMode="Single" 
