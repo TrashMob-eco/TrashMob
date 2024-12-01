@@ -31,10 +31,24 @@
                 .AsEnumerable();
         }
 
+        public override async Task<EventLitterReport> AddAsync(EventLitterReport eventLitterReport, CancellationToken cancellationToken)
+        {
+            var litterReport = eventLitterReport.LitterReport;
+            litterReport.LitterReportStatusId = (int)LitterReportStatusEnum.Assigned;
+
+            return await Repository.AddAsync(eventLitterReport);
+        }
+
         public override async Task<int> Delete(Guid parentId, Guid secondId, CancellationToken cancellationToken)
         {
             var eventLitterReport = await Repository.Get(ea => ea.EventId == parentId && ea.LitterReportId == secondId)
+                .Include(ea => ea.LitterReport)
                 .FirstOrDefaultAsync(cancellationToken);
+
+            var litterReport = eventLitterReport.LitterReport;
+            litterReport.LitterReportStatusId = (int)LitterReportStatusEnum.New;
+
+            await Repository.UpdateAsync(eventLitterReport);
 
             return await Repository.DeleteAsync(eventLitterReport);
         }
