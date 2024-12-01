@@ -1,19 +1,19 @@
 ﻿namespace TrashMobMobile.Services;
 
-using System.Diagnostics;
 using System.Net.Http.Json;
 using TrashMob.Models;
+using TrashMob.Models.Poco;
 
 public class EventAttendeeRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IEventAttendeeRestService
 {
     protected override string Controller => "eventattendees";
 
-    public async Task<IEnumerable<EventAttendee>> GetEventAttendeesAsync(Guid eventId,
+    public async Task<IEnumerable<DisplayUser>> GetEventAttendeesAsync(Guid eventId,
         CancellationToken cancellationToken = default)
     {
         var requestUri = string.Concat(Controller, $"/{eventId}");
         var eventAttendees =
-            await AuthorizedHttpClient.GetFromJsonAsync<IEnumerable<EventAttendee>>(requestUri, SerializerOptions,
+            await AuthorizedHttpClient.GetFromJsonAsync<IEnumerable<DisplayUser>>(requestUri, SerializerOptions,
                 cancellationToken);
         return eventAttendees ?? [];
     }

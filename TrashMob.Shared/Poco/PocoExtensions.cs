@@ -1,6 +1,7 @@
 ﻿namespace TrashMob.Shared.Poco
 {
     using TrashMob.Models;
+    using TrashMob.Models.Poco;
 
     public static class PocoExtensions
     {
