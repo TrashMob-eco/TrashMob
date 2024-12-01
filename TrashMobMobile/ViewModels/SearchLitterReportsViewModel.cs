@@ -157,7 +157,7 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
             }
         }
 
-        if (ReportStatus == "Assigned")
+        if (ReportStatus == "Assigned to an Event")
         {
             RawLitterReports = await litterReportManager.GetAssignedLitterReportsAsync();
         }

@@ -314,13 +314,15 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
 
         RawLitterReports = await litterReportManager.GetLitterReportsAsync(filter, ImageSizeEnum.Thumb);
 
-        UpdateLitterReportViewModels();
+        var assignedLitterReports = await eventLitterReportRestService.GetEventLitterReportsAsync(EventViewModel.Id);
+
+        UpdateLitterReportViewModels(assignedLitterReports);
 
         AreLitterReportsAvailable = EventLitterReports.Any();
         AreNoLitterReportsAvailable = !AreLitterReportsAvailable;
     }
 
-    private void UpdateLitterReportViewModels()
+    private void UpdateLitterReportViewModels(IEnumerable<TrashMob.Models.Poco.FullEventLitterReport> assignedLitterReports)
     {
         EventLitterReports.Clear();
         LitterImages.Clear();
@@ -328,6 +330,13 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
         foreach (var litterReport in RawLitterReports.OrderByDescending(l => l.CreatedDate))
         {
             var vm = litterReport.ToEventLitterReportViewModel(NotificationService, eventLitterReportRestService, EventViewModel.Id);
+
+            if (assignedLitterReports.Any(l => l.LitterReportId == litterReport.Id))
+            {
+                vm.CanAddToEvent = false;
+                vm.CanRemoveFromEvent = true;
+                vm.Status = "Assigned to this event";
+            }
 
             foreach (var litterImage in litterReport.LitterImages)
             {
