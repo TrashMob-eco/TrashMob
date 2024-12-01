@@ -70,22 +70,8 @@ export const EventSectionComponent = (props: EventSectionProps) => {
 
     const handleSelectLocation = useCallback(
         async (location: SearchLocationOption) => {
-            console.log({ location });
             const { lat, lon: lng } = location.position;
-            /**
-         * if (selectedCountry !== '') {
-                filterEvents = filterEvents.filter((event) => event.country === selectedCountry);
-
-                if (selectedState !== '') {
-                    filterEvents = filterEvents.filter((event) => event.region === selectedState);
-
-                    if (selectedCities.length > 0) {
-                        filterEvents = filterEvents.filter((event) => selectedCities.includes(event.city));
-                    }
-                }
-            }
-         */
-            // if (map) map.panTo({ lat, lng });
+            if (map) map.panTo({ lat, lng });
         },
         [map],
     );

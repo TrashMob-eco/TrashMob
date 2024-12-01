@@ -435,7 +435,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
 const LocationPreferenceWrapper = (props: LocationPreferenceProps) => {
     const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey();
 
-    // if (isLoading) return null;
+    if (isLoading) return null;
 
     return (
         <APIProvider apiKey={googleApiKey || ''}>
