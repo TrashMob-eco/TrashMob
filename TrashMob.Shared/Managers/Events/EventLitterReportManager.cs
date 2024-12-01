@@ -14,11 +14,13 @@
     {
         private readonly IEmailManager emailManager;
         private readonly IKeyedRepository<Event> eventRepository;
+        private readonly IKeyedRepository<LitterReport> litterReportRepository;
 
-        public EventLitterReportManager(IBaseRepository<EventLitterReport> repository, IKeyedRepository<Event> eventRepository,
+        public EventLitterReportManager(IBaseRepository<EventLitterReport> repository, IKeyedRepository<Event> eventRepository, IKeyedRepository<LitterReport> litterReportRepository,
             IEmailManager emailManager) : base(repository)
         {
             this.eventRepository = eventRepository;
+            this.litterReportRepository = litterReportRepository;
             this.emailManager = emailManager;
         }
 
@@ -33,8 +35,9 @@
 
         public override async Task<EventLitterReport> AddAsync(EventLitterReport eventLitterReport, CancellationToken cancellationToken)
         {
-            var litterReport = eventLitterReport.LitterReport;
+            var litterReport = litterReportRepository.Get(l => l.Id == eventLitterReport.LitterReportId).FirstOrDefault();
             litterReport.LitterReportStatusId = (int)LitterReportStatusEnum.Assigned;
+            await litterReportRepository.UpdateAsync(litterReport);
 
             return await Repository.AddAsync(eventLitterReport);
         }
@@ -42,13 +45,11 @@
         public override async Task<int> Delete(Guid parentId, Guid secondId, CancellationToken cancellationToken)
         {
             var eventLitterReport = await Repository.Get(ea => ea.EventId == parentId && ea.LitterReportId == secondId)
-                .Include(ea => ea.LitterReport)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            var litterReport = eventLitterReport.LitterReport;
+            var litterReport = litterReportRepository.Get(l => l.Id == eventLitterReport.LitterReportId).FirstOrDefault();
             litterReport.LitterReportStatusId = (int)LitterReportStatusEnum.New;
-
-            await Repository.UpdateAsync(eventLitterReport);
+            await litterReportRepository.UpdateAsync(litterReport);
 
             return await Repository.DeleteAsync(eventLitterReport);
         }
