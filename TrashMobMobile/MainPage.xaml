@@ -145,6 +145,11 @@
                              Command="{Binding ListSelectedCommand}" />
             </Grid>
 
+            <Label Text="Click on a map pin popup to see details for the event/litter report." 
+                   FontSize="Micro" 
+                   IsVisible="{Binding IsMapSelected}"
+                   Margin="10, 0" />
+
             <maps:Map x:Name="mainMap"
                           IsVisible="{Binding IsMapSelected}"
                           ItemsSource="{Binding Addresses}">
@@ -159,6 +164,11 @@
                     </DataTemplate>
                 </maps:Map.ItemTemplate>
             </maps:Map>
+
+            <Label Text="Upcoming Events" 
+                   FontSize="Medium" 
+                   IsVisible="{Binding IsListSelected}"
+                   Margin="10, 0" />
 
             <CollectionView x:Name="EventsCollection"
                                 Margin="5"

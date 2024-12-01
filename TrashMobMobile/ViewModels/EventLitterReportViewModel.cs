@@ -40,7 +40,7 @@ public partial class EventLitterReportViewModel : LitterReportViewModel
 
         CanAddToEvent = false;
         CanRemoveFromEvent = true;
-        Status = "Assigned";
+        Status = "Assigned to this event";
     }
 
     [RelayCommand]
@@ -54,6 +54,6 @@ public partial class EventLitterReportViewModel : LitterReportViewModel
 
         CanAddToEvent = true;
         CanRemoveFromEvent = false;
-        Status = "Available";
+        Status = "Open";
     }
 }
