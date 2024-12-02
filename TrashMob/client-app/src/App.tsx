@@ -30,7 +30,6 @@ import ManageEventDashboard, {
     ManageEventDashboardMatchParams,
 } from './components/EventManagement/ManageEventDashboard';
 import { Shop } from './components/Shop';
-import { EventSummaries } from './components/EventSummaries';
 import { CancelEvent, CancelEventMatchParams } from './components/EventManagement/CancelEvent';
 
 import './custom.css';
@@ -277,9 +276,6 @@ export const App: FC = () => {
                                 </Route>
                                 <Route exact path='/contactus'>
                                     <ContactUs />
-                                </Route>
-                                <Route exact path='/eventsummaries'>
-                                    <EventSummaries />
                                 </Route>
                                 <Route exact path='/faq'>
                                     <Faq />
