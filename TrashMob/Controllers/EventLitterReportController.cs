@@ -25,7 +25,8 @@
         [HttpGet("{eventId}")]
         public async Task<IActionResult> GetEventLitterReports(Guid eventId)
         {
-            var result = await eventLitterReportManager.GetByParentIdAsync(eventId, CancellationToken.None).ConfigureAwait(false);
+            var result = await eventLitterReportManager.GetByParentIdAsync(eventId, CancellationToken.None)
+                .ConfigureAwait(false);
 
             var fullEventLitterReports = await ToFullEventLitterReports(result, CancellationToken.None);
 

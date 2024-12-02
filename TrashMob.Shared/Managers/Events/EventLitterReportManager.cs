@@ -32,6 +32,7 @@
         {
             return (await Repository.Get().Where(p => p.EventId == parentId)
                     .Include(p => p.LitterReport)
+                    .Include(p => p.LitterReport.LitterImages)
                     .ToListAsync(cancellationToken))
                 .AsEnumerable();
         }
