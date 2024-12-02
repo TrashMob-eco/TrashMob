@@ -15,12 +15,14 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     IEventAttendeeRestService eventAttendeeRestService,
     IEventAttendeeRouteRestService eventAttendeeRouteRestService,
     INotificationService notificationService,
+    IEventLitterReportManager eventLitterReportManager,
     IEventLitterReportRestService eventLitterReportRestService,
     IUserManager userManager,
     IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService,
     ILitterReportManager litterReportManager) : BaseViewModel(notificationService)
 {
     private readonly IEventAttendeeRestService eventAttendeeRestService = eventAttendeeRestService;
+    private readonly IEventLitterReportManager eventLitterReportManager = eventLitterReportManager;
     private readonly IEventLitterReportRestService eventLitterReportRestService = eventLitterReportRestService;
     private readonly IUserManager userManager = userManager;
     private readonly IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService = eventPartnerLocationServiceRestService;
@@ -28,8 +30,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     private readonly IEventTypeRestService eventTypeRestService = eventTypeRestService;
     private readonly IMobEventManager mobEventManager = mobEventManager;
     private readonly IWaiverManager waiverManager = waiverManager;
-    private IEnumerable<FullEventLitterReport> RawLitterReports { get; set; } = [];
-
+ 
     [ObservableProperty]
     private string attendeeCount = string.Empty;
 
@@ -129,26 +130,6 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
         try
         {
             mobEvent = await mobEventManager.GetEventAsync(eventId);
-            var eventLitterReports = await eventLitterReportRestService.GetEventLitterReportsAsync(mobEvent.Id);
-
-            foreach (var eventLitterReport in eventLitterReports)
-            {
-                EventLitterReports.Add(eventLitterReport.LitterReport.ToEventLitterReportViewModel(NotificationService, eventLitterReportRestService, eventId));
-
-                foreach (var litterImage in eventLitterReport.LitterReport.LitterImages)
-                {
-                    var litterImageViewModel = litterImage.ToLitterImageViewModel(NotificationService);
-
-                    if (litterImageViewModel != null)
-                    {
-                        litterImageViewModel.Address.DisplayName = eventLitterReport.LitterReport.Name;
-                        litterImageViewModel.Address.ParentId = eventLitterReport.LitterReport.Id;
-                        LitterImages.Add(litterImageViewModel);
-                        Addresses.Add(litterImageViewModel.Address);
-                    }
-                }
-            }
-
             EventViewModel = mobEvent.ToEventViewModel(userManager.CurrentUser.Id);
 
             var eventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
@@ -169,7 +150,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             IsDetailsVisible = true;
             IsPartnersVisible = false;
             IsLitterReportsVisible = false;
-            IsAttendeesVisible = true;
+            IsAttendeesVisible = false;
 
             EnableStartTrackEventRoute = mobEvent.IsEventLead(userManager.CurrentUser.Id);
             EnableStopTrackEventRoute = false;
@@ -254,7 +235,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
         AvailablePartners.Clear();
 
-        foreach (var eventPartnerLocation in eventPartnerLocations)
+        foreach (var eventPartnerLocation in eventPartnerLocations.Where(e => e.PartnerServicesEngaged != "None"))
         {
             var eventPartnerLocationViewModel = new EventPartnerLocationViewModel
             {
@@ -279,9 +260,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
         IsLitterReportMapSelected = true;
         IsLitterReportListSelected = false;
 
-        RawLitterReports = await eventLitterReportRestService.GetEventLitterReportsAsync(EventViewModel.Id);
-
-        var assignedLitterReports = await eventLitterReportRestService.GetEventLitterReportsAsync(EventViewModel.Id);
+        var assignedLitterReports = await eventLitterReportManager.GetEventLitterReportsAsync(EventViewModel.Id, ImageSizeEnum.Thumb);
 
         UpdateLitterReportViewModels(assignedLitterReports);
 
@@ -294,7 +273,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
         EventLitterReports.Clear();
         LitterImages.Clear();
 
-        foreach (var eventLitterReport in RawLitterReports.OrderByDescending(l => l.LitterReport.CreatedDate))
+        foreach (var eventLitterReport in assignedLitterReports.OrderByDescending(l => l.LitterReport.CreatedDate))
         {
             var vm = eventLitterReport.LitterReport.ToEventLitterReportViewModel(NotificationService, eventLitterReportRestService, EventViewModel.Id);
             vm.Status = "Assigned to this event";
