@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
-import { APIProvider } from '@vis.gl/react-google-maps';
+import { APIProvider, useMap } from '@vis.gl/react-google-maps';
 import { useCallback, useEffect, useState } from 'react';
 import UserData from '@/components/Models/UserData';
 import { useQuery } from '@tanstack/react-query';
@@ -22,6 +22,7 @@ interface EventSectionProps {
 }
 
 export const EventSectionComponent = (props: EventSectionProps) => {
+    const map = useMap();
     const [azureSubscriptionKey, setAzureSubscriptionKey] = useState<string>('');
     useEffect(() => {
         MapStore.getOption().then((opts) => {
@@ -67,39 +68,40 @@ export const EventSectionComponent = (props: EventSectionProps) => {
         });
     }, []);
 
-    const handleSelectLocation = useCallback(async (location: SearchLocationOption) => {
-        const { lat, lon } = location.position;
-        console.log({ lat, lon });
-    }, []);
+    const handleSelectLocation = useCallback(
+        async (location: SearchLocationOption) => {
+            const { lat, lon: lng } = location.position;
+            if (map) map.panTo({ lat, lng });
+        },
+        [map],
+    );
 
     return (
         <section id='event-section' className='bg-[#FCFBF8]'>
             <div className='container !py-20'>
                 <div className='flex flex-col gap-2'>
-                    <div className='flex flex-col md:flex-row items-center gap-4'>
+                    <div className='flex flex-col md:flex-row items-center gap-4 relative'>
                         <h3 className='my-0 font-semibold'>Upcoming Events near</h3>
-                        <AzureSearchLocationInput
-                            azureKey={azureSubscriptionKey}
-                            renderInput={({ inputRef, referenceElementRef, ...inputProps }) => (
-                                <div className='w-fit'>
-                                    <input
-                                        type='text'
-                                        {...inputProps}
-                                        value='Seattle, WA'
-                                        className='w-72 text-primary font-semibold text-4xl mb-0 !py-2 border-b-4 border-primary bg-[#FCFBF8] outline-none'
-                                        ref={(input) => {
-                                            inputRef(input);
-                                            referenceElementRef(input);
-                                        }}
-                                    />
-                                    <Button variant='ghost' className='w-12 h-12 text-primary'>
+                        <div className='relative z-10 h-[60px]'>
+                            <AzureSearchLocationInput
+                                azureKey={azureSubscriptionKey}
+                                className='!rounded-none !border-none !shadow-none !bg-transparent'
+                                listClassName='!rounded-lg border md:min-w-[200px] relative shadow-md bg-card !mt-2'
+                                renderInput={(inputProps) => (
+                                    <div className='w-fit flex flex-row items-center'>
+                                        <input
+                                            type='text'
+                                            {...inputProps}
+                                            defaultValue='Seattle, WA'
+                                            className='w-72 text-primary placeholder:text-[rgba(150,186,0,0.5)] font-semibold text-4xl mb-0 !py-2 border-b-4 border-primary bg-[#FCFBF8] outline-none'
+                                        />
                                         <svg
                                             xmlns='http://www.w3.org/2000/svg'
                                             fill='none'
                                             viewBox='0 0 24 24'
                                             strokeWidth={1.5}
                                             stroke='currentColor'
-                                            className='!w-8 !h-8'
+                                            className='!w-8 !h-8 text-primary'
                                         >
                                             <path
                                                 strokeLinecap='round'
@@ -107,11 +109,11 @@ export const EventSectionComponent = (props: EventSectionProps) => {
                                                 d='m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10'
                                             />
                                         </svg>
-                                    </Button>
-                                </div>
-                            )}
-                            onSelectLocation={handleSelectLocation}
-                        />
+                                    </div>
+                                )}
+                                onSelectLocation={handleSelectLocation}
+                            />
+                        </div>
                     </div>
                     <div className='py-4'>
                         <Tabs
