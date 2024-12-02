@@ -156,7 +156,7 @@ public partial class MainViewModel(IAuthService authService,
             IncludeLitterImages = true,
         };
 
-        var litterReports = await litterReportManager.GetLitterReportsAsync(litterFilter, ImageSizeEnum.Thumb);
+        var litterReports = await litterReportManager.GetLitterReportsAsync(litterFilter, ImageSizeEnum.Thumb, getImageUrls: false);
 
         foreach (var litterReport in litterReports.OrderBy(l => l.CreatedDate))
         {
