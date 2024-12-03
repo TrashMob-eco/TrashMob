@@ -1,6 +1,5 @@
 import { FC } from 'react';
-import { Col, Image, Row } from 'react-bootstrap';
-import globes from '../assets/gettingStarted/globes.png';
+import globes from '@/components/assets/gettingStarted/globes.png';
 
 interface HeroSectionProps {
     Title: string;
@@ -8,20 +7,21 @@ interface HeroSectionProps {
 }
 
 export const HeroSection: FC<HeroSectionProps> = ({ Title, Description }) => (
-    <div className='bg-grass '>
-        <div className='container-lg mx-auto'>
-            <Row className='text-center mx-auto text-md-left pt-0 position-relative'>
-                <Col className='d-flex flex-column justify-content-center pr-sm-5 m-auto' style={{ zIndex: 5 }}>
-                    <h1 className='font-weight-bold'>{Title}</h1>
-                    <p className='font-weight-bold'>{Description}</p>
-                </Col>
-                <div className='d-md-none position-absolute h-100 w-100' style={{ zIndex: '1', opacity: '30%' }}>
-                    <Image src={globes} alt='globes' className='h-100 w-100 object-fit-cover mt-0' />
+    <div className='tailwind'>
+        <div className='bg-[#96ba00]'>
+            <div className='container !px-0 md:!px-8 relative'>
+                <img
+                    src={globes}
+                    alt='globes'
+                    className='absolute right-0 md:right-8 top-0 bottom-0 h-full mt-0 object-cover opacity-30 md:opacity-100'
+                />
+                <div className='flex flex-row items-stretch relative'>
+                    <div className='flex flex-col justify-center flex-1 !pr-12 !py-3 xl:!py-8 relative z-10 text-center md:!text-left'>
+                        <h1 className='font-bold'>{Title}</h1>
+                        <p className='font-bold'>{Description}</p>
+                    </div>
                 </div>
-                <Col className='d-none d-md-block'>
-                    <Image src={globes} alt='globes' className='h-100 mt-0' />
-                </Col>
-            </Row>
+            </div>
         </div>
     </div>
 );
