@@ -43,14 +43,14 @@ export const SiteHeader = (props: SiteHeaderProps) => {
                                 'lg:items-center lg:justify-between lg:flex-row lg:basis-0',
                                 'lg:max-h-none',
                                 {
-                                    'max-h-64': show,
+                                    'max-h-84': show,
                                     'max-h-0': !show,
                                 },
                             )}
                         >
                             <MainNav className='flex-1 !py-4 lg:!py-0' isUserLoaded={isUserLoaded} />
                             <div className={cn('flex flex-row gap-4')}>
-                                <Button asChild>
+                                <Button asChild className='flex md:hidden xl:flex'>
                                     <Link to='/manageeventdashboard'>
                                         <Plus /> Create an Event
                                     </Link>
