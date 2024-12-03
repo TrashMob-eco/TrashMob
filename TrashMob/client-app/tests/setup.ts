@@ -20,3 +20,12 @@ vi.stubGlobal('crypto', {
         return arr;
     },
 });
+
+vi.stubGlobal(
+    'ResizeObserver',
+    class {
+        observe = vi.fn();
+        unobserve = vi.fn();
+        disconnect = vi.fn();
+    },
+);
