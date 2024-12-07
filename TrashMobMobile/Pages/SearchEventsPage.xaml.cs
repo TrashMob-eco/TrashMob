@@ -32,15 +32,6 @@ public partial class SearchEventsPage : ContentPage
         }
     }
 
-    private async void OnEventStatusRadioButtonCheckedChanged(object sender, CheckedChangedEventArgs e)
-    {
-        if (sender is RadioButton radioButton && radioButton.IsChecked)
-        {
-            viewModel.EventStatus = (string)radioButton.Content;
-            await viewModel.Init();
-        }
-    }
-
     private async void Pin_InfoWindowClicked(object sender, PinClickedEventArgs e)
     {
         var p = (Pin)sender;

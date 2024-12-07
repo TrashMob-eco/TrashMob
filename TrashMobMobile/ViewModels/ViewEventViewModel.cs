@@ -280,13 +280,12 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
             foreach (var litterImage in eventLitterReport.LitterReport.LitterImages)
             {
-                var litterImageViewModel = litterImage.ToLitterImageViewModel(NotificationService);
+                var litterImageViewModel = litterImage.ToLitterImageViewModel(eventLitterReport.LitterReport.LitterReportStatusId, NotificationService);
 
                 if (litterImageViewModel != null)
                 {
                     litterImageViewModel.Address.DisplayName = eventLitterReport.LitterReport.Name;
                     litterImageViewModel.Address.ParentId = eventLitterReport.LitterReport.Id;
-                    litterImageViewModel.Address.IconFile = "litterreportnew";
                     LitterImages.Add(litterImageViewModel);
                 }
             }

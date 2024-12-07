@@ -84,7 +84,7 @@ public partial class EditLitterReportViewModel(ILitterReportManager litterReport
                 LitterImageViewModels.Clear();
                 foreach (var litterImage in litterReport.LitterImages)
                 {
-                    var litterImageViewModel = litterImage.ToLitterImageViewModel(NotificationService);
+                    var litterImageViewModel = litterImage.ToLitterImageViewModel(litterReport.LitterReportStatusId, NotificationService);
                     LitterImageViewModels.Add(litterImageViewModel);
                 }
             }

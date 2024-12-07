@@ -82,7 +82,7 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
             LitterImageViewModels.Clear();
             foreach (var litterImage in LitterReport.LitterImages)
             {
-                var litterImageViewModel = litterImage.ToLitterImageViewModel(NotificationService);
+                var litterImageViewModel = litterImage.ToLitterImageViewModel(LitterReport.LitterReportStatusId, NotificationService);
 
                 if (litterImageViewModel != null)
                 {

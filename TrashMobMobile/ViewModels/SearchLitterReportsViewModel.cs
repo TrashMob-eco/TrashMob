@@ -265,7 +265,7 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
 
             foreach (var litterImage in litterReport.LitterImages)
             {
-                var litterImageViewModel = litterImage.ToLitterImageViewModel(NotificationService);
+                var litterImageViewModel = litterImage.ToLitterImageViewModel(litterReport.LitterReportStatusId, NotificationService);
 
                 if (litterImageViewModel != null)
                 {
