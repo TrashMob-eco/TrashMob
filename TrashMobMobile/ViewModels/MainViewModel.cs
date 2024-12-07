@@ -112,8 +112,13 @@ public partial class MainViewModel(IAuthService authService,
 
                 Addresses.Clear();
 
-                await RefreshEvents();
-                await RefreshLitterReports();
+                var tasks = new List<Task>
+                {
+                    RefreshEvents(),
+                    RefreshLitterReports(),
+                };
+
+                await Task.WhenAll(tasks);
 
                 IsMapSelected = true;
                 IsListSelected = false;
@@ -165,9 +170,7 @@ public partial class MainViewModel(IAuthService authService,
 
             foreach (var litterImageViewModel in vm.LitterImageViewModels)
             {
-                var address = litterImageViewModel.Address;
-                address.IconFile = "litterreportnew";
-                Addresses.Add(address);
+                Addresses.Add(litterImageViewModel.Address);
             }
         }
     }
@@ -186,7 +189,6 @@ public partial class MainViewModel(IAuthService authService,
             vm.IsUserAttending = eventsUserIsAttending.Any(e => e.Id == mobEvent.Id);
 
             UpcomingEvents.Add(vm);
-            vm.Address.IconFile = "eventupcoming";
             Addresses.Add(vm.Address);
         }
     }

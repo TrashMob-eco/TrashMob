@@ -14,8 +14,6 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
 {
     private readonly IMobEventManager mobEventManager = mobEventManager;
     private readonly IUserManager userManager = userManager;
-    [ObservableProperty]
-    private string eventStatus = "Upcoming";
 
     private IEnumerable<TrashMob.Models.Poco.Location> locations = [];
 
@@ -34,6 +32,21 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
     public ObservableCollection<string> CountryCollection { get; set; } = [];
     public ObservableCollection<string> RegionCollection { get; set; } = [];
     public ObservableCollection<string> CityCollection { get; set; } = [];
+
+    [ObservableProperty]
+    private bool isMapSelected;
+
+    [ObservableProperty]
+    private bool isListSelected;
+
+    [ObservableProperty]
+    private bool isUpcomingSelected;
+
+    [ObservableProperty]
+    private bool isCompletedSelected;
+
+    [ObservableProperty]
+    private bool isBothSelected;
 
     public string? SelectedCountry
     {
@@ -95,6 +108,11 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
 
         try
         {
+            IsMapSelected = true;
+            IsListSelected = false;
+            IsUpcomingSelected = true;
+            IsCompletedSelected = false;
+            IsBothSelected = false;
             UserLocation = userManager.CurrentUser.GetAddress();
             await RefreshEvents();
 
@@ -135,11 +153,11 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
             }
         }
 
-        if (EventStatus == "Upcoming")
+        if (IsUpcomingSelected)
         {
             RawEvents = await mobEventManager.GetActiveEventsAsync();
         }
-        else if (EventStatus == "Completed")
+        else if (IsCompletedSelected)
         {
             RawEvents = await mobEventManager.GetCompletedEventsAsync();
         }
@@ -237,8 +255,67 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
         foreach (var mobEvent in RawEvents)
         {
             var vm = mobEvent.ToEventViewModel(userManager.CurrentUser.Id);
+            
             Events.Add(vm);
         }
+    }
+
+    [RelayCommand]
+    private async Task ViewUpcoming()
+    {
+        IsBusy = true;
+
+        IsUpcomingSelected = true;
+        IsCompletedSelected = false; 
+        IsBothSelected = false;
+
+        await RefreshEvents();
+
+        IsBusy = false;
+    }
+
+    [RelayCommand]
+    private async Task ViewCompleted()
+    {
+        IsBusy = true;
+
+        IsUpcomingSelected = false;
+        IsCompletedSelected = true;
+        IsBothSelected = false;
+
+        await RefreshEvents();
+
+        IsBusy = false;
+    }
+
+    [RelayCommand]
+    private async Task ViewBoth()
+    {
+        IsBusy = true;
+
+        IsUpcomingSelected = false;
+        IsCompletedSelected = false;
+        IsBothSelected = true;
+
+        await RefreshEvents();
+
+        IsBusy = false;
+    }
+
+    [RelayCommand]
+    private Task MapSelected()
+    {
+        IsMapSelected = true;
+        IsListSelected = false;
+        return Task.CompletedTask;
+    }
+
+    [RelayCommand]
+    private Task ListSelected()
+    {
+        IsMapSelected = false;
+        IsListSelected = true;
+        return Task.CompletedTask;
     }
 
     [RelayCommand]
