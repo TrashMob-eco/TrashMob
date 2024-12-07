@@ -25,23 +25,23 @@
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="2" Grid.ColumnSpan="2">
                         <Label Text="Status" Style="{StaticResource FieldLabel}" />
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Label
+                        <Label
                                 Text="{Binding LitterReportStatus}"
                                 VerticalOptions="Center"
                                 HorizontalOptions="Start"
                                 HorizontalTextAlignment="Center" />
-                        </Border>
                     </VerticalStackLayout>
 
                     <Button Grid.Row="3" Grid.Column="0"
                             Margin="10"
                             Clicked="TakePhoto_Clicked"
+                            Style="{StaticResource PrimarySmallButton}"
                             IsEnabled="{Binding CanAddImages}"
                             Text="Add Litter Image" />
 
                     <Button Grid.Row="3" Grid.Column="1" Margin="10"
                             Command="{Binding SaveLitterReportCommand}"
+                            Style="{StaticResource SecondarySmallButton}"
                             IsEnabled="{Binding ReportIsValid}"
                             Text="Save Litter Report" />
                 </Grid>

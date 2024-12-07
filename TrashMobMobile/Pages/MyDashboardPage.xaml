@@ -45,14 +45,14 @@
                             Grid.ColumnSpan="2"
                             Command="{Binding CreateEventCommand}"
                             HorizontalOptions="Center"
-                            Style="{StaticResource RoundButton}"
+                            Style="{StaticResource PrimarySmallButton}"
                             Text="Create an Event" />
                     <Button Grid.Row="0"
                             Grid.Column="2"
                             Grid.ColumnSpan="2"
                             Command="{Binding CreateLitterReportCommand}"
                             HorizontalOptions="Center"
-                            Style="{StaticResource RoundButton}"
+                            Style="{StaticResource SecondarySmallButton}"
                             Text="Report Litter" />
                 </Grid>
 

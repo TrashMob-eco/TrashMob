@@ -73,16 +73,46 @@
         </Setter>
     </Style>
 
-    <Style x:Key="SecondaryButton" TargetType="Button">
-        <Setter Property="BackgroundColor" Value="{StaticResource Secondary}" />
-        <Setter Property="TextColor" Value="{StaticResource Primary}" />
+    <Style x:Key="PrimaryLargeButton" TargetType="Button">
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal" />
+                    <VisualState x:Name="Disabled">
+                        <VisualState.Setters>
+                            <Setter Property="TextColor"
+                                    Value="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}" />
+                            <Setter Property="BackgroundColor"
+                                    Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="PointerOver" />
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
         <Setter Property="HeightRequest" Value="48" />
         <Setter Property="CornerRadius" Value="20" />
     </Style>
 
-    <Style x:Key="RoundButton" TargetType="Button">
-        <Setter Property="HeightRequest" Value="44" />
-        <Setter Property="CornerRadius" Value="22" />
+    <Style x:Key="SecondaryLargeButton" TargetType="Button">
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal" />
+                    <VisualState x:Name="Disabled">
+                        <VisualState.Setters>
+                            <Setter Property="TextColor"
+                                    Value="{AppThemeBinding Light={StaticResource SecondaryText}, Dark={StaticResource SecondaryDarkText}}" />
+                            <Setter Property="BackgroundColor"
+                                    Value="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="PointerOver" />
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+        <Setter Property="HeightRequest" Value="48" />
+        <Setter Property="CornerRadius" Value="20" />
     </Style>
 
     <Style x:Key="PrimarySmallButton" TargetType="Button">
@@ -102,14 +132,6 @@
         <Setter Property="CornerRadius" Value="5" />
         <Setter Property="LineBreakMode" Value="WordWrap" />
         <Setter Property="Margin" Value="5" />
-        <Setter Property="FontSize" Value="Micro" />
-    </Style>
-
-    <Style x:Key="LinkButton" TargetType="Button">
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="TextColor"
-                Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
-        <Setter Property="HeightRequest" Value="40" />
         <Setter Property="FontSize" Value="Micro" />
     </Style>
 

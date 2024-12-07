@@ -171,7 +171,7 @@
 
     <Shell.FlyoutFooter>
         <VerticalStackLayout Padding="28,48">
-            <Button Style="{StaticResource SecondaryButton}"
+            <Button Style="{StaticResource SecondaryLargeButton}"
                     ContentLayout="Left, 10"
                     Clicked="OnLogoutClicked"
                     Text="Sign out"
