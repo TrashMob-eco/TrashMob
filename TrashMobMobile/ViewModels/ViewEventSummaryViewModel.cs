@@ -28,6 +28,12 @@ public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager,
     [ObservableProperty]
     private EventViewModel eventViewModel = new();
 
+    [ObservableProperty]
+    private bool isMapSelected;
+
+    [ObservableProperty]
+    private bool isListSelected;
+
     private PickupLocationViewModel selectedPickupLocationViewModel = new(pickupLocationManager, mobEventManager, notificationService, userManager);
 
     public ObservableCollection<PickupLocationViewModel> PickupLocations { get; set; } = [];
@@ -58,6 +64,9 @@ public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager,
 
         try
         {
+            IsMapSelected = true;
+            IsListSelected = false;
+
             var mobEvent = await mobEventManager.GetEventAsync(eventId);
             EventViewModel = mobEvent.ToEventViewModel(userManager.CurrentUser.Id);
 
@@ -77,7 +86,7 @@ public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager,
 
             EnableEditEventSummary = mobEvent.IsEventLead(userManager.CurrentUser.Id);
             EnableAddPickupLocation = mobEvent.IsEventLead(userManager.CurrentUser.Id);
-
+            
             var pickupLocations = await pickupLocationManager.GetPickupLocationsAsync(eventId, ImageSizeEnum.Thumb);
 
             PickupLocations.Clear();
@@ -130,5 +139,21 @@ public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager,
     private async Task EditEventSummary()
     {
         await Shell.Current.GoToAsync($"{nameof(EditEventSummaryPage)}?EventId={EventSummaryViewModel.EventId}");
+    }
+
+    [RelayCommand]
+    private Task MapSelected()
+    {
+        IsMapSelected = true;
+        IsListSelected = false;
+        return Task.CompletedTask;
+    }
+
+    [RelayCommand]
+    private Task ListSelected()
+    {
+        IsMapSelected = false;
+        IsListSelected = true;
+        return Task.CompletedTask;
     }
 }

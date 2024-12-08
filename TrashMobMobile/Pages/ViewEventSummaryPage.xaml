@@ -49,10 +49,18 @@
 
                     <Label Text="Pickup Locations" Grid.Row="2" Style="{StaticResource FieldLabel}" />
 
-                    <HorizontalStackLayout Grid.Row="3" Grid.ColumnSpan="2">
-                        <RadioButton Content="Map" IsChecked="True" x:Name="viewMap" FontSize="Micro" />
-                        <RadioButton Content="List" x:Name="viewList" FontSize="Micro" />
-                    </HorizontalStackLayout>
+                    <Grid Margin="5" Grid.Row="2"
+                      ColumnDefinitions="6*, *, *"
+                      RowDefinitions="Auto">
+                        <ImageButton Grid.Column="1"
+                             HeightRequest="24"
+                             Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconMap}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" 
+                             Command="{Binding MapSelectedCommand}" />
+                        <ImageButton Grid.Column="2" 
+                             HeightRequest="24"
+                             Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconViewList}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" 
+                             Command="{Binding ListSelectedCommand}" />
+                    </Grid>
 
                     <CollectionView x:Name="PickupLocationCollection"
                                     ItemsSource="{Binding PickupLocations}"
@@ -60,7 +68,7 @@
                                     IsVisible="{Binding Source={x:Reference viewList}, Path=IsChecked}"
                                     SelectionMode="Single"
                                     Grid.Row="4"
-                                    Grid.ColumnSpan="2">
+                                    Grid.ColumnSpan="2"> 
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="viewModels:PickupLocationViewModel">
                                 <StackLayout Margin="5">

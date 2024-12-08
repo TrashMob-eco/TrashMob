@@ -40,6 +40,24 @@
             return NotFound();
         }
 
+        [HttpGet("v2/{eventId}")]
+        public async Task<IActionResult> GetEventSummaryV2(Guid eventId, CancellationToken cancellationToken = default)
+        {
+            var eventSummary =
+                (await eventSummaryManager.GetAsync(es => es.EventId == eventId, cancellationToken)
+                    .ConfigureAwait(false)).FirstOrDefault();
+
+            if (eventSummary == null)
+            {
+                eventSummary = new EventSummary
+                {
+                    EventId = eventId,
+                };
+            }
+
+            return Ok(eventSummary);
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetEventSummaries([FromQuery] string country = "",
             [FromQuery] string region = "", [FromQuery] string city = "", [FromQuery] string postalCode = "",
