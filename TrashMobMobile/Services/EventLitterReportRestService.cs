@@ -21,7 +21,7 @@ public class EventLitterReportRestService(IHttpClientFactory httpClientFactory) 
     public async Task<FullEventLitterReport> GetEventLitterReportByLitterReportIdAsync(Guid litterReportId,
         CancellationToken cancellationToken = default)
     {
-        var requestUri = string.Concat(Controller, $"GetByLitterReportId/{litterReportId}");
+        var requestUri = string.Concat(Controller, $"/GetByLitterReportId/{litterReportId}");
         var eventLitterReport =
             await AuthorizedHttpClient.GetFromJsonAsync<FullEventLitterReport>(requestUri, SerializerOptions,
                 cancellationToken);
