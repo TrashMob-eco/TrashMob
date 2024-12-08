@@ -11,6 +11,20 @@
     <ScrollView>
         <Grid>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}" >
+                <Grid RowDefinitions="*" ColumnDefinitions="*, *">
+                    <Button Text="Add Pickup Location" 
+                            Command="{Binding AddPickupLocationCommand}"
+                            IsVisible="{Binding EnableAddPickupLocation}" 
+                            Grid.Row="0" 
+                            Grid.Column="0"
+                            Style="{StaticResource PrimarySmallButton}" />
+                    <Button Text="Edit Event Summary" 
+                            Command="{Binding EditEventSummaryCommand}"
+                            IsVisible="{Binding EnableEditEventSummary}" 
+                            Grid.Row="0" 
+                            Grid.Column="1" 
+                            Style="{StaticResource SecondarySmallButton}"/>
+                </Grid>
                 <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="*, *">
                     <Border Style="{x:StaticResource RoundBorder}" Margin="5,0" Grid.Row="0" Grid.ColumnSpan="2">
                         <Grid RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="*, *, *">
@@ -38,19 +52,16 @@
 
                     <VerticalStackLayout Grid.Row="1" Grid.ColumnSpan="2">
                         <Label Text="Notes" Style="{StaticResource FieldLabel}" />
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Label
-                                Text="{Binding EventSummaryViewModel.Notes}"
-                                VerticalOptions="Center"
-                                HorizontalOptions="Start"
-                                HorizontalTextAlignment="Center" />
-                        </Border>
+                        <Label Text="{Binding EventSummaryViewModel.Notes}"
+                               VerticalOptions="Center"
+                               HorizontalOptions="Start"
+                               HorizontalTextAlignment="Center" />
                     </VerticalStackLayout>
 
                     <Label Text="Pickup Locations" Grid.Row="2" Style="{StaticResource FieldLabel}" />
 
-                    <Grid Margin="5" Grid.Row="2"
-                      ColumnDefinitions="6*, *, *"
+                    <Grid Margin="5" Grid.Row="2" Grid.Column="1"
+                      ColumnDefinitions="4*, *, *"
                       RowDefinitions="Auto">
                         <ImageButton Grid.Column="1"
                              HeightRequest="24"
@@ -68,7 +79,7 @@
                                     IsVisible="{Binding Source={x:Reference viewList}, Path=IsChecked}"
                                     SelectionMode="Single"
                                     Grid.Row="4"
-                                    Grid.ColumnSpan="2"> 
+                                    Grid.ColumnSpan="2">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="viewModels:PickupLocationViewModel">
                                 <StackLayout Margin="5">
@@ -112,11 +123,6 @@
                             </DataTemplate>
                         </maps:Map.ItemTemplate>
                     </maps:Map>
-
-                    <Button Text="Edit Event Summary" Command="{Binding EditEventSummaryCommand}"
-                            IsVisible="{Binding EnableEditEventSummary}" Grid.Row="5" Grid.Column="0" Margin="10" />
-                    <Button Text="Add Pickup Location" Command="{Binding AddPickupLocationCommand}"
-                            IsVisible="{Binding EnableAddPickupLocation}" Grid.Row="5" Grid.Column="1" Margin="10" />
                 </Grid>
             </VerticalStackLayout>
             <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
