@@ -88,7 +88,7 @@
         public async Task<IActionResult> AddEventLitterReport(EventLitterReport eventLitterReport,
             CancellationToken cancellationToken)
         {
-            await eventLitterReportManager.AddAsync(eventLitterReport, cancellationToken).ConfigureAwait(false);
+            await eventLitterReportManager.AddAsync(eventLitterReport, UserId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddEventLitterReport));
             return Ok();
         }
