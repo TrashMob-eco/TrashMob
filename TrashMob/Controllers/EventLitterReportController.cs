@@ -34,6 +34,20 @@
             return Ok(fullEventLitterReports);
         }
 
+        [HttpGet("GetByLitterReportId/{litterReportId}")]
+        public async Task<IActionResult> GetEventLitterReportByLitterReportId(Guid litterReportId)
+        {
+            var result = await eventLitterReportManager.GetAsync(l => l.LitterReportId == litterReportId, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            var lastEventLitterReport = result.OrderByDescending(e => e.CreatedDate).FirstOrDefault();
+
+            var fullEventLitterReport = await ToFullEventLitterReport(lastEventLitterReport, CancellationToken.None);
+
+            TelemetryClient.TrackEvent(nameof(GetEventLitterReportByLitterReportId));
+            return Ok(fullEventLitterReport);
+        }
+
         [HttpPut]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> UpdateEventLitterReport(EventLitterReport eventLitterReport,

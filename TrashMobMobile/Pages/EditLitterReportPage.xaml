@@ -62,7 +62,7 @@
                             <DataTemplate x:DataType="viewModels:LitterImageViewModel">
                                 <controls:CustomPin Location="{Binding Address.Location}"
                                           Address="{Binding Address.StreetAddress}"
-                                          ImageSource="litterreportnew"
+                                          ImageSource="{Binding Address.IconFile}"
                                           Label="Litter Image" />
                             </DataTemplate>
                         </maps:Map.ItemTemplate>

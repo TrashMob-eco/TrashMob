@@ -111,7 +111,7 @@
                                           Address="{Binding Address.StreetAddress}"
                                           Label="{Binding Address.StreetAddress}"
                                           AutomationId="{Binding LitterReportId}"
-                                          ImageSource="litterreportnew"
+                                          ImageSource="{Binding Address.IconFile}"
                                           InfoWindowClicked="Pin_InfoWindowClicked" />
                             </DataTemplate>
                         </maps:Map.ItemTemplate>
