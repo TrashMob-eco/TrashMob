@@ -18,6 +18,16 @@ public class EventLitterReportRestService(IHttpClientFactory httpClientFactory) 
         return eventLitterReports ?? [];
     }
 
+    public async Task<FullEventLitterReport> GetEventLitterReportByLitterReportIdAsync(Guid litterReportId,
+        CancellationToken cancellationToken = default)
+    {
+        var requestUri = string.Concat(Controller, $"GetByLitterReportId/{litterReportId}");
+        var eventLitterReport =
+            await AuthorizedHttpClient.GetFromJsonAsync<FullEventLitterReport>(requestUri, SerializerOptions,
+                cancellationToken);
+        return eventLitterReport;
+    }
+
     public async Task AddLitterReportAsync(EventLitterReport eventLitterReport, CancellationToken cancellationToken = default)
     {
         var content = JsonContent.Create(eventLitterReport, typeof(EventLitterReport), null, SerializerOptions);
