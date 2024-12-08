@@ -12,34 +12,34 @@
         public async Task<EventSummary> GetEventSummaryAsync(Guid eventId,
             CancellationToken cancellationToken = default)
         {
-            var requestUri = Controller + "/" + eventId;
+            var requestUri = Controller + "/v2/" + eventId;
 
-            using (var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken))
+            HttpResponseMessage? response = null;
+            try
             {
-                try
+                response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken);
+
+                response.EnsureSuccessStatusCode();
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                return JsonConvert.DeserializeObject<EventSummary>(content);
+            }
+            catch (HttpRequestException)
+            {
+                if (response?.StatusCode == System.Net.HttpStatusCode.NotFound)
                 {
-                    response.EnsureSuccessStatusCode();
-                    var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                    return JsonConvert.DeserializeObject<EventSummary>(content);
-                }
-                catch (HttpRequestException)
-                {
-                    if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    var eventSummary = new EventSummary
                     {
-                        var eventSummary = new EventSummary
-                        {
-                            EventId = eventId,
-                            ActualNumberOfAttendees = 0,
-                            DurationInMinutes = 0,
-                            NumberOfBags = 0,
-                            Notes = string.Empty,
-                        };
+                        EventId = eventId,
+                        ActualNumberOfAttendees = 0,
+                        DurationInMinutes = 0,
+                        NumberOfBags = 0,
+                        Notes = string.Empty,
+                    };
 
-                        return eventSummary;
-                    }
-
-                    throw;
+                    return eventSummary;
                 }
+
+                throw;
             }
         }
 
@@ -59,14 +59,14 @@
         public async Task<EventSummary> AddEventSummaryAsync(EventSummary eventSummary,
             CancellationToken cancellationToken = default)
         {
-                var content = JsonContent.Create(eventSummary, typeof(EventSummary), null, SerializerOptions);
+            var content = JsonContent.Create(eventSummary, typeof(EventSummary), null, SerializerOptions);
 
-                using (var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken))
-                {
-                    response.EnsureSuccessStatusCode();
-                }
+            using (var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken))
+            {
+                response.EnsureSuccessStatusCode();
+            }
 
-                return await GetEventSummaryAsync(eventSummary.EventId, cancellationToken);
+            return await GetEventSummaryAsync(eventSummary.EventId, cancellationToken);
         }
     }
 }

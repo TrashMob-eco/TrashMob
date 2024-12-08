@@ -12,7 +12,7 @@
              Title="Edit Event">
     <Grid>
         <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
-            <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="*, *, *, *"
+            <Grid RowDefinitions="Auto" ColumnDefinitions="*, *, *, *"
                       MaximumWidthRequest="400">
                 <Button Margin="10"
                             Grid.Row="0" 

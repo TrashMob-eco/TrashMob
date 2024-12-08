@@ -33,6 +33,24 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
     public ObservableCollection<string> RegionCollection { get; set; } = [];
     public ObservableCollection<string> CityCollection { get; set; } = [];
 
+    [ObservableProperty]
+    private bool isMapSelected;
+
+    [ObservableProperty]
+    private bool isListSelected;
+
+    [ObservableProperty]
+    private bool isNewSelected;
+
+    [ObservableProperty]
+    private bool isAssignedSelected;
+
+    [ObservableProperty]
+    private bool isCleanedSelected;
+
+    [ObservableProperty]
+    private bool isAllSelected;
+
     public string? SelectedCountry
     {
         get => selectedCountry;
@@ -119,6 +137,13 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
 
         try
         {
+            IsMapSelected = true;
+            IsListSelected = false;
+            IsNewSelected = true;
+            IsAssignedSelected = false;
+            IsCleanedSelected = false;
+            IsAllSelected = false;
+
             UserLocation = userManager.CurrentUser.GetAddress();
             await RefreshLitterReports();
             IsBusy = false;
@@ -157,15 +182,15 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
             }
         }
 
-        if (ReportStatus == "Assigned to an Event")
+        if (IsAssignedSelected)
         {
             RawLitterReports = await litterReportManager.GetAssignedLitterReportsAsync();
         }
-        else if (ReportStatus == "New")
+        else if (IsNewSelected)
         {
             RawLitterReports = await litterReportManager.GetNewLitterReportsAsync();
         }
-        else if (ReportStatus == "Cleaned")
+        else if (IsCleanedSelected)
         {
             RawLitterReports = await litterReportManager.GetCleanedLitterReportsAsync();
         }
@@ -289,5 +314,81 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
         await RefreshLitterReports();
 
         IsBusy = false;
+    }
+
+    [RelayCommand]
+    private async Task ViewNew()
+    {
+        IsBusy = true;
+
+        IsNewSelected = true;
+        IsAssignedSelected = false;
+        IsCleanedSelected = false;
+        IsAllSelected = false;
+
+        await RefreshLitterReports();
+
+        IsBusy = false;
+    }
+
+    [RelayCommand]
+    private async Task ViewAssigned()
+    {
+        IsBusy = true;
+
+        IsNewSelected = false;
+        IsAssignedSelected = true;
+        IsCleanedSelected = false;
+        IsAllSelected = false;
+
+        await RefreshLitterReports();
+
+        IsBusy = false;
+    }
+
+    [RelayCommand]
+    private async Task ViewCleaned()
+    {
+        IsBusy = true;
+
+        IsNewSelected = false;
+        IsAssignedSelected = false;
+        IsCleanedSelected = true;
+        IsAllSelected = false;
+
+        await RefreshLitterReports();
+
+        IsBusy = false;
+    }
+
+    [RelayCommand]
+    private async Task ViewAll()
+    {
+        IsBusy = true;
+
+        IsNewSelected = false;
+        IsAssignedSelected = false;
+        IsCleanedSelected = false;
+        IsAllSelected = true;
+
+        await RefreshLitterReports();
+
+        IsBusy = false;
+    }
+
+    [RelayCommand]
+    private Task MapSelected()
+    {
+        IsMapSelected = true;
+        IsListSelected = false;
+        return Task.CompletedTask;
+    }
+
+    [RelayCommand]
+    private Task ListSelected()
+    {
+        IsMapSelected = false;
+        IsListSelected = true;
+        return Task.CompletedTask;
     }
 }

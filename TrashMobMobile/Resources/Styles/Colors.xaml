@@ -8,8 +8,11 @@
 
     <Color x:Key="Primary">#005C4B</Color>
     <Color x:Key="PrimaryDark">#ac99ea</Color>
+    <Color x:Key="PrimaryText">#005C4B</Color>
     <Color x:Key="PrimaryDarkText">#242424</Color>
     <Color x:Key="Secondary">#CCDEDA</Color>
+    <Color x:Key="SecondaryDark">#ac99ea</Color>
+    <Color x:Key="SecondaryText">#9880e5</Color>
     <Color x:Key="SecondaryDarkText">#9880e5</Color>
     <Color x:Key="Tertiary">#2B0B98</Color>
     <Color x:Key="AppGreen">#8BAC00</Color>

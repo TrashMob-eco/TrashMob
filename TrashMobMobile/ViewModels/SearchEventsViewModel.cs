@@ -252,7 +252,7 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
     {
         Events.Clear();
 
-        foreach (var mobEvent in RawEvents)
+        foreach (var mobEvent in RawEvents.OrderBy(e => e.EventDate))
         {
             var vm = mobEvent.ToEventViewModel(userManager.CurrentUser.Id);
             

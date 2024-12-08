@@ -141,7 +141,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
             Addresses.Add(EventViewModel.Address);
 
-            EnableEditEvent = mobEvent.IsEventLead(userManager.CurrentUser.Id);
+            EnableEditEvent = mobEvent.IsEventLead(userManager.CurrentUser.Id) && !mobEvent.IsCompleted();
             EnableViewEventSummary = mobEvent.IsCompleted();
             EnableViewEventDetails = true;
             EnableViewEventPartners = true;
@@ -152,7 +152,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             IsLitterReportsVisible = false;
             IsAttendeesVisible = false;
 
-            EnableStartTrackEventRoute = mobEvent.IsEventLead(userManager.CurrentUser.Id);
+            EnableStartTrackEventRoute = mobEvent.IsEventLead(userManager.CurrentUser.Id) && !mobEvent.IsCompleted();
             EnableStopTrackEventRoute = false;
 
             WhatToExpect =

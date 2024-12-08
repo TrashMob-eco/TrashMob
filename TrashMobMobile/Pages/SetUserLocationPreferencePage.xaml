@@ -68,7 +68,9 @@
                     </VerticalStackLayout>
                 </Grid>
 
-                <Button Text="Update Location" Command="{Binding UpdateLocationCommand}" Margin="10" />
+                <Button Text="Update Location" 
+                        Command="{Binding UpdateLocationCommand}"
+                        Style="{StaticResource PrimaryLargeButton}"/>
             </VerticalStackLayout>
             <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
                      VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />
