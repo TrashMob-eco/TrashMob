@@ -40,11 +40,12 @@
         public override async Task<EventLitterReport> AddAsync(EventLitterReport eventLitterReport, CancellationToken cancellationToken)
         {
             logger.LogInformation($"Adding EventLitterReport for EventId {eventLitterReport.EventId} and LitterReportId {eventLitterReport.LitterReportId}");
+            
             var litterReport = litterReportRepository.Get(l => l.Id == eventLitterReport.LitterReportId).FirstOrDefault();
             litterReport.LitterReportStatusId = (int)LitterReportStatusEnum.Assigned;
             await litterReportRepository.UpdateAsync(litterReport);
-            logger.LogInformation("Updated LitterReport Status for LitterReportId {LitterReportId} to {LitterReportStatus}", eventLitterReport.LitterReportId, (int)LitterReportStatusEnum.Assigned);
 
+            logger.LogInformation("Updated LitterReport Status for LitterReportId {LitterReportId} to {LitterReportStatus}", eventLitterReport.LitterReportId, (int)LitterReportStatusEnum.Assigned);
             return await Repository.AddAsync(eventLitterReport);
         }
 

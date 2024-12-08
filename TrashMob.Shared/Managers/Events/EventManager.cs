@@ -19,11 +19,13 @@
         IKeyedRepository<Event> repository,
         IEventAttendeeManager eventAttendeeManager,
         IBaseRepository<EventAttendee> eventAttendeeRepository,
+        IEventLitterReportManager eventLitterReportManager,
         IMapManager mapManager,
         IEmailManager emailManager)
         : KeyedManager<Event>(repository), IEventManager
     {
         private const int StandardEventWindowInMinutes = 120;
+        private readonly IEventLitterReportManager eventLitterReportManager = eventLitterReportManager;
 
         public async Task<IEnumerable<Event>> GetActiveEventsAsync(CancellationToken cancellationToken = default)
         {
@@ -96,6 +98,13 @@
             instance.CancellationReason = cancellationReason;
 
             await base.UpdateAsync(instance, userId, cancellationToken);
+
+            var eventLitterReports = await eventLitterReportManager.GetByParentIdAsync(id, cancellationToken).ConfigureAwait(false);
+
+            foreach (var eventLitterReport in eventLitterReports)
+            {
+                await eventLitterReportManager.Delete(id, eventLitterReport.LitterReportId, cancellationToken).ConfigureAwait(false);
+            }
 
             var eventAttendees = eventAttendeeRepository.Get(e => e.EventId == id).Include(e => e.User);
 
