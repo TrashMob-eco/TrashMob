@@ -94,39 +94,6 @@
         </DataTemplate>
     </Shell.MenuItemTemplate>
 
-    <!--<Shell.FlyoutHeader> --><!-- Details hardcoded for demo until we have this functionality --><!--
-        <VerticalStackLayout>
-            <Grid ColumnDefinitions="40,*"
-                  RowDefinitions="25,25"
-                  ColumnSpacing="10"
-                  RowSpacing="5"
-                  Margin="25,40">
-                <toolkit:AvatarView ImageSource="joepic.jpg"
-                                    HeightRequest="40"
-                                    WidthRequest="40"
-                                    Grid.RowSpan="2"
-                                    VerticalOptions="Center"
-                                    HorizontalOptions="Center"/> 
-                
-                <Label FontSize="Large"
-                       TextColor="Black"
-                       Text="Joe Beernink"
-                       Grid.Column="1"
-                       Grid.Row="0"/>
-                
-                <Label FontSize="Small"
-                       Text="Edit profile"
-                       TextColor="{StaticResource Primary}"
-                       Grid.Column="1"
-                       Grid.Row="1"/>
-            </Grid>
-            <BoxView HorizontalOptions="Fill"
-                     HeightRequest="1"
-                     Margin="0,16"
-                     BackgroundColor="{StaticResource GlobalBorderBase}"/>
-        </VerticalStackLayout>
-    </Shell.FlyoutHeader>-->
-
     <Shell.Behaviors>
         <toolkit:StatusBarBehavior
             StatusBarColor="{AppThemeBinding Light={StaticResource PageBackgroundLight}, Dark={StaticResource PageBackgroundDark}}"

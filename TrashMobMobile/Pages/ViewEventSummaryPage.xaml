@@ -118,7 +118,7 @@
                                           Address="{Binding Address.StreetAddress}"
                                           Label="{Binding Id}"
                                           AutomationId="{Binding Id}"
-                                          ImageSource="eventupcoming"
+                                          ImageSource="{Binding Address.IconFile}"
                                           InfoWindowClicked="Pin_InfoWindowClicked" />
                             </DataTemplate>
                         </maps:Map.ItemTemplate>
