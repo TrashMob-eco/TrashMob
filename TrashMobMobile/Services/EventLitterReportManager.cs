@@ -34,6 +34,11 @@
             return eventLitterReports;
         }
 
+        public Task<FullEventLitterReport> GetEventLitterReportByLitterReportIdAsync(Guid litterReportId, CancellationToken cancellationToken = default)
+        {
+            return eventLitterReportRestService.GetEventLitterReportByLitterReportIdAsync(litterReportId, cancellationToken);
+        }
+
         public Task<IEnumerable<LitterReport>> GetUserLitterReportsAsync(Guid userId,
             CancellationToken cancellationToken = default)
         {

@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Linq.Expressions;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
@@ -37,14 +38,30 @@
                 .AsEnumerable();
         }
 
-        public override async Task<EventLitterReport> AddAsync(EventLitterReport eventLitterReport, CancellationToken cancellationToken)
+        public override async Task<IEnumerable<EventLitterReport>> GetAsync(Expression<Func<EventLitterReport, bool>> expression, CancellationToken cancellationToken = default)
+        {
+            return await Repository.Get(expression)
+                .Include(e => e.Event)
+                .Include(e => e.LitterReport)
+                .Include(e => e.LitterReport.LitterImages)
+                .ToListAsync(cancellationToken);                
+        }
+
+        public override async Task<EventLitterReport> AddAsync(EventLitterReport eventLitterReport, Guid userId, CancellationToken cancellationToken)
         {
             logger.LogInformation($"Adding EventLitterReport for EventId {eventLitterReport.EventId} and LitterReportId {eventLitterReport.LitterReportId}");
+            
             var litterReport = litterReportRepository.Get(l => l.Id == eventLitterReport.LitterReportId).FirstOrDefault();
             litterReport.LitterReportStatusId = (int)LitterReportStatusEnum.Assigned;
+            litterReport.LastUpdatedByUserId = userId;
+            litterReport.LastUpdatedDate = DateTimeOffset.UtcNow;
             await litterReportRepository.UpdateAsync(litterReport);
-            logger.LogInformation("Updated LitterReport Status for LitterReportId {LitterReportId} to {LitterReportStatus}", eventLitterReport.LitterReportId, (int)LitterReportStatusEnum.Assigned);
 
+            logger.LogInformation("Updated LitterReport Status for LitterReportId {LitterReportId} to {LitterReportStatus}", eventLitterReport.LitterReportId, (int)LitterReportStatusEnum.Assigned);
+            eventLitterReport.CreatedByUserId = userId;
+            eventLitterReport.CreatedDate = DateTimeOffset.UtcNow;
+            eventLitterReport.LastUpdatedByUserId = userId;
+            eventLitterReport.LastUpdatedDate = DateTimeOffset.UtcNow;
             return await Repository.AddAsync(eventLitterReport);
         }
 

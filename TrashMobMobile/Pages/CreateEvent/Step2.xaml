@@ -23,7 +23,7 @@
                 <DataTemplate x:DataType="viewModels:EventViewModel">
                     <controls:CustomPin Address="{Binding Address.StreetAddress}"
                                   Label="{Binding Name}"
-                                  ImageSource="eventupcoming"
+                                  ImageSource="{Binding Address.IconFile}"
                                   Location="{Binding Address.Location}" />
                 </DataTemplate>
             </maps:Map.ItemTemplate>
