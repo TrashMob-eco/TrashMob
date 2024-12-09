@@ -117,6 +117,11 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
             IsLitterReportsVisible = false;
 
             MobEvent = await mobEventManager.GetEventAsync(eventId);
+            
+            foreach (var eventType in EventTypes)
+            {
+                ETypes.Add(eventType.Name);
+            }
 
             SelectedEventType = EventTypes.First(et => et.Id == MobEvent.EventTypeId).Name;
 
@@ -126,12 +131,7 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
             await LoadLitterReports();
 
             Events.Add(EventViewModel);
-
-            foreach (var eventType in EventTypes)
-            {
-                ETypes.Add(eventType.Name);
-            }
-
+            
             IsBusy = false;
         }
         catch (Exception ex)
