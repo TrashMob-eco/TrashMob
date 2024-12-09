@@ -12,82 +12,78 @@
         <VerticalStackLayout Style="{StaticResource OuterVerticalStack}" Margin="10">
             <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="*, *, *, *"
                       MaximumWidthRequest="400">
+
+
                 <Button Margin="5"
                             Grid.Row="0" 
+                            Grid.Column="0" 
+                            Command="{Binding ViewEventDetailsCommand}" 
+                            Text="View Event Details"
+                            IsVisible="{Binding EnableViewEventDetails}"
+                            Style="{StaticResource SecondarySmallButton}" />
+                <Button Margin="5"
+                            Grid.Row="0" 
+                            Grid.Column="1" 
+                            Command="{Binding ViewEventPartnersCommand}" 
+                            Text="View Event Partners"
+                            IsVisible="{Binding EnableViewEventPartners}"
+                            Style="{StaticResource SecondarySmallButton}" />
+                <Button Margin="5"
+                            Grid.Row="0" 
+                            Grid.Column="2" 
+                            Command="{Binding ViewLitterReportsCommand}" 
+                            Text="View Event Litter Reports"
+                            IsVisible="{Binding EnableViewEventLitterReports}"
+                            Style="{StaticResource SecondarySmallButton}" />
+                <Button Margin="5"
+                            Grid.Row="0" 
+                            Grid.Column="3" 
+                            Command="{Binding ViewEventAttendeesCommand}" 
+                            Text="View Event Attendees"
+                            IsVisible="{Binding EnableViewEventAttendees}"
+                            Style="{StaticResource SecondarySmallButton}" />
+                
+                <Button Margin="5"
+                            Grid.Row="1" 
                             Grid.Column="0" 
                             Text="Register" 
                             Command="{Binding RegisterCommand}"
                             IsVisible="{Binding EnableRegister}"
                             Style="{StaticResource PrimarySmallButton}" />
                 <Button Margin="5"
-                            Grid.Row="0" 
+                            Grid.Row="1" 
                             Grid.Column="0" 
                             Text="Unregister" 
                             Command="{Binding UnregisterCommand}"
                             IsVisible="{Binding EnableUnregister}"
                             Style="{StaticResource PrimarySmallButton}" />
                 <Button Margin="5"
-                            Grid.Row="0" 
+                            Grid.Row="1" 
                             Grid.Column="0" 
                             Text="Edit Event" 
                             Command="{Binding EditEventCommand}"
                             IsVisible="{Binding EnableEditEvent}"
                             Style="{StaticResource PrimarySmallButton}" />
-
                 <Button Margin="5"
-                            Grid.Row="0" 
+                            Grid.Row="1" 
                             Grid.Column="1" 
                             Command="{Binding ViewEventSummaryCommand}" 
                             Text="View Event Summary"
                             IsVisible="{Binding EnableViewEventSummary}"
                             Style="{StaticResource SecondarySmallButton}" />
-
                 <Button Margin="5"
-                            Grid.Row="0" 
+                            Grid.Row="1" 
                             Grid.Column="2" 
                             Command="{Binding RealTimeLocationTrackerCancelCommand}" 
                             IsVisible="{Binding EnableStartTrackEventRoute}"
                             Text="Start Tracking" 
                             Style="{StaticResource SecondarySmallButton}" />
-
                 <Button Margin="5"
-                            Grid.Row="0" 
+                            Grid.Row="1" 
                             Grid.Column="2" 
                             Command="{Binding RealTimeLocationTrackerCommand}" 
                             IsVisible="{Binding EnableStopTrackEventRoute}"
                             Text="Stop Tracking" 
-                            Style="{StaticResource SecondarySmallButton}" />
-
-                <Button Margin="5"
-                            Grid.Row="1" 
-                            Grid.Column="0" 
-                            Command="{Binding ViewEventDetailsCommand}" 
-                            Text="View Event Details"
-                            IsVisible="{Binding EnableViewEventDetails}"
-                            Style="{StaticResource SecondarySmallButton}" />
-
-                <Button Margin="5"
-                            Grid.Row="1" 
-                            Grid.Column="1" 
-                            Command="{Binding ViewEventPartnersCommand}" 
-                            Text="View Event Partners"
-                            IsVisible="{Binding EnableViewEventPartners}"
-                            Style="{StaticResource SecondarySmallButton}" />
-
-                <Button Margin="5"
-                            Grid.Row="1" 
-                            Grid.Column="2" 
-                            Command="{Binding ViewLitterReportsCommand}" 
-                            Text="View Event Litter Reports"
-                            IsVisible="{Binding EnableViewEventLitterReports}"
-                            Style="{StaticResource SecondarySmallButton}" />
-
-                <Button Margin="5"
-                            Grid.Row="1" 
-                            Grid.Column="3" 
-                            Command="{Binding ViewEventAttendeesCommand}" 
-                            Text="View Event Attendees"
-                            IsVisible="{Binding EnableViewEventAttendees}"
                             Style="{StaticResource SecondarySmallButton}" />
             </Grid>
 

@@ -45,11 +45,12 @@
                         <Button Margin="10"
                             Grid.Row="0" 
                             Grid.Column="4" 
+                            Padding="5"
                             Command="{Binding ViewEventCommand}" 
                             IsEnabled="{Binding IsAssignedToEvent}"
                             IsVisible="{Binding IsAssignedToEvent}" 
                             Style="{StaticResource SecondarySmallButton}" 
-                            Text="View Assigned Event">
+                            Text="View Event">
                         </Button>
                     </Grid>
 

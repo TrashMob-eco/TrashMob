@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Linq.Expressions;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
@@ -35,6 +36,15 @@
                     .Include(p => p.LitterReport.LitterImages)
                     .ToListAsync(cancellationToken))
                 .AsEnumerable();
+        }
+
+        public override async Task<IEnumerable<EventLitterReport>> GetAsync(Expression<Func<EventLitterReport, bool>> expression, CancellationToken cancellationToken = default)
+        {
+            return await Repository.Get(expression)
+                .Include(e => e.Event)
+                .Include(e => e.LitterReport)
+                .Include(e => e.LitterReport.LitterImages)
+                .ToListAsync(cancellationToken);                
         }
 
         public override async Task<EventLitterReport> AddAsync(EventLitterReport eventLitterReport, Guid userId, CancellationToken cancellationToken)
