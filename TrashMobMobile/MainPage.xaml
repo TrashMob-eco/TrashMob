@@ -49,8 +49,14 @@
                            Text="Here's what TrashMob's volunteers have done so far!" />
                     <Image Grid.Row="1"
                            Grid.Column="0"
-                           MaximumWidthRequest="25"
-                           Source="calendar" />
+                           MaximumWidthRequest="40">
+                        <Image.Source>
+                            <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconCalendarCheck}"
+                                             Size="50"
+                                             Color="{StaticResource AppGreen}" />
+                        </Image.Source>
+                    </Image>
                     <Image Grid.Row="1"
                            Grid.Column="1"
                            MaximumWidthRequest="40">
@@ -63,12 +69,24 @@
                     </Image>
                     <Image Grid.Row="1"
                            Grid.Column="2"
-                           Source="trashbag"
-                           WidthRequest="25" />
+                           MaximumWidthRequest="40">
+                        <Image.Source>
+                            <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconTrashCanOutline}"
+                                             Size="50"
+                                             Color="{StaticResource AppGreen}" />
+                        </Image.Source>
+                    </Image>
                     <Image Grid.Row="1"
                            Grid.Column="3"
-                           Source="clock"
-                           WidthRequest="25" />
+                           MaximumWidthRequest="40">
+                        <Image.Source>
+                            <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconClockOutline}"
+                                             Size="50"
+                                             Color="{StaticResource AppGreen}" />
+                        </Image.Source>
+                    </Image>
                     <Image Grid.Row="1"
                            Grid.Column="4"
                            MaximumWidthRequest="40">
