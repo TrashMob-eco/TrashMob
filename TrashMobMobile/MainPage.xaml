@@ -54,7 +54,7 @@
                             <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
                                              Glyph="{StaticResource IconCalendarCheck}"
                                              Size="50"
-                                             Color="{StaticResource AppGreen}" />
+                                             Color="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}" />
                         </Image.Source>
                     </Image>
                     <Image Grid.Row="1"
@@ -74,7 +74,7 @@
                             <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
                                              Glyph="{StaticResource IconTrashCanOutline}"
                                              Size="50"
-                                             Color="{StaticResource AppGreen}" />
+                                             Color="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}" />
                         </Image.Source>
                     </Image>
                     <Image Grid.Row="1"
@@ -84,7 +84,7 @@
                             <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
                                              Glyph="{StaticResource IconClockOutline}"
                                              Size="50"
-                                             Color="{StaticResource AppGreen}" />
+                                             Color="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}" />
                         </Image.Source>
                     </Image>
                     <Image Grid.Row="1"
