@@ -243,7 +243,7 @@
     <!-- <x:String x:Key="IconCalculator">&#xf00ec;</x:String> -->
     <!-- <x:String x:Key="IconCalendar">&#xf00ed;</x:String> -->
     <!-- <x:String x:Key="IconCalendarBlank">&#xf00ee;</x:String> -->
-    <!-- <x:String x:Key="IconCalendarCheck">&#xf00ef;</x:String> -->
+    <x:String x:Key="IconCalendarCheck">&#xf00ef;</x:String>
     <!-- <x:String x:Key="IconCalendarClock">&#xf00f0;</x:String> -->
     <!-- <x:String x:Key="IconCalendarMultiple">&#xf00f1;</x:String> -->
     <!-- <x:String x:Key="IconCalendarMultipleCheck">&#xf00f2;</x:String> -->
@@ -340,7 +340,7 @@
     <x:String x:Key="IconClipboardText">&#xf014d;</x:String>
     <!-- <x:String x:Key="IconClipboardCheck">&#xf014e;</x:String> -->
     <!-- <x:String x:Key="IconClippy">&#xf014f;</x:String> -->
-    <!-- <x:String x:Key="IconClockOutline">&#xf0150;</x:String> -->
+     <x:String x:Key="IconClockOutline">&#xf0150;</x:String> 
     <!-- <x:String x:Key="IconClockEnd">&#xf0151;</x:String> -->
     <!-- <x:String x:Key="IconClockFast">&#xf0152;</x:String> -->
     <!-- <x:String x:Key="IconClockIn">&#xf0153;</x:String> -->
@@ -2679,7 +2679,7 @@
     <!-- <x:String x:Key="IconTargetVariant">&#xf0a77;</x:String> -->
     <!-- <x:String x:Key="IconTrademark">&#xf0a78;</x:String> -->
     <!-- <x:String x:Key="IconTrashCan">&#xf0a79;</x:String> -->
-    <!-- <x:String x:Key="IconTrashCanOutline">&#xf0a7a;</x:String> -->
+     <x:String x:Key="IconTrashCanOutline">&#xf0a7a;</x:String> 
     <!-- <x:String x:Key="IconTshirtCrew">&#xf0a7b;</x:String> -->
     <!-- <x:String x:Key="IconTshirtV">&#xf0a7c;</x:String> -->
     <!-- <x:String x:Key="IconZodiacAquarius">&#xf0a7d;</x:String> -->
