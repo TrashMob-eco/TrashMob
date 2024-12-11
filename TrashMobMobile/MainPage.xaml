@@ -54,7 +54,7 @@
                             <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
                                              Glyph="{StaticResource IconCalendarCheck}"
                                              Size="50"
-                                             Color="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}" />
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
                         </Image.Source>
                     </Image>
                     <Image Grid.Row="1"
@@ -64,7 +64,7 @@
                             <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
                                              Glyph="{StaticResource IconAccount}"
                                              Size="50"
-                                             Color="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}" />
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
                         </Image.Source>
                     </Image>
                     <Image Grid.Row="1"
@@ -74,7 +74,7 @@
                             <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
                                              Glyph="{StaticResource IconTrashCanOutline}"
                                              Size="50"
-                                             Color="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}" />
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
                         </Image.Source>
                     </Image>
                     <Image Grid.Row="1"
@@ -84,7 +84,7 @@
                             <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
                                              Glyph="{StaticResource IconClockOutline}"
                                              Size="50"
-                                             Color="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}" />
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
                         </Image.Source>
                     </Image>
                     <Image Grid.Row="1"
@@ -94,7 +94,7 @@
                             <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
                                              Glyph="{StaticResource IconClipboardText}"
                                              Size="50"
-                                             Color="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}" />
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
                         </Image.Source>
                     </Image>
                     <Label Grid.Row="2"
