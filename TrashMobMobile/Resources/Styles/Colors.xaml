@@ -11,8 +11,8 @@
     <Color x:Key="PrimaryText">#005B4C</Color>
     <Color x:Key="PrimaryReverseText">#F8FBF9</Color>
     <Color x:Key="ContentPrimary">#1E2225</Color>
-    <Color x:Key="Secondary">#abc414</Color>
-    <Color x:Key="SecondaryText">#abc414</Color>
+    <Color x:Key="Secondary">#F8FBF9</Color>
+    <Color x:Key="SecondaryText">#005B4C</Color>
     <Color x:Key="SecondaryReverseText">#F8FBF9</Color>
     <Color x:Key="Disabled">#C8C8C8</Color>
     <Color x:Key="DisabledText">#A1A1AA</Color>

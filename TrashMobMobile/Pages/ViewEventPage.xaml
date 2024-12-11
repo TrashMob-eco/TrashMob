@@ -107,7 +107,7 @@
                 <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
                            Text="{Binding EventViewModel.Address.DisplayAddress }" FontAttributes="Bold"
                            Margin="10,0,10,0" />
-                <maps:Map Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" x:Name="eventLocationMap"
+                <maps:Map Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" x:Name="eventLocationMap" HeightRequest="200"
                               ItemsSource="{Binding Addresses}">
                     <maps:Map.ItemTemplate>
                         <DataTemplate x:DataType="viewModels:AddressViewModel">
