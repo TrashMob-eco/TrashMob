@@ -30,7 +30,6 @@ import PickupLocationData from '../Models/PickupLocationData';
 import { SocialsModal } from '../EventManagement/ShareToSocialsModal';
 import { HeroSection } from '../Customization/HeroSection';
 import * as SharingMessages from '../../store/SharingMessages';
-import { GetUserEvents } from '../../services/events';
 import { Services } from '../../config/services.config';
 import {
     AcceptPartnerAdminInvitation,
@@ -47,6 +46,7 @@ import { Button } from '@/components/ui/button';
 
 import { Eye, Pencil } from 'lucide-react';
 import { EventsTable } from '../EventsTable/EventsTable';
+import { useGetUserEvents } from '@/hooks/useGetUserEvents';
 
 const isUpcomingEvent = (event: EventData) => new Date(event.eventDate) >= new Date();
 const isPastEvent = (event: EventData) => new Date(event.eventDate) < new Date();
@@ -58,7 +58,6 @@ interface MyDashboardProps extends RouteComponentProps<any> {
 
 const MyDashboard: FC<MyDashboardProps> = (props) => {
     const { isUserLoaded, currentUser } = props;
-    const [myEventList, setMyEventList] = useState<EventData[]>([]);
     const [partnerStatusList, setPartnerStatusList] = useState<PartnerStatusData[]>([]);
     const [partnerRequestStatusList, setPartnerRequestStatusList] = useState<PartnerRequestStatusData[]>([]);
     const [myPartnerRequests, setMyPartnerRequests] = useState<DisplayPartnershipData[]>([]);
@@ -77,15 +76,10 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const [eventToShare, setEventToShare] = useState<EventData>();
     const [showModal, setShowSocialsModal] = useState<boolean>(false);
 
+    const { data: userEvents } = useGetUserEvents(currentUser.id);
+    const myEventList = userEvents || [];
     const upcomingEvents = myEventList.filter(isUpcomingEvent);
     const pastEvents = myEventList.filter(isPastEvent);
-
-    const getUserEvents = useQuery({
-        queryKey: GetUserEvents({ userId: currentUser.id }).key,
-        queryFn: GetUserEvents({ userId: currentUser.id }).service,
-        staleTime: Services.CACHE.DISABLE,
-        enabled: false,
-    });
 
     const getPartnerAdminInvitationsByUser = useQuery({
         queryKey: GetPartnerAdminInvitationsByUser({
@@ -164,11 +158,6 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     useEffect(() => {
         if (props.isUserLoaded) {
             setIsEventDataLoaded(false);
-
-            getUserEvents.refetch().then((res) => {
-                setMyEventList(res.data?.data || []);
-                setIsEventDataLoaded(true);
-            });
 
             getPartnerAdminInvitationsByUser.refetch().then((res) => {
                 setMyPartnerAdminInvitations(res.data?.data || []);

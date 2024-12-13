@@ -1,8 +1,7 @@
 import { useCallback, useState } from 'react';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
-import { FileEarmarkCheck } from 'react-bootstrap-icons';
-import { Ellipsis, Eye, Link2, Pencil, Share2, SquareX, UserRoundX } from 'lucide-react';
+import { FileCheck, Ellipsis, Eye, Link2, Pencil, Share2, SquareX, UserRoundX } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -15,8 +14,7 @@ import EventData from '../Models/EventData';
 import UserData from '../Models/UserData';
 import { SocialsModal } from '../EventManagement/ShareToSocialsModal';
 import * as SharingMessages from '@/store/SharingMessages';
-import { useMutation } from '@tanstack/react-query';
-import { DeleteEventAttendee } from '@/services/events';
+import { useDeleteEventAttendee } from '@/hooks/useDeleteEventAttendee';
 
 type EventTableProps = {
     events: EventData[];
@@ -30,13 +28,7 @@ export const EventsTable = (props: EventTableProps) => {
     const [copied, setCopied] = useState<boolean>(false);
     const [eventToShare, setEventToShare] = useState<EventData | null>();
 
-    const deleteEventAttendee = useMutation({
-        mutationKey: DeleteEventAttendee().key,
-        mutationFn: DeleteEventAttendee().service,
-        onSuccess: () => {
-            // TODO: invalidate / reload events
-        },
-    });
+    const deleteEventAttendee = useDeleteEventAttendee();
 
     const handleCopyLink = (eventId: string) => {
         navigator.clipboard.writeText(`${window.location.origin}/eventdetails/${eventId}`);
@@ -52,7 +44,6 @@ export const EventsTable = (props: EventTableProps) => {
 
     const handleUnregisterEvent = (id: string, name: string) => {
         if (!window.confirm(`Do you want to remove yourself from this event: ${name}?`)) return;
-
         deleteEventAttendee.mutateAsync({ eventId: id, userId: currentUser.id });
     };
 
@@ -101,7 +92,7 @@ export const EventsTable = (props: EventTableProps) => {
                                             {isEventOwner && isCompleted ? (
                                                 <DropdownMenuItem asChild>
                                                     <Link to={`/eventsummary/${event.id}`}>
-                                                        <FileEarmarkCheck />
+                                                        <FileCheck />
                                                         Event Summary
                                                     </Link>
                                                 </DropdownMenuItem>
