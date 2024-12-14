@@ -7,7 +7,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import EventData from '../Models/EventData';
 import UserData from '../Models/UserData';
 import * as ToolTips from '../../store/ToolTips';
-import { SocialsModal } from './ShareToSocialsModal';
+import { ShareToSocialsDialog } from './ShareToSocialsDialog';
 import * as SharingMessages from '../../store/SharingMessages';
 import { DeleteEvent, GetEventById } from '../../services/events';
 import { Services } from '../../config/services.config';
@@ -148,7 +148,7 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
         <div>
             <Container className='p-4 bg-white rounded my-5'>
                 {isDataLoaded ? (
-                    <SocialsModal
+                    <ShareToSocialsDialog
                         eventToShare={eventToShare}
                         show={showModal}
                         handleShow={handleShowModal}
