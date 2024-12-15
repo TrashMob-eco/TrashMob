@@ -111,6 +111,9 @@
 	    <SubType>Code</SubType>
 	    <DependentUpon>%(Filename)</DependentUpon>
 	  </Compile>
+	  <Compile Update="Pages\CreateEvent\Step3.xaml.cs">
+	    <DependentUpon>Step3.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Pages\CreateLitterReportPage.xaml.cs">
 	    <DependentUpon>CreateLitterReportPage.xaml</DependentUpon>
 	  </Compile>
@@ -181,12 +184,12 @@
 	    <DependentUpon>CreateEventPage.xaml</DependentUpon>
 	    <SubType>Code</SubType>
 	  </Compile>
-	  <Compile Update="Pages\CreateEvent\Step5.xaml.cs">
-	    <DependentUpon>Step5.xaml</DependentUpon>
+	  <Compile Update="Pages\CreateEvent\Step4.xaml.cs">
+	    <DependentUpon>Step4.xaml</DependentUpon>
 	    <SubType>Code</SubType>
 	  </Compile>
-	  <Compile Update="Pages\CreateEvent\Step6.xaml.cs">
-	    <DependentUpon>Step6.xaml</DependentUpon>
+	  <Compile Update="Pages\CreateEvent\Step5.xaml.cs">
+	    <DependentUpon>Step5.xaml</DependentUpon>
 	    <SubType>Code</SubType>
 	  </Compile>
 	  <Compile Update="Controls\TMPicker.xaml.cs">
@@ -279,10 +282,10 @@
 	    <SubType>Designer</SubType>
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Pages\CreateEvent\Step5.xaml">
+	  <MauiXaml Update="Pages\CreateEvent\Step4.xaml">
 	    <SubType>Designer</SubType>
 	  </MauiXaml>
-	  <MauiXaml Update="Pages\CreateEvent\Step6.xaml">
+	  <MauiXaml Update="Pages\CreateEvent\Step5.xaml">
 	    <SubType>Designer</SubType>
 	  </MauiXaml>
 	  <MauiXaml Update="Controls\TMPicker.xaml">

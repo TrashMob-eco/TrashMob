@@ -1,53 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<createEvent:BaseStepClass xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-                           xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-                           xmlns:createEvent="clr-namespace:TrashMobMobile.Pages.CreateEvent"
-                           xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
-                           xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
-                           x:DataType="viewModels:CreateEventViewModel"
-                           xmlns:controls="clr-namespace:TrashMobMobile.Controls"
-                           x:Class="TrashMobMobile.Pages.CreateEvent.Step4">
+<createEvent:BaseStepClass  xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                            xmlns:createEvent="clr-namespace:TrashMobMobile.Pages.CreateEvent"
+                            xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+                            x:Class="TrashMobMobile.Pages.CreateEvent.Step4">
     <ScrollView>
         <Grid>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
-
-                <Label
-                    Text="{Binding EventViewModel.Name}" Style="{StaticResource Headline}"
-                    VerticalOptions="Center"
-                    Margin="5" />
-
                 <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
-                <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto" RowSpacing="3"
-                      ColumnDefinitions="*, 2*">
-                    <Label Grid.Row="0" Grid.Column="0" Text="{Binding SelectedEventType}" FontSize="Small"
-                           Margin="10, 0, 10,0" Grid.ColumnSpan="2" />
-                    <Label Grid.Row="1" Grid.Column="0" Text="{Binding EventViewModel.DisplayDate}"
-                           FontAttributes="Bold" Margin="10,0,10,0" Grid.ColumnSpan="2" />
-                    <Label Grid.Row="2" Grid.Column="0" Text="{Binding EventViewModel.DisplayTime}" FontSize="Micro"
-                           Margin="10, 0, 10,0" />
-                    <Label Grid.Row="2" Grid.Column="1" Text="{Binding FormattedEventDuration}" FontSize="Micro"
-                           Margin="10, 0, 10,0" />
-                    <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
-                           Text="{Binding EventViewModel.Address.DisplayAddress }" FontAttributes="Bold"
-                           Margin="10,0,10,0" />
-                    <maps:Map Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" x:Name="eventLocationMap"
-                              ItemsSource="{Binding Events}">
-                        <maps:Map.ItemTemplate>
-                            <DataTemplate x:DataType="viewModels:EventViewModel">
-                                <controls:CustomPin Location="{Binding Address.Location}"
-                                          Address="{Binding Address.StreetAddress}"
-                                          ImageSource="{Binding Address.IconFile}"
-                                          Label="{Binding Name}" />
+                <Grid RowDefinitions="Auto, Auto, Auto">
+                    <Label Grid.Row="0" Text="We're sorry. There are currently no partners available in your area." IsVisible="{Binding AreNoPartnersAvailable}" />
+
+                    <Label Grid.Row="0"
+                           Text="Available Event Partners"
+                           FontSize="Medium"
+                           VerticalOptions="Center"
+                           HorizontalOptions="Start"
+                           HorizontalTextAlignment="Center"
+                           IsVisible="{Binding ArePartnersAvailable}"
+                           Margin="10" />
+
+                    <Label Grid.Row="1" 
+                       Text="Click on a Partner listed below to request services for your event." 
+                       IsVisible="{Binding ArePartnersAvailable}" 
+                       FontSize="Micro" 
+                       Margin="10, 0"/>
+
+                    <CollectionView Grid.Row="2" x:Name="AvailableEventPartners"
+                                    ItemsSource="{Binding AvailablePartners}"
+                                    SelectedItem="{Binding SelectedEventPartnerLocation}"
+                                    SelectionMode="Single" 
+                                    IsVisible="{Binding ArePartnersAvailable}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate 
+                                x:DataType="viewModels:EventPartnerLocationViewModel">
+                                <Border Style="{StaticResource RoundBorder}" Margin="5">
+                                    <Grid RowDefinitions="1*, 2*, 1*" ColumnDefinitions="*, *"
+                                          x:Name="PartnerLocationItem">
+                                        <Label Text="Partner Name" Style="{StaticResource FieldLabel}" Grid.Row="0" />
+                                        <Label Text="{Binding PartnerLocationName}" Grid.Column="1" Grid.Row="0" />
+                                        <Label Text="Info" Style="{StaticResource FieldLabel}" Grid.Row="1" />
+                                        <Label Text="{Binding PartnerLocationNotes}" Grid.Row="1" Grid.Column="1" />
+                                        <Label Text="Services Requested" Style="{StaticResource FieldLabel}" Grid.Row="2" />
+                                        <Label Text="{Binding PartnerServicesEngaged}" Grid.Row="2" Grid.Column="1" />
+                                    </Grid>
+                                </Border>
                             </DataTemplate>
-                        </maps:Map.ItemTemplate>
-                    </maps:Map>
-                    <Label Grid.Row="5" Grid.Column="0" Text="About this event" FontAttributes="Bold"
-                           Grid.ColumnSpan="2" />
-                    <Label Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding EventViewModel.Description}"
-                           FontSize="Micro" />
-                 </Grid>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
             </VerticalStackLayout>
             <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
                      VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />
