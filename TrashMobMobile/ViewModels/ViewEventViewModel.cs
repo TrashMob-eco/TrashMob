@@ -16,14 +16,12 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     IEventAttendeeRouteRestService eventAttendeeRouteRestService,
     INotificationService notificationService,
     IEventLitterReportManager eventLitterReportManager,
-    IEventLitterReportRestService eventLitterReportRestService,
     IUserManager userManager,
     IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService,
     ILitterReportManager litterReportManager) : BaseViewModel(notificationService)
 {
     private readonly IEventAttendeeRestService eventAttendeeRestService = eventAttendeeRestService;
     private readonly IEventLitterReportManager eventLitterReportManager = eventLitterReportManager;
-    private readonly IEventLitterReportRestService eventLitterReportRestService = eventLitterReportRestService;
     private readonly IUserManager userManager = userManager;
     private readonly IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService = eventPartnerLocationServiceRestService;
     private readonly ILitterReportManager litterReportManager = litterReportManager;
@@ -275,7 +273,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
         foreach (var eventLitterReport in assignedLitterReports.OrderByDescending(l => l.LitterReport.CreatedDate))
         {
-            var vm = eventLitterReport.LitterReport.ToEventLitterReportViewModel(NotificationService, eventLitterReportRestService, EventViewModel.Id);
+            var vm = eventLitterReport.LitterReport.ToEventLitterReportViewModel(NotificationService, eventLitterReportManager, EventViewModel.Id);
             vm.Status = "Assigned to this event";
 
             foreach (var litterImage in eventLitterReport.LitterReport.LitterImages)
