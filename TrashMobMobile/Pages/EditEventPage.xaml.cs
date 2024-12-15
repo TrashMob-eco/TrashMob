@@ -1,7 +1,5 @@
 namespace TrashMobMobile.Pages;
 
-using CommunityToolkit.Maui.Alerts;
-using CommunityToolkit.Maui.Core;
 using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Maps;
 
@@ -24,12 +22,26 @@ public partial class EditEventPage : ContentPage
     {
         base.OnNavigatedTo(args);
         await viewModel.Init(new Guid(EventId));
+        viewModel.UpdateMapLocation = UpdateMapLocation;
+        UpdateMapLocation();
+    }
 
+    private void UpdateMapLocation()
+    {
         if (viewModel?.EventViewModel?.Address?.Location != null)
         {
             var mapSpan = new MapSpan(viewModel.EventViewModel.Address.Location, 0.05, 0.05);
+            eventLocationMap.InitialMapSpanAndroid = mapSpan;
             eventLocationMap.MoveToRegion(mapSpan);
         }
+    }
+
+    private async void Pin_InfoWindowClicked(object sender, PinClickedEventArgs e)
+    {
+        var p = (Pin)sender;
+
+        var litterReportId = p.AutomationId;
+        await Shell.Current.GoToAsync($"{nameof(ViewLitterReportPage)}?LitterReportId={litterReportId}");
     }
 
     private async void OnMapClicked(object sender, MapClickedEventArgs e)

@@ -12,37 +12,73 @@
         <Grid>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
 
-                <Grid RowDefinitions="Auto, Auto, Auto">
-                    <VerticalStackLayout Grid.Row="0">
+                <Grid RowDefinitions="*, *, *, *">
+                    <Grid RowDefinitions="Auto" ColumnDefinitions="*, *, *, *"
+                      MaximumWidthRequest="400">
+                        <Button Margin="10"
+                            Grid.Row="0" 
+                            Grid.Column="0" 
+                            Command="{Binding EditLitterReportCommand}" 
+                            Text="Edit"
+                            IsEnabled="{Binding CanEditLitterReport}"
+                            IsVisible="{Binding CanEditLitterReport}" 
+                            Style="{StaticResource PrimarySmallButton}" >
+                        </Button>
+                        <Button Margin="10"
+                            Grid.Row="0" 
+                            Grid.Column="1" 
+                            Command="{Binding MarkLitterReportCleanedCommand}" 
+                            IsEnabled="{Binding CanMarkLitterReportCleaned}"
+                            IsVisible="{Binding CanMarkLitterReportCleaned}" 
+                            Style="{StaticResource SecondarySmallButton}" 
+                            Text="Mark Cleaned">
+                        </Button>
+                        <Button Margin="10"
+                            Grid.Row="0" 
+                            Grid.Column="2" 
+                            Command="{Binding DeleteLitterReportCommand}" 
+                            IsEnabled="{Binding CanDeleteLitterReport}"
+                            IsVisible="{Binding CanDeleteLitterReport}" 
+                            Style="{StaticResource SecondarySmallButton}" 
+                            Text="Delete">
+                        </Button>
+                        <Button Margin="10"
+                            Grid.Row="0" 
+                            Grid.Column="4" 
+                            Padding="5"
+                            Command="{Binding ViewEventCommand}" 
+                            IsEnabled="{Binding IsAssignedToEvent}"
+                            IsVisible="{Binding IsAssignedToEvent}" 
+                            Style="{StaticResource SecondarySmallButton}" 
+                            Text="View Event">
+                        </Button>
+                    </Grid>
+
+                    <VerticalStackLayout Grid.Row="1">
                         <Label Text="Name" Style="{StaticResource FieldLabel}" />
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Label
+                        <Label
                                 Text="{Binding LitterReportViewModel.Name}"
                                 VerticalOptions="Center"
                                 HorizontalOptions="Start"
                                 HorizontalTextAlignment="Center" />
-                        </Border>
                     </VerticalStackLayout>
 
-                    <VerticalStackLayout Grid.Row="1">
+                    <VerticalStackLayout Grid.Row="2">
                         <Label Text="Description" Style="{StaticResource FieldLabel}" />
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Label
+                        <Label
                                 Text="{Binding LitterReportViewModel.Description}"
                                 VerticalOptions="Center"
                                 HorizontalOptions="Start"
                                 HorizontalTextAlignment="Center" />
-                        </Border>
                     </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Row="2">
+
+                    <VerticalStackLayout Grid.Row="3">
                         <Label Text="Status" Style="{StaticResource FieldLabel}" />
-                        <Border Style="{x:StaticResource RoundBorder}">
-                            <Label
+                        <Label
                                 Text="{Binding LitterReportStatus}"
                                 VerticalOptions="Center"
                                 HorizontalOptions="Start"
                                 HorizontalTextAlignment="Center" />
-                        </Border>
                     </VerticalStackLayout>
                 </Grid>
 
@@ -51,45 +87,11 @@
                         <DataTemplate x:DataType="viewModels:LitterImageViewModel">
                             <controls:CustomPin Location="{Binding Address.Location}"
                                       Address="{Binding Address.StreetAddress}"
-                                      ImageSource="litterreportnew"
+                                      ImageSource="{Binding Address.IconFile}"
                                       Label="Litter Image" />
                         </DataTemplate>
                     </maps:Map.ItemTemplate>
                 </maps:Map>
-
-                <Grid ColumnDefinitions="1*,1*, 1*"
-                      RowDefinitions="Auto"
-                      VerticalOptions="End"
-                      Margin="0,0,0,20">
-                    <Button Grid.Row="0"
-                            Grid.Column="0"
-                            Grid.ColumnSpan="1"
-                            Command="{Binding DeleteLitterReportCommand}"
-                            HorizontalOptions="Center"
-                            Style="{StaticResource RoundButton}"
-                            Text="Delete Report"
-                            IsEnabled="{Binding CanDeleteLitterReport}"
-                            IsVisible="{Binding CanDeleteLitterReport}" />
-
-                    <Button Grid.Row="0"
-                            Grid.Column="1"
-                            Text="Edit Report"
-                            Command="{Binding EditLitterReportCommand}"
-                            IsEnabled="{Binding CanEditLitterReport}"
-                            IsVisible="{Binding CanDeleteLitterReport}"
-                            Margin="10"
-                            Style="{StaticResource RoundButton}" />
-
-                    <Button Grid.Row="0"
-                            Grid.Column="2"
-                            Grid.ColumnSpan="1"
-                            Command="{Binding MarkLitterReportCleanedCommand}"
-                            HorizontalOptions="Center"
-                            Style="{StaticResource RoundButton}"
-                            Text="Mark Cleaned"
-                            IsEnabled="{Binding CanMarkLitterReportCleaned}"
-                            IsVisible="{Binding CanMarkLitterReportCleaned}" />
-                </Grid>
 
                 <CollectionView x:Name="LitterImagesCollection"
                                 ItemsSource="{Binding LitterImageViewModels}"
@@ -98,7 +100,7 @@
                         <DataTemplate x:DataType="viewModels:LitterImageViewModel">
                             <Border Style="{StaticResource RoundBorder}">
                                 <Grid WidthRequest="400"
-                                      ColumnDefinitions="*, 1*"
+                                      ColumnDefinitions="*, *"
                                       RowDefinitions="Auto"
                                       x:Name="LitterImageItem">
                                     <Image Source="{Binding AzureBlobUrl}" MaximumWidthRequest="100" Grid.Column="0"

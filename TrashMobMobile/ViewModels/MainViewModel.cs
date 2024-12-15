@@ -47,6 +47,12 @@ public partial class MainViewModel(IAuthService authService,
     [ObservableProperty]
     private string? welcomeMessage;
 
+    [ObservableProperty]
+    private bool isMapSelected;
+
+    [ObservableProperty]
+    private bool isListSelected;
+
     public ObservableCollection<EventViewModel> UpcomingEvents { get; set; } = [];
     
     public ObservableCollection<LitterReportViewModel> LitterReports { get; set; } = [];
@@ -106,8 +112,16 @@ public partial class MainViewModel(IAuthService authService,
 
                 Addresses.Clear();
 
-                await RefreshEvents();
-                await RefreshLitterReports();
+                var tasks = new List<Task>
+                {
+                    RefreshEvents(),
+                    RefreshLitterReports(),
+                };
+
+                await Task.WhenAll(tasks);
+
+                IsMapSelected = true;
+                IsListSelected = false;
 
                 IsBusy = false;
             }
@@ -147,7 +161,7 @@ public partial class MainViewModel(IAuthService authService,
             IncludeLitterImages = true,
         };
 
-        var litterReports = await litterReportManager.GetLitterReportsAsync(litterFilter);
+        var litterReports = await litterReportManager.GetLitterReportsAsync(litterFilter, ImageSizeEnum.Thumb, getImageUrls: false);
 
         foreach (var litterReport in litterReports.OrderBy(l => l.CreatedDate))
         {
@@ -156,9 +170,7 @@ public partial class MainViewModel(IAuthService authService,
 
             foreach (var litterImageViewModel in vm.LitterImageViewModels)
             {
-                var address = litterImageViewModel.Address;
-                address.IconFile = "litterreportnew";
-                Addresses.Add(address);
+                Addresses.Add(litterImageViewModel.Address);
             }
         }
     }
@@ -177,7 +189,6 @@ public partial class MainViewModel(IAuthService authService,
             vm.IsUserAttending = eventsUserIsAttending.Any(e => e.Id == mobEvent.Id);
 
             UpcomingEvents.Add(vm);
-            vm.Address.IconFile = "eventupcoming";
             Addresses.Add(vm.Address);
         }
     }
@@ -186,6 +197,22 @@ public partial class MainViewModel(IAuthService authService,
     private async Task MyDashboard()
     {
         await Shell.Current.GoToAsync(nameof(MyDashboardPage));
+    }
+
+    [RelayCommand]
+    private Task MapSelected()
+    {
+        IsMapSelected = true;
+        IsListSelected = false;
+        return Task.CompletedTask;
+    }
+
+    [RelayCommand]
+    private Task ListSelected()
+    {
+        IsMapSelected = false;
+        IsListSelected = true;
+        return Task.CompletedTask;
     }
 
     [RelayCommand]

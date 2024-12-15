@@ -4,6 +4,9 @@
 
     public static class EventExtensions
     {
+        private static string MapIconEventUpcoming = "eventupcoming";
+        private static string MapIconEventCompleted = "eventcompleted";
+
         public static string GetFormattedAddress(this Event mobEvent)
         {
             if (string.IsNullOrEmpty(mobEvent.StreetAddress) && string.IsNullOrEmpty(mobEvent.City)
@@ -132,7 +135,13 @@
                 Region = mobEvent.Region,
                 StreetAddress = mobEvent.StreetAddress,
                 Location = new Location(mobEvent.Latitude.Value, mobEvent.Longitude.Value),
+                IconFile = GetMapIcon(mobEvent.IsCompleted()),
             };
+        }
+
+        public static string GetMapIcon(bool isEventCompleted)
+        {
+            return isEventCompleted ? MapIconEventCompleted : MapIconEventUpcoming;
         }
     }
 }

@@ -8,19 +8,107 @@
              x:Class="TrashMobMobile.Pages.ViewEventPage"
              xmlns:controls="clr-namespace:TrashMobMobile.Controls"
              Title="Event Details">
-    <ScrollView>
-        <Grid>
-            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
-                
-                <Label
+    <Grid>
+        <VerticalStackLayout Style="{StaticResource OuterVerticalStack}" Margin="10">
+            <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="*, *, *, *"
+                      MaximumWidthRequest="400">
+
+
+                <Button Margin="5"
+                            Grid.Row="0" 
+                            Grid.Column="0" 
+                            Command="{Binding ViewEventDetailsCommand}" 
+                            Text="View Event Details"
+                            IsVisible="{Binding EnableViewEventDetails}"
+                            Style="{StaticResource SecondarySmallButton}" />
+                <Button Margin="5"
+                            Grid.Row="0" 
+                            Grid.Column="1" 
+                            Command="{Binding ViewEventPartnersCommand}" 
+                            Text="View Event Partners"
+                            IsVisible="{Binding EnableViewEventPartners}"
+                            Style="{StaticResource SecondarySmallButton}" />
+                <Button Margin="5"
+                            Grid.Row="0" 
+                            Grid.Column="2" 
+                            Command="{Binding ViewLitterReportsCommand}" 
+                            Text="View Event Litter Reports"
+                            IsVisible="{Binding EnableViewEventLitterReports}"
+                            Style="{StaticResource SecondarySmallButton}" />
+                <Button Margin="5"
+                            Grid.Row="0" 
+                            Grid.Column="3" 
+                            Command="{Binding ViewEventAttendeesCommand}" 
+                            Text="View Event Attendees"
+                            IsVisible="{Binding EnableViewEventAttendees}"
+                            Style="{StaticResource SecondarySmallButton}" />
+
+                <Button Margin="5"
+                            Grid.Row="1" 
+                            Grid.Column="0" 
+                            Text="Register" 
+                            Command="{Binding RegisterCommand}"
+                            IsVisible="{Binding EnableRegister}"
+                            Style="{StaticResource PrimarySmallButton}" />
+                <Button Margin="5"
+                            Grid.Row="1" 
+                            Grid.Column="0" 
+                            Text="Unregister" 
+                            Command="{Binding UnregisterCommand}"
+                            IsVisible="{Binding EnableUnregister}"
+                            Style="{StaticResource PrimarySmallButton}" />
+                <Button Margin="5"
+                            Grid.Row="1" 
+                            Grid.Column="0" 
+                            Text="Edit Event" 
+                            Command="{Binding EditEventCommand}"
+                            IsVisible="{Binding EnableEditEvent}"
+                            Style="{StaticResource PrimarySmallButton}" />
+                <Button Margin="5"
+                            Grid.Row="1" 
+                            Grid.Column="1" 
+                            Command="{Binding ViewEventSummaryCommand}" 
+                            Text="View Event Summary"
+                            IsVisible="{Binding EnableViewEventSummary}"
+                            Style="{StaticResource SecondarySmallButton}" />
+                <Button Margin="5"
+                            Grid.Row="1" 
+                            Grid.Column="2" 
+                            Command="{Binding RealTimeLocationTrackerCancelCommand}" 
+                            IsVisible="{Binding EnableStartTrackEventRoute}"
+                            Text="Start Tracking" 
+                            Style="{StaticResource SecondarySmallButton}" />
+                <Button Margin="5"
+                            Grid.Row="1" 
+                            Grid.Column="2" 
+                            Command="{Binding RealTimeLocationTrackerCommand}" 
+                            IsVisible="{Binding EnableStopTrackEventRoute}"
+                            Text="Stop Tracking" 
+                            Style="{StaticResource SecondarySmallButton}" />
+            </Grid>
+
+            <Label
                     Text="{Binding EventViewModel.Name}" Style="{StaticResource Headline}"
                     VerticalOptions="Center"
                     Margin="5" />
 
-                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
-                <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" RowSpacing="3"
-                      ColumnDefinitions="1*, 2*">
+            <maps:Map x:Name="eventLocationMap" HeightRequest="200"
+                              ItemsSource="{Binding Addresses}">
+                <maps:Map.ItemTemplate>
+                    <DataTemplate x:DataType="viewModels:AddressViewModel">
+                        <controls:CustomPin Location="{Binding Location}"
+                                          Address="{Binding StreetAddress}"
+                                          ImageSource="{Binding IconFile}"                                          
+                                          Label="{Binding AddressType}" />
+                    </DataTemplate>
+                </maps:Map.ItemTemplate>
+            </maps:Map>
+
+            <ScrollView>
+                <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" RowSpacing="3"
+                      ColumnDefinitions="*, 2*" IsVisible="{Binding IsDetailsVisible}">
                     <Label Grid.Row="0" Grid.Column="0" Text="{Binding SelectedEventType}" FontSize="Small"
                            Margin="10, 0, 10,0" Grid.ColumnSpan="2" />
                     <Label Grid.Row="1" Grid.Column="0" Text="{Binding EventViewModel.DisplayDate}"
@@ -32,61 +120,156 @@
                     <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
                            Text="{Binding EventViewModel.Address.DisplayAddress }" FontAttributes="Bold"
                            Margin="10,0,10,0" />
-                    <maps:Map Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" x:Name="eventLocationMap"
-                              ItemsSource="{Binding Addresses}">
+                    <Label Grid.Row="4" Grid.Column="0" Text="About this event" FontAttributes="Bold"
+                           Grid.ColumnSpan="2" />
+                    <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding EventViewModel.Description}"
+                           FontSize="Micro" />
+                    <Label Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding WhatToExpect}"
+                           FontSize="Micro" />
+                    <Label Grid.Row="7" Grid.Column="0" Text="Attendees" FontSize="Micro" />
+                    <Label Grid.Row="8" Grid.Column="1" Text="{Binding AttendeeCount}" FontSize="Micro" />
+                </Grid>
+            </ScrollView>
+
+            <Grid IsVisible="{Binding IsPartnersVisible}" RowDefinitions="Auto, Auto">
+                <Label Grid.Row="0"
+                           Text="Assigned Event Partners"
+                           FontSize="Medium"
+                           VerticalOptions="Center"
+                           HorizontalOptions="Start"
+                           HorizontalTextAlignment="Center"
+                           Margin="10" />
+
+                <Label Grid.Row="1" Text="We're sorry. There are currently no partners assigned to this event." IsVisible="{Binding AreNoPartnersAvailable}" />
+
+                <CollectionView Grid.Row="1" x:Name="AvailableEventPartners"
+                                    ItemsSource="{Binding AvailablePartners}"
+                                    SelectionMode="None" 
+                                    IsVisible="{Binding ArePartnersAvailable}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate 
+                                x:DataType="viewModels:EventPartnerLocationViewModel">
+                            <Border Style="{StaticResource RoundBorder}" Margin="5">
+                                <Grid RowDefinitions="1*, 2*, 1*" ColumnDefinitions="*, *"
+                                          x:Name="PartnerLocationItem">
+                                    <Label Text="Partner Name" Style="{StaticResource FieldLabel}" Grid.Row="0" />
+                                    <Label Text="{Binding PartnerLocationName}" Grid.Column="1" Grid.Row="0" />
+                                    <Label Text="Info" Style="{StaticResource FieldLabel}" Grid.Row="1" />
+                                    <Label Text="{Binding PartnerLocationNotes}" Grid.Row="1" Grid.Column="1" />
+                                    <Label Text="Services Requested" Style="{StaticResource FieldLabel}" Grid.Row="2" />
+                                    <Label Text="{Binding PartnerServicesEngaged}" Grid.Row="2" Grid.Column="1" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+
+            <Grid IsVisible="{Binding IsAttendeesVisible}" RowDefinitions="*, *, *">
+
+                <Label Grid.Row="0"
+                           Text="Event Attendees"
+                           FontSize="Medium"
+                           VerticalOptions="Center"
+                           HorizontalOptions="Start"
+                           HorizontalTextAlignment="Center"
+                           Margin="10" />
+
+                <CollectionView x:Name="EventAttendeesCollection" Grid.Row="1"
+                                    ItemsSource="{Binding EventAttendees}"
+                                    SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="viewModels:EventAttendeeViewModel">
+                            <StackLayout Margin="5">
+                                <Border Style="{StaticResource RoundBorder}" Margin="5">
+                                    <Grid ColumnDefinitions="*, *" RowDefinitions="*, *, *">
+                                        <Label Text="User Name" Style="{StaticResource FieldLabel}" Grid.Row="0" />
+                                        <Label Text="{Binding UserName}" Grid.Row="0" Grid.Column="1" />
+                                        <Label Text="Member Since" Style="{StaticResource FieldLabel}" Grid.Row="1" />
+                                        <Label Text="{Binding MemberSince}" Grid.Row="1" Grid.Column="1" />
+                                        <Label Text="Event Role" Style="{StaticResource FieldLabel}" Grid.Row="2" />
+                                        <Label Text="{Binding Role}" Grid.Row="2" Grid.Column="1"/>
+                                    </Grid>
+                                </Border>
+                            </StackLayout>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+
+
+            <Grid IsVisible="{Binding IsLitterReportsVisible}" RowDefinitions="*, *, *">
+
+                <Label Grid.Row="0"
+                           Text="Assigned Litter Reports"
+                           FontSize="Medium"
+                           VerticalOptions="Center"
+                           HorizontalOptions="Start"
+                           HorizontalTextAlignment="Center"
+                           IsVisible="{Binding AreLitterReportsAvailable}"
+                           Margin="10" />
+
+                <Label Text="There are currently no litter reports assigned to this event." IsVisible="{Binding AreNoLitterReportsAvailable}" Margin="10" Grid.Row="1" />
+
+                <Grid RowDefinitions="*, *, *, *" IsVisible="{Binding AreLitterReportsAvailable}" Grid.Row="2">
+                    <Grid Margin="5" Grid.Row="0"
+                      ColumnDefinitions="6*, *, *"
+                      RowDefinitions="Auto">
+                        <ImageButton Grid.Column="1"
+                             HeightRequest="24"
+                             Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconMap}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" 
+                             Command="{Binding MapSelectedCommand}" />
+                        <ImageButton Grid.Column="2" 
+                             HeightRequest="24"
+                             Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconViewList}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" 
+                             Command="{Binding ListSelectedCommand}" />
+                    </Grid>
+
+                    <maps:Map x:Name="litterImagesMap"
+                              Grid.Row="1"
+                              ItemsSource="{Binding LitterImages}"
+                              IsVisible="{Binding IsLitterReportMapSelected}">
                         <maps:Map.ItemTemplate>
-                            <DataTemplate x:DataType="viewModels:AddressViewModel">
-                                <controls:CustomPin Location="{Binding Location}"
-                                          Address="{Binding StreetAddress}"
-                                          ImageSource="eventupcoming"
-                                          Label="{Binding AddressType}" />
+                            <DataTemplate x:DataType="viewModels:LitterImageViewModel">
+                                <controls:CustomPin Location="{Binding Address.Location}"
+                                          Address="{Binding Address.StreetAddress}"
+                                          Label="{Binding Address.StreetAddress}"
+                                          AutomationId="{Binding LitterReportId}"
+                                          ImageSource="{Binding Address.IconFile}" />
                             </DataTemplate>
                         </maps:Map.ItemTemplate>
                     </maps:Map>
-                    <Label Grid.Row="6" Grid.Column="0" Text="About this event" FontAttributes="Bold"
-                           Grid.ColumnSpan="2" />
-                    <Label Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding EventViewModel.Description}"
-                           FontSize="Micro" />
-                    <Label Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding WhatToExpect}"
-                           FontSize="Micro" />
-                    <Label Grid.Row="9" Grid.Column="0" Text="Attendees" FontSize="Micro" />
-                    <Label Grid.Row="9" Grid.Column="1" Text="{Binding AttendeeCount}" FontSize="Micro" />
-                    <Button Grid.Row="10" Grid.Column="1" Text="Register" Command="{Binding RegisterCommand}"
-                            IsVisible="{Binding EnableRegister}" Margin="10" />
-                    <Button Grid.Row="10" Grid.Column="1" Text="Unregister" Command="{Binding UnregisterCommand}"
-                            IsVisible="{Binding EnableUnregister}" Margin="10" />
-                    <Button Grid.Row="10" Grid.Column="1" Text="Edit Event" Command="{Binding EditEventCommand}"
-                            IsVisible="{Binding EnableEditEvent}" Margin="10" />
-                    <Button Grid.Row="10" Grid.Column="1" Text="View Event Summary"
-                            Command="{Binding ViewEventSummaryCommand}" IsVisible="{Binding EnableViewEventSummary}"
-                            Margin="10" />
-                    <Button Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="2" Text="Start Tracking" Command="{Binding RealTimeLocationTrackerCommand}"
-                            IsVisible="{Binding EnableStartTrackEventRoute}" Margin="10" IsEnabled="{Binding EnableStartTrackEventRoute}" />
-                    <Button Grid.Row="11" Grid.Column="1" Text="Stop Tracking" Command="{Binding RealTimeLocationTrackerCancelCommand}"
-                            IsVisible="{Binding EnableStopTrackEventRoute}" IsEnabled="{Binding EnableStopTrackEventRoute}" Margin="10" />
 
-                    <CollectionView x:Name="LitterReportsCollection" Grid.Row="13"
-                        ItemsSource="{Binding LitterReports}"
-                        SelectionMode="None">
+                    <CollectionView x:Name="LitterReportsCollection" Grid.Row="1"
+                                    ItemsSource="{Binding EventLitterReports}"
+                                    IsVisible="{Binding IsLitterReportListSelected}"
+                                    SelectionMode="None">
                         <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="viewModels:LitterReportViewModel">
+                            <DataTemplate x:DataType="viewModels:EventLitterReportViewModel">
                                 <StackLayout Margin="5">
-                                    <Border Style="{StaticResource RoundBorder}">
-                                        <Grid ColumnDefinitions="1*, 1*"
-                           RowDefinitions="Auto, Auto, Auto"
-                           x:Name="LitterReportItem">
-                                            <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="1"
-                                FontSize="Small" />
-                                            <Label Text="{Binding CreatedDate}" Grid.Row="0" Grid.ColumnSpan="1"
-                                Grid.Column="1" FontSize="Micro" />
-                                            <Label Text="{Binding Description}" Grid.Row="1" Grid.ColumnSpan="2"
-                                FontSize="Micro" />
-                                            <Label Text="Locations" Grid.Row="2" FontSize="Micro" FontAttributes="Bold" />
-                                            <CollectionView ItemsSource="{Binding LitterImageViewModels}" Grid.Row="2"
-                                         Grid.Column="1">
+                                    <Border Style="{StaticResource RoundBorder}" Margin="5">
+                                        <Grid ColumnDefinitions="*, *"
+                                              RowDefinitions="*, *, *, *, *, *, *"
+                                              x:Name="LitterReportItem">
+                                            <Label Text="Name" Style="{StaticResource FieldLabel}" Grid.Row="0" />
+                                            <Label Text="{Binding Name}" Grid.Row="0" Grid.Column="1" />
+                                            <Label Text="Date Created" Style="{StaticResource FieldLabel}" Grid.Row="1" />
+                                            <Label Text="{Binding CreatedDate}" Grid.Row="1" Grid.Column="1" />
+                                            <Label Text="Status" Style="{StaticResource FieldLabel}" Grid.Row="2" />
+                                            <Label Text="{Binding Status}" Grid.Row="2" Grid.Column="1"/>
+                                            <Label Text="Description" Style="{StaticResource FieldLabel}" Grid.Row="3" />
+                                            <Label Text="{Binding Description}" Grid.Row="3" Grid.Column="1" />
+                                            <Label Text="Locations" Grid.Row="5" Style="{StaticResource FieldLabel}" />
+                                            <CollectionView ItemsSource="{Binding LitterImageViewModels}" Grid.Row="6"
+                                                            Grid.Column="0" Grid.ColumnSpan="2">
                                                 <CollectionView.ItemTemplate>
                                                     <DataTemplate x:DataType="viewModels:LitterImageViewModel">
-                                                        <Label Text="{Binding Address.DisplayAddress}" FontSize="Micro" />
+                                                        <Border Style="{StaticResource RoundBorder}" Margin="0, 3">
+                                                            <Grid ColumnDefinitions="*, *">
+                                                                <Label Text="{Binding Address.DisplayAddress}" Grid.Column="0" LineBreakMode="WordWrap" FontSize="Micro" />
+                                                                <Image Source="{Binding AzureBlobUrl}" MaximumWidthRequest="60" Grid.Column="1" />
+                                                            </Grid>
+                                                        </Border>
                                                     </DataTemplate>
                                                 </CollectionView.ItemTemplate>
                                             </CollectionView>
@@ -97,12 +280,13 @@
                         </CollectionView.ItemTemplate>
                     </CollectionView>
                 </Grid>
+            </Grid>
 
-            </VerticalStackLayout>
-            <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
+
+        </VerticalStackLayout>
+        <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
                      VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center"
+        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center"
                                HorizontalOptions="Center" />
-        </Grid>
-    </ScrollView>
+    </Grid>
 </ContentPage>

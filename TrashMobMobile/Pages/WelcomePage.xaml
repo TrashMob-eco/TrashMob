@@ -15,33 +15,116 @@
                     HorizontalOptions="Center"
                     HorizontalTextAlignment="Center" />
 
-                <Border Style="{x:StaticResource RoundBorder}">
-                    <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="1*, 1*, 1*, 1*, 1*">
-                        <Image Grid.Row="0" Grid.Column="0" Source="calendar" MaximumWidthRequest="25" />
-                        <Label Grid.Row="1" Grid.Column="0" Text="{ Binding StatisticsViewModel.TotalEvents }"
-                               FontSize="Micro" HorizontalTextAlignment="Center" />
-                        <Label Grid.Row="2" Grid.Column="0" Text="Events Hosted" FontSize="Micro"
-                               HorizontalTextAlignment="Center" />
-                        <Image Grid.Row="0" Grid.Column="1" Source="person" MaximumWidthRequest="25" />
-                        <Label Grid.Row="1" Grid.Column="1" Text="{ Binding StatisticsViewModel.TotalAttendees }"
-                               FontSize="Micro" HorizontalTextAlignment="Center" />
-                        <Label Grid.Row="2" Grid.Column="1" Text="Participants" FontSize="Micro"
-                               HorizontalTextAlignment="Center" />
-                        <Image Grid.Row="0" Grid.Column="2" Source="trashbag" WidthRequest="25" />
-                        <Label Grid.Row="1" Grid.Column="2" Text="{ Binding StatisticsViewModel.TotalBags }"
-                               FontSize="Micro" HorizontalTextAlignment="Center" />
-                        <Label Grid.Row="2" Grid.Column="2" Text="Bags Collected" FontSize="Micro"
-                               HorizontalTextAlignment="Center" />
-                        <Image Grid.Row="0" Grid.Column="3" Source="clock" WidthRequest="25" />
-                        <Label Grid.Row="1" Grid.Column="3" Text="{ Binding StatisticsViewModel.TotalHours }"
-                               FontSize="Micro" HorizontalTextAlignment="Center" />
-                        <Label Grid.Row="2" Grid.Column="3" Text="Hours Spent" FontSize="Micro"
-                               HorizontalTextAlignment="Center" />
-                        <Image Grid.Row="0" Grid.Column="4" Source="trashbag" WidthRequest="25" />
-                        <Label Grid.Row="1" Grid.Column="4" Text="{ Binding StatisticsViewModel.TotalLitterReportsSubmitted }"
-                               FontSize="Micro" HorizontalTextAlignment="Center" />
-                        <Label Grid.Row="2" Grid.Column="4" Text="Litter Reports" FontSize="Micro"
-                               HorizontalTextAlignment="Center" />
+                <Border Margin="5, 0, 5, 10"
+                        Style="{x:StaticResource RoundBorder}">
+                    <Grid ColumnDefinitions="*, *, *, *, *"
+                          RowDefinitions="Auto, Auto, Auto, Auto">
+                        <Label Grid.Row="0"
+                           Grid.Column="0"
+                           Grid.ColumnSpan="4"
+                           Margin="0,0,0,10"
+                           FontSize="Micro"
+                           Text="Here's what TrashMob's volunteers have done so far!" />
+                        <Image Grid.Row="1"
+                           Grid.Column="0"
+                           MaximumWidthRequest="40">
+                            <Image.Source>
+                                <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconCalendarCheck}"
+                                             Size="50"
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </Image.Source>
+                        </Image>
+                        <Image Grid.Row="1"
+                           Grid.Column="1"
+                           MaximumWidthRequest="40">
+                            <Image.Source>
+                                <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconAccount}"
+                                             Size="50"
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </Image.Source>
+                        </Image>
+                        <Image Grid.Row="1"
+                           Grid.Column="2"
+                           MaximumWidthRequest="40">
+                            <Image.Source>
+                                <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconTrashCanOutline}"
+                                             Size="50"
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </Image.Source>
+                        </Image>
+                        <Image Grid.Row="1"
+                           Grid.Column="3"
+                           MaximumWidthRequest="40">
+                            <Image.Source>
+                                <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconClockOutline}"
+                                             Size="50"
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </Image.Source>
+                        </Image>
+                        <Image Grid.Row="1"
+                           Grid.Column="4"
+                           MaximumWidthRequest="40">
+                            <Image.Source>
+                                <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconClipboardText}"
+                                             Size="50"
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </Image.Source>
+                        </Image>
+                        <Label Grid.Row="2"
+                           Grid.Column="0"
+                           FontSize="Micro"
+                           HorizontalTextAlignment="Center"
+                           Text="{Binding StatisticsViewModel.TotalEvents}" />
+                        <Label Grid.Row="2"
+                           Grid.Column="1"
+                           FontSize="Micro"
+                           HorizontalTextAlignment="Center"
+                           Text="{Binding StatisticsViewModel.TotalAttendees}" />
+                        <Label Grid.Row="2"
+                           Grid.Column="2"
+                           FontSize="Micro"
+                           HorizontalTextAlignment="Center"
+                           Text="{Binding StatisticsViewModel.TotalBags}" />
+                        <Label Grid.Row="2"
+                           Grid.Column="3"
+                           FontSize="Micro"
+                           HorizontalTextAlignment="Center"
+                           Text="{Binding StatisticsViewModel.TotalHours}" />
+                        <Label Grid.Row="2"
+                           Grid.Column="4"
+                           FontSize="Micro"
+                           HorizontalTextAlignment="Center"
+                           Text="{Binding StatisticsViewModel.TotalLitterReportsSubmitted}" />
+                        <Label Grid.Row="3"
+                           Grid.Column="0"
+                           FontSize="Micro"
+                           HorizontalTextAlignment="Center"
+                           Text="Events Hosted" />
+                        <Label Grid.Row="3"
+                           Grid.Column="1"
+                           FontSize="Micro"
+                           HorizontalTextAlignment="Center"
+                           Text="Participants" />
+                        <Label Grid.Row="3"
+                           Grid.Column="2"
+                           FontSize="Micro"
+                           HorizontalTextAlignment="Center"
+                           Text="Bags Collected" />
+                        <Label Grid.Row="3"
+                           Grid.Column="3"
+                           FontSize="Micro"
+                           HorizontalTextAlignment="Center"
+                           Text="Hours Spent" />
+                        <Label Grid.Row="3"
+                           Grid.Column="4"
+                           FontSize="Micro"
+                           HorizontalTextAlignment="Center"
+                           Text="Litter Reports" />
                     </Grid>
                 </Border>
 

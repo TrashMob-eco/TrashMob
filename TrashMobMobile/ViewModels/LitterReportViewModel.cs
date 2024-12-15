@@ -41,7 +41,7 @@ public partial class LitterReportViewModel : ObservableObject
                     LitterReportStatus = "New";
                     break;
                 case 2:
-                    LitterReportStatus = "Assigned";
+                    LitterReportStatus = "Assigned to an Event";
                     break;
                 case 3:
                     LitterReportStatus = "Cleaned";

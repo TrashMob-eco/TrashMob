@@ -37,6 +37,12 @@ public partial class AppShell : Shell
         await Current.GoToAsync($"{nameof(MyDashboardPage)}");
     }
 
+    public async void OnSetMyLocationClicked(object sender, EventArgs e)
+    {
+        Current.FlyoutIsPresented = false;
+        await Current.GoToAsync($"{nameof(SetUserLocationPreferencePage)}");
+    }
+
     public async void OnPrivacyPolicyClicked(object sender, EventArgs e)
     {
         Current.FlyoutIsPresented = false;

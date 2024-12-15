@@ -9,7 +9,7 @@ export const GoogleMap = (props: PropsWithChildren<MapProps>) => {
     return (
         <Map
             mapId='6f295631d841c617'
-            gestureHandling='greedy'
+            gestureHandling={props.gestureHandling ?? 'greedy'}
             disableDefaultUI
             style={{ width: '100%', height: '500px' }}
             defaultZoom={defaultZoomProps || MapStore.defaultUserLocationZoom}

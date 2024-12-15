@@ -27,13 +27,13 @@
                         <DataTemplate x:DataType="viewModels:AddressViewModel">
                             <controls:CustomPin Location="{Binding Location}"
                                       Address="{Binding StreetAddress}"
-                                      ImageSource="eventupcoming"
+                                      ImageSource="{Binding IconFile}"
                                       Label="Your Preferred Location" />
                         </DataTemplate>
                     </maps:Map.ItemTemplate>
                 </maps:Map>
 
-                <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="1*, 1*" Margin="10">
+                <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="*, *" Margin="10">
                     <VerticalStackLayout Grid.Row="0" Grid.Column="0">
                         <Label Text="Set the Max Travel Distance you are willing to travel for an event."
                                Style="{StaticResource FieldLabel}" />
@@ -68,7 +68,9 @@
                     </VerticalStackLayout>
                 </Grid>
 
-                <Button Text="Update Location" Command="{Binding UpdateLocationCommand}" Margin="10" />
+                <Button Text="Update Location" 
+                        Command="{Binding UpdateLocationCommand}"
+                        Style="{StaticResource PrimaryLargeButton}"/>
             </VerticalStackLayout>
             <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
                      VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />

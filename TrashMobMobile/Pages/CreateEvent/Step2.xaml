@@ -23,12 +23,12 @@
                 <DataTemplate x:DataType="viewModels:EventViewModel">
                     <controls:CustomPin Address="{Binding Address.StreetAddress}"
                                   Label="{Binding Name}"
-                                  ImageSource="eventupcoming"
+                                  ImageSource="{Binding Address.IconFile}"
                                   Location="{Binding Address.Location}" />
                 </DataTemplate>
             </maps:Map.ItemTemplate>
         </maps:Map>
-        <Grid ColumnDefinitions="1*, 1*"
+        <Grid ColumnDefinitions="*, *"
                   RowDefinitions="Auto, Auto, Auto">
             <VerticalStackLayout Grid.Row="0" Grid.ColumnSpan="2">
                 <Label Text="Address" Style="{StaticResource FieldLabel}" />

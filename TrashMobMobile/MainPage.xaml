@@ -9,218 +9,227 @@
              x:DataType="vm:MainViewModel">
 
     <Grid>
-        <ScrollView>
-            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
-                
-                <Grid ColumnDefinitions="1*, 1*"
+        <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
+
+            <Grid Margin="0, 20"
+                      ColumnDefinitions="*, *, *, *"
                       RowDefinitions="Auto">
-                    <Button Grid.Column="0"
+                <Button Grid.Row="0"
+                            Grid.Column="0"
+                            Command="{Binding CreateEventCommand}"
+                            HorizontalOptions="Center"
+                            Style="{StaticResource PrimarySmallButton}"
+                            Text="Create an Event" />
+                <Button Grid.Row="0"
+                            Grid.Column="1"
+                            Padding="15,5"
+                            Command="{Binding CreateLitterReportCommand}"
+                            HorizontalOptions="Center"
+                            Style="{StaticResource SecondarySmallButton}"
+                            Text="Report Litter" />
+                <Button Grid.Column="2"
                             Command="{Binding SearchEventsCommand}"
+                            Padding="15,5"
+                            Style="{StaticResource SecondarySmallButton}"
                             Text="Search Events" />
-                    <Button Grid.Column="1"
+                <Button Grid.Column="3"
                             Command="{Binding SearchLitterReportsCommand}"
+                            Style="{StaticResource SecondarySmallButton}"
                             Text="Search Litter Reports" />
-                </Grid>
-                <Border Margin="5,0"
+            </Grid>
+            <Border Margin="5, 0, 5, 10"
                         Style="{x:StaticResource RoundBorder}">
-                    <Grid ColumnDefinitions="1*, 1*, 1*, 1*, 1*"
+                <Grid ColumnDefinitions="*, *, *, *, *"
                           RowDefinitions="Auto, Auto, Auto, Auto">
-                        <Label Grid.Row="0"
-                               Grid.Column="0"
-                               Grid.ColumnSpan="4"
-                               Margin="0,0,0,10"
-                               FontSize="Micro"
-                               Text="Here's what TrashMob's volunteers have done so far!" />
-                        <Image Grid.Row="1"
-                               Grid.Column="0"
-                               MaximumWidthRequest="25"
-                               Source="calendar" />
-                        <Label Grid.Row="2"
-                               Grid.Column="0"
-                               FontSize="Micro"
-                               HorizontalTextAlignment="Center"
-                               Text="{Binding StatisticsViewModel.TotalEvents}" />
-                        <Label Grid.Row="3"
-                               Grid.Column="0"
-                               FontSize="Micro"
-                               HorizontalTextAlignment="Center"
-                               Text="Events Hosted" />
-                        <Image Grid.Row="1"
-                               Grid.Column="1"
-                               MaximumWidthRequest="40">
-                               <Image.Source>
-                                      <FontImageSource
-                                             FontFamily="{StaticResource GoogleMaterialFontFamily}"
+                    <Label Grid.Row="0"
+                           Grid.Column="0"
+                           Grid.ColumnSpan="4"
+                           Margin="0,0,0,10"
+                           FontSize="Micro"
+                           Text="Here's what TrashMob's volunteers have done so far!" />
+                    <Image Grid.Row="1"
+                           Grid.Column="0"
+                           MaximumWidthRequest="40">
+                        <Image.Source>
+                            <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconCalendarCheck}"
+                                             Size="50"
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                        </Image.Source>
+                    </Image>
+                    <Image Grid.Row="1"
+                           Grid.Column="1"
+                           MaximumWidthRequest="40">
+                        <Image.Source>
+                            <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
                                              Glyph="{StaticResource IconAccount}"
                                              Size="50"
-                                             Color="{StaticResource AppGreen}" />
-                               </Image.Source>
-                        </Image>
-                        <Label Grid.Row="2"
-                               Grid.Column="1"
-                               FontSize="Micro"
-                               HorizontalTextAlignment="Center"
-                               Text="{Binding StatisticsViewModel.TotalAttendees}" />
-                        <Label Grid.Row="3"
-                               Grid.Column="1"
-                               FontSize="Micro"
-                               HorizontalTextAlignment="Center"
-                               Text="Participants" />
-                        <Image Grid.Row="1"
-                               Grid.Column="2"
-                               Source="trashbag"
-                               WidthRequest="25" />
-                        <Label Grid.Row="2"
-                               Grid.Column="2"
-                               FontSize="Micro"
-                               HorizontalTextAlignment="Center"
-                               Text="{Binding StatisticsViewModel.TotalBags}" />
-                        <Label Grid.Row="3"
-                               Grid.Column="2"
-                               FontSize="Micro"
-                               HorizontalTextAlignment="Center"
-                               Text="Bags Collected" />
-                        <Image Grid.Row="1"
-                               Grid.Column="3"
-                               Source="clock"
-                               WidthRequest="25" />
-                        <Label Grid.Row="2"
-                               Grid.Column="3"
-                               FontSize="Micro"
-                               HorizontalTextAlignment="Center"
-                               Text="{Binding StatisticsViewModel.TotalHours}" />
-                        <Label Grid.Row="3"
-                               Grid.Column="3"
-                               FontSize="Micro"
-                               HorizontalTextAlignment="Center"
-                               Text="Hours Spent" />
-                        <Image Grid.Row="1"
-                               Grid.Column="4"
-                               Source="trashbag"
-                               WidthRequest="25" />
-                        <Label Grid.Row="2"
-                               Grid.Column="4"
-                               FontSize="Micro"
-                               HorizontalTextAlignment="Center"
-                               Text="{Binding StatisticsViewModel.TotalLitterReportsSubmitted}" />
-                        <Label Grid.Row="3"
-                               Grid.Column="4"
-                               FontSize="Micro"
-                               HorizontalTextAlignment="Center"
-                               Text="Litter Reports" />
-                    </Grid>
-                </Border>
-
-                <Grid Margin="5"
-                      ColumnDefinitions="1*, 1*"
-                      RowDefinitions="Auto, Auto, Auto">
-                    <Button Grid.Row="0"
-                            Grid.Column="1"
-                            Style="{StaticResource LinkButton}"
-                            Command="{Binding MyDashboardCommand}"
-                            Text="View My Dashboard" />
-                    <Label Grid.Row="1"
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                        </Image.Source>
+                    </Image>
+                    <Image Grid.Row="1"
+                           Grid.Column="2"
+                           MaximumWidthRequest="40">
+                        <Image.Source>
+                            <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconTrashCanOutline}"
+                                             Size="50"
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                        </Image.Source>
+                    </Image>
+                    <Image Grid.Row="1"
+                           Grid.Column="3"
+                           MaximumWidthRequest="40">
+                        <Image.Source>
+                            <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconClockOutline}"
+                                             Size="50"
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                        </Image.Source>
+                    </Image>
+                    <Image Grid.Row="1"
+                           Grid.Column="4"
+                           MaximumWidthRequest="40">
+                        <Image.Source>
+                            <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconClipboardText}"
+                                             Size="50"
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                        </Image.Source>
+                    </Image>
+                    <Label Grid.Row="2"
                            Grid.Column="0"
-                           FontAttributes="Bold"
-                           Text="Find Nearby Events" />
-                    <Label Grid.Row="1"
+                           FontSize="Micro"
+                           HorizontalTextAlignment="Center"
+                           Text="{Binding StatisticsViewModel.TotalEvents}" />
+                    <Label Grid.Row="2"
                            Grid.Column="1"
                            FontSize="Micro"
-                           HorizontalOptions="Center"
-                           Text="Your Location" />
-                    <HorizontalStackLayout Grid.Row="2">
-                        <RadioButton x:Name="viewMap"
-                                     Content="Map"
-                                     FontSize="Micro"
-                                     IsChecked="True" />
-                        <RadioButton x:Name="viewList"
-                                     Content="List"
-                                     FontSize="Micro" />
-                    </HorizontalStackLayout>
-                    <Button Grid.Row="2"
-                            Grid.Column="1"
-                            Style="{StaticResource LinkButton}"
-                            Command="{Binding SetLocationPreferenceCommand}"
-                            Text="{Binding UserLocationDisplay}" />
+                           HorizontalTextAlignment="Center"
+                           Text="{Binding StatisticsViewModel.TotalAttendees}" />
+                    <Label Grid.Row="2"
+                           Grid.Column="2"
+                           FontSize="Micro"
+                           HorizontalTextAlignment="Center"
+                           Text="{Binding StatisticsViewModel.TotalBags}" />
+                    <Label Grid.Row="2"
+                           Grid.Column="3"
+                           FontSize="Micro"
+                           HorizontalTextAlignment="Center"
+                           Text="{Binding StatisticsViewModel.TotalHours}" />
+                    <Label Grid.Row="2"
+                           Grid.Column="4"
+                           FontSize="Micro"
+                           HorizontalTextAlignment="Center"
+                           Text="{Binding StatisticsViewModel.TotalLitterReportsSubmitted}" />
+                    <Label Grid.Row="3"
+                           Grid.Column="0"
+                           FontSize="Micro"
+                           HorizontalTextAlignment="Center"
+                           Text="Events Hosted" />
+                    <Label Grid.Row="3"
+                           Grid.Column="1"
+                           FontSize="Micro"
+                           HorizontalTextAlignment="Center"
+                           Text="Participants" />
+                    <Label Grid.Row="3"
+                           Grid.Column="2"
+                           FontSize="Micro"
+                           HorizontalTextAlignment="Center"
+                           Text="Bags Collected" />
+                    <Label Grid.Row="3"
+                           Grid.Column="3"
+                           FontSize="Micro"
+                           HorizontalTextAlignment="Center"
+                           Text="Hours Spent" />
+                    <Label Grid.Row="3"
+                           Grid.Column="4"
+                           FontSize="Micro"
+                           HorizontalTextAlignment="Center"
+                           Text="Litter Reports" />
                 </Grid>
+            </Border>
 
-                <maps:Map x:Name="mainMap"
-                          IsVisible="{Binding Source={x:Reference viewMap}, Path=IsChecked}"
+            <Grid Margin="5"
+                      ColumnDefinitions="6*, *, *"
+                      RowDefinitions="Auto">
+                <ImageButton Grid.Column="1"
+                             HeightRequest="24"
+                             Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconMap}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" 
+                             Command="{Binding MapSelectedCommand}" />
+                <ImageButton Grid.Column="2" 
+                             HeightRequest="24"
+                             Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconViewList}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" 
+                             Command="{Binding ListSelectedCommand}" />
+            </Grid>
+
+            <Label Text="Click on a map pin popup to see details for the event/litter report." 
+                   FontSize="Micro" 
+                   IsVisible="{Binding IsMapSelected}"
+                   Margin="10, 0" />
+
+            <maps:Map x:Name="mainMap"
+                          IsVisible="{Binding IsMapSelected}"
                           ItemsSource="{Binding Addresses}">
-                    <maps:Map.ItemTemplate>
-                        <DataTemplate x:DataType="vm:AddressViewModel">
-                            <controls:CustomPin Address="{Binding StreetAddress}"
+                <maps:Map.ItemTemplate>
+                    <DataTemplate x:DataType="vm:AddressViewModel">
+                        <controls:CustomPin Address="{Binding StreetAddress}"
                                       AutomationId="{Binding AutomationId}"                                      
                                       InfoWindowClicked="Pin_InfoWindowClicked"
                                       Label="{Binding DisplayName}"
                                       ImageSource="{Binding IconFile}"
                                       Location="{Binding Location}" />
-                        </DataTemplate>
-                    </maps:Map.ItemTemplate>
-                </maps:Map>
+                    </DataTemplate>
+                </maps:Map.ItemTemplate>
+            </maps:Map>
 
-                <CollectionView x:Name="EventsCollection"
+            <Label Text="Upcoming Events" 
+                   FontSize="Medium" 
+                   IsVisible="{Binding IsListSelected}"
+                   Margin="10, 0" />
+
+            <CollectionView x:Name="EventsCollection"
                                 Margin="5"
-                                IsVisible="{Binding Source={x:Reference viewList}, Path=IsChecked}"
+                                IsVisible="{Binding IsListSelected}"
                                 ItemsSource="{Binding UpcomingEvents}"
-                                MaximumHeightRequest="250"
+                                MaximumHeightRequest="400"
                                 SelectedItem="{Binding SelectedEvent}"
                                 SelectionMode="Single">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="vm:EventViewModel">
-                            <StackLayout Margin="5">
-                                <Border Style="{StaticResource RoundBorder}">
-                                    <Grid x:Name="EventItem"
-                                          ColumnDefinitions="1*, 1*"
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:EventViewModel">
+                        <StackLayout Margin="5">
+                            <Border Style="{StaticResource RoundBorder}">
+                                <Grid x:Name="EventItem"
+                                          ColumnDefinitions="*, *"
                                           RowDefinitions="Auto, Auto, Auto, Auto">
 
-                                        <Label Grid.Row="0"
-                                               Grid.ColumnSpan="2"
-                                               FontSize="Small"
-                                               Text="{Binding Name}" />
-                                        <Label Grid.Row="1"
-                                               Grid.ColumnSpan="2"
-                                               FontSize="Micro"
-                                               Text="{Binding DisplayDate}" />
-                                        <Label Grid.Row="1"
-                                               Grid.Column="1"
-                                               FontSize="Micro"
-                                               Text="{Binding DisplayTime}" />
-                                        <Label Grid.Row="2"
-                                               Grid.ColumnSpan="2"
-                                               FontSize="Micro"
-                                               Text="{Binding Address.DisplayAddress}" />
-                                        <Label Grid.Row="3"
-                                               FontSize="Micro"
-                                               Text="{Binding UserRoleForEvent}" />
-                                    </Grid>
-                                </Border>
-                            </StackLayout>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
+                                    <Label Grid.Row="0"
+                                           Grid.ColumnSpan="2"
+                                           FontSize="Small"
+                                           Text="{Binding Name}" />
+                                    <Label Grid.Row="1"
+                                           Grid.ColumnSpan="2"
+                                           FontSize="Micro"
+                                           Text="{Binding DisplayDate}" />
+                                    <Label Grid.Row="1"
+                                           Grid.Column="1"
+                                           FontSize="Micro"
+                                           Text="{Binding DisplayTime}" />
+                                    <Label Grid.Row="2"
+                                           Grid.ColumnSpan="2"
+                                           FontSize="Micro"
+                                           Text="{Binding Address.DisplayAddress}" />
+                                    <Label Grid.Row="3"
+                                           FontSize="Micro"
+                                           Text="{Binding UserRoleForEvent}" />
+                                </Grid>
+                            </Border>
+                        </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
-            </VerticalStackLayout>
-        </ScrollView>
-        <Grid ColumnDefinitions="1*,1*, 1*, 1*"
-              RowDefinitions="Auto"
-              VerticalOptions="End"
-              Margin="0,0,0,20">
-            <Button Grid.Row="0"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    Command="{Binding CreateEventCommand}"
-                    HorizontalOptions="Center"
-                    Style="{StaticResource RoundButton}"
-                    Text="Create an Event" />
-            <Button Grid.Row="0"
-                    Grid.Column="2"
-                    Grid.ColumnSpan="2"
-                    Command="{Binding CreateLitterReportCommand}"
-                    HorizontalOptions="Center"
-                    Style="{StaticResource RoundButton}"
-                    Text="Report Litter" />
-        </Grid>
+        </VerticalStackLayout>
         <BoxView BackgroundColor="{StaticResource TransparentBlack}"
                  HorizontalOptions="Fill"
                  IsVisible="{Binding IsBusy}"

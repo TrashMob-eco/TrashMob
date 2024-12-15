@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { Link, RouteComponentProps } from 'react-router-dom';
-import { Button } from 'reactstrap';
+import { Button } from '@/components/ui/button';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { getEventType } from '../store/eventTypeHelper';
 import EventData from './Models/EventData';
@@ -137,14 +137,18 @@ export const MainEvents: FC<MainEventsDataProps> = ({
 
     const renderEventsList = (events: DisplayEvent[]) => (
         <div>
-            <div className='d-flex justify-content-between'>
-                <Button color='primary' className='mb-2' onClick={() => history.push('/manageeventdashboard')}>
-                    Create a New Event
-                </Button>
-                <Button color='primary' className='mb-2 align-self-right' onClick={sortEventsByDate}>
-                    Sort By Date{' '}
-                    {sortingOrder === SortingOrder.Ascending ? String.fromCharCode(8593) : String.fromCharCode(8595)}
-                </Button>
+            <div className='tailwind'>
+                <div className='flex flex-row justify-between'>
+                    <Button color='primary' className='mb-2' onClick={() => history.push('/manageeventdashboard')}>
+                        Create a New Event
+                    </Button>
+                    <Button color='primary' className='mb-2 align-self-right' onClick={sortEventsByDate}>
+                        Sort By Date{' '}
+                        {sortingOrder === SortingOrder.Ascending
+                            ? String.fromCharCode(8593)
+                            : String.fromCharCode(8595)}
+                    </Button>
+                </div>
             </div>
             <ol className='px-1 px-md-5'>
                 {events.map((mobEvent, i) => (

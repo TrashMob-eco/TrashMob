@@ -27,7 +27,7 @@
                        VerticalOptions="Center">
                     <Image.Source>
                         <FontImageSource
-                            FontFamily="{StaticResource GoogleMaterialFontFamily}"
+                            FontFamily="{StaticResource GoogleMaterialIcons}"
                             Glyph="{StaticResource IconClose}"
                             Color="Black" />
                     </Image.Source>
@@ -37,24 +37,21 @@
                 </Image>
                 <Label Margin="35,0,0,0" VerticalOptions="Center" Text="{Binding StepTitle}" FontSize="24"></Label>
             </StackLayout>
-            <Grid RowDefinitions="Auto" ColumnDefinitions="*,*,*,*,*,*">
+            <Grid RowDefinitions="Auto" ColumnDefinitions="*,*,*,*,*">
                 <BoxView BackgroundColor="{Binding StepOneColor}" Style="{StaticResource BoxLabelStyle}"
                          HeightRequest="4">
                 </BoxView>
                 <BoxView BackgroundColor="{Binding StepTwoColor}" Style="{StaticResource BoxLabelStyle}"
                          Grid.Column="1" HeightRequest="4">
                 </BoxView>
-                <BoxView BackgroundColor="{Binding StepThreeColor}" Style="{StaticResource BoxLabelStyle}"
+                <BoxView BackgroundColor="{Binding StepFourColor}" Style="{StaticResource BoxLabelStyle}"
                          Grid.Column="2" HeightRequest="4">
                 </BoxView>
-                <BoxView BackgroundColor="{Binding StepFourColor}" Style="{StaticResource BoxLabelStyle}"
+                <BoxView BackgroundColor="{Binding StepFiveColor}" Style="{StaticResource BoxLabelStyle}"
                          Grid.Column="3" HeightRequest="4">
                 </BoxView>
-                <BoxView BackgroundColor="{Binding StepFiveColor}" Style="{StaticResource BoxLabelStyle}"
-                         Grid.Column="4" HeightRequest="4">
-                </BoxView>
                 <BoxView BackgroundColor="{Binding StepSixColor}" Style="{StaticResource BoxLabelStyle}"
-                         Grid.Column="5" HeightRequest="4">
+                         Grid.Column="4" HeightRequest="4">
                 </BoxView>
             </Grid>
         </StackLayout>

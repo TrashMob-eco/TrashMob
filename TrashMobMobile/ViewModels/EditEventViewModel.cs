@@ -11,19 +11,26 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
     IEventTypeRestService eventTypeRestService,
     IMapRestService mapRestService,
     INotificationService notificationService,
-    IUserManager userManager)
+    IUserManager userManager,
+    IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService,
+    ILitterReportManager litterReportManager,
+    IEventLitterReportRestService eventLitterReportRestService)
     : BaseViewModel(notificationService)
 {
+    private const int NewLitterReportStatus = 1;
     private readonly IEventTypeRestService eventTypeRestService = eventTypeRestService;
     private readonly IMapRestService mapRestService = mapRestService;
     private readonly IUserManager userManager = userManager;
+    private readonly IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService = eventPartnerLocationServiceRestService;
+    private readonly ILitterReportManager litterReportManager = litterReportManager;
+    private readonly IEventLitterReportRestService eventLitterReportRestService = eventLitterReportRestService;
     private readonly IMobEventManager mobEventManager = mobEventManager;
+    private EventPartnerLocationViewModel selectedEventPartnerLocation;
+    
+    private IEnumerable<LitterReport> RawLitterReports { get; set; } = [];
 
     [ObservableProperty]
     private EventViewModel eventViewModel;
-
-    [ObservableProperty]
-    private bool isManageEventPartnersEnabled;
 
     [ObservableProperty]
     private string selectedEventType;
@@ -33,6 +40,44 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
 
     private Event MobEvent { get; set; }
 
+    [ObservableProperty] 
+    private bool arePartnersAvailable;
+
+    [ObservableProperty] 
+    private bool areNoPartnersAvailable;
+
+    [ObservableProperty] 
+    private bool areLitterReportsAvailable;
+
+    [ObservableProperty] 
+    private bool areNoLitterReportsAvailable;
+
+    [ObservableProperty]
+    private bool isLitterReportMapSelected;
+
+    [ObservableProperty]
+    private bool isLitterReportListSelected;
+
+    public ObservableCollection<EventPartnerLocationViewModel> AvailablePartners { get; set; } = new();
+
+    public EventPartnerLocationViewModel SelectedEventPartnerLocation
+    {
+        get => selectedEventPartnerLocation;
+        set
+        {
+            if (selectedEventPartnerLocation != value)
+            {
+                selectedEventPartnerLocation = value;
+                OnPropertyChanged(nameof(selectedEventPartnerLocation));
+
+                if (selectedEventPartnerLocation != null)
+                {
+                    PerformNavigation(selectedEventPartnerLocation);
+                }
+            }
+        }
+    }
+
     // This is only for the map point
     public ObservableCollection<EventViewModel> Events { get; set; } = new();
 
@@ -40,30 +85,53 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
 
     public ObservableCollection<string> ETypes { get; set; } = new();
 
+    public ObservableCollection<EventLitterReportViewModel> EventLitterReports { get; set; } = [];
+
+    public ObservableCollection<LitterImageViewModel> LitterImages { get; set; } = [];
+
+    [ObservableProperty]
+    private bool isDetailsVisible;
+
+    [ObservableProperty]
+    private bool isLocationVisible;
+
+    [ObservableProperty]
+    private bool isPartnersVisible;
+
+    [ObservableProperty]
+    private bool isLitterReportsVisible;
+
+    public Action UpdateMapLocation { get; set; }
+
     public async Task Init(Guid eventId)
     {
         IsBusy = true;
 
         try
         {
-            IsManageEventPartnersEnabled = false;
             UserLocation = userManager.CurrentUser.GetAddress();
             EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
+            IsDetailsVisible = true;
+            IsLocationVisible = false;
+            IsPartnersVisible = false;
+            IsLitterReportsVisible = false;
 
             MobEvent = await mobEventManager.GetEventAsync(eventId);
-
-            SelectedEventType = EventTypes.First(et => et.Id == MobEvent.EventTypeId).Name;
-
-            EventViewModel = MobEvent.ToEventViewModel(userManager.CurrentUser.Id);
-
-            Events.Add(EventViewModel);
-
+            
             foreach (var eventType in EventTypes)
             {
                 ETypes.Add(eventType.Name);
             }
 
-            IsManageEventPartnersEnabled = true;
+            SelectedEventType = EventTypes.First(et => et.Id == MobEvent.EventTypeId).Name;
+
+            EventViewModel = MobEvent.ToEventViewModel(userManager.CurrentUser.Id);
+            
+            await LoadPartners();
+            await LoadLitterReports();
+
+            Events.Add(EventViewModel);
+            
             IsBusy = false;
         }
         catch (Exception ex)
@@ -154,9 +222,40 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
     }
 
     [RelayCommand]
-    private async Task ManageEventPartners()
+    private void ManageEventPartners()
     {
-        await Shell.Current.GoToAsync($"{nameof(ManageEventPartnersPage)}?EventId={EventViewModel.Id}");
+        IsDetailsVisible = false;
+        IsLocationVisible = false;
+        IsPartnersVisible = true;
+        IsLitterReportsVisible = false;
+    }
+
+    [RelayCommand]
+    private void ManageLitterReports()
+    {
+        IsDetailsVisible = false;
+        IsLocationVisible = false;
+        IsPartnersVisible = false;
+        IsLitterReportsVisible = true;
+    }
+
+    [RelayCommand]
+    private void ManageEventDetails()
+    {
+        IsDetailsVisible = true;
+        IsLocationVisible = false;
+        IsPartnersVisible = false;
+        IsLitterReportsVisible = false;
+    }
+
+    [RelayCommand]
+    private void ManageEventLocation()
+    {
+        IsDetailsVisible = false;
+        IsLocationVisible = true;
+        IsPartnersVisible = false;
+        IsLitterReportsVisible = false;
+        UpdateMapLocation();
     }
 
     private async Task<bool> Validate()
@@ -168,5 +267,112 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
         }
 
         return true;
+    }
+
+    private async Task LoadPartners()
+    {
+        ArePartnersAvailable = false;
+        AreNoPartnersAvailable = true;
+
+        var eventPartnerLocations =
+            await eventPartnerLocationServiceRestService.GetEventPartnerLocationsAsync(EventViewModel.Id);
+
+        AvailablePartners.Clear();
+
+        foreach (var eventPartnerLocation in eventPartnerLocations)
+        {
+            var eventPartnerLocationViewModel = new EventPartnerLocationViewModel
+            {
+                PartnerLocationId = eventPartnerLocation.PartnerLocationId,
+                PartnerLocationName = eventPartnerLocation.PartnerLocationName,
+                PartnerLocationNotes = eventPartnerLocation.PartnerLocationNotes,
+                PartnerServicesEngaged = eventPartnerLocation.PartnerServicesEngaged,
+                PartnerId = eventPartnerLocation.PartnerId,
+            };
+
+            AvailablePartners.Add(eventPartnerLocationViewModel);
+        }
+
+        ArePartnersAvailable = AvailablePartners.Any();
+        AreNoPartnersAvailable = !ArePartnersAvailable;
+    }
+
+    private async Task LoadLitterReports()
+    {
+        AreLitterReportsAvailable = false;
+        AreNoLitterReportsAvailable = true;
+        IsLitterReportMapSelected = true;
+        IsLitterReportListSelected = false;
+
+        var filter = new TrashMob.Models.Poco.LitterReportFilter()
+        {
+            City = EventViewModel.Address.City,
+            Country = EventViewModel.Address.Country,
+            LitterReportStatusId = NewLitterReportStatus,
+            IncludeLitterImages = true,
+        };
+
+        RawLitterReports = await litterReportManager.GetLitterReportsAsync(filter, ImageSizeEnum.Thumb);
+
+        var assignedLitterReports = await eventLitterReportRestService.GetEventLitterReportsAsync(EventViewModel.Id);
+
+        UpdateLitterReportViewModels(assignedLitterReports);
+
+        AreLitterReportsAvailable = EventLitterReports.Any();
+        AreNoLitterReportsAvailable = !AreLitterReportsAvailable;
+    }
+
+    private void UpdateLitterReportViewModels(IEnumerable<TrashMob.Models.Poco.FullEventLitterReport> assignedLitterReports)
+    {
+        EventLitterReports.Clear();
+        LitterImages.Clear();
+
+        foreach (var litterReport in RawLitterReports.OrderByDescending(l => l.CreatedDate))
+        {
+            var vm = litterReport.ToEventLitterReportViewModel(NotificationService, eventLitterReportRestService, EventViewModel.Id);
+
+            if (assignedLitterReports.Any(l => l.LitterReportId == litterReport.Id))
+            {
+                vm.CanAddToEvent = false;
+                vm.CanRemoveFromEvent = true;
+                vm.Status = "Assigned to this event";
+            }
+
+            foreach (var litterImage in litterReport.LitterImages)
+            {
+                var litterImageViewModel = litterImage.ToLitterImageViewModel(litterReport.LitterReportStatusId, NotificationService);
+
+                if (litterImageViewModel != null)
+                {
+                    litterImageViewModel.Address.DisplayName = litterReport.Name;
+                    litterImageViewModel.Address.ParentId = litterReport.Id;
+                    LitterImages.Add(litterImageViewModel);
+                }
+            }
+
+            EventLitterReports.Add(vm);
+        }
+    }
+
+    private async void PerformNavigation(EventPartnerLocationViewModel eventPartnerLocationViewModel)
+    {
+        await Shell.Current.GoToAsync(
+            $"{nameof(EditEventPartnerLocationServicesPage)}?EventId={EventViewModel.Id}&PartnerLocationId={eventPartnerLocationViewModel.PartnerLocationId}");
+    }
+
+    [RelayCommand]
+    private Task MapSelected()
+    {
+        IsLitterReportMapSelected = true;
+        IsLitterReportListSelected = false;
+        return Task.CompletedTask;
+    }
+
+    [RelayCommand]
+    private Task ListSelected()
+    {
+        IsLitterReportMapSelected = false;
+        IsLitterReportListSelected = true;
+        return Task.CompletedTask;
     }
 }

@@ -46,10 +46,24 @@
             return litterReportRestService.GetNotCancelledLitterReportsAsync(cancellationToken);
         }
 
-        public Task<PaginatedList<LitterReport>> GetLitterReportsAsync(LitterReportFilter filter,
+        public async Task<PaginatedList<LitterReport>> GetLitterReportsAsync(LitterReportFilter filter, ImageSizeEnum imageSize, bool getImageUrls = true,
             CancellationToken cancellationToken = default)
         {
-            return litterReportRestService.GetLitterReportsAsync(filter, cancellationToken);
+            var litterReports = await litterReportRestService.GetLitterReportsAsync(filter, cancellationToken);
+
+            if (getImageUrls)
+            {
+                foreach (var litterReport in litterReports)
+                {
+                    foreach (var litterImage in litterReport.LitterImages)
+                    {
+                        litterImage.AzureBlobURL =
+                            await litterReportRestService.GetLitterImageUrlAsync(litterImage.Id, imageSize, cancellationToken);
+                    }
+                }
+            }
+
+            return litterReports;
         }
 
         public Task<IEnumerable<LitterReport>> GetUserLitterReportsAsync(Guid userId,

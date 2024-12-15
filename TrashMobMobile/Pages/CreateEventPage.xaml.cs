@@ -18,8 +18,7 @@ public partial class CreateEventPage : ContentPage
             new Step2(),
             new Step3(),
             new Step4(),
-            new Step5(),
-            new Step6()
+            new Step5()
         };
 
         BindingContext = this.viewModel;

@@ -8,6 +8,7 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using TrashMob.Models;
+    using TrashMob.Models.Poco;
     using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Poco;

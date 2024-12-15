@@ -13,7 +13,7 @@
     <ScrollView>
         <Grid>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
-                <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="1*">
+                <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="*">
                     <Image Source="{Binding PickupLocationViewModel.ImageUrl}" Margin="10" Grid.Row="0" />
                     <VerticalStackLayout Grid.Row="1">
                         <Label Text="Name" Style="{StaticResource FieldLabel}" />
@@ -44,13 +44,13 @@
                             <controls:CustomPin Location="{Binding Address.Location}"
                                       Address="{Binding Address.StreetAddress}"
                                       Label="{Binding Id}"
-                                      ImageSource="eventupcoming"
+                                      ImageSource="{Binding Address.IconFile}"
                                       AutomationId="{Binding Id}" />
                         </DataTemplate>
                     </maps:Map.ItemTemplate>
                 </maps:Map>
 
-                <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="1*, 1*">
+                <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="*, *">
                     <VerticalStackLayout Grid.Row="0" Grid.ColumnSpan="2">
                         <Label Text="Address" Style="{StaticResource FieldLabel}" />
 

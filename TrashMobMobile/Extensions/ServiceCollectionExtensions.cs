@@ -20,6 +20,7 @@
             services.AddSingleton<IContactRequestRestService, ContactRequestRestService>();
             services.AddSingleton<IEventAttendeeRestService, EventAttendeeRestService>();
             services.AddSingleton<IEventAttendeeRouteRestService, EventAttendeeRouteRestService>();
+            services.AddSingleton<IEventLitterReportManager, EventLitterReportManager>();
             services.AddSingleton<IEventLitterReportRestService, EventLitterReportRestService>();
             services.AddSingleton<IEventPartnerLocationServiceRestService, EventPartnerLocationServiceRestService>();
             services

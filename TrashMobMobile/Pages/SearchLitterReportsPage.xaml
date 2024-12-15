@@ -12,16 +12,70 @@
         <Grid>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
                 <Grid RowDefinitions="Auto, Auto, Auto, *">
-                    <HorizontalStackLayout Grid.Row="0">
-                        <RadioButton Content="New" IsChecked="True" GroupName="LitterReportStatus"
-                                     CheckedChanged="OnReportStatusRadioButtonCheckedChanged" />
-                        <RadioButton Content="Assigned" GroupName="LitterReportStatus"
-                                     CheckedChanged="OnReportStatusRadioButtonCheckedChanged" />
-                        <RadioButton Content="Cleaned" GroupName="LitterReportStatus"
-                                     CheckedChanged="OnReportStatusRadioButtonCheckedChanged" />
-                    </HorizontalStackLayout>
+                    <Grid RowDefinitions="Auto" ColumnDefinitions="*, *, *, *" Grid.Row="0">
+                        <Button Margin="10"
+                            Grid.Row="0" 
+                            Grid.Column="0" 
+                            Style="{StaticResource SecondarySmallButton}"
+                            Command="{Binding ViewNewCommand}"                                 
+                            Text="New">
+                            <Button.Triggers>
+                                <DataTrigger TargetType="Button" Binding="{Binding IsNewSelected}" Value="true">
+                                    <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Button" Binding="{Binding IsNewSelected}" Value="false">
+                                    <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
+                                </DataTrigger>
+                            </Button.Triggers>
+                        </Button>
+                        <Button Margin="10"
+                            Grid.Row="0" 
+                            Grid.Column="1" 
+                            Style="{StaticResource SecondarySmallButton}"
+                            Command="{Binding ViewAssignedCommand}" 
+                            Text="Assigned">
+                            <Button.Triggers>
+                                <DataTrigger TargetType="Button" Binding="{Binding IsAssignedSelected}" Value="true">
+                                    <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Button" Binding="{Binding IsAssignedSelected}" Value="false">
+                                    <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
+                                </DataTrigger>
+                            </Button.Triggers>
+                        </Button>
+                        <Button Margin="10"
+                            Grid.Row="0" 
+                            Grid.Column="2" 
+                            Style="{StaticResource SecondarySmallButton}"
+                            Command="{Binding ViewCleanedCommand}" 
+                            Text="Cleaned">
+                            <Button.Triggers>
+                                <DataTrigger TargetType="Button" Binding="{Binding IsCleanedSelected}" Value="true">
+                                    <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Button" Binding="{Binding IsCleanedSelected}" Value="false">
+                                    <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
+                                </DataTrigger>
+                            </Button.Triggers>
+                        </Button>
+                        <Button Margin="10"
+                            Grid.Row="0" 
+                            Grid.Column="3" 
+                            Style="{StaticResource SecondarySmallButton}"
+                            Command="{Binding ViewAllCommand}" 
+                            Text="All">
+                            <Button.Triggers>
+                                <DataTrigger TargetType="Button" Binding="{Binding IsAllSelected}" Value="true">
+                                    <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Button" Binding="{Binding IsAllSelected}" Value="false">
+                                    <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
+                                </DataTrigger>
+                            </Button.Triggers>
+                        </Button>
+                    </Grid>
                     <Border Grid.Row="1" Style="{StaticResource RoundBorder}">
-                        <Grid ColumnDefinitions="1*, 1*, 1*, 1*">
+                        <Grid ColumnDefinitions="*, *, *, *">
                             <Picker x:Name="CountryPicker" Title="Select a country"
                                     ItemsSource="{Binding CountryCollection}" SelectedItem="{Binding SelectedCountry}"
                                     FontSize="Micro" Grid.Column="0" />
@@ -34,22 +88,30 @@
                                     FontSize="Micro" Grid.Column="3" />
                         </Grid>
                     </Border>
-                    <HorizontalStackLayout Grid.Row="2">
-                        <RadioButton Content="Map" IsChecked="True" x:Name="viewMap" FontSize="Micro" />
-                        <RadioButton Content="List" x:Name="viewList" FontSize="Micro" />
-                    </HorizontalStackLayout>
+                    <Grid Margin="5" Grid.Row="2"
+                      ColumnDefinitions="6*, *, *"
+                      RowDefinitions="Auto">
+                        <ImageButton Grid.Column="1"
+                             HeightRequest="24"
+                             Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconMap}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" 
+                             Command="{Binding MapSelectedCommand}" />
+                        <ImageButton Grid.Column="2" 
+                             HeightRequest="24"
+                             Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconViewList}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" 
+                             Command="{Binding ListSelectedCommand}" />
+                    </Grid>
 
                     <maps:Map x:Name="litterImagesMap"
                               Grid.Row="3"
                               ItemsSource="{Binding LitterImages}"
-                              IsVisible="{Binding Source={x:Reference viewMap}, Path=IsChecked}">
+                              IsVisible="{Binding IsMapSelected}">
                         <maps:Map.ItemTemplate>
                             <DataTemplate x:DataType="viewModels:LitterImageViewModel">
                                 <controls:CustomPin Location="{Binding Address.Location}"
                                           Address="{Binding Address.StreetAddress}"
                                           Label="{Binding Address.StreetAddress}"
                                           AutomationId="{Binding LitterReportId}"
-                                          ImageSource="litterreportnew"
+                                          ImageSource="{Binding Address.IconFile}"
                                           InfoWindowClicked="Pin_InfoWindowClicked" />
                             </DataTemplate>
                         </maps:Map.ItemTemplate>
@@ -58,13 +120,13 @@
                     <CollectionView x:Name="LitterReportsCollection" Grid.Row="4"
                                     ItemsSource="{Binding LitterReports}"
                                     SelectedItem="{Binding SelectedLitterReport}"
-                                    IsVisible="{Binding Source={x:Reference viewList}, Path=IsChecked}"
+                                    IsVisible="{Binding IsListSelected}"
                                     SelectionMode="Single">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="viewModels:LitterReportViewModel">
                                 <StackLayout Margin="5">
                                     <Border Style="{StaticResource RoundBorder}">
-                                        <Grid ColumnDefinitions="1*, 1*"
+                                        <Grid ColumnDefinitions="*, *"
                                               RowDefinitions="Auto, Auto, Auto"
                                               x:Name="LitterReportItem">
                                             <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="1"

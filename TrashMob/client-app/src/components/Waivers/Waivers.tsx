@@ -1,14 +1,13 @@
 import React from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
-import Container from 'react-bootstrap/Container';
-import Button from 'react-bootstrap/Button';
-import { Col, Form, Row } from 'react-bootstrap';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import UserData from '../Models/UserData';
-import logo from '../assets/logo.svg';
 import { HeroSection } from '../Customization/HeroSection';
 import { GetUserById, UpdateUser } from '../../services/users';
+import { Logo } from '../Logo';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '../ui/checkbox';
 
 type WaiverFormInputs = {
     userId: string;
@@ -31,8 +30,9 @@ const Waivers: React.FC<WaiversProps> = ({ currentUser, onUserUpdated }) => {
     const userId = currentUser.id;
 
     const {
-        register,
         handleSubmit,
+        control,
+        getValues,
         formState: { isValid, errors },
     } = useForm<WaiverFormInputs>({
         defaultValues: {
@@ -63,10 +63,10 @@ const Waivers: React.FC<WaiversProps> = ({ currentUser, onUserUpdated }) => {
     };
 
     return (
-        <>
+        <div className='tailwind'>
             <HeroSection Title='Waiver' Description='Safety first!' />
-            <Container className='bodyMargin'>
-                <h2 className='fw-500 font-size-xl'>TrashMob.eco Waiver</h2>
+            <div className='container'>
+                <h2 className='font-medium text-3xl'>TrashMob.eco Waiver</h2>
                 <p className='p-18'>
                     You will only need to sign this waiver once unless we have to change the legalese.
                 </p>
@@ -80,7 +80,7 @@ const Waivers: React.FC<WaiversProps> = ({ currentUser, onUserUpdated }) => {
                             }
                     `}
                     </style>
-                    <h2 className='fw-500 font-size-xl'>TrashMob.eco</h2>
+                    <h2 className='font-medium text-3xl'>TrashMob.eco</h2>
                     <h5>Volunteer Release and Waiver of Liability Form</h5>
                     <p>
                         The Volunteer Release and Waiver of Liability Form (“Release”). (“Volunteer”) hereby releases
@@ -138,30 +138,38 @@ const Waivers: React.FC<WaiversProps> = ({ currentUser, onUserUpdated }) => {
                         </li>
                     </ol>
                 </div>
-                <Form onSubmit={handleSubmit(onSubmit)} className='mt-4'>
-                    <Form.Group>
-                        <Form.Check type='checkbox' id='i-have-read-and-accept' style={{ paddingLeft: '1.75rem' }}>
-                            <Form.Check.Input
-                                type='checkbox'
-                                style={{ marginLeft: '-1.75rem', marginTop: '0.15rem' }}
-                                {...register('accepted', { required: true })}
-                            />
-                            <Form.Check.Label>I HAVE READ THIS RELEASE AND WAIVER FORM</Form.Check.Label>
-                        </Form.Check>
-                    </Form.Group>
-                    <Button disabled={!isValid} type='submit' variant='primary' className='h-49 fw-600'>
+                <form onSubmit={handleSubmit(onSubmit)} className='mt-4'>
+                    <Controller
+                        name='accepted'
+                        control={control}
+                        rules={{ required: true }}
+                        render={({ field }) => (
+                            <div className='flex items-center space-x-2 !mb-4'>
+                                <Checkbox
+                                    id='i-have-read-and-accept'
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                />
+                                <label
+                                    htmlFor='i-have-read-and-accept'
+                                    className='text-sm font-medium !mb-0 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                                >
+                                    I HAVE READ THIS RELEASE AND WAIVER FORM
+                                </label>
+                            </div>
+                        )}
+                    />
+                    <Button disabled={!isValid} type='submit' className='font-semibold'>
                         Sign Waiver
                     </Button>
-                </Form>
+                </form>
                 <p className='p-18 mb-5'>Thank you!</p>
                 <p className='p-18'>The team at TrashMob.eco.</p>
-                <Row className='mb-5'>
-                    <Col lg={3} sm={6} md={4} xs={6} className='p-0'>
-                        <img src={logo} className='p-0 m-0 pl-2 mb-5' alt='TrashMob Logo' id='logo' />
-                    </Col>
-                </Row>
-            </Container>
-        </>
+                <div className='mb-5'>
+                    <Logo className='w-96 max-w-full' />
+                </div>
+            </div>
+        </div>
     );
 };
 

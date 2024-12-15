@@ -1,15 +1,22 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace TrashMobMobile.Pages.CreateEvent;
 
-public partial class Step3 : BaseStepClass 
+using Microsoft.Maui.Maps;
+
+public partial class Step3 : BaseStepClass
 {
     public Step3()
     {
         InitializeComponent();
+    }
+
+    public override void OnNavigated()
+    {
+        base.OnNavigated();
+
+        if (ViewModel?.EventViewModel?.Address?.Location != null)
+        {
+            var mapSpan = new MapSpan(ViewModel.EventViewModel.Address.Location, 0.05, 0.05);
+            eventLocationMap.MoveToRegion(mapSpan);
+        }
     }
 }

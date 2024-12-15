@@ -7,14 +7,14 @@ using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class ViewLitterReportViewModel(ILitterReportManager litterReportManager, INotificationService notificationService) : BaseViewModel(notificationService)
+public partial class ViewLitterReportViewModel(ILitterReportManager litterReportManager, IEventLitterReportManager eventLitterReportManager, INotificationService notificationService) : BaseViewModel(notificationService)
 {
     private const int NewLitterReportStatus = 1;
     private const int AssignedLitterReportStatus = 2;
     private const int CleanedLitterReportStatus = 3;
 
     private readonly ILitterReportManager litterReportManager = litterReportManager;
-
+    private readonly IEventLitterReportManager eventLitterReportManager = eventLitterReportManager;
     [ObservableProperty]
     private bool canDeleteLitterReport;
 
@@ -26,6 +26,12 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
 
     [ObservableProperty]
     private string litterReportStatus;
+
+    [ObservableProperty]
+    private Guid eventIdAssignedTo;
+
+    [ObservableProperty]
+    private bool isAssignedToEvent;
 
     [ObservableProperty]
     public LitterReportViewModel? litterReportViewModel;
@@ -46,6 +52,18 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
 
             LitterReportViewModel = LitterReport.ToLitterReportViewModel(NotificationService);
             LitterReportStatus = LitterReportExtensions.GetLitterStatusFromId(LitterReportViewModel?.LitterReportStatusId);
+            IsAssignedToEvent = false;
+
+            if (LitterReport.LitterReportStatusId == (int)LitterReportStatusEnum.Assigned)
+            {
+                IsAssignedToEvent = true;
+                var eventLitterReport = await eventLitterReportManager.GetEventLitterReportByLitterReportIdAsync(litterReportId);
+                
+                if (eventLitterReport != null)
+                {
+                    EventIdAssignedTo = eventLitterReport.EventId;
+                }
+            }
 
             if (LitterReport.CreatedByUserId == App.CurrentUser.Id &&
                 LitterReport.LitterReportStatusId == NewLitterReportStatus)
@@ -82,7 +100,7 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
             LitterImageViewModels.Clear();
             foreach (var litterImage in LitterReport.LitterImages)
             {
-                var litterImageViewModel = litterImage.ToLitterImageViewModel(NotificationService);
+                var litterImageViewModel = litterImage.ToLitterImageViewModel(LitterReport.LitterReportStatusId, NotificationService);
 
                 if (litterImageViewModel != null)
                 {
@@ -106,6 +124,12 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
     private async Task EditLitterReport()
     {
         await Shell.Current.GoToAsync($"{nameof(EditLitterReportPage)}?LitterReportId={LitterReportViewModel.Id}");
+    }
+
+    [RelayCommand]
+    private async Task ViewEvent()
+    {
+        await Shell.Current.GoToAsync($"{nameof(ViewEventPage)}?EventId={eventIdAssignedTo}");
     }
 
     [RelayCommand]
