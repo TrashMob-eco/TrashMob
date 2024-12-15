@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
+using TrashMob.Models.Extensions;
+using TrashMob.Models.Poco;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
@@ -14,7 +16,7 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
     IUserManager userManager,
     IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService,
     ILitterReportManager litterReportManager,
-    IEventLitterReportRestService eventLitterReportRestService)
+    IEventLitterReportManager eventLitterReportManager)
     : BaseViewModel(notificationService)
 {
     private const int NewLitterReportStatus = 1;
@@ -23,11 +25,11 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
     private readonly IUserManager userManager = userManager;
     private readonly IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService = eventPartnerLocationServiceRestService;
     private readonly ILitterReportManager litterReportManager = litterReportManager;
-    private readonly IEventLitterReportRestService eventLitterReportRestService = eventLitterReportRestService;
+    private readonly IEventLitterReportManager eventLitterReportManager = eventLitterReportManager;
     private readonly IMobEventManager mobEventManager = mobEventManager;
     private EventPartnerLocationViewModel selectedEventPartnerLocation;
     
-    private IEnumerable<LitterReport> RawLitterReports { get; set; } = [];
+    private List<LitterReport> RawLitterReports { get; set; } = [];
 
     [ObservableProperty]
     private EventViewModel eventViewModel;
@@ -200,7 +202,7 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
         }
     }
 
-    public async Task ChangeLocation(Location location)
+    public async Task ChangeLocation(Microsoft.Maui.Devices.Sensors.Location location)
     {
         IsBusy = true;
 
@@ -304,17 +306,23 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
         IsLitterReportMapSelected = true;
         IsLitterReportListSelected = false;
 
+        // Get new litter reports
         var filter = new TrashMob.Models.Poco.LitterReportFilter()
         {
             City = EventViewModel.Address.City,
             Country = EventViewModel.Address.Country,
-            LitterReportStatusId = NewLitterReportStatus,
-            IncludeLitterImages = true,
+            LitterReportStatusId = NewLitterReportStatus,            
         };
 
         RawLitterReports = await litterReportManager.GetLitterReportsAsync(filter, ImageSizeEnum.Thumb);
 
-        var assignedLitterReports = await eventLitterReportRestService.GetEventLitterReportsAsync(EventViewModel.Id);
+        var assignedLitterReports = await eventLitterReportManager.GetEventLitterReportsAsync(EventViewModel.Id, ImageSizeEnum.Thumb, true);
+
+        // Add the Litter Reports assigned to this event to the list of litter reports
+        foreach (var assignedLitterReport in assignedLitterReports)
+        {
+            RawLitterReports.Add(assignedLitterReport.LitterReport.ToLitterReport());
+        }
 
         UpdateLitterReportViewModels(assignedLitterReports);
 
@@ -329,7 +337,7 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
 
         foreach (var litterReport in RawLitterReports.OrderByDescending(l => l.CreatedDate))
         {
-            var vm = litterReport.ToEventLitterReportViewModel(NotificationService, eventLitterReportRestService, EventViewModel.Id);
+            var vm = litterReport.ToEventLitterReportViewModel(NotificationService, eventLitterReportManager, EventViewModel.Id);
 
             if (assignedLitterReports.Any(l => l.LitterReportId == litterReport.Id))
             {

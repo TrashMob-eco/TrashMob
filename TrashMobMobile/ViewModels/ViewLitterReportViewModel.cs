@@ -34,6 +34,9 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
     private bool isAssignedToEvent;
 
     [ObservableProperty]
+    private bool isNotAssignedToEvent;
+
+    [ObservableProperty]
     public LitterReportViewModel? litterReportViewModel;
 
     private LitterReport LitterReport { get; set; }
@@ -53,10 +56,12 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
             LitterReportViewModel = LitterReport.ToLitterReportViewModel(NotificationService);
             LitterReportStatus = LitterReportExtensions.GetLitterStatusFromId(LitterReportViewModel?.LitterReportStatusId);
             IsAssignedToEvent = false;
+            IsNotAssignedToEvent = true;
 
             if (LitterReport.LitterReportStatusId == (int)LitterReportStatusEnum.Assigned)
             {
                 IsAssignedToEvent = true;
+                IsNotAssignedToEvent = false;
                 var eventLitterReport = await eventLitterReportManager.GetEventLitterReportByLitterReportIdAsync(litterReportId);
                 
                 if (eventLitterReport != null)
@@ -130,6 +135,12 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
     private async Task ViewEvent()
     {
         await Shell.Current.GoToAsync($"{nameof(ViewEventPage)}?EventId={eventIdAssignedTo}");
+    }
+
+    [RelayCommand]
+    private async Task CreateEvent()
+    {
+        await Shell.Current.GoToAsync($"{nameof(CreateEventPage)}?LitterReportId={litterReportViewModel.Id}");
     }
 
     [RelayCommand]

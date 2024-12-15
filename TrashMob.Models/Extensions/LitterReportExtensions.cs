@@ -53,6 +53,7 @@
                 CreatedDate = fullLitterReport.CreatedDate,
                 LastUpdatedByUserId = fullLitterReport.LastUpdatedByUserId,
                 LastUpdatedDate = fullLitterReport.LastUpdatedDate,
+                LitterImages = fullLitterReport.LitterImages.Select(x => x.ToLitterImage()).ToList()
             };
         }
 

@@ -7,13 +7,13 @@ using TrashMobMobile.Services;
 
 public partial class EventLitterReportViewModel : LitterReportViewModel
 {
-    public EventLitterReportViewModel(IEventLitterReportRestService eventLitterReportRestService, Guid eventId)
+    public EventLitterReportViewModel(IEventLitterReportManager eventLitterReportManager, Guid eventId)
     {
         Description = string.Empty;
         Name = string.Empty;
         Status = "Available";
         CanAddToEvent = true;
-        this.eventLitterReportRestService = eventLitterReportRestService;
+        this.eventLitterReportManager = eventLitterReportManager;
         this.eventId = eventId;
     }
 
@@ -26,13 +26,13 @@ public partial class EventLitterReportViewModel : LitterReportViewModel
     [ObservableProperty]
     private string status;
 
-    private readonly IEventLitterReportRestService eventLitterReportRestService;
+    private readonly IEventLitterReportManager eventLitterReportManager;
     private readonly Guid eventId;
 
     [RelayCommand]
     private async Task AddToEvent()
     {
-        await eventLitterReportRestService.AddLitterReportAsync(new EventLitterReport
+        await eventLitterReportManager.AddLitterReportAsync(new EventLitterReport
         {
             EventId = eventId,
             LitterReportId = Id,
@@ -46,7 +46,7 @@ public partial class EventLitterReportViewModel : LitterReportViewModel
     [RelayCommand]
     private async Task RemoveFromEvent()
     {
-        await eventLitterReportRestService.RemoveLitterReportAsync(new EventLitterReport
+        await eventLitterReportManager.RemoveLitterReportAsync(new EventLitterReport
         {
             EventId = eventId,
             LitterReportId = Id,
