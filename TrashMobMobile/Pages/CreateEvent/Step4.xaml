@@ -11,7 +11,6 @@
     <ScrollView>
         <Grid>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
-
                 <Label
                     Text="{Binding EventViewModel.Name}" Style="{StaticResource Headline}"
                     VerticalOptions="Center"
@@ -22,16 +21,16 @@
                 <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto" RowSpacing="3"
                       ColumnDefinitions="*, 2*">
                     <Label Grid.Row="0" Grid.Column="0" Text="{Binding SelectedEventType}" FontSize="Small"
-                           Margin="10, 0, 10,0" Grid.ColumnSpan="2" />
+                           Margin="10, 0, 10, 0" Grid.ColumnSpan="2" />
                     <Label Grid.Row="1" Grid.Column="0" Text="{Binding EventViewModel.DisplayDate}"
-                           FontAttributes="Bold" Margin="10,0,10,0" Grid.ColumnSpan="2" />
+                           FontAttributes="Bold" Margin="10, 0, 10, 0" Grid.ColumnSpan="2" />
                     <Label Grid.Row="2" Grid.Column="0" Text="{Binding EventViewModel.DisplayTime}" FontSize="Micro"
-                           Margin="10, 0, 10,0" />
+                           Margin="10, 0, 10, 0" />
                     <Label Grid.Row="2" Grid.Column="1" Text="{Binding FormattedEventDuration}" FontSize="Micro"
-                           Margin="10, 0, 10,0" />
+                           Margin="10, 0, 10, 0" />
                     <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
                            Text="{Binding EventViewModel.Address.DisplayAddress }" FontAttributes="Bold"
-                           Margin="10,0,10,0" />
+                           Margin="10, 0, 10, 0" />
                     <maps:Map Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" x:Name="eventLocationMap"
                               ItemsSource="{Binding Events}">
                         <maps:Map.ItemTemplate>
@@ -43,9 +42,17 @@
                             </DataTemplate>
                         </maps:Map.ItemTemplate>
                     </maps:Map>
-                    <Label Grid.Row="5" Grid.Column="0" Text="About this event" FontAttributes="Bold"
+                    <Label Grid.Row="5" 
+                           Grid.Column="0" 
+                           Text="About this event" 
+                           FontAttributes="Bold"
+                           Margin="10, 0, 10, 0"
                            Grid.ColumnSpan="2" />
-                    <Label Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding EventViewModel.Description}"
+                    <Label Grid.Row="6" 
+                           Grid.Column="0" 
+                           Grid.ColumnSpan="2" 
+                           Margin="10, 0, 10,0"
+                           Text="{Binding EventViewModel.Description}"
                            FontSize="Micro" />
                  </Grid>
             </VerticalStackLayout>

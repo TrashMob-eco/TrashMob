@@ -267,14 +267,13 @@ public partial class CreateEventViewModel : BaseViewModel
         {
             case 0:
             case 1:
-            case 2:
-            case 4:
+            case 3:
                 NextStepText = "Next";
                 break;
-            case 3:
+            case 2:
                 NextStepText = "Save Event";
                 break;
-            case 5:
+            case 4:
                 NextStepText = "Finish";
                 break;
             default:
@@ -284,13 +283,12 @@ public partial class CreateEventViewModel : BaseViewModel
         if (CurrentView is BaseStepClass current)
             current.OnNavigated();
 
-        //TODO reference these colors from the app styles
+        // TODO: reference these colors from the app styles
         StepOneColor = CurrentStep == 0 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
         StepTwoColor = CurrentStep == 1 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
-        StepThreeColor = CurrentStep == 2 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
-        StepFourColor = CurrentStep == 3 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
-        StepFiveColor = CurrentStep == 4 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
-        StepSixColor = CurrentStep == 5 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
+        StepFourColor = CurrentStep == 2 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
+        StepFiveColor = CurrentStep == 3 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
+        StepSixColor = CurrentStep == 4 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
     }
 
     public async Task SetCurrentStep(StepType step)
@@ -298,10 +296,9 @@ public partial class CreateEventViewModel : BaseViewModel
         /*
          * Step 1 Main details                  CurrentStep = 0
          * Step 2 Map Location                  CurrentStep = 1
-         * Step 3 Max Attendees                 CurrentStep = 2
-         * Step 4 Event Summary and Save        CurrentStep = 3
-         * Step 5 Add Partners                  CurrentStep = 4
-         * Step 6 Add Litter Reports            CurrentStep = 5
+         * Step 4 Event Summary and Save        CurrentStep = 2
+         * Step 5 Add Partners                  CurrentStep = 3
+         * Step 6 Add Litter Reports            CurrentStep = 4
          */
 
         if (step == StepType.Backward)
@@ -318,7 +315,7 @@ public partial class CreateEventViewModel : BaseViewModel
             {
                 switch (CurrentStep)
                 {
-                    case 3:
+                    case 2:
                     {
                         if (await SaveEvent() == false)
                         {
@@ -330,7 +327,7 @@ public partial class CreateEventViewModel : BaseViewModel
 
                         break;
                     }
-                    case 5:
+                    case 4:
                         //Evaluate displaying a confirmation text
                         CloseCommand.Execute(null);
                         return;
@@ -342,7 +339,7 @@ public partial class CreateEventViewModel : BaseViewModel
             }
         }
 
-        CanGoBack = CurrentStep != 0 && CurrentStep != 4 && CurrentStep != 5;
+        CanGoBack = CurrentStep != 0 && CurrentStep != 4 && CurrentStep != 4;
     }
 
     // This is only for the map point
@@ -640,8 +637,7 @@ public partial class CreateEventViewModel : BaseViewModel
 
     private readonly string[] stepTitles =
     [
-        "Set Event Details", "Set Event Location", "Set Event Restrictions", "Review Event", "Event Partners",
-        "Litter Reports"
+        "Set Event Details", "Set Event Location", "Review Event", "Event Partners", "Litter Reports"
     ];
 
     #region UI Related properties
