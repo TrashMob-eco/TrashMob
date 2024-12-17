@@ -15,7 +15,7 @@ import { GetStats } from '../../services/stats';
 import { Services } from '../../config/services.config';
 import StatsData from '../Models/StatsData';
 import { Share } from 'react-bootstrap-icons';
-import { SocialsModal } from '../EventManagement/ShareToSocialsModal';
+import { ShareToSocialsDialog } from '../EventManagement/ShareToSocialsDialog';
 import * as SharingMessages from '../../store/SharingMessages';
 
 export interface HomeProps extends RouteComponentProps<any> {
@@ -53,7 +53,7 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, mat
         <>
             <Container fluid>
                 <div className='position-absolute'>
-                    <SocialsModal
+                    <ShareToSocialsDialog
                         show={showModal}
                         handleShow={handleShowModal}
                         modalTitle='Invite a friend to join TrashMob.eco'

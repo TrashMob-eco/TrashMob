@@ -8,7 +8,7 @@ import * as ToolTips from '../store/ToolTips';
 import EventSummaryData from './Models/EventSummaryData';
 import EventData from './Models/EventData';
 import PickupLocations from './PickupLocations';
-import { SocialsModal } from './EventManagement/ShareToSocialsModal';
+import { ShareToSocialsDialog } from './EventManagement/ShareToSocialsDialog';
 import * as SharingMessages from '../store/SharingMessages';
 import { CreateEventSummary, GetEventById, GetEventSummaryById, UpdateEventSummary } from '../services/events';
 import { Services } from '../config/services.config';
@@ -395,7 +395,7 @@ export const EventSummary: FC<EventSummaryDashboardProps> = (props) => {
     return (
         <Container>
             {eventToShare ? (
-                <SocialsModal
+                <ShareToSocialsDialog
                     eventToShare={eventToShare}
                     show={showModal}
                     handleShow={handleShowModal}

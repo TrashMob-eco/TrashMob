@@ -29,7 +29,7 @@ import PartnerStatusData from '../Models/PartnerStatusData';
 import DisplayPartnerAdminInvitationData from '../Models/DisplayPartnerAdminInvitationData';
 import { PartnerLocationEventRequests } from '../Partners/PartnerLocationEventRequests';
 import PickupLocationData from '../Models/PickupLocationData';
-import { SocialsModal } from '../EventManagement/ShareToSocialsModal';
+import { ShareToSocialsDialog } from '../EventManagement/ShareToSocialsDialog';
 import { HeroSection } from '../Customization/HeroSection';
 import * as SharingMessages from '../../store/SharingMessages';
 import { DeleteEventAttendee, GetUserEvents } from '../../services/events';
@@ -710,7 +710,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
             <HeroSection Title='Dashboard' Description="See how much you've done!" />
             <Container className='mt-5 pb-5'>
                 {eventToShare ? (
-                    <SocialsModal
+                    <ShareToSocialsDialog
                         eventToShare={eventToShare}
                         show={showModal}
                         handleShow={handleShowModal}
