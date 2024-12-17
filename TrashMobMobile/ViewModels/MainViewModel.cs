@@ -230,7 +230,7 @@ public partial class MainViewModel(IAuthService authService,
     [RelayCommand]
     private async Task CreateEvent()
     {
-        await Shell.Current.GoToAsync(nameof(CreateEventPage));
+        await Shell.Current.GoToAsync($"{nameof(CreateEventPage)}?LitterReportId={Guid.Empty}");
     }
 
     [RelayCommand]
