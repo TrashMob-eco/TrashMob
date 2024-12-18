@@ -13,7 +13,7 @@
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
             <Grid RowDefinitions="Auto, Auto, *">
-                <Grid RowDefinitions="Auto" ColumnDefinitions="*, *, *, *" Grid.Row="0">
+                <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*, *, *, *" Grid.Row="0">
                     <Button Margin="10"
                             Grid.Row="0" 
                             Grid.Column="0" 
@@ -44,18 +44,18 @@
                             </DataTrigger>
                         </Button.Triggers>
                     </Button>
-                    <controls:TMPicker Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" IsVisible="{Binding IsUpcomingSelected}"
-                                           Title="Date Range"
+                    <controls:TMPicker Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2"
+                                           Title="Upcoming Date Range"
                                            HeightRequest="40"
                                            Margin="0, 0, 10, 0"
-                                           ItemsSource="{Binding UpcomingDateRanges, Mode=TwoWay}"
-                                           SelectedItem="{Binding SelectedUpcomingDateRange, Mode=TwoWay}" />
-                    <controls:TMPicker Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" IsVisible="{Binding IsCompletedSelected}"
-                                           Title="Date Range"
+                                           ItemsSource="{Binding UpcomingDateRanges}"
+                                           SelectedItem="{Binding SelectedUpcomingDateRange}" />
+                    <controls:TMPicker Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2"
+                                           Title="Completed Date Range"
                                            HeightRequest="40"
                                            Margin="0, 0, 10, 0"
-                                           ItemsSource="{Binding CompletedDateRanges, Mode=TwoWay}"
-                                           SelectedItem="{Binding SelectedCompletedDateRange, Mode=TwoWay}" />
+                                           ItemsSource="{Binding CompletedDateRanges}"
+                                           SelectedItem="{Binding SelectedCompletedDateRange}" />
                 </Grid>
 
                 <Border Grid.Row="1" Style="{StaticResource RoundBorder}">
