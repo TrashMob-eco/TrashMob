@@ -18,21 +18,6 @@
             this.eventSummaryRestService = eventSummaryRestService;
         }
 
-        public Task<IEnumerable<Event>> GetActiveEventsAsync(CancellationToken cancellationToken = default)
-        {
-            return mobEventRestService.GetActiveEventsAsync(cancellationToken);
-        }
-
-        public Task<IEnumerable<Event>> GetCompletedEventsAsync(CancellationToken cancellationToken = default)
-        {
-            return mobEventRestService.GetCompletedEventsAsync(cancellationToken);
-        }
-
-        public Task<IEnumerable<Event>> GetAllEventsAsync(CancellationToken cancellationToken = default)
-        {
-            return mobEventRestService.GetAllEventsAsync(cancellationToken);
-        }
-
         public Task<PaginatedList<Event>> GetFilteredEventsAsync(GeneralFilter filter, CancellationToken cancellationToken = default)
         {
             return mobEventRestService.GetFilteredEventsAsync(filter, cancellationToken);

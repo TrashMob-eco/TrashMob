@@ -6,12 +6,6 @@
 
     public interface IMobEventRestService
     {
-        Task<IEnumerable<Event>> GetActiveEventsAsync(CancellationToken cancellationToken = default);
-
-        Task<IEnumerable<Event>> GetCompletedEventsAsync(CancellationToken cancellationToken = default);
-
-        Task<IEnumerable<Event>> GetAllEventsAsync(CancellationToken cancellationToken = default);
-
         Task<PaginatedList<Event>> GetFilteredEventsAsync(GeneralFilter filter,
             CancellationToken cancellationToken = default);
 
