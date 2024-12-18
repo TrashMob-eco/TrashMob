@@ -35,6 +35,11 @@ public partial class TMPicker : ContentView
     {
         WrappedPicker.Title = newValue;
     }
+
+    private void WrappedPicker_OnSelectedIndexChanged(object? sender, EventArgs e)
+    {
+        SelectedItem = ((BorderlessPicker) sender).SelectedItem;
+    }
 }
 
 public class BorderlessPicker : Picker
