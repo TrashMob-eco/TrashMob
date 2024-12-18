@@ -13,7 +13,7 @@
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
             <Grid RowDefinitions="Auto, Auto, *">
-                <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*, *, *, *" Grid.Row="0">
+                <Grid RowDefinitions="Auto" ColumnDefinitions="*, *, *, *" Grid.Row="0">
                     <Button Margin="10"
                             Grid.Row="0" 
                             Grid.Column="0" 
@@ -45,12 +45,14 @@
                         </Button.Triggers>
                     </Button>
                     <controls:TMPicker Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2"
+                                           IsVisible="{Binding IsUpcomingSelected}"
                                            Title="Upcoming Date Range"
                                            HeightRequest="40"
                                            Margin="0, 0, 10, 0"
                                            ItemsSource="{Binding UpcomingDateRanges}"
-                                           SelectedItem="{Binding SelectedUpcomingDateRange}" />
-                    <controls:TMPicker Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2"
+                                           SelectedItem="{Binding SelectedUpcomingDateRange, Mode=TwoWay}" />
+                    <controls:TMPicker Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2"
+                                           IsVisible="{Binding IsCompletedSelected}"
                                            Title="Completed Date Range"
                                            HeightRequest="40"
                                            Margin="0, 0, 10, 0"
