@@ -179,14 +179,15 @@ public partial class MainViewModel(IAuthService authService,
     {
         UpcomingEvents.Clear();
         var startDate = DateTimeOffset.Now;
-        var endDate = DateTimeOffset.Now.AddDays(365);
+        var endDate = DateTimeOffset.Now.AddDays(3650);
 
-        var eventFilter = new GeneralFilter
+        var eventFilter = new EventFilter
         {
             StartDate = startDate,
             EndDate = endDate,
             PageIndex = 0,
             PageSize = 50,
+            EventStatusId = null,
         };
 
         var events = await mobEventManager.GetFilteredEventsAsync(eventFilter);

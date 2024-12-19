@@ -138,7 +138,7 @@
                     <Label Text="Event Type" Style="{StaticResource FieldLabel}" />
 
                     <controls:TMPicker Title="Event Type" ItemsSource="{Binding ETypes}"
-                                    SelectedItem="{Binding SelectedEventType}" />
+                                    SelectedItem="{Binding SelectedEventType, Mode=TwoWay}" />
                 </VerticalStackLayout>
 
                 <VerticalStackLayout Grid.Row="4" Grid.Column="2">

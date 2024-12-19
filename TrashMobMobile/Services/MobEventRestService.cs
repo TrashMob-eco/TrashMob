@@ -11,9 +11,9 @@ public class MobEventRestService(IHttpClientFactory httpClientFactory) : RestSer
 {
     protected override string Controller => "events";
 
-    public async Task<PaginatedList<Event>> GetFilteredEventsAsync(GeneralFilter filter, CancellationToken cancellationToken = default)
+    public async Task<PaginatedList<Event>> GetFilteredEventsAsync(EventFilter filter, CancellationToken cancellationToken = default)
     {
-        var content = JsonContent.Create(filter, typeof(GeneralFilter), null, SerializerOptions);
+        var content = JsonContent.Create(filter, typeof(EventFilter), null, SerializerOptions);
         var requestUri = $"{Controller}/pagedfilteredevents";
         var response = await AnonymousHttpClient.PostAsync(requestUri, content, cancellationToken);
         response.EnsureSuccessStatusCode();

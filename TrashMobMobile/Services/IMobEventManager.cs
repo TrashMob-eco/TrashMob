@@ -6,7 +6,7 @@
 
     public interface IMobEventManager
     {
-        Task<PaginatedList<Event>> GetFilteredEventsAsync(GeneralFilter filter,
+        Task<PaginatedList<Event>> GetFilteredEventsAsync(EventFilter filter,
             CancellationToken cancellationToken = default);
 
         Task<IEnumerable<Event>> GetUserEventsAsync(Guid userId, bool showFutureEventsOnly,

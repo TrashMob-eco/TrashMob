@@ -13,17 +13,18 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
                                            IUserManager userManager)
     : BaseViewModel(notificationService)
 {
-    private const string LastYear = "Last Year";
+    private const string AllTime = "All";
+    private const string LastYear = "Last 12 Months";
     private const string LastSixMonths = "Last Six Months";
-    private const string LastThreeMonths = "Last Three Months";
-    private const string LastMonth = "Last Month";
-    private const string LastWeek = "Last Week";
+    private const string LastThreeMonths = "Last 90 Days";
+    private const string LastMonth = "Last 30 Days";
+    private const string LastWeek = "Last 7 Days";
     private const string Yesterday = "Yesterday";
     private const string Today = "Today";
     private const string Tomorrow = "Tomorrow";
-    private const string ThisWeek = "This Week";
-    private const string ThisMonth = "This Month";
-    private const string ThisYear = "This Year";
+    private const string ThisWeek = "Next 7 Days";
+    private const string ThisMonth = "Next 30 Days";
+    private const string ThisYear = "Next 12 Months";
 
     private readonly Dictionary<string, Tuple<int, int>> UpcomingRangeDictionary = new()
     {
@@ -36,6 +37,7 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
 
     private readonly Dictionary<string, Tuple<int, int>> CompletedRangeDictionary = new()
     {
+        { AllTime, new Tuple<int, int>(-3650, 0) },
         { LastYear, new Tuple<int, int>(-365, 0) },
         { LastSixMonths, new Tuple<int, int>(-180, 0) },
         { LastThreeMonths, new Tuple<int, int>(-90, 0) },
@@ -203,13 +205,14 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
 
             SelectedUpcomingDateRange = ThisMonth;
 
-            CompletedDateRanges.Add(LastYear);
-            CompletedDateRanges.Add(LastSixMonths);
-            CompletedDateRanges.Add(LastThreeMonths);
-            CompletedDateRanges.Add(LastMonth);
-            CompletedDateRanges.Add(LastWeek);
-            CompletedDateRanges.Add(Yesterday);
             CompletedDateRanges.Add(Today);
+            CompletedDateRanges.Add(Yesterday);
+            CompletedDateRanges.Add(LastWeek);
+            CompletedDateRanges.Add(LastMonth);
+            CompletedDateRanges.Add(LastThreeMonths);
+            CompletedDateRanges.Add(LastSixMonths);
+            CompletedDateRanges.Add(LastYear);
+            CompletedDateRanges.Add(AllTime);
 
             SelectedCompletedDateRange = LastMonth;
 
@@ -270,12 +273,13 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
             }
         }
 
-        var eventFilter = new GeneralFilter
+        var eventFilter = new EventFilter
         {
             StartDate = startDate,
             EndDate = endDate,
             PageIndex = 0,
-            PageSize = 20,
+            PageSize = 100,
+            EventStatusId = null,
         };
 
         var events = await mobEventManager.GetFilteredEventsAsync(eventFilter);

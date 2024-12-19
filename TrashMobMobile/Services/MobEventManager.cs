@@ -18,7 +18,7 @@
             this.eventSummaryRestService = eventSummaryRestService;
         }
 
-        public Task<PaginatedList<Event>> GetFilteredEventsAsync(GeneralFilter filter, CancellationToken cancellationToken = default)
+        public Task<PaginatedList<Event>> GetFilteredEventsAsync(EventFilter filter, CancellationToken cancellationToken = default)
         {
             return mobEventRestService.GetFilteredEventsAsync(filter, cancellationToken);
         }
