@@ -64,12 +64,11 @@
         public async Task<IEnumerable<Event>> GetFilteredEventsAsync(EventFilter filter,
             CancellationToken cancellationToken = default)
         {
-            return await Repo.Get(e => (filter.StartDate == null || e.CreatedDate >= filter.StartDate) &&
-                                       (filter.EndDate == null || e.CreatedDate <= filter.EndDate) &&
+            return await Repo.Get(e => (filter.StartDate == null || e.EventDate >= filter.StartDate) &&
+                                       (filter.EndDate == null || e.EventDate <= filter.EndDate) &&
                                        (filter.Country == null || e.Country == filter.Country) &&
                                        (filter.Region == null || e.Region == filter.Region) &&
                                        (filter.City == null || e.City == filter.City) &&
-                                       (filter.EventStatusId == null || e.EventStatusId == filter.EventStatusId) &&
                                        (filter.CreatedByUserId == null || e.CreatedByUserId == filter.CreatedByUserId))
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
         }

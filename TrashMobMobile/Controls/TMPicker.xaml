@@ -13,6 +13,6 @@
                 <Setter Property="Stroke" Value="{StaticResource InputBorderActive}" />
             </DataTrigger>
         </Border.Triggers>
-        <controls:BorderlessPicker x:Name="WrappedPicker"/>
+        <controls:BorderlessPicker x:Name="WrappedPicker" SelectedIndexChanged="WrappedPicker_OnSelectedIndexChanged"/>
     </Border>
 </ContentView>

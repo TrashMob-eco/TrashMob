@@ -41,7 +41,7 @@
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="0" Grid.Column="1">
                         <Label Text="Set your preferred Units of measure." Style="{StaticResource FieldLabel}" />
-                        <controls:TMPicker SelectedItem="{Binding Units}" >
+                        <controls:TMPicker SelectedItem="{Binding Units, Mode=TwoWay}" >
                             <controls:TMPicker.ItemsSource>
                                 <x:Array Type="{x:Type x:String}">
                                     <x:String>Kilometers</x:String>

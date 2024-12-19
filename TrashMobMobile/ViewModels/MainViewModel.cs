@@ -178,7 +178,19 @@ public partial class MainViewModel(IAuthService authService,
     private async Task RefreshEvents()
     {
         UpcomingEvents.Clear();
-        var events = await mobEventManager.GetActiveEventsAsync();
+        var startDate = DateTimeOffset.Now;
+        var endDate = DateTimeOffset.Now.AddDays(3650);
+
+        var eventFilter = new EventFilter
+        {
+            StartDate = startDate,
+            EndDate = endDate,
+            PageIndex = 0,
+            PageSize = 50,
+            EventStatusId = null,
+        };
+
+        var events = await mobEventManager.GetFilteredEventsAsync(eventFilter);
 
         var eventsUserIsAttending = await mobEventManager.GetEventsUserIsAttending(userManager.CurrentUser.Id);
 

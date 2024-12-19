@@ -8,136 +8,137 @@
              x:Class="TrashMobMobile.Pages.SearchEventsPage"
              xmlns:controls="clr-namespace:TrashMobMobile.Controls"
              Title="Search Events">
-    <ScrollView>
-        <Grid>
+    <Grid>
+        <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
-            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
-                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
-
-                <Grid RowDefinitions="Auto, Auto, *">
-                    <Grid RowDefinitions="Auto" ColumnDefinitions="*, *, *, *" Grid.Row="0">
-                        <Button Margin="10"
+            <Grid RowDefinitions="Auto, Auto, *">
+                <Grid RowDefinitions="Auto" ColumnDefinitions="*, *, *, *" Grid.Row="0">
+                    <Button Margin="10"
                             Grid.Row="0" 
                             Grid.Column="0" 
                             Style="{StaticResource SecondarySmallButton}"
                             Command="{Binding ViewUpcomingCommand}"                                 
                             Text="Upcoming">
-                            <Button.Triggers>
-                                <DataTrigger TargetType="Button" Binding="{Binding IsUpcomingSelected}" Value="true">
-                                    <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
-                                </DataTrigger>
-                                <DataTrigger TargetType="Button" Binding="{Binding IsUpcomingSelected}" Value="false">
-                                    <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
-                                </DataTrigger>
-                            </Button.Triggers>
-                        </Button>
-                        <Button Margin="10"
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding IsUpcomingSelected}" Value="true">
+                                <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Button" Binding="{Binding IsUpcomingSelected}" Value="false">
+                                <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+                    <Button Margin="10"
                             Grid.Row="0" 
                             Grid.Column="1" 
                             Style="{StaticResource SecondarySmallButton}"
                             Command="{Binding ViewCompletedCommand}" 
                             Text="Completed">
-                            <Button.Triggers>
-                                <DataTrigger TargetType="Button" Binding="{Binding IsCompletedSelected}" Value="true">
-                                    <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
-                                </DataTrigger>
-                                <DataTrigger TargetType="Button" Binding="{Binding IsCompletedSelected}" Value="false">
-                                    <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
-                                </DataTrigger>
-                            </Button.Triggers>
-                        </Button>
-                        <Button Margin="10"
-                            Grid.Row="0" 
-                            Grid.Column="2" 
-                            Style="{StaticResource SecondarySmallButton}"
-                            Command="{Binding ViewBothCommand}" 
-                            Text="Both">
-                            <Button.Triggers>
-                                <DataTrigger TargetType="Button" Binding="{Binding IsBothSelected}" Value="true">
-                                    <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
-                                </DataTrigger>
-                                <DataTrigger TargetType="Button" Binding="{Binding IsBothSelected}" Value="false">
-                                    <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
-                                </DataTrigger>
-                            </Button.Triggers>
-                        </Button>
-                    </Grid>
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding IsCompletedSelected}" Value="true">
+                                <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Button" Binding="{Binding IsCompletedSelected}" Value="false">
+                                <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+                    <controls:TMPicker Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2"
+                                           IsVisible="{Binding IsUpcomingSelected}"
+                                           Title="Upcoming Date Range"
+                                           HeightRequest="40"
+                                           Margin="0, 0, 10, 0"
+                                           ItemsSource="{Binding UpcomingDateRanges}"
+                                           SelectedItem="{Binding SelectedUpcomingDateRange, Mode=TwoWay}" />
+                    <controls:TMPicker Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2"
+                                           IsVisible="{Binding IsCompletedSelected}"
+                                           Title="Completed Date Range"
+                                           HeightRequest="40"
+                                           Margin="0, 0, 10, 0"
+                                           ItemsSource="{Binding CompletedDateRanges}"
+                                           SelectedItem="{Binding SelectedCompletedDateRange, Mode=TwoWay}" />
+                </Grid>
 
-                    <Border Grid.Row="1" Style="{StaticResource RoundBorder}">
-                        <Grid ColumnDefinitions="*, *, *, *">
-                            <Picker x:Name="CountryPicker" Title="Select a country"
+                <Border Grid.Row="1" Style="{StaticResource RoundBorder}">
+                    <Grid ColumnDefinitions="*, *, *, *">
+                        <Picker x:Name="CountryPicker" Title="Select a country"
                                     ItemsSource="{Binding CountryCollection}" SelectedItem="{Binding SelectedCountry}"
                                     FontSize="Micro" Grid.Column="0" />
-                            <Picker x:Name="RegionPicker" Title="Select a state"
+                        <Picker x:Name="RegionPicker" Title="Select a state"
                                     ItemsSource="{Binding RegionCollection}" SelectedItem="{Binding SelectedRegion}"
                                     FontSize="Micro" Grid.Column="1" />
-                            <Picker x:Name="CityPicker" Title="Select a city" ItemsSource="{Binding CityCollection}"
+                        <Picker x:Name="CityPicker" Title="Select a city" ItemsSource="{Binding CityCollection}"
                                     SelectedItem="{Binding SelectedCity}" FontSize="Micro" Grid.Column="2" />
-                            <Button Text="Clear Selections" Command="{Binding ClearSelectionsCommand}" Margin="10" Style="{StaticResource SecondarySmallButton}"
+                        <Button Text="Clear Selections" Command="{Binding ClearSelectionsCommand}" Margin="10" Style="{StaticResource SecondarySmallButton}"
                                     Grid.Column="3" />
-                        </Grid>
-                    </Border>
-                    <Grid Margin="5" Grid.Row="2"
+                    </Grid>
+                </Border>
+                <Grid Margin="5" Grid.Row="2"
                       ColumnDefinitions="6*, *, *"
                       RowDefinitions="Auto">
-                        <ImageButton Grid.Column="1"
+                    <ImageButton Grid.Column="1"
                              HeightRequest="24"
                              Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconMap}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" 
                              Command="{Binding MapSelectedCommand}" />
-                        <ImageButton Grid.Column="2" 
+                    <ImageButton Grid.Column="2" 
                              HeightRequest="24"
                              Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconViewList}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" 
                              Command="{Binding ListSelectedCommand}" />
-                    </Grid>
                 </Grid>
+            </Grid>
 
-                <maps:Map x:Name="eventsMap"
+            <maps:Map x:Name="eventsMap"
                           ItemsSource="{Binding Events}"
                           IsVisible="{Binding IsMapSelected}">
-                    <maps:Map.ItemTemplate>
-                        <DataTemplate x:DataType="viewModels:EventViewModel">
-                            <controls:CustomPin Location="{Binding Address.Location}"
+                <maps:Map.ItemTemplate>
+                    <DataTemplate x:DataType="viewModels:EventViewModel">
+                        <controls:CustomPin Location="{Binding Address.Location}"
                                       Address="{Binding Address.StreetAddress}"
                                       Label="{Binding Name}"
                                       AutomationId="{Binding Id}"
                                       ImageSource="{Binding Address.IconFile}"
                                       InfoWindowClicked="Pin_InfoWindowClicked" />
-                        </DataTemplate>
-                    </maps:Map.ItemTemplate>
-                </maps:Map>
+                    </DataTemplate>
+                </maps:Map.ItemTemplate>
+            </maps:Map>
 
+            <Grid RowDefinitions="Auto" IsVisible="{Binding IsListSelected}" Margin="10">
+                <Label Text="There are no events matching the selected criteria." IsVisible="{Binding AreNoEventsFound}" Grid.Row="0" />
                 <CollectionView x:Name="EventsCollection"
                                 ItemsSource="{Binding Events}"
                                 SelectedItem="{Binding SelectedEvent}"
-                                IsVisible="{Binding IsListSelected}"
-                                SelectionMode="Single">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="viewModels:EventViewModel">
-                            <StackLayout Margin="5">
-                                <Border Style="{StaticResource RoundBorder}">
-                                    <Grid ColumnDefinitions="*, *"
+                                IsVisible="{Binding AreEventsFound}"
+                                SelectionMode="Single"
+                                Grid.Row="0"
+                                MaximumHeightRequest="400">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="viewModels:EventViewModel">
+                        <StackLayout Margin="5">
+                            <Border Style="{StaticResource RoundBorder}">
+                                <Grid ColumnDefinitions="*, *"
                                           RowDefinitions="Auto, Auto, Auto, Auto"
                                           x:Name="EventItem">
 
-                                        <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Small" />
-                                        <Label Text="{Binding DisplayDate}" Grid.Row="1" Grid.ColumnSpan="2"
+                                    <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Small" />
+                                    <Label Text="{Binding DisplayDate}" Grid.Row="1" Grid.ColumnSpan="2"
                                                FontSize="Micro" />
-                                        <Label Text="{Binding DisplayTime}" Grid.Row="1" Grid.Column="1"
+                                    <Label Text="{Binding DisplayTime}" Grid.Row="1" Grid.Column="1"
                                                FontSize="Micro" />
-                                        <Label Text="{Binding Address.DisplayAddress}" Grid.Row="2" Grid.ColumnSpan="2"
+                                    <Label Text="{Binding Address.DisplayAddress}" Grid.Row="2" Grid.ColumnSpan="2"
                                                FontSize="Micro" />
-                                        <Label Text="{Binding UserRoleForEvent}" Grid.Row="3" FontSize="Micro" />
-                                    </Grid>
-                                </Border>
-                            </StackLayout>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </VerticalStackLayout>
-            <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
+                                    <Label Text="{Binding UserRoleForEvent}" Grid.Row="3" FontSize="Micro" />
+                                </Grid>
+                            </Border>
+                        </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            </Grid>
+        </VerticalStackLayout>
+        <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
                      VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center"
+        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center"
                                HorizontalOptions="Center" />
-        </Grid>
-    </ScrollView>
+    </Grid>
 </ContentPage>
