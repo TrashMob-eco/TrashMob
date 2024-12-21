@@ -3,10 +3,8 @@ import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 import { APIProvider } from '@vis.gl/react-google-maps';
 import { Col, Container, Dropdown, Image, Row } from 'react-bootstrap';
 import {
-    Eye,
     PersonX,
     Link as LinkIcon,
-    Pencil,
     FileEarmarkCheck,
     CheckSquare,
     XSquare,
@@ -32,7 +30,6 @@ import PickupLocationData from '../Models/PickupLocationData';
 import { SocialsModal } from '../EventManagement/ShareToSocialsModal';
 import { HeroSection } from '../Customization/HeroSection';
 import * as SharingMessages from '../../store/SharingMessages';
-import { DeleteEventAttendee, GetUserEvents } from '../../services/events';
 import { Services } from '../../config/services.config';
 import {
     AcceptPartnerAdminInvitation,
@@ -45,6 +42,11 @@ import { GetPartnerAdminsForUser } from '../../services/admin';
 import { GetStatsForUser } from '../../services/stats';
 import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
 import { EventsMap } from '../Map';
+import { Button } from '@/components/ui/button';
+
+import { Eye, Pencil } from 'lucide-react';
+import { EventsTable } from '../EventsTable/EventsTable';
+import { useGetUserEvents } from '@/hooks/useGetUserEvents';
 
 const isUpcomingEvent = (event: EventData) => new Date(event.eventDate) >= new Date();
 const isPastEvent = (event: EventData) => new Date(event.eventDate) < new Date();
@@ -56,7 +58,6 @@ interface MyDashboardProps extends RouteComponentProps<any> {
 
 const MyDashboard: FC<MyDashboardProps> = (props) => {
     const { isUserLoaded, currentUser } = props;
-    const [myEventList, setMyEventList] = useState<EventData[]>([]);
     const [partnerStatusList, setPartnerStatusList] = useState<PartnerStatusData[]>([]);
     const [partnerRequestStatusList, setPartnerRequestStatusList] = useState<PartnerRequestStatusData[]>([]);
     const [myPartnerRequests, setMyPartnerRequests] = useState<DisplayPartnershipData[]>([]);
@@ -66,10 +67,8 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const [isEventDataLoaded, setIsEventDataLoaded] = useState<boolean>(false);
     const [isPartnerAdminInvitationsDataLoaded, setIsPartnerAdminInvitationsDataLoaded] = useState<boolean>(false);
     const [isPickupRequestsDataLoaded, setIsPickupRequestsDataLoaded] = useState<boolean>(false);
-    const [reloadEvents, setReloadEvents] = useState<number>(0);
     const [upcomingEventsMapView, setUpcomingEventsMapView] = useState<boolean>(false);
     const [pastEventsMapView, setPastEventsMapView] = useState<boolean>(false);
-    const [copied, setCopied] = useState(false);
     const [totalBags, setTotalBags] = useState<number>(0);
     const [totalHours, setTotalHours] = useState<number>(0);
     const [totalEvents, setTotalEvents] = useState<number>(0);
@@ -77,15 +76,10 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const [eventToShare, setEventToShare] = useState<EventData>();
     const [showModal, setShowSocialsModal] = useState<boolean>(false);
 
+    const { data: userEvents } = useGetUserEvents(currentUser.id);
+    const myEventList = userEvents || [];
     const upcomingEvents = myEventList.filter(isUpcomingEvent);
     const pastEvents = myEventList.filter(isPastEvent);
-
-    const getUserEvents = useQuery({
-        queryKey: GetUserEvents({ userId: currentUser.id }).key,
-        queryFn: GetUserEvents({ userId: currentUser.id }).service,
-        staleTime: Services.CACHE.DISABLE,
-        enabled: false,
-    });
 
     const getPartnerAdminInvitationsByUser = useQuery({
         queryKey: GetPartnerAdminInvitationsByUser({
@@ -152,11 +146,6 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         mutationFn: DeclinePartnerAdminInvitation().service,
     });
 
-    const deleteEventAttendee = useMutation({
-        mutationKey: DeleteEventAttendee().key,
-        mutationFn: DeleteEventAttendee().service,
-    });
-
     const pickupLocationMarkAsPickedUp = useMutation({
         mutationKey: PickupLocationMarkAsPickedUp().key,
         mutationFn: PickupLocationMarkAsPickedUp().service,
@@ -169,11 +158,6 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     useEffect(() => {
         if (props.isUserLoaded) {
             setIsEventDataLoaded(false);
-
-            getUserEvents.refetch().then((res) => {
-                setMyEventList(res.data?.data || []);
-                setIsEventDataLoaded(true);
-            });
 
             getPartnerAdminInvitationsByUser.refetch().then((res) => {
                 setMyPartnerAdminInvitations(res.data?.data || []);
@@ -215,7 +199,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                 setTotalEvents(res.data?.data.totalEvents || 0);
             });
         }
-    }, [reloadEvents, props.currentUser, props.currentUser.id, props.isUserLoaded]);
+    }, [props.currentUser, props.currentUser.id, props.isUserLoaded]);
 
     const setSharingEvent = useCallback((newEventToShare: EventData, updateShowModal: boolean) => {
         setEventToShare(newEventToShare);
@@ -237,11 +221,6 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         }
     }, [state, isEventDataLoaded, props.currentUser.id, props.history, myEventList, setSharingEvent]);
 
-    const handleReloadEvents = () => {
-        // A trick to force the reload as needed.
-        setReloadEvents(reloadEvents + 1);
-    };
-
     const handleEventView = (view: string, table: string) => {
         if (table === 'Upcoming events') {
             if (view === 'list') {
@@ -257,14 +236,6 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
 
     const handleShowModal = (showModal: boolean) => {
         setShowSocialsModal(showModal);
-    };
-
-    const handleCopyLink = (eventId: string) => {
-        navigator.clipboard.writeText(`${window.location.origin}/eventdetails/${eventId}`);
-        setCopied(true);
-        setTimeout(() => {
-            setCopied(false);
-        }, 2000);
     };
 
     const handleAcceptInvitation = (partnerAdminInvitationId: string) => {
@@ -296,14 +267,6 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         });
     };
 
-    const handleUnregisterEvent = (id: string, name: string) => {
-        if (!window.confirm(`Do you want to remove yourself from this event: ${name}?`)) return;
-
-        deleteEventAttendee.mutateAsync({ eventId: id, userId: props.currentUser.id }).then(() => {
-            handleReloadEvents();
-        });
-    };
-
     const handleMarkAsPickedUp = (id: string) => {
         pickupLocationMarkAsPickedUp.mutateAsync({ locationId: id }).then(() => {
             getEventPickupLocationsByUser.refetch().then((res) => {
@@ -312,86 +275,6 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
             });
         });
     };
-
-    const attendeeActionDropdownList = (event: EventData) => (
-        <>
-            <Dropdown.Item href={`/eventdetails/${event.id}`}>
-                <Eye />
-                View event
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => handleUnregisterEvent(event.id, props.currentUser.userName)}>
-                <PersonX />
-                Unregister for event
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => handleCopyLink(event.id)}>
-                <LinkIcon />
-                {copied ? 'Copied!' : 'Copy event link'}
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => setSharingEvent(event, true)}>
-                <Share />
-                Share Event
-            </Dropdown.Item>
-        </>
-    );
-
-    const eventOwnerActionDropdownList = (event: EventData) => (
-        <>
-            <Dropdown.Item href={`/manageeventdashboard/${event.id}`}>
-                <Pencil />
-                Manage event
-            </Dropdown.Item>
-            <Dropdown.Item href={`/eventdetails/${event.id}`}>
-                <Eye />
-                View event
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => handleCopyLink(event.id)}>
-                <LinkIcon />
-                {copied ? 'Copied!' : 'Copy event link'}
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => setSharingEvent(event, true)}>
-                <Share />
-                Share Event
-            </Dropdown.Item>
-            <Dropdown.Item href={`/cancelevent/${event.id}`}>
-                <XSquare />
-                Cancel event
-            </Dropdown.Item>
-        </>
-    );
-
-    const completedAttendeeActionDropdownList = (eventId: string) => (
-        <>
-            <Dropdown.Item href={`/eventdetails/${eventId}`}>
-                <Eye />
-                View event
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => handleCopyLink(eventId)}>
-                <LinkIcon />
-                {copied ? 'Copied!' : 'Copy event link'}
-            </Dropdown.Item>
-        </>
-    );
-
-    const completedEventOwnerActionDropdownList = (eventId: string) => (
-        <>
-            <Dropdown.Item href={`/eventsummary/${eventId}`}>
-                <FileEarmarkCheck />
-                Event Summary
-            </Dropdown.Item>
-            <Dropdown.Item href={`/manageeventdashboard/${eventId}`}>
-                <Pencil />
-                Manage event
-            </Dropdown.Item>
-            <Dropdown.Item href={`/eventdetails/${eventId}`}>
-                <Eye />
-                View event
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => handleCopyLink(eventId)}>
-                <LinkIcon />
-                {copied ? 'Copied!' : 'Copy event link'}
-            </Dropdown.Item>
-        </>
-    );
 
     const partnerAdminInvitationsActionDropdownList = (partnerAdminInvitationId: string) => (
         <>
@@ -439,102 +322,6 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
             Activate partnership
         </Dropdown.Item>
     );
-
-    function UpcomingEventsTable() {
-        const headerTitles = ['Name', 'Role', 'Date', 'Time', 'Location', 'Actions'];
-        return (
-            <div className='bg-white p-3 px-4 overflow-auto'>
-                <Table columnHeaders={headerTitles}>
-                    {myEventList
-                        .sort((a, b) => (a.eventDate < b.eventDate ? 1 : -1))
-                        .filter(({ eventDate }) => new Date(eventDate) >= new Date())
-                        .map((event) => (
-                            <tr key={event.id.toString()}>
-                                <td>{event.name}</td>
-                                <td>{event.createdByUserId === props.currentUser.id ? 'Lead' : ' Attendee'}</td>
-                                <td>
-                                    {new Date(event.eventDate).toLocaleDateString('en-us', {
-                                        year: 'numeric',
-                                        month: '2-digit',
-                                        day: '2-digit',
-                                    })}
-                                </td>
-                                <td>
-                                    {new Date(event.eventDate).toLocaleTimeString('en-us', {
-                                        hour12: true,
-                                        hour: 'numeric',
-                                        minute: '2-digit',
-                                    })}
-                                </td>
-                                <td>
-                                    {event.streetAddress},{event.city}
-                                </td>
-                                <td className='btn py-0'>
-                                    <Dropdown role='menuitem'>
-                                        <Dropdown.Toggle id='share-toggle' variant='outline' className='h-100 border-0'>
-                                            ...
-                                        </Dropdown.Toggle>
-                                        <Dropdown.Menu id='share-menu'>
-                                            {event.createdByUserId === props.currentUser.id
-                                                ? eventOwnerActionDropdownList(event)
-                                                : attendeeActionDropdownList(event)}
-                                        </Dropdown.Menu>
-                                    </Dropdown>
-                                </td>
-                            </tr>
-                        ))}
-                </Table>
-            </div>
-        );
-    }
-
-    function PastEventsTable() {
-        const headerTitles = ['Name', 'Role', 'Date', 'Time', 'Location', 'Actions'];
-        return (
-            <div className='bg-white p-3 px-4 overflow-auto'>
-                <Table columnHeaders={headerTitles}>
-                    {myEventList
-                        .sort((a, b) => (a.eventDate < b.eventDate ? 1 : -1))
-                        .filter(({ eventDate }) => new Date(eventDate) < new Date())
-                        .map(({ id, name, createdByUserId, eventDate, streetAddress, city }) => (
-                            <tr key={id.toString()}>
-                                <td>{name}</td>
-                                <td>{createdByUserId === props.currentUser.id ? 'Lead' : ' Attendee'}</td>
-                                <td>
-                                    {new Date(eventDate).toLocaleDateString('en-us', {
-                                        year: 'numeric',
-                                        month: '2-digit',
-                                        day: '2-digit',
-                                    })}
-                                </td>
-                                <td>
-                                    {new Date(eventDate).toLocaleTimeString('en-us', {
-                                        hour12: true,
-                                        hour: 'numeric',
-                                        minute: '2-digit',
-                                    })}
-                                </td>
-                                <td>
-                                    {streetAddress},{city}
-                                </td>
-                                <td className='btn py-0'>
-                                    <Dropdown role='menuitem'>
-                                        <Dropdown.Toggle id='share-toggle' variant='outline' className='h-100 border-0'>
-                                            ...
-                                        </Dropdown.Toggle>
-                                        <Dropdown.Menu id='share-menu'>
-                                            {createdByUserId === props.currentUser.id
-                                                ? completedEventOwnerActionDropdownList(id)
-                                                : completedAttendeeActionDropdownList(id)}
-                                        </Dropdown.Menu>
-                                    </Dropdown>
-                                </td>
-                            </tr>
-                        ))}
-                </Table>
-            </div>
-        );
-    }
 
     function MyPartnersTable() {
         const headerTitles = ['Name', 'Status', 'Actions'];
@@ -706,9 +493,9 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     }
 
     return (
-        <>
+        <div className='tailwind'>
             <HeroSection Title='Dashboard' Description="See how much you've done!" />
-            <Container className='mt-5 pb-5'>
+            <div className='container !mt-12 !pb-12'>
                 {eventToShare ? (
                     <SocialsModal
                         eventToShare={eventToShare}
@@ -718,64 +505,38 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                         message={SharingMessages.getEventShareMessage(eventToShare, props.currentUser.id)}
                     />
                 ) : null}
-                <Row className='pt-5 justify-content-lg-center'>
-                    <Col xs='6' md='4' xl='3'>
-                        <div className='d-flex bg-white'>
-                            <Col className='ml-3'>
-                                <p className='card-title'>Events</p>
-                                <p className='card-statistic color-primary mt-0'>{totalEvents}</p>
-                            </Col>
-                            <Col className='d-flex justify-content-end'>
-                                <Image
-                                    src={twofigure}
-                                    alt='person silouhette icons'
-                                    className='card-icon align-self-end mr-3 '
-                                />
-                            </Col>
+                <div className='!pt-12 flex flex-row flex-wrap gap-8 justify-center'>
+                    {[
+                        { name: 'Events', value: totalEvents, img: twofigure },
+                        { name: 'Hours', value: totalHours, img: calendarclock },
+                        { name: 'Bags', value: totalBags, img: bucketplus },
+                    ].map((stat) => (
+                        <div
+                            className='basis-full md:basis-[200px] md:max-w-[255px] md:grow bg-card !px-7 relative'
+                            key={stat.name}
+                        >
+                            <p className='text-[25px] font-medium !mt-6 !mb-3'>{stat.name}</p>
+                            <p className='text-primary !mt-0 text-[55px]'>{stat.value}</p>
+                            <img
+                                src={stat.img}
+                                alt={stat.name}
+                                className='absolute right-8 bottom-0 w-[95px] h-[95px]'
+                            />
                         </div>
-                    </Col>
-                    <Col xs='6' md='4' xl='3'>
-                        <div className='d-flex bg-white'>
-                            <Col className='ml-3'>
-                                <p className='card-title'>Hours</p>
-                                <p className='card-statistic color-primary mt-0'>{totalHours}</p>
-                            </Col>
-                            <Col className='d-flex justify-content-end'>
-                                <Image
-                                    src={calendarclock}
-                                    alt='calendar clock icons'
-                                    className='card-icon align-self-end mr-3'
-                                />
-                            </Col>
-                        </div>
-                    </Col>
-                    <Col xs='6' md='4' xl='3' className='mt-4 mt-md-0'>
-                        <div className='d-flex bg-white'>
-                            <Col className='ml-3'>
-                                <p className='card-title'>Bags</p>
-                                <p className='card-statistic color-primary mt-0'>{totalBags}</p>
-                            </Col>
-                            <Col className='d-flex justify-content-end'>
-                                <Image
-                                    src={bucketplus}
-                                    alt='add bucket icons'
-                                    className='card-icon align-self-end mr-3'
-                                />
-                            </Col>
-                        </div>
-                    </Col>
-                </Row>
-            </Container>
-            <Container className='mb-5 pb-5'>
-                <div className='d-flex my-5 mb-4 justify-content-between'>
-                    <h4 className='font-weight-bold mr-2 pb-2 mt-0 active-line'>My Events ({myEventList.length})</h4>
-                    <Link
-                        className='d-flex align-items-center btn btn-primary banner-button'
-                        to='/manageeventdashboard'
-                    >
-                        Create Event
-                    </Link>
+                    ))}
                 </div>
+            </div>
+            <div className='container !my-12'>
+                <div className='flex justify-between'>
+                    <h4 className='font-bold !mr-2 !pb-2 !mt-0 border-b-[3px] border-primary'>
+                        My Events ({myEventList.length})
+                    </h4>
+                    <Button asChild size='lg'>
+                        <Link to='/manageeventdashboard'>Create Event</Link>
+                    </Button>
+                </div>
+            </div>
+            <Container className='mb-5 pb-5'>
                 <div className='mb-4 bg-white'>
                     <div className='d-flex justify-content-between px-4'>
                         <p className='color-primary font-weight-bold pt-3'>
@@ -815,7 +576,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                             currentUser={currentUser}
                         />
                     ) : (
-                        <UpcomingEventsTable />
+                        <EventsTable events={upcomingEvents} currentUser={currentUser} />
                     )}
                 </div>
                 <div className='mb-4 bg-white'>
@@ -856,7 +617,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                             currentUser={currentUser}
                         />
                     ) : (
-                        <PastEventsTable />
+                        <EventsTable events={pastEvents} currentUser={currentUser} />
                     )}
                 </div>
                 <div className='d-flex flex-column mt-5 mb-3'>
@@ -917,7 +678,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                     <PartnerAdminInvitationsTable />
                 </div>
             </Container>
-        </>
+        </div>
     );
 };
 
