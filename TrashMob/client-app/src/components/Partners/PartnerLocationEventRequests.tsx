@@ -207,7 +207,7 @@ export const PartnerLocationEventRequests: React.FC<PartnerLocationEventRequests
     }
 
     return (
-        <div className='bg-white p-5 shadow-sm rounded'>
+        <div>
             {!isPartnerLocationEventDataLoaded && props.partnerLocationId !== Guid.EMPTY && (
                 <p>
                     <em>Loading...</em>
