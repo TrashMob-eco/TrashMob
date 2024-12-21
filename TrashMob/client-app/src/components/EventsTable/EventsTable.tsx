@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import moment from 'moment';
+import _compact from 'lodash/compact';
 import { Link } from 'react-router-dom';
 import { FileCheck, Ellipsis, Eye, Link2, Pencil, Share2, SquareX, UserRoundX } from 'lucide-react';
 import {
@@ -48,7 +49,7 @@ export const EventsTable = (props: EventTableProps) => {
     };
 
     return (
-        <div className='bg-white p-3 px-4 overflow-auto'>
+        <div className='overflow-auto'>
             {eventToShare ? (
                 <ShareToSocialsDialog
                     eventToShare={eventToShare}
@@ -78,9 +79,7 @@ export const EventsTable = (props: EventTableProps) => {
                                 </TableCell>
                                 <TableCell>{moment(event.eventDate).format('MM/DD/YYYY')}</TableCell>
                                 <TableCell>{moment(event.eventDate).format('hh:mm A')}</TableCell>
-                                <TableCell>
-                                    {event.streetAddress},{event.city}
-                                </TableCell>
+                                <TableCell>{_compact([event.streetAddress, event.city]).join(', ')}</TableCell>
                                 <TableCell className='btn py-0'>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>

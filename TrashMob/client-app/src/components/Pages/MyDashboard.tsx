@@ -1,21 +1,10 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 import { APIProvider } from '@vis.gl/react-google-maps';
-import { Col, Container, Dropdown, Image, Row } from 'react-bootstrap';
-import {
-    PersonX,
-    Link as LinkIcon,
-    FileEarmarkCheck,
-    CheckSquare,
-    XSquare,
-    ArrowRightSquare,
-    Share,
-} from 'react-bootstrap-icons';
 import { Guid } from 'guid-typescript';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import EventData from '../Models/EventData';
 import UserData from '../Models/UserData';
-import { Table } from '../Customization/Table';
 import twofigure from '../assets/card/twofigure.svg';
 import calendarclock from '../assets/card/calendarclock.svg';
 import bucketplus from '../assets/card/bucketplus.svg';
@@ -43,8 +32,18 @@ import { GetStatsForUser } from '../../services/stats';
 import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
 import { EventsMap } from '../Map';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
-import { Eye, Pencil } from 'lucide-react';
+import { Ellipsis, Eye, Pencil, SquareCheck, SquareX, Plus, SquareArrowRight, FileCheck } from 'lucide-react';
 import { EventsTable } from '../EventsTable/EventsTable';
 import { useGetUserEvents } from '@/hooks/useGetUserEvents';
 
@@ -203,7 +202,6 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
 
     const setSharingEvent = useCallback((newEventToShare: EventData, updateShowModal: boolean) => {
         setEventToShare(newEventToShare);
-
         handleShowModal(updateShowModal);
     }, []);
 
@@ -276,98 +274,61 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         });
     };
 
-    const partnerAdminInvitationsActionDropdownList = (partnerAdminInvitationId: string) => (
-        <>
-            <Dropdown.Item onClick={() => handleAcceptInvitation(partnerAdminInvitationId)}>
-                <CheckSquare />
-                Accept Invitation
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => handleDeclineInvitation(partnerAdminInvitationId)}>
-                <XSquare />
-                Decline Invitation
-            </Dropdown.Item>
-        </>
-    );
-
-    const partnerRequestActionDropdownList = (partnerRequestId: string) => (
-        <Dropdown.Item href={`/partnerRequestDetails/${partnerRequestId}`}>
-            <Eye />
-            View request form
-        </Dropdown.Item>
-    );
-
-    const pickupRequestActionDropdownList = (pickupRequestId: string, eventId: string) => (
-        <>
-            <Dropdown.Item href={`/eventsummary/${eventId}`}>
-                <FileEarmarkCheck />
-                Event Summary
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => handleMarkAsPickedUp(pickupRequestId)}>
-                <CheckSquare />
-                Marked picked up
-            </Dropdown.Item>
-        </>
-    );
-
-    const activePartnerActionDropdownList = (partnerId: string) => (
-        <Dropdown.Item href={`/partnerdashboard/${partnerId}`}>
-            <Pencil />
-            Manage partnership
-        </Dropdown.Item>
-    );
-
-    const inactivePartnerActionDropdownList = (partnerId: string) => (
-        <Dropdown.Item href={`/partnerDashboard/${partnerId}`}>
-            <ArrowRightSquare />
-            Activate partnership
-        </Dropdown.Item>
-    );
-
     function MyPartnersTable() {
         const headerTitles = ['Name', 'Status', 'Actions'];
-        if (myPartners) {
-            return (
-                <div className='bg-white p-3 px-4 overflow-auto'>
-                    <Table columnHeaders={headerTitles}>
-                        {myPartners
+        return (
+            <div className='overflow-auto'>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            {headerTitles.map((header) => (
+                                <TableHead key={header}>{header}</TableHead>
+                            ))}
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {(myPartners || [])
                             .sort((a, b) => (a.name < b.name ? 1 : -1))
                             .map((displayPartner) => (
-                                <tr key={displayPartner.id.toString()}>
-                                    <td>{displayPartner.name}</td>
-                                    <td>
+                                <TableRow key={displayPartner.id.toString()}>
+                                    <TableCell>{displayPartner.name}</TableCell>
+                                    <TableCell>
                                         {getDisplayPartnershipStatus(
                                             partnerStatusList,
                                             partnerRequestStatusList,
                                             displayPartner.partnerStatusId,
                                             displayPartner.partnerRequestStatusId,
                                         )}
-                                    </td>
-                                    <td className='btn py-0'>
-                                        <Dropdown role='menuitem'>
-                                            <Dropdown.Toggle
-                                                id='share-toggle'
-                                                variant='outline'
-                                                className='h-100 border-0'
-                                            >
-                                                ...
-                                            </Dropdown.Toggle>
-                                            <Dropdown.Menu id='share-menu'>
-                                                {displayPartner.partnerStatusId === PartnerStatusActive
-                                                    ? activePartnerActionDropdownList(displayPartner.id)
-                                                    : inactivePartnerActionDropdownList(displayPartner.id)}
-                                            </Dropdown.Menu>
-                                        </Dropdown>
-                                    </td>
-                                </tr>
+                                    </TableCell>
+                                    <TableCell className='py-0'>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant='ghost' size='icon'>
+                                                    <Ellipsis />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent className='w-56'>
+                                                {displayPartner.partnerStatusId === PartnerStatusActive ? (
+                                                    <DropdownMenuItem asChild>
+                                                        <Link to={`/partnerdashboard/${displayPartner.id}`}>
+                                                            <Pencil />
+                                                            <span>Manage partnership</span>
+                                                        </Link>
+                                                    </DropdownMenuItem>
+                                                ) : (
+                                                    <DropdownMenuItem asChild>
+                                                        <Link to={`/partnerdashboard/${displayPartner.id}`}>
+                                                            <SquareArrowRight />
+                                                            <span>Activate Partnership</span>
+                                                        </Link>
+                                                    </DropdownMenuItem>
+                                                )}
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </TableCell>
+                                </TableRow>
                             ))}
-                    </Table>
-                </div>
-            );
-        }
-        return (
-            <div className='bg-white p-3 px-4 overflow-auto'>
-                <Table columnHeaders={headerTitles}>
-                    <></>
+                    </TableBody>
                 </Table>
             </div>
         );
@@ -375,36 +336,47 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
 
     function MyPickupRequestsTable() {
         const headerTitles = ['Street Address', 'City', 'Notes', 'Actions'];
-        if (isPickupRequestsDataLoaded && myPickupRequests) {
-            return (
-                <div className='bg-white p-3 px-4 overflow-auto'>
-                    <Table columnHeaders={headerTitles}>
-                        {myPickupRequests.map((displayPickup) => (
-                            <tr key={displayPickup.id.toString()}>
-                                <td>{displayPickup.name}</td>
-                                <td>{displayPickup.streetAddress}</td>
-                                <td>{displayPickup.city}</td>
-                                <td>{displayPickup.notes}</td>
-                                <td className='btn py-0'>
-                                    <Dropdown role='menuitem'>
-                                        <Dropdown.Toggle id='share-toggle' variant='outline' className='h-100 border-0'>
-                                            ...
-                                        </Dropdown.Toggle>
-                                        <Dropdown.Menu id='share-menu'>
-                                            {pickupRequestActionDropdownList(displayPickup.id, displayPickup.eventId)}
-                                        </Dropdown.Menu>
-                                    </Dropdown>
-                                </td>
-                            </tr>
-                        ))}
-                    </Table>
-                </div>
-            );
-        }
         return (
-            <div className='bg-white p-3 px-4 overflow-auto'>
-                <Table columnHeaders={headerTitles}>
-                    <></>
+            <div className='overflow-auto'>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            {headerTitles.map((header) => (
+                                <TableHead key={header}>{header}</TableHead>
+                            ))}
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {(myPickupRequests || []).map((displayPickup) => (
+                            <TableRow key={displayPickup.id.toString()}>
+                                <TableCell>{displayPickup.name}</TableCell>
+                                <TableCell>{displayPickup.streetAddress}</TableCell>
+                                <TableCell>{displayPickup.city}</TableCell>
+                                <TableCell>{displayPickup.notes}</TableCell>
+                                <TableCell className='py-0'>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant='ghost' size='icon'>
+                                                <Ellipsis />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent className='w-56'>
+                                            <DropdownMenuItem asChild>
+                                                <Link to={`/eventsummary/${displayPickup.eventId}`}>
+                                                    <FileCheck />
+                                                    <span>Event Summary</span>
+                                                </Link>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => handleMarkAsPickedUp(displayPickup.id)}>
+                                                <SquareCheck />
+                                                <span>Marked picked up</span>
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
                 </Table>
             </div>
         );
@@ -412,47 +384,50 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
 
     function MyPartnerRequestsTable() {
         const headerTitles = ['Name', 'Status', 'Actions'];
-        if (myPartnerRequests) {
-            return (
-                <div className='bg-white p-3 px-4 overflow-auto'>
-                    <Table columnHeaders={headerTitles}>
-                        {myPartnerRequests
+        return (
+            <div className='overflow-auto'>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            {headerTitles.map((header) => (
+                                <TableHead key={header}>{header}</TableHead>
+                            ))}
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {(myPartnerRequests || [])
                             .sort((a, b) => (a.name < b.name ? 1 : -1))
                             .map((displayPartner) => (
-                                <tr key={displayPartner.id.toString()}>
-                                    <td>{displayPartner.name}</td>
-                                    <td>
+                                <TableRow key={displayPartner.id.toString()}>
+                                    <TableCell>{displayPartner.name}</TableCell>
+                                    <TableCell>
                                         {getDisplayPartnershipStatus(
                                             partnerStatusList,
                                             partnerRequestStatusList,
                                             displayPartner.partnerStatusId,
                                             displayPartner.partnerRequestStatusId,
                                         )}
-                                    </td>
-                                    <td className='btn py-0'>
-                                        <Dropdown role='menuitem'>
-                                            <Dropdown.Toggle
-                                                id='share-toggle'
-                                                variant='outline'
-                                                className='h-100 border-0'
-                                            >
-                                                ...
-                                            </Dropdown.Toggle>
-                                            <Dropdown.Menu id='share-menu'>
-                                                {partnerRequestActionDropdownList(displayPartner.id)}
-                                            </Dropdown.Menu>
-                                        </Dropdown>
-                                    </td>
-                                </tr>
+                                    </TableCell>
+                                    <TableCell className='py-0'>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant='ghost' size='icon'>
+                                                    <Ellipsis />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent className='w-56'>
+                                                <DropdownMenuItem asChild>
+                                                    <Link to={`/partnerRequestDetails/${displayPartner.id}`}>
+                                                        <Eye />
+                                                        View request form
+                                                    </Link>
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </TableCell>
+                                </TableRow>
                             ))}
-                    </Table>
-                </div>
-            );
-        }
-        return (
-            <div className='bg-white p-3 px-4 overflow-auto'>
-                <Table columnHeaders={headerTitles}>
-                    <></>
+                    </TableBody>
                 </Table>
             </div>
         );
@@ -460,33 +435,46 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
 
     function PartnerAdminInvitationsTable() {
         const headerTitles = ['Partner Name', 'Actions'];
-        if (isPartnerAdminInvitationsDataLoaded && myPartnerAdminInvitations) {
-            return (
-                <div className='bg-white p-3 px-4 overflow-auto'>
-                    <Table columnHeaders={headerTitles}>
-                        {myPartnerAdminInvitations.map((displayInvitation) => (
-                            <tr key={displayInvitation.id.toString()}>
-                                <td>{displayInvitation.partnerName}</td>
-                                <td className='btn py-0'>
-                                    <Dropdown role='menuitem'>
-                                        <Dropdown.Toggle id='share-toggle' variant='outline' className='h-100 border-0'>
-                                            ...
-                                        </Dropdown.Toggle>
-                                        <Dropdown.Menu id='share-menu'>
-                                            {partnerAdminInvitationsActionDropdownList(displayInvitation.id)}
-                                        </Dropdown.Menu>
-                                    </Dropdown>
-                                </td>
-                            </tr>
-                        ))}
-                    </Table>
-                </div>
-            );
-        }
         return (
-            <div className='bg-white p-3 px-4 overflow-auto'>
-                <Table columnHeaders={headerTitles}>
-                    <></>
+            <div className='overflow-auto'>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            {headerTitles.map((header) => (
+                                <TableHead key={header}>{header}</TableHead>
+                            ))}
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {(myPartnerAdminInvitations || []).map((displayInvitation) => (
+                            <TableRow key={displayInvitation.id.toString()}>
+                                <TableCell>{displayInvitation.partnerName}</TableCell>
+                                <TableCell className='py-0'>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant='ghost' size='icon'>
+                                                <Ellipsis />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent className='w-56'>
+                                            <DropdownMenuItem
+                                                onClick={() => handleAcceptInvitation(displayInvitation.id)}
+                                            >
+                                                <SquareCheck />
+                                                Accept Invitation
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem
+                                                onClick={() => handleDeclineInvitation(displayInvitation.id)}
+                                            >
+                                                <SquareX />
+                                                Decline Invitation
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
                 </Table>
             </div>
         );
@@ -528,156 +516,160 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
             </div>
             <div className='container !my-12'>
                 <div className='flex justify-between'>
-                    <h4 className='font-bold !mr-2 !pb-2 !mt-0 border-b-[3px] border-primary'>
-                        My Events ({myEventList.length})
+                    <h4 className='font-bold !mr-2 !pb-2 !mt-0 border-b-[3px] border-primary flex items-center w-full'>
+                        <div className='grow'>My Events ({myEventList.length})</div>
+                        <Button asChild>
+                            <Link to='/manageeventdashboard'>
+                                <Plus /> Create Event
+                            </Link>
+                        </Button>
                     </h4>
-                    <Button asChild size='lg'>
-                        <Link to='/manageeventdashboard'>Create Event</Link>
-                    </Button>
                 </div>
             </div>
-            <Container className='mb-5 pb-5'>
-                <div className='mb-4 bg-white'>
-                    <div className='d-flex justify-content-between px-4'>
-                        <p className='color-primary font-weight-bold pt-3'>
-                            Upcoming events (
-                            {myEventList.filter((event) => new Date(event.eventDate) >= new Date()).length})
-                        </p>
-                        <div className='d-flex align-items-center mt-4'>
-                            <label className='mr-2'>
-                                <input
-                                    type='radio'
-                                    className='mb-0 radio'
-                                    name='Event view'
-                                    value='list'
-                                    onChange={(e) => handleEventView(e.target.value, 'Upcoming events')}
-                                    checked={!upcomingEventsMapView}
-                                />
-                                <span className='px-2'>List view</span>
-                            </label>
-                            <label className='pr-3'>
-                                <input
-                                    type='radio'
-                                    className='mb-0 radio'
-                                    name='Event view'
-                                    value='map'
-                                    onChange={(e) => handleEventView(e.target.value, 'Upcoming events')}
-                                    checked={upcomingEventsMapView}
-                                />
-                                <span className='px-2'>Map view</span>
-                            </label>
+            <div className='container mb-5 pb-5'>
+                <Card className='mb-4'>
+                    <CardHeader>
+                        <div className='flex flex-row'>
+                            <CardTitle className='grow text-primary'>
+                                Upcoming events (
+                                {myEventList.filter((event) => new Date(event.eventDate) >= new Date()).length})
+                            </CardTitle>
+                            <RadioGroup
+                                value={upcomingEventsMapView ? 'map' : 'list'}
+                                onValueChange={(value) => handleEventView(value, 'Upcoming events')}
+                                className='grid-cols-2'
+                                orientation='horizontal'
+                            >
+                                <div className='flex items-center space-x-2'>
+                                    <RadioGroupItem value='list' id='upcomingevents-list' />
+                                    <Label htmlFor='upcomingevents-list'>List view</Label>
+                                </div>
+                                <div className='flex items-center space-x-2'>
+                                    <RadioGroupItem value='map' id='upcomingevents-map' />
+                                    <Label htmlFor='upcomingevents-map'>Map view</Label>
+                                </div>
+                            </RadioGroup>
                         </div>
-                    </div>
-                    {upcomingEventsMapView ? (
-                        <EventsMap
-                            id='upcomingEventsMap'
-                            events={upcomingEvents}
-                            isUserLoaded={isUserLoaded}
-                            currentUser={currentUser}
-                        />
-                    ) : (
-                        <EventsTable events={upcomingEvents} currentUser={currentUser} />
-                    )}
-                </div>
-                <div className='mb-4 bg-white'>
-                    <div className='d-flex justify-content-between px-4'>
-                        <p className='color-primary font-weight-bold pt-3'>
-                            Past events ({myEventList.filter((event) => new Date(event.eventDate) < new Date()).length})
-                        </p>
-                        <div className='d-flex align-items-center mt-4'>
-                            <label className='mr-2'>
-                                <input
-                                    type='radio'
-                                    className='mb-0 radio'
-                                    name='Past event view'
-                                    value='list'
-                                    onChange={(e) => handleEventView(e.target.value, 'Past events')}
-                                    checked={!pastEventsMapView}
-                                />
-                                <span className='px-2'>List view</span>
-                            </label>
-                            <label className='pr-3'>
-                                <input
-                                    type='radio'
-                                    className='mb-0 radio'
-                                    name='Past event view'
-                                    value='map'
-                                    onChange={(e) => handleEventView(e.target.value, 'Past events')}
-                                    checked={pastEventsMapView}
-                                />
-                                <span className='px-2'>Map view</span>
-                            </label>
+                    </CardHeader>
+                    <CardContent>
+                        {upcomingEventsMapView ? (
+                            <EventsMap
+                                id='upcomingEventsMap'
+                                events={upcomingEvents}
+                                isUserLoaded={isUserLoaded}
+                                currentUser={currentUser}
+                            />
+                        ) : (
+                            <EventsTable events={upcomingEvents} currentUser={currentUser} />
+                        )}
+                    </CardContent>
+                </Card>
+
+                <Card className='mb-4'>
+                    <CardHeader>
+                        <div className='flex flex-row'>
+                            <CardTitle className='grow text-primary'>
+                                Past events (
+                                {myEventList.filter((event) => new Date(event.eventDate) < new Date()).length})
+                            </CardTitle>
+                            <RadioGroup
+                                value={pastEventsMapView ? 'map' : 'list'}
+                                onValueChange={(value) => handleEventView(value, 'Past events')}
+                                className='grid-cols-2'
+                                orientation='horizontal'
+                            >
+                                <div className='flex items-center space-x-2'>
+                                    <RadioGroupItem value='list' id='pastevents-list' />
+                                    <Label htmlFor='pastevents-list'>List view</Label>
+                                </div>
+                                <div className='flex items-center space-x-2'>
+                                    <RadioGroupItem value='map' id='pastevents-map' />
+                                    <Label htmlFor='pastevents-map'>Map view</Label>
+                                </div>
+                            </RadioGroup>
                         </div>
-                    </div>
-                    {pastEventsMapView ? (
-                        <EventsMap
-                            id='pastEventsMap'
-                            events={pastEvents}
-                            isUserLoaded={isUserLoaded}
-                            currentUser={currentUser}
-                        />
-                    ) : (
-                        <EventsTable events={pastEvents} currentUser={currentUser} />
-                    )}
-                </div>
-                <div className='d-flex flex-column mt-5 mb-3'>
-                    <h4 className='font-weight-bold mr-2 mt-0 active-line pb-2'>
+                    </CardHeader>
+                    <CardContent>
+                        {pastEventsMapView ? (
+                            <EventsMap
+                                id='pastEventsMap'
+                                events={pastEvents}
+                                isUserLoaded={isUserLoaded}
+                                currentUser={currentUser}
+                            />
+                        ) : (
+                            <EventsTable events={pastEvents} currentUser={currentUser} />
+                        )}
+                    </CardContent>
+                </Card>
+                <div className='flex flex-column mt-5 mb-3'>
+                    <h4 className='font-semibold mr-2 mt-0 pb-2 border-b-[3px] border-primary'>
                         My Partnerships ({myPartnerRequests.length + myPartners.length})
                     </h4>
-                    <Link
-                        className='d-flex align-items-center btn btn-primary banner-button mx-auto mr-sm-auto ml-sm-0 mt-2'
-                        to='/inviteapartner'
-                    >
-                        Send invitation to join TrashMob.eco as a partner
-                    </Link>
-                    <Link
-                        className='d-flex align-items-center btn btn-primary banner-button mx-auto mr-sm-auto ml-sm-0 mt-2'
-                        to='/becomeapartner'
-                    >
-                        Apply to become a partner
-                    </Link>
-                </div>
-                <div className='mb-4 bg-white'>
-                    <div className='d-flex justify-content-between px-4'>
-                        <p className='color-primary font-weight-bold pt-3'>My Partners ({myPartners.length})</p>
+                    <div className='flex flex-row flex-wrap gap-4 !my-4'>
+                        <Button variant='outline' asChild>
+                            <Link to='/inviteapartner'>Send invitation to join TrashMob.eco as a partner</Link>
+                        </Button>
+                        <Button variant='outline' asChild>
+                            <Link to='/becomeapartner'>Apply to become a partner</Link>
+                        </Button>
                     </div>
-                    <MyPartnersTable />
                 </div>
-                <div className='mb-4 bg-white'>
-                    <div className='d-flex justify-content-between px-4'>
-                        <p className='color-primary font-weight-bold pt-3'>
+                <Card className='mb-4'>
+                    <CardHeader>
+                        <CardTitle className='text-primary'>My Partners ({myPartners.length})</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <MyPartnersTable />
+                    </CardContent>
+                </Card>
+
+                <Card className='mb-4'>
+                    <CardHeader>
+                        <CardTitle className='text-primary'>
                             Partner Requests and Invitations Sent ({myPartnerRequests.length})
-                        </p>
-                    </div>
-                    <MyPartnerRequestsTable />
-                </div>
-                <div className='mb-4 bg-white'>
-                    <div className='d-flex justify-content-between px-4'>
-                        <p className='color-primary font-weight-bold pt-3'>Partner Event Requests</p>
-                    </div>
-                    <PartnerLocationEventRequests
-                        partnerLocationId={Guid.EMPTY}
-                        currentUser={props.currentUser}
-                        isUserLoaded={props.isUserLoaded}
-                    />
-                </div>
-                <div className='mb-4 bg-white'>
-                    <div className='d-flex justify-content-between px-4'>
-                        <p className='color-primary font-weight-bold pt-3'>
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <MyPartnerRequestsTable />
+                    </CardContent>
+                </Card>
+
+                <Card className='mb-4'>
+                    <CardHeader>
+                        <CardTitle className='text-primary'>Partner Event Requests</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <PartnerLocationEventRequests
+                            partnerLocationId={Guid.EMPTY}
+                            currentUser={props.currentUser}
+                            isUserLoaded={props.isUserLoaded}
+                        />
+                    </CardContent>
+                </Card>
+
+                <Card className='mb-4'>
+                    <CardHeader>
+                        <CardTitle className='text-primary'>
                             Pickup Requests Pending ({myPickupRequests.length})
-                        </p>
-                    </div>
-                    <MyPickupRequestsTable />
-                </div>
-                <div className='mb-4 bg-white'>
-                    <div className='d-flex justify-content-between px-4'>
-                        <p className='color-primary font-weight-bold pt-3'>
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <MyPickupRequestsTable />
+                    </CardContent>
+                </Card>
+
+                <Card className='mb-4'>
+                    <CardHeader>
+                        <CardTitle className='text-primary'>
                             Partner Admin Invitations Pending ({myPartnerAdminInvitations.length})
-                        </p>
-                    </div>
-                    <PartnerAdminInvitationsTable />
-                </div>
-            </Container>
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <PartnerAdminInvitationsTable />
+                    </CardContent>
+                </Card>
+            </div>
         </div>
     );
 };
