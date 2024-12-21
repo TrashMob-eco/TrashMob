@@ -12,7 +12,7 @@ import EventTypeData from '../Models/EventTypeData';
 import { getEventType } from '../../store/eventTypeHelper';
 import * as MapStore from '../../store/MapStore';
 import { MarkerWithInfoWindow, EventInfoWindowContent } from '../Map';
-import { SocialsModal } from '../EventManagement/ShareToSocialsModal';
+import { ShareToSocialsDialog } from '../EventManagement/ShareToSocialsDialog';
 import { RegisterBtn } from '../Customization/RegisterBtn';
 import { HeroSection } from '../Customization/HeroSection';
 import * as SharingMessages from '../../store/SharingMessages';
@@ -210,7 +210,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
             ) : (
                 <>
                     <Container className='my-5'>
-                        <SocialsModal
+                        <ShareToSocialsDialog
                             eventToShare={eventToShare}
                             show={showModal}
                             handleShow={handleShowModal}

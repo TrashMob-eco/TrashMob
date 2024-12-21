@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '../ui/button';
 import EventData from '../Models/EventData';
 import UserData from '../Models/UserData';
-import { SocialsModal } from '../EventManagement/ShareToSocialsModal';
+import { ShareToSocialsDialog } from '../EventManagement/ShareToSocialsDialog';
 import * as SharingMessages from '@/store/SharingMessages';
 import { useDeleteEventAttendee } from '@/hooks/useDeleteEventAttendee';
 
@@ -50,7 +50,7 @@ export const EventsTable = (props: EventTableProps) => {
     return (
         <div className='bg-white p-3 px-4 overflow-auto'>
             {eventToShare ? (
-                <SocialsModal
+                <ShareToSocialsDialog
                     eventToShare={eventToShare}
                     show={!!eventToShare}
                     handleShow={() => setEventToShare(null)}
