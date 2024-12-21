@@ -57,7 +57,7 @@
 
         public static EventLitterReportViewModel ToEventLitterReportViewModel(this FullLitterReport litterReport,
                                                                                    INotificationService notificationService,
-                                                                                   IEventLitterReportRestService eventLitterReportRestService,
+                                                                                   IEventLitterReportManager eventLitterReportRestService,
                                                                                    Guid eventId)
         {
             var litterReportViewModel = new EventLitterReportViewModel(eventLitterReportRestService, eventId)
@@ -85,10 +85,10 @@
 
         public static EventLitterReportViewModel ToEventLitterReportViewModel(this LitterReport litterReport,
                                                                            INotificationService notificationService,
-                                                                           IEventLitterReportRestService eventLitterReportRestService,
+                                                                           IEventLitterReportManager eventLitterReportManager,
                                                                            Guid eventId)
         {
-            var litterReportViewModel = new EventLitterReportViewModel(eventLitterReportRestService, eventId)
+            var litterReportViewModel = new EventLitterReportViewModel(eventLitterReportManager, eventId)
             {
                 Id = litterReport.Id,
                 Name = litterReport.Name,
@@ -97,14 +97,17 @@
                 CreatedDate = litterReport.CreatedDate?.GetFormattedLocalDate() ?? string.Empty,
             };
 
-            foreach (var litterImage in litterReport.LitterImages)
+            if (litterReport.LitterImages != null)
             {
-                var litterImageViewModel = litterImage.ToLitterImageViewModel(litterReport.LitterReportStatusId, notificationService);
-                if (litterImageViewModel != null)
+                foreach (var litterImage in litterReport.LitterImages)
                 {
-                    litterImageViewModel.Address.DisplayName = litterReport.Name;
-                    litterImageViewModel.Address.ParentId = litterReport.Id;
-                    litterReportViewModel.LitterImageViewModels.Add(litterImageViewModel);
+                    var litterImageViewModel = litterImage.ToLitterImageViewModel(litterReport.LitterReportStatusId, notificationService);
+                    if (litterImageViewModel != null)
+                    {
+                        litterImageViewModel.Address.DisplayName = litterReport.Name;
+                        litterImageViewModel.Address.ParentId = litterReport.Id;
+                        litterReportViewModel.LitterImageViewModels.Add(litterImageViewModel);
+                    }
                 }
             }
 
@@ -113,7 +116,7 @@
 
         public static EventLitterReportViewModel ToEventLitterReportViewModel(this EventLitterReport eventLitterReport,
                                                                               INotificationService notificationService,
-                                                                              IEventLitterReportRestService eventLitterReportRestService,
+                                                                              IEventLitterReportManager eventLitterReportRestService,
                                                                               Guid eventId)
         {
             var eventLitterReportViewModel = new EventLitterReportViewModel(eventLitterReportRestService, eventId)

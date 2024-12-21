@@ -52,6 +52,16 @@
                             Style="{StaticResource SecondarySmallButton}" 
                             Text="View Event">
                         </Button>
+                        <Button Margin="10"
+                            Grid.Row="0" 
+                            Grid.Column="4" 
+                            Padding="5"
+                            Command="{Binding CreateEventCommand}" 
+                            IsEnabled="{Binding IsNotAssignedToEvent}"
+                            IsVisible="{Binding IsNotAssignedToEvent}" 
+                            Style="{StaticResource SecondarySmallButton}" 
+                            Text="Create Event">
+                        </Button>
                     </Grid>
 
                     <VerticalStackLayout Grid.Row="1">

@@ -3,6 +3,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
@@ -178,6 +179,6 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
     [RelayCommand]
     private async Task CreateEvent()
     {
-        await Shell.Current.GoToAsync(nameof(CreateEventPage));
+        await Shell.Current.GoToAsync($"{nameof(CreateEventPage)}?LitterReportId={Guid.Empty}");
     }
 }

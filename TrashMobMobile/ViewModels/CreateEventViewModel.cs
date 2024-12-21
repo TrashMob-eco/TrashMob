@@ -23,7 +23,7 @@ public partial class CreateEventViewModel : BaseViewModel
     private readonly IWaiverManager waiverManager;
     private readonly IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService;
     private readonly ILitterReportManager litterReportManager;
-    private readonly IEventLitterReportRestService eventLitterReportRestService;
+    private readonly IEventLitterReportManager eventLitterReportManager;
     private readonly IUserManager userManager;
     private readonly INotificationService notificationService;
     private readonly IEventPartnerLocationServiceStatusRestService eventPartnerLocationServiceStatusRestService;
@@ -131,7 +131,7 @@ public partial class CreateEventViewModel : BaseViewModel
         INotificationService notificationService,
         IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService,
         ILitterReportManager litterReportManager,
-        IEventLitterReportRestService eventLitterReportRestService,
+        IEventLitterReportManager eventLitterReportRestService,
         IUserManager userManager)
         : base(notificationService)
     {
@@ -142,7 +142,7 @@ public partial class CreateEventViewModel : BaseViewModel
         this.notificationService = notificationService;
         this.eventPartnerLocationServiceRestService = eventPartnerLocationServiceRestService;
         this.litterReportManager = litterReportManager;
-        this.eventLitterReportRestService = eventLitterReportRestService;
+        this.eventLitterReportManager = eventLitterReportRestService;
         this.userManager = userManager;
 
         NextCommand = new Command(async () =>
@@ -267,14 +267,13 @@ public partial class CreateEventViewModel : BaseViewModel
         {
             case 0:
             case 1:
-            case 2:
-            case 4:
+            case 3:
                 NextStepText = "Next";
                 break;
-            case 3:
+            case 2:
                 NextStepText = "Save Event";
                 break;
-            case 5:
+            case 4:
                 NextStepText = "Finish";
                 break;
             default:
@@ -284,13 +283,12 @@ public partial class CreateEventViewModel : BaseViewModel
         if (CurrentView is BaseStepClass current)
             current.OnNavigated();
 
-        //TODO reference these colors from the app styles
+        // TODO: reference these colors from the app styles
         StepOneColor = CurrentStep == 0 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
         StepTwoColor = CurrentStep == 1 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
-        StepThreeColor = CurrentStep == 2 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
-        StepFourColor = CurrentStep == 3 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
-        StepFiveColor = CurrentStep == 4 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
-        StepSixColor = CurrentStep == 5 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
+        StepFourColor = CurrentStep == 2 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
+        StepFiveColor = CurrentStep == 3 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
+        StepSixColor = CurrentStep == 4 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
     }
 
     public async Task SetCurrentStep(StepType step)
@@ -298,10 +296,9 @@ public partial class CreateEventViewModel : BaseViewModel
         /*
          * Step 1 Main details                  CurrentStep = 0
          * Step 2 Map Location                  CurrentStep = 1
-         * Step 3 Max Attendees                 CurrentStep = 2
-         * Step 4 Event Summary and Save        CurrentStep = 3
-         * Step 5 Add Partners                  CurrentStep = 4
-         * Step 6 Add Litter Reports            CurrentStep = 5
+         * Step 4 Event Summary and Save        CurrentStep = 2
+         * Step 5 Add Partners                  CurrentStep = 3
+         * Step 6 Add Litter Reports            CurrentStep = 4
          */
 
         if (step == StepType.Backward)
@@ -318,7 +315,7 @@ public partial class CreateEventViewModel : BaseViewModel
             {
                 switch (CurrentStep)
                 {
-                    case 3:
+                    case 2:
                     {
                         if (await SaveEvent() == false)
                         {
@@ -330,7 +327,7 @@ public partial class CreateEventViewModel : BaseViewModel
 
                         break;
                     }
-                    case 5:
+                    case 4:
                         //Evaluate displaying a confirmation text
                         CloseCommand.Execute(null);
                         return;
@@ -342,7 +339,7 @@ public partial class CreateEventViewModel : BaseViewModel
             }
         }
 
-        CanGoBack = CurrentStep != 0 && CurrentStep != 4 && CurrentStep != 5;
+        CanGoBack = CurrentStep != 0 && CurrentStep != 4 && CurrentStep != 4;
     }
 
     // This is only for the map point
@@ -381,9 +378,13 @@ public partial class CreateEventViewModel : BaseViewModel
             $"{nameof(EditEventPartnerLocationServicesPage)}?EventId={EventViewModel.Id}&PartnerLocationId={eventPartnerLocationViewModel.PartnerLocationId}");
     }
 
-    public async Task Init()
+    private Guid? initialLitterReport = null;
+
+    public async Task Init(Guid? litterReportId)
     {
         IsBusy = true;
+
+        initialLitterReport = litterReportId;
 
         SetCurrentView();
 
@@ -403,8 +404,6 @@ public partial class CreateEventViewModel : BaseViewModel
             UserLocation = userManager.CurrentUser.GetAddress();
             EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
 
-            await LoadPartners();
-
             // Set defaults
             EventViewModel = new EventViewModel
             {
@@ -414,10 +413,40 @@ public partial class CreateEventViewModel : BaseViewModel
                 MaxNumberOfParticipants = 0,
                 DurationHours = 2,
                 DurationMinutes = 0,
-                Address = UserLocation,
                 EventTypeId = EventTypes.OrderBy(e => e.DisplayOrder).First().Id,
                 EventStatusId = ActiveEventStatus,
             };
+
+            // If the LitterReportId is passed in, we need to load the litter report and set the address
+            if (litterReportId != null && litterReportId != Guid.Empty)
+            {
+                var litterReport = await litterReportManager.GetLitterReportAsync(litterReportId.Value, ImageSizeEnum.Thumb);
+
+                if (litterReport != null)
+                {
+                    var address = litterReport.LitterImages.FirstOrDefault();
+
+                    if (address != null)
+                    {
+                        EventViewModel.Address.City = address.City;
+                        EventViewModel.Address.Country = address.Country;
+                        EventViewModel.Address.Latitude = address.Latitude;
+                        EventViewModel.Address.Longitude = address.Longitude;
+                        EventViewModel.Address.PostalCode = address.PostalCode;
+                        EventViewModel.Address.StreetAddress = address.StreetAddress;
+                        EventViewModel.Address.AddressType = AddressType.Event;
+                        EventViewModel.Address.Location = new Microsoft.Maui.Devices.Sensors.Location(address.Latitude.Value, address.Longitude.Value);
+                    }
+                }
+            }
+            else
+            {
+                EventViewModel.Address = UserLocation;
+            }
+
+            EventViewModel.Address.IconFile = EventExtensions.GetMapIcon(false);
+
+            await LoadPartners();
 
             StartTime = TimeSpan.FromHours(9);
 
@@ -488,6 +517,16 @@ public partial class CreateEventViewModel : BaseViewModel
             Events.Clear();
             Events.Add(EventViewModel);
 
+            // Assign the litter report to the event if it was passed in
+            if (initialLitterReport != null)
+            {
+                await eventLitterReportManager.AddLitterReportAsync(new EventLitterReport
+                {
+                    EventId = EventViewModel.Id,
+                    LitterReportId = initialLitterReport.Value,
+                });
+            }
+
             IsBusy = false;
 
             await notificationService.Notify("Event has been saved.");
@@ -552,7 +591,7 @@ public partial class CreateEventViewModel : BaseViewModel
         };
 
         RawLitterReports = await litterReportManager.GetLitterReportsAsync(filter, ImageSizeEnum.Thumb);
-        var assignedLitterReports = await eventLitterReportRestService.GetEventLitterReportsAsync(EventViewModel.Id);
+        var assignedLitterReports = await eventLitterReportManager.GetEventLitterReportsAsync(EventViewModel.Id, ImageSizeEnum.Thumb, true);
 
         UpdateLitterReportViewModels(assignedLitterReports);
 
@@ -602,7 +641,7 @@ public partial class CreateEventViewModel : BaseViewModel
 
         foreach (var litterReport in RawLitterReports.OrderByDescending(l => l.CreatedDate))
         {
-            var vm = litterReport.ToEventLitterReportViewModel(NotificationService, eventLitterReportRestService, EventViewModel.Id);
+            var vm = litterReport.ToEventLitterReportViewModel(NotificationService, eventLitterReportManager, EventViewModel.Id);
 
             if (assignedLitterReports.Any(l => l.LitterReportId == litterReport.Id))
             {
@@ -640,8 +679,7 @@ public partial class CreateEventViewModel : BaseViewModel
 
     private readonly string[] stepTitles =
     [
-        "Set Event Details", "Set Event Location", "Set Event Restrictions", "Review Event", "Event Partners",
-        "Litter Reports"
+        "Set Event Details", "Set Event Location", "Review Event", "Event Partners", "Litter Reports"
     ];
 
     #region UI Related properties

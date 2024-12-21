@@ -81,5 +81,15 @@
         {
             return litterReportRestService.GetLocationsByTimeRangeAsync(startDate, endDate, cancellationToken);
         }
+
+        public Task AddLitterReportAsync(EventLitterReport eventLitterReport, CancellationToken cancellationToken = default)
+        {
+            return eventLitterReportRestService.AddLitterReportAsync(eventLitterReport, cancellationToken);
+        }
+
+        public Task RemoveLitterReportAsync(EventLitterReport eventLitterReport, CancellationToken cancellationToken = default)
+        {
+            return eventLitterReportRestService.RemoveLitterReportAsync(eventLitterReport, cancellationToken);
+        }
     }
 }

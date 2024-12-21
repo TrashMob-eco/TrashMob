@@ -2,6 +2,7 @@ namespace TrashMobMobile.Pages;
 
 using TrashMobMobile.Pages.CreateEvent;
 
+[QueryProperty(nameof(LitterReportId), nameof(LitterReportId))]
 public partial class CreateEventPage : ContentPage
 {
     private readonly CreateEventViewModel viewModel;
@@ -18,16 +19,17 @@ public partial class CreateEventPage : ContentPage
             new Step2(),
             new Step3(),
             new Step4(),
-            new Step5(),
-            new Step6()
+            new Step5()
         };
 
         BindingContext = this.viewModel;
     }
 
+    public string LitterReportId { get; set; }
+
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        await viewModel.Init();
+        await viewModel.Init(new Guid(LitterReportId));
     }
 }
