@@ -5,20 +5,7 @@
 
     public interface ILitterReportRestService
     {
-        Task<IEnumerable<LitterReport>> GetAllLitterReportsAsync(CancellationToken cancellationToken = default);
-
-        Task<IEnumerable<LitterReport>> GetNewLitterReportsAsync(CancellationToken cancellationToken = default);
-
-        Task<IEnumerable<LitterReport>> GetAssignedLitterReportsAsync(CancellationToken cancellationToken = default);
-
-        Task<IEnumerable<LitterReport>> GetCleanedLitterReportsAsync(CancellationToken cancellationToken = default);
-
         Task<PaginatedList<LitterReport>> GetLitterReportsAsync(LitterReportFilter filter, CancellationToken cancellationToken = default);
-
-        Task<IEnumerable<LitterReport>>
-            GetNotCancelledLitterReportsAsync(CancellationToken cancellationToken = default);
-
-        Task<IEnumerable<LitterReport>> GetCancelledLitterReportsAsync(CancellationToken cancellationToken = default);
 
         Task<IEnumerable<LitterReport>> GetUserLitterReportsAsync(Guid userId,
             CancellationToken cancellationToken = default);
