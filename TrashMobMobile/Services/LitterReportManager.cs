@@ -12,40 +12,6 @@
             this.litterReportRestService = litterReportRestService;
         }
 
-        public Task<IEnumerable<LitterReport>> GetAllLitterReportsAsync(CancellationToken cancellationToken = default)
-        {
-            return litterReportRestService.GetAllLitterReportsAsync(cancellationToken);
-        }
-
-        public Task<IEnumerable<LitterReport>> GetNewLitterReportsAsync(CancellationToken cancellationToken = default)
-        {
-            return litterReportRestService.GetNewLitterReportsAsync(cancellationToken);
-        }
-
-        public Task<IEnumerable<LitterReport>> GetAssignedLitterReportsAsync(
-            CancellationToken cancellationToken = default)
-        {
-            return litterReportRestService.GetAssignedLitterReportsAsync(cancellationToken);
-        }
-
-        public Task<IEnumerable<LitterReport>> GetCleanedLitterReportsAsync(
-            CancellationToken cancellationToken = default)
-        {
-            return litterReportRestService.GetCleanedLitterReportsAsync(cancellationToken);
-        }
-
-        public Task<IEnumerable<LitterReport>> GetNotCancelledLitterReportsAsync(
-            CancellationToken cancellationToken = default)
-        {
-            return litterReportRestService.GetNotCancelledLitterReportsAsync(cancellationToken);
-        }
-
-        public Task<IEnumerable<LitterReport>> GetCancelledLitterReportsAsync(
-            CancellationToken cancellationToken = default)
-        {
-            return litterReportRestService.GetNotCancelledLitterReportsAsync(cancellationToken);
-        }
-
         public async Task<PaginatedList<LitterReport>> GetLitterReportsAsync(LitterReportFilter filter, ImageSizeEnum imageSize, bool getImageUrls = true,
             CancellationToken cancellationToken = default)
         {
