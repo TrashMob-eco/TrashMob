@@ -45,6 +45,7 @@ import { useLogin } from './hooks/useLogin';
 
 /** 2024 pages */
 import { Home as Home2024 } from './pages/Home';
+import { CreateEventWrapper } from './pages/ManageEventDashboard/create';
 
 interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> {}
 
@@ -167,6 +168,9 @@ export const App: FC = () => {
                                     path='/manageeventdashboard/:eventId?'
                                     render={(props: AppProps) => renderEditEvent(props)}
                                 />
+                                <Route path='/events/create'>
+                                    <CreateEventWrapper />
+                                </Route>
                                 <Route
                                     path='/partnerdashboard/:partnerId?'
                                     render={(props: PartnerProps) => renderPartnerDashboard(props)}
