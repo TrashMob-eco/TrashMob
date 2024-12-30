@@ -5,6 +5,7 @@
              xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
              x:DataType="viewModels:MyDashboardViewModel"
              x:Class="TrashMobMobile.Pages.MyDashboardPage"
+             xmlns:controls="clr-namespace:TrashMobMobile.Controls"
              Title="My Dashboard">
 
     <ScrollView Margin="0, 0, 0, 100">
@@ -64,12 +65,21 @@
                     HorizontalTextAlignment="Center"
                     Margin="10, 0, 10, 0" />
 
+                <controls:TMPicker Title="Upcoming Date Range"
+                                   HeightRequest="40"
+                                   Margin="0, 0, 10, 0"
+                                   ItemsSource="{Binding UpcomingDateRanges}"
+                                   SelectedItem="{Binding SelectedUpcomingDateRange, Mode=TwoWay}" />
+
+                <Label Text="There are no upcoming events matching the selected criteria." IsVisible="{Binding AreNoUpcomingEventsFound}" Margin="10" />
+
                 <CollectionView x:Name="UpcomingEventsCollection"
                                 ItemsSource="{Binding UpcomingEvents}"
                                 SelectedItem="{Binding UpcomingSelectedEvent}"
                                 SelectionMode="Single"
                                 Margin="5"
-                                MaximumHeightRequest="250">
+                                MaximumHeightRequest="250"
+                                IsVisible="{Binding AreUpcomingEventsFound}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="viewModels:EventViewModel">
                             <Border Style="{StaticResource RoundBorder}" Margin="5">
@@ -98,12 +108,21 @@
                     HorizontalTextAlignment="Center"
                     Margin="10" />
 
+                <controls:TMPicker Title="Completed Date Range"
+                                   HeightRequest="40"
+                                   Margin="0, 0, 10, 0"
+                                   ItemsSource="{Binding CompletedDateRanges}"
+                                   SelectedItem="{Binding SelectedCompletedDateRange, Mode=TwoWay}" />
+
+                <Label Text="There are no completed events matching the selected criteria." IsVisible="{Binding AreNoCompletedEventsFound}" Margin="10" />
+
                 <CollectionView x:Name="CompletedEventsCollection"
                                 ItemsSource="{Binding CompletedEvents}"
                                 SelectedItem="{Binding CompletedSelectedEvent}"
                                 SelectionMode="Single"
                                 Margin="5"
-                                MaximumHeightRequest="250">
+                                MaximumHeightRequest="250"
+                                IsVisible="{Binding AreCompletedEventsFound}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="viewModels:EventViewModel">
                             <Border Style="{StaticResource RoundBorder}" Margin="5">
@@ -132,12 +151,21 @@
                     HorizontalTextAlignment="Center"
                     Margin="10" />
 
+                <controls:TMPicker Title="Created Date Range"
+                                   HeightRequest="40"
+                                   Margin="10"
+                                   ItemsSource="{Binding CreatedDateRanges}"
+                                   SelectedItem="{Binding SelectedCreatedDateRange, Mode=TwoWay}" />
+
+                <Label Text="There are no litter reports matching the selected criteria." IsVisible="{Binding AreNoLitterReportsFound}" Margin="10" />
+
                 <CollectionView x:Name="LitterReportCollection"
                                 ItemsSource="{Binding LitterReports}"
                                 SelectedItem="{Binding SelectedLitterReport}"
                                 SelectionMode="Single"
                                 Margin="5"
-                                MaximumHeightRequest="250">
+                                MaximumHeightRequest="250"
+                                IsVisible="{Binding AreLitterReportsFound}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="viewModels:LitterReportViewModel">
                             <Border Style="{StaticResource RoundBorder}" Margin="5">
