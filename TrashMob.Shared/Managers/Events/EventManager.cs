@@ -52,6 +52,16 @@
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
         }
 
+        public async Task<IEnumerable<Event>> GetUserEventsAsync(EventFilter filter, Guid userId,
+            CancellationToken cancellationToken = default)
+        {
+            return await Repo.Get(e => e.CreatedByUserId == userId
+                                       && e.EventStatusId != (int)EventStatusEnum.Canceled
+                                       && (filter.StartDate == null || filter.StartDate <= e.EventDate)
+                                       && (filter.EndDate == null || filter.EndDate >= e.EventDate))
+                .ToListAsync(cancellationToken).ConfigureAwait(false);
+        }
+
         public async Task<IEnumerable<Event>> GetCanceledUserEventsAsync(Guid userId, bool futureEventsOnly,
             CancellationToken cancellationToken = default)
         {
@@ -64,7 +74,8 @@
         public async Task<IEnumerable<Event>> GetFilteredEventsAsync(EventFilter filter,
             CancellationToken cancellationToken = default)
         {
-            return await Repo.Get(e => (filter.StartDate == null || e.EventDate >= filter.StartDate) &&
+            return await Repo.Get(e => e.EventStatusId != (int)EventStatusEnum.Canceled &&
+                                       (filter.StartDate == null || e.EventDate >= filter.StartDate) &&
                                        (filter.EndDate == null || e.EventDate <= filter.EndDate) &&
                                        (filter.Country == null || e.Country == filter.Country) &&
                                        (filter.Region == null || e.Region == filter.Region) &&

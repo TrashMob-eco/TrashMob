@@ -163,6 +163,28 @@
         }
 
         [HttpPost]
+        [Route("pageduserevents/{userId}")]
+        public async Task<IActionResult> GetPagedUserEvents([FromBody] EventFilter filter, Guid userId, CancellationToken cancellationToken)
+        {
+            var result1 = await eventManager.GetUserEventsAsync(filter, userId, cancellationToken)
+                .ConfigureAwait(false);
+
+            var result2 = await eventAttendeeManager
+                .GetEventsUserIsAttendingAsync(filter, userId, cancellationToken).ConfigureAwait(false);
+
+            var allResults = result1.Union(result2, new EventComparer());
+
+            if (filter.PageSize != null)
+            {
+                var pagedResults = PaginatedList<Event>.Create(allResults.OrderByDescending(e => e.EventDate).AsQueryable(),
+                                       filter.PageIndex.GetValueOrDefault(0), filter.PageSize.GetValueOrDefault(10));
+                return Ok(pagedResults);
+            }
+
+            return Ok(allResults);
+        }
+
+        [HttpPost]
         [Route("pagedfilteredevents")]
         public async Task<IActionResult> GetPagedFilteredEvents([FromBody] EventFilter filter,
             CancellationToken cancellationToken)
