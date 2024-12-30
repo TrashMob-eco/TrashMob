@@ -3,12 +3,13 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using TrashMob.Models.Poco;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
 public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
                                           IStatsRestService statsRestService,
-                                          ILitterReportManager litterReportManager, 
+                                          ILitterReportManager litterReportManager,
                                           INotificationService notificationService,
                                           IUserManager userManager)
     : BaseViewModel(notificationService)
@@ -246,27 +247,41 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
 
         var upcomingStartDate = DateTimeOffset.Now.Date.AddDays(DateRanges.UpcomingRangeDictionary[SelectedUpcomingDateRange].Item1);
         var upcomingEndDate = DateTimeOffset.Now.Date.AddDays(DateRanges.UpcomingRangeDictionary[SelectedUpcomingDateRange].Item2);
-    
+
+        var upcomingEventFilter = new EventFilter
+        {
+            StartDate = upcomingStartDate,
+            EndDate = upcomingEndDate,
+        };
+
         var completedStartDate = DateTimeOffset.Now.Date.AddDays(DateRanges.CompletedRangeDictionary[SelectedCompletedDateRange].Item1);
         var completedEndDate = DateTimeOffset.Now.Date.AddDays(DateRanges.CompletedRangeDictionary[SelectedCompletedDateRange].Item2);
 
-        var events = await mobEventManager.GetUserEventsAsync(userManager.CurrentUser.Id, false);
+        var completedEventFilter = new EventFilter
+        {
+            StartDate = completedStartDate,
+            EndDate = completedEndDate,
+        };
 
-        foreach (var mobEvent in events.OrderByDescending(e => e.EventDate))
+        var upcomingEvents = await mobEventManager.GetUserEventsAsync(upcomingEventFilter, userManager.CurrentUser.Id);
+
+        foreach (var mobEvent in upcomingEvents.OrderByDescending(e => e.EventDate))
         {
             var vm = mobEvent.ToEventViewModel(userManager.CurrentUser.Id);
             vm.IsUserAttending = true;
 
-            if (mobEvent.IsCompleted())
-            {
-                vm.CanCancelEvent = false;
-                CompletedEvents.Add(vm);
-            }
-            else
-            {
-                vm.CanCancelEvent = mobEvent.IsCancellable() && mobEvent.IsEventLead(userManager.CurrentUser.Id);
-                UpcomingEvents.Add(vm);
-            }
+            vm.CanCancelEvent = mobEvent.IsCancellable() && mobEvent.IsEventLead(userManager.CurrentUser.Id);
+            UpcomingEvents.Add(vm);
+        }
+
+        var completedEvents = await mobEventManager.GetUserEventsAsync(completedEventFilter, userManager.CurrentUser.Id);
+
+        foreach (var mobEvent in completedEvents.OrderByDescending(e => e.EventDate))
+        {
+            var vm = mobEvent.ToEventViewModel(userManager.CurrentUser.Id);
+            vm.IsUserAttending = true;
+            vm.CanCancelEvent = false;
+            CompletedEvents.Add(vm);
         }
 
         AreUpcomingEventsFound = UpcomingEvents.Any();
@@ -282,7 +297,14 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
         DateTimeOffset startDate = DateTimeOffset.Now.Date.AddDays(DateRanges.CreatedDateRangeDictionary[SelectedCreatedDateRange].Item1);
         DateTimeOffset endDate = DateTimeOffset.Now.Date.AddDays(DateRanges.CreatedDateRangeDictionary[SelectedCreatedDateRange].Item2);
 
-        var litterReports = await litterReportManager.GetUserLitterReportsAsync(userManager.CurrentUser.Id);
+        var litterReportFilter = new LitterReportFilter
+        {
+            StartDate = startDate,
+            EndDate = endDate,
+            CreatedByUserId = userManager.CurrentUser.Id,
+        };
+
+        var litterReports = await litterReportManager.GetLitterReportsAsync(litterReportFilter, TrashMob.Models.ImageSizeEnum.Thumb, true);
 
         foreach (var litterReport in litterReports.OrderByDescending(l => l.CreatedDate))
         {

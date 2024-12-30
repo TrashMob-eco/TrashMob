@@ -9,6 +9,8 @@
         Task<PaginatedList<Event>> GetFilteredEventsAsync(EventFilter filter,
             CancellationToken cancellationToken = default);
 
+        Task<PaginatedList<Event>> GetUserEventsAsync(EventFilter eventFilter, Guid userId, CancellationToken cancellationToken = default);
+
         Task<IEnumerable<Event>> GetUserEventsAsync(Guid userId, bool showFutureEventsOnly,
             CancellationToken cancellationToken = default);
 
