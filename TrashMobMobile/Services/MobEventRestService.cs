@@ -21,6 +21,16 @@ public class MobEventRestService(IHttpClientFactory httpClientFactory) : RestSer
         return JsonConvert.DeserializeObject<PaginatedList<Event>>(returnContent);
     }
 
+    public async Task<PaginatedList<Event>> GetUserEventsAsync(EventFilter filter, Guid userId, CancellationToken cancellationToken = default)
+    {
+        var content = JsonContent.Create(filter, typeof(EventFilter), null, SerializerOptions);
+        var requestUri = $"{Controller}/pageduserevents/{userId}";
+        var response = await AnonymousHttpClient.PostAsync(requestUri, content, cancellationToken);
+        response.EnsureSuccessStatusCode();
+        var returnContent = await response.Content.ReadAsStringAsync(cancellationToken);
+        return JsonConvert.DeserializeObject<PaginatedList<Event>>(returnContent);
+    }
+
     public async Task<IEnumerable<Event>> GetUserEventsAsync(Guid userId, bool showFutureEventsOnly,
         CancellationToken cancellationToken = default)
     {

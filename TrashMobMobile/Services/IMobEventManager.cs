@@ -12,6 +12,9 @@
         Task<IEnumerable<Event>> GetUserEventsAsync(Guid userId, bool showFutureEventsOnly,
             CancellationToken cancellationToken = default);
 
+        Task<PaginatedList<Event>> GetUserEventsAsync(EventFilter eventFilter, Guid userId,
+            CancellationToken cancellationToken = default);
+
         Task<IEnumerable<Event>> GetEventsUserIsAttending(Guid userId, CancellationToken cancellationToken = default);
 
         Task<Event> GetEventAsync(Guid eventId, CancellationToken cancellationToken = default);

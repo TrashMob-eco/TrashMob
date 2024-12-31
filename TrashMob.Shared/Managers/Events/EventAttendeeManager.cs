@@ -7,6 +7,7 @@
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using TrashMob.Models;
+    using TrashMob.Models.Poco;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
 
@@ -50,6 +51,24 @@
                                                             && (!futureEventsOnly ||
                                                                 e.EventDate >= DateTimeOffset.UtcNow)
                                                             && eventAttendees.Select(ea => ea.EventId).Contains(e.Id))
+                    .ToListAsync(cancellationToken);
+                return events;
+            }
+
+            return new List<Event>();
+        }
+
+        public async Task<IEnumerable<Event>> GetEventsUserIsAttendingAsync(EventFilter filter, Guid attendeeId,
+            CancellationToken cancellationToken = default)
+        {
+            var eventAttendees = await Repository.Get(ea => ea.UserId == attendeeId).ToListAsync(cancellationToken);
+
+            if (eventAttendees.Any())
+            {
+                var events = await eventRepository.Get(e => e.EventStatusId != (int)EventStatusEnum.Canceled &&
+                                                           (filter.StartDate == null || e.EventDate >= filter.StartDate) &&
+                                                           (filter.EndDate == null || e.EventDate <= filter.EndDate) &&
+                                                            eventAttendees.Select(ea => ea.EventId).Contains(e.Id))
                     .ToListAsync(cancellationToken);
                 return events;
             }
