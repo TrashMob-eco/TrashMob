@@ -1,5 +1,3 @@
-using System.Collections;
-
 namespace TrashMobMobile.Controls;
 
 using Maui.BindableProperty.Generator.Core;

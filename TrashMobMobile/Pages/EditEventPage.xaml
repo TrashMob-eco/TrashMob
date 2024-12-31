@@ -94,7 +94,7 @@
                 <VerticalStackLayout Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2">
                     <Label Text="Event Time" Style="{StaticResource FieldLabel}" />
 
-                    <TimePicker Time="{Binding EventViewModel.EventTime}" />
+                    <controls:TMTimePicker Time="{Binding EventViewModel.EventTime, Mode=TwoWay}" />
                 </VerticalStackLayout>
 
                 <VerticalStackLayout Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
