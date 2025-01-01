@@ -25,7 +25,9 @@ public partial class Step5 : BaseStepClass
     {
         var p = (Pin)sender;
 
-        var litterReportId = p.AutomationId;
-        await Shell.Current.GoToAsync($"{nameof(ViewLitterReportPage)}?LitterReportId={litterReportId}");
+
+        var litterReportId = new Guid(p.AutomationId);
+
+        await ViewModel.UpdateLitterAssignment(litterReportId);
     }
 }
