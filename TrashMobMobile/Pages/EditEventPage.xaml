@@ -280,7 +280,7 @@
                              Command="{Binding ListSelectedCommand}" />
                     </Grid>
 
-                    <maps:Map x:Name="litterImagesMap"
+                    <controls:CustomMap x:Name="litterImagesMap"
                               Grid.Row="1"
                               ItemsSource="{Binding LitterImages}"
                               IsVisible="{Binding IsLitterReportMapSelected}">
@@ -294,7 +294,7 @@
                                           InfoWindowClicked="Pin_InfoWindowClicked" />
                             </DataTemplate>
                         </maps:Map.ItemTemplate>
-                    </maps:Map>
+                    </controls:CustomMap>
 
                     <CollectionView x:Name="LitterReportsCollection" Grid.Row="1"
                                     ItemsSource="{Binding EventLitterReports}"

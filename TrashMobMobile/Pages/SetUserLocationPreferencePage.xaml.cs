@@ -26,6 +26,7 @@ public partial class SetUserLocationPreferencePage : ContentPage
             var mapSpan =
                 new MapSpan(new Location(viewModel.Address.Latitude.Value, viewModel.Address.Longitude.Value), 0.01,
                     0.01);
+            userLocationMap.InitialMapSpanAndroid = mapSpan;
             userLocationMap.MoveToRegion(mapSpan);
         }
     }

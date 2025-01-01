@@ -33,6 +33,8 @@ public partial class EditEventPage : ContentPage
             var mapSpan = new MapSpan(viewModel.EventViewModel.Address.Location, 0.05, 0.05);
             eventLocationMap.InitialMapSpanAndroid = mapSpan;
             eventLocationMap.MoveToRegion(mapSpan);
+            litterImagesMap.InitialMapSpanAndroid = mapSpan;
+            litterImagesMap.MoveToRegion(mapSpan);
         }
     }
 

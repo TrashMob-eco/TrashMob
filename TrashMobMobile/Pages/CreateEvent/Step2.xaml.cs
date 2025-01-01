@@ -17,6 +17,7 @@ public partial class Step2 : BaseStepClass
                     new MapSpan(
                         new Location(ViewModel.UserLocation.Location.Latitude, ViewModel.UserLocation.Location.Longitude),
                         0.05, 0.05);
+                eventLocationMap.InitialMapSpanAndroid = mapSpan;
                 eventLocationMap.MoveToRegion(mapSpan);
             }
         };

@@ -28,6 +28,7 @@ public partial class CreatePickupLocationPage : ContentPage
         if (viewModel?.EventViewModel?.Address != null)
         {
             var mapSpan = new MapSpan(viewModel.EventViewModel.Address.Location, 0.05, 0.05);
+            pickupLocationMap.InitialMapSpanAndroid = mapSpan;
             pickupLocationMap.MoveToRegion(mapSpan);
         }
     }

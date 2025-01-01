@@ -16,6 +16,7 @@ public partial class Step5 : BaseStepClass
         if (ViewModel?.EventViewModel?.Address?.Location != null)
         {
             var mapSpan = new MapSpan(ViewModel.EventViewModel.Address.Location, 0.01, 0.01);
+            litterImagesMap.InitialMapSpanAndroid = mapSpan;
             litterImagesMap.MoveToRegion(mapSpan);
         }
     }

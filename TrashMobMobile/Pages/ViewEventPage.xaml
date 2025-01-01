@@ -128,7 +128,7 @@
             <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" RowSpacing="3"
                       ColumnDefinitions="*, 2*" IsVisible="{Binding IsDetailsVisible}">
 
-                <maps:Map x:Name="eventLocationMap" HeightRequest="200"
+                <controls:CustomMap x:Name="eventLocationMap" HeightRequest="200"
                               ItemsSource="{Binding Addresses}" Grid.Row="0" Grid.ColumnSpan="2">
                     <maps:Map.ItemTemplate>
                         <DataTemplate x:DataType="viewModels:AddressViewModel">
@@ -138,7 +138,7 @@
                                           Label="{Binding AddressType}" />
                         </DataTemplate>
                     </maps:Map.ItemTemplate>
-                </maps:Map>
+                </controls:CustomMap>
 
                 <Label Grid.Row="1" Grid.Column="0" Text="{Binding SelectedEventType}" FontSize="Small"
                            Margin="10, 0, 10,0" Grid.ColumnSpan="2" />
@@ -254,7 +254,7 @@
                              Command="{Binding ListSelectedCommand}" />
                     </Grid>
 
-                    <maps:Map x:Name="litterImagesMap"
+                    <controls:CustomMap x:Name="litterImagesMap"
                               Grid.Row="1"
                               ItemsSource="{Binding LitterImages}"
                               IsVisible="{Binding IsLitterReportMapSelected}">
@@ -267,7 +267,7 @@
                                           ImageSource="{Binding Address.IconFile}" />
                             </DataTemplate>
                         </maps:Map.ItemTemplate>
-                    </maps:Map>
+                    </controls:CustomMap>
 
                     <CollectionView x:Name="LitterReportsCollection" Grid.Row="1"
                                     ItemsSource="{Binding EventLitterReports}"
