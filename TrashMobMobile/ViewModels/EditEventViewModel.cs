@@ -5,7 +5,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
 using TrashMob.Models.Extensions;
-using TrashMob.Models.Poco;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
@@ -311,10 +310,11 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
         {
             City = EventViewModel.Address.City,
             Country = EventViewModel.Address.Country,
-            LitterReportStatusId = NewLitterReportStatus,            
+            LitterReportStatusId = NewLitterReportStatus,
+            IncludeLitterImages = true,
         };
 
-        RawLitterReports = await litterReportManager.GetLitterReportsAsync(filter, ImageSizeEnum.Thumb);
+        RawLitterReports = await litterReportManager.GetLitterReportsAsync(filter, ImageSizeEnum.Thumb, true);
 
         var assignedLitterReports = await eventLitterReportManager.GetEventLitterReportsAsync(EventViewModel.Id, ImageSizeEnum.Thumb, true);
 
