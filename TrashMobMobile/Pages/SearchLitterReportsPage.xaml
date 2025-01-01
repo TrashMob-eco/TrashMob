@@ -92,7 +92,7 @@
                              Command="{Binding ListSelectedCommand}" />
                 </Grid>
 
-                <maps:Map x:Name="litterImagesMap"
+                <controls:CustomMap x:Name="litterImagesMap"
                               Grid.Row="3"
                               ItemsSource="{Binding LitterImages}"
                               IsVisible="{Binding IsMapSelected}">
@@ -106,7 +106,7 @@
                                           InfoWindowClicked="Pin_InfoWindowClicked" />
                         </DataTemplate>
                     </maps:Map.ItemTemplate>
-                </maps:Map>
+                </controls:CustomMap>
 
                 <Grid Grid.Row="4" IsVisible="{Binding IsListSelected}">
                     <Label Text="There are no litter reports matching the selected criteria." IsVisible="{Binding AreNoLitterReportsFound}" Grid.Row="0" Margin="10" />

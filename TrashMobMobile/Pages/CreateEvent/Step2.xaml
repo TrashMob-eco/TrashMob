@@ -16,7 +16,7 @@
                 HorizontalTextAlignment="Center"
                 Text="Click on the map to set the event location."
                 VerticalOptions="Center" />
-        <maps:Map x:Name="eventLocationMap"
+        <controls:CustomMap x:Name="eventLocationMap"
                       ItemsSource="{Binding Events}"
                       MapClicked="OnMapClicked">
             <maps:Map.ItemTemplate>
@@ -27,7 +27,7 @@
                                   Location="{Binding Address.Location}" />
                 </DataTemplate>
             </maps:Map.ItemTemplate>
-        </maps:Map>
+        </controls:CustomMap>
         <Grid ColumnDefinitions="*, *"
                   RowDefinitions="Auto, Auto, Auto">
             <VerticalStackLayout Grid.Row="0" Grid.ColumnSpan="2">

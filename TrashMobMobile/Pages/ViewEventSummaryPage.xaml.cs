@@ -28,6 +28,7 @@ public partial class ViewEventSummaryPage : ContentPage
         if (viewModel?.EventViewModel?.Address?.Location != null)
         {
             var mapSpan = new MapSpan(viewModel.EventViewModel.Address.Location, 0.01, 0.01);
+            pickupLocationsMap.InitialMapSpanAndroid = mapSpan;
             pickupLocationsMap.MoveToRegion(mapSpan);
         }
     }
