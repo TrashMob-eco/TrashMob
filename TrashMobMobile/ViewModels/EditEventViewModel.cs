@@ -143,6 +143,34 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
         }
     }
 
+    public async Task UpdateLitterAssignment(Guid litterReportId)
+    {
+        var eventLitterReport = EventLitterReports.FirstOrDefault(l => l.Id == litterReportId);
+
+        if (eventLitterReport != null && eventLitterReport.CanRemoveFromEvent) 
+        {
+            await eventLitterReport.RemoveLitterReportFromEvent();
+        }
+        else
+        {
+            if (eventLitterReport != null)
+            {
+                await eventLitterReport.AddLitterReportToEvent();
+            }
+            else
+            {
+                var litterReport = RawLitterReports.FirstOrDefault(l => l.Id == litterReportId);
+                if (litterReport != null)
+                {
+                    var eventLitterReportViewModel = litterReport.ToEventLitterReportViewModel(NotificationService, eventLitterReportManager, EventViewModel.Id);
+                    await eventLitterReportViewModel.AddLitterReportToEvent();
+                }
+            }
+        }
+
+        await LoadLitterReports();
+    }
+
     [RelayCommand]
     private async Task SaveEvent()
     {

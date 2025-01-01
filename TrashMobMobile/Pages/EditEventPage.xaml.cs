@@ -42,8 +42,9 @@ public partial class EditEventPage : ContentPage
     {
         var p = (Pin)sender;
 
-        var litterReportId = p.AutomationId;
-        await Shell.Current.GoToAsync($"{nameof(ViewLitterReportPage)}?LitterReportId={litterReportId}");
+        var litterReportId = new Guid(p.AutomationId);
+
+        await viewModel.UpdateLitterAssignment(litterReportId);
     }
 
     private async void OnMapClicked(object sender, MapClickedEventArgs e)
