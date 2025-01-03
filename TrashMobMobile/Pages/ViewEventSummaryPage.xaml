@@ -107,7 +107,7 @@
                         </CollectionView.ItemTemplate>
                     </CollectionView>
 
-                    <maps:Map x:Name="pickupLocationsMap"
+                    <controls:CustomMap x:Name="pickupLocationsMap"
                               ItemsSource="{Binding PickupLocations}"
                               IsVisible="{Binding Source={x:Reference viewMap}, Path=IsChecked}"
                               Grid.Row="4"
@@ -122,7 +122,7 @@
                                           InfoWindowClicked="Pin_InfoWindowClicked" />
                             </DataTemplate>
                         </maps:Map.ItemTemplate>
-                    </maps:Map>
+                    </controls:CustomMap>
                 </Grid>
             </VerticalStackLayout>
             <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"

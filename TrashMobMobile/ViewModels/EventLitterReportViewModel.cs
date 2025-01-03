@@ -32,6 +32,11 @@ public partial class EventLitterReportViewModel : LitterReportViewModel
     [RelayCommand]
     private async Task AddToEvent()
     {
+        await AddLitterReportToEvent();
+    }
+
+    public async Task AddLitterReportToEvent()
+    {
         await eventLitterReportManager.AddLitterReportAsync(new EventLitterReport
         {
             EventId = eventId,
@@ -45,6 +50,11 @@ public partial class EventLitterReportViewModel : LitterReportViewModel
 
     [RelayCommand]
     private async Task RemoveFromEvent()
+    {
+        await RemoveLitterReportFromEvent();
+    }
+
+    public async Task RemoveLitterReportFromEvent()
     {
         await eventLitterReportManager.RemoveLitterReportAsync(new EventLitterReport
         {

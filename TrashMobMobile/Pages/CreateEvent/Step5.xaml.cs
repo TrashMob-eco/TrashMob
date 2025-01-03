@@ -16,6 +16,7 @@ public partial class Step5 : BaseStepClass
         if (ViewModel?.EventViewModel?.Address?.Location != null)
         {
             var mapSpan = new MapSpan(ViewModel.EventViewModel.Address.Location, 0.01, 0.01);
+            litterImagesMap.InitialMapSpanAndroid = mapSpan;
             litterImagesMap.MoveToRegion(mapSpan);
         }
     }
@@ -24,7 +25,9 @@ public partial class Step5 : BaseStepClass
     {
         var p = (Pin)sender;
 
-        var litterReportId = p.AutomationId;
-        await Shell.Current.GoToAsync($"{nameof(ViewLitterReportPage)}?LitterReportId={litterReportId}");
+
+        var litterReportId = new Guid(p.AutomationId);
+
+        await ViewModel.UpdateLitterAssignment(litterReportId);
     }
 }

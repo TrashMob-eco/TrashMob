@@ -5,7 +5,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
 using TrashMob.Models.Extensions;
-using TrashMob.Models.Poco;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
@@ -142,6 +141,34 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
             IsBusy = false;
             await NotificationService.NotifyError("An error has occurred while loading the event. Please wait and try again in a moment.");
         }
+    }
+
+    public async Task UpdateLitterAssignment(Guid litterReportId)
+    {
+        var eventLitterReport = EventLitterReports.FirstOrDefault(l => l.Id == litterReportId);
+
+        if (eventLitterReport != null && eventLitterReport.CanRemoveFromEvent) 
+        {
+            await eventLitterReport.RemoveLitterReportFromEvent();
+        }
+        else
+        {
+            if (eventLitterReport != null)
+            {
+                await eventLitterReport.AddLitterReportToEvent();
+            }
+            else
+            {
+                var litterReport = RawLitterReports.FirstOrDefault(l => l.Id == litterReportId);
+                if (litterReport != null)
+                {
+                    var eventLitterReportViewModel = litterReport.ToEventLitterReportViewModel(NotificationService, eventLitterReportManager, EventViewModel.Id);
+                    await eventLitterReportViewModel.AddLitterReportToEvent();
+                }
+            }
+        }
+
+        await LoadLitterReports();
     }
 
     [RelayCommand]
@@ -311,10 +338,11 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
         {
             City = EventViewModel.Address.City,
             Country = EventViewModel.Address.Country,
-            LitterReportStatusId = NewLitterReportStatus,            
+            LitterReportStatusId = NewLitterReportStatus,
+            IncludeLitterImages = true,
         };
 
-        RawLitterReports = await litterReportManager.GetLitterReportsAsync(filter, ImageSizeEnum.Thumb);
+        RawLitterReports = await litterReportManager.GetLitterReportsAsync(filter, ImageSizeEnum.Thumb, true);
 
         var assignedLitterReports = await eventLitterReportManager.GetEventLitterReportsAsync(EventViewModel.Id, ImageSizeEnum.Thumb, true);
 

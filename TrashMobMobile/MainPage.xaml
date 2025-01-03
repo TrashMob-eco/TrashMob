@@ -168,7 +168,7 @@
                    IsVisible="{Binding IsMapSelected}"
                    Margin="10, 0" />
 
-            <maps:Map x:Name="mainMap"
+            <controls:CustomMap x:Name="mainMap"
                           IsVisible="{Binding IsMapSelected}"
                           ItemsSource="{Binding Addresses}">
                 <maps:Map.ItemTemplate>
@@ -181,7 +181,7 @@
                                       Location="{Binding Location}" />
                     </DataTemplate>
                 </maps:Map.ItemTemplate>
-            </maps:Map>
+            </controls:CustomMap>
 
             <Label Text="Upcoming Events" 
                    FontSize="Medium" 

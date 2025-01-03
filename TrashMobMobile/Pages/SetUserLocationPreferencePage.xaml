@@ -20,7 +20,7 @@
                     HorizontalTextAlignment="Center"
                     Margin="5" />
 
-                <maps:Map x:Name="userLocationMap"
+                <controls:CustomMap x:Name="userLocationMap"
                           ItemsSource="{Binding Addresses}"
                           MapClicked="OnMapClicked">
                     <maps:Map.ItemTemplate>
@@ -31,7 +31,7 @@
                                       Label="Your Preferred Location" />
                         </DataTemplate>
                     </maps:Map.ItemTemplate>
-                </maps:Map>
+                </controls:CustomMap>
 
                 <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="*, *" Margin="10">
                     <VerticalStackLayout Grid.Row="0" Grid.Column="0">

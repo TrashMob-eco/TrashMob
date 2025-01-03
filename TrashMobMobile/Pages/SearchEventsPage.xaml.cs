@@ -28,6 +28,7 @@ public partial class SearchEventsPage : ContentPage
                 new MapSpan(
                     new Location(viewModel.UserLocation.Location.Latitude, viewModel.UserLocation.Location.Longitude),
                     0.05, 0.05);
+            eventsMap.InitialMapSpanAndroid = mapSpan;
             eventsMap.MoveToRegion(mapSpan);
         }
     }

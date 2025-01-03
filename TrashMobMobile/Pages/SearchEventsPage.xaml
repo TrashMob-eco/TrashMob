@@ -88,7 +88,7 @@
                 </Grid>
             </Grid>
 
-            <maps:Map x:Name="eventsMap"
+            <controls:CustomMap x:Name="eventsMap"
                           ItemsSource="{Binding Events}"
                           IsVisible="{Binding IsMapSelected}">
                 <maps:Map.ItemTemplate>
@@ -101,7 +101,7 @@
                                       InfoWindowClicked="Pin_InfoWindowClicked" />
                     </DataTemplate>
                 </maps:Map.ItemTemplate>
-            </maps:Map>
+            </controls:CustomMap>
 
             <Grid RowDefinitions="Auto" IsVisible="{Binding IsListSelected}" Margin="10">
                 <Label Text="There are no events matching the selected criteria." IsVisible="{Binding AreNoEventsFound}" Grid.Row="0" />
