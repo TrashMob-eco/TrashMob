@@ -136,6 +136,7 @@ namespace TrashMob
                 {
                     x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
                     x.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                    x.JsonSerializerOptions.NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals;
                 });
 
             builder.Services.AddDbContext<MobDbContext>(c => c.UseLazyLoadingProxies());
