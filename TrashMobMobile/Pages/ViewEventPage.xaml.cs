@@ -1,7 +1,6 @@
 namespace TrashMobMobile.Pages;
 
-using CommunityToolkit.Maui.Alerts;
-using CommunityToolkit.Maui.Core;
+using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Maps;
 
 [QueryProperty(nameof(EventId), nameof(EventId))]
@@ -23,7 +22,7 @@ public partial class ViewEventPage : ContentPage
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        await viewModel.Init(new Guid(EventId));
+        await viewModel.Init(new Guid(EventId), UpdateRoutes);
 
         if (viewModel?.EventViewModel?.Address?.Location != null)
         {
@@ -32,6 +31,27 @@ public partial class ViewEventPage : ContentPage
             eventLocationMap.MoveToRegion(mapSpan);
             litterImagesMap.InitialMapSpanAndroid = mapSpan;
             litterImagesMap.MoveToRegion(mapSpan);
+        }
+    }
+
+    private void UpdateRoutes()
+    {
+        eventLocationMap.MapElements.Clear();
+
+        foreach (var route in viewModel.EventAttendeeRoutes)
+        {
+            var polyline = new Polyline
+            {
+                StrokeColor = Color.FromArgb("c7d762"),
+                StrokeWidth = 5,
+            };
+
+            foreach (var location in route.Locations)
+            {
+                polyline.Geopath.Add(new Location(location.Latitude, location.Longitude));
+            }
+
+            eventLocationMap.MapElements.Add(polyline);
         }
     }
 }

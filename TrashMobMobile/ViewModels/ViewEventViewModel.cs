@@ -108,7 +108,9 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
     [ObservableProperty]
     private bool isLitterReportListSelected;
-
+    
+    private Action UpdateRoutes;
+    
     public ObservableCollection<EventPartnerLocationViewModel> AvailablePartners { get; set; } = new();
 
     public ObservableCollection<EventViewModel> Events { get; set; } = [];
@@ -121,7 +123,9 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
     public ObservableCollection<EventAttendeeViewModel> EventAttendees { get; set; } = [];
 
-    public async Task Init(Guid eventId)
+    public ObservableCollection<DisplayEventAttendeeRoute> EventAttendeeRoutes { get; set; } = [];
+
+    public async Task Init(Guid eventId, Action updRoutes)
     {
         IsBusy = true;
 
@@ -160,6 +164,16 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             await GetAttendeeCount();
             await LoadPartners();
             await LoadLitterReports();
+
+            var routes = await eventAttendeeRouteRestService.GetEventAttendeeRoutesForEventAsync(eventId);
+            EventAttendeeRoutes.Clear();
+
+            foreach (var eventAttendeeRoute in routes)
+            {
+                EventAttendeeRoutes.Add(eventAttendeeRoute);
+            }
+
+            UpdateRoutes();
 
             IsBusy = false;
         }
