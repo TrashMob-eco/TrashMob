@@ -5,7 +5,7 @@ using Maui.BindableProperty.Generator.Core;
 public partial class TMTimePicker : ContentView
 {
     [AutoBindable(OnChanged = nameof(TimePropertyChanged))]
-    private readonly TimeSpan time;
+    private TimeSpan time;
 
     public TMTimePicker()
     {

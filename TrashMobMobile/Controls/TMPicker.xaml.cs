@@ -1,7 +1,6 @@
-using System.Collections;
-
 namespace TrashMobMobile.Controls;
 
+using System.Collections;
 using Maui.BindableProperty.Generator.Core;
 
 public partial class TMPicker : ContentView

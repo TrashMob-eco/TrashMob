@@ -5,7 +5,7 @@ using Maui.BindableProperty.Generator.Core;
 public partial class TMDatePicker : ContentView
 {
     [AutoBindable(OnChanged = nameof(DateTimePropertyChanged))]
-    private readonly DateTime date;
+    private DateTime date;
 
     public TMDatePicker()
     {
