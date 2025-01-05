@@ -110,7 +110,13 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     private bool isLitterReportListSelected;
     
     private Action UpdateRoutes;
-    
+
+    [ObservableProperty]
+    private DateTimeOffset routeStartTime;
+
+    [ObservableProperty]
+    private DateTimeOffset routeEndTime;
+
     public ObservableCollection<EventPartnerLocationViewModel> AvailablePartners { get; set; } = new();
 
     public ObservableCollection<EventViewModel> Events { get; set; } = [];
@@ -360,12 +366,15 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     {
         if (EnableStartTrackEventRoute)
         {
+            RouteStartTime = DateTimeOffset.Now;
+            RouteEndTime = DateTimeOffset.Now;
             EnableStopTrackEventRoute = true;
             EnableStartTrackEventRoute = false;
         }
 
         cancellationToken.Register(async () =>
         {
+            RouteEndTime = DateTimeOffset.Now;
             await SaveRoute();
             Locations.Clear();
             EnableStopTrackEventRoute = false;
@@ -384,6 +393,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
                 currentLocation = location;
             }
 
+            currentLocation.Timestamp = DateTimeOffset.Now;
             Locations.Add(currentLocation);
         });
 
@@ -410,7 +420,9 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             {
                 EventId = mobEvent.Id,
                 UserId = userManager.CurrentUser.Id,
-                Locations = GetSortableLocations()
+                Locations = GetSortableLocations(),
+                StartTime = RouteStartTime,
+                EndTime = RouteEndTime,
             });
         }
         catch (Exception ex)
