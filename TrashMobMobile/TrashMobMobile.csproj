@@ -111,6 +111,9 @@
 	    <SubType>Code</SubType>
 	    <DependentUpon>%(Filename)</DependentUpon>
 	  </Compile>
+	  <Compile Update="Controls\TMTimePicker.xaml.cs">
+	    <DependentUpon>TMTimePicker.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Pages\CreateEvent\Step3.xaml.cs">
 	    <DependentUpon>Step3.xaml</DependentUpon>
 	  </Compile>
@@ -206,6 +209,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="Controls\TMTimePicker.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Controls\TMEditor.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

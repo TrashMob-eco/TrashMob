@@ -4,18 +4,24 @@ using Maui.BindableProperty.Generator.Core;
 
 public partial class TMDatePicker : ContentView
 {
-    [AutoBindable(OnChanged = nameof(DateTimePropertyChanged))]
-    private readonly DateTime date;
+    [AutoBindable(OnChanged = nameof(DateTimePropertyChanged), DefaultBindingMode = nameof(BindingMode.TwoWay), HidesUnderlyingProperty = true)]
+    private DateTime date;
 
     public TMDatePicker()
     {
         InitializeComponent();
+        WrappedDatePicker.DateSelected += WrappedDatePicker_DateSelected;
+    }
+
+    private void WrappedDatePicker_DateSelected(object? sender, DateChangedEventArgs e)
+    {
+        Date = WrappedDatePicker.Date;
     }
 
     private void DateTimePropertyChanged(DateTime newValue)
     {
         WrappedDatePicker.Date = newValue;
-    }   
+    }
 }
 
 public class BorderlessDatePicker : DatePicker
