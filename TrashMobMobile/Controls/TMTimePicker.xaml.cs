@@ -4,12 +4,21 @@ using Maui.BindableProperty.Generator.Core;
 
 public partial class TMTimePicker : ContentView
 {
-    [AutoBindable(OnChanged = nameof(TimePropertyChanged))]
+    [AutoBindable(OnChanged = nameof(TimePropertyChanged), DefaultBindingMode = nameof(BindingMode.TwoWay), HidesUnderlyingProperty = true)]
     private TimeSpan time;
 
     public TMTimePicker()
     {
         InitializeComponent();
+        WrappedTimePicker.PropertyChanged += WrappedTimePicker_PropertyChanged;
+    }
+
+    private void WrappedTimePicker_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(WrappedTimePicker.Time))
+        {
+            Time = WrappedTimePicker.Time;
+        }
     }
 
     private void TimePropertyChanged(TimeSpan newValue)
