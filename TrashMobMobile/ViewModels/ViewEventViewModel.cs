@@ -137,6 +137,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
         try
         {
+            UpdateRoutes = updRoutes;
+
             mobEvent = await mobEventManager.GetEventAsync(eventId);
             EventViewModel = mobEvent.ToEventViewModel(userManager.CurrentUser.Id);
 
