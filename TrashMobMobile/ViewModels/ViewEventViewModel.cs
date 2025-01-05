@@ -108,6 +108,14 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
     [ObservableProperty]
     private bool isLitterReportListSelected;
+    
+    private Action UpdateRoutes;
+
+    [ObservableProperty]
+    private DateTimeOffset routeStartTime;
+
+    [ObservableProperty]
+    private DateTimeOffset routeEndTime;
 
     public ObservableCollection<EventPartnerLocationViewModel> AvailablePartners { get; set; } = new();
 
@@ -121,7 +129,9 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
     public ObservableCollection<EventAttendeeViewModel> EventAttendees { get; set; } = [];
 
-    public async Task Init(Guid eventId)
+    public ObservableCollection<DisplayEventAttendeeRoute> EventAttendeeRoutes { get; set; } = [];
+
+    public async Task Init(Guid eventId, Action updRoutes)
     {
         IsBusy = true;
 
@@ -160,6 +170,16 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             await GetAttendeeCount();
             await LoadPartners();
             await LoadLitterReports();
+
+            var routes = await eventAttendeeRouteRestService.GetEventAttendeeRoutesForEventAsync(eventId);
+            EventAttendeeRoutes.Clear();
+
+            foreach (var eventAttendeeRoute in routes)
+            {
+                EventAttendeeRoutes.Add(eventAttendeeRoute);
+            }
+
+            UpdateRoutes();
 
             IsBusy = false;
         }
@@ -346,12 +366,15 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     {
         if (EnableStartTrackEventRoute)
         {
+            RouteStartTime = DateTimeOffset.Now;
+            RouteEndTime = DateTimeOffset.Now;
             EnableStopTrackEventRoute = true;
             EnableStartTrackEventRoute = false;
         }
 
         cancellationToken.Register(async () =>
         {
+            RouteEndTime = DateTimeOffset.Now;
             await SaveRoute();
             Locations.Clear();
             EnableStopTrackEventRoute = false;
@@ -370,6 +393,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
                 currentLocation = location;
             }
 
+            currentLocation.Timestamp = DateTimeOffset.Now;
             Locations.Add(currentLocation);
         });
 
@@ -396,7 +420,9 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             {
                 EventId = mobEvent.Id,
                 UserId = userManager.CurrentUser.Id,
-                Locations = GetSortableLocations()
+                Locations = GetSortableLocations(),
+                StartTime = RouteStartTime,
+                EndTime = RouteEndTime,
             });
         }
         catch (Exception ex)
