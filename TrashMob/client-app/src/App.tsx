@@ -14,7 +14,7 @@ import ContactUs from './components/Pages/ContactUs';
 import EventSummary from './components/EventSummary';
 import { Faq } from './components/Faq';
 import { GettingStarted } from './components/Pages/GettingStarted';
-import MyDashboard from './components/Pages/MyDashboard';
+import MyDashboard from './pages/mydashboard';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { TermsOfService } from './components/Pages/TermsOfService';
 import { Board } from './components/Board';
