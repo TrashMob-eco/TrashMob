@@ -1,10 +1,18 @@
 import * as React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
-import { Button, Col, Container, Form } from 'react-bootstrap';
-import { APIProvider, MapMouseEvent, useMap } from '@vis.gl/react-google-maps';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Form as ShadcnForm, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Tooltip as ShadcnTooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import PhoneInput from 'react-phone-input-2';
+
+import { APIProvider, MapMouseEvent, useMap } from '@vis.gl/react-google-maps';
 import { useMutation } from '@tanstack/react-query';
 import * as ToolTips from '../../store/ToolTips';
 import PartnerRequestData from '../Models/PartnerRequestData';
@@ -17,6 +25,12 @@ import { Marker } from '@vis.gl/react-google-maps';
 import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
 import { AzureSearchLocationInput, SearchLocationOption } from '../Map/AzureSearchLocationInput';
 import { useAzureMapSearchAddressReverse } from '../../hooks/useAzureMapSearchAddressReverse';
+import { PartnerType } from '@/enums/PartnerType';
+
+enum PartnerRequestMode {
+    SEND = 'send',
+    REQUEST = 'request',
+}
 
 interface PartnerRequestProps extends RouteComponentProps<any> {
     mode: string;
@@ -24,63 +38,97 @@ interface PartnerRequestProps extends RouteComponentProps<any> {
     currentUser: UserData;
 }
 
+interface FormInputs {
+    name: string;
+    partnerTypeId: PartnerType;
+    email: string;
+    website: string;
+    phone: string;
+    notes: string;
+    location: { lat: number; lng: number };
+
+    // Auto
+    streetAddress: string;
+    city: string;
+    country: string;
+    region: string;
+    postalCode: string;
+}
+
+const formSchema = z.object({
+    name: z.string({ required_error: 'Name cannot be blank.' }),
+    partnerTypeId: z.string(),
+    email: z
+        .string({ required_error: 'Email cannot be blank.' })
+        .email({ message: 'Please enter valid email address.' }),
+    website: z.string().url({ message: 'Please enter valid website.' }).optional(),
+    phone: z.string().regex(Constants.RegexPhoneNumber, { message: 'Please enter a valid phone number.' }).optional(),
+    location: z.object({
+        lat: z.number().optional(),
+        lng: z.number().optional(),
+    }),
+    streetAddress: z.string().optional(),
+    city: z.string().optional(),
+    country: z.string().optional(),
+    region: z.string().optional(),
+    postalCode: z.string().optional(),
+});
+
 export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
-    const [name, setName] = React.useState<string>();
-    const [partnerTypeId, setPartnerTypeId] = React.useState<number>(Constants.PartnerTypeGovernment);
-    const [isGovernmentPartner, setIsGovernmentPartner] = React.useState<boolean>(true);
-    const [email, setEmail] = React.useState<string>();
-    const [website, setWebsite] = React.useState<string>();
-    const [phone, setPhone] = React.useState<string>();
-    const [notes, setNotes] = React.useState<string>('');
-    const [nameErrors, setNameErrors] = React.useState<string>('');
-    const [emailErrors, setEmailErrors] = React.useState<string>('');
-    const [websiteErrors, setWebsiteErrors] = React.useState<string>('');
-    const [phoneErrors, setPhoneErrors] = React.useState<string>('');
-    const [latitude, setLatitude] = React.useState<number>(0);
-    const [longitude, setLongitude] = React.useState<number>(0);
-    const [streetAddress, setStreetAddress] = React.useState<string>();
-    const [city, setCity] = React.useState<string>();
-    const [country, setCountry] = React.useState<string>('');
-    const [region, setRegion] = React.useState<string>();
-    const [postalCode, setPostalCode] = React.useState<string>();
-    const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
-    const [title, setTitle] = React.useState<string>('Apply to become a partner');
-    const [mode, setMode] = React.useState<string>('');
+    const { mode } = props;
 
     const createPartnerRequest = useMutation({
         mutationKey: CreatePartnerRequest().key,
         mutationFn: CreatePartnerRequest().service,
+        onSuccess: () => {
+            props.history.push('/');
+        },
     });
 
     React.useEffect(() => {
-        setIsGovernmentPartner(true);
-
-        if (props.mode && props.mode === 'send') {
-            setMode('send');
-            setTitle('Send invite to join TrashMob as a partner');
-        } else {
-            setMode('request');
-        }
-
         MapStore.getOption().then((opts) => {
             setAzureSubscriptionKey(opts.subscriptionKey);
         });
-    }, [props.currentUser, props.isUserLoaded, props.mode]);
+    }, []);
 
-    React.useEffect(() => {
-        if (nameErrors !== '' || emailErrors !== '' || websiteErrors !== '' || phoneErrors !== '' || region === '') {
-            setIsSaveEnabled(false);
-        } else {
-            setIsSaveEnabled(true);
-        }
-    }, [nameErrors, emailErrors, websiteErrors, phoneErrors, region]);
+    const form = useForm<FormInputs>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            partnerTypeId: PartnerType.GOVERNMENT,
+        },
+    });
+
+    const onSubmit: SubmitHandler<FormInputs> = (data) => {
+        const body = new PartnerRequestData();
+        body.name = data.name ?? '';
+        body.email = data.email ?? '';
+        body.phone = data.phone ?? '';
+        body.website = data.website ?? '';
+        body.partnerRequestStatusId = Constants.PartnerRequestStatusSent;
+        body.notes = data.notes ?? '';
+        body.streetAddress = data.streetAddress ?? '';
+        body.city = data.city ?? '';
+        body.region = data.region ?? '';
+        body.country = data.country ?? '';
+        body.latitude = data.location.lat ?? 0;
+        body.longitude = data.location.lng ?? 0;
+        body.createdByUserId = props.currentUser.id;
+        body.partnerTypeId = Number(data.partnerTypeId);
+        body.isBecomeAPartnerRequest = mode !== PartnerRequestMode.SEND;
+
+        createPartnerRequest.mutateAsync(body);
+    };
+
+    const location = form.watch('location');
+
+    const title = mode === 'send' ? 'Send invite to join TrashMob as a partner' : 'Apply to become a partner';
 
     const [azureSubscriptionKey, setAzureSubscriptionKey] = React.useState<string>();
 
     const { refetch: refetchAddressReverse } = useAzureMapSearchAddressReverse(
         {
-            lat: latitude,
-            long: longitude,
+            lat: location?.lat,
+            long: location?.lng,
             azureKey: azureSubscriptionKey || '',
         },
         { enabled: false },
@@ -91,8 +139,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     const handleSelectSearchLocation = React.useCallback(
         async (location: SearchLocationOption) => {
             const { lat, lon } = location.position;
-            setLatitude(lat);
-            setLongitude(lon);
+            form.setValue('location', { lat, lng: lon });
 
             // side effect: Move Map Center
             if (map) map.panTo({ lat, lng: lon });
@@ -104,8 +151,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         if (e.detail.latLng) {
             const lat = e.detail.latLng.lat;
             const lng = e.detail.latLng.lng;
-            setLatitude(lat);
-            setLongitude(lng);
+            form.setValue('location', { lat, lng });
         }
     }, []);
 
@@ -113,8 +159,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         if (e.latLng) {
             const lat = e.latLng.lat();
             const lng = e.latLng.lng();
-            setLatitude(lat);
-            setLongitude(lng);
+            form.setValue('location', { lat, lng });
         }
     }, []);
 
@@ -126,44 +171,17 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
             const firstResult = data?.addresses[0];
 
             if (firstResult) {
-                setStreetAddress(firstResult.address.streetNameAndNumber || firstResult.address.streetName);
-                setCity(firstResult.address.municipality);
-                setCountry(firstResult.address.country);
-                setRegion(firstResult.address.countrySubdivisionName);
-                setPostalCode(firstResult.address.postalCode);
+                const { streetNameAndNumber, streetName, municipality, country, countrySubdivisionName, postalCode } =
+                    firstResult.address;
+                form.setValue('streetAddress', streetNameAndNumber || streetName);
+                form.setValue('city', municipality);
+                form.setValue('country', country);
+                form.setValue('region', countrySubdivisionName);
+                form.setValue('postalCode', postalCode);
             }
         };
-        if (latitude && longitude) searchAddressReverse();
-    }, [latitude, longitude]);
-
-    // This will handle the submit form event.
-    function handleSave(event: any) {
-        event.preventDefault();
-
-        if (!isSaveEnabled) return;
-        setIsSaveEnabled(false);
-
-        const body = new PartnerRequestData();
-        body.name = name ?? '';
-        body.email = email ?? '';
-        body.phone = phone ?? '';
-        body.website = website ?? '';
-        body.partnerRequestStatusId = Constants.PartnerRequestStatusSent;
-        body.notes = notes ?? '';
-        body.streetAddress = streetAddress ?? '';
-        body.city = city ?? '';
-        body.region = region ?? '';
-        body.country = country ?? '';
-        body.latitude = latitude ?? 0;
-        body.longitude = longitude ?? 0;
-        body.createdByUserId = props.currentUser.id;
-        body.partnerTypeId = partnerTypeId;
-        body.isBecomeAPartnerRequest = mode !== 'send';
-
-        createPartnerRequest.mutateAsync(body).then((res) => {
-            props.history.push('/');
-        });
-    }
+        if (location) searchAddressReverse();
+    }, [location]);
 
     // This will handle Cancel button click event.
     function handleCancel(event: any) {
@@ -171,327 +189,271 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         props.history.push('/partnerships');
     }
 
-    function handleNameChanged(val: string) {
-        if (name === '') {
-            setNameErrors('Name cannot be blank.');
-        } else {
-            setNameErrors('');
-            setName(val);
-        }
-    }
-
-    function handleEmailChanged(val: string) {
-        const pattern = new RegExp(Constants.RegexEmail);
-
-        if (!pattern.test(val)) {
-            setEmailErrors('Please enter valid email address.');
-        } else {
-            setEmailErrors('');
-            setEmail(val);
-        }
-    }
-
-    function handleWebsiteChanged(val: string) {
-        const pattern = new RegExp(Constants.RegexWebsite);
-
-        if (!pattern.test(val)) {
-            setWebsiteErrors('Please enter valid website.');
-        } else {
-            setWebsiteErrors('');
-            setWebsite(val);
-        }
-    }
-
-    function handlePhoneChanged(val: string) {
-        const pattern = new RegExp(Constants.RegexPhoneNumber);
-
-        if (!pattern.test(val)) {
-            setPhoneErrors('Please enter a valid phone number.');
-        } else {
-            setPhoneErrors('');
-            setPhone(val);
-        }
-    }
-
-    function handleNotesChanged(val: string) {
-        setNotes(val);
-    }
-
-    function renderNameToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestName}</Tooltip>;
-    }
-
-    function renderPartnerTypeToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerType}</Tooltip>;
-    }
-
-    function renderEmailToolTip(props: any) {
-        if (mode === 'send') {
-            return <Tooltip {...props}>{ToolTips.PartnerRequestInviteEmail}</Tooltip>;
-        }
-        return <Tooltip {...props}>{ToolTips.PartnerRequestEmail}</Tooltip>;
-    }
-
-    function renderWebsiteToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerRequestWebsite}</Tooltip>;
-    }
-
-    function renderPhoneToolTip(props: any) {
-        if (mode === 'send') {
-            return <Tooltip {...props}>{ToolTips.PartnerRequestInvitePhone}</Tooltip>;
-        }
-        return <Tooltip {...props}>{ToolTips.PartnerRequestPhone}</Tooltip>;
-    }
-
-    function renderNotesToolTip(props: any) {
-        if (mode === 'send') {
-            return <Tooltip {...props}>{ToolTips.PartnerRequestInviteNotes}</Tooltip>;
-        }
-        return <Tooltip {...props}>{ToolTips.PartnerRequestNotes}</Tooltip>;
-    }
-
-    function setPartnerType(val: boolean) {
-        if (val) {
-            setPartnerTypeId(Constants.PartnerTypeGovernment);
-        } else {
-            setPartnerTypeId(Constants.PartnerTypeBusiness);
-        }
-    }
-
-    function createFormDescriptionContent() {
-        let content =
-            'Use this form to send an informational note to a potential TrashMob.eco partner in your community. Fill out as much detail as you can and TrashMob.eco will reach out to the email address provided with an information packet to see if they would like to become a TrashMob.eco Partner!';
-        const content1 =
-            "If connecting with a government partner, the department responsible for managing waste and maintaining cleanliness in a community is often a part of the public works department, environmental services division, or a similar agency. You can find contact information for these organizations by searching online or by calling the city's main government phone number and asking for the appropriate department.";
-
-        if (mode === 'request') {
-            content = `Use this form to request to become a TrashMob.eco partner. TrashMob.eco site adminsitrators will 
-            review your request, and either approve it, or reach out to you for more information. If approved, you will
-            be sent a Welcome email with instructions on how to complete setup of your partnership.`;
-        }
-
-        return (
-            <div className='content'>
-                <p>{content}</p>
-                <p>{content1}</p>
-            </div>
-        );
-    }
-
-    // Returns the HTML Form to the render() method.
-    function renderCreateForm() {
-        return (
-            <Container className='py-5'>
-                <div className='bg-white py-2 px-5 shadow-sm rounded'>
-                    <h2 className='color-primary mt-4 mb-5'>{title}</h2>
-                    {createFormDescriptionContent()}
-                </div>
-                <div className='bg-white p-5 shadow-sm rounded'>
-                    <Form onSubmit={handleSave} className='mt-0 p-4'>
-                        <Form.Row className='d-block d-md-flex'>
-                            <Col>
-                                <Form.Group className='required'>
-                                    <OverlayTrigger placement='top' overlay={renderNameToolTip}>
-                                        <Form.Label className='control-label h5'>Partner Name</Form.Label>
-                                    </OverlayTrigger>
-                                    <Form.Control
-                                        type='text'
-                                        className='border-0 bg-light h-60 para'
-                                        defaultValue={name}
-                                        maxLength={parseInt('64')}
-                                        onChange={(val) => handleNameChanged(val.target.value)}
-                                        required
+    return (
+        <div className='tailwind'>
+            <div className='container !py-12'>
+                <Card className=''>
+                    <CardHeader>
+                        <CardTitle className='text-4xl text-primary'>{title}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        {mode === PartnerRequestMode.SEND && (
+                            <p>
+                                Use this form to send an informational note to a potential TrashMob.eco partner in your
+                                community. Fill out as much detail as you can and TrashMob.eco will reach out to the
+                                email address provided with an information packet to see if they would like to become a
+                                TrashMob.eco Partner!
+                            </p>
+                        )}
+                        {mode === PartnerRequestMode.REQUEST && (
+                            <p>
+                                Use this form to request to become a TrashMob.eco partner. TrashMob.eco site
+                                adminsitrators will review your request, and either approve it, or reach out to you for
+                                more information. If approved, you will be sent a Welcome email with instructions on how
+                                to complete setup of your partnership.
+                            </p>
+                        )}
+                        <p>
+                            If connecting with a government partner, the department responsible for managing waste and
+                            maintaining cleanliness in a community is often a part of the public works department,
+                            environmental services division, or a similar agency. You can find contact information for
+                            these organizations by searching online or by calling the city's main government phone
+                            number and asking for the appropriate department.
+                        </p>
+                    </CardContent>
+                    <CardContent>
+                        <TooltipProvider>
+                            <ShadcnForm {...form}>
+                                <form onSubmit={form.handleSubmit(onSubmit)} className='grid grid-cols-12 gap-4'>
+                                    <FormField
+                                        control={form.control}
+                                        name='name'
+                                        render={({ field }) => (
+                                            <FormItem className='col-span-6'>
+                                                <ShadcnTooltip>
+                                                    <TooltipTrigger>
+                                                        <FormLabel>Partner Name</FormLabel>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent className='max-w-64'>
+                                                        {ToolTips.PartnerRequestName}
+                                                    </TooltipContent>
+                                                </ShadcnTooltip>
+                                                <FormControl>
+                                                    <Input {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
                                     />
-                                    <span style={{ color: 'red' }}>{nameErrors}</span>
-                                </Form.Group>
-                            </Col>
-                            <Col>
-                                <Form.Group>
-                                    <OverlayTrigger placement='top' overlay={renderPartnerTypeToolTip}>
-                                        <Form.Label className='control-label h5' htmlFor='PartnerType'>
-                                            Type
-                                        </Form.Label>
-                                    </OverlayTrigger>
-                                    <div className='d-flex h-60'>
-                                        <div className='d-flex w-100 align-items-center'>
-                                            <input
-                                                type='radio'
-                                                className='m-0'
-                                                checked={isGovernmentPartner}
-                                                name='type'
-                                                onChange={() => setPartnerType(true)}
-                                            />
-                                            <label className='control-label m-0 ml-2'>Government</label>
-                                        </div>
-                                        <div className='d-flex w-100 align-items-center'>
-                                            <input
-                                                type='radio'
-                                                className='m-0'
-                                                name='type'
-                                                onChange={() => setPartnerType(false)}
-                                            />
-                                            <label className='control-label m-0 ml-2'>Business</label>
-                                        </div>
-                                    </div>
-                                </Form.Group>
-                            </Col>
-                        </Form.Row>
-                        <Form.Row className='d-block d-md-flex'>
-                            <Col>
-                                <Form.Group className='required'>
-                                    <OverlayTrigger placement='top' overlay={renderEmailToolTip}>
-                                        <Form.Label className='control-label h5'>Email</Form.Label>
-                                    </OverlayTrigger>
-                                    <Form.Control
-                                        type='text'
-                                        className='border-0 bg-light h-60 para'
-                                        defaultValue={email}
-                                        maxLength={parseInt('64')}
-                                        onChange={(val) => handleEmailChanged(val.target.value)}
-                                        required
+                                    <FormField
+                                        control={form.control}
+                                        name='partnerTypeId'
+                                        render={({ field }) => (
+                                            <FormItem className='col-span-6'>
+                                                <ShadcnTooltip>
+                                                    <TooltipTrigger>
+                                                        <FormLabel>Type</FormLabel>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent className='max-w-64'>
+                                                        {ToolTips.PartnerType}
+                                                    </TooltipContent>
+                                                </ShadcnTooltip>
+                                                <FormControl>
+                                                    <RadioGroup
+                                                        onValueChange={field.onChange}
+                                                        defaultValue={field.value}
+                                                        className='flex flex-row space-y-1 h-9 items-center'
+                                                    >
+                                                        <FormItem className='flex items-center space-x-3 space-y-0'>
+                                                            <FormControl>
+                                                                <RadioGroupItem value={PartnerType.GOVERNMENT} />
+                                                            </FormControl>
+                                                            <FormLabel className='font-normal'>Government</FormLabel>
+                                                        </FormItem>
+                                                        <FormItem className='flex items-center space-x-3 space-y-0'>
+                                                            <FormControl>
+                                                                <RadioGroupItem value={PartnerType.BUSINESS} />
+                                                            </FormControl>
+                                                            <FormLabel className='font-normal'>Business</FormLabel>
+                                                        </FormItem>
+                                                    </RadioGroup>
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
                                     />
-                                    <span style={{ color: 'red' }}>{emailErrors}</span>
-                                </Form.Group>
-                            </Col>
-                            <Col>
-                                <Form.Group>
-                                    <OverlayTrigger placement='top' overlay={renderWebsiteToolTip}>
-                                        <Form.Label className='control-label h5'>Website</Form.Label>
-                                    </OverlayTrigger>
-                                    <Form.Control
-                                        type='text'
-                                        className='border-0 bg-light h-60 para'
-                                        defaultValue={website}
-                                        maxLength={parseInt('1024')}
-                                        onChange={(val) => handleWebsiteChanged(val.target.value)}
+                                    <FormField
+                                        control={form.control}
+                                        name='email'
+                                        render={({ field }) => (
+                                            <FormItem className='col-span-6'>
+                                                <ShadcnTooltip>
+                                                    <TooltipTrigger>
+                                                        <FormLabel>Email</FormLabel>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent className='max-w-64'>
+                                                        {mode === 'send'
+                                                            ? ToolTips.PartnerRequestInviteEmail
+                                                            : ToolTips.PartnerRequestEmail}
+                                                    </TooltipContent>
+                                                </ShadcnTooltip>
+                                                <FormControl>
+                                                    <Input {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
                                     />
-                                    <span style={{ color: 'red' }}>{websiteErrors}</span>
-                                </Form.Group>
-                            </Col>
-                        </Form.Row>
-                        <Form.Row>
-                            <Col>
-                                <Form.Group>
-                                    <OverlayTrigger placement='top' overlay={renderPhoneToolTip}>
-                                        <Form.Label className='control-label h5'>Phone</Form.Label>
-                                    </OverlayTrigger>
-                                    <PhoneInput
-                                        country='us'
-                                        value={phone}
-                                        onChange={(val) => handlePhoneChanged(val)}
+                                    <FormField
+                                        control={form.control}
+                                        name='website'
+                                        render={({ field }) => (
+                                            <FormItem className='col-span-6'>
+                                                <ShadcnTooltip>
+                                                    <TooltipTrigger>
+                                                        <FormLabel>Website</FormLabel>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent className='max-w-64'>
+                                                        {ToolTips.PartnerRequestWebsite}
+                                                    </TooltipContent>
+                                                </ShadcnTooltip>
+                                                <FormControl>
+                                                    <Input {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
                                     />
-                                    <span style={{ color: 'red' }}>{phoneErrors}</span>
-                                </Form.Group>
-                            </Col>
-                        </Form.Row>
-                        <Form.Group>
-                            <OverlayTrigger placement='top' overlay={renderNotesToolTip}>
-                                <Form.Label className='control-label h5'>Notes</Form.Label>
-                            </OverlayTrigger>
-                            <Form.Control
-                                as='textarea'
-                                className='border-0 bg-light h-60 para'
-                                defaultValue={notes}
-                                maxLength={parseInt('2048')}
-                                rows={5}
-                                cols={5}
-                                onChange={(val) => handleNotesChanged(val.target.value)}
-                            />
-                        </Form.Group>
-
-                        <Form.Row>
-                            <div>
-                                <Form.Label>Choose a location!</Form.Label>
-                            </div>
-                        </Form.Row>
-                        <Form.Row>
-                            <div style={{ position: 'relative', width: '100%' }}>
-                                <GoogleMap onClick={handleClickMap}>
-                                    <Marker
-                                        position={{ lat: latitude, lng: longitude }}
-                                        draggable
-                                        onDragEnd={handleMarkerDragEnd}
+                                    <FormField
+                                        control={form.control}
+                                        name='phone'
+                                        render={({ field }) => (
+                                            <FormItem className='col-span-6'>
+                                                <ShadcnTooltip>
+                                                    <TooltipTrigger>
+                                                        <FormLabel>Phone</FormLabel>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent className='max-w-64'>
+                                                        {mode === 'send'
+                                                            ? ToolTips.PartnerRequestInvitePhone
+                                                            : ToolTips.PartnerRequestPhone}
+                                                    </TooltipContent>
+                                                </ShadcnTooltip>
+                                                <FormControl>
+                                                    <PhoneInput
+                                                        country='us'
+                                                        value={field.value}
+                                                        onChange={field.onChange}
+                                                        inputClass='flex h-9 !w-full rounded-md border border-input bg-transparent pr-3 py-1 text-base shadow-sm '
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
                                     />
-                                </GoogleMap>
-                                {azureSubscriptionKey ? (
-                                    <div style={{ position: 'absolute', top: 8, left: 8 }}>
-                                        <AzureSearchLocationInput
-                                            azureKey={azureSubscriptionKey}
-                                            onSelectLocation={handleSelectSearchLocation}
-                                        />
-                                    </div>
-                                ) : null}
-                            </div>
-                        </Form.Row>
-
-                        <Form.Row className='mt-4'>
-                            <Col>
-                                <Form.Group>
-                                    <Form.Label className='control-label h5' htmlFor='StreetAddress'>
-                                        Street Address
-                                    </Form.Label>
-                                    <Form.Control
-                                        type='text'
-                                        className='border-0 bg-light h-60 p-18'
-                                        disabled
+                                    <FormField
+                                        control={form.control}
+                                        name='notes'
+                                        render={({ field }) => (
+                                            <FormItem className='col-span-12'>
+                                                <ShadcnTooltip>
+                                                    <TooltipTrigger>
+                                                        <FormLabel>Notes</FormLabel>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent className='max-w-64'>
+                                                        {mode === 'send'
+                                                            ? ToolTips.PartnerRequestInviteNotes
+                                                            : ToolTips.PartnerRequestNotes}
+                                                    </TooltipContent>
+                                                </ShadcnTooltip>
+                                                <FormControl>
+                                                    <Textarea {...field} maxLength={2048} className='h-24' />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name='location'
+                                        render={({ field }) => (
+                                            <FormItem className='col-span-12'>
+                                                <FormLabel>Choose a location!</FormLabel>
+                                                <FormControl>
+                                                    <div className='relative w-full'>
+                                                        <GoogleMap onClick={handleClickMap}>
+                                                            <Marker
+                                                                position={field.value}
+                                                                draggable
+                                                                onDragEnd={handleMarkerDragEnd}
+                                                            />
+                                                        </GoogleMap>
+                                                        {azureSubscriptionKey ? (
+                                                            <div style={{ position: 'absolute', top: 8, left: 8 }}>
+                                                                <AzureSearchLocationInput
+                                                                    azureKey={azureSubscriptionKey}
+                                                                    onSelectLocation={handleSelectSearchLocation}
+                                                                />
+                                                            </div>
+                                                        ) : null}
+                                                    </div>
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
                                         name='streetAddress'
-                                        value={streetAddress}
+                                        render={({ field }) => (
+                                            <FormItem className='col-span-12'>
+                                                <FormLabel>Street Address</FormLabel>
+                                                <FormControl>
+                                                    <Input {...field} disabled />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
                                     />
-                                </Form.Group>
-                            </Col>
-                        </Form.Row>
-
-                        <Form.Row className='d-block d-md-flex'>
-                            <Col>
-                                <Form.Group>
-                                    <Form.Label className='control-label h5' htmlFor='City'>
-                                        City
-                                    </Form.Label>
-                                    <Form.Control
-                                        type='text'
-                                        className='border-0 bg-light h-60 p-18'
-                                        disabled
+                                    <FormField
+                                        control={form.control}
                                         name='city'
-                                        value={city}
+                                        render={({ field }) => (
+                                            <FormItem className='col-span-6'>
+                                                <FormLabel>City</FormLabel>
+                                                <FormControl>
+                                                    <Input {...field} disabled />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
                                     />
-                                </Form.Group>
-                            </Col>
-                            <Col>
-                                <Form.Group>
-                                    <Form.Label className='control-label h5' htmlFor='PostalCode'>
-                                        Postal Code
-                                    </Form.Label>
-                                    <Form.Control
-                                        type='text'
-                                        className='border-0 bg-light h-60 p-18'
-                                        disabled
+                                    <FormField
+                                        control={form.control}
                                         name='postalCode'
-                                        value={postalCode}
+                                        render={({ field }) => (
+                                            <FormItem className='col-span-6'>
+                                                <FormLabel>Postal Code</FormLabel>
+                                                <FormControl>
+                                                    <Input {...field} disabled />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
                                     />
-                                </Form.Group>
-                            </Col>
-                        </Form.Row>
-                        <Form.Group className='d-flex justify-content-end'>
-                            <Button
-                                disabled={!isSaveEnabled}
-                                type='submit'
-                                className='action btn-default px-3 mr-3 h-49'
-                            >
-                                Submit
-                            </Button>
-                            <Button className='action' onClick={(e) => handleCancel(e)}>
-                                Cancel
-                            </Button>
-                        </Form.Group>
-                    </Form>
-                </div>
-            </Container>
-        );
-    }
-
-    const contents = renderCreateForm();
-
-    return <div>{contents}</div>;
+                                    <div className='col-span-12 flex justify-end gap-2'>
+                                        <Button variant='secondary' onClick={handleCancel}>
+                                            Cancel
+                                        </Button>
+                                        <Button type='submit'>Submit</Button>
+                                    </div>
+                                </form>
+                            </ShadcnForm>
+                        </TooltipProvider>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    );
 };
 
 const PartnerRequestWrapper = (props: PartnerRequestProps) => {
