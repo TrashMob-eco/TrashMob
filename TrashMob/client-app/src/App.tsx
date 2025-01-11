@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 
-import { Route, Switch } from 'react-router';
+import { Route, Switch, useLocation } from 'react-router';
 import { BrowserRouter, RouteComponentProps } from 'react-router-dom';
 
 import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
@@ -69,6 +69,17 @@ const useInitializeApp = () => {
         setIsInitialized(true);
     }, [isInitialized]);
 };
+
+// Component for Listening to pathname change, then scroll to top
+function ScrollToTop() {
+    const { pathname } = useLocation();
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [pathname]);
+
+    return null;
+}
 
 export const App: FC = () => {
     useInitializeApp();
@@ -160,6 +171,7 @@ export const App: FC = () => {
             <MsalProvider instance={msalClient}>
                 <div className='d-flex flex-column h-100'>
                     <BrowserRouter>
+                        <ScrollToTop />
                         <SiteHeader currentUser={currentUser} isUserLoaded={isUserLoaded} />
                         <div className='container-fluid px-0'>
                             <Switch>

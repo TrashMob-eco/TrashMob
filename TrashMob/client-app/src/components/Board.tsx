@@ -99,10 +99,6 @@ const boards = [
 ];
 
 export const Board: React.FC = () => {
-    React.useEffect(() => {
-        window.scrollTo(0, 0);
-    });
-
     return (
         <div className='tailwind'>
             <HeroSection Title='Board of Directors' Description='Meet our team!' />

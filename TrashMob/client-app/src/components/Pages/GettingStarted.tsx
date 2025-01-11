@@ -9,10 +9,6 @@ import { HeroSection } from '../Customization/HeroSection';
 import { Button } from '../ui/button';
 
 export const GettingStarted: React.FC = () => {
-    React.useEffect(() => {
-        window.scrollTo(0, 0);
-    });
-
     return (
         <div className='tailwind'>
             <HeroSection Title='Getting Started' Description='Tips and tricks to get you out there.' />

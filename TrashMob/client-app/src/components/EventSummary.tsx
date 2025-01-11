@@ -68,7 +68,6 @@ export const EventSummary: FC<EventSummaryDashboardProps> = (props) => {
     });
 
     useEffect(() => {
-        window.scrollTo(0, 0);
         getEventById.refetch().then((res) => {
             if (res.data === undefined) return;
             setEventName(res.data.data.name);
