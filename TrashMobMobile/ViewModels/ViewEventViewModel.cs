@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
@@ -359,8 +360,6 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
         await Shell.Current.GoToAsync($"{nameof(EditEventPage)}?EventId={EventViewModel.Id}");
     }
     
-    private Microsoft.Maui.Devices.Sensors.Location? currentLocation;
-    
     public ObservableCollection<Microsoft.Maui.Devices.Sensors.Location> Locations { get; } = [];
 
     [RelayCommand(IncludeCancelCommand = true, AllowConcurrentExecutions = false)]
@@ -385,18 +384,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
         var progress = new Progress<Microsoft.Maui.Devices.Sensors.Location>(location =>
         {
-            if (currentLocation is null)
-            {
-                currentLocation = location;
-            }
-            else
-            {
-                Locations.Remove(currentLocation);
-                currentLocation = location;
-            }
-
-            currentLocation.Timestamp = DateTimeOffset.Now;
-            Locations.Add(currentLocation);
+            location.Timestamp = DateTimeOffset.Now;
+            Locations.Add(location);
         });
 
         await Geolocator.Default.StartListening(progress, cancellationToken);
