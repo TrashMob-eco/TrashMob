@@ -1,7 +1,5 @@
 import * as React from 'react';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { ButtonGroup, Col, Container, Row, ToggleButton } from 'react-bootstrap';
-import { Guid } from 'guid-typescript';
+import { RouteComponentProps, useParams, withRouter } from 'react-router-dom';
 import UserData from '../Models/UserData';
 import { PartnerEdit } from './PartnerEdit';
 import { PartnerAdmins } from './PartnerAdmins';
@@ -9,9 +7,10 @@ import { PartnerLocations } from './PartnerLocations';
 import { PartnerDocuments } from './PartnerDocuments';
 import { PartnerSocialMediaAccounts } from './PartnerSocialMediaAccounts';
 import { PartnerContacts } from './PartnerContacts';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export interface PartnerDashboardMatchParams {
-    partnerId?: string;
+    partnerId: string;
 }
 
 export interface PartnerDashboardProps extends RouteComponentProps<PartnerDashboardMatchParams> {
@@ -21,9 +20,8 @@ export interface PartnerDashboardProps extends RouteComponentProps<PartnerDashbo
 
 const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
     const [radioValue, setRadioValue] = React.useState('1');
-    const [partnerId, setPartnerId] = React.useState<string>('');
-    const [isPartnerIdReady, setIsPartnerIdReady] = React.useState<boolean>();
-    const [loadedPartnerId, setLoadedPartnerId] = React.useState<string | undefined>(props.match?.params.partnerId);
+
+    const { partnerId } = useParams<PartnerDashboardMatchParams>();
 
     const radios = [
         { name: 'Manage Partner', value: '1' },
@@ -34,134 +32,63 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
         { name: 'Manage Partner Social Media Accounts', value: '6' },
     ];
 
-    React.useEffect(() => {
-        const partId = loadedPartnerId;
-        if (!partId) {
-            setPartnerId(Guid.createEmpty().toString());
-            setLoadedPartnerId(Guid.createEmpty().toString());
-        } else {
-            setPartnerId(partId);
-        }
-
-        setIsPartnerIdReady(true);
-    }, [loadedPartnerId]);
-
-    function renderEditPartner() {
-        return (
-            <div>
-                <PartnerEdit partnerId={partnerId} currentUser={props.currentUser} isUserLoaded={props.isUserLoaded} />
-            </div>
-        );
-    }
-
-    function renderPartnerAdmins() {
-        return (
-            <div>
-                <PartnerAdmins
-                    partnerId={partnerId}
-                    currentUser={props.currentUser}
-                    isUserLoaded={props.isUserLoaded}
-                />
-            </div>
-        );
-    }
-
-    function renderPartnerLocations() {
-        return (
-            <div>
-                <PartnerLocations
-                    partnerId={partnerId}
-                    currentUser={props.currentUser}
-                    isUserLoaded={props.isUserLoaded}
-                />
-            </div>
-        );
-    }
-
-    function renderPartnerContacts() {
-        return (
-            <div>
-                <PartnerContacts
-                    partnerId={partnerId}
-                    currentUser={props.currentUser}
-                    isUserLoaded={props.isUserLoaded}
-                />
-            </div>
-        );
-    }
-
-    function renderPartnerDocuments() {
-        return (
-            <div>
-                <PartnerDocuments
-                    partnerId={partnerId}
-                    currentUser={props.currentUser}
-                    isUserLoaded={props.isUserLoaded}
-                />
-            </div>
-        );
-    }
-
-    function renderPartnerSocialMediaAccounts() {
-        return (
-            <div>
-                <PartnerSocialMediaAccounts
-                    partnerId={partnerId}
-                    currentUser={props.currentUser}
-                    isUserLoaded={props.isUserLoaded}
-                />
-            </div>
-        );
-    }
-
-    function renderPartnerDashboard() {
-        return (
-            <Container>
-                <Col>
-                    <Row className='gx-2 py-5'>
-                        <div className='bg-white p-5 shadow-sm rounded'>
-                            <ButtonGroup>
-                                {radios.map((radio, idx) => (
-                                    <ToggleButton
-                                        key={idx}
-                                        id={`radio-${idx}`}
-                                        type='radio'
-                                        variant={idx % 2 ? 'outline-success' : 'outline-danger'}
-                                        name='radio'
-                                        value={radio.value}
-                                        checked={radioValue === radio.value}
-                                        onChange={(e) => setRadioValue(e.currentTarget.value)}
-                                    >
-                                        {radio.name}
-                                    </ToggleButton>
-                                ))}
-                            </ButtonGroup>
-
-                            {radioValue === '1' && renderEditPartner()}
-                            {radioValue === '2' && renderPartnerLocations()}
-                            {radioValue === '3' && renderPartnerContacts()}
-                            {radioValue === '4' && renderPartnerAdmins()}
-                            {radioValue === '5' && renderPartnerDocuments()}
-                            {radioValue === '6' && renderPartnerSocialMediaAccounts()}
-                        </div>
-                    </Row>
-                </Col>
-            </Container>
-        );
-    }
-
-    const contents = isPartnerIdReady ? (
-        renderPartnerDashboard()
-    ) : (
-        <p>
-            <em>Loading...</em>
-        </p>
-    );
-
     return (
-        <div>
-            <hr />
-            {contents}
+        <div className='tailwind'>
+            <div className='container my-8'>
+                <div>
+                    <Tabs value={radioValue} onValueChange={setRadioValue}>
+                        <TabsList className='w-full h-14'>
+                            {radios.map((radio, idx) => (
+                                <TabsTrigger className='whitespace-normal' value={radio.value} key={`tab-${idx}`}>
+                                    {radio.name}
+                                </TabsTrigger>
+                            ))}
+                        </TabsList>
+                        <TabsContent value='1'>
+                            <PartnerEdit
+                                partnerId={partnerId}
+                                currentUser={props.currentUser}
+                                isUserLoaded={props.isUserLoaded}
+                            />
+                        </TabsContent>
+                        <TabsContent value='2'>
+                            <PartnerLocations
+                                partnerId={partnerId}
+                                currentUser={props.currentUser}
+                                isUserLoaded={props.isUserLoaded}
+                            />
+                        </TabsContent>
+                        <TabsContent value='3'>
+                            <PartnerContacts
+                                partnerId={partnerId}
+                                currentUser={props.currentUser}
+                                isUserLoaded={props.isUserLoaded}
+                            />
+                        </TabsContent>
+                        <TabsContent value='4'>
+                            <PartnerAdmins
+                                partnerId={partnerId}
+                                currentUser={props.currentUser}
+                                isUserLoaded={props.isUserLoaded}
+                            />
+                        </TabsContent>
+                        <TabsContent value='5'>
+                            <PartnerDocuments
+                                partnerId={partnerId}
+                                currentUser={props.currentUser}
+                                isUserLoaded={props.isUserLoaded}
+                            />
+                        </TabsContent>
+                        <TabsContent value='6'>
+                            <PartnerSocialMediaAccounts
+                                partnerId={partnerId}
+                                currentUser={props.currentUser}
+                                isUserLoaded={props.isUserLoaded}
+                            />
+                        </TabsContent>
+                    </Tabs>
+                </div>
+            </div>
         </div>
     );
 };
