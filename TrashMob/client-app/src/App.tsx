@@ -7,6 +7,8 @@ import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } fr
 import { InteractionType } from '@azure/msal-browser';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { Toaster } from '@/components/ui/toaster';
+
 import Home from './components/Pages/Home';
 
 import { AboutUs } from './components/Pages/AboutUs';
@@ -311,6 +313,9 @@ export const App: FC = () => {
                     </BrowserRouter>
                 </div>
             </MsalProvider>
+            <div className='tailwind'>
+                <Toaster />
+            </div>
             <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
     );
