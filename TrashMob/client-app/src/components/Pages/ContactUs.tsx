@@ -27,10 +27,6 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
         mutationFn: CreateContactRequest().service,
     });
 
-    React.useEffect(() => {
-        window.scrollTo(0, 0);
-    });
-
     // This will handle the submit form event.
     function handleSave(event: any) {
         event.preventDefault();

@@ -12,10 +12,6 @@ import { HeroSection } from '../Customization/HeroSection';
 import { Button } from '../ui/button';
 
 export const Partnerships: FC<any> = () => {
-    React.useEffect(() => {
-        window.scrollTo(0, 0);
-    });
-
     return (
         <div className='tailwind'>
             <HeroSection Title='Partnerships' Description='Connecting you with volunteers.' />

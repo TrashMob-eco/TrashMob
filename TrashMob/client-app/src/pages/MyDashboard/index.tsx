@@ -103,10 +103,6 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const totalHours = stats?.totalHours || 0;
     const totalEvents = stats?.totalEvents || 0;
 
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, []);
-
     const setSharingEvent = useCallback((newEventToShare: EventData, updateShowModal: boolean) => {
         setEventToShare(newEventToShare);
         setShowSocialsModal(updateShowModal);

@@ -78,7 +78,6 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
     );
 
     useEffect(() => {
-        window.scrollTo(0, 0);
         setUnits(['mi', 'km']);
         if (props.isUserLoaded && !isDataLoaded) {
             getUserById.refetch().then((res) => {
