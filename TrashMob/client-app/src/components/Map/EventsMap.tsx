@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { AdvancedMarker, InfoWindow, useMap } from '@vis.gl/react-google-maps';
+import { AdvancedMarker, InfoWindow, useMap, MapProps } from '@vis.gl/react-google-maps';
 import { GoogleMap } from './GoogleMap';
 import { EventDetailInfoWindowHeader, EventDetailInfoWindowContent } from './EventInfoWindowContent';
 import EventData from '../Models/EventData';
@@ -9,17 +9,16 @@ import { GetAllEventsBeingAttendedByUser } from '../../services/events';
 import { useIsInViewport } from '@/hooks/useIsInViewport';
 import { cn } from '@/lib/utils';
 
-interface EventsMapProps {
+interface EventsMapProps extends MapProps {
     id?: string;
     events: EventData[];
     isUserLoaded: boolean;
     currentUser: UserData;
-    gestureHandling?: string;
     autoFitBounds?: boolean;
 }
 
 export const EventsMap = (props: EventsMapProps) => {
-    const { id, events, isUserLoaded, currentUser, gestureHandling, autoFitBounds = false } = props;
+    const { id, events, isUserLoaded, currentUser, gestureHandling, autoFitBounds = false, ...rest } = props;
 
     // Load and add user's attendance to events
     const { data: myAttendanceList } = useQuery({
@@ -58,7 +57,7 @@ export const EventsMap = (props: EventsMapProps) => {
 
     return (
         <div ref={ref}>
-            <GoogleMap id={id} gestureHandling={gestureHandling}>
+            <GoogleMap id={id} gestureHandling={gestureHandling} {...rest}>
                 {eventsWithAttendance.map((event) => (
                     <AdvancedMarker
                         key={event.id}

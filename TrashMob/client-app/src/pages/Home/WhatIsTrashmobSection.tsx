@@ -8,6 +8,7 @@ export const WhatIsTrashmobSection = () => {
 
     return (
         <section id='introduction' className='bg-card'>
+            <div ref={viewportRef} />
             <div className='mx-auto max-w-screen-xl py-8'>
                 <div className='px-8 flex flex-col items-center md:grid md:auto-rows-auto md:grid-cols-5 md:gap-x-4'>
                     <div className='col-span-3'>
@@ -68,7 +69,6 @@ export const WhatIsTrashmobSection = () => {
                     </div>
                 </div>
             </div>
-            <div ref={viewportRef} />
         </section>
     );
 };

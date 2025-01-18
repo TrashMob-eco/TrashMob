@@ -178,7 +178,7 @@ export const MainEvents: FC<MainEventsDataProps> = ({
                                     {mobEvent.city},{mobEvent.region},{mobEvent.country}
                                 </span>
                             </div>
-                            <div className='mt-2 mt-sm-0'>
+                            <div className='mt-2 mt-sm-0 tailwind'>
                                 <Link to={`/eventdetails/${mobEvent.id}`}>
                                     <button className='btn btn-outline mr-2 font-weight-bold btn-128'>View</button>
                                 </Link>

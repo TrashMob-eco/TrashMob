@@ -18,7 +18,7 @@
     .timeline-steps .timeline-step:not(:last-child):after {
         content: '';
         display: block;
-        border-top: 0.125rem solid $primary;
+        border-top: 0.125rem solid rgb(150, 186, 0);
         width: 9rem;
         position: absolute;
         left: 6.5rem;
@@ -27,7 +27,7 @@
     .timeline-steps .timeline-step:not(:first-child):before {
         content: '';
         display: block;
-        border-top: 0.125rem solid $primary;
+        border-top: 0.125rem solid rgb(150, 186, 0);
         width: 9rem;
         position: absolute;
         right: 6.5rem;
@@ -57,7 +57,7 @@
 
 .timeline-steps .timeline-content .inner-circle:before {
     content: '';
-    background-color: $primary;
+    background-color: rgb(150, 186, 0);
     display: inline-block;
     height: 3rem;
     width: 3rem;
