@@ -20,10 +20,6 @@ function ReadMore({ children }: any) {
 }
 
 export const VolunteerOpportunities: React.FC = () => {
-    React.useEffect(() => {
-        window.scrollTo(0, 0);
-    });
-
     return (
         <>
             <HeroSection Title='Recruiting' Description='We’d love to have you join us.' />

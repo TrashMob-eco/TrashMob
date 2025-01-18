@@ -81,7 +81,6 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
     }, [isResetFilters]);
 
     useEffect(() => {
-        window.scrollTo(0, 0);
         getEventTypes.refetch().then((res) => {
             setEventTypeList(res.data?.data || []);
         });

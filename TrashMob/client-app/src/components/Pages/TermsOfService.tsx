@@ -16,10 +16,6 @@ export class TermsOfServiceVersion {
 }
 
 export const TermsOfService: FC = () => {
-    React.useEffect(() => {
-        window.scrollTo(0, 0);
-    });
-
     return (
         <>
             <HeroSection Title='Terms of Service' Description='Transparency matters to us.' />

@@ -28,10 +28,6 @@ const tabs = [
 ];
 
 const Events: React.FC = () => {
-    React.useEffect(() => {
-        window.scrollTo(0, 0);
-    });
-
     return (
         <div className='active-border rounded mt-4 bg-white'>
             <h3 className='pl-4 font-weight-500 color'>Events</h3>

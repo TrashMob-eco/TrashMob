@@ -6,10 +6,6 @@ import trashcans from '../assets/trashcan-artwork.png';
 import { GettingStartedSection } from '../GettingStartedSection';
 
 export const AboutUs: React.FC = () => {
-    React.useEffect(() => {
-        window.scrollTo(0, 0);
-    });
-
     return (
         <>
             <Container fluid className='mt-1 bg-white p-5'>

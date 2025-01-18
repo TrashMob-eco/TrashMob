@@ -11,10 +11,6 @@ interface DeleteMyDataProps extends RouteComponentProps<any> {
 }
 
 const DeleteMyData: FC<DeleteMyDataProps> = (props) => {
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, []);
-
     const handleDelete = (event: FormEvent<HTMLElement>) => {
         event.preventDefault();
 

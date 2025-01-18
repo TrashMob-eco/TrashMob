@@ -101,8 +101,6 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
     });
 
     useEffect(() => {
-        window.scrollTo(0, 0);
-
         getEventTypes.refetch().then((res) => {
             setEventTypeList(res.data?.data || []);
         });
