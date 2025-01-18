@@ -12,13 +12,17 @@ import UserData from '@/components/Models/UserData';
 import { useQuery } from '@tanstack/react-query';
 import { GetAllActiveEvents } from '@/services/events';
 import { cn } from '@/lib/utils';
-import MultiSelect from '@/components/ui/multi-select';
-import { useGetEventTypes } from '@/hooks/useGetEventTypes';
+import { Select, SelectContent, SelectItemAlt, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { List, Map, Plus } from 'lucide-react';
 
 interface EventSectionProps {
     isUserLoaded: boolean;
     currentUser: UserData;
+}
+
+enum EventStatus {
+    UPCOMING = 'upcoming',
+    COMPLETED = 'completed'
 }
 
 export const EventSectionComponent = (props: EventSectionProps) => {
@@ -30,43 +34,40 @@ export const EventSectionComponent = (props: EventSectionProps) => {
         });
     });
 
+    /** Statuses */
+    const statuses = [
+        { value: EventStatus.UPCOMING, label: 'Upcoming' },
+        { value: EventStatus.COMPLETED, label: 'Completed' },
+    ];
+
+    /** Filter Parameters */
+    const [selectedStatuses, setSelectedStatuses] = useState<string>(EventStatus.UPCOMING);
+    const [selectedTimeRange, setSelectedTimeRange] = useState<string>('today');
+    const [view, setView] = useState<string>('map');
+
     /** Time Ranges */
-    const timeRangeOptions = [
+    const timeRangeOptions = selectedStatuses === EventStatus.UPCOMING ? [
         { value: 'today', label: 'Today' },
         { value: 'tomorrow', label: 'Tomorrow' },
         { value: 'this weekend', label: 'This weekend' },
         { value: 'all', label: 'All' },
+    ] : [
+        { value: '-7d', label: 'Last 7 days' },
+        { value: '-30d', label: 'Last 30 days' },
+        { value: '-90d', label: 'Last 90 days' },
+        { value: '-180d', label: 'Last 6 months' },
+        { value: '-365d', label: 'Last 12 months' },
+        { value: 'all', label: 'All time' },
     ];
 
-    /** Event Types */
-    const { data: eventTypes } = useGetEventTypes();
-    const eventTypeOptions = (eventTypes || []).map((et) => ({ value: `${et.id}`, label: et.name }));
-
-    /** Statuses */
-    const statuses = [
-        { value: 'completed', label: 'Completed' },
-        { value: 'upcoming', label: 'Upcoming' },
-    ];
-    /** Filter Parameters */
-    const [selectedTimeRange, setSelectedTimeRange] = useState<string>('today');
-    const [selectedEventTypes, setSelectedEventTypes] = useState<string[]>([]);
-    const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
-    const [view, setView] = useState<string>('map');
-
+    
     /** Event List */
-    const [events, setEvents] = useState([]);
-    const { refetch } = useQuery({
+    const { data: events } = useQuery({
         queryKey: GetAllActiveEvents().key,
         queryFn: GetAllActiveEvents().service,
+        select: res => res.data || [],
         staleTime: 100,
-        enabled: false,
     });
-
-    useEffect(() => {
-        refetch().then((res) => {
-            setEvents(res.data?.data || []);
-        });
-    }, []);
 
     const handleSelectLocation = useCallback(
         async (location: SearchLocationOption) => {
@@ -114,18 +115,25 @@ export const EventSectionComponent = (props: EventSectionProps) => {
                                 onSelectLocation={handleSelectLocation}
                             />
                         </div>
+                        <div className="grow flex justify-end">
+                            <Button asChild className='hidden md:flex'>
+                                <Link to='/manageeventdashboard'>
+                                    <Plus /> Create Event
+                                </Link>
+                            </Button>
+                        </div>
                     </div>
                     <div className='py-4'>
                         <Tabs
-                            defaultValue={selectedTimeRange}
-                            onValueChange={setSelectedTimeRange}
+                            defaultValue={selectedStatuses}
+                            onValueChange={setSelectedStatuses}
                             className='w-full rounded-none bg-transparent p-0'
                         >
                             <TabsList className='bg-transparent gap-2 w-full justify-center md:w-auto md:justify-start '>
-                                {timeRangeOptions.map((timeRange) => (
+                                {statuses.map((status) => (
                                     <TabsTrigger
-                                        key={timeRange.value}
-                                        value={timeRange.value}
+                                        key={status.value}
+                                        value={status.value}
                                         className={cn(
                                             'relative !px-2 h-9 rounded-[2px] border-b-2 border-b-transparent bg-transparent font-semibold text-muted-foreground shadow-none transition-none',
                                             "after:content-[''] after:w-0 after:h-0.5 after:absolute after:left-0 after:-bottom-3",
@@ -135,32 +143,24 @@ export const EventSectionComponent = (props: EventSectionProps) => {
                                             'after:transition-all after:duration-300 after:ease-in-out',
                                         )}
                                     >
-                                        {timeRange.label}
+                                        {status.label}
                                     </TabsTrigger>
                                 ))}
                             </TabsList>
                         </Tabs>
                     </div>
-                    <div className='flex flex-row gap-4 mb-2'>
-                        <MultiSelect
-                            placeholder='Cleanup types'
-                            className='w-48'
-                            options={eventTypeOptions}
-                            selectedOptions={selectedEventTypes}
-                            setSelectedOptions={setSelectedEventTypes}
-                        />
-                        <MultiSelect
-                            placeholder='Status'
-                            className='w-36'
-                            options={statuses}
-                            selectedOptions={selectedStatuses}
-                            setSelectedOptions={setSelectedStatuses}
-                        />
-                        <Button asChild className='hidden md:flex'>
-                            <Link to='/manageeventdashboard'>
-                                <Plus /> Create Event
-                            </Link>
-                        </Button>
+                    <div className='flex flex-row gap-4 mb-2 tailwind'>
+                        <Select value={selectedTimeRange} onValueChange={setSelectedTimeRange}>
+                            <SelectTrigger className="w-48">
+                                <SelectValue placeholder="Time" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {timeRangeOptions.map(timeRange => (
+                                    <SelectItemAlt key={timeRange.value} value={timeRange.value}>{timeRange.label}</SelectItemAlt>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        
                         <div className='flex-1' />
                         <ToggleGroup value={view} onValueChange={setView} type='single' variant='outline'>
                             <ToggleGroupItem
@@ -177,8 +177,11 @@ export const EventSectionComponent = (props: EventSectionProps) => {
                             </ToggleGroupItem>
                         </ToggleGroup>
                     </div>
+                    <div>
+                        {(events || []).length} events found within your location radius.
+                    </div>
                     <EventsMap
-                        events={events}
+                        events={events || []}
                         isUserLoaded={props.isUserLoaded}
                         currentUser={props.currentUser}
                         gestureHandling='cooperative'

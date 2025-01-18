@@ -15,10 +15,11 @@ interface EventsMapProps {
     isUserLoaded: boolean;
     currentUser: UserData;
     gestureHandling?: string;
+    autoFitBounds?: boolean;
 }
 
 export const EventsMap = (props: EventsMapProps) => {
-    const { id, events, isUserLoaded, currentUser, gestureHandling } = props;
+    const { id, events, isUserLoaded, currentUser, gestureHandling, autoFitBounds = false } = props;
 
     // Load and add user's attendance to events
     const { data: myAttendanceList } = useQuery({
@@ -36,14 +37,14 @@ export const EventsMap = (props: EventsMapProps) => {
 
     // Fit Map to show all events markers
     useEffect(() => {
-        if (map && events.length) {
+        if (map && autoFitBounds && events.length) {
             let bounds = new google.maps.LatLngBounds();
             for (let event of events) {
                 bounds.extend({ lat: event.latitude, lng: event.longitude });
             }
             map.fitBounds(bounds);
         }
-    }, [map, events]);
+    }, [map, events, autoFitBounds]);
 
     /**
      *  Show Event InfoWindow when user hover marker
