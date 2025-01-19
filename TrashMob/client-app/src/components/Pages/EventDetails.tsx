@@ -222,7 +222,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ match, currentUser, isUser
                         />
                         <div className='d-flex justify-content-between align-items-md-end flex-column flex-md-row'>
                             <h2 className='font-weight-bold m-0'>{eventName}</h2>
-                            <div className='d-flex my-3'>
+                            <div className='d-flex my-3 tailwind'>
                                 <RegisterBtn
                                     eventId={eventId}
                                     isAttending={isAttending}

@@ -1,6 +1,6 @@
-import React, { FC, useState } from 'react';
-import { Button } from 'react-bootstrap';
-import { RouteComponentProps, useHistory } from 'react-router-dom';
+import { FC, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { useHistory } from 'react-router-dom';
 import { getApiConfig, msalClient } from '../../store/AuthStore';
 import EventAttendeeData from '../Models/EventAttendeeData';
 import UserData from '../Models/UserData';
@@ -10,6 +10,7 @@ import { CurrentTrashMobWaiverVersion } from '../Waivers/Waivers';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { GetTrashMobWaivers } from '../../services/waivers';
 import { AddEventAttendee, GetAllEventsBeingAttendedByUser } from '../../services/events';
+import { cn } from '@/lib/utils';
 
 interface RegisterBtnProps {
     currentUser: UserData;
@@ -86,9 +87,9 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
 
     return (
         <Button
-            id='addAttendee'
-            className='btn btn-primary action btn-128'
-            hidden={!isUserLoaded || isAttending === 'Yes' || registered || isEventCompleted}
+            className={cn({
+                hidden: !isUserLoaded || isAttending === 'Yes' || registered || isEventCompleted,
+            })}
             onClick={() => handleAttend(eventId)}
         >
             {registered ? 'Attended!' : 'Attend'}
