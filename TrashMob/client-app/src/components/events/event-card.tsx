@@ -10,12 +10,33 @@ import UserData from '@/components/Models/UserData';
 import { RegisterBtn } from '../Customization/RegisterBtn';
 import { useGetEventType } from '@/hooks/useGetEventType';
 
-interface EventCardPRops {
+interface EventCardProps {
     event: EventData;
     isUserLoaded: boolean;
     currentUser: UserData;
 }
-export const EventCard = (props: EventCardPRops) => {
+
+export const EventPlaceAndLocation = (event: EventData) => {
+    return (
+        <div className='grid grid-cols-[24px_1fr] gap-x-3 gap-y-2'>
+            <Calendar />
+            <div>{moment(event.eventDate).format('MMM DD, YYYY | hh:mm A z')}</div>
+            <MapPin />
+            <div>
+                <a
+                    href={`https://google.com/maps/place/${event.streetAddress}+${event.city}+${event.region}+${event.postalCode}+${event.country}`}
+                    target='_blank'
+                    className="text-foreground hover:underline"
+                    rel='noopener noreferrer'
+                >
+                    {compact([event.streetAddress, event.city, event.region]).join(', ')}
+                </a>
+            </div>
+        </div>
+    )
+}
+
+export const EventCard = (props: EventCardProps) => {
     const { event, isUserLoaded, currentUser } = props;
     const { data: eventType } = useGetEventType(event.eventTypeId);
     return (
@@ -32,11 +53,8 @@ export const EventCard = (props: EventCardPRops) => {
                     {event.createdByUserId === currentUser.id ? <HostingBadge /> : null}
                 </div>
             </CardHeader>
-            <CardContent className='!p-4 !pt-0 grid grid-cols-[24px_1fr] gap-x-3 gap-y-2'>
-                <Calendar />
-                <div>{moment(event.eventDate).format('MMM DD, YYYY | hh A z')}</div>
-                <MapPin />
-                <div>{compact([event.streetAddress, event.city, event.region]).join(', ')}</div>
+            <CardContent className="!p-4 !pt-0">
+                <EventPlaceAndLocation {...event} />
             </CardContent>
             <CardFooter className='!p-4 !pt-0 flex justify-between'>
                 <Button variant='outline' asChild>
