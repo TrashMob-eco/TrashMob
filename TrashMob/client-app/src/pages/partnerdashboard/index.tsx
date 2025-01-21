@@ -1,24 +1,25 @@
 import * as React from 'react';
-import { RouteComponentProps, useParams, withRouter } from 'react-router-dom';
-import UserData from '../Models/UserData';
-import { PartnerEdit } from './PartnerEdit';
-import { PartnerAdmins } from './PartnerAdmins';
-import { PartnerLocations } from './PartnerLocations';
-import { PartnerDocuments } from './PartnerDocuments';
-import { PartnerSocialMediaAccounts } from './PartnerSocialMediaAccounts';
-import { PartnerContacts } from './PartnerContacts';
+import { useParams } from 'react-router-dom';
+
+import UserData from '@/components/Models/UserData';
+import { PartnerEdit } from '@/components/Partners/PartnerEdit';
+import { PartnerAdmins } from '@/components/Partners/PartnerAdmins';
+import { PartnerLocations } from '@/components/Partners/PartnerLocations';
+import { PartnerDocuments } from '@/components/Partners/PartnerDocuments';
+import { PartnerSocialMediaAccounts } from '@/components/Partners/PartnerSocialMediaAccounts';
+import { PartnerContacts } from '@/components/Partners/PartnerContacts';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export interface PartnerDashboardMatchParams {
     partnerId: string;
 }
 
-export interface PartnerDashboardProps extends RouteComponentProps<PartnerDashboardMatchParams> {
+export interface PartnerDashboardProps {
     isUserLoaded: boolean;
     currentUser: UserData;
 }
 
-const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
+export const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
     const [radioValue, setRadioValue] = React.useState('1');
 
     const { partnerId } = useParams<PartnerDashboardMatchParams>();
@@ -37,7 +38,7 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
             <div className='container my-8'>
                 <div>
                     <Tabs value={radioValue} onValueChange={setRadioValue}>
-                        <TabsList className='w-full h-14'>
+                        <TabsList className='w-full h-14 mb-4'>
                             {radios.map((radio, idx) => (
                                 <TabsTrigger className='whitespace-normal' value={radio.value} key={`tab-${idx}`}>
                                     {radio.name}
@@ -92,5 +93,3 @@ const PartnerDashboard: React.FC<PartnerDashboardProps> = (props) => {
         </div>
     );
 };
-
-export default withRouter(PartnerDashboard);

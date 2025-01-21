@@ -1,18 +1,58 @@
 import * as React from 'react';
-import { Button, Col, Form, OverlayTrigger, ToggleButton, Tooltip } from 'react-bootstrap';
-import { Guid } from 'guid-typescript';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from "@/components/ui/checkbox"
 import { useMutation, useQuery } from '@tanstack/react-query';
 import UserData from '../Models/UserData';
 import * as ToolTips from '../../store/ToolTips';
 import PartnerLocationData from '../Models/PartnerLocationData';
 import * as MapStore from '../../store/MapStore';
 import { CreatePartnerLocations, GetPartnerLocations, UpdatePartnerLocations } from '../../services/locations';
-import { Services } from '../../config/services.config';
 import { GoogleMap } from '../Map/GoogleMap';
 import { APIProvider, MapMouseEvent, Marker, useMap } from '@vis.gl/react-google-maps';
 import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
 import { useAzureMapSearchAddressReverse } from '../../hooks/useAzureMapSearchAddressReverse';
 import { AzureSearchLocationInput, SearchLocationOption } from '../Map/AzureSearchLocationInput';
+
+interface FormInputs {
+    partnerId: string;
+    name: string;
+    isActive: boolean;
+    publicNotes: string;
+    privateNotes: string;
+    location: { lat: number; lng: number };
+
+    // Auto
+    streetAddress: string;
+    city: string;
+    region: string;
+    postalCode: string;
+    country: string;
+}
+
+const formSchema = z.object({
+    partnerId: z.string(),
+    name: z.string({ required_error: 'Location Name cannot be empty.' }),
+    isActive: z.boolean(),
+    publicNotes: z.string({ required_error: 'Public notes cannot be empty.' }),
+    privateNotes: z.string(),
+    location: z.object({
+        lat: z.number().optional(),
+        lng: z.number().optional(),
+    }),
+    streetAddress: z.string().optional(),
+    city: z.string().optional(),
+    country: z.string().optional(),
+    region: z.string().optional(),
+    postalCode: z.string().optional(),
+});
 
 export interface PartnerLocationEditDataProps {
     partnerId: string;
@@ -24,32 +64,67 @@ export interface PartnerLocationEditDataProps {
 }
 
 export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (props) => {
-    const [partnerLocationId, setPartnerLocationId] = React.useState<string>(Guid.EMPTY);
-    const [locationName, setLocationName] = React.useState<string>('');
-    const [locationNameErrors, setLocationNameErrors] = React.useState<string>('');
-    const [publicNotes, setPublicNotes] = React.useState<string>('');
-    const [publicNotesErrors, setPublicNotesErrors] = React.useState<string>('');
-    const [privateNotes, setPrivateNotes] = React.useState<string>('');
-    const [isPartnerLocationActive, setIsPartnerLocationActive] = React.useState<boolean>(true);
-    const [streetAddress, setStreetAddress] = React.useState<string>('');
-    const [city, setCity] = React.useState<string>('');
-    const [country, setCountry] = React.useState<string>('');
-    const [region, setRegion] = React.useState<string>('');
-    const [postalCode, setPostalCode] = React.useState<string>('');
-    const [latitude, setLatitude] = React.useState<number>(0);
-    const [longitude, setLongitude] = React.useState<number>(0);
-    const [createdByUserId, setCreatedByUserId] = React.useState<string>();
-    const [createdDate, setCreatedDate] = React.useState<Date>(new Date());
-    const [lastUpdatedDate, setLastUpdatedDate] = React.useState<Date>(new Date());
-    const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
-    const [isPartnerLocationDataLoaded, setIsPartnerLocationDataLoaded] = React.useState<boolean>(false);
 
-    const getPartnerLocations = useQuery({
-        queryKey: GetPartnerLocations({ locationId: props.partnerLocationId }).key,
-        queryFn: GetPartnerLocations({ locationId: props.partnerLocationId }).service,
-        staleTime: Services.CACHE.DISABLE,
-        enabled: false,
+    const { partnerLocationId: locationId } = props
+    const { data: item } = useQuery({
+        queryKey: GetPartnerLocations({ locationId }).key,
+        queryFn: GetPartnerLocations({ locationId }).service,
+        select: res => res.data
     });
+
+    console.log({ item })
+     const form = useForm<FormInputs>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {},
+    });
+
+    const location = form.watch('location');
+
+    const onSubmit: SubmitHandler<FormInputs> = (data) => {
+        const body = new PartnerLocationData();
+        body.id = locationId;
+        body.partnerId = props.partnerId;
+        body.name = data.name ?? '';
+        body.streetAddress = data.streetAddress ?? '';
+        body.city = data.city ?? '';
+        body.region = data.region ?? '';
+        body.country = data.country ?? '';
+        body.postalCode = data.postalCode ?? '';
+        body.latitude = data.location.lat ?? 0;
+        body.longitude = data.location.lng ?? 0;
+        body.isActive = data.isActive;
+        body.publicNotes = data.publicNotes ?? '';
+        body.privateNotes = data.privateNotes ?? '';
+        body.createdByUserId = data.createdByUserId ?? props.currentUser.id;
+        body.createdDate = data.createdDate;
+
+        // if (partnerLocationId === Guid.EMPTY) await createPartnerLocations.mutateAsync(body);
+        // else await updatePartnerLocations.mutateAsync(body);
+
+        props.onSave();
+
+        // createPartnerRequest.mutateAsync(body);
+    };
+
+    // const [partnerLocationId, setPartnerLocationId] = React.useState<string>(Guid.EMPTY);
+    // const [locationName, setLocationName] = React.useState<string>('');
+    // const [locationNameErrors, setLocationNameErrors] = React.useState<string>('');
+    // const [publicNotes, setPublicNotes] = React.useState<string>('');
+    // const [publicNotesErrors, setPublicNotesErrors] = React.useState<string>('');
+    // const [privateNotes, setPrivateNotes] = React.useState<string>('');
+    // const [isPartnerLocationActive, setIsPartnerLocationActive] = React.useState<boolean>(true);
+    // const [streetAddress, setStreetAddress] = React.useState<string>('');
+    // const [city, setCity] = React.useState<string>('');
+    // const [country, setCountry] = React.useState<string>('');
+    // const [region, setRegion] = React.useState<string>('');
+    // const [postalCode, setPostalCode] = React.useState<string>('');
+    // const [latitude, setLatitude] = React.useState<number>(0);
+    // const [longitude, setLongitude] = React.useState<number>(0);
+    // const [createdByUserId, setCreatedByUserId] = React.useState<string>();
+    // const [createdDate, setCreatedDate] = React.useState<Date>(new Date());
+    // const [lastUpdatedDate, setLastUpdatedDate] = React.useState<Date>(new Date());
+    // const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
+    // const [isPartnerLocationDataLoaded, setIsPartnerLocationDataLoaded] = React.useState<boolean>(false);
 
     const createPartnerLocations = useMutation({
         mutationKey: CreatePartnerLocations().key,
@@ -62,147 +137,17 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
     });
 
     React.useEffect(() => {
-        if (props.isUserLoaded && props.partnerLocationId === Guid.EMPTY) setIsPartnerLocationDataLoaded(true);
-        else if (props.isUserLoaded && props.partnerLocationId && props.partnerLocationId !== Guid.EMPTY) {
-            getPartnerLocations.refetch().then((res) => {
-                if (res.data === undefined) return;
-                setPartnerLocationId(res.data?.data.id);
-                setLocationName(res.data?.data.name);
-                setStreetAddress(res.data?.data.streetAddress);
-                setCity(res.data?.data.city);
-                setCountry(res.data?.data.country);
-                setRegion(res.data?.data.region);
-                setPostalCode(res.data?.data.postalCode);
-                setLatitude(res.data?.data.latitude);
-                setLongitude(res.data?.data.longitude);
-                setIsPartnerLocationActive(res.data?.data.isActive);
-                setCreatedByUserId(res.data?.data.createdByUserId);
-                setCreatedDate(new Date(res.data?.data.createdDate));
-                setLastUpdatedDate(new Date(res.data?.data.lastUpdatedDate));
-                setPublicNotes(res.data?.data.publicNotes);
-                setIsPartnerLocationDataLoaded(true);
-            });
-        }
-
         MapStore.getOption().then((opts) => {
             setAzureSubscriptionKey(opts.subscriptionKey);
         });
-    }, [props.currentUser, props.partnerLocationId, props.isUserLoaded, props.partnerId]);
-
-    function handleLocationNameChanged(locationName: string) {
-        if (locationName === '') {
-            setLocationNameErrors('Location Name cannot be empty.');
-        } else {
-            setLocationName(locationName);
-            setLocationNameErrors('');
-        }
-    }
-
-    function handlePublicNotesChanged(notes: string) {
-        if (notes === '') {
-            setPublicNotesErrors('Public notes cannot be empty.');
-        } else {
-            setPublicNotes(notes);
-            setPublicNotesErrors('');
-        }
-    }
-
-    function handleIsPartnerLocationActiveChanged(val: boolean) {
-        setIsPartnerLocationActive(val);
-    }
-
-    function handlePrivateNotesChanged(notes: string) {
-        setPrivateNotes(notes);
-    }
-
-    function renderPartnerLocationNameToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerLocationName}</Tooltip>;
-    }
-
-    function renderStreetAddressToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerLocationStreetAddress}</Tooltip>;
-    }
-
-    function renderCityToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerLocationCity}</Tooltip>;
-    }
-
-    function renderCountryToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerLocationCountry}</Tooltip>;
-    }
-
-    function renderRegionToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerLocationRegion}</Tooltip>;
-    }
-
-    function renderPostalCodeToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerLocationPostalCode}</Tooltip>;
-    }
-
-    function renderIsPartnerLocationActiveToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerLocationIsPartnerLocationActive}</Tooltip>;
-    }
-
-    function renderPublicNotesToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerLocationPublicNotes}</Tooltip>;
-    }
-
-    function renderPrivateNotesToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerLocationPrivateNotes}</Tooltip>;
-    }
-
-    function renderCreatedDateToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerCreatedDate}</Tooltip>;
-    }
-
-    function renderLastUpdatedDateToolTip(props: any) {
-        return <Tooltip {...props}>{ToolTips.PartnerLastUpdatedDate}</Tooltip>;
-    }
-
-    React.useEffect(() => {
-        if (publicNotes === '' || publicNotesErrors !== '' || country === '') {
-            setIsSaveEnabled(false);
-        } else {
-            setIsSaveEnabled(true);
-        }
-    }, [publicNotes, publicNotesErrors, country]);
-
-    async function handleSave(event: any) {
-        event.preventDefault();
-
-        if (!isSaveEnabled) return;
-        setIsSaveEnabled(false);
-
-        const body = new PartnerLocationData();
-        body.id = partnerLocationId;
-        body.partnerId = props.partnerId;
-        body.name = locationName ?? '';
-        body.streetAddress = streetAddress ?? '';
-        body.city = city ?? '';
-        body.region = region ?? '';
-        body.country = country ?? '';
-        body.postalCode = postalCode ?? '';
-        body.latitude = latitude ?? 0;
-        body.longitude = longitude ?? 0;
-        body.isActive = isPartnerLocationActive;
-        body.publicNotes = publicNotes ?? '';
-        body.privateNotes = privateNotes ?? '';
-        body.createdByUserId = createdByUserId ?? props.currentUser.id;
-        body.createdDate = createdDate;
-
-        if (partnerLocationId === Guid.EMPTY) await createPartnerLocations.mutateAsync(body);
-        else await updatePartnerLocations.mutateAsync(body);
-
-        props.onSave();
-    }
+    }, []);
 
     const map = useMap();
 
     const handleSelectSearchLocation = React.useCallback(
         async (location: SearchLocationOption) => {
             const { lat, lon } = location.position;
-            setLatitude(lat);
-            setLongitude(lon);
+            form.setValue('location', { lat, lng: lon });
 
             // side effect: Move Map Center
             if (map) map.panTo({ lat, lng: lon });
@@ -214,8 +159,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
         if (e.detail.latLng) {
             const lat = e.detail.latLng.lat;
             const lng = e.detail.latLng.lng;
-            setLatitude(lat);
-            setLongitude(lng);
+            form.setValue('location', { lat, lng });
         }
     }, []);
 
@@ -223,16 +167,15 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
         if (e.latLng) {
             const lat = e.latLng.lat();
             const lng = e.latLng.lng();
-            setLatitude(lat);
-            setLongitude(lng);
+            form.setValue('location', { lat, lng });
         }
     }, []);
 
     const [azureSubscriptionKey, setAzureSubscriptionKey] = React.useState<string>();
     const { refetch: refetchAddressReverse } = useAzureMapSearchAddressReverse(
         {
-            lat: latitude,
-            long: longitude,
+            lat: location?.lat,
+            long: location?.lng,
             azureKey: azureSubscriptionKey || '',
         },
         { enabled: false },
@@ -245,283 +188,162 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
 
             const firstResult = data?.addresses[0];
             if (firstResult) {
-                setStreetAddress(firstResult.address.streetNameAndNumber);
-                setCity(firstResult.address.municipality);
-                setCountry(firstResult.address.country);
-                setRegion(firstResult.address.countrySubdivisionName);
-                setPostalCode(firstResult.address.postalCode);
+                const { streetNameAndNumber, streetName, municipality, country, countrySubdivisionName, postalCode } =
+                    firstResult.address;
+                form.setValue('streetAddress', streetNameAndNumber || streetName);
+                form.setValue('city', municipality);
+                form.setValue('country', country);
+                form.setValue('region', countrySubdivisionName);
+                form.setValue('postalCode', postalCode);
             }
         };
-        if (latitude && longitude) searchAddressReverse();
-    }, [latitude, longitude]);
+        if (location) searchAddressReverse();
+    }, [location]);
 
     const defaultCenter = { lat: MapStore.defaultLatitude, lng: MapStore.defaultLongitude };
-
-    // This will handle Cancel button click event.
-    function handleCancel(event: any) {
-        event.preventDefault();
-        setLocationName('');
-        setStreetAddress('');
-        setCity('');
-        setRegion('');
-        setCountry('');
-        setPostalCode('');
-        setLatitude(0);
-        setLongitude(0);
-        setPrivateNotes('');
-        setPublicNotes('');
-        setCreatedByUserId(Guid.EMPTY);
-        setCreatedDate(new Date());
-        setLastUpdatedDate(new Date());
-        props.onCancel();
-    }
-
-    function renderEditLocation() {
-        return (
-            <div>
-                <h2 className='color-primary mt-4 mb-5'>Edit Partner Location</h2>
-                <Form onSubmit={handleSave}>
-                    <Form.Row>
-                        <input type='hidden' name='Id' value={partnerLocationId} />
-                    </Form.Row>
-                    <Button disabled={!isSaveEnabled} type='submit' className='btn btn-default'>
-                        Save
-                    </Button>
-                    <Button className='action' onClick={(e: any) => handleCancel(e)}>
-                        Cancel
-                    </Button>
-                    <Form.Row>
-                        <Col>
-                            <Form.Group className='required'>
-                                <OverlayTrigger placement='top' overlay={renderPartnerLocationNameToolTip}>
-                                    <Form.Label className='control-label font-weight-bold h5' htmlFor='LocationName'>
-                                        Location Name
-                                    </Form.Label>
-                                </OverlayTrigger>
-                                <Form.Control
-                                    type='text'
-                                    name='locationName'
-                                    defaultValue={locationName}
-                                    onChange={(val) => handleLocationNameChanged(val.target.value)}
-                                    maxLength={parseInt('64')}
-                                    required
-                                />
-                                <span style={{ color: 'red' }}>{locationNameErrors}</span>
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group>
-                                <OverlayTrigger placement='top' overlay={renderIsPartnerLocationActiveToolTip}>
-                                    <Form.Label
-                                        className='control-label font-weight-bold h5'
-                                        htmlFor='IsPartnerLocationActive'
-                                    >
-                                        Is Active
-                                    </Form.Label>
-                                </OverlayTrigger>
-                                <ToggleButton
-                                    type='checkbox'
-                                    variant='outline-dark'
-                                    checked={isPartnerLocationActive}
-                                    value='1'
-                                    onChange={(e) => handleIsPartnerLocationActiveChanged(e.currentTarget.checked)}
-                                />
-                            </Form.Group>
-                        </Col>
-                    </Form.Row>
-                    <Form.Row>
-                        <Col>
-                            <Form.Group>
-                                <OverlayTrigger placement='top' overlay={renderStreetAddressToolTip}>
-                                    <Form.Label className='control-label font-weight-bold h5' htmlFor='StreetAddress'>
-                                        Street Address
-                                    </Form.Label>
-                                </OverlayTrigger>
-                                <Form.Control
-                                    type='text'
-                                    className='border-0 bg-light h-60 p-18'
-                                    disabled
-                                    name='streetAddress'
-                                    value={streetAddress}
-                                />
-                            </Form.Group>
-                        </Col>
-                    </Form.Row>
-                    <Form.Row>
-                        <Col>
-                            <Form.Group className='required'>
-                                <OverlayTrigger placement='top' overlay={renderCityToolTip}>
-                                    <Form.Label className='control-label font-weight-bold h5' htmlFor='City'>
-                                        City
-                                    </Form.Label>
-                                </OverlayTrigger>
-                                <Form.Control
-                                    type='text'
-                                    className='border-0 bg-light h-60 p-18'
-                                    disabled
-                                    name='city'
-                                    value={city}
-                                />
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group>
-                                <OverlayTrigger placement='top' overlay={renderPostalCodeToolTip}>
-                                    <Form.Label className='control-label font-weight-bold h5' htmlFor='PostalCode'>
-                                        Postal Code
-                                    </Form.Label>
-                                </OverlayTrigger>
-                                <Form.Control
-                                    type='text'
-                                    className='border-0 bg-light h-60 p-18'
-                                    disabled
-                                    name='postalCode'
-                                    value={postalCode}
-                                />
-                            </Form.Group>
-                        </Col>
-                    </Form.Row>
-                    <Form.Row>
-                        <Col>
-                            <Form.Group className='required'>
-                                <OverlayTrigger placement='top' overlay={renderRegionToolTip}>
-                                    <Form.Label className='control-label font-weight-bold h5' htmlFor='Region'>
-                                        Region
-                                    </Form.Label>
-                                </OverlayTrigger>
-                                <Form.Control
-                                    type='text'
-                                    className='border-0 bg-light h-60 p-18'
-                                    disabled
-                                    name='region'
-                                    value={region}
-                                />
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group className='required'>
-                                <OverlayTrigger placement='top' overlay={renderCountryToolTip}>
-                                    <Form.Label className='control-label font-weight-bold h5' htmlFor='Country'>
-                                        Country
-                                    </Form.Label>
-                                </OverlayTrigger>
-                                <Form.Control
-                                    type='text'
-                                    className='border-0 bg-light h-60 p-18'
-                                    disabled
-                                    name='country'
-                                    value={country}
-                                />
-                            </Form.Group>
-                        </Col>
-                    </Form.Row>
-                    <Form.Group className='required'>
-                        <OverlayTrigger placement='top' overlay={renderPublicNotesToolTip}>
-                            <Form.Label className='control-label font-weight-bold h5'>Public Notes</Form.Label>
-                        </OverlayTrigger>
-                        <Form.Control
-                            as='textarea'
-                            defaultValue={publicNotes}
-                            maxLength={parseInt('2048')}
-                            rows={5}
-                            cols={5}
-                            onChange={(val) => handlePublicNotesChanged(val.target.value)}
-                            required
-                        />
-                        <span style={{ color: 'red' }}>{publicNotesErrors}</span>
-                    </Form.Group>
-                    <Form.Group>
-                        <OverlayTrigger placement='top' overlay={renderPrivateNotesToolTip}>
-                            <Form.Label className='control-label font-weight-bold h5'>Private Notes</Form.Label>
-                        </OverlayTrigger>
-                        <Form.Control
-                            as='textarea'
-                            defaultValue={privateNotes}
-                            maxLength={parseInt('2048')}
-                            rows={5}
-                            cols={5}
-                            onChange={(val) => handlePrivateNotesChanged(val.target.value)}
-                        />
-                    </Form.Group>
-                    <Form.Row>
-                        <Form.Label>
-                            Click on the map to set the location for your Partner. The location fields above will be
-                            automatically populated.
-                        </Form.Label>
-                    </Form.Row>
-                    <Form.Row>
-                        <div style={{ position: 'relative', width: '100%' }}>
-                            <GoogleMap defaultCenter={defaultCenter} onClick={handleClickMap}>
-                                <Marker
-                                    position={
-                                        latitude && longitude
-                                            ? {
-                                                  lat: latitude,
-                                                  lng: longitude,
-                                              }
-                                            : defaultCenter
-                                    }
-                                    draggable
-                                    onDragEnd={handleMarkerDragEnd}
-                                />
-                            </GoogleMap>
-                            {azureSubscriptionKey ? (
-                                <div style={{ position: 'absolute', top: 8, left: 8 }}>
-                                    <AzureSearchLocationInput
-                                        azureKey={azureSubscriptionKey}
-                                        onSelectLocation={handleSelectSearchLocation}
-                                    />
-                                </div>
-                            ) : null}
-                        </div>
-                    </Form.Row>
-                    <Form.Row>
-                        <Col>
-                            <Form.Group>
-                                <OverlayTrigger placement='top' overlay={renderCreatedDateToolTip}>
-                                    <Form.Label className='control-label font-weight-bold h5' htmlFor='createdDate'>
-                                        Created Date
-                                    </Form.Label>
-                                </OverlayTrigger>
-                                <Form.Control
-                                    type='text'
-                                    className='border-0 bg-light h-60 p-18'
-                                    disabled
-                                    name='createdDate'
-                                    value={createdDate ? createdDate.toLocaleString() : ''}
-                                />
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group>
-                                <OverlayTrigger placement='top' overlay={renderLastUpdatedDateToolTip}>
-                                    <Form.Label className='control-label font-weight-bold h5' htmlFor='lastUpdatedDate'>
-                                        Last Updated Date
-                                    </Form.Label>
-                                </OverlayTrigger>
-                                <Form.Control
-                                    type='text'
-                                    className='border-0 bg-light h-60 p-18'
-                                    disabled
-                                    name='lastUpdatedDate'
-                                    value={lastUpdatedDate ? lastUpdatedDate.toLocaleString() : ''}
-                                />
-                            </Form.Group>
-                        </Col>
-                    </Form.Row>
-                </Form>
-            </div>
-        );
-    }
-
+    
     return (
         <div>
-            {!isPartnerLocationDataLoaded && (
-                <p>
-                    <em>Loading...</em>
-                </p>
-            )}
-            {isPartnerLocationDataLoaded ? renderEditLocation() : null}
+            <Card>
+                <CardHeader>
+                    <CardTitle className='text-2xl text-primary'>Edit Partner Location</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <TooltipProvider delayDuration={0}>
+                        <Form {...form}>
+                            <form onSubmit={form.handleSubmit(onSubmit)} className='grid grid-cols-12 gap-4'>
+                                <input type='hidden' name='Id' value={locationId} />
+                                <FormField
+                                    control={form.control}
+                                    name='name'
+                                    render={({ field }) => (
+                                        <FormItem className='col-span-6'>
+                                            <Tooltip>
+                                                <TooltipTrigger>
+                                                    <FormLabel>Location Name</FormLabel>
+                                                </TooltipTrigger>
+                                                <TooltipContent className='max-w-64'>
+                                                    {ToolTips.PartnerLocationName}
+                                                </TooltipContent>
+                                            </Tooltip>
+                                            <FormControl>
+                                                <Input {...field} maxLength={64} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name='isActive'
+                                    render={({ field }) => (
+                                        <FormItem className='col-span-6'>
+                                            <Tooltip>
+                                                <TooltipTrigger>
+                                                    <FormLabel>Is Active</FormLabel>
+                                                </TooltipTrigger>
+                                                <TooltipContent className='max-w-64'>
+                                                    {ToolTips.PartnerLocationIsPartnerLocationActive}
+                                                </TooltipContent>
+                                            </Tooltip>
+                                            <FormControl>
+                                                <div className="flex items-center space-x-2">
+                                                    <Checkbox id="isActive" checked={field.value} onCheckedChange={field.onChange} />
+                                                    <label
+                                                        htmlFor="isActive"
+                                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                                    >
+                                                        Active
+                                                    </label>
+                                                </div>
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name='publicNotes'
+                                    render={({ field }) => (
+                                        <FormItem className='col-span-6'>
+                                            <Tooltip>
+                                                <TooltipTrigger>
+                                                    <FormLabel>Public Notes</FormLabel>
+                                                </TooltipTrigger>
+                                                <TooltipContent className='max-w-64'>
+                                                    {ToolTips.PartnerLocationPublicNotes}
+                                                </TooltipContent>
+                                            </Tooltip>
+                                            <FormControl>
+                                                <Textarea {...field} maxLength={2048} className='h-24' />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name='privateNotes'
+                                    render={({ field }) => (
+                                        <FormItem className='col-span-6'>
+                                            <Tooltip>
+                                                <TooltipTrigger>
+                                                    <FormLabel>Private Notes</FormLabel>
+                                                </TooltipTrigger>
+                                                <TooltipContent className='max-w-64'>
+                                                    {ToolTips.PartnerLocationPrivateNotes}
+                                                </TooltipContent>
+                                            </Tooltip>
+                                            <FormControl>
+                                                <Textarea {...field} maxLength={2048} className='h-24' />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <div className="col-span-12">
+                                    <div>
+                                        Click on the map to set the location for your Partner. The location fields above will be
+                                    automatically populated.
+                                    </div>
+                                    <div style={{ position: 'relative', width: '100%' }}>
+                                        <GoogleMap defaultCenter={defaultCenter} onClick={handleClickMap}>
+                                            <Marker
+                                                position={
+                                                    location
+                                                        ? location
+                                                        : defaultCenter
+                                                }
+                                                draggable
+                                                onDragEnd={handleMarkerDragEnd}
+                                            />
+                                        </GoogleMap>
+                                        {azureSubscriptionKey ? (
+                                            <div style={{ position: 'absolute', top: 8, left: 8 }}>
+                                                <AzureSearchLocationInput
+                                                    azureKey={azureSubscriptionKey}
+                                                    onSelectLocation={handleSelectSearchLocation}
+                                                />
+                                            </div>
+                                        ) : null}
+                                    </div>
+                                </div>
+                                <div className='col-span-12 flex justify-end gap-2'>
+                                    <Button variant='secondary' onClick={() => form.reset()}>
+                                        Cancel
+                                    </Button>
+                                    {/* <Button type='submit' disabled={createPartnerRequest.isLoading}>
+                                        {createPartnerRequest.isLoading ? (
+                                            <Loader2 className='animate-spin' />
+                                        ) : null}
+                                        Submit
+                                    </Button> */}
+                                </div>
+                            </form>
+                        </Form>
+                    </TooltipProvider>
+                </CardContent>
+            </Card>
         </div>
     );
 };

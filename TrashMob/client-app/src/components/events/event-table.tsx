@@ -17,10 +17,10 @@ import { ShareToSocialsDialog } from '../EventManagement/ShareToSocialsDialog';
 import * as SharingMessages from '@/store/SharingMessages';
 import { useDeleteEventAttendee } from '@/hooks/useDeleteEventAttendee';
 
-type EventTableProps = {
+interface EventTableProps {
     events: EventData[];
     currentUser: UserData;
-};
+}
 
 export const EventsTable = (props: EventTableProps) => {
     const { events, currentUser } = props;
