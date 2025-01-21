@@ -5,7 +5,6 @@
     "dependencies": {
         "@azure/msal-browser": "^2.23.0",
         "@azure/msal-react": "^1.3.2",
-        "@culturehq/add-to-calendar": "^1.1.2",
         "@hookform/resolvers": "^3.10.0",
         "@radix-ui/react-checkbox": "^1.1.2",
         "@radix-ui/react-dialog": "^1.1.2",

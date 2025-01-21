@@ -24,7 +24,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 import { Plus } from 'lucide-react';
-import { EventsTable } from '@/components/EventsTable/EventsTable';
+import { EventsTable } from '@/components/events/event-table';
 import { useGetUserEvents } from '@/hooks/useGetUserEvents';
 import { MyPartnersTable } from '@/pages/mydashboard/MyPartnersTable';
 import { MyPickupRequestsTable } from '@/pages/mydashboard/MyPickupRequestsTable';

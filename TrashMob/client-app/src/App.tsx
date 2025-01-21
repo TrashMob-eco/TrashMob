@@ -25,7 +25,6 @@ import { msalClient } from './store/AuthStore';
 import EventDetails, { DetailsMatchParams } from './components/Pages/EventDetails';
 import { NoMatch } from './components/NoMatch';
 import LocationPreference from './components/Pages/LocationPreference';
-import PartnerDashboard, { PartnerDashboardMatchParams } from './components/Partners/PartnerDashboard';
 import PartnerRequest from './components/Partners/PartnerRequest';
 import SiteAdmin from './components/Admin/SiteAdmin';
 import ManageEventDashboard, {
@@ -47,6 +46,7 @@ import { useLogin } from './hooks/useLogin';
 
 /** 2024 pages */
 import { Home as Home2024 } from './pages/Home';
+import { PartnerDashboard, PartnerDashboardProps, PartnerDashboardMatchParams } from './pages/partnerdashboard';
 
 interface AppProps extends RouteComponentProps<ManageEventDashboardMatchParams> {}
 
@@ -112,7 +112,7 @@ export const App: FC = () => {
         );
     }
 
-    function renderPartnerDashboard(inp: PartnerProps) {
+    function renderPartnerDashboard(inp: PartnerDashboardProps) {
         return (
             <MsalAuthenticationTemplate
                 interactionType={InteractionType.Redirect}
@@ -183,7 +183,7 @@ export const App: FC = () => {
                                 />
                                 <Route
                                     path='/partnerdashboard/:partnerId?'
-                                    render={(props: PartnerProps) => renderPartnerDashboard(props)}
+                                    render={(props) => renderPartnerDashboard(props)}
                                 />
                                 <Route
                                     path='/partnerrequestdetails/:partnerRequestId'
