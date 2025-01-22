@@ -1,5 +1,5 @@
 import { FC, useCallback, useEffect, useState } from 'react';
-import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 import { APIProvider } from '@vis.gl/react-google-maps';
 import { Guid } from 'guid-typescript';
 import { useQuery } from '@tanstack/react-query';
@@ -36,22 +36,26 @@ import { GetPartnerAdminsForUser } from '@/services/admin';
 import { GetPartnerAdminInvitationsByUser } from '@/services/invitations';
 import { GetEventPickupLocationsByUser } from '@/services/locations';
 import PickupLocationData from '@/components/Models/PickupLocationData';
+import { useLocation } from 'react-router';
 
 const isUpcomingEvent = (event: EventData) => new Date(event.eventDate) >= new Date();
 const isPastEvent = (event: EventData) => new Date(event.eventDate) < new Date();
 
-interface MyDashboardProps extends RouteComponentProps<any> {
+interface MyDashboardProps {
     isUserLoaded: boolean;
     currentUser: UserData;
 }
 
 const MyDashboard: FC<MyDashboardProps> = (props) => {
     const { isUserLoaded, currentUser } = props;
+    const location = useLocation();
+    const navigate = useNavigate();
+
     const userId = currentUser.id;
 
     const [upcomingEventsMapView, setUpcomingEventsMapView] = useState<boolean>(false);
     const [pastEventsMapView, setPastEventsMapView] = useState<boolean>(false);
-    const state = props.history.location.state as { newEventCreated: boolean };
+    const state = location.state as { newEventCreated: boolean };
     const [eventToShare, setEventToShare] = useState<EventData>();
     const [showModal, setShowSocialsModal] = useState<boolean>(false);
 
@@ -118,9 +122,9 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
 
             // replace state
             state.newEventCreated = false;
-            props.history.replace({ ...props.history.location, state });
+            navigate(location.pathname, { replace: true, state });
         }
-    }, [state, props.currentUser.id, props.history, myEventList, setSharingEvent]);
+    }, [state, props.currentUser.id, navigate, myEventList, setSharingEvent]);
 
     const handleEventView = (view: string, table: string) => {
         if (table === 'Upcoming events') {
@@ -352,4 +356,4 @@ const MyDashboardWrapper = (props: MyDashboardProps) => {
     );
 };
 
-export default withRouter(MyDashboardWrapper);
+export default MyDashboardWrapper;

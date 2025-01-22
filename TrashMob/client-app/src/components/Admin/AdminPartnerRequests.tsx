@@ -1,6 +1,5 @@
 import * as React from 'react';
 
-import { RouteComponentProps } from 'react-router-dom';
 import { Col, Container, Dropdown, Row } from 'react-bootstrap';
 import { CheckSquare, XSquare } from 'react-bootstrap-icons';
 import PhoneInput from 'react-phone-input-2';
@@ -18,7 +17,7 @@ import {
     GetPartnerRequestStatuses,
 } from '../../services/partners';
 
-interface AdminPartnerRequestsPropsType extends RouteComponentProps {
+interface AdminPartnerRequestsPropsType {
     isUserLoaded: boolean;
     currentUser: UserData;
 }

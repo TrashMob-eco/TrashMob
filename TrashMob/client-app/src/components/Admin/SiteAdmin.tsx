@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { ButtonGroup, Col, Container, Row, ToggleButton } from 'react-bootstrap';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
 import UserData from '../Models/UserData';
 import { AdminEmailTemplates } from './AdminEmailTemplates';
 import { AdminEvents } from './AdminEvents';
@@ -8,13 +7,15 @@ import { AdminPartnerRequests } from './AdminPartnerRequests';
 import { AdminPartners } from './AdminPartners';
 import { AdminSendNotifications } from './AdminSendNotifications';
 import { AdminUsers } from './AdminUsers';
+import { useNavigate } from 'react-router';
 
-interface SiteAdminProps extends RouteComponentProps<any> {
+interface SiteAdminProps {
     isUserLoaded: boolean;
     currentUser: UserData;
 }
 
 const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
+    const navigate = useNavigate();
     const [currentUser, setCurrentUser] = React.useState<UserData>(props.currentUser);
     const [isUserLoaded, setIsUserLoaded] = React.useState<boolean>(props.isUserLoaded);
     const [isSiteAdmin, setIsSiteAdmin] = React.useState<boolean>(false);
@@ -39,13 +40,7 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
     function renderManageEvents() {
         return (
             <div>
-                <AdminEvents
-                    history={props.history}
-                    location={props.location}
-                    match={props.match}
-                    currentUser={currentUser}
-                    isUserLoaded={isUserLoaded}
-                />
+                <AdminEvents currentUser={currentUser} isUserLoaded={isUserLoaded} />
             </div>
         );
     }
@@ -53,13 +48,7 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
     function renderManageUsers() {
         return (
             <div>
-                <AdminUsers
-                    history={props.history}
-                    location={props.location}
-                    match={props.match}
-                    currentUser={currentUser}
-                    isUserLoaded={isUserLoaded}
-                />
+                <AdminUsers currentUser={currentUser} isUserLoaded={isUserLoaded} />
             </div>
         );
     }
@@ -67,13 +56,7 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
     function renderManagePartners() {
         return (
             <div>
-                <AdminPartners
-                    history={props.history}
-                    location={props.location}
-                    match={props.match}
-                    currentUser={currentUser}
-                    isUserLoaded={isUserLoaded}
-                />
+                <AdminPartners currentUser={currentUser} isUserLoaded={isUserLoaded} />
             </div>
         );
     }
@@ -81,13 +64,7 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
     function renderManagePartnerRequests() {
         return (
             <div>
-                <AdminPartnerRequests
-                    history={props.history}
-                    location={props.location}
-                    match={props.match}
-                    currentUser={currentUser}
-                    isUserLoaded={isUserLoaded}
-                />
+                <AdminPartnerRequests currentUser={currentUser} isUserLoaded={isUserLoaded} />
             </div>
         );
     }
@@ -95,13 +72,7 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
     function renderSendNotifications() {
         return (
             <div>
-                <AdminSendNotifications
-                    history={props.history}
-                    location={props.location}
-                    match={props.match}
-                    currentUser={currentUser}
-                    isUserLoaded={isUserLoaded}
-                />
+                <AdminSendNotifications currentUser={currentUser} isUserLoaded={isUserLoaded} />
             </div>
         );
     }
@@ -109,13 +80,7 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
     function renderEmailTemplates() {
         return (
             <div>
-                <AdminEmailTemplates
-                    history={props.history}
-                    location={props.location}
-                    match={props.match}
-                    currentUser={currentUser}
-                    isUserLoaded={isUserLoaded}
-                />
+                <AdminEmailTemplates currentUser={currentUser} isUserLoaded={isUserLoaded} />
             </div>
         );
     }
@@ -174,4 +139,4 @@ const SiteAdmin: React.FC<SiteAdminProps> = (props) => {
     );
 };
 
-export default withRouter(SiteAdmin);
+export default SiteAdmin;

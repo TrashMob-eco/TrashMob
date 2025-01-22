@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useHistory, useParams, withRouter } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router';
 import moment from 'moment';
 import { useQuery } from '@tanstack/react-query';
 import * as ToolTips from '@/store/ToolTips';
@@ -20,8 +20,8 @@ export interface PartnerRequestDetailsMatchParams {
 }
 
 export const PartnerRequestDetails: React.FC = () => {
-    const { partnerRequestId } = useParams<PartnerRequestDetailsMatchParams>();
-    const history = useHistory();
+    const { partnerRequestId } = useParams<'partnerRequestId'>();
+    const history = useNavigate();
 
     // Get PartnerRequest
     const { data, isLoading } = useQuery({
@@ -252,4 +252,4 @@ const PartnerRequestDetailsWrapper = () => {
     );
 };
 
-export default withRouter(PartnerRequestDetailsWrapper);
+export default PartnerRequestDetailsWrapper;

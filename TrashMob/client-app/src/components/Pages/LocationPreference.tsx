@@ -1,7 +1,6 @@
 import { ChangeEvent, FC, FormEvent, useEffect, useState, useCallback, useRef } from 'react';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { APIProvider, MapMouseEvent, useMap } from '@vis.gl/react-google-maps';
@@ -19,14 +18,16 @@ import { AzureSearchLocationInput, SearchLocationOption } from '../Map/AzureSear
 import { useAzureMapSearchAddressReverse } from '../../hooks/useAzureMapSearchAddressReverse';
 import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
 import { GoogleMap } from '../Map/GoogleMap';
+import { useNavigate } from 'react-router';
 
-interface LocationPreferenceProps extends RouteComponentProps<any> {
+interface LocationPreferenceProps {
     isUserLoaded: boolean;
     currentUser: UserData;
     onUserUpdated: any;
 }
 
 const LocationPreference: FC<LocationPreferenceProps> = (props) => {
+    const navigate = useNavigate();
     const userId = props.currentUser.id;
     const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
     const [userName, setUserName] = useState<string>('');
@@ -114,7 +115,7 @@ const LocationPreference: FC<LocationPreferenceProps> = (props) => {
     // This will handle Cancel button click event.
     const handleCancel = (event: FormEvent<HTMLElement>) => {
         event.preventDefault();
-        props.history.push('/');
+        navigate('/');
     };
 
     useEffect(() => {
@@ -443,4 +444,4 @@ const LocationPreferenceWrapper = (props: LocationPreferenceProps) => {
     );
 };
 
-export default withRouter(LocationPreferenceWrapper);
+export default LocationPreferenceWrapper;

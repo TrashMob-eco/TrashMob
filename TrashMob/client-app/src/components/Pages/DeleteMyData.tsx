@@ -1,11 +1,10 @@
 import { FC, FormEvent, useEffect } from 'react';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Button, Container } from 'react-bootstrap';
 import UserData from '../Models/UserData';
 import { getApiConfig, getB2CPolicies, msalClient } from '../../store/AuthStore';
 import { HeroSection } from '../Customization/HeroSection';
 
-interface DeleteMyDataProps extends RouteComponentProps<any> {
+interface DeleteMyDataProps {
     isUserLoaded: boolean;
     currentUser: UserData;
 }
@@ -64,4 +63,4 @@ const DeleteMyData: FC<DeleteMyDataProps> = (props) => {
     );
 };
 
-export default withRouter(DeleteMyData);
+export default DeleteMyData;

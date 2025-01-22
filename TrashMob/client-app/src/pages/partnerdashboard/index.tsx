@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import UserData from '@/components/Models/UserData';
 import { PartnerEdit } from '@/components/Partners/PartnerEdit';
 import { PartnerAdmins } from '@/components/Partners/PartnerAdmins';

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button, Col, Container, Row } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { HeroSection } from './Customization/HeroSection';
 
 function ReadMore({ children }: any) {

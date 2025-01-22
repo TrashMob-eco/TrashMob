@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { Link, RouteComponentProps } from 'react-router-dom';
+import { Link, RouteComponentProps, useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { getEventType } from '../store/eventTypeHelper';
@@ -50,10 +50,8 @@ export const MainEvents: FC<MainEventsDataProps> = ({
     eventTypeList,
     currentUser,
     backToTop,
-    history,
-    location,
-    match,
 }) => {
+    const navigate = useNavigate();
     const [displayEvents, setDisplayEvents] = useState<DisplayEvent[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [currentTableData, setCurrentTableData] = useState<DisplayEvent[]>([]);
@@ -139,7 +137,7 @@ export const MainEvents: FC<MainEventsDataProps> = ({
         <div>
             <div className='tailwind'>
                 <div className='flex flex-row justify-between'>
-                    <Button color='primary' className='mb-2' onClick={() => history.push('/manageeventdashboard')}>
+                    <Button color='primary' className='mb-2' onClick={() => navigate('/manageeventdashboard')}>
                         Create a New Event
                     </Button>
                     <Button color='primary' className='mb-2 align-self-right' onClick={sortEventsByDate}>
