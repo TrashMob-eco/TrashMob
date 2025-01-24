@@ -9,9 +9,9 @@ import {
 import {
     ChevronDown,
     CircleUserRound,
-    CircleHelp,
     Gauge,
     IdCard,
+    Loader2,
     LogOut,
     Map,
     Plus,
@@ -23,6 +23,7 @@ import { cn } from '@/lib/utils';
 import UserData from '../Models/UserData';
 import { getApiConfig, getB2CPolicies, msalClient } from '@/store/AuthStore';
 import React from 'react';
+import { useLogin } from '@/hooks/useLogin';
 
 interface UserNavProps {
     currentUser: UserData;
@@ -32,14 +33,16 @@ interface UserNavProps {
 
 export const UserNav = (props: UserNavProps) => {
     const { currentUser, isUserLoaded, className } = props;
+    const { login, isUserLoading } = useLogin()
 
     function signIn(e: React.MouseEvent) {
         e.preventDefault();
-        const apiConfig = getApiConfig();
+        login()
+        // const apiConfig = getApiConfig();
 
-        msalClient.loginRedirect({
-            scopes: apiConfig.b2cScopes,
-        });
+        // msalClient.loginRedirect({
+        //     scopes: apiConfig.b2cScopes,
+        // });
     }
 
     function signOut(e: React.MouseEvent) {
@@ -70,7 +73,8 @@ export const UserNav = (props: UserNavProps) => {
     return (
         <div className={cn('flex flex-row item-center basis-full lg:basis-0', className)}>
             {!isUserLoaded && (
-                <Button variant='outline' className='text-current border-primary' onClick={signIn}>
+                <Button variant='outline' disabled={isUserLoading} className='text-current border-primary' onClick={signIn}>
+                    {isUserLoading ? <Loader2 className="animate-spin" /> : null}
                     Sign in
                 </Button>
             )}
