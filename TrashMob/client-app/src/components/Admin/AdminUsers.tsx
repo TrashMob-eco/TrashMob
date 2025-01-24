@@ -1,6 +1,5 @@
 import * as React from 'react';
 
-import { RouteComponentProps } from 'react-router-dom';
 import { Col, Container, Dropdown, Row } from 'react-bootstrap';
 import { XSquare } from 'react-bootstrap-icons';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -8,7 +7,7 @@ import UserData from '../Models/UserData';
 import { DeleteUserById, GetAllUsers } from '../../services/users';
 import { Services } from '../../config/services.config';
 
-interface AdminUsersPropsType extends RouteComponentProps {
+interface AdminUsersPropsType {
     isUserLoaded: boolean;
     currentUser: UserData;
 }

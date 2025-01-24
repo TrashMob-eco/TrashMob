@@ -1,5 +1,5 @@
 import { CalendarRange, ArrowRight, Calendar, MapPin } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import moment from 'moment';
 import compact from 'lodash/compact';
 

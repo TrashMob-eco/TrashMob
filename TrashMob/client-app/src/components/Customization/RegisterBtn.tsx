@@ -1,6 +1,6 @@
 import { FC, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { getApiConfig, msalClient } from '../../store/AuthStore';
 import EventAttendeeData from '../Models/EventAttendeeData';
 import UserData from '../Models/UserData';
@@ -28,7 +28,7 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
     isEventCompleted,
 }) => {
     const userId = currentUser.id;
-    const history = useHistory();
+    const navigate = useNavigate();
     const [registered, setRegistered] = useState<boolean>(false);
     const queryClient = useQueryClient();
 
@@ -46,7 +46,7 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
             queryClient.invalidateQueries(GetAllEventsBeingAttendedByUser({ userId }).key);
 
             // re-direct user to event details page once they are registered
-            history.push(`/eventdetails/${eventId}`);
+            navigate(`/eventdetails/${eventId}`);
         },
     });
 
@@ -66,7 +66,7 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
             CurrentTrashMobWaiverVersion.versionDate.toISOString();
         if (waiver?.isWaiverEnabled && (isTrashMobWaiverOutOfDate || currentUser.trashMobWaiverVersion === '')) {
             sessionStorage.setItem('targetUrl', window.location.pathname);
-            history.push('/waivers');
+            navigate('/waivers');
         }
 
         const accounts = msalClient.getAllAccounts();

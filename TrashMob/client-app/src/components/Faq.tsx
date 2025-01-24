@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Col, Container, Image, Row } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import events from './assets/faq/Event.svg';
 import attendees from './assets/faq/Attendees.svg';
 import volunteer from './assets/faq/volunteer.svg';
