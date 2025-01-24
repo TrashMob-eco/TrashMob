@@ -19,7 +19,6 @@ import MyDashboard from './pages/mydashboard';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { TermsOfService } from './components/Pages/TermsOfService';
 import { Board } from './components/Board';
-import { VolunteerOpportunities } from './components/VolunteerOpportunities';
 import { msalClient } from './store/AuthStore';
 import EventDetails from './components/Pages/EventDetails';
 import { NoMatch } from './components/NoMatch';
@@ -44,6 +43,7 @@ import { useLogin } from './hooks/useLogin';
 /** 2024 pages */
 import { Home as Home2024 } from './pages/Home';
 import { PartnerDashboard } from './pages/partnerdashboard';
+import { VolunteerOpportunities } from './pages/volunteeropportunities';
 
 const queryClient = new QueryClient();
 
