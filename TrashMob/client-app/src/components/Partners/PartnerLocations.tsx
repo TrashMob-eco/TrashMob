@@ -19,14 +19,13 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
+import { useLogin } from '@/hooks/useLogin';
+import { useParams } from 'react-router';
 
-export interface PartnerLocationsDataProps {
-    partnerId: string;
-    isUserLoaded: boolean;
-    currentUser: UserData;
-}
+export const PartnerLocations: React.FC = () => {
+    const { isUserLoaded, currentUser } = useLogin();
+    const { partnerId } = useParams<{ partnerId: string }>() as { partnerId: string };
 
-export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => {
     const [partnerLocations, setPartnerLocations] = React.useState<PartnerLocationData[]>([]);
     const [isPartnerLocationDataLoaded, setIsPartnerLocationDataLoaded] = React.useState<boolean>(false);
     const [partnerLocationId, setPartnerLocationId] = React.useState<string>('');
@@ -34,8 +33,8 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     const [isAdd, setIsAdd] = React.useState<boolean>(false);
 
     const getLocationsByPartner = useQuery({
-        queryKey: GetLocationsByPartner({ partnerId: props.partnerId }).key,
-        queryFn: GetLocationsByPartner({ partnerId: props.partnerId }).service,
+        queryKey: GetLocationsByPartner({ partnerId }).key,
+        queryFn: GetLocationsByPartner({ partnerId }).service,
         staleTime: Services.CACHE.DISABLE,
         enabled: false,
     });
@@ -46,13 +45,13 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
     });
 
     React.useEffect(() => {
-        if (props.isUserLoaded) {
+        if (isUserLoaded) {
             getLocationsByPartner.refetch().then((res) => {
                 setPartnerLocations(res.data?.data || []);
                 setIsPartnerLocationDataLoaded(true);
             });
         }
-    }, [props.currentUser, props.isUserLoaded, props.partnerId]);
+    }, [currentUser, isUserLoaded, partnerId]);
 
     function removeLocation(locationId: string, name: string) {
         if (
@@ -120,8 +119,8 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
             <div>
                 <PartnerLocationServices
                     partnerLocationId={partnerLocationId}
-                    currentUser={props.currentUser}
-                    isUserLoaded={props.isUserLoaded}
+                    currentUser={currentUser}
+                    isUserLoaded={isUserLoaded}
                 />
                 <hr />
             </div>
@@ -146,8 +145,8 @@ export const PartnerLocations: React.FC<PartnerLocationsDataProps> = (props) => 
             <div>
                 <PartnerLocationEventRequests
                     partnerLocationId={partnerLocationId}
-                    currentUser={props.currentUser}
-                    isUserLoaded={props.isUserLoaded}
+                    currentUser={currentUser}
+                    isUserLoaded={isUserLoaded}
                 />
                 <hr />
             </div>

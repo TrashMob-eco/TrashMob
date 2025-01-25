@@ -7,7 +7,6 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import * as Constants from '../Models/Constants';
 import PartnerContactData from '../Models/PartnerContactData';
 import * as ToolTips from '../../store/ToolTips';
-import UserData from '../Models/UserData';
 import { Services } from '../../config/services.config';
 import {
     CreatePartnerContact,
@@ -16,14 +15,13 @@ import {
     GetPartnerContactsByPartnerId,
     UpdatePartnerContact,
 } from '../../services/contact';
+import { useLogin } from '@/hooks/useLogin';
+import { useParams } from 'react-router';
 
-export interface PartnerContactsDataProps {
-    partnerId: string;
-    isUserLoaded: boolean;
-    currentUser: UserData;
-}
+export const PartnerContacts: React.FC = () => {
+    const { isUserLoaded, currentUser } = useLogin();
+    const { partnerId } = useParams<{ partnerId: string }>() as { partnerId: string };
 
-export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
     const [partnerContactId, setPartnerContactId] = React.useState<string>(Guid.EMPTY);
     const [name, setName] = React.useState<string>('');
     const [email, setEmail] = React.useState<string>('');
@@ -43,8 +41,8 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
     const [isAddEnabled, setIsAddEnabled] = React.useState<boolean>(true);
 
     const getPartnerContactsByPartnerId = useQuery({
-        queryKey: GetPartnerContactsByPartnerId({ partnerId: props.partnerId }).key,
-        queryFn: GetPartnerContactsByPartnerId({ partnerId: props.partnerId }).service,
+        queryKey: GetPartnerContactsByPartnerId({ partnerId }).key,
+        queryFn: GetPartnerContactsByPartnerId({ partnerId }).service,
         staleTime: Services.CACHE.DISABLE,
         enabled: false,
     });
@@ -70,13 +68,13 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
     });
 
     React.useEffect(() => {
-        if (props.isUserLoaded && props.partnerId && props.partnerId !== Guid.EMPTY) {
+        if (isUserLoaded && partnerId && partnerId !== Guid.EMPTY) {
             getPartnerContactsByPartnerId.refetch().then((res) => {
                 setPartnerContacts(res.data?.data || []);
                 setIsPartnerContactsDataLoaded(true);
             });
         }
-    }, [props.partnerId, props.isUserLoaded]);
+    }, [partnerId, isUserLoaded]);
 
     function addContact() {
         setPartnerContactId(Guid.EMPTY);
@@ -84,7 +82,7 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
         setPhone('');
         setEmail('');
         setNotes('');
-        setCreatedByUserId(props.currentUser.id);
+        setCreatedByUserId(currentUser.id);
         setCreatedDate(new Date());
         setLastUpdatedDate(new Date());
         setIsEditOrAdd(true);
@@ -99,7 +97,7 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
         setPhone('');
         setEmail('');
         setNotes('');
-        setCreatedByUserId(props.currentUser.id);
+        setCreatedByUserId(currentUser.id);
         setCreatedDate(new Date());
         setLastUpdatedDate(new Date());
         setIsEditOrAdd(false);
@@ -141,7 +139,7 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
 
         const body = new PartnerContactData();
         body.id = partnerContactId;
-        body.partnerId = props.partnerId;
+        body.partnerId = partnerId;
         body.name = name;
         body.phone = phone;
         body.email = email;
@@ -417,13 +415,13 @@ export const PartnerContacts: React.FC<PartnerContactsDataProps> = (props) => {
                 </Col>
                 <Col lg={8}>
                     <div className='bg-white p-5 shadow-sm rounded'>
-                        {props.partnerId === Guid.EMPTY && (
+                        {partnerId === Guid.EMPTY && (
                             <p>
                                 {' '}
                                 <em>Partner must be created first.</em>
                             </p>
                         )}
-                        {!isPartnerContactsDataLoaded && props.partnerId !== Guid.EMPTY && (
+                        {!isPartnerContactsDataLoaded && partnerId !== Guid.EMPTY && (
                             <p>
                                 <em>Loading...</em>
                             </p>
