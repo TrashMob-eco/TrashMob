@@ -106,7 +106,7 @@ export const App: FC = () => {
                             <Routes>
                                 <Route element={<AuthLayout />}>
                                     <Route
-                                        path='manageeventdashboard/:eventId'
+                                        path='manageeventdashboard/:eventId?'
                                         element={
                                             <ManageEventDashboard
                                                 currentUser={currentUser}
