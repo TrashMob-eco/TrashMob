@@ -41,9 +41,16 @@ import { useLogin } from './hooks/useLogin';
 
 /** 2024 pages */
 import { Home as Home2024 } from './pages/Home';
-import { PartnerDashboard } from './pages/partnerdashboard';
 import { TermsOfService } from './pages/termsofservice';
 import { VolunteerOpportunities } from './pages/volunteeropportunities';
+import { PartnerEdit } from './pages/partnerdashboard/[partnerId]/edit';
+import { PartnerLayout } from './pages/partnerdashboard/[partnerId]/_layout';
+import { PartnerLocations } from './components/Partners/PartnerLocations';
+import { PartnerContacts } from './components/Partners/PartnerContacts';
+import { PartnerAdmins } from './components/Partners/PartnerAdmins';
+import { PartnerDocuments } from './components/Partners/PartnerDocuments';
+import { PartnerSocialMediaAccounts } from './components/Partners/PartnerSocialMediaAccounts';
+import { PartnerIndex } from './pages/partnerdashboard/[partnerId]';
 
 const queryClient = new QueryClient();
 
@@ -114,12 +121,18 @@ export const App: FC = () => {
                                             />
                                         }
                                     />
-                                    <Route
-                                        path='/partnerdashboard/:partnerId?'
-                                        element={
-                                            <PartnerDashboard currentUser={currentUser} isUserLoaded={isUserLoaded} />
-                                        }
-                                    />
+                                    <Route path='partnerdashboard'>
+                                        <Route index element={<div>Partner Dashboard Index</div>} />
+                                        <Route path=':partnerId' element={<PartnerLayout />}>
+                                            <Route index element={<PartnerIndex />} />
+                                            <Route path='edit' element={<PartnerEdit />} />
+                                            <Route path='locations' element={<PartnerLocations />} />
+                                            <Route path='contacts' element={<PartnerContacts />} />
+                                            <Route path='admins' element={<PartnerAdmins />} />
+                                            <Route path='documents' element={<PartnerDocuments />} />
+                                            <Route path='socials' element={<PartnerSocialMediaAccounts />} />
+                                        </Route>
+                                    </Route>
                                     <Route
                                         path='/eventsummary/:eventId?'
                                         element={<EventSummary currentUser={currentUser} isUserLoaded={isUserLoaded} />}

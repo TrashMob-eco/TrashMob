@@ -17,14 +17,13 @@ import {
     UpdatePartnerSocialMediaAccount,
 } from '../../services/social-media';
 import { Services } from '../../config/services.config';
+import { useLogin } from '@/hooks/useLogin';
+import { useParams } from 'react-router';
 
-export interface PartnerSocialMediaAccountsDataProps {
-    partnerId: string;
-    isUserLoaded: boolean;
-    currentUser: UserData;
-}
+export const PartnerSocialMediaAccounts: React.FC = () => {
+    const { isUserLoaded, currentUser } = useLogin();
+    const { partnerId } = useParams<{ partnerId: string }>() as { partnerId: string };
 
-export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsDataProps> = (props) => {
     const [socialMediaAccountId, setSocialMediaAccountId] = React.useState<string>(Guid.EMPTY);
     const [accountName, setAccountName] = React.useState<string>('');
     const [isActive, setIsActive] = React.useState<boolean>(true);
@@ -51,10 +50,10 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
 
     const getPartnerSocialMediaAccountsByPartnerId = useQuery({
         queryKey: GetPartnerSocialMediaAccountsByPartnerId({
-            partnerId: props.partnerId,
+            partnerId,
         }).key,
         queryFn: GetPartnerSocialMediaAccountsByPartnerId({
-            partnerId: props.partnerId,
+            partnerId,
         }).service,
         staleTime: Services.CACHE.DISABLE,
         enabled: false,
@@ -85,13 +84,13 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
             setSocialMediaAccountTypeList(res.data?.data || []);
         });
 
-        if (props.isUserLoaded && props.partnerId && props.partnerId !== Guid.EMPTY) {
+        if (isUserLoaded && partnerId && partnerId !== Guid.EMPTY) {
             getPartnerSocialMediaAccountsByPartnerId.refetch().then((res) => {
                 setSocialMediaAccounts(res.data?.data || []);
                 setIsSocialMediaAccountDataLoaded(true);
             });
         }
-    }, [props.partnerId, props.isUserLoaded]);
+    }, [partnerId, isUserLoaded]);
 
     function addSocialMediaAccount() {
         setAccountName('');
@@ -153,7 +152,7 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
 
         const body = new PartnerSocialMediaAccountData();
         body.id = socialMediaAccountId;
-        body.partnerId = props.partnerId;
+        body.partnerId = partnerId;
         body.accountIdentifier = accountName;
         body.isActive = isActive;
         body.socialMediaAccountTypeId = socialMediaAccountTypeId ?? 0;
@@ -396,13 +395,13 @@ export const PartnerSocialMediaAccounts: React.FC<PartnerSocialMediaAccountsData
                 </Col>
                 <Col lg={8}>
                     <div className='bg-white p-5 shadow-sm rounded'>
-                        {props.partnerId === Guid.EMPTY && (
+                        {partnerId === Guid.EMPTY && (
                             <p>
                                 {' '}
                                 <em>Partner must be created first.</em>
                             </p>
                         )}
-                        {!isSocialMediaAccountsDataLoaded && props.partnerId !== Guid.EMPTY && (
+                        {!isSocialMediaAccountsDataLoaded && partnerId !== Guid.EMPTY && (
                             <p>
                                 <em>Loading...</em>
                             </p>
