@@ -1,5 +1,5 @@
 import { FC, useEffect, useState, useCallback, useRef } from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, useMatch, useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { Container } from 'react-bootstrap';
 import { useQuery } from '@tanstack/react-query';
@@ -25,7 +25,9 @@ export interface EventsSectionProps extends RouteComponentProps<any> {
     currentUser: UserData;
 }
 
-export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUser, history, location, match }) => {
+export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUser }) => {
+    const navigate = useNavigate();
+
     const [eventList, setEventList] = useState<EventData[]>([]);
     const [eventTypeList, setEventTypeList] = useState<EventTypeData[]>([]);
     const [isEventDataLoaded, setIsEventDataLoaded] = useState(false);
@@ -346,7 +348,7 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
                 </div>
                 {eventView === 'map' ? (
                     <div className='tailwind'>
-                        <Button className='!mb-4' onClick={() => history.push('/manageeventdashboard')}>
+                        <Button className='!mb-4' onClick={() => navigate('/manageeventdashboard')}>
                             Create a New Event
                         </Button>
                         <div className='w-100 m-0'>
@@ -367,9 +369,6 @@ export const EventsSection: FC<EventsSectionProps> = ({ isUserLoaded, currentUse
                             isUserEventDataLoaded={isUserEventDataLoaded}
                             isUserLoaded={isUserLoaded}
                             currentUser={currentUser}
-                            history={history}
-                            location={location}
-                            match={match}
                             backToTop={backToTop}
                         />
                     </div>

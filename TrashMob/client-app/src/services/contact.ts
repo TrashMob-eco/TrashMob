@@ -91,9 +91,9 @@ export const GetPartnerContactsByPartnerId = (params: GetPartnerContactsByPartne
 
 export type GetPartnerContactsByContactId_Params = { contactId: string };
 export type GetPartnerContactsByContactId_Response = PartnerContactData;
-export const GetPartnerContactsByContactId = () => ({
-    key: ['/partnercontacts/', 'get by contactId'],
-    service: async (params: GetPartnerContactsByContactId_Params) =>
+export const GetPartnerContactsByContactId = (params: GetPartnerContactsByContactId_Params) => ({
+    key: ['/partnercontacts/', params.contactId],
+    service: async () =>
         ApiService('protected').fetchData<GetPartnerContactsByContactId_Response>({
             url: `/partnercontacts/${params.contactId}`,
             method: 'get',

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import attitude from '../assets/gettingStarted/attitude.png';
 import bucket from '../assets/gettingStarted/bucket.png';
 import highways from '../assets/gettingStarted/highways.png';

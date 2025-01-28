@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import Ihca from '../assets/partnerships/logos/IHCA.png';
 import TroutUnlimited from '../assets/partnerships/logos/TROUTUNLIMITEDLogo.png';
 import Safetykits from '../assets/partnerships/Safetykits.svg';

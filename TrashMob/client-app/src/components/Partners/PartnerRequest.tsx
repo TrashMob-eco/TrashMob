@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -80,6 +80,7 @@ const formSchema = z.object({
 export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     const { mode } = props;
     const { toast } = useToast();
+    const navigate = useNavigate();
 
     const createPartnerRequest = useMutation({
         mutationKey: CreatePartnerRequest().key,
@@ -91,7 +92,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                 description:
                     'We will review your application and will get back to you shortly. Thank you for your interest in joining us!',
             });
-            props.history.push('/');
+            navigate('/');
         },
     });
 
@@ -196,7 +197,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     // This will handle Cancel button click event.
     function handleCancel(event: any) {
         event.preventDefault();
-        props.history.push('/partnerships');
+        navigate('/partnerships');
     }
 
     return (
@@ -483,4 +484,4 @@ const PartnerRequestWrapper = (props: PartnerRequestProps) => {
     );
 };
 
-export default withRouter(PartnerRequestWrapper);
+export default PartnerRequestWrapper;

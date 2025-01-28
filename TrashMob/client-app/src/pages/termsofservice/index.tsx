@@ -1,13 +1,6 @@
 import React, { FC } from 'react';
-
-import { Col, Container, Row } from 'react-bootstrap';
-import logo from '../assets/logo.svg';
-import { HeroSection } from '../Customization/HeroSection';
-
-export const CurrentTermsOfServiceVersion: TermsOfServiceVersion = {
-    versionId: '0.3',
-    versionDate: new Date(2021, 5, 14, 0, 0, 0, 0),
-};
+import logo from '@/components/assets/logo.svg';
+import { HeroSection } from '@/components/Customization/HeroSection';
 
 export class TermsOfServiceVersion {
     versionId: string = '0.1';
@@ -17,10 +10,10 @@ export class TermsOfServiceVersion {
 
 export const TermsOfService: FC = () => {
     return (
-        <>
+        <div className='tailwind'>
             <HeroSection Title='Terms of Service' Description='Transparency matters to us.' />
-            <Container className='py-5'>
-                <h5 className='font-weight-bold mt-5'>1. Terms</h5>
+            <div className='py-5 mx-auto container'>
+                <h5 className='font-semibold mt-5'>1. Terms</h5>
 
                 <p>
                     By accessing this Website, accessible from www.trashmob.eco, you are agreeing to be bound by these
@@ -29,7 +22,7 @@ export const TermsOfService: FC = () => {
                     this site. The materials contained in this Website are protected by copyright and trade mark law.
                 </p>
 
-                <h5 className='font-weight-bold mt-5'>2. Use License</h5>
+                <h5 className='font-semibold mt-5'>2. Use License</h5>
 
                 <p>
                     Permission is granted to temporarily download one copy of the materials on TrashMob's Website for
@@ -54,7 +47,7 @@ export const TermsOfService: FC = () => {
                     <a href='https://www.generateprivacypolicy.com'>Privacy Policy Generator</a>.
                 </p>
 
-                <h5 className='font-weight-bold mt-5'>3. Disclaimer</h5>
+                <h5 className='font-semibold mt-5'>3. Disclaimer</h5>
 
                 <p>
                     All the materials on TrashMob’s Website are provided "as is". TrashMob makes no warranties, may it
@@ -63,7 +56,7 @@ export const TermsOfService: FC = () => {
                     Website or otherwise relating to such materials or any sites linked to this Website.
                 </p>
 
-                <h5 className='font-weight-bold mt-5'>4. Limitations</h5>
+                <h5 className='font-semibold mt-5'>4. Limitations</h5>
 
                 <p>
                     TrashMob or its suppliers will not be hold accountable for any damages that will arise with the use
@@ -73,7 +66,7 @@ export const TermsOfService: FC = () => {
                     liability for incidental damages, these limitations may not apply to you.
                 </p>
 
-                <h5 className='font-weight-bold mt-5'>5. Revisions and Errata</h5>
+                <h5 className='font-semibold mt-5'>5. Revisions and Errata</h5>
 
                 <p>
                     The materials appearing on TrashMob’s Website may include technical, typographical, or photographic
@@ -82,7 +75,7 @@ export const TermsOfService: FC = () => {
                     TrashMob does not make any commitment to update the materials.
                 </p>
 
-                <h5 className='font-weight-bold mt-5'>6. Links</h5>
+                <h5 className='font-semibold mt-5'>6. Links</h5>
 
                 <p>
                     TrashMob has not reviewed all of the sites linked to its Website and is not responsible for the
@@ -90,7 +83,7 @@ export const TermsOfService: FC = () => {
                     the site. The use of any linked website is at the user’s own risk.
                 </p>
 
-                <h5 className='font-weight-bold mt-5'>7. Site Terms of Use Modifications</h5>
+                <h5 className='font-semibold mt-5'>7. Site Terms of Use Modifications</h5>
 
                 <p>
                     TrashMob may revise these Terms of Use for its Website at any time without prior notice. By using
@@ -98,11 +91,11 @@ export const TermsOfService: FC = () => {
                     Use.
                 </p>
 
-                <h5 className='font-weight-bold mt-5'>8. Your Privacy</h5>
+                <h5 className='font-semibold mt-5'>8. Your Privacy</h5>
 
                 <p>Please read our Privacy Policy.</p>
 
-                <h5 className='font-weight-bold mt-5'>9. Governing Law</h5>
+                <h5 className='font-semibold mt-5'>9. Governing Law</h5>
 
                 <p>
                     Any claim related to TrashMob's Website shall be governed by the laws of us without regards to its
@@ -110,12 +103,12 @@ export const TermsOfService: FC = () => {
                 </p>
 
                 <p className='mt-5'>The team at TrashMob.eco</p>
-                <Row className='mb-5'>
-                    <Col className='p-0'>
-                        <img src={logo} className='logo p-0 m-0 pl-2 mb-5' alt='TrashMob Logo' />
-                    </Col>
-                </Row>
-            </Container>
-        </>
+                <div className='mb-5'>
+                    <div className='p-0'>
+                        <img src={logo} className='p-0 m-0 pl-2 mb-5' alt='TrashMob Logo' />
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 };

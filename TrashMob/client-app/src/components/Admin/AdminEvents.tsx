@@ -1,6 +1,5 @@
 import * as React from 'react';
 
-import { RouteComponentProps } from 'react-router-dom';
 import { Col, Container, Dropdown, Row } from 'react-bootstrap';
 import { Eye, Pencil, XSquare, SortDown } from 'react-bootstrap-icons';
 import { useQuery } from '@tanstack/react-query';
@@ -8,13 +7,15 @@ import UserData from '../Models/UserData';
 import EventData from '../Models/EventData';
 import { GetAllEvents } from '../../services/events';
 import { Services } from '../../config/services.config';
+import { useNavigate } from 'react-router';
 
-interface AdminEventsPropsType extends RouteComponentProps {
+interface AdminEventsPropsType {
     isUserLoaded: boolean;
     currentUser: UserData;
 }
 
 export const AdminEvents: React.FC<AdminEventsPropsType> = (props) => {
+    const navigate = useNavigate();
     const [eventList, setEventList] = React.useState<EventData[]>([]);
     const [isEventDataLoaded, setIsEventDataLoaded] = React.useState<boolean>(false);
 
@@ -44,15 +45,15 @@ export const AdminEvents: React.FC<AdminEventsPropsType> = (props) => {
 
     const eventActionDropdownList = (eventId: string) => (
         <>
-            <Dropdown.Item onClick={() => props.history.push(`/manageeventdashboard/${eventId}`)}>
+            <Dropdown.Item onClick={() => navigate(`/manageeventdashboard/${eventId}`)}>
                 <Pencil />
                 Manage Event
             </Dropdown.Item>
-            <Dropdown.Item onClick={() => props.history.push(`/cancelevent/${eventId}`)}>
+            <Dropdown.Item onClick={() => navigate(`/cancelevent/${eventId}`)}>
                 <XSquare />
                 Delete Event
             </Dropdown.Item>
-            <Dropdown.Item onClick={() => props.history.push(`/eventdetails/${eventId}`)}>
+            <Dropdown.Item onClick={() => navigate(`/eventdetails/${eventId}`)}>
                 <Eye />
                 View Event
             </Dropdown.Item>

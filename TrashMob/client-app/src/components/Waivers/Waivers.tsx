@@ -1,6 +1,6 @@
 import React from 'react';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import UserData from '../Models/UserData';
 import { HeroSection } from '../Customization/HeroSection';
@@ -25,7 +25,7 @@ export const CurrentTrashMobWaiverVersion = {
 };
 
 const Waivers: React.FC<WaiversProps> = ({ currentUser, onUserUpdated }) => {
-    const history = useHistory();
+    const navigate = useNavigate();
     const queryClient = useQueryClient();
     const userId = currentUser.id;
 
@@ -50,7 +50,7 @@ const Waivers: React.FC<WaiversProps> = ({ currentUser, onUserUpdated }) => {
             onUserUpdated();
 
             // Then redirect to home
-            history.push('/');
+            navigate('/');
         },
     });
 
