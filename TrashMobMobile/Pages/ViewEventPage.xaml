@@ -7,119 +7,11 @@
              x:DataType="viewModels:ViewEventViewModel"
              x:Class="TrashMobMobile.Pages.ViewEventPage"
              xmlns:controls="clr-namespace:TrashMobMobile.Controls"
+             xmlns:tabs="http://sharpnado.com"
+             xmlns:views="clr-namespace:TrashMobMobile.Views.ViewEvent"
              Title="Event Details">
     <Grid>
         <VerticalStackLayout Style="{StaticResource OuterVerticalStack}" Margin="10">
-            <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="*, *, *, *"
-                      MaximumWidthRequest="400">
-
-
-                <Button Margin="5"
-                            Grid.Row="0" 
-                            Grid.Column="0" 
-                            Command="{Binding ViewEventDetailsCommand}" 
-                            Text="View Event Details"
-                            IsVisible="{Binding EnableViewEventDetails}">
-                    <Button.Triggers>
-                        <DataTrigger TargetType="Button" Binding="{Binding IsDetailsVisible}" Value="true">
-                            <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
-                        </DataTrigger>
-                        <DataTrigger TargetType="Button" Binding="{Binding IsDetailsVisible}" Value="false">
-                            <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
-                        </DataTrigger>
-                    </Button.Triggers>
-                </Button>
-                <Button Margin="5"
-                            Grid.Row="0" 
-                            Grid.Column="1" 
-                            Command="{Binding ViewEventPartnersCommand}" 
-                            Text="View Event Partners"
-                            IsVisible="{Binding EnableViewEventPartners}">
-                    <Button.Triggers>
-                        <DataTrigger TargetType="Button" Binding="{Binding IsPartnersVisible}" Value="true">
-                            <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
-                        </DataTrigger>
-                        <DataTrigger TargetType="Button" Binding="{Binding IsPartnersVisible}" Value="false">
-                            <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
-                        </DataTrigger>
-                    </Button.Triggers>
-                </Button>
-                <Button Margin="5"
-                            Grid.Row="0" 
-                            Grid.Column="2" 
-                            Command="{Binding ViewLitterReportsCommand}" 
-                            Text="View Event Litter Reports"
-                            IsVisible="{Binding EnableViewEventLitterReports}">
-                    <Button.Triggers>
-                        <DataTrigger TargetType="Button" Binding="{Binding IsLitterReportsVisible}" Value="true">
-                            <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
-                        </DataTrigger>
-                        <DataTrigger TargetType="Button" Binding="{Binding IsLitterReportsVisible}" Value="false">
-                            <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
-                        </DataTrigger>
-                    </Button.Triggers>
-                </Button>
-                <Button Margin="5"
-                            Grid.Row="0" 
-                            Grid.Column="3" 
-                            Command="{Binding ViewEventAttendeesCommand}" 
-                            Text="View Event Attendees"
-                            IsVisible="{Binding EnableViewEventAttendees}">
-                    <Button.Triggers>
-                        <DataTrigger TargetType="Button" Binding="{Binding IsAttendeesVisible}" Value="true">
-                            <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
-                        </DataTrigger>
-                        <DataTrigger TargetType="Button" Binding="{Binding IsAttendeesVisible}" Value="false">
-                            <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
-                        </DataTrigger>
-                    </Button.Triggers>
-                </Button>
-                <Button Margin="5"
-                            Grid.Row="1" 
-                            Grid.Column="0" 
-                            Text="Register" 
-                            Command="{Binding RegisterCommand}"
-                            IsVisible="{Binding EnableRegister}"
-                            Style="{StaticResource PrimarySmallButton}" />
-                <Button Margin="5"
-                            Grid.Row="1" 
-                            Grid.Column="0" 
-                            Text="Unregister" 
-                            Command="{Binding UnregisterCommand}"
-                            IsVisible="{Binding EnableUnregister}"
-                            Style="{StaticResource PrimarySmallButton}" />
-                <Button Margin="5"
-                            Grid.Row="1" 
-                            Grid.Column="0" 
-                            Text="Edit Event" 
-                            Command="{Binding EditEventCommand}"
-                            IsVisible="{Binding EnableEditEvent}"
-                            Style="{StaticResource PrimarySmallButton}" />
-                <Button Margin="5"
-                            Grid.Row="1" 
-                            Grid.Column="1" 
-                            Command="{Binding ViewEventSummaryCommand}" 
-                            Text="View Event Summary"
-                            IsVisible="{Binding EnableViewEventSummary}"
-                            Style="{StaticResource SecondarySmallButton}" />
-                <Button Margin="5"
-                            Grid.Row="1" 
-                            Grid.Column="2" 
-                            Command="{Binding RealTimeLocationTrackerCommand}" 
-                            IsVisible="{Binding EnableStartTrackEventRoute}"
-                            IsEnabled="{Binding EnableStartTrackEventRoute}"
-                            Text="Start Tracking" 
-                            Style="{StaticResource SecondarySmallButton}" />
-                <Button Margin="5"
-                            Grid.Row="1" 
-                            Grid.Column="2" 
-                            Command="{Binding RealTimeLocationTrackerCancelCommand}" 
-                            IsEnabled="{Binding EnableStopTrackEventRoute}"
-                            IsVisible="{Binding EnableStopTrackEventRoute}"
-                            Text="Stop Tracking" 
-                            Style="{StaticResource SecondarySmallButton}" />
-            </Grid>
-
             <Label
                     Text="{Binding EventViewModel.Name}" Style="{StaticResource Headline}"
                     VerticalOptions="Center"
@@ -127,192 +19,41 @@
 
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
-            <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" RowSpacing="3"
-                      ColumnDefinitions="*, 2*" IsVisible="{Binding IsDetailsVisible}">
+            <tabs:TabHostView Padding="10" 
+                              Orientation="Horizontal" 
+                              TabType="Fixed"
+                              SelectedIndex="{Binding Source={x:Reference Switcher}, 
+                                          Path=SelectedIndex, Mode=TwoWay}">
+                <tabs:BottomTabItem Label="Details"  SelectedTabColor="{StaticResource Primary}" />
 
-                <controls:CustomMap x:Name="eventLocationMap" HeightRequest="200"
-                              ItemsSource="{Binding Addresses}" Grid.Row="0" Grid.ColumnSpan="2">
-                    <maps:Map.ItemTemplate>
-                        <DataTemplate x:DataType="viewModels:AddressViewModel">
-                            <controls:CustomPin Location="{Binding Location}"
-                                          Address="{Binding StreetAddress}"
-                                          ImageSource="{Binding IconFile}"                                          
-                                          Label="{Binding AddressType}" />
-                        </DataTemplate>
-                    </maps:Map.ItemTemplate>
-                </controls:CustomMap>
+                <tabs:BottomTabItem Label="Partners" SelectedTabColor="{StaticResource Primary}" />
 
-                <Label Grid.Row="1" Grid.Column="0" Text="{Binding SelectedEventType}" FontSize="Small"
-                           Margin="10, 0, 10,0" Grid.ColumnSpan="2" />
-                <Label Grid.Row="2" Grid.Column="0" Text="{Binding EventViewModel.DisplayDate}"
-                           FontAttributes="Bold" Margin="10,0,10,0" Grid.ColumnSpan="2" />
-                <Label Grid.Row="3" Grid.Column="0" Text="{Binding EventViewModel.DisplayTime}" FontSize="Micro"
-                           Margin="10, 0, 10,0" />
-                <Label Grid.Row="4" Grid.Column="1" Text="{Binding DisplayDuration}" FontSize="Micro"
-                           Margin="10, 0, 10,0" />
-                <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
-                           Text="{Binding EventViewModel.Address.DisplayAddress }" FontAttributes="Bold"
-                           Margin="10,0,10,0" />
-                <Label Grid.Row="6" Grid.Column="0" Text="About this event" FontAttributes="Bold"
-                           Grid.ColumnSpan="2" />
-                <Label Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding EventViewModel.Description}"
-                           FontSize="Micro" />
-                <Label Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding WhatToExpect}"
-                           FontSize="Micro" />
-                <Label Grid.Row="9" Grid.Column="0" Text="Attendees" FontSize="Micro" />
-                <Label Grid.Row="10" Grid.Column="1" Text="{Binding AttendeeCount}" FontSize="Micro" />
-            </Grid>
+                <tabs:BottomTabItem Label="Attendees" SelectedTabColor="{StaticResource Primary}" />
 
-            <Grid IsVisible="{Binding IsPartnersVisible}" RowDefinitions="Auto, Auto">
-                <Label Grid.Row="0"
-                           Text="Assigned Event Partners"
-                           FontSize="Medium"
-                           VerticalOptions="Center"
-                           HorizontalOptions="Start"
-                           HorizontalTextAlignment="Center"
-                           Margin="10" />
+                <tabs:BottomTabItem Label="LitterReports" SelectedTabColor="{StaticResource Primary}" />
 
-                <Label Grid.Row="1" Text="We're sorry. There are currently no partners assigned to this event." IsVisible="{Binding AreNoPartnersAvailable}" />
+            </tabs:TabHostView>
 
-                <CollectionView Grid.Row="1" x:Name="AvailableEventPartners"
-                                    ItemsSource="{Binding AvailablePartners}"
-                                    SelectionMode="None" 
-                                    IsVisible="{Binding ArePartnersAvailable}">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate 
-                                x:DataType="viewModels:EventPartnerLocationViewModel">
-                            <Border Style="{StaticResource RoundBorder}" Margin="5">
-                                <Grid RowDefinitions="1*, 2*, 1*" ColumnDefinitions="*, *"
-                                          x:Name="PartnerLocationItem">
-                                    <Label Text="Partner Name" Style="{StaticResource FieldLabel}" Grid.Row="0" />
-                                    <Label Text="{Binding PartnerLocationName}" Grid.Column="1" Grid.Row="0" />
-                                    <Label Text="Info" Style="{StaticResource FieldLabel}" Grid.Row="1" />
-                                    <Label Text="{Binding PartnerLocationNotes}" Grid.Row="1" Grid.Column="1" />
-                                    <Label Text="Services Requested" Style="{StaticResource FieldLabel}" Grid.Row="2" />
-                                    <Label Text="{Binding PartnerServicesEngaged}" Grid.Row="2" Grid.Column="1" />
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </Grid>
-
-            <Grid IsVisible="{Binding IsAttendeesVisible}" RowDefinitions="*, *, *">
-
-                <Label Grid.Row="0"
-                           Text="Event Attendees"
-                           FontSize="Medium"
-                           VerticalOptions="Center"
-                           HorizontalOptions="Start"
-                           HorizontalTextAlignment="Center"
-                           Margin="10" />
-
-                <CollectionView x:Name="EventAttendeesCollection" Grid.Row="1"
-                                    ItemsSource="{Binding EventAttendees}"
-                                    SelectionMode="None">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="viewModels:EventAttendeeViewModel">
-                            <StackLayout Margin="5">
-                                <Border Style="{StaticResource RoundBorder}" Margin="5">
-                                    <Grid ColumnDefinitions="*, *" RowDefinitions="*, *, *">
-                                        <Label Text="User Name" Style="{StaticResource FieldLabel}" Grid.Row="0" />
-                                        <Label Text="{Binding UserName}" Grid.Row="0" Grid.Column="1" />
-                                        <Label Text="Member Since" Style="{StaticResource FieldLabel}" Grid.Row="1" />
-                                        <Label Text="{Binding MemberSince}" Grid.Row="1" Grid.Column="1" />
-                                        <Label Text="Event Role" Style="{StaticResource FieldLabel}" Grid.Row="2" />
-                                        <Label Text="{Binding Role}" Grid.Row="2" Grid.Column="1"/>
-                                    </Grid>
-                                </Border>
-                            </StackLayout>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </Grid>
-
-            <Grid IsVisible="{Binding IsLitterReportsVisible}" RowDefinitions="*, *, *">
-
-                <Label Grid.Row="0"
-                           Text="Assigned Litter Reports"
-                           FontSize="Medium"
-                           VerticalOptions="Center"
-                           HorizontalOptions="Start"
-                           HorizontalTextAlignment="Center"
-                           IsVisible="{Binding AreLitterReportsAvailable}"
-                           Margin="10" />
-
-                <Label Text="There are currently no litter reports assigned to this event." IsVisible="{Binding AreNoLitterReportsAvailable}" Margin="10" Grid.Row="1" />
-
-                <Grid RowDefinitions="*, *, *, *" IsVisible="{Binding AreLitterReportsAvailable}" Grid.Row="2">
-                    <Grid Margin="5" Grid.Row="0"
-                      ColumnDefinitions="6*, *, *"
-                      RowDefinitions="Auto">
-                        <ImageButton Grid.Column="1"
-                             HeightRequest="24"
-                             Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconMap}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" 
-                             Command="{Binding MapSelectedCommand}" />
-                        <ImageButton Grid.Column="2" 
-                             HeightRequest="24"
-                             Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconViewList}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" 
-                             Command="{Binding ListSelectedCommand}" />
-                    </Grid>
-
-                    <controls:CustomMap x:Name="litterImagesMap"
-                              Grid.Row="1"
-                              ItemsSource="{Binding LitterImages}"
-                              IsVisible="{Binding IsLitterReportMapSelected}">
-                        <maps:Map.ItemTemplate>
-                            <DataTemplate x:DataType="viewModels:LitterImageViewModel">
-                                <controls:CustomPin Location="{Binding Address.Location}"
-                                          Address="{Binding Address.StreetAddress}"
-                                          Label="{Binding Address.StreetAddress}"
-                                          AutomationId="{Binding LitterReportId}"
-                                          ImageSource="{Binding Address.IconFile}" />
-                            </DataTemplate>
-                        </maps:Map.ItemTemplate>
-                    </controls:CustomMap>
-
-                    <CollectionView x:Name="LitterReportsCollection" Grid.Row="1"
-                                    ItemsSource="{Binding EventLitterReports}"
-                                    IsVisible="{Binding IsLitterReportListSelected}"
-                                    SelectionMode="None">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="viewModels:EventLitterReportViewModel">
-                                <StackLayout Margin="5">
-                                    <Border Style="{StaticResource RoundBorder}" Margin="5">
-                                        <Grid ColumnDefinitions="*, *"
-                                              RowDefinitions="*, *, *, *, *, *, *"
-                                              x:Name="LitterReportItem">
-                                            <Label Text="Name" Style="{StaticResource FieldLabel}" Grid.Row="0" />
-                                            <Label Text="{Binding Name}" Grid.Row="0" Grid.Column="1" />
-                                            <Label Text="Date Created" Style="{StaticResource FieldLabel}" Grid.Row="1" />
-                                            <Label Text="{Binding CreatedDate}" Grid.Row="1" Grid.Column="1" />
-                                            <Label Text="Status" Style="{StaticResource FieldLabel}" Grid.Row="2" />
-                                            <Label Text="{Binding Status}" Grid.Row="2" Grid.Column="1"/>
-                                            <Label Text="Description" Style="{StaticResource FieldLabel}" Grid.Row="3" />
-                                            <Label Text="{Binding Description}" Grid.Row="3" Grid.Column="1" />
-                                            <Label Text="Locations" Grid.Row="5" Style="{StaticResource FieldLabel}" />
-                                            <CollectionView ItemsSource="{Binding LitterImageViewModels}" Grid.Row="6"
-                                                            Grid.Column="0" Grid.ColumnSpan="2">
-                                                <CollectionView.ItemTemplate>
-                                                    <DataTemplate x:DataType="viewModels:LitterImageViewModel">
-                                                        <Border Style="{StaticResource RoundBorder}" Margin="0, 3">
-                                                            <Grid ColumnDefinitions="*, *">
-                                                                <Label Text="{Binding Address.DisplayAddress}" Grid.Column="0" LineBreakMode="WordWrap" FontSize="Micro" />
-                                                                <Image Source="{Binding AzureBlobUrl}" MaximumWidthRequest="60" Grid.Column="1" />
-                                                            </Grid>
-                                                        </Border>
-                                                    </DataTemplate>
-                                                </CollectionView.ItemTemplate>
-                                            </CollectionView>
-                                        </Grid>
-                                    </Border>
-                                </StackLayout>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </Grid>
-            </Grid>
-
+            <tabs:ViewSwitcher x:Name="Switcher"
+                           Margin="0"
+                           Animate="True">
+                <tabs:DelayedView x:TypeArguments="views:TabDetails" x:Name="tabDetails"
+                        AccentColor="{StaticResource Primary}"
+                        Animate="True"
+                        UseActivityIndicator="True" />
+                <tabs:DelayedView x:TypeArguments="views:TabPartners" x:Name="tabPartners"
+                        AccentColor="{StaticResource Primary}"
+                        Animate="True"
+                        UseActivityIndicator="True" />
+                <tabs:DelayedView x:TypeArguments="views:TabAttendees"
+                        AccentColor="{StaticResource Primary}"
+                        Animate="True"
+                        UseActivityIndicator="True" />
+                <tabs:DelayedView x:TypeArguments="views:TabLitterReports"
+                        AccentColor="{StaticResource Primary}"
+                        Animate="True"
+                        UseActivityIndicator="True" />
+            </tabs:ViewSwitcher>
 
         </VerticalStackLayout>
         <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
