@@ -8,7 +8,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from "@/components/ui/checkbox"
+import { Checkbox } from '@/components/ui/checkbox';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import UserData from '../Models/UserData';
 import * as ToolTips from '../../store/ToolTips';
@@ -64,16 +64,15 @@ export interface PartnerLocationEditDataProps {
 }
 
 export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (props) => {
-
-    const { partnerLocationId: locationId } = props
+    const { partnerLocationId: locationId } = props;
     const { data: item } = useQuery({
         queryKey: GetPartnerLocations({ locationId }).key,
         queryFn: GetPartnerLocations({ locationId }).service,
-        select: res => res.data
+        select: (res) => res.data,
     });
 
-    console.log({ item })
-     const form = useForm<FormInputs>({
+    console.log({ item });
+    const form = useForm<FormInputs>({
         resolver: zodResolver(formSchema),
         defaultValues: {},
     });
@@ -201,7 +200,7 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
     }, [location]);
 
     const defaultCenter = { lat: MapStore.defaultLatitude, lng: MapStore.defaultLongitude };
-    
+
     return (
         <div>
             <Card>
@@ -247,11 +246,15 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                                                 </TooltipContent>
                                             </Tooltip>
                                             <FormControl>
-                                                <div className="flex items-center space-x-2">
-                                                    <Checkbox id="isActive" checked={field.value} onCheckedChange={field.onChange} />
+                                                <div className='flex items-center space-x-2'>
+                                                    <Checkbox
+                                                        id='isActive'
+                                                        checked={field.value}
+                                                        onCheckedChange={field.onChange}
+                                                    />
                                                     <label
-                                                        htmlFor="isActive"
-                                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                                        htmlFor='isActive'
+                                                        className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
                                                     >
                                                         Active
                                                     </label>
@@ -301,19 +304,15 @@ export const PartnerLocationEdit: React.FC<PartnerLocationEditDataProps> = (prop
                                         </FormItem>
                                     )}
                                 />
-                                <div className="col-span-12">
+                                <div className='col-span-12'>
                                     <div>
-                                        Click on the map to set the location for your Partner. The location fields above will be
-                                    automatically populated.
+                                        Click on the map to set the location for your Partner. The location fields above
+                                        will be automatically populated.
                                     </div>
                                     <div style={{ position: 'relative', width: '100%' }}>
                                         <GoogleMap defaultCenter={defaultCenter} onClick={handleClickMap}>
                                             <Marker
-                                                position={
-                                                    location
-                                                        ? location
-                                                        : defaultCenter
-                                                }
+                                                position={location ? location : defaultCenter}
                                                 draggable
                                                 onDragEnd={handleMarkerDragEnd}
                                             />

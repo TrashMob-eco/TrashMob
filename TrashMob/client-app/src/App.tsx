@@ -45,7 +45,7 @@ import { TermsOfService } from './pages/termsofservice';
 import { VolunteerOpportunities } from './pages/volunteeropportunities';
 import { PartnerEdit } from './pages/partnerdashboard/$partnerId/edit';
 import { PartnerLayout } from './pages/partnerdashboard/$partnerId/_layout';
-import { PartnerLocations } from './components/Partners/PartnerLocations';
+import { PartnerLocations } from './pages/partnerdashboard/$partnerId/locations';
 import { PartnerContacts } from './pages/partnerdashboard/$partnerId/contacts';
 import { PartnerAdmins } from './components/Partners/PartnerAdmins';
 import { PartnerDocuments } from './components/Partners/PartnerDocuments';
@@ -53,6 +53,8 @@ import { PartnerSocialMediaAccounts } from './components/Partners/PartnerSocialM
 import { PartnerIndex } from './pages/partnerdashboard/$partnerId';
 import { PartnerContactEdit } from './pages/partnerdashboard/$partnerId/contacts.$contactId.edit';
 import { PartnerContactCreate } from './pages/partnerdashboard/$partnerId/contacts.create';
+import { PartnerLocationEdit } from './pages/partnerdashboard/$partnerId/locations.$locationId.edit';
+import { PartnerLocationCreate } from './pages/partnerdashboard/$partnerId/locations.create';
 
 const queryClient = new QueryClient();
 
@@ -128,7 +130,10 @@ export const App: FC = () => {
                                         <Route path=':partnerId' element={<PartnerLayout />}>
                                             <Route index element={<PartnerIndex />} />
                                             <Route path='edit' element={<PartnerEdit />} />
-                                            <Route path='locations' element={<PartnerLocations />} />
+                                            <Route path='locations' element={<PartnerLocations />}>
+                                                <Route path='create' element={<PartnerLocationCreate />} />
+                                                <Route path=':locationId/edit' element={<PartnerLocationEdit />} />
+                                            </Route>
                                             <Route path='contacts' element={<PartnerContacts />}>
                                                 <Route path='create' element={<PartnerContactCreate />} />
                                                 <Route path=':contactId/edit' element={<PartnerContactEdit />} />
