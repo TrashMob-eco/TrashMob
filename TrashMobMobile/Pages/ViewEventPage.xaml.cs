@@ -1,9 +1,5 @@
 namespace TrashMobMobile.Pages;
 
-using Microsoft.Maui.Controls.Maps;
-using Microsoft.Maui.Maps;
-using TrashMobMobile.Views.ViewEvent;
-
 [QueryProperty(nameof(EventId), nameof(EventId))]
 public partial class ViewEventPage : ContentPage
 {

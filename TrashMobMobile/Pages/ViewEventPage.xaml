@@ -30,7 +30,7 @@
 
                 <tabs:BottomTabItem Label="Attendees" SelectedTabColor="{StaticResource Primary}" />
 
-                <tabs:BottomTabItem Label="LitterReports" SelectedTabColor="{StaticResource Primary}" />
+                <tabs:BottomTabItem Label="Litter Reports" SelectedTabColor="{StaticResource Primary}" />
 
             </tabs:TabHostView>
 
