@@ -42,7 +42,7 @@ export const VolunteerOpportunities: React.FC = () => {
         great opportunity for developers passionate about the environment to dig in and lend a
         hand!
       `,
-        }
+        },
     ];
 
     return (
