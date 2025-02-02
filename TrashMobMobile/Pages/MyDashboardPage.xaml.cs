@@ -1,8 +1,5 @@
 namespace TrashMobMobile.Pages;
 
-using CommunityToolkit.Maui.Alerts;
-using CommunityToolkit.Maui.Core;
-
 public partial class MyDashboardPage : ContentPage
 {
     private readonly MyDashboardViewModel viewModel;
@@ -19,5 +16,6 @@ public partial class MyDashboardPage : ContentPage
     {
         base.OnNavigatedTo(args);
         await viewModel.Init();
+        Switcher.SelectedIndex = 0;
     }
 }

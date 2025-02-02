@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:controls="clr-namespace:TrashMobMobile.Controls"
+             x:Class="TrashMobMobile.Views.EditEvent.TabDetails">
+    <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="*, *, *, *" MaximumWidthRequest="400">
+
+        <VerticalStackLayout Grid.Row="0" Grid.ColumnSpan="4">
+            <Label Text="Name" Style="{StaticResource FieldLabel}" />
+            <controls:TMEntry Text="{Binding EventViewModel.Name}" />
+
+        </VerticalStackLayout>
+
+        <VerticalStackLayout Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+            <Label Text="Event Date" Style="{StaticResource FieldLabel}" />
+            <controls:TMDatePicker Date="{Binding EventViewModel.EventDateOnly, Mode=TwoWay}" />
+        </VerticalStackLayout>
+
+        <VerticalStackLayout Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2">
+            <Label Text="Event Time" Style="{StaticResource FieldLabel}" />
+            <controls:TMTimePicker Time="{Binding EventViewModel.EventTime, Mode=TwoWay}" />
+        </VerticalStackLayout>
+
+        <VerticalStackLayout Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+            <Label Text="Duration Hours" Style="{StaticResource FieldLabel}" />
+            <controls:TMEntry Keyboard="Numeric" Text="{Binding EventViewModel.DurationHours}" />
+        </VerticalStackLayout>
+
+        <VerticalStackLayout Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2">
+            <Label Text="Duration Minutes" Style="{StaticResource FieldLabel}" />
+            <controls:TMEntry Keyboard="Numeric" Text="{Binding EventViewModel.DurationMinutes}" />
+        </VerticalStackLayout>
+
+        <VerticalStackLayout Grid.Row="3" Grid.ColumnSpan="4">
+            <Label Text="Description" Style="{StaticResource FieldLabel}" />
+            <controls:TMEditor Text="{Binding EventViewModel.Description}" />
+        </VerticalStackLayout>
+
+
+        <VerticalStackLayout Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
+            <Label Text="Event Type" Style="{StaticResource FieldLabel}" />
+            <controls:TMPicker Title="Event Type" ItemsSource="{Binding ETypes}"
+                                    SelectedItem="{Binding SelectedEventType, Mode=TwoWay}" />
+        </VerticalStackLayout>
+
+        <VerticalStackLayout Grid.Row="4" Grid.Column="2">
+            <Label Text="Max Attendees" Style="{StaticResource FieldLabel}" />
+            <controls:TMEntry Keyboard="Numeric" Text="{Binding EventViewModel.MaxNumberOfParticipants}" />
+        </VerticalStackLayout>
+
+        <VerticalStackLayout Grid.Row="4" Grid.Column="3">
+            <Label Text="Is Event Public?" Style="{StaticResource FieldLabel}" />
+            <CheckBox IsChecked="{Binding EventViewModel.IsEventPublic}" />
+        </VerticalStackLayout>
+    </Grid>
+</ContentView>
