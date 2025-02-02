@@ -48,7 +48,7 @@ export const SiteFooter = () => {
                             <div className='basis-3/4'>
                                 <div className='text-[13px] font-[Montserrat] font-serif font-medium'>
                                     <p className='mb-1 text-sm text-center md:!text-start'>
-                                        Copyright &copy; 2023 TRASHMOB.ECO - All rights reserved.
+                                        Copyright &copy; 2025 TRASHMOB.ECO - All rights reserved.
                                     </p>
                                     <p className='my-2 text-xs text-center md:!text-start'>
                                         TrashMob is a non-profit, 501(c)(3) organization based in Washington State, USA.

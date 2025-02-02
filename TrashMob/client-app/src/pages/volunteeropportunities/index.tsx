@@ -43,19 +43,6 @@ export const VolunteerOpportunities: React.FC = () => {
         hand!
       `,
         },
-        {
-            title: 'Mobile product manager',
-            shortDesc: 'Manage mobile app development',
-            preferredSkill: 'Managing Mobile Deployments to Apple Store and Google Play Store, Mobile App Design',
-            desc: `
-        Getting a mobile app out the door involves more than just developers checking in code.
-        Making sure all the boxes are checked on the Apple and Google Play stores is a lot of
-        work. We're looking for someone who can drive the mobile app through the app stores, and
-        work with the designers and devs to plot out a release strategy for more features and
-        more bells and whistles. If this is something you've done before, and you'd love to help
-        a non-profit get it's mobile app launched, send us a note!
-      `,
-        },
     ];
 
     return (
