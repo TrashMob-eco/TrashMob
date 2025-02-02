@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Button, Container, Dropdown } from 'react-bootstrap';
 import { Guid } from 'guid-typescript';
 import { Eye } from 'react-bootstrap-icons';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import UserData from '../Models/UserData';
 import * as Constants from '../Models/Constants';

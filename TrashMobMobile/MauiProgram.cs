@@ -2,6 +2,7 @@
 
 using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
+using Sharpnado.Tabs;
 using TrashMobMobile.Authentication;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
@@ -13,7 +14,9 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
-            .UseMauiMaps();
+            .UseMauiMaps()
+            .UseSharpnadoTabs(loggerEnable: false);
+            
             builder.ConfigureMauiHandlers(handlers =>
             {
 #if ANDROID || IOS || MACCATALYST

@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import moment from 'moment';
 import _compact from 'lodash/compact';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { FileCheck, Ellipsis, Eye, Link2, Pencil, Share2, SquareX, UserRoundX } from 'lucide-react';
 import {
     DropdownMenu,

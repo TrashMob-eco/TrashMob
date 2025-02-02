@@ -14,14 +14,13 @@ import {
     GetPartnerDocumentsByPartnerId,
     UpdatePartnerDocument,
 } from '../../services/documents';
+import { useLogin } from '@/hooks/useLogin';
+import { useParams } from 'react-router';
 
-export interface PartnerDocumentsDataProps {
-    partnerId: string;
-    isUserLoaded: boolean;
-    currentUser: UserData;
-}
+export const PartnerDocuments: React.FC = () => {
+    const { isUserLoaded, currentUser } = useLogin();
+    const { partnerId } = useParams<{ partnerId: string }>() as { partnerId: string };
 
-export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => {
     const [partnerDocumentId, setPartnerDocumentId] = React.useState<string>(Guid.EMPTY);
     const [documentName, setDocumentName] = React.useState<string>('');
     const [documentUrl, setDocumentUrl] = React.useState<string>('');
@@ -36,8 +35,8 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
     const [isAddEnabled, setIsAddEnabled] = React.useState<boolean>(true);
 
     const getPartnerDocumentsByPartnerId = useQuery({
-        queryKey: GetPartnerDocumentsByPartnerId({ partnerId: props.partnerId }).key,
-        queryFn: GetPartnerDocumentsByPartnerId({ partnerId: props.partnerId }).service,
+        queryKey: GetPartnerDocumentsByPartnerId({ partnerId }).key,
+        queryFn: GetPartnerDocumentsByPartnerId({ partnerId }).service,
         staleTime: Services.CACHE.DISABLE,
         enabled: false,
     });
@@ -63,19 +62,19 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
     });
 
     React.useEffect(() => {
-        if (props.isUserLoaded && props.partnerId && props.partnerId !== Guid.EMPTY) {
+        if (isUserLoaded && partnerId && partnerId !== Guid.EMPTY) {
             getPartnerDocumentsByPartnerId.refetch().then((res) => {
                 setPartnerDocuments(res.data?.data || []);
                 setIsPartnerDocumentsDataLoaded(true);
             });
         }
-    }, [props.partnerId, props.isUserLoaded]);
+    }, [partnerId, isUserLoaded]);
 
     function addDocument() {
         setPartnerDocumentId(Guid.EMPTY);
         setDocumentName('');
         setDocumentUrl('');
-        setCreatedByUserId(props.currentUser.id);
+        setCreatedByUserId(currentUser.id);
         setCreatedDate(new Date());
         setLastUpdatedDate(new Date());
         setIsEditOrAdd(true);
@@ -89,7 +88,7 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
         setPartnerDocumentId(Guid.EMPTY);
         setDocumentName('');
         setDocumentUrl('');
-        setCreatedByUserId(props.currentUser.id);
+        setCreatedByUserId(currentUser.id);
         setCreatedDate(new Date());
         setLastUpdatedDate(new Date());
         setIsEditOrAdd(false);
@@ -135,7 +134,7 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
 
         const body = new PartnerDocumentData();
         body.id = partnerDocumentId;
-        body.partnerId = props.partnerId;
+        body.partnerId = partnerId;
         body.name = documentName;
         body.url = documentUrl ?? 0;
         body.createdDate = createdDate;
@@ -339,13 +338,13 @@ export const PartnerDocuments: React.FC<PartnerDocumentsDataProps> = (props) => 
                 </Col>
                 <Col lg={8}>
                     <div className='bg-white p-5 shadow-sm rounded'>
-                        {props.partnerId === Guid.EMPTY && (
+                        {partnerId === Guid.EMPTY && (
                             <p>
                                 {' '}
                                 <em>Partner must be created first.</em>
                             </p>
                         )}
-                        {!isPartnerDocumentsDataLoaded && props.partnerId !== Guid.EMPTY && (
+                        {!isPartnerDocumentsDataLoaded && partnerId !== Guid.EMPTY && (
                             <p>
                                 <em>Loading...</em>
                             </p>

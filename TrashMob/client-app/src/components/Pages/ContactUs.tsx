@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { loadCaptchaEnginge, LoadCanvasTemplateNoReload, validateCaptcha } from 'react-simple-captcha';
 import { Button, ButtonGroup, Col, Container, Form, Modal, Row } from 'react-bootstrap';
 import { useMutation } from '@tanstack/react-query';
@@ -7,9 +7,10 @@ import * as Constants from '../Models/Constants';
 import ContactRequestData from '../Models/ContactRequestData';
 import { CreateContactRequest } from '../../services/contact';
 
-interface ContactUsProps extends RouteComponentProps<any> {}
+interface ContactUsProps {}
 
 export const ContactUs: React.FC<ContactUsProps> = (props) => {
+    const navigate = useNavigate();
     const [name, setName] = React.useState<string>();
     const [email, setEmail] = React.useState<string>();
     const [nameErrors, setNameErrors] = React.useState<string>('');
@@ -48,7 +49,7 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
         body.message = message ?? '';
 
         createContactRequest.mutateAsync(body).then(() => {
-            setTimeout(() => props.history.push('/'), 2000);
+            setTimeout(() => navigate('/'), 2000);
         });
 
         handleShow();
@@ -73,7 +74,7 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
     function handleCancel(event: any) {
         event.preventDefault();
         setIsSaveEnabled(false);
-        props.history.push('/');
+        navigate('/');
     }
 
     function handleNameChanged(val: string) {
@@ -209,4 +210,4 @@ export const ContactUs: React.FC<ContactUsProps> = (props) => {
     );
 };
 
-export default withRouter(ContactUs);
+export default ContactUs;

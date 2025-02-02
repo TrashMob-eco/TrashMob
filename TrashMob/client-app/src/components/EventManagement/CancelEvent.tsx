@@ -2,7 +2,7 @@ import * as React from 'react';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { Button, Col, Container, Form } from 'react-bootstrap';
-import { RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps } from 'react-router';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import EventData from '../Models/EventData';
 import UserData from '../Models/UserData';

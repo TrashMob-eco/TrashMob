@@ -1,6 +1,5 @@
 import * as React from 'react';
 
-import { RouteComponentProps } from 'react-router-dom';
 import { Col, Container, Dropdown, Row } from 'react-bootstrap';
 import { XSquare } from 'react-bootstrap-icons';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -9,7 +8,7 @@ import UserData from '../Models/UserData';
 import { DeletePartnerById, GetPartners } from '../../services/partners';
 import { Services } from '../../config/services.config';
 
-interface AdminPartnersPropsType extends RouteComponentProps {
+interface AdminPartnersPropsType {
     isUserLoaded: boolean;
     currentUser: UserData;
 }

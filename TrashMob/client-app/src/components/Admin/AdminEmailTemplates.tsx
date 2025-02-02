@@ -1,6 +1,5 @@
 import * as React from 'react';
 
-import { RouteComponentProps } from 'react-router-dom';
 import { Col, Container, Row } from 'react-bootstrap';
 import { useQuery } from '@tanstack/react-query';
 import UserData from '../Models/UserData';
@@ -8,7 +7,7 @@ import EmailTemplateData from '../Models/EmailTemplateData';
 import { GetAdminEmailTemplates } from '../../services/admin';
 import { Services } from '../../config/services.config';
 
-interface AdminEmailTemplatesPropsType extends RouteComponentProps {
+interface AdminEmailTemplatesPropsType {
     isUserLoaded: boolean;
     currentUser: UserData;
 }

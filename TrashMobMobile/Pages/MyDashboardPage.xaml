@@ -6,6 +6,8 @@
              x:DataType="viewModels:MyDashboardViewModel"
              x:Class="TrashMobMobile.Pages.MyDashboardPage"
              xmlns:controls="clr-namespace:TrashMobMobile.Controls"
+             xmlns:tabs="http://sharpnado.com"
+             xmlns:views="clr-namespace:TrashMobMobile.Views.MyDashboard"
              Title="My Dashboard">
 
     <ScrollView>
@@ -86,133 +88,36 @@
                             Text="Report Litter" />
                 </Grid>
 
-                <Label
-                    Text="Upcoming Events"
-                    FontSize="Medium"
-                    VerticalOptions="Center"
-                    HorizontalOptions="Start"
-                    HorizontalTextAlignment="Center"
-                    Margin="10, 0, 10, 0" />
+                <tabs:TabHostView Padding="10" 
+                              Orientation="Horizontal" 
+                              TabType="Fixed"
+                              SelectedIndex="{Binding Source={x:Reference Switcher}, 
+                                          Path=SelectedIndex, Mode=TwoWay}">
+                    <tabs:BottomTabItem Label="Upcoming"  SelectedTabColor="{StaticResource Primary}" />
 
-                <controls:TMPicker Title="Upcoming Date Range"
-                                   HeightRequest="40"
-                                   Margin="10, 0, 10, 0"
-                                   ItemsSource="{Binding UpcomingDateRanges}"
-                                   SelectedItem="{Binding SelectedUpcomingDateRange, Mode=TwoWay}" />
+                    <tabs:BottomTabItem Label="Completed" SelectedTabColor="{StaticResource Primary}" />
 
-                <Label Text="There are no upcoming events matching the selected criteria." IsVisible="{Binding AreNoUpcomingEventsFound}" Margin="10" />
+                    <tabs:BottomTabItem Label="Litter Reports" SelectedTabColor="{StaticResource Primary}" />
 
-                <CollectionView x:Name="UpcomingEventsCollection"
-                                ItemsSource="{Binding UpcomingEvents}"
-                                SelectedItem="{Binding UpcomingSelectedEvent}"
-                                SelectionMode="Single"
-                                Margin="10, 0, 10, 0"
-                                MaximumHeightRequest="250"
-                                IsVisible="{Binding AreUpcomingEventsFound}">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="viewModels:EventViewModel">
-                            <Border Style="{StaticResource RoundBorder}" Margin="5">
-                                <Grid ColumnDefinitions="*, *"
-                                      RowDefinitions="Auto, Auto, Auto, Auto"
-                                      x:Name="EventItem">
+                </tabs:TabHostView>
 
-                                    <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Small" />
-                                    <Label Text="{Binding DisplayDate}" Grid.Row="1" Grid.ColumnSpan="2"
-                                           FontSize="Micro" />
-                                    <Label Text="{Binding DisplayTime}" Grid.Row="1" Grid.Column="1" FontSize="Micro" />
-                                    <Label Text="{Binding Address.DisplayAddress}" Grid.Row="2" Grid.ColumnSpan="2"
-                                           FontSize="Micro" />
-                                    <Label Text="{Binding UserRoleForEvent}" Grid.Row="3" FontSize="Micro" />
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
+                <tabs:ViewSwitcher x:Name="Switcher"
+                           Margin="0"
+                           Animate="True">
+                    <tabs:DelayedView x:TypeArguments="views:TabUpcomingEvents" x:Name="tabUpcomingEvents"
+                        AccentColor="{StaticResource Primary}"
+                        Animate="True"
+                        UseActivityIndicator="True" />
+                    <tabs:DelayedView x:TypeArguments="views:TabCompletedEvents" x:Name="tabCompletedEvents"
+                        AccentColor="{StaticResource Primary}"
+                        Animate="True"
+                        UseActivityIndicator="True" />
+                    <tabs:DelayedView x:TypeArguments="views:TabLitterReports"
+                        AccentColor="{StaticResource Primary}"
+                        Animate="True"
+                        UseActivityIndicator="True" />
+                </tabs:ViewSwitcher>
 
-                <Label
-                    Text="Completed Events"
-                    FontSize="Medium"
-                    VerticalOptions="Center"
-                    HorizontalOptions="Start"
-                    HorizontalTextAlignment="Center"
-                    Margin="10, 0, 10, 0" />
-
-                <controls:TMPicker Title="Completed Date Range"
-                                   HeightRequest="40"
-                                   Margin="10, 0, 10, 0"
-                                   ItemsSource="{Binding CompletedDateRanges}"
-                                   SelectedItem="{Binding SelectedCompletedDateRange, Mode=TwoWay}" />
-
-                <Label Text="There are no completed events matching the selected criteria." IsVisible="{Binding AreNoCompletedEventsFound}" Margin="10" />
-
-                <CollectionView x:Name="CompletedEventsCollection"
-                                ItemsSource="{Binding CompletedEvents}"
-                                SelectedItem="{Binding CompletedSelectedEvent}"
-                                SelectionMode="Single"
-                                Margin="10, 0, 10, 0"
-                                MaximumHeightRequest="250"
-                                IsVisible="{Binding AreCompletedEventsFound}">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="viewModels:EventViewModel">
-                            <Border Style="{StaticResource RoundBorder}" Margin="5">
-                                <Grid ColumnDefinitions="*, *"
-                                      RowDefinitions="Auto, Auto, Auto, Auto"
-                                      x:Name="EventItem">
-
-                                    <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Small" />
-                                    <Label Text="{Binding DisplayDate}" Grid.Row="1" Grid.ColumnSpan="2"
-                                           FontSize="Micro" />
-                                    <Label Text="{Binding DisplayTime}" Grid.Row="1" Grid.Column="1" FontSize="Micro" />
-                                    <Label Text="{Binding Address.DisplayAddress}" Grid.Row="2" Grid.ColumnSpan="2"
-                                           FontSize="Micro" />
-                                    <Label Text="{Binding UserRoleForEvent}" Grid.Row="3" FontSize="Micro" />
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-
-                <Label
-                    Text="Litter Reports"
-                    FontSize="Medium"
-                    VerticalOptions="Center"
-                    HorizontalOptions="Start"
-                    HorizontalTextAlignment="Center"
-                    Margin="10, 0, 10, 0" />
-
-                <controls:TMPicker Title="Created Date Range"
-                                   HeightRequest="40"
-                                   Margin="10, 0, 10, 0"
-                                   ItemsSource="{Binding CreatedDateRanges}"
-                                   SelectedItem="{Binding SelectedCreatedDateRange, Mode=TwoWay}" />
-
-                <Label Text="There are no litter reports matching the selected criteria." IsVisible="{Binding AreNoLitterReportsFound}" Margin="10" />
-
-                <CollectionView x:Name="LitterReportCollection"
-                                ItemsSource="{Binding LitterReports}"
-                                SelectedItem="{Binding SelectedLitterReport}"
-                                SelectionMode="Single"
-                                Margin="10, 0, 10, 0"
-                                MaximumHeightRequest="250"
-                                IsVisible="{Binding AreLitterReportsFound}">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="viewModels:LitterReportViewModel">
-                            <Border Style="{StaticResource RoundBorder}" Margin="5">
-                                <Grid ColumnDefinitions="*, *"
-                                      RowDefinitions="Auto, Auto, Auto, Auto"
-                                      x:Name="LitterReportItem" RowSpacing="3">
-
-                                    <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Small" />
-                                    <Label Text="{Binding LitterReportStatus}" Grid.Row="0" Grid.Column="1"
-                                           FontSize="Micro" />
-                                    <Label Text="{Binding CreatedDate}" Grid.Row="1" Grid.Column="0"
-                                           Grid.ColumnSpan="1" FontSize="Micro" />
-                                    <Label Text="{Binding Description}" Grid.Row="1" Grid.Column="1" FontSize="Micro" />
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
             </VerticalStackLayout>
 
             <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"

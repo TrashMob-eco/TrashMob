@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
+import { Link } from 'react-router';
 import { Button, Col, Container, Row } from 'react-bootstrap';
 import { useQuery } from '@tanstack/react-query';
 import UserData from '../Models/UserData';
@@ -18,7 +18,7 @@ import { Share } from 'react-bootstrap-icons';
 import { ShareToSocialsDialog } from '../EventManagement/ShareToSocialsDialog';
 import * as SharingMessages from '../../store/SharingMessages';
 
-export interface HomeProps extends RouteComponentProps<any> {
+export interface HomeProps {
     isUserLoaded: boolean;
     currentUser: UserData;
     onUserUpdated: any;
@@ -38,7 +38,7 @@ const useGetHomeStats = () =>
         staleTime: Services.CACHE.DISABLE,
     });
 
-const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, match }) => {
+const Home: FC<HomeProps> = ({ isUserLoaded, currentUser }) => {
     const [showModal, setShowSocialsModal] = useState<boolean>(false);
     const handleShowModal = (showModal: boolean) => setShowSocialsModal(showModal);
 
@@ -200,16 +200,10 @@ const Home: FC<HomeProps> = ({ isUserLoaded, currentUser, history, location, mat
                     ))}
                 </div>
             </div>
-            <EventsSection
-                currentUser={currentUser}
-                isUserLoaded={isUserLoaded}
-                history={history}
-                location={location}
-                match={match}
-            />
+            <EventsSection currentUser={currentUser} isUserLoaded={isUserLoaded} />
             <GettingStartedSection />
         </>
     );
 };
 
-export default withRouter(Home);
+export default Home;

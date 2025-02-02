@@ -19,14 +19,13 @@ import {
     ResendPartnerAdminInvitation,
 } from '../../services/invitations';
 import { DeletePartnerAdminsByPartnerIAndUserId, GetPartnerAdminsByPartnerId } from '../../services/admin';
+import { useLogin } from '@/hooks/useLogin';
+import { useParams } from 'react-router';
 
-export interface PartnerAdminsDataProps {
-    partnerId: string;
-    isUserLoaded: boolean;
-    currentUser: UserData;
-}
+export const PartnerAdmins: React.FC = () => {
+    const { isUserLoaded, currentUser } = useLogin();
+    const { partnerId } = useParams<{ partnerId: string }>() as { partnerId: string };
 
-export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
     const [userEmail, setUserEmail] = React.useState<string>('');
     const [administrators, setAdministrators] = React.useState<UserData[]>([]);
     const [isPartnerAdminDataLoaded, setIsPartnerAdminDataLoaded] = React.useState<boolean>(false);
@@ -47,18 +46,18 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
     });
 
     const getPartnerAdminsByPartnerId = useQuery({
-        queryKey: GetPartnerAdminsByPartnerId({ partnerId: props.partnerId }).key,
-        queryFn: GetPartnerAdminsByPartnerId({ partnerId: props.partnerId }).service,
+        queryKey: GetPartnerAdminsByPartnerId({ partnerId }).key,
+        queryFn: GetPartnerAdminsByPartnerId({ partnerId }).service,
         staleTime: Services.CACHE.DISABLE,
         enabled: false,
     });
 
     const getPartnerAdminInvitationsByPartnerId = useQuery({
         queryKey: GetPartnerAdminInvitationsByPartnerId({
-            partnerId: props.partnerId,
+            partnerId: partnerId,
         }).key,
         queryFn: GetPartnerAdminInvitationsByPartnerId({
-            partnerId: props.partnerId,
+            partnerId: partnerId,
         }).service,
         staleTime: Services.CACHE.DISABLE,
         enabled: false,
@@ -66,10 +65,10 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
 
     const getPartnerAdminInvitationsByGetByPartnerId = useQuery({
         queryKey: GetPartnerAdminInvitationsByGetByPartnerId({
-            partnerId: props.partnerId,
+            partnerId: partnerId,
         }).key,
         queryFn: GetPartnerAdminInvitationsByGetByPartnerId({
-            partnerId: props.partnerId,
+            partnerId: partnerId,
         }).service,
         staleTime: Services.CACHE.DISABLE,
         enabled: false,
@@ -100,7 +99,7 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
             setInvitationStatusList(res.data?.data || []);
         });
 
-        if (props.isUserLoaded) {
+        if (isUserLoaded) {
             getPartnerAdminsByPartnerId.refetch().then((partnerAdminsRes) => {
                 setAdministrators(partnerAdminsRes.data?.data || []);
                 setIsPartnerAdminDataLoaded(true);
@@ -113,7 +112,7 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
                 });
             });
         }
-    }, [props.currentUser, props.isUserLoaded, props.partnerId]);
+    }, [currentUser, isUserLoaded, partnerId]);
 
     function removeUser(userId: string, email: string) {
         if (
@@ -123,7 +122,7 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
         )
             return;
 
-        deletePartnerAdminsByPartnerIAndUserId.mutateAsync({ partnerId: props.partnerId, userId }).then(() => {
+        deletePartnerAdminsByPartnerIAndUserId.mutateAsync({ partnerId: partnerId, userId }).then(() => {
             getPartnerAdminsByPartnerId.refetch().then((res) => {
                 setAdministrators(res.data?.data || []);
                 setIsPartnerAdminDataLoaded(true);
@@ -173,7 +172,7 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
             return;
 
         const body = new PartnerAdminInvitationData();
-        body.partnerId = props.partnerId;
+        body.partnerId = partnerId;
         body.email = userEmail ?? '';
         body.invitationStatusId = 1;
 
@@ -356,7 +355,7 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
     }
 
     const partnerAdminContents =
-        isPartnerAdminDataLoaded && props.partnerId !== Guid.EMPTY ? (
+        isPartnerAdminDataLoaded && partnerId !== Guid.EMPTY ? (
             renderUsersTable(administrators)
         ) : (
             <p>
@@ -365,7 +364,7 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
         );
 
     const partnerAdminInvitationsContents =
-        isPartnerAdminInvitationsDataLoaded && props.partnerId !== Guid.EMPTY ? (
+        isPartnerAdminInvitationsDataLoaded && partnerId !== Guid.EMPTY ? (
             renderInvitationsTable(partnerAdminInvitations)
         ) : (
             <p>
@@ -395,7 +394,7 @@ export const PartnerAdmins: React.FC<PartnerAdminsDataProps> = (props) => {
                     </Col>
                     <Col lg={8}>
                         <div className='bg-white p-5 shadow-sm rounded'>
-                            {props.partnerId === Guid.EMPTY && (
+                            {partnerId === Guid.EMPTY && (
                                 <p>
                                     {' '}
                                     <em>Partner must be created first.</em>
