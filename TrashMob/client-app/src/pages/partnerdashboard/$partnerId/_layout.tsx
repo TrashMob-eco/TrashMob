@@ -1,6 +1,7 @@
-import { Outlet, useLocation, useNavigate, useParams } from 'react-router';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCallback } from 'react';
+import { Outlet, useLocation, useNavigate, useParams, useRouteLoaderData, useMatches } from 'react-router';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+// import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export const PartnerLayout = () => {
     const navigate = useNavigate();
