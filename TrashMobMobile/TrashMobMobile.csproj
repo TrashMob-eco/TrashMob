@@ -318,6 +318,15 @@
 	  <MauiXaml Update="Views\EditEvent\TabPartners.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\MyDashboard\TabCompletedEvents.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\MyDashboard\TabLitterReports.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\MyDashboard\TabUpcomingEvents.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\ViewEvent\TabAttendees.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
