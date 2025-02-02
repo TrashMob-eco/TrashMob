@@ -24,6 +24,7 @@ public partial class ViewEventPage : ContentPage
     {
         base.OnNavigatedTo(args);
         await viewModel.Init(new Guid(EventId), UpdateRoutes);
+        Switcher.SelectedIndex = 0;
     }
 
     private void UpdateRoutes()
