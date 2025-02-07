@@ -1,17 +1,24 @@
+import { ReactNode, Children, isValidElement, cloneElement } from 'react';
+
 import { Form } from '@/components/ui/form';
-import { ReactNode } from 'react';
+import { Button } from '@/components/ui/button';
 
 interface FormWrapperProps {
     form: any;
     onSubmit: (data: any) => void;
+    onCancel?: () => void;
     children: ReactNode;
 }
 
-function FormWrapper({ form, onSubmit, children }: FormWrapperProps) {
+function FormWrapper({ form, onSubmit, onCancel, children }: FormWrapperProps) {
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className='w-2/3 space-y-6'>
-                {children}
+                {Children.map(children, (child) =>
+                    isValidElement(child) ? cloneElement(child, { control: form.control }) : child,
+                )}
+                {onCancel && <Button>Discard</Button>}
+                <Button type='submit'>Save</Button>
             </form>
         </Form>
     );

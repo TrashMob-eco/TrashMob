@@ -1,7 +1,6 @@
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-
-import { renderFormDescription } from './formUtils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface FormInputWrapperProps {
     control: any;
@@ -14,20 +13,28 @@ interface FormInputWrapperProps {
 
 function FormInput({ control, name, label, placeholder, description, inputProps = {} }: FormInputWrapperProps) {
     return (
-        <FormField
-            control={control}
-            name={name}
-            render={({ field }) => (
-                <FormItem>
-                    {label && <FormLabel>{label}</FormLabel>}
-                    <FormControl>
-                        <Input placeholder={placeholder} {...field} {...inputProps} />
-                    </FormControl>
-                    {description && renderFormDescription(description)}
-                    <FormMessage />
-                </FormItem>
-            )}
-        />
+        <TooltipProvider>
+            <FormField
+                control={control}
+                name={name}
+                render={({ field }) => (
+                    <FormItem>
+                        <Tooltip>
+                            <TooltipTrigger asChild>{label && <FormLabel>{label}</FormLabel>}</TooltipTrigger>
+                            {description && (
+                                <TooltipContent>
+                                    <p>{description}</p>
+                                </TooltipContent>
+                            )}
+                        </Tooltip>
+                        <FormControl>
+                            <Input placeholder={placeholder} {...field} {...inputProps} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+        </TooltipProvider>
     );
 }
 
