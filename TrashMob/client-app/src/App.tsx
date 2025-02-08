@@ -55,7 +55,9 @@ import { PartnerContactEdit } from './pages/partnerdashboard/$partnerId/contacts
 import { PartnerContactCreate } from './pages/partnerdashboard/$partnerId/contacts.create';
 import { PartnerLocationEdit } from './pages/partnerdashboard/$partnerId/locations.$locationId.edit';
 import { PartnerLocationCreate } from './pages/partnerdashboard/$partnerId/locations.create';
-
+import { PartnerServices } from './pages/partnerdashboard/$partnerId/services';
+import { PartnerServiceEdit } from './pages/partnerdashboard/$partnerId/services.edit';
+import { PartnerServiceEnable } from './pages/partnerdashboard/$partnerId/services.enable';
 const queryClient = new QueryClient();
 
 const useInitializeApp = () => {
@@ -133,6 +135,10 @@ export const App: FC = () => {
                                             <Route path='locations' element={<PartnerLocations />}>
                                                 <Route path='create' element={<PartnerLocationCreate />} />
                                                 <Route path=':locationId/edit' element={<PartnerLocationEdit />} />
+                                            </Route>
+                                            <Route path='services' element={<PartnerServices />}>
+                                                <Route path='enable' element={<PartnerServiceEnable />} />
+                                                <Route path='edit' element={<PartnerServiceEdit />} />
                                             </Route>
                                             <Route path='contacts' element={<PartnerContacts />}>
                                                 <Route path='create' element={<PartnerContactCreate />} />

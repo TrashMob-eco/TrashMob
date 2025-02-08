@@ -10,13 +10,19 @@ import { EnhancedFormLabel as FormLabel } from '@/components/ui/custom/form';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import * as ToolTips from '@/store/ToolTips';
 import * as MapStore from '@/store/MapStore';
 
-import { GetLocationsByPartner, GetPartnerLocations, UpdatePartnerLocations } from '@/services/locations';
+import {
+    GetLocationsByPartner,
+    GetPartnerLocations,
+    UpdatePartnerLocations,
+    UpdatePartnerLocations_Body,
+} from '@/services/locations';
 import PartnerLocationData from '@/components/Models/PartnerLocationData';
 import { GoogleMap } from '@/components/Map/GoogleMap';
 import { APIProvider, MapMouseEvent, Marker, useMap } from '@vis.gl/react-google-maps';
@@ -77,6 +83,7 @@ export const PartnerLocationEditForm = (props: PartnerLocationEditFormProps) => 
     const { toast } = useToast();
     const queryClient = useQueryClient();
     const navigate = useNavigate();
+
     const { data: currentValues, isLoading } = useGetPartnerLocationById(locationId);
     const { mutate, isLoading: isSubmitting } = useMutation({
         mutationKey: UpdatePartnerLocations().key,
@@ -99,6 +106,7 @@ export const PartnerLocationEditForm = (props: PartnerLocationEditFormProps) => 
         resolver: zodResolver(formSchema),
         defaultValues: {
             location: { lat: MapStore.defaultLatitude, lng: MapStore.defaultLongitude },
+            services: [],
         },
     });
 
@@ -191,6 +199,8 @@ export const PartnerLocationEditForm = (props: PartnerLocationEditFormProps) => 
         };
         if (location) searchAddressReverse();
     }, [location]);
+
+    console.log(form.formState.errors);
 
     if (isLoading) {
         return <Loader2 className='animate-spin mx-auto my-10' />;

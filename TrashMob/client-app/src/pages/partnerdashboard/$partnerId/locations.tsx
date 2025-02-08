@@ -9,20 +9,13 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { GetPartnerContactsByPartnerId } from '@/services/contact';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Ellipsis, Pencil, SquareX, Plus } from 'lucide-react';
+import { Ellipsis, Pencil, SquareX, Plus, Eye } from 'lucide-react';
 import { Link, Outlet, useMatch, useNavigate, useParams } from 'react-router';
 import { SidebarLayout } from './_layout.sidebar';
 import { useState } from 'react';
 import { DeletePartnerLocation, GetLocationsByPartner } from '@/services/locations';
 import { Badge } from '@/components/ui/badge';
-
-const useGetLocationsByPartnerId = (partnerId: string) => {
-    return useQuery({
-        queryKey: GetLocationsByPartner({ partnerId }).key,
-        queryFn: GetLocationsByPartner({ partnerId }).service,
-        select: (res) => res.data,
-    });
-};
+import { useGetPartnerLocations } from '@/hooks/useGetPartnerLocations';
 
 const useDeletePartnerLocationByLocationId = () => {
     return useMutation({
@@ -33,12 +26,12 @@ const useDeletePartnerLocationByLocationId = () => {
 
 export const PartnerLocations = () => {
     const { partnerId } = useParams<{ partnerId: string }>() as { partnerId: string };
-    const navigate = useNavigate();
     const queryClient = useQueryClient();
+    const navigate = useNavigate();
     const isEdit = useMatch(`/partnerdashboard/:partnerId/locations/:locationId/edit`);
     const isCreate = useMatch(`/partnerdashboard/:partnerId/locations/create`);
 
-    const { data: rows } = useGetLocationsByPartnerId(partnerId);
+    const { data: rows } = useGetPartnerLocations({ partnerId });
 
     const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
     const deletePartnerLocationByLocationId = useDeletePartnerLocationByLocationId();

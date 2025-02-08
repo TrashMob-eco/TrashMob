@@ -30,7 +30,6 @@ import { useAzureMapSearchAddressReverse } from '@/hooks/useAzureMapSearchAddres
 import { AzureSearchLocationInput, SearchLocationOption } from '@/components/Map/AzureSearchLocationInput';
 
 interface FormInputs {
-    partnerId: string;
     name: string;
     isActive: boolean;
     publicNotes: string;
@@ -46,7 +45,6 @@ interface FormInputs {
 }
 
 const formSchema = z.object({
-    partnerId: z.string(),
     name: z.string({ required_error: 'Location Name cannot be empty.' }),
     isActive: z.boolean(),
     publicNotes: z.string({ required_error: 'Public notes cannot be empty.' }),
