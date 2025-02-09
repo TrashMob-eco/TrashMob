@@ -12,6 +12,7 @@ export const PartnerLayout = () => {
     const navs = [
         { name: 'Manage Partner', value: `${pathPrefix}/edit` },
         { name: 'Manage Partner Locations', value: `${pathPrefix}/locations` },
+        { name: 'Manage Services', value: `${pathPrefix}/services` },
         { name: 'Manage Partner Contacts', value: `${pathPrefix}/contacts` },
         { name: 'Manage Partner Admins', value: `${pathPrefix}/admins` },
         { name: 'Manage Partner Documents', value: `${pathPrefix}/documents` },

@@ -4,8 +4,6 @@ import { Guid } from 'guid-typescript';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import UserData from '../Models/UserData';
 import PartnerLocationData from '../Models/PartnerLocationData';
-import PartnerLocationEdit from './PartnerLocationEdit';
-import { PartnerLocationServices } from './PartnerLocationServices';
 import { PartnerLocationEventRequests } from './PartnerLocationEventRequests';
 import { DeletePartnerLocation, GetLocationsByPartner } from '../../services/locations';
 import { Services } from '../../config/services.config';
@@ -99,45 +97,7 @@ export const PartnerLocations: React.FC = () => {
     }
 
     function renderEditPartnerLocation() {
-        return (
-            <div>
-                <PartnerLocationEdit
-                    partnerId={props.partnerId}
-                    partnerLocationId={partnerLocationId}
-                    currentUser={props.currentUser}
-                    isUserLoaded={props.isUserLoaded}
-                    onCancel={handleCancel}
-                    onSave={handleSave}
-                />
-                <hr />
-            </div>
-        );
-    }
-
-    function renderPartnerLocationServices() {
-        return (
-            <div>
-                <PartnerLocationServices
-                    partnerLocationId={partnerLocationId}
-                    currentUser={currentUser}
-                    isUserLoaded={isUserLoaded}
-                />
-                <hr />
-            </div>
-        );
-    }
-
-    function renderPartnerLocationServicesHelp() {
-        return (
-            <div className='bg-white py-2 px-5 shadow-sm rounded'>
-                <h2 className='color-primary mt-4 mb-5'>Edit Partner Location Services</h2>
-                <p>
-                    This page allows you set up the services offered by a partner location. That is, what capabilities
-                    are you willing to provide to TrashMob.eco users to help them clean up the local community? This
-                    support is crucial to the success of TrashMob.eco volunteers, and we appreciate your help!
-                </p>
-            </div>
-        );
+        return <div>Partner Location Edit (Moved)</div>;
     }
 
     function renderPartnerLocationEventRequests() {
@@ -167,131 +127,127 @@ export const PartnerLocations: React.FC = () => {
     }
 
     return (
-        <div className='container mx-auto'>
-            <div className='grid grid-cols-12 gap-8'>
-                <div className='col-span-12 lg:col-span-4'>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className='text-primary text-2xl'>Edit Partner Locations</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p>
-                                A partner location can be thought of as an instance of a business franchise, or the
-                                location of a municipal office or yard. You can have as many locations within a
-                                community as you want to set up. Each location can offer different services, and have
-                                different contact information associated with it. For instance, City Hall may provide
-                                starter kits and supplies, but only the public utilities yard offers hauling and
-                                disposal.
-                            </p>
-                            <p>
-                                A partner location must have at least one contact set up in order to be ready for events
-                                to use them. It must also be Active.
-                            </p>
-                        </CardContent>
-                    </Card>
-                </div>
-                <div className='col-span-12 lg:col-span-8'>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className='text-primary text-2xl'>Partner Locations</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            {!isPartnerLocationDataLoaded && (
+        <div className='tailwind'>
+            <div className='container mx-auto'>
+                <div className='grid grid-cols-12 gap-8'>
+                    <div className='col-span-12 lg:col-span-4'>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className='text-primary text-2xl'>Edit Partner Locations</CardTitle>
+                            </CardHeader>
+                            <CardContent>
                                 <p>
-                                    <em>Loading...</em>
+                                    A partner location can be thought of as an instance of a business franchise, or the
+                                    location of a municipal office or yard. You can have as many locations within a
+                                    community as you want to set up. Each location can offer different services, and
+                                    have different contact information associated with it. For instance, City Hall may
+                                    provide starter kits and supplies, but only the public utilities yard offers hauling
+                                    and disposal.
                                 </p>
-                            )}
-                            {!isEdit && !isAdd && isPartnerLocationDataLoaded && partnerLocations ? (
-                                <div>
-                                    <Table className='w-full'>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead>Name</TableHead>
-                                                <TableHead>City</TableHead>
-                                                <TableHead>Region</TableHead>
-                                                <TableHead>Status</TableHead>
-                                                <TableHead>Ready?</TableHead>
-                                                <TableHead>Actions</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {partnerLocations.map((location) => (
-                                                <TableRow key={location.id.toString()}>
-                                                    <TableCell>{location.name}</TableCell>
-                                                    <TableCell>{location.city}</TableCell>
-                                                    <TableCell>{location.region}</TableCell>
-                                                    <TableCell>
-                                                        {location.isActive ? (
-                                                            <Badge variant='success'>Active</Badge>
-                                                        ) : (
-                                                            <Badge variant='secondary'>Active</Badge>
-                                                        )}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {location.partnerLocationContacts &&
-                                                        location.partnerLocationContacts.length > 0
-                                                            ? 'Yes'
-                                                            : 'No'}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <DropdownMenu>
-                                                            <DropdownMenuTrigger asChild>
-                                                                <Button variant='ghost'>
-                                                                    <Ellipsis />
-                                                                </Button>
-                                                            </DropdownMenuTrigger>
-                                                            <DropdownMenuContent>
-                                                                <DropdownMenuItem
-                                                                    onClick={() => editLocation(location.id)}
-                                                                >
-                                                                    <PencilIcon />
-                                                                    Manage Location
-                                                                </DropdownMenuItem>
-                                                                <DropdownMenuItem
-                                                                    onClick={() =>
-                                                                        removeLocation(location.id, location.name)
-                                                                    }
-                                                                >
-                                                                    <SquareX />
-                                                                    Remove Location
-                                                                </DropdownMenuItem>
-                                                            </DropdownMenuContent>
-                                                        </DropdownMenu>
+                                <p>
+                                    A partner location must have at least one contact set up in order to be ready for
+                                    events to use them. It must also be Active.
+                                </p>
+                            </CardContent>
+                        </Card>
+                    </div>
+                    <div className='col-span-12 lg:col-span-8'>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className='text-primary text-2xl'>Partner Locations</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                {!isPartnerLocationDataLoaded && (
+                                    <p>
+                                        <em>Loading...</em>
+                                    </p>
+                                )}
+                                {!isEdit && !isAdd && isPartnerLocationDataLoaded && partnerLocations ? (
+                                    <div>
+                                        <Table className='w-full'>
+                                            <TableHeader>
+                                                <TableRow>
+                                                    <TableHead>Name</TableHead>
+                                                    <TableHead>City</TableHead>
+                                                    <TableHead>Region</TableHead>
+                                                    <TableHead>Status</TableHead>
+                                                    <TableHead>Ready?</TableHead>
+                                                    <TableHead>Actions</TableHead>
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {partnerLocations.map((location) => (
+                                                    <TableRow key={location.id.toString()}>
+                                                        <TableCell>{location.name}</TableCell>
+                                                        <TableCell>{location.city}</TableCell>
+                                                        <TableCell>{location.region}</TableCell>
+                                                        <TableCell>
+                                                            {location.isActive ? (
+                                                                <Badge variant='success'>Active</Badge>
+                                                            ) : (
+                                                                <Badge variant='secondary'>Active</Badge>
+                                                            )}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            {location.partnerLocationContacts &&
+                                                            location.partnerLocationContacts.length > 0
+                                                                ? 'Yes'
+                                                                : 'No'}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <DropdownMenu>
+                                                                <DropdownMenuTrigger asChild>
+                                                                    <Button variant='ghost'>
+                                                                        <Ellipsis />
+                                                                    </Button>
+                                                                </DropdownMenuTrigger>
+                                                                <DropdownMenuContent>
+                                                                    <DropdownMenuItem
+                                                                        onClick={() => editLocation(location.id)}
+                                                                    >
+                                                                        <PencilIcon />
+                                                                        Manage Location
+                                                                    </DropdownMenuItem>
+                                                                    <DropdownMenuItem
+                                                                        onClick={() =>
+                                                                            removeLocation(location.id, location.name)
+                                                                        }
+                                                                    >
+                                                                        <SquareX />
+                                                                        Remove Location
+                                                                    </DropdownMenuItem>
+                                                                </DropdownMenuContent>
+                                                            </DropdownMenu>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                                <TableRow>
+                                                    <TableCell colSpan={6}>
+                                                        <Button
+                                                            disabled={isAdd}
+                                                            variant='ghost'
+                                                            className='w-full'
+                                                            onClick={addLocation}
+                                                        >
+                                                            <Plus />
+                                                            Add Location
+                                                        </Button>
                                                     </TableCell>
                                                 </TableRow>
-                                            ))}
-                                            <TableRow>
-                                                <TableCell colSpan={6}>
-                                                    <Button
-                                                        disabled={isAdd}
-                                                        variant='ghost'
-                                                        className='w-full'
-                                                        onClick={addLocation}
-                                                    >
-                                                        <Plus />
-                                                        Add Location
-                                                    </Button>
-                                                </TableCell>
-                                            </TableRow>
-                                        </TableBody>
-                                    </Table>
-                                </div>
-                            ) : null}
-                            {isEdit || isAdd ? renderEditPartnerLocation() : null}
-                        </CardContent>
-                    </Card>
-                </div>
-                <div className='col-span-12 lg:col-span-4'>
-                    {isEdit || isAdd ? renderPartnerLocationServicesHelp() : null}
-                </div>
-                <div className='col-span-12 lg:col-span-8'>
-                    {isEdit || isAdd ? renderPartnerLocationServices() : null}
-                </div>
-                <div className='col-span-12 lg:col-span-4'>
-                    {isEdit || isAdd ? renderPartnerLocationEventRequestsHelp() : null}
-                </div>
-                <div className='col-span-12 lg:col-span-8'>
-                    {isEdit || isAdd ? renderPartnerLocationEventRequests() : null}
+                                            </TableBody>
+                                        </Table>
+                                    </div>
+                                ) : null}
+                                {isEdit || isAdd ? renderEditPartnerLocation() : null}
+                            </CardContent>
+                        </Card>
+                    </div>
+                    <div className='col-span-12 lg:col-span-4'>
+                        {isEdit || isAdd ? renderPartnerLocationEventRequestsHelp() : null}
+                    </div>
+                    <div className='col-span-12 lg:col-span-8'>
+                        {isEdit || isAdd ? renderPartnerLocationEventRequests() : null}
+                    </div>
                 </div>
             </div>
         </div>
