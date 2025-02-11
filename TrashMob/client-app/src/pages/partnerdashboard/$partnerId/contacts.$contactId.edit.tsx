@@ -11,13 +11,20 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import * as ToolTips from '@/store/ToolTips';
-import { GetPartnerContactsByContactId, GetPartnerContactsByPartnerId, UpdatePartnerContact } from '@/services/contact';
+import { GetPartnerContactsByContactId, GetPartnerContactsByPartnerId, GetPartnerLocationContactByContactId, GetPartnerLocationContactsByLocationId, UpdatePartnerContact, UpdatePartnerLocationContact } from '@/services/contact';
 import PartnerContactData from '@/components/Models/PartnerContactData';
 import * as Constants from '@/components/Models/Constants';
+import { useLogin } from '@/hooks/useLogin';
+import PartnerLocationContactData from '@/components/Models/PartnerLocationContactData';
+import { PartnerContactType } from '@/enums/PartnerContactType';
+import { useGetPartnerLocations } from '@/hooks/useGetPartnerLocations';
+import { AxiosResponse } from 'axios';
 
 interface FormInputs {
+    partnerLocationId: string;
     name: string;
     email: string;
     phone: string;
@@ -26,6 +33,7 @@ interface FormInputs {
 }
 
 const formSchema = z.object({
+    partnerLocationId: z.string().optional(),
     name: z.string({ required_error: 'Name cannot be blank.' }),
     email: z.string().email(),
     phone: z.string().regex(Constants.RegexPhoneNumber, { message: 'Please enter a valid phone number.' }),
@@ -35,38 +43,81 @@ const formSchema = z.object({
         .max(1000, 'Notes cannot be more than 1000 characters long'),
 });
 
-const useGetPartnerContactById = (contactId: string) =>
-    useQuery({
-        queryKey: GetPartnerContactsByContactId({ contactId }).key,
-        queryFn: GetPartnerContactsByContactId({ contactId }).service,
-        select: (res) => res.data,
-    });
+const useGetPartnerContactById = (type: PartnerContactType, contactId: string) => {
+    switch (type) {
+        case PartnerContactType.LOCATION_SPECIFIC:
+            return useQuery<AxiosResponse<PartnerLocationContactData>, unknown, PartnerLocationContactData>({
+                queryKey: GetPartnerLocationContactByContactId({ contactId }).key,
+                queryFn: GetPartnerLocationContactByContactId({ contactId }).service,
+                select: (res) => res.data,
+            });
+        case PartnerContactType.ORGANIZATION_WIDE: 
+        default:
+            return useQuery<AxiosResponse<PartnerContactData>, unknown, PartnerContactData>({
+                queryKey: GetPartnerContactsByContactId({ contactId }).key,
+                queryFn: GetPartnerContactsByContactId({ contactId }).service,
+                select: (res) => res.data,
+            });
+    }
+}
 
-export const PartnerContactEdit = () => {
+interface PartnerContactEditProps {
+    type: PartnerContactType
+}
+
+function isPartnerLocationContact(contact?: PartnerContactData | PartnerLocationContactData): contact is PartnerLocationContactData {
+    if (!contact) return false
+    return "partnerLocationId" in contact && typeof contact.partnerLocationId === "string"
+}
+
+export const PartnerContactEdit = (props: PartnerContactEditProps) => {
+    const { type: contactType } = props
     const { partnerId, contactId } = useParams<{ partnerId: string; contactId: string }>() as {
         partnerId: string;
         contactId: string;
     };
+    const { currentUser } = useLogin();
+    const { data: locations } = useGetPartnerLocations({ partnerId });
+    
     const { toast } = useToast();
     const queryClient = useQueryClient();
     const navigate = useNavigate();
-    const { data: currentValues, isLoading } = useGetPartnerContactById(contactId);
 
-    const { mutate, isLoading: isSubmitting } = useMutation({
-        mutationKey: UpdatePartnerContact().key,
-        mutationFn: UpdatePartnerContact().service,
-        onSuccess: () => {
-            toast({
-                variant: 'primary',
-                title: 'Contact saved!',
-                description: '',
-            });
+    const { data: currentValues, isLoading } = useGetPartnerContactById(contactType, contactId);
+    const locationId = isPartnerLocationContact(currentValues) ? currentValues?.partnerLocationId : ''
+
+    const onUpdateSuccess = (_data: unknown, variables: PartnerContactData | PartnerLocationContactData) => {
+        const locationId = isPartnerLocationContact(variables) ? variables.partnerLocationId : ''
+        toast({
+            variant: 'primary',
+            title: 'Contact saved!',
+            description: '',
+        });
+        queryClient.invalidateQueries({
+            queryKey: GetPartnerContactsByPartnerId({ partnerId }).key,
+            refetchType: 'all',
+        });
+        if (locationId) {
             queryClient.invalidateQueries({
-                queryKey: GetPartnerContactsByPartnerId({ partnerId }).key,
+                queryKey: GetPartnerLocationContactsByLocationId({
+                    locationId
+                }).key,
                 refetchType: 'all',
             });
-            navigate(`/partnerdashboard/${partnerId}/contacts`);
-        },
+        }
+        navigate(`/partnerdashboard/${partnerId}/contacts`);
+    }
+
+    const updatePartnerContact = useMutation({
+        mutationKey: UpdatePartnerContact().key,
+        mutationFn: UpdatePartnerContact().service,
+        onSuccess: onUpdateSuccess,
+    });
+
+    const updatePartnerLocationContact = useMutation({
+        mutationKey: UpdatePartnerLocationContact().key,
+        mutationFn: UpdatePartnerLocationContact().service,
+        onSuccess: onUpdateSuccess,
     });
 
     const form = useForm<FormInputs>({
@@ -75,8 +126,7 @@ export const PartnerContactEdit = () => {
             name: currentValues?.name,
             phone: currentValues?.phone,
             email: currentValues?.email,
-            createdDate: `${currentValues?.createdDate}`,
-            lastUpdatedDate: `${currentValues?.lastUpdatedDate}`,
+            partnerLocationId: locationId,
         },
     });
 
@@ -84,7 +134,6 @@ export const PartnerContactEdit = () => {
         if (currentValues) {
             form.reset({
                 ...currentValues,
-                createdDate: `${currentValues?.createdDate}`,
                 lastUpdatedDate: `${currentValues?.lastUpdatedDate}`,
             });
         }
@@ -92,28 +141,75 @@ export const PartnerContactEdit = () => {
 
     const onSubmit: SubmitHandler<FormInputs> = useCallback(
         (formValues) => {
+            console.log({ formValues })
             if (!currentValues) return;
 
-            const body = new PartnerContactData();
-            body.id = contactId;
-            body.partnerId = partnerId;
-            body.name = formValues.name ?? '';
-            body.email = formValues.email ?? '';
-            body.phone = formValues.phone ?? '';
-            body.notes = formValues.notes ?? '';
-            body.createdByUserId = currentValues.createdByUserId;
-            mutate(body);
+            if (contactType === PartnerContactType.ORGANIZATION_WIDE) {
+                console.log(`contactType`, contactType)
+                const body = new PartnerContactData();
+                body.id = contactId;
+                body.partnerId = partnerId;
+                body.name = formValues.name ?? '';
+                body.email = formValues.email ?? '';
+                body.phone = formValues.phone ?? '';
+                body.notes = formValues.notes ?? '';
+                body.lastUpdatedByUserId = currentUser.id;
+                console.log(body)
+                updatePartnerContact.mutate(body);
+            } else if (contactType === PartnerContactType.LOCATION_SPECIFIC) {
+                const body = new PartnerLocationContactData();
+                body.id = contactId;
+                body.partnerLocationId = formValues.partnerLocationId;
+                body.name = formValues.name ?? '';
+                body.email = formValues.email ?? '';
+                body.phone = formValues.phone ?? '';
+                body.notes = formValues.notes ?? '';
+                body.lastUpdatedByUserId = currentUser.id;
+                updatePartnerLocationContact.mutate(body);
+            }
         },
-        [currentValues, partnerId],
+        [currentValues, contactType, partnerId],
     );
 
+    const isSubmitting = updatePartnerContact.isLoading || updatePartnerLocationContact.isLoading
+
     if (isLoading) {
-        return <Loader2 className='animate-spin m-10' />;
+        return <Loader2 className='animate-spin mx-auto my-10' />;
     }
+
+    console.log(form.formState.errors)
 
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className='grid grid-cols-12 gap-4'>
+                <FormField
+                    control={form.control}
+                    name='partnerLocationId'
+                    render={({ field }) => (
+                        <FormItem className='col-span-6'>
+                            <FormLabel>
+                                This contact is for
+                            </FormLabel>
+                            <FormControl>
+                                <Select
+                                    value={field.value}
+                                    onValueChange={field.onChange}
+                                    disabled={contactType === PartnerContactType.ORGANIZATION_WIDE}
+                                >
+                                    <SelectTrigger className='w-full'>
+                                        <SelectValue placeholder='Organization-wide' />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {(locations || []).map((loc) => (
+                                            <SelectItem key={`${loc.id}`} value={`${loc.id}`}>{loc.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
                 <FormField
                     control={form.control}
                     name='name'
@@ -153,20 +249,7 @@ export const PartnerContactEdit = () => {
                                 Phone
                             </FormLabel>
                             <FormControl>
-                                <PhoneInput country='us' {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name='lastUpdatedDate'
-                    render={({ field }) => (
-                        <FormItem className='col-span-6'>
-                            <FormLabel tooltip={ToolTips.PartnerLastUpdatedDate}>Last Update Date</FormLabel>
-                            <FormControl>
-                                <Input {...field} disabled />
+                                <PhoneInput country='us' value={field.value} onChange={field.onChange} inputProps={{ ref: field.ref }} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

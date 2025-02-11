@@ -17,19 +17,10 @@ import {
     DeletePartnerLocationServiceByLocationIdAndServiceType,
     GetLocationsByPartner,
     GetPartnerLocationsServicesByLocationId,
-    UpdateLocationService,
 } from '@/services/locations';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useGetServiceTypes } from '@/hooks/useGetServiceTypes';
-import PartnerLocationServiceData from '@/components/Models/PartnerLocationServiceData';
-
-const useGetLocationsByPartnerId = (partnerId: string) => {
-    return useQuery({
-        queryKey: GetLocationsByPartner({ partnerId }).key,
-        queryFn: GetLocationsByPartner({ partnerId }).service,
-        select: (res) => res.data,
-    });
-};
+import { useGetPartnerLocations } from '@/hooks/useGetPartnerLocations';
 
 const useDeleteLocationService = () => {
     return useMutation({
@@ -45,7 +36,7 @@ export const PartnerServices = () => {
     const isEnabling = useMatch(`/partnerdashboard/:partnerId/services/enable`);
     const isEditing = useMatch(`/partnerdashboard/:partnerId/services/edit`);
 
-    const { data: locations } = useGetLocationsByPartnerId(partnerId);
+    const { data: locations } = useGetPartnerLocations({ partnerId });
     const { data: serviceTypes } = useGetServiceTypes();
 
     const servicesByLocation = useQueries({
@@ -108,7 +99,7 @@ export const PartnerServices = () => {
                                             (ls) => ls.serviceTypeId === serviceType.id,
                                         );
                                         return (
-                                            <TableRow key={serviceType.id}>
+                                            <TableRow key={serviceType.id} className={(isDeletingId?.locationId === location.id && isDeletingId?.serviceTypeId === serviceType.id) ? 'opacity-20' : ''}>
                                                 <TableCell>{serviceType.name}</TableCell>
                                                 <TableCell className='text-center'>
                                                     {locationService ? (
