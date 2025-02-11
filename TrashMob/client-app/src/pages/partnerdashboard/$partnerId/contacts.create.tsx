@@ -5,8 +5,8 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import PhoneInput from 'react-phone-input-2';
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { EnhancedFormLabel as FormLabel } from '@/components/ui/custom/form';
 import { Button } from '@/components/ui/button';
@@ -31,13 +31,15 @@ import { useGetPartnerLocations } from '@/hooks/useGetPartnerLocations';
 import PartnerLocationContactData from '@/components/Models/PartnerLocationContactData';
 import { PartnerContactType } from '@/enums/PartnerContactType';
 
-function isPartnerLocationContact(contact?: PartnerContactData | PartnerLocationContactData): contact is PartnerLocationContactData {
-    if (!contact) return false
-    return "partnerLocationId" in contact && typeof contact.partnerLocationId === "string"
+function isPartnerLocationContact(
+    contact?: PartnerContactData | PartnerLocationContactData,
+): contact is PartnerLocationContactData {
+    if (!contact) return false;
+    return 'partnerLocationId' in contact && typeof contact.partnerLocationId === 'string';
 }
 
 interface FormInputs {
-    contactType: PartnerContactType
+    contactType: PartnerContactType;
     locationId: string;
     name: string;
     email: string;
@@ -66,7 +68,8 @@ export const PartnerContactCreate = () => {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const [searchParams] = useSearchParams();
-    const defaultContactType = searchParams.get('contactType') as PartnerContactType || PartnerContactType.ORGANIZATION_WIDE
+    const defaultContactType =
+        (searchParams.get('contactType') as PartnerContactType) || PartnerContactType.ORGANIZATION_WIDE;
 
     const { currentUser } = useLogin();
     const { toast } = useToast();
@@ -74,7 +77,7 @@ export const PartnerContactCreate = () => {
     const { data: locations } = useGetPartnerLocations({ partnerId });
 
     const onCreateSuccess = (_data: unknown, variables: PartnerContactData | PartnerLocationContactData) => {
-        const locationId = isPartnerLocationContact(variables) ? variables.partnerLocationId : ''
+        const locationId = isPartnerLocationContact(variables) ? variables.partnerLocationId : '';
         toast({
             variant: 'primary',
             title: 'Contact saved!',
@@ -91,7 +94,7 @@ export const PartnerContactCreate = () => {
             });
         }
         navigate(`/partnerdashboard/${partnerId}/contacts`);
-    }
+    };
 
     const createPartnerContact = useMutation({
         mutationKey: CreatePartnerContact().key,
@@ -109,21 +112,21 @@ export const PartnerContactCreate = () => {
         resolver: zodResolver(formSchema),
         defaultValues: {
             contactType: defaultContactType,
-            locationId: ''
-        }
+            locationId: '',
+        },
     });
 
-    const contactType = form.watch('contactType')
+    const contactType = form.watch('contactType');
 
     useEffect(() => {
         if (contactType === PartnerContactType.ORGANIZATION_WIDE) {
-            form.setValue('locationId', '')
+            form.setValue('locationId', '');
         } else if (contactType === PartnerContactType.LOCATION_SPECIFIC) {
             if (locations && locations.length > 0) {
-                form.setValue('locationId', locations[0].id)
+                form.setValue('locationId', locations[0].id);
             }
         }
-    }, [contactType, locations])
+    }, [contactType, locations]);
 
     const onSubmit: SubmitHandler<FormInputs> = useCallback(
         (formValues) => {
@@ -151,7 +154,7 @@ export const PartnerContactCreate = () => {
         [currentUser?.id, partnerId],
     );
 
-    const isSubmitting = createPartnerContact.isLoading || createPartnerLocationContact.isLoading
+    const isSubmitting = createPartnerContact.isLoading || createPartnerLocationContact.isLoading;
 
     return (
         <Form {...form}>
@@ -162,26 +165,38 @@ export const PartnerContactCreate = () => {
                     render={({ field }) => (
                         <FormItem className='col-span-12 pt-3'>
                             <Card>
-                                <CardContent className="px-4 py-3">
+                                <CardContent className='px-4 py-3'>
                                     <RadioGroup value={field.value} onValueChange={field.onChange} className='flex'>
-                                        <div className="basis-1/2 flex items-start space-x-2">
-                                            <RadioGroupItem value={PartnerContactType.ORGANIZATION_WIDE} id={PartnerContactType.ORGANIZATION_WIDE} className="mt-2" />
-                                            <Label htmlFor={PartnerContactType.ORGANIZATION_WIDE} className="!mx-4">
-                                               <div>Organization-wide Contact</div>
-                                               <div className="text-sm text-muted font-normal mt-1">This contact applies to the entire organization.</div>
-                                           </Label>
+                                        <div className='basis-1/2 flex items-start space-x-2'>
+                                            <RadioGroupItem
+                                                value={PartnerContactType.ORGANIZATION_WIDE}
+                                                id={PartnerContactType.ORGANIZATION_WIDE}
+                                                className='mt-2'
+                                            />
+                                            <Label htmlFor={PartnerContactType.ORGANIZATION_WIDE} className='!mx-4'>
+                                                <div>Organization-wide Contact</div>
+                                                <div className='text-sm text-muted font-normal mt-1'>
+                                                    This contact applies to the entire organization.
+                                                </div>
+                                            </Label>
                                         </div>
-                                        <Separator orientation="vertical" className="min-h-[64px]" />
-                                        <div className="basis-1/2 flex items-start space-x-2">
-                                            <RadioGroupItem value={PartnerContactType.LOCATION_SPECIFIC} id={PartnerContactType.LOCATION_SPECIFIC} className="mt-2" />
-                                            <Label htmlFor={PartnerContactType.LOCATION_SPECIFIC} className="!mx-4">
-                                               <div>Location-specific Contact</div>
-                                               <div className="text-sm text-muted font-normal mt-1">This contact is for a specific location.</div>
-                                           </Label>
+                                        <Separator orientation='vertical' className='min-h-[64px]' />
+                                        <div className='basis-1/2 flex items-start space-x-2'>
+                                            <RadioGroupItem
+                                                value={PartnerContactType.LOCATION_SPECIFIC}
+                                                id={PartnerContactType.LOCATION_SPECIFIC}
+                                                className='mt-2'
+                                            />
+                                            <Label htmlFor={PartnerContactType.LOCATION_SPECIFIC} className='!mx-4'>
+                                                <div>Location-specific Contact</div>
+                                                <div className='text-sm text-muted font-normal mt-1'>
+                                                    This contact is for a specific location.
+                                                </div>
+                                            </Label>
                                         </div>
                                     </RadioGroup>
                                 </CardContent>
-                            </Card> 
+                            </Card>
                         </FormItem>
                     )}
                 />
@@ -190,9 +205,7 @@ export const PartnerContactCreate = () => {
                     name='locationId'
                     render={({ field }) => (
                         <FormItem className='col-span-6'>
-                            <FormLabel>
-                                This contact is for
-                            </FormLabel>
+                            <FormLabel>This contact is for</FormLabel>
                             <FormControl>
                                 <Select
                                     value={field.value}
@@ -252,13 +265,18 @@ export const PartnerContactCreate = () => {
                                 Phone
                             </FormLabel>
                             <FormControl>
-                               <PhoneInput country='us' value={field.value} onChange={field.onChange} inputProps={{ ref: field.ref }} />
+                                <PhoneInput
+                                    country='us'
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                    inputProps={{ ref: field.ref }}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                
+
                 <FormField
                     control={form.control}
                     name='notes'

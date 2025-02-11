@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -14,7 +14,14 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import * as ToolTips from '@/store/ToolTips';
-import { GetPartnerContactsByContactId, GetPartnerContactsByPartnerId, GetPartnerLocationContactByContactId, GetPartnerLocationContactsByLocationId, UpdatePartnerContact, UpdatePartnerLocationContact } from '@/services/contact';
+import {
+    GetPartnerContactsByContactId,
+    GetPartnerContactsByPartnerId,
+    GetPartnerLocationContactByContactId,
+    GetPartnerLocationContactsByLocationId,
+    UpdatePartnerContact,
+    UpdatePartnerLocationContact,
+} from '@/services/contact';
 import PartnerContactData from '@/components/Models/PartnerContactData';
 import * as Constants from '@/components/Models/Constants';
 import { useLogin } from '@/hooks/useLogin';
@@ -44,50 +51,51 @@ const formSchema = z.object({
 });
 
 const useGetPartnerContactById = (type: PartnerContactType, contactId: string) => {
-    switch (type) {
-        case PartnerContactType.LOCATION_SPECIFIC:
-            return useQuery<AxiosResponse<PartnerLocationContactData>, unknown, PartnerLocationContactData>({
-                queryKey: GetPartnerLocationContactByContactId({ contactId }).key,
-                queryFn: GetPartnerLocationContactByContactId({ contactId }).service,
-                select: (res) => res.data,
-            });
-        case PartnerContactType.ORGANIZATION_WIDE: 
-        default:
-            return useQuery<AxiosResponse<PartnerContactData>, unknown, PartnerContactData>({
-                queryKey: GetPartnerContactsByContactId({ contactId }).key,
-                queryFn: GetPartnerContactsByContactId({ contactId }).service,
-                select: (res) => res.data,
-            });
-    }
-}
+    const queryOptions =
+        type === PartnerContactType.LOCATION_SPECIFIC
+            ? ({
+                  queryKey: GetPartnerLocationContactByContactId({ contactId }).key,
+                  queryFn: GetPartnerLocationContactByContactId({ contactId }).service,
+                  select: (res: AxiosResponse<PartnerLocationContactData>) => res.data,
+              } as UseQueryOptions)
+            : ({
+                  queryKey: GetPartnerContactsByContactId({ contactId }).key,
+                  queryFn: GetPartnerContactsByContactId({ contactId }).service,
+                  select: (res: AxiosResponse<PartnerContactData>) => res.data,
+              } as UseQueryOptions);
+
+    return useQuery(queryOptions);
+};
 
 interface PartnerContactEditProps {
-    type: PartnerContactType
+    type: PartnerContactType;
 }
 
-function isPartnerLocationContact(contact?: PartnerContactData | PartnerLocationContactData): contact is PartnerLocationContactData {
-    if (!contact) return false
-    return "partnerLocationId" in contact && typeof contact.partnerLocationId === "string"
+function isPartnerLocationContact(
+    contact?: PartnerContactData | PartnerLocationContactData,
+): contact is PartnerLocationContactData {
+    if (!contact) return false;
+    return 'partnerLocationId' in contact && typeof contact.partnerLocationId === 'string';
 }
 
 export const PartnerContactEdit = (props: PartnerContactEditProps) => {
-    const { type: contactType } = props
+    const { type: contactType } = props;
     const { partnerId, contactId } = useParams<{ partnerId: string; contactId: string }>() as {
         partnerId: string;
         contactId: string;
     };
     const { currentUser } = useLogin();
     const { data: locations } = useGetPartnerLocations({ partnerId });
-    
+
     const { toast } = useToast();
     const queryClient = useQueryClient();
     const navigate = useNavigate();
 
     const { data: currentValues, isLoading } = useGetPartnerContactById(contactType, contactId);
-    const locationId = isPartnerLocationContact(currentValues) ? currentValues?.partnerLocationId : ''
+    const locationId = isPartnerLocationContact(currentValues) ? currentValues?.partnerLocationId : '';
 
     const onUpdateSuccess = (_data: unknown, variables: PartnerContactData | PartnerLocationContactData) => {
-        const locationId = isPartnerLocationContact(variables) ? variables.partnerLocationId : ''
+        const locationId = isPartnerLocationContact(variables) ? variables.partnerLocationId : '';
         toast({
             variant: 'primary',
             title: 'Contact saved!',
@@ -100,13 +108,13 @@ export const PartnerContactEdit = (props: PartnerContactEditProps) => {
         if (locationId) {
             queryClient.invalidateQueries({
                 queryKey: GetPartnerLocationContactsByLocationId({
-                    locationId
+                    locationId,
                 }).key,
                 refetchType: 'all',
             });
         }
         navigate(`/partnerdashboard/${partnerId}/contacts`);
-    }
+    };
 
     const updatePartnerContact = useMutation({
         mutationKey: UpdatePartnerContact().key,
@@ -141,11 +149,11 @@ export const PartnerContactEdit = (props: PartnerContactEditProps) => {
 
     const onSubmit: SubmitHandler<FormInputs> = useCallback(
         (formValues) => {
-            console.log({ formValues })
+            console.log({ formValues });
             if (!currentValues) return;
 
             if (contactType === PartnerContactType.ORGANIZATION_WIDE) {
-                console.log(`contactType`, contactType)
+                console.log(`contactType`, contactType);
                 const body = new PartnerContactData();
                 body.id = contactId;
                 body.partnerId = partnerId;
@@ -154,7 +162,7 @@ export const PartnerContactEdit = (props: PartnerContactEditProps) => {
                 body.phone = formValues.phone ?? '';
                 body.notes = formValues.notes ?? '';
                 body.lastUpdatedByUserId = currentUser.id;
-                console.log(body)
+                console.log(body);
                 updatePartnerContact.mutate(body);
             } else if (contactType === PartnerContactType.LOCATION_SPECIFIC) {
                 const body = new PartnerLocationContactData();
@@ -171,13 +179,13 @@ export const PartnerContactEdit = (props: PartnerContactEditProps) => {
         [currentValues, contactType, partnerId],
     );
 
-    const isSubmitting = updatePartnerContact.isLoading || updatePartnerLocationContact.isLoading
+    const isSubmitting = updatePartnerContact.isLoading || updatePartnerLocationContact.isLoading;
 
     if (isLoading) {
         return <Loader2 className='animate-spin mx-auto my-10' />;
     }
 
-    console.log(form.formState.errors)
+    console.log(form.formState.errors);
 
     return (
         <Form {...form}>
@@ -187,9 +195,7 @@ export const PartnerContactEdit = (props: PartnerContactEditProps) => {
                     name='partnerLocationId'
                     render={({ field }) => (
                         <FormItem className='col-span-6'>
-                            <FormLabel>
-                                This contact is for
-                            </FormLabel>
+                            <FormLabel>This contact is for</FormLabel>
                             <FormControl>
                                 <Select
                                     value={field.value}
@@ -201,7 +207,9 @@ export const PartnerContactEdit = (props: PartnerContactEditProps) => {
                                     </SelectTrigger>
                                     <SelectContent>
                                         {(locations || []).map((loc) => (
-                                            <SelectItem key={`${loc.id}`} value={`${loc.id}`}>{loc.name}</SelectItem>
+                                            <SelectItem key={`${loc.id}`} value={`${loc.id}`}>
+                                                {loc.name}
+                                            </SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
@@ -249,7 +257,12 @@ export const PartnerContactEdit = (props: PartnerContactEditProps) => {
                                 Phone
                             </FormLabel>
                             <FormControl>
-                                <PhoneInput country='us' value={field.value} onChange={field.onChange} inputProps={{ ref: field.ref }} />
+                                <PhoneInput
+                                    country='us'
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                    inputProps={{ ref: field.ref }}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

@@ -99,7 +99,15 @@ export const PartnerServices = () => {
                                             (ls) => ls.serviceTypeId === serviceType.id,
                                         );
                                         return (
-                                            <TableRow key={serviceType.id} className={(isDeletingId?.locationId === location.id && isDeletingId?.serviceTypeId === serviceType.id) ? 'opacity-20' : ''}>
+                                            <TableRow
+                                                key={serviceType.id}
+                                                className={
+                                                    isDeletingId?.locationId === location.id &&
+                                                    isDeletingId?.serviceTypeId === serviceType.id
+                                                        ? 'opacity-20'
+                                                        : ''
+                                                }
+                                            >
                                                 <TableCell>{serviceType.name}</TableCell>
                                                 <TableCell className='text-center'>
                                                     {locationService ? (

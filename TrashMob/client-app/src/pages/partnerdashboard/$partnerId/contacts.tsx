@@ -5,10 +5,15 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
-import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/components/ui/card'
+import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { DeletePartnerContactByContactId, DeletePartnerLocationContactByContactId, GetPartnerContactsByPartnerId, GetPartnerLocationContactsByLocationId } from '@/services/contact';
+import {
+    DeletePartnerContactByContactId,
+    DeletePartnerLocationContactByContactId,
+    GetPartnerContactsByPartnerId,
+    GetPartnerLocationContactsByLocationId,
+} from '@/services/contact';
 import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Ellipsis, Pencil, SquareX, Plus } from 'lucide-react';
 import { Link, Outlet, useMatch, useNavigate, useParams } from 'react-router';
@@ -19,21 +24,14 @@ import PartnerLocationContactData from '@/components/Models/PartnerLocationConta
 import { Badge } from '@/components/ui/badge';
 import { PartnerContactType } from '@/enums/PartnerContactType';
 
-const colors = [
-    'bg-green-100',
-    'bg-sky-100',
-    'bg-rose-100',
-    'bg-red-100',
-    'bg-cyan-100',
-    'bg-purple-100',
-]
+const colors = ['bg-green-100', 'bg-sky-100', 'bg-rose-100', 'bg-red-100', 'bg-cyan-100', 'bg-purple-100'];
 
 const formatPhone = (phone: string) => {
     function splitIntoChunks(str: string, size: number): string[] {
         return str.match(new RegExp(`.{1,${size}}`, 'g')) || [];
     }
-    return splitIntoChunks(`+${phone}`, 3).join(' ')
-}
+    return splitIntoChunks(`+${phone}`, 3).join(' ');
+};
 
 const useGetOrganizationWideContacts = (partnerId: string) => {
     return useQuery({
@@ -55,7 +53,7 @@ const useDeletePartnerLocationContactByContactId = () => {
         mutationKey: DeletePartnerLocationContactByContactId().key,
         mutationFn: DeletePartnerLocationContactByContactId().service,
     });
-}
+};
 
 export const PartnerContacts = () => {
     const { partnerId } = useParams<{ partnerId: string }>() as { partnerId: string };
@@ -67,22 +65,25 @@ export const PartnerContacts = () => {
     const { data: locations } = useGetPartnerLocations({ partnerId });
     const { data: organizationWideContacts } = useGetOrganizationWideContacts(partnerId);
 
-    const getLocation = useCallback((locationId: string) => {
-        return (locations || []).find(loc => loc.id === locationId)
-    }, [locations])
+    const getLocation = useCallback(
+        (locationId: string) => {
+            return (locations || []).find((loc) => loc.id === locationId);
+        },
+        [locations],
+    );
 
     const contactsByLocation = useQueries({
         queries: (locations || []).map((location, locIndex) => {
-            const badgeColor = colors[locIndex % colors.length]
+            const badgeColor = colors[locIndex % colors.length];
             return {
                 queryKey: GetPartnerLocationContactsByLocationId({ locationId: location.id }).key,
                 queryFn: GetPartnerLocationContactsByLocationId({ locationId: location.id }).service,
-                select: (res) => (res.data || []).map(item => ({ ...item, badgeColor })),
-            }
+                select: (res) => (res.data || []).map((item) => ({ ...item, badgeColor })),
+            };
         }),
     });
 
-    const contacts = contactsByLocation.map(loc => loc.data || []).flat()    
+    const contacts = contactsByLocation.map((loc) => loc.data || []).flat();
 
     const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
     const deletePartnerContact = useDeletePartnerContactByContactId();
@@ -132,7 +133,11 @@ export const PartnerContacts = () => {
                 <Card>
                     <CardHeader>
                         <CardTitle>Organization-wide Contacts</CardTitle>
-                        <CardDescription>This information may be displayed in the partnerships page on TrashMob.eco, but is also used by the TrashMob site administrators to contact your organization during setup and during times where issues have arisen.</CardDescription>
+                        <CardDescription>
+                            This information may be displayed in the partnerships page on TrashMob.eco, but is also used
+                            by the TrashMob site administrators to contact your organization during setup and during
+                            times where issues have arisen.
+                        </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Table>
@@ -149,9 +154,7 @@ export const PartnerContacts = () => {
                                     <TableRow key={row.name} className={isDeletingId === row?.id ? 'opacity-20' : ''}>
                                         <TableCell>{row.name}</TableCell>
                                         <TableCell>{row.email}</TableCell>
-                                        <TableCell>
-                                            {formatPhone(row.phone)}
-                                        </TableCell>
+                                        <TableCell>{formatPhone(row.phone)}</TableCell>
                                         <TableCell>
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
@@ -192,7 +195,10 @@ export const PartnerContacts = () => {
                     <CardHeader>
                         <CardTitle>Location-specific Contacts</CardTitle>
                         <CardDescription>
-                            These are contacts for a particular location of your organization. These addresses will be sent emails when a TrashMob.eco user chooses to use the services offered by this location. This will allow you to accept or decline the request so that the user knows the status of their requests.
+                            These are contacts for a particular location of your organization. These addresses will be
+                            sent emails when a TrashMob.eco user chooses to use the services offered by this location.
+                            This will allow you to accept or decline the request so that the user knows the status of
+                            their requests.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -208,19 +214,15 @@ export const PartnerContacts = () => {
                             </TableHeader>
                             <TableBody>
                                 {(contacts || []).map((row) => {
-                                    const location = getLocation(row.partnerLocationId)
+                                    const location = getLocation(row.partnerLocationId);
                                     return (
                                         <TableRow key={row.id}>
                                             <TableCell>
-                                                <Badge className={row.badgeColor}>
-                                                    {location?.name}
-                                                </Badge>
+                                                <Badge className={row.badgeColor}>{location?.name}</Badge>
                                             </TableCell>
                                             <TableCell>{row.name}</TableCell>
                                             <TableCell>{row.email}</TableCell>
-                                            <TableCell>
-                                                {formatPhone(row.phone)}
-                                            </TableCell>
+                                            <TableCell>{formatPhone(row.phone)}</TableCell>
                                             <TableCell>
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
@@ -235,7 +237,16 @@ export const PartnerContacts = () => {
                                                                 Edit Contact
                                                             </Link>
                                                         </DropdownMenuItem>
-                                                        <DropdownMenuItem onClick={() => removeLocationContact(row.id, row.name, row.partnerLocationId, location?.name)}>
+                                                        <DropdownMenuItem
+                                                            onClick={() =>
+                                                                removeLocationContact(
+                                                                    row.id,
+                                                                    row.name,
+                                                                    row.partnerLocationId,
+                                                                    location?.name,
+                                                                )
+                                                            }
+                                                        >
                                                             <SquareX />
                                                             Remove Contact
                                                         </DropdownMenuItem>
@@ -243,7 +254,7 @@ export const PartnerContacts = () => {
                                                 </DropdownMenu>
                                             </TableCell>
                                         </TableRow>
-                                    )
+                                    );
                                 })}
                                 <TableRow>
                                     <TableCell colSpan={5}>

@@ -143,8 +143,22 @@ export const App: FC = () => {
                                             </Route>
                                             <Route path='contacts' element={<PartnerContacts />}>
                                                 <Route path='create' element={<PartnerContactCreate />} />
-                                                <Route path=':contactId/edit' element={<PartnerContactEdit type={PartnerContactType.ORGANIZATION_WIDE} />} />
-                                                <Route path='by-location/:contactId/edit' element={<PartnerContactEdit type={PartnerContactType.LOCATION_SPECIFIC} />} />
+                                                <Route
+                                                    path=':contactId/edit'
+                                                    element={
+                                                        <PartnerContactEdit
+                                                            type={PartnerContactType.ORGANIZATION_WIDE}
+                                                        />
+                                                    }
+                                                />
+                                                <Route
+                                                    path='by-location/:contactId/edit'
+                                                    element={
+                                                        <PartnerContactEdit
+                                                            type={PartnerContactType.LOCATION_SPECIFIC}
+                                                        />
+                                                    }
+                                                />
                                             </Route>
                                             <Route path='admins' element={<PartnerAdmins />} />
                                             <Route path='documents' element={<PartnerDocuments />} />
