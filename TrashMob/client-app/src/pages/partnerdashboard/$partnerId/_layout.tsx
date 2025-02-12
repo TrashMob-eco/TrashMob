@@ -10,6 +10,7 @@ export const PartnerLayout = () => {
 
     const pathPrefix = `/partnerdashboard/${partnerId}`;
     const navs = [
+        { name: 'Service Requests', value: `${pathPrefix}` },
         { name: 'Manage Partner', value: `${pathPrefix}/edit` },
         { name: 'Manage Partner Locations', value: `${pathPrefix}/locations` },
         { name: 'Manage Services', value: `${pathPrefix}/services` },

@@ -15,11 +15,10 @@ import { SidebarLayout } from './_layout.sidebar';
 import { useState } from 'react';
 import {
     DeletePartnerLocationServiceByLocationIdAndServiceType,
-    GetLocationsByPartner,
     GetPartnerLocationsServicesByLocationId,
 } from '@/services/locations';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useGetServiceTypes } from '@/hooks/useGetServiceTypes';
+import { useGetPartnerServiceTypes } from '@/hooks/useGetPartnerServiceTypes';
 import { useGetPartnerLocations } from '@/hooks/useGetPartnerLocations';
 
 const useDeleteLocationService = () => {
@@ -37,7 +36,7 @@ export const PartnerServices = () => {
     const isEditing = useMatch(`/partnerdashboard/:partnerId/services/edit`);
 
     const { data: locations } = useGetPartnerLocations({ partnerId });
-    const { data: serviceTypes } = useGetServiceTypes();
+    const { data: serviceTypes } = useGetPartnerServiceTypes();
 
     const servicesByLocation = useQueries({
         queries: (locations || []).map((location) => ({

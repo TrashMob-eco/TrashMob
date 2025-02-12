@@ -1,5 +1,3 @@
-// servicetypes
-
 import { ApiService } from '.';
 import ServiceTypeData from '../components/Models/ServiceTypeData';
 

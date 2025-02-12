@@ -15,7 +15,7 @@ import * as ToolTips from '@/store/ToolTips';
 
 import { CreateLocationService, GetLocationsByPartner } from '@/services/locations';
 import PartnerLocationServiceData from '@/components/Models/PartnerLocationServiceData';
-import { useGetServiceTypes } from '@/hooks/useGetServiceTypes';
+import { useGetServiceTypes } from '@/hooks/useGetPartnerServiceTypes';
 import { useLogin } from '@/hooks/useLogin';
 
 interface FormInputs {

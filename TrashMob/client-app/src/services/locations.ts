@@ -289,9 +289,11 @@ export type GetPartnerLocationEventServicesByLocationId_Params = {
     locationId: string;
 };
 export type GetPartnerLocationEventServicesByLocationId_Response = DisplayPartnerLocationEventData[];
-export const GetPartnerLocationEventServicesByLocationId = () => ({
-    key: ['/partnerlocationeventservices/', 'by locationId'],
-    service: async (params: GetPartnerLocationEventServicesByLocationId_Params) =>
+export const GetPartnerLocationEventServicesByLocationId = (
+    params: GetPartnerLocationEventServicesByLocationId_Params,
+) => ({
+    key: ['/partnerlocationeventservices/', params],
+    service: async () =>
         ApiService('protected').fetchData<GetPartnerLocationEventServicesByLocationId_Response>({
             url: `/partnerlocationeventservices/${params.locationId}`,
             method: 'get',

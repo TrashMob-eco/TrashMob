@@ -23,8 +23,7 @@ import { useGetPartnerLocations } from '@/hooks/useGetPartnerLocations';
 import PartnerLocationContactData from '@/components/Models/PartnerLocationContactData';
 import { Badge } from '@/components/ui/badge';
 import { PartnerContactType } from '@/enums/PartnerContactType';
-
-const colors = ['bg-green-100', 'bg-sky-100', 'bg-rose-100', 'bg-red-100', 'bg-cyan-100', 'bg-purple-100'];
+import { getIndexedColor } from '@/lib/color';
 
 const formatPhone = (phone: string) => {
     function splitIntoChunks(str: string, size: number): string[] {
@@ -74,7 +73,7 @@ export const PartnerContacts = () => {
 
     const contactsByLocation = useQueries({
         queries: (locations || []).map((location, locIndex) => {
-            const badgeColor = colors[locIndex % colors.length];
+            const badgeColor = getIndexedColor(locIndex);
             return {
                 queryKey: GetPartnerLocationContactsByLocationId({ locationId: location.id }).key,
                 queryFn: GetPartnerLocationContactsByLocationId({ locationId: location.id }).service,

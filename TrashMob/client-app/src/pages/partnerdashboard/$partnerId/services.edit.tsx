@@ -20,7 +20,7 @@ import {
 } from '@/services/locations';
 import PartnerLocationServiceData from '@/components/Models/PartnerLocationServiceData';
 import { useLogin } from '@/hooks/useLogin';
-import { useGetServiceTypes } from '@/hooks/useGetServiceTypes';
+import { useGetPartnerServiceTypes } from '@/hooks/useGetPartnerServiceTypes';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useGetPartnerLocations } from '@/hooks/useGetPartnerLocations';
 
@@ -60,7 +60,7 @@ export const PartnerServiceEdit = (props: PartnerServiceEditProps) => {
         select: (res) => res.data,
     });
 
-    const { data: serviceTypes } = useGetServiceTypes();
+    const { data: serviceTypes } = useGetPartnerServiceTypes();
     const { data: locations } = useGetPartnerLocations({ partnerId });
 
     const form = useForm<FormInputs>({

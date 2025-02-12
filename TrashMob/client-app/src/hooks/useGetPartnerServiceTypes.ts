@@ -1,7 +1,7 @@
 import { GetServiceTypes } from '@/services/services';
 import { useQuery } from '@tanstack/react-query';
 
-export const useGetServiceTypes = () => {
+export const useGetPartnerServiceTypes = () => {
     return useQuery({
         queryKey: GetServiceTypes().key,
         queryFn: GetServiceTypes().service,
