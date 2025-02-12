@@ -1,3 +1,10 @@
+import { useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Link, Outlet, useMatch, useNavigate, useParams } from 'react-router';
+import { AxiosResponse } from 'axios';
+import { Ellipsis, Pencil, Plus, SquareX } from 'lucide-react';
+
+import { SidebarLayout } from './_layout.sidebar';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -7,87 +14,72 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { GetPartnerContactsByPartnerId } from '@/services/contact';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Ellipsis, Pencil, SquareX, Plus } from 'lucide-react';
-import { Link, Outlet, useMatch, useNavigate, useParams } from 'react-router';
-import { SidebarLayout } from './_layout.sidebar';
-import { useState } from 'react';
-import { DeletePartnerLocation } from '@/services/locations';
-import { Badge } from '@/components/ui/badge';
-import { useGetPartnerLocations } from '@/hooks/useGetPartnerLocations';
 
-const useDeletePartnerLocationByLocationId = () => {
-    return useMutation({
-        mutationKey: DeletePartnerLocation().key,
-        mutationFn: DeletePartnerLocation().service,
-    });
-};
+import { DeletePartnerDocumentByDocuemntId, GetPartnerDocumentsByPartnerId } from '@/services/documents';
+import PartnerDocumentData from '@/components/Models/PartnerDocumentData';
 
-export const PartnerLocations = () => {
+export const PartnerDocuments = () => {
     const { partnerId } = useParams<{ partnerId: string }>() as { partnerId: string };
     const queryClient = useQueryClient();
     const navigate = useNavigate();
-    const isEdit = useMatch(`/partnerdashboard/:partnerId/locations/:locationId/edit`);
-    const isCreate = useMatch(`/partnerdashboard/:partnerId/locations/create`);
+    const isEdit = useMatch(`/partnerdashboard/:partnerId/documents/:documentId/edit`);
+    const isCreate = useMatch(`/partnerdashboard/:partnerId/documents/create`);
 
-    const { data: rows } = useGetPartnerLocations({ partnerId });
+    const { data: documents } = useQuery<AxiosResponse<PartnerDocumentData[]>, unknown, PartnerDocumentData[]>({
+        queryKey: GetPartnerDocumentsByPartnerId({ partnerId }).key,
+        queryFn: GetPartnerDocumentsByPartnerId({ partnerId }).service,
+        select: (res) => res.data,
+    });
+
+    const deletePartnerDocumentByDocuemntId = useMutation({
+        mutationKey: DeletePartnerDocumentByDocuemntId().key,
+        mutationFn: DeletePartnerDocumentByDocuemntId().service,
+    });
 
     const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
-    const deletePartnerLocationByLocationId = useDeletePartnerLocationByLocationId();
+    const removeDocument = (documentId: string, documentName: string) => {
+        setIsDeletingId(documentId);
+        if (
+            !window.confirm(
+                `Please confirm that you want to remove document with name: '${
+                    documentName
+                }' as a document from this Partner?`,
+            )
+        )
+            return;
 
-    function removeLocation(partnerLocationId: string, name: string) {
-        if (!window.confirm(`Please confirm that you want to remove location: '${name}' from this Partner ?`)) return;
-        setIsDeletingId(partnerLocationId);
-
-        deletePartnerLocationByLocationId
-            .mutateAsync({ locationId: partnerLocationId })
+        deletePartnerDocumentByDocuemntId
+            .mutateAsync({ documentId })
             .then(async () => {
                 return queryClient.invalidateQueries({
-                    queryKey: GetPartnerContactsByPartnerId({ partnerId }).key,
+                    queryKey: GetPartnerDocumentsByPartnerId({ partnerId }).key,
                     refetchType: 'all',
                 });
             })
             .then(() => {
                 setIsDeletingId(null);
             });
-    }
+    };
 
     return (
         <SidebarLayout
-            title='Edit Partner Locations'
-            description='A partner location can be thought of as an instance of a business franchise, or the location of a municipal office or yard. You can have as many locations within a community as you want to set up. Each location can offer different services, and have different contact information associated with it. For instance, City Hall may provide starter kits and supplies, but only the public utilities yard offers hauling and disposal. A partner location must have at least one contact set up in order to be ready for events to use them. It must also be Active.'
+            title='Edit Partner Documents'
+            description='This page allows you and the TrashMob administrators to track documents relevant to the partnership. i.e. Volunteer Organizational Agreements or special waivers if needed. Note that this page will have more functionality added in the future to allow uploading filled out documents.'
         >
             <div>
                 <Table>
                     <TableHeader>
                         <TableRow>
                             <TableHead>Name</TableHead>
-                            <TableHead>City</TableHead>
-                            <TableHead>Region</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Ready?</TableHead>
+                            <TableHead>Url</TableHead>
                             <TableHead>Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {(rows || []).map((row) => (
+                        {(documents || []).map((row) => (
                             <TableRow key={row.id} className={isDeletingId === row.id ? 'opacity-20' : ''}>
                                 <TableCell>{row.name}</TableCell>
-                                <TableCell>{row.city}</TableCell>
-                                <TableCell>{row.region}</TableCell>
-                                <TableCell>
-                                    {row.isActive ? (
-                                        <Badge variant='success'>Active</Badge>
-                                    ) : (
-                                        <Badge variant='secondary'>Active</Badge>
-                                    )}
-                                </TableCell>
-                                <TableCell>
-                                    {row.partnerLocationContacts && row.partnerLocationContacts.length > 0
-                                        ? 'Yes'
-                                        : 'No'}
-                                </TableCell>
+                                <TableCell>{row.url}</TableCell>
                                 <TableCell>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
@@ -99,12 +91,12 @@ export const PartnerLocations = () => {
                                             <DropdownMenuItem asChild>
                                                 <Link to={`${row.id}/edit`}>
                                                     <Pencil />
-                                                    Edit Location
+                                                    Edit Document
                                                 </Link>
                                             </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => removeLocation(row.id, row.name)}>
+                                            <DropdownMenuItem onClick={() => removeDocument(row.id, row.name)}>
                                                 <SquareX />
-                                                Remove Location
+                                                Remove Document
                                             </DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
@@ -112,10 +104,10 @@ export const PartnerLocations = () => {
                             </TableRow>
                         ))}
                         <TableRow>
-                            <TableCell colSpan={6}>
+                            <TableCell colSpan={3}>
                                 <Button variant='ghost' className='w-full' asChild>
                                     <Link to='create'>
-                                        <Plus /> Add Location
+                                        <Plus /> Add Document
                                     </Link>
                                 </Button>
                             </TableCell>
@@ -128,7 +120,7 @@ export const PartnerLocations = () => {
                         onOpenAutoFocus={(e) => e.preventDefault()}
                     >
                         <DialogHeader>
-                            <DialogTitle>Edit Location</DialogTitle>
+                            <DialogTitle>Edit Document</DialogTitle>
                         </DialogHeader>
                         <div>
                             <Outlet />
@@ -141,7 +133,7 @@ export const PartnerLocations = () => {
                         onOpenAutoFocus={(e) => e.preventDefault()}
                     >
                         <DialogHeader>
-                            <DialogTitle>Create Location</DialogTitle>
+                            <DialogTitle>Add Document</DialogTitle>
                         </DialogHeader>
                         <div>
                             <Outlet />
