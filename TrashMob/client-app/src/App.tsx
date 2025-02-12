@@ -58,6 +58,7 @@ import { PartnerLocationCreate } from './pages/partnerdashboard/$partnerId/locat
 import { PartnerServices } from './pages/partnerdashboard/$partnerId/services';
 import { PartnerServiceEdit } from './pages/partnerdashboard/$partnerId/services.edit';
 import { PartnerServiceEnable } from './pages/partnerdashboard/$partnerId/services.enable';
+import { PartnerContactType } from './enums/PartnerContactType';
 const queryClient = new QueryClient();
 
 const useInitializeApp = () => {
@@ -142,7 +143,22 @@ export const App: FC = () => {
                                             </Route>
                                             <Route path='contacts' element={<PartnerContacts />}>
                                                 <Route path='create' element={<PartnerContactCreate />} />
-                                                <Route path=':contactId/edit' element={<PartnerContactEdit />} />
+                                                <Route
+                                                    path=':contactId/edit'
+                                                    element={
+                                                        <PartnerContactEdit
+                                                            type={PartnerContactType.ORGANIZATION_WIDE}
+                                                        />
+                                                    }
+                                                />
+                                                <Route
+                                                    path='by-location/:contactId/edit'
+                                                    element={
+                                                        <PartnerContactEdit
+                                                            type={PartnerContactType.LOCATION_SPECIFIC}
+                                                        />
+                                                    }
+                                                />
                                             </Route>
                                             <Route path='admins' element={<PartnerAdmins />} />
                                             <Route path='documents' element={<PartnerDocuments />} />

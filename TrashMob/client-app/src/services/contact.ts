@@ -32,9 +32,9 @@ export const GetPartnerLocationContactsByLocationId = (params: GetPartnerLocatio
 
 export type GetPartnerLocationContactByContactId_Params = { contactId: string };
 export type GetPartnerLocationContactByContactId_Response = PartnerLocationContactData;
-export const GetPartnerLocationContactByContactId = () => ({
-    key: ['/partnerlocationcontacts/', 'get by contactId'],
-    service: async (params: GetPartnerLocationContactByContactId_Params) =>
+export const GetPartnerLocationContactByContactId = (params: GetPartnerLocationContactByContactId_Params) => ({
+    key: ['/partnerlocationcontacts/', params.contactId],
+    service: async () =>
         ApiService('protected').fetchData<GetPartnerLocationContactByContactId_Response>({
             url: `/partnerlocationcontacts/${params.contactId}`,
             method: 'get',
