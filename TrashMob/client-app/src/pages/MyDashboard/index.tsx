@@ -1,7 +1,6 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { APIProvider } from '@vis.gl/react-google-maps';
-import { Guid } from 'guid-typescript';
 import { useQuery } from '@tanstack/react-query';
 import EventData from '@/components/Models/EventData';
 import UserData from '@/components/Models/UserData';
@@ -11,7 +10,7 @@ import bucketplus from '@/components/assets/card/bucketplus.svg';
 import StatsData from '@/components/Models/StatsData';
 import DisplayPartnershipData from '@/components/Models/DisplayPartnershipData';
 import DisplayPartnerAdminInvitationData from '@/components/Models/DisplayPartnerAdminInvitationData';
-import { PartnerLocationEventRequests } from '@/components/Partners/PartnerLocationEventRequests';
+import DisplayPartnerLocationEventData from '@/components/Models/DisplayPartnerLocationEventServiceData';
 import { ShareToSocialsDialog } from '@/components/EventManagement/ShareToSocialsDialog';
 import { HeroSection } from '@/components/Customization/HeroSection';
 import * as SharingMessages from '@/store/SharingMessages';
@@ -34,9 +33,10 @@ import { AxiosResponse } from 'axios';
 import { GetPartnerRequestByUserId } from '@/services/partners';
 import { GetPartnerAdminsForUser } from '@/services/admin';
 import { GetPartnerAdminInvitationsByUser } from '@/services/invitations';
-import { GetEventPickupLocationsByUser } from '@/services/locations';
+import { GetEventPickupLocationsByUser, GetPartnerLocationEventServicesByUserId } from '@/services/locations';
 import PickupLocationData from '@/components/Models/PickupLocationData';
 import { useLocation } from 'react-router';
+import { PartnerEventRequestTable } from '@/components/Partners/partner-event-request-table';
 
 const isUpcomingEvent = (event: EventData) => new Date(event.eventDate) >= new Date();
 const isPastEvent = (event: EventData) => new Date(event.eventDate) < new Date();
@@ -93,6 +93,17 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const { data: myPickupRequests } = useQuery<AxiosResponse<PickupLocationData[]>, unknown, PickupLocationData[]>({
         queryKey: GetEventPickupLocationsByUser({ userId }).key,
         queryFn: GetEventPickupLocationsByUser({ userId }).service,
+        select: (res) => res.data,
+    });
+
+    // Event Request
+    const { data: partnerEventServices, isLoading: isPartnerEventServicesLoading } = useQuery<
+        AxiosResponse<DisplayPartnerLocationEventData[]>,
+        unknown,
+        DisplayPartnerLocationEventData[]
+    >({
+        queryKey: GetPartnerLocationEventServicesByUserId({ userId }).key,
+        queryFn: GetPartnerLocationEventServicesByUserId({ userId }).service,
         select: (res) => res.data,
     });
 
@@ -303,10 +314,9 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                         <CardTitle className='text-primary'>Partner Event Requests</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <PartnerLocationEventRequests
-                            partnerLocationId={Guid.EMPTY}
-                            currentUser={props.currentUser}
-                            isUserLoaded={props.isUserLoaded}
+                        <PartnerEventRequestTable
+                            isLoading={isPartnerEventServicesLoading}
+                            data={partnerEventServices}
                         />
                     </CardContent>
                 </Card>
