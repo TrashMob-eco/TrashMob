@@ -48,7 +48,6 @@ import { PartnerLayout } from './pages/partnerdashboard/$partnerId/_layout';
 import { PartnerLocations } from './pages/partnerdashboard/$partnerId/locations';
 import { PartnerContacts } from './pages/partnerdashboard/$partnerId/contacts';
 import { PartnerAdmins } from './components/Partners/PartnerAdmins';
-import { PartnerSocialMediaAccounts } from './components/Partners/PartnerSocialMediaAccounts';
 import { PartnerIndex } from './pages/partnerdashboard/$partnerId';
 import { PartnerContactEdit } from './pages/partnerdashboard/$partnerId/contacts.$contactId.edit';
 import { PartnerContactCreate } from './pages/partnerdashboard/$partnerId/contacts.create';
@@ -60,6 +59,9 @@ import { PartnerServiceEnable } from './pages/partnerdashboard/$partnerId/servic
 import { PartnerDocuments } from './pages/partnerdashboard/$partnerId/documents';
 import { PartnerDocumentEdit } from './pages/partnerdashboard/$partnerId/documents.$documentId.edit';
 import { PartnerDocumentCreate } from './pages/partnerdashboard/$partnerId/documents.create';
+import { PartnerSocialMediaAccounts } from './pages/partnerdashboard/$partnerId/socials';
+import { PartnerSocialAcccountEdit } from './pages/partnerdashboard/$partnerId/socials.$accountId.edit';
+import { PartnerSocialAcccountCreate } from './pages/partnerdashboard/$partnerId/socials.create';
 
 import { PartnerContactType } from './enums/PartnerContactType';
 
@@ -169,7 +171,10 @@ export const App: FC = () => {
                                                 <Route path=':documentId/edit' element={<PartnerDocumentEdit />} />
                                                 <Route path='create' element={<PartnerDocumentCreate />} />
                                             </Route>
-                                            <Route path='socials' element={<PartnerSocialMediaAccounts />} />
+                                            <Route path='socials' element={<PartnerSocialMediaAccounts />}>
+                                                <Route path=':accountId/edit' element={<PartnerSocialAcccountEdit />} />
+                                                <Route path='create' element={<PartnerSocialAcccountCreate />} />
+                                            </Route>
                                         </Route>
                                     </Route>
                                     <Route
