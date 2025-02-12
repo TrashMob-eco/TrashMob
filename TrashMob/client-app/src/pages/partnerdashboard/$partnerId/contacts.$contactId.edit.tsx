@@ -149,11 +149,9 @@ export const PartnerContactEdit = (props: PartnerContactEditProps) => {
 
     const onSubmit: SubmitHandler<FormInputs> = useCallback(
         (formValues) => {
-            console.log({ formValues });
             if (!currentValues) return;
 
             if (contactType === PartnerContactType.ORGANIZATION_WIDE) {
-                console.log(`contactType`, contactType);
                 const body = new PartnerContactData();
                 body.id = contactId;
                 body.partnerId = partnerId;
@@ -162,7 +160,6 @@ export const PartnerContactEdit = (props: PartnerContactEditProps) => {
                 body.phone = formValues.phone ?? '';
                 body.notes = formValues.notes ?? '';
                 body.lastUpdatedByUserId = currentUser.id;
-                console.log(body);
                 updatePartnerContact.mutate(body);
             } else if (contactType === PartnerContactType.LOCATION_SPECIFIC) {
                 const body = new PartnerLocationContactData();
@@ -184,8 +181,6 @@ export const PartnerContactEdit = (props: PartnerContactEditProps) => {
     if (isLoading) {
         return <Loader2 className='animate-spin mx-auto my-10' />;
     }
-
-    console.log(form.formState.errors);
 
     return (
         <Form {...form}>

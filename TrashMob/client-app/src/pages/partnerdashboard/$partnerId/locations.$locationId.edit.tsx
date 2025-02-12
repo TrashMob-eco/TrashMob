@@ -200,8 +200,6 @@ export const PartnerLocationEditForm = (props: PartnerLocationEditFormProps) => 
         if (location) searchAddressReverse();
     }, [location]);
 
-    console.log(form.formState.errors);
-
     if (isLoading) {
         return <Loader2 className='animate-spin mx-auto my-10' />;
     }
