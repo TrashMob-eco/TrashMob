@@ -16,7 +16,7 @@ import * as ToolTips from '@/store/ToolTips';
 import { CreateLocationService, GetPartnerLocationsServicesByLocationId } from '@/services/locations';
 import PartnerLocationServiceData from '@/components/Models/PartnerLocationServiceData';
 import { useLogin } from '@/hooks/useLogin';
-import { useGetServiceTypes } from '@/hooks/useGetServiceTypes';
+import { useGetPartnerServiceTypes } from '@/hooks/useGetPartnerServiceTypes';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useGetPartnerLocations } from '@/hooks/useGetPartnerLocations';
 
@@ -48,7 +48,7 @@ export const PartnerServiceEnable = () => {
     const queryClient = useQueryClient();
     const navigate = useNavigate();
 
-    const { data: serviceTypes } = useGetServiceTypes();
+    const { data: serviceTypes } = useGetPartnerServiceTypes();
     const { data: locations } = useGetPartnerLocations({ partnerId });
 
     const form = useForm<FormInputs>({
