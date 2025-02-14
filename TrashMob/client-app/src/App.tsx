@@ -47,7 +47,6 @@ import { PartnerEdit } from './pages/partnerdashboard/$partnerId/edit';
 import { PartnerLayout } from './pages/partnerdashboard/$partnerId/_layout';
 import { PartnerLocations } from './pages/partnerdashboard/$partnerId/locations';
 import { PartnerContacts } from './pages/partnerdashboard/$partnerId/contacts';
-import { PartnerAdmins } from './components/Partners/PartnerAdmins';
 import { PartnerIndex } from './pages/partnerdashboard/$partnerId';
 import { PartnerContactEdit } from './pages/partnerdashboard/$partnerId/contacts.$contactId.edit';
 import { PartnerContactCreate } from './pages/partnerdashboard/$partnerId/contacts.create';
@@ -62,8 +61,10 @@ import { PartnerDocumentCreate } from './pages/partnerdashboard/$partnerId/docum
 import { PartnerSocialMediaAccounts } from './pages/partnerdashboard/$partnerId/socials';
 import { PartnerSocialAcccountEdit } from './pages/partnerdashboard/$partnerId/socials.$accountId.edit';
 import { PartnerSocialAcccountCreate } from './pages/partnerdashboard/$partnerId/socials.create';
+import { PartnerAdmins } from './pages/partnerdashboard/$partnerId/admins';
 
 import { PartnerContactType } from './enums/PartnerContactType';
+import { PartnerAdminInvite } from './pages/partnerdashboard/$partnerId/admins.invite';
 
 const queryClient = new QueryClient();
 
@@ -166,7 +167,9 @@ export const App: FC = () => {
                                                     }
                                                 />
                                             </Route>
-                                            <Route path='admins' element={<PartnerAdmins />} />
+                                            <Route path='admins' element={<PartnerAdmins />}>
+                                                <Route path='invite' element={<PartnerAdminInvite />} />
+                                            </Route>
                                             <Route path='documents' element={<PartnerDocuments />}>
                                                 <Route path=':documentId/edit' element={<PartnerDocumentEdit />} />
                                                 <Route path='create' element={<PartnerDocumentCreate />} />
