@@ -1,4 +1,5 @@
 import { Link } from 'react-router';
+import toNumber from 'lodash/toNumber';
 import * as MapStore from '@/store/MapStore';
 import { AzureSearchLocationInput, SearchLocationOption } from '@/components/Map/AzureSearchLocationInput';
 import { EventsMap } from '@/components/Map';
@@ -8,7 +9,6 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
 import { APIProvider, useMap } from '@vis.gl/react-google-maps';
 import { useCallback, useEffect, useState } from 'react';
-import UserData from '@/components/Models/UserData';
 import { useQuery } from '@tanstack/react-query';
 import { GetFilteredEvents, GetFilteredEvents_Params } from '@/services/events';
 import { cn } from '@/lib/utils';
@@ -20,12 +20,10 @@ import { AzureMapSearchAddressReverse } from '@/services/maps';
 import { GetAllEventsBeingAttendedByUser } from '@/services/events';
 
 import { EventList } from '@/components/events/event-list';
-import toNumber from 'lodash/toNumber';
+import { useLogin } from '@/hooks/useLogin';
+import { getCompletedTimeranges, getThisweekendTimerange, getUpcomingTimeranges } from './utils/timerange';
 
-interface EventSectionProps {
-    isUserLoaded: boolean;
-    currentUser: UserData;
-}
+interface EventSectionProps {}
 
 enum EventStatus {
     UPCOMING = 'upcoming',
@@ -42,7 +40,7 @@ const useGetFilteredEvents = (params: GetFilteredEvents_Params) => {
 };
 
 export const EventSectionComponent = (props: EventSectionProps) => {
-    const { isUserLoaded, currentUser } = props;
+    const { isUserLoaded, currentUser } = useLogin();
     const now = moment();
     const map = useMap();
     const defaultMapCenter = useGetDefaultMapCenter();
@@ -62,56 +60,16 @@ export const EventSectionComponent = (props: EventSectionProps) => {
 
     /** Filter Parameters */
     const [selectedStatuses, setSelectedStatuses] = useState<string>(EventStatus.UPCOMING);
-    const [selectedTimeRange, setSelectedTimeRange] = useState<string>(
-        `${now.format('YYYY-MM-DD')}|${now.clone().format('YYYY-MM-DD')}`,
-    );
+
+    // Default timerange is This weekend
+    const [selectedTimeRange, setSelectedTimeRange] = useState<string>(getThisweekendTimerange());
+
     const [selectedLocation, setSelectedLocation] = useState<SearchLocationOption>();
     const [view, setView] = useState<string>('map');
 
     /** Time Ranges */
     const timeRangeOptions =
-        selectedStatuses === EventStatus.UPCOMING
-            ? [
-                  { value: `${now.format('YYYY-MM-DD')}|${now.format('YYYY-MM-DD')}`, label: 'Today' },
-                  {
-                      value: `${now.clone().add(1, 'd').format('YYYY-MM-DD')}|${now.clone().add(1, 'd').format('YYYY-MM-DD')}`,
-                      label: 'Tomorrow',
-                  },
-                  {
-                      value: `${now.clone().endOf('week').format('YYYY-MM-DD')}|${now.clone().endOf('week').add(1, 'd').format('YYYY-MM-DD')}`,
-                      label: 'This weekend',
-                  },
-                  {
-                      value: `${now.format('YYYY-MM-DD')}|${now.clone().add(10, 'y').format('YYYY-MM-DD')}`,
-                      label: 'All',
-                  },
-              ]
-            : [
-                  {
-                      value: `${now.clone().subtract(7, 'd').format('YYYY-MM-DD')}|${now.format('YYYY-MM-DD')}`,
-                      label: 'Last 7 days',
-                  },
-                  {
-                      value: `${now.clone().subtract(30, 'd').format('YYYY-MM-DD')}|${now.format('YYYY-MM-DD')}`,
-                      label: 'Last 30 days',
-                  },
-                  {
-                      value: `${now.clone().subtract(90, 'd').format('YYYY-MM-DD')}|${now.format('YYYY-MM-DD')}`,
-                      label: 'Last 90 days',
-                  },
-                  {
-                      value: `${now.clone().subtract(6, 'M').format('YYYY-MM-DD')}|${now.format('YYYY-MM-DD')}`,
-                      label: 'Last 6 months',
-                  },
-                  {
-                      value: `${now.clone().subtract(12, 'M').format('YYYY-MM-DD')}|${now.format('YYYY-MM-DD')}`,
-                      label: 'Last 12 months',
-                  },
-                  {
-                      value: `${now.clone().subtract(10, 'y').format('YYYY-MM-DD')}|${now.format('YYYY-MM-DD')}`,
-                      label: 'All time',
-                  },
-              ];
+        selectedStatuses === EventStatus.UPCOMING ? getUpcomingTimeranges() : getCompletedTimeranges();
 
     /** Event List */
     const [startDate, endDate] = selectedTimeRange.split('|');

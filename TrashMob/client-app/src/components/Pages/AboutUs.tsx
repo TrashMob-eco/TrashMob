@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { Col, Container, Image, Row } from 'react-bootstrap';
 import trashbin from '../assets/the-blowup-t06aN6vewaQ-unsplash1.png';
 import trashcans from '../assets/trashcan-artwork.png';
-import { GettingStartedSection } from '../GettingStartedSection';
+import { GettingStartSection } from '@/pages/_home/getting-start-section';
 
 export const AboutUs: React.FC = () => {
     return (
@@ -200,7 +200,9 @@ export const AboutUs: React.FC = () => {
                     </Col>
                 </Row>
             </Container>
-            <GettingStartedSection />
+            <div className='tailwind'>
+                <GettingStartSection />
+            </div>
         </>
     );
 };
