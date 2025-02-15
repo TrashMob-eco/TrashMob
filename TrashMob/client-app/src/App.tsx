@@ -8,8 +8,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from '@/components/ui/toaster';
 
-import Home from './components/Pages/Home';
-
 import { AboutUs } from './components/Pages/AboutUs';
 import ContactUs from './components/Pages/ContactUs';
 import EventSummary from './components/EventSummary';
@@ -40,7 +38,7 @@ import { SiteHeader } from './components/SiteHeader';
 import { useLogin } from './hooks/useLogin';
 
 /** 2024 pages */
-import { Home as Home2024 } from './pages/Home';
+import { Home } from './pages/_home';
 import { TermsOfService } from './pages/termsofservice';
 import { VolunteerOpportunities } from './pages/volunteeropportunities';
 import { PartnerEdit } from './pages/partnerdashboard/$partnerId/edit';
@@ -259,20 +257,7 @@ export const App: FC = () => {
                                     <Route path='/privacypolicy' element={<PrivacyPolicy />} />
                                     <Route path='/termsofservice' element={<TermsOfService />} />
                                     <Route path='/volunteeropportunities' element={<VolunteerOpportunities />} />
-                                    <Route
-                                        path='/2024'
-                                        element={<Home2024 currentUser={currentUser} isUserLoaded={isUserLoaded} />}
-                                    />
-                                    <Route
-                                        path='/'
-                                        element={
-                                            <Home
-                                                currentUser={currentUser}
-                                                isUserLoaded={isUserLoaded}
-                                                onUserUpdated={handleUserUpdated}
-                                            />
-                                        }
-                                    />
+                                    <Route path='/' element={<Home />} />
                                 </Route>
                                 <Route element={<NoMatch />} />
                             </Routes>
