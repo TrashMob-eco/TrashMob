@@ -16,7 +16,7 @@ import { HeroSection } from '@/components/Customization/HeroSection';
 import * as SharingMessages from '@/store/SharingMessages';
 import { GetStatsForUser } from '@/services/stats';
 import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
-import { EventsMap } from '@/components/Map';
+import { EventsMap } from '@/components/events/event-map';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';

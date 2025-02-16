@@ -2,7 +2,7 @@ import { Link } from 'react-router';
 import toNumber from 'lodash/toNumber';
 import * as MapStore from '@/store/MapStore';
 import { AzureSearchLocationInput, SearchLocationOption } from '@/components/Map/AzureSearchLocationInput';
-import { EventsMap } from '@/components/Map';
+import { EventsMap } from '@/components/events/event-map';
 import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -14,7 +14,6 @@ import { GetFilteredEvents, GetFilteredEvents_Params } from '@/services/events';
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItemAlt, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { List, Map, Plus, Pencil } from 'lucide-react';
-import moment from 'moment';
 import { useGetDefaultMapCenter } from '@/hooks/useGetDefaultMapCenter';
 import { AzureMapSearchAddressReverse } from '@/services/maps';
 import { GetAllEventsBeingAttendedByUser } from '@/services/events';
@@ -22,13 +21,9 @@ import { GetAllEventsBeingAttendedByUser } from '@/services/events';
 import { EventList } from '@/components/events/event-list';
 import { useLogin } from '@/hooks/useLogin';
 import { getCompletedTimeranges, getThisweekendTimerange, getUpcomingTimeranges } from './utils/timerange';
+import { EventStatus } from '@/enums/EventStatus';
 
 interface EventSectionProps {}
-
-enum EventStatus {
-    UPCOMING = 'upcoming',
-    COMPLETED = 'completed',
-}
 
 /** Event List */
 const useGetFilteredEvents = (params: GetFilteredEvents_Params) => {
@@ -41,7 +36,6 @@ const useGetFilteredEvents = (params: GetFilteredEvents_Params) => {
 
 export const EventSectionComponent = (props: EventSectionProps) => {
     const { isUserLoaded, currentUser } = useLogin();
-    const now = moment();
     const map = useMap();
     const defaultMapCenter = useGetDefaultMapCenter();
 
