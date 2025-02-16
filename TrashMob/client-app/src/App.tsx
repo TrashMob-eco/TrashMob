@@ -14,7 +14,6 @@ import EventSummary from './components/EventSummary';
 import { Faq } from './components/Faq';
 import { GettingStarted } from './components/Pages/GettingStarted';
 import MyDashboard from './pages/mydashboard';
-import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { Board } from './components/Board';
 import { msalClient } from './store/AuthStore';
 import EventDetails from './components/Pages/EventDetails';
@@ -60,6 +59,7 @@ import { PartnerSocialMediaAccounts } from './pages/partnerdashboard/$partnerId/
 import { PartnerSocialAcccountEdit } from './pages/partnerdashboard/$partnerId/socials.$accountId.edit';
 import { PartnerSocialAcccountCreate } from './pages/partnerdashboard/$partnerId/socials.create';
 import { PartnerAdmins } from './pages/partnerdashboard/$partnerId/admins';
+import { PrivacyPolicy } from './pages/privacypolicy';
 
 import { PartnerContactType } from './enums/PartnerContactType';
 import { PartnerAdminInvite } from './pages/partnerdashboard/$partnerId/admins.invite';
