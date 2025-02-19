@@ -51,6 +51,16 @@
         public async Task<IActionResult> AddPartnerLocation(PartnerLocation partnerLocation,
             CancellationToken cancellationToken)
         {
+            if (partnerLocation == null)
+            {
+                return BadRequest("PartnerLocation cannot be null.");
+            }
+
+            if (partnerLocation.PartnerId == Guid.Empty)
+            {
+                return BadRequest("PartnerId is required.");
+            }
+
             var partner = await partnerManager.GetAsync(partnerLocation.PartnerId, cancellationToken);
             var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
                 AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);

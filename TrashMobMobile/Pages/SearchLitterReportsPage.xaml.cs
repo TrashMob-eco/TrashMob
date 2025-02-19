@@ -28,6 +28,7 @@ public partial class SearchLitterReportsPage : ContentPage
                 new MapSpan(
                     new Location(viewModel.UserLocation.Location.Latitude, viewModel.UserLocation.Location.Longitude),
                     0.05, 0.05);
+            litterImagesMap.InitialMapSpanAndroid = mapSpan;
             litterImagesMap.MoveToRegion(mapSpan);
         }
     }

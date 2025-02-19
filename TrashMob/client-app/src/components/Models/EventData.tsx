@@ -44,6 +44,8 @@ class EventData {
     isEventPublic: boolean = true;
 
     createdByUserName: string = '';
+
+    isAttending?: boolean;
 }
 
 export default EventData;

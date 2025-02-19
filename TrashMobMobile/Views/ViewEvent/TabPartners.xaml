@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             x:Class="TrashMobMobile.Views.ViewEvent.TabPartners">
+    <Grid RowDefinitions="Auto, Auto">
+        <Label Grid.Row="1" Text="We're sorry. There are currently no partners assigned to this event." IsVisible="{Binding AreNoPartnersAvailable}" />
+
+        <CollectionView Grid.Row="1" x:Name="AvailableEventPartners"
+                                    ItemsSource="{Binding AvailablePartners}"
+                                    SelectionMode="None" 
+                                    IsVisible="{Binding ArePartnersAvailable}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate 
+                                x:DataType="viewModels:EventPartnerLocationViewModel">
+                    <Border Style="{StaticResource RoundBorder}" Margin="5">
+                        <Grid RowDefinitions="1*, 2*, 1*" ColumnDefinitions="*, *"
+                                          x:Name="PartnerLocationItem">
+                            <Label Text="Partner Name" Style="{StaticResource FieldLabel}" Grid.Row="0" />
+                            <Label Text="{Binding PartnerLocationName}" Grid.Column="1" Grid.Row="0" />
+                            <Label Text="Info" Style="{StaticResource FieldLabel}" Grid.Row="1" />
+                            <Label Text="{Binding PartnerLocationNotes}" Grid.Row="1" Grid.Column="1" />
+                            <Label Text="Services Requested" Style="{StaticResource FieldLabel}" Grid.Row="2" />
+                            <Label Text="{Binding PartnerServicesEngaged}" Grid.Row="2" Grid.Column="1" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentView>

@@ -89,6 +89,23 @@
                 return Forbid();
             }
 
+            if (partnerAdminInvitation.PartnerId == Guid.Empty)
+            {
+                return BadRequest("PartnerId is required.");
+            }
+
+            if (string.IsNullOrWhiteSpace(partnerAdminInvitation.Email))
+            {
+                return BadRequest("Email is required.");
+            }
+
+            var addUser = await userManager.GetAsync(p => p.Email == partnerAdminInvitation.Email, cancellationToken);
+
+            if (addUser == null) 
+            {
+                return NotFound($"User with Email {partnerAdminInvitation.Email} not found.");
+            }
+
             var result = await partnerAdminInvitationManager.AddAsync(partnerAdminInvitation, UserId, cancellationToken)
                 .ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(AddPartnerAdminInvitation));

@@ -27,6 +27,7 @@ public partial class ViewPickupLocationPage : ContentPage
         if (viewModel?.PickupLocationViewModel?.Address?.Location != null)
         {
             var mapSpan = new MapSpan(viewModel.PickupLocationViewModel.Address.Location, 0.05, 0.05);
+            pickupLocationsMap.InitialMapSpanAndroid = mapSpan;
             pickupLocationsMap.MoveToRegion(mapSpan);
         }
     }

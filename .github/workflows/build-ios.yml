@@ -61,13 +61,13 @@ jobs:
             fetch-depth: 0
 
         - name: Install GitVersion
-          uses: gittools/actions/gitversion/setup@v3.0.0
+          uses: gittools/actions/gitversion/setup@v3.1.11
           with:
             versionSpec: '5.x'
     
         - name: Determine Version
           id: version_step # step id used as reference for output values
-          uses: gittools/actions/gitversion/execute@v3.0.0
+          uses: gittools/actions/gitversion/execute@v3.1.11
 
         - name: Update Build Number
           run: sed -i '' "s|<ApplicationVersion>.*</ApplicationVersion>|<ApplicationVersion>${{ env.semVer }}</ApplicationVersion>|g" TrashMobMobile/TrashMobMobile.csproj
@@ -90,14 +90,14 @@ jobs:
           run: |
             dotnet nuget locals all --clear
             dotnet workload install maui --ignore-failed-sources
-            dotnet workload install maui-ios --version 8.0.401 --source https://api.nuget.org/v3/index.json
+            dotnet workload install maui-ios --source https://api.nuget.org/v3/index.json
 
         - name: Set XCode Version
           if: runner.os == 'macOS'
           shell: bash
           run: |
-            sudo xcode-select -s "/Applications/Xcode_15.4.app"
-            echo "MD_APPLE_SDK_ROOT=/Applications/Xcode_15.4.app" >> $GITHUB_ENV
+            sudo xcode-select -s "/Applications/Xcode_16.2.app"
+            echo "MD_APPLE_SDK_ROOT=/Applications/Xcode_16.2.app" >> $GITHUB_ENV
 
         - name: Import Code-Signing Certificates
           uses: Apple-Actions/import-codesign-certs@v3
@@ -115,10 +115,10 @@ jobs:
             api-private-key: ${{ secrets.apple_key }}
 
         - name: Build MAUI iOS
-          run: dotnet publish TrashMobMobile/TrashMobMobile.csproj -c ${{ inputs.configuration }} -f net8.0-ios -r ios-arm64 --self-contained /p:buildForSimulator=False /p:packageApp=True /p:ArchiveOnBuild=true /p:EnableAssemblyILStripping=true /p:PublishTrimmed=true
+          run: dotnet publish TrashMobMobile/TrashMobMobile.csproj -c ${{ inputs.configuration }} -f net9.0-ios -r ios-arm64 --self-contained /p:buildForSimulator=False /p:packageApp=True /p:ArchiveOnBuild=true /p:EnableAssemblyILStripping=true /p:PublishTrimmed=true
 
         - name: Upload iOS Artifact
-          uses: actions/upload-artifact@v3.2.1
+          uses: actions/upload-artifact@v4.6.0
           with:
             name: artifacts-ios-${{ inputs.build_number }}
-            path: TrashMobMobile/bin/${{ inputs.configuration }}/net8.0-ios/ios-arm64/publish//*.ipa
+            path: TrashMobMobile/bin/${{ inputs.configuration }}/net9.0-ios/ios-arm64/publish//*.ipa

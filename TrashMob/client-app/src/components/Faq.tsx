@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Col, Container, Image, Row } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import events from './assets/faq/Event.svg';
 import attendees from './assets/faq/Attendees.svg';
 import volunteer from './assets/faq/volunteer.svg';
@@ -28,10 +28,6 @@ const tabs = [
 ];
 
 const Events: React.FC = () => {
-    React.useEffect(() => {
-        window.scrollTo(0, 0);
-    });
-
     return (
         <div className='active-border rounded mt-4 bg-white'>
             <h3 className='pl-4 font-weight-500 color'>Events</h3>

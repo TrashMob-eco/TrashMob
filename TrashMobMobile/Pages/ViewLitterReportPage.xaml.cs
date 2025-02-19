@@ -28,6 +28,7 @@ public partial class ViewLitterReportPage : ContentPage
         {
             var mapSpan = new MapSpan(viewModel?.LitterImageViewModels?.FirstOrDefault()?.Address?.Location, 0.05,
                 0.05);
+            litterReportLocationMap.InitialMapSpanAndroid = mapSpan;
             litterReportLocationMap.MoveToRegion(mapSpan);
         }
     }

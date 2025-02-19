@@ -5,31 +5,63 @@
              xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
              x:DataType="viewModels:MyDashboardViewModel"
              x:Class="TrashMobMobile.Pages.MyDashboardPage"
+             xmlns:controls="clr-namespace:TrashMobMobile.Controls"
+             xmlns:tabs="http://sharpnado.com"
+             xmlns:views="clr-namespace:TrashMobMobile.Views.MyDashboard"
              Title="My Dashboard">
 
-    <ScrollView Margin="0, 0, 0, 100">
+    <ScrollView>
         <Grid>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
-                <Border Style="{x:StaticResource RoundBorder}" Margin="5,0">
+                <Border Style="{x:StaticResource RoundBorder}" Margin="5,5">
                     <Grid RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="*, *, *, *">
                         <Label Text="Here's what you have done so far!" Grid.Row="0" Grid.Column="0"
                                Grid.ColumnSpan="3" FontSize="Micro" Margin="0, 0, 0, 10" />
-                        <Image Grid.Row="1" Grid.Column="0" Source="calendar" MaximumWidthRequest="25" />
+                        <Image Grid.Row="1" Grid.Column="0"
+                            MaximumWidthRequest="40">
+                            <Image.Source>
+                                <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconCalendarCheck}"
+                                             Size="50"
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </Image.Source>
+                        </Image>
                         <Label Grid.Row="2" Grid.Column="0" Text="{ Binding StatisticsViewModel.TotalEvents }"
                                FontSize="Micro" HorizontalTextAlignment="Center" />
                         <Label Grid.Row="3" Grid.Column="0" Text="Events Attended" FontSize="Micro"
                                HorizontalTextAlignment="Center" />
-                        <Image Grid.Row="1" Grid.Column="1" Source="trashbag" WidthRequest="25" />
+                        <Image Grid.Row="1" Grid.Column="1" MaximumWidthRequest="40">
+                            <Image.Source>
+                                <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconTrashCanOutline}"
+                                             Size="50"
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </Image.Source>
+                        </Image>
                         <Label Grid.Row="2" Grid.Column="1" Text="{ Binding StatisticsViewModel.TotalBags }"
                                FontSize="Micro" HorizontalTextAlignment="Center" />
                         <Label Grid.Row="3" Grid.Column="1" Text="Bags Collected" FontSize="Micro"
                                HorizontalTextAlignment="Center" />
-                        <Image Grid.Row="1" Grid.Column="2" Source="clock" WidthRequest="25" />
+                        <Image Grid.Row="1" Grid.Column="2" MaximumWidthRequest="40">
+                            <Image.Source>
+                                <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconClockOutline}"
+                                             Size="50"
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </Image.Source>
+                        </Image>
                         <Label Grid.Row="2" Grid.Column="2" Text="{ Binding StatisticsViewModel.TotalHours }"
                                FontSize="Micro" HorizontalTextAlignment="Center" />
                         <Label Grid.Row="3" Grid.Column="2" Text="Hours Spent" FontSize="Micro"
                                HorizontalTextAlignment="Center" />
-                        <Image Grid.Row="1" Grid.Column="3" Source="trashbag" WidthRequest="25" />
+                        <Image Grid.Row="1" Grid.Column="3" MaximumWidthRequest="40">
+                            <Image.Source>
+                                <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconClipboardText}"
+                                             Size="50"
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </Image.Source>
+                        </Image>
                         <Label Grid.Row="2" Grid.Column="3" Text="{ Binding StatisticsViewModel.TotalLitterReportsSubmitted }"
                                FontSize="Micro" HorizontalTextAlignment="Center" />
                         <Label Grid.Row="3" Grid.Column="3" Text="Litter Reports" FontSize="Micro"
@@ -39,7 +71,7 @@
                 <Grid ColumnDefinitions="*, *, *, *"
                       RowDefinitions="Auto"
                       VerticalOptions="End"
-                      Margin="0,0,0,20">
+                      Margin="0,0,0,10">
                     <Button Grid.Row="0"
                             Grid.Column="0"
                             Grid.ColumnSpan="2"
@@ -56,106 +88,36 @@
                             Text="Report Litter" />
                 </Grid>
 
-                <Label
-                    Text="Upcoming Events"
-                    FontSize="Medium"
-                    VerticalOptions="Center"
-                    HorizontalOptions="Start"
-                    HorizontalTextAlignment="Center"
-                    Margin="10, 0, 10, 0" />
+                <tabs:TabHostView Padding="10" 
+                              Orientation="Horizontal" 
+                              TabType="Fixed"
+                              SelectedIndex="{Binding Source={x:Reference Switcher}, 
+                                          Path=SelectedIndex, Mode=TwoWay}">
+                    <tabs:BottomTabItem Label="Upcoming"  SelectedTabColor="{StaticResource Primary}" />
 
-                <CollectionView x:Name="UpcomingEventsCollection"
-                                ItemsSource="{Binding UpcomingEvents}"
-                                SelectedItem="{Binding UpcomingSelectedEvent}"
-                                SelectionMode="Single"
-                                Margin="5"
-                                MaximumHeightRequest="250">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="viewModels:EventViewModel">
-                            <Border Style="{StaticResource RoundBorder}" Margin="5">
-                                <Grid ColumnDefinitions="*, *"
-                                      RowDefinitions="Auto, Auto, Auto, Auto"
-                                      x:Name="EventItem">
+                    <tabs:BottomTabItem Label="Completed" SelectedTabColor="{StaticResource Primary}" />
 
-                                    <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Small" />
-                                    <Label Text="{Binding DisplayDate}" Grid.Row="1" Grid.ColumnSpan="2"
-                                           FontSize="Micro" />
-                                    <Label Text="{Binding DisplayTime}" Grid.Row="1" Grid.Column="1" FontSize="Micro" />
-                                    <Label Text="{Binding Address.DisplayAddress}" Grid.Row="2" Grid.ColumnSpan="2"
-                                           FontSize="Micro" />
-                                    <Label Text="{Binding UserRoleForEvent}" Grid.Row="3" FontSize="Micro" />
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
+                    <tabs:BottomTabItem Label="Litter Reports" SelectedTabColor="{StaticResource Primary}" />
 
-                <Label
-                    Text="Completed Events"
-                    FontSize="Medium"
-                    VerticalOptions="Center"
-                    HorizontalOptions="Start"
-                    HorizontalTextAlignment="Center"
-                    Margin="10" />
+                </tabs:TabHostView>
 
-                <CollectionView x:Name="CompletedEventsCollection"
-                                ItemsSource="{Binding CompletedEvents}"
-                                SelectedItem="{Binding CompletedSelectedEvent}"
-                                SelectionMode="Single"
-                                Margin="5"
-                                MaximumHeightRequest="250">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="viewModels:EventViewModel">
-                            <Border Style="{StaticResource RoundBorder}" Margin="5">
-                                <Grid ColumnDefinitions="*, *"
-                                      RowDefinitions="Auto, Auto, Auto, Auto"
-                                      x:Name="EventItem">
+                <tabs:ViewSwitcher x:Name="Switcher"
+                           Margin="0"
+                           Animate="True">
+                    <tabs:DelayedView x:TypeArguments="views:TabUpcomingEvents" x:Name="tabUpcomingEvents"
+                        AccentColor="{StaticResource Primary}"
+                        Animate="True"
+                        UseActivityIndicator="True" />
+                    <tabs:DelayedView x:TypeArguments="views:TabCompletedEvents" x:Name="tabCompletedEvents"
+                        AccentColor="{StaticResource Primary}"
+                        Animate="True"
+                        UseActivityIndicator="True" />
+                    <tabs:DelayedView x:TypeArguments="views:TabLitterReports"
+                        AccentColor="{StaticResource Primary}"
+                        Animate="True"
+                        UseActivityIndicator="True" />
+                </tabs:ViewSwitcher>
 
-                                    <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Small" />
-                                    <Label Text="{Binding DisplayDate}" Grid.Row="1" Grid.ColumnSpan="2"
-                                           FontSize="Micro" />
-                                    <Label Text="{Binding DisplayTime}" Grid.Row="1" Grid.Column="1" FontSize="Micro" />
-                                    <Label Text="{Binding Address.DisplayAddress}" Grid.Row="2" Grid.ColumnSpan="2"
-                                           FontSize="Micro" />
-                                    <Label Text="{Binding UserRoleForEvent}" Grid.Row="3" FontSize="Micro" />
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-
-                <Label
-                    Text="Litter Reports"
-                    FontSize="Medium"
-                    VerticalOptions="Center"
-                    HorizontalOptions="Start"
-                    HorizontalTextAlignment="Center"
-                    Margin="10" />
-
-                <CollectionView x:Name="LitterReportCollection"
-                                ItemsSource="{Binding LitterReports}"
-                                SelectedItem="{Binding SelectedLitterReport}"
-                                SelectionMode="Single"
-                                Margin="5"
-                                MaximumHeightRequest="250">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="viewModels:LitterReportViewModel">
-                            <Border Style="{StaticResource RoundBorder}" Margin="5">
-                                <Grid ColumnDefinitions="*, *"
-                                      RowDefinitions="Auto, Auto, Auto, Auto"
-                                      x:Name="LitterReportItem" RowSpacing="3">
-
-                                    <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Small" />
-                                    <Label Text="{Binding LitterReportStatus}" Grid.Row="0" Grid.Column="1"
-                                           FontSize="Micro" />
-                                    <Label Text="{Binding CreatedDate}" Grid.Row="1" Grid.Column="0"
-                                           Grid.ColumnSpan="1" FontSize="Micro" />
-                                    <Label Text="{Binding Description}" Grid.Row="1" Grid.Column="1" FontSize="Micro" />
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
             </VerticalStackLayout>
 
             <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"

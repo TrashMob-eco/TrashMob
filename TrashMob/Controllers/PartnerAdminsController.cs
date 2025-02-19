@@ -122,6 +122,11 @@
                 return Forbid();
             }
 
+            if (userId == Guid.Empty)
+            {
+                return BadRequest("UserId is required.");
+            }
+
             var partnerUser = new PartnerAdmin
             {
                 PartnerId = partnerId,

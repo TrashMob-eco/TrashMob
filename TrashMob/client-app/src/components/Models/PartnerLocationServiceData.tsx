@@ -1,6 +1,8 @@
 import { Guid } from 'guid-typescript';
 
 class PartnerLocationServiceData {
+    partnerId: string = Guid.createEmpty().toString();
+
     partnerLocationId: string = Guid.createEmpty().toString();
 
     serviceTypeId: number = 0;

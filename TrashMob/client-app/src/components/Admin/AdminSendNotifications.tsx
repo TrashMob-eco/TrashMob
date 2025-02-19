@@ -1,19 +1,20 @@
 import * as React from 'react';
 
-import { RouteComponentProps } from 'react-router-dom';
 import { Button, ButtonGroup, Col, Container, Form, Modal, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import { useMutation } from '@tanstack/react-query';
 import UserData from '../Models/UserData';
 import * as ToolTips from '../../store/ToolTips';
 import MessageRequestData from '../Models/MessageRequestData';
 import { CreateMessageRequest } from '../../services/message';
+import { useNavigate } from 'react-router';
 
-interface AdminSendNotificationsPropsType extends RouteComponentProps {
+interface AdminSendNotificationsPropsType {
     isUserLoaded: boolean;
     currentUser: UserData;
 }
 
 export const AdminSendNotifications: React.FC<AdminSendNotificationsPropsType> = (props) => {
+    const navigate = useNavigate();
     const [name, setName] = React.useState<string>();
     const [nameErrors, setNameErrors] = React.useState<string>('');
     const [message, setMessage] = React.useState<string>('');
@@ -32,7 +33,7 @@ export const AdminSendNotifications: React.FC<AdminSendNotificationsPropsType> =
     // This will handle Cancel button click event.
     function handleCancel(event: any) {
         event.preventDefault();
-        props.history.push('/');
+        navigate('/');
     }
 
     // Handle Delete request for a user

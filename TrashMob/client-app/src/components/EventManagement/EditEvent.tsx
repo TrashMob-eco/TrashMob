@@ -4,7 +4,7 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { Button, Col, Container, Form, ToggleButton } from 'react-bootstrap';
 import { Guid } from 'guid-typescript';
-import { RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps } from 'react-router';
 import moment from 'moment';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import EventData from '../Models/EventData';

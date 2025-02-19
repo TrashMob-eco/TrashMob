@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:TrashMobMobile.Controls"
+             x:Class="TrashMobMobile.Controls.TMTimePicker">
+    <Border Padding="5,0"
+            Style="{StaticResource InputStyle}">
+        <Border.Triggers>
+            <DataTrigger Binding="{Binding Source={x:Reference WrappedTimePicker}, Path=IsFocused}"
+                         TargetType="Border"
+                         Value="True">
+                <Setter Property="Stroke" Value="{StaticResource InputBorderActive}" />
+            </DataTrigger>
+        </Border.Triggers>
+        <controls:BorderlessTimePicker x:Name="WrappedTimePicker"/>
+    </Border>
+</ContentView>

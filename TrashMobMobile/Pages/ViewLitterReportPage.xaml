@@ -92,7 +92,7 @@
                     </VerticalStackLayout>
                 </Grid>
 
-                <maps:Map x:Name="litterReportLocationMap" ItemsSource="{Binding LitterImageViewModels}">
+                <controls:CustomMap x:Name="litterReportLocationMap" ItemsSource="{Binding LitterImageViewModels}">
                     <maps:Map.ItemTemplate>
                         <DataTemplate x:DataType="viewModels:LitterImageViewModel">
                             <controls:CustomPin Location="{Binding Address.Location}"
@@ -101,7 +101,7 @@
                                       Label="Litter Image" />
                         </DataTemplate>
                     </maps:Map.ItemTemplate>
-                </maps:Map>
+                </controls:CustomMap>
 
                 <CollectionView x:Name="LitterImagesCollection"
                                 ItemsSource="{Binding LitterImageViewModels}"

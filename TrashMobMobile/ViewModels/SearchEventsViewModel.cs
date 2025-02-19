@@ -13,39 +13,6 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
                                            IUserManager userManager)
     : BaseViewModel(notificationService)
 {
-    private const string AllTime = "All";
-    private const string LastYear = "Last 12 Months";
-    private const string LastSixMonths = "Last Six Months";
-    private const string LastThreeMonths = "Last 90 Days";
-    private const string LastMonth = "Last 30 Days";
-    private const string LastWeek = "Last 7 Days";
-    private const string Yesterday = "Yesterday";
-    private const string Today = "Today";
-    private const string Tomorrow = "Tomorrow";
-    private const string ThisWeek = "Next 7 Days";
-    private const string ThisMonth = "Next 30 Days";
-    private const string ThisYear = "Next 12 Months";
-
-    private readonly Dictionary<string, Tuple<int, int>> UpcomingRangeDictionary = new()
-    {
-        { Today, new Tuple<int, int>(0, 0) },
-        { Tomorrow, new Tuple<int, int>(1, 0) },
-        { ThisWeek, new Tuple<int, int>(0, 7) },
-        { ThisMonth, new Tuple<int, int>(0, 30) },
-        { ThisYear, new Tuple<int, int>(0, 365) }
-    };
-
-    private readonly Dictionary<string, Tuple<int, int>> CompletedRangeDictionary = new()
-    {
-        { AllTime, new Tuple<int, int>(-3650, 0) },
-        { LastYear, new Tuple<int, int>(-365, 0) },
-        { LastSixMonths, new Tuple<int, int>(-180, 0) },
-        { LastThreeMonths, new Tuple<int, int>(-90, 0) },
-        { LastMonth, new Tuple<int, int>(-30, 0) },
-        { LastWeek, new Tuple<int, int>(-7, 0) },
-        { Yesterday, new Tuple<int, int>(-1, 0) },
-    };
-
     private readonly IMobEventManager mobEventManager = mobEventManager;
     private readonly IUserManager userManager = userManager;
 
@@ -89,9 +56,9 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
     [ObservableProperty]
     private bool areNoEventsFound;
 
-    private string selectedUpcomingDateRange = Today;
+    private string selectedUpcomingDateRange = DateRanges.Today;
 
-    private string selectedCompletedDateRange = Yesterday;
+    private string selectedCompletedDateRange = DateRanges.Yesterday;
 
     public string SelectedUpcomingDateRange
     {
@@ -197,24 +164,19 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
             IsCompletedSelected = false;
             UserLocation = userManager.CurrentUser.GetAddress();
 
-            UpcomingDateRanges.Add(Today);
-            UpcomingDateRanges.Add(Tomorrow);
-            UpcomingDateRanges.Add(ThisWeek);
-            UpcomingDateRanges.Add(ThisMonth);
-            UpcomingDateRanges.Add(ThisYear);
+            foreach (var date in DateRanges.UpcomingRangeDictionary)
+            {
+                UpcomingDateRanges.Add(date.Key);
+            }
 
-            SelectedUpcomingDateRange = ThisMonth;
+            SelectedUpcomingDateRange = DateRanges.ThisMonth;
 
-            CompletedDateRanges.Add(Today);
-            CompletedDateRanges.Add(Yesterday);
-            CompletedDateRanges.Add(LastWeek);
-            CompletedDateRanges.Add(LastMonth);
-            CompletedDateRanges.Add(LastThreeMonths);
-            CompletedDateRanges.Add(LastSixMonths);
-            CompletedDateRanges.Add(LastYear);
-            CompletedDateRanges.Add(AllTime);
+            foreach (var date in DateRanges.CompletedRangeDictionary)
+            {
+                CompletedDateRanges.Add(date.Key);
+            }
 
-            SelectedCompletedDateRange = LastMonth;
+            SelectedCompletedDateRange = DateRanges.LastMonth;
 
             IsBusy = false;
 
@@ -244,13 +206,13 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
 
         if (IsUpcomingSelected)
         {
-            startDate = DateTimeOffset.Now.Date.AddDays(UpcomingRangeDictionary[SelectedUpcomingDateRange].Item1);
-            endDate = DateTimeOffset.Now.Date.AddDays(UpcomingRangeDictionary[SelectedUpcomingDateRange].Item2);
+            startDate = DateTimeOffset.Now.Date.AddDays(DateRanges.UpcomingRangeDictionary[SelectedUpcomingDateRange].Item1);
+            endDate = DateTimeOffset.Now.Date.AddDays(DateRanges.UpcomingRangeDictionary[SelectedUpcomingDateRange].Item2);
         }
         else
         {
-            startDate = DateTimeOffset.Now.Date.AddDays(CompletedRangeDictionary[SelectedCompletedDateRange].Item1);
-            endDate = DateTimeOffset.Now.Date.AddDays(CompletedRangeDictionary[SelectedCompletedDateRange].Item2);
+            startDate = DateTimeOffset.Now.Date.AddDays(DateRanges.CompletedRangeDictionary[SelectedCompletedDateRange].Item1);
+            endDate = DateTimeOffset.Now.Date.AddDays(DateRanges.CompletedRangeDictionary[SelectedCompletedDateRange].Item2);
         }
 
         locations = await mobEventManager.GetLocationsByTimeRangeAsync(startDate, endDate);

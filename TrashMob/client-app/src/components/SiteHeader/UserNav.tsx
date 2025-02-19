@@ -18,7 +18,7 @@ import {
     User,
     UserRoundX,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { cn } from '@/lib/utils';
 import UserData from '../Models/UserData';
 import { getApiConfig, getB2CPolicies, msalClient } from '@/store/AuthStore';

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import * as MapStore from '../store/MapStore';
+import { defaultFilter } from 'cmdk';
 
 export const useGetDefaultMapCenter = () => {
     const [defaultCenter, setDefaultCenter] = useState<google.maps.LatLngLiteral>({
@@ -13,5 +14,6 @@ export const useGetDefaultMapCenter = () => {
             });
         }
     }, []);
+
     return defaultCenter;
 };

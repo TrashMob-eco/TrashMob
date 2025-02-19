@@ -1,15 +1,11 @@
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { Col, Container, Image, Row } from 'react-bootstrap';
 import trashbin from '../assets/the-blowup-t06aN6vewaQ-unsplash1.png';
 import trashcans from '../assets/trashcan-artwork.png';
-import { GettingStartedSection } from '../GettingStartedSection';
+import { GettingStartSection } from '@/pages/_home/getting-start-section';
 
 export const AboutUs: React.FC = () => {
-    React.useEffect(() => {
-        window.scrollTo(0, 0);
-    });
-
     return (
         <>
             <Container fluid className='mt-1 bg-white p-5'>
@@ -204,7 +200,9 @@ export const AboutUs: React.FC = () => {
                     </Col>
                 </Row>
             </Container>
-            <GettingStartedSection />
+            <div className='tailwind'>
+                <GettingStartSection />
+            </div>
         </>
     );
 };

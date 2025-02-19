@@ -29,9 +29,9 @@ export const GetPartnerSocialMediaAccountsByPartnerId = (params: GetPartnerSocia
 
 export type GetPartnerSocialMediaAccount_Params = { partnerAccountId: string };
 export type GetPartnerSocialMediaAccount_Response = PartnerSocialMediaAccountData;
-export const GetPartnerSocialMediaAccount = () => ({
-    key: ['/partnersocialmediaaccounts/', 'get one'],
-    service: async (params: GetPartnerSocialMediaAccount_Params) =>
+export const GetPartnerSocialMediaAccount = (params: GetPartnerSocialMediaAccount_Params) => ({
+    key: ['/partnersocialmediaaccounts/', params.partnerAccountId],
+    service: async () =>
         ApiService('protected').fetchData<GetPartnerSocialMediaAccount_Response>({
             url: `/partnersocialmediaaccounts/${params.partnerAccountId}`,
             method: 'get',

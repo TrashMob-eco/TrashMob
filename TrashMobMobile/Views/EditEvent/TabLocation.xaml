@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:TrashMobMobile.Controls"
+             xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             x:Class="TrashMobMobile.Views.EditEvent.TabLocation">
+    <VerticalStackLayout>
+        <Label
+                    Text="Click on the map to set the event location."
+                    FontSize="Micro"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"
+                    HorizontalTextAlignment="Center"
+                    Margin="5" />
+
+        <controls:CustomMap x:Name="eventLocationMap" ItemsSource="{Binding Events}" IsShowingUser="True" HeightRequest="400"
+                          MapClicked="OnMapClicked">
+            <maps:Map.ItemTemplate>
+                <DataTemplate x:DataType="viewModels:EventViewModel">
+                    <controls:CustomPin Location="{Binding Address.Location}"
+                                      Address="{Binding Address.StreetAddress}"
+                                      ImageSource="{Binding Address.IconFile}"
+                                      Label="{Binding Name}" />
+                </DataTemplate>
+            </maps:Map.ItemTemplate>
+        </controls:CustomMap>
+
+        <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="*, *">
+            <VerticalStackLayout Grid.Row="0" Grid.ColumnSpan="2">
+                <Label Text="Address" Style="{StaticResource FieldLabel}" />
+                <Label Text="{Binding EventViewModel.Address.StreetAddress }" FontSize="Micro" />
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Row="1" Grid.Column="0">
+                <Label Text="City" Style="{StaticResource FieldLabel}" />
+                <Label Text="{Binding EventViewModel.Address.City }" FontSize="Micro" />
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Row="1" Grid.Column="1">
+                <Label Text="State/Region" Style="{StaticResource FieldLabel}" />
+                <Label Text="{Binding EventViewModel.Address.Region }" FontSize="Micro" />
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Row="2" Grid.Column="0">
+                <Label Text="Country" Style="{StaticResource FieldLabel}" />
+                <Label Text="{Binding EventViewModel.Address.Country }" FontSize="Micro" />
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Row="2" Grid.Column="1">
+                <Label Text="Postal Code" Style="{StaticResource FieldLabel}" />
+                <Label Text="{Binding EventViewModel.Address.PostalCode }" FontSize="Micro" />
+            </VerticalStackLayout>
+        </Grid>
+    </VerticalStackLayout>
+</ContentView>

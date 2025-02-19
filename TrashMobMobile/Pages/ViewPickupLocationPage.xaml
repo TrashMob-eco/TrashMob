@@ -36,7 +36,7 @@
                 </Grid>
 
 
-                <maps:Map x:Name="pickupLocationsMap"
+                <controls:CustomMap x:Name="pickupLocationsMap"
                           ItemsSource="{Binding PickupLocations}"
                           IsVisible="{Binding Source={x:Reference viewMap}, Path=IsChecked}">
                     <maps:Map.ItemTemplate>
@@ -48,7 +48,7 @@
                                       AutomationId="{Binding Id}" />
                         </DataTemplate>
                     </maps:Map.ItemTemplate>
-                </maps:Map>
+                </controls:CustomMap>
 
                 <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="*, *">
                     <VerticalStackLayout Grid.Row="0" Grid.ColumnSpan="2">

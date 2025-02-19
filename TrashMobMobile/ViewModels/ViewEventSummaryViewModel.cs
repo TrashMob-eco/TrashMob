@@ -4,17 +4,20 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
+using TrashMob.Models.Poco;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
 public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager, 
-                                               IPickupLocationManager pickupLocationManager, 
+                                               IPickupLocationManager pickupLocationManager,
+                                               IEventAttendeeRouteRestService eventAttendeeRouteRestService,
                                                INotificationService notificationService,
                                                IUserManager userManager) 
     : BaseViewModel(notificationService)
 {
     private readonly IMobEventManager mobEventManager = mobEventManager;
     private readonly IPickupLocationManager pickupLocationManager = pickupLocationManager;
+    private readonly IEventAttendeeRouteRestService eventAttendeeRouteRestService = eventAttendeeRouteRestService;
     private readonly IUserManager userManager = userManager;
     [ObservableProperty]
     private bool enableAddPickupLocation;
@@ -38,6 +41,10 @@ public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager,
 
     public ObservableCollection<PickupLocationViewModel> PickupLocations { get; set; } = [];
 
+    public ObservableCollection<DisplayEventAttendeeRoute> EventAttendeeRoutes { get; set; } = [];
+
+    private Action UpdateRoutes;
+
     public PickupLocationViewModel SelectedPickupLocation
     {
         get => selectedPickupLocationViewModel;
@@ -58,9 +65,11 @@ public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager,
         await Shell.Current.GoToAsync($"{nameof(ViewPickupLocationPage)}?PickupLocationId={pickupLocationId}");
     }
 
-    public async Task Init(Guid eventId)
+    public async Task Init(Guid eventId, Action updRoutes)
     {
         IsBusy = true;
+
+        UpdateRoutes = updRoutes;
 
         try
         {
@@ -99,7 +108,7 @@ public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager,
                         City = pickupLocation.City,
                         Country = pickupLocation.Country,
                         County = pickupLocation.County,
-                        Location = new Location(pickupLocation.Latitude ?? 0, pickupLocation.Longitude ?? 0),
+                        Location = new Microsoft.Maui.Devices.Sensors.Location(pickupLocation.Latitude ?? 0, pickupLocation.Longitude ?? 0),
                         Latitude = pickupLocation.Latitude ?? 0,
                         Longitude = pickupLocation.Longitude ?? 0,
                         PostalCode = pickupLocation.PostalCode,
@@ -118,6 +127,16 @@ public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager,
 
                 PickupLocations.Add(pickupLocationViewModel);
             }
+
+            var routes = await eventAttendeeRouteRestService.GetEventAttendeeRoutesForEventAsync(eventId);
+            EventAttendeeRoutes.Clear();
+
+            foreach (var eventAttendeeRoute in routes)
+            {
+                EventAttendeeRoutes.Add(eventAttendeeRoute);
+            }
+
+            UpdateRoutes();
 
             IsBusy = false;
         }
