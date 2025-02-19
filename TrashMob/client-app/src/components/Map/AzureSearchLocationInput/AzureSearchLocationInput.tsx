@@ -185,14 +185,12 @@ export function AzureSearchLocationInput(props: AzureSearchLocationInputProps) {
 
 export const AzureSearchLocationInputWithKey = (props: Omit<AzureSearchLocationInputProps, 'azureKey'>) => {
     const [azureKey, setAzureKey] = useState<string>('');
-    
+
     useEffect(() => {
         MapStore.getOption().then((opts) => {
             setAzureKey(opts.subscriptionKey);
         });
-    }, [])  
+    }, []);
 
-    return (
-        <AzureSearchLocationInput {...props} azureKey={azureKey} />
-    );
-}
+    return <AzureSearchLocationInput {...props} azureKey={azureKey} />;
+};

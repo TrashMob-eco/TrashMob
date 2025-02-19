@@ -37,8 +37,8 @@ import { SiteHeader } from './components/SiteHeader';
 import { useLogin } from './hooks/useLogin';
 
 /** 2024 pages */
-import { CreateEventWrapper } from './pages/ManageEventDashboard/create';
 import { Home } from './pages/_home';
+import { CreateEventWrapper } from './pages/events/create';
 import { TermsOfService } from './pages/termsofservice';
 import { VolunteerOpportunities } from './pages/volunteeropportunities';
 import { PartnerEdit } from './pages/partnerdashboard/$partnerId/edit';
@@ -134,6 +134,9 @@ export const App: FC = () => {
                                             />
                                         }
                                     />
+                                    <Route path='/events'>
+                                        <Route path='create' element={<CreateEventWrapper />} />
+                                    </Route>
                                     <Route path='partnerdashboard'>
                                         <Route index element={<div>Partner Dashboard Index</div>} />
                                         <Route path=':partnerId' element={<PartnerLayout />}>
