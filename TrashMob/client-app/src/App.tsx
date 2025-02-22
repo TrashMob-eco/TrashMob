@@ -37,6 +37,7 @@ import { SiteHeader } from './components/SiteHeader';
 import { useLogin } from './hooks/useLogin';
 
 /** 2024 pages */
+import { CreateEventWrapper } from './pages/ManageEventDashboard/create';
 import { Home } from './pages/_home';
 import { TermsOfService } from './pages/termsofservice';
 import { VolunteerOpportunities } from './pages/volunteeropportunities';
