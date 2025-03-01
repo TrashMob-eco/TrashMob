@@ -12,11 +12,17 @@ import { RegisterBtn } from '@/components/Customization/RegisterBtn';
 
 import { useGetEventType } from '@/hooks/useGetEventType';
 
-export const EventPlaceAndLocation = (event: EventData) => {
+export const EventPlaceAndLocation = (
+    event: Partial<Pick<EventData, 'eventDate' | 'streetAddress' | 'city' | 'region'>>,
+) => {
     return (
         <div className='grid grid-cols-[24px_1fr] gap-x-3 gap-y-2'>
-            <Calendar />
-            <div>{moment(event.eventDate).format('MMM DD, YYYY | hh:mm A z')}</div>
+            {event.eventDate ? (
+                <>
+                    <Calendar />
+                    <div>{moment(event.eventDate).format('MMM DD, YYYY | hh:mm A z')}</div>
+                </>
+            ) : null}
             <MapPin />
             <div>
                 <a

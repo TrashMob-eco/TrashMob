@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ManageEventDashboardLayout } from './_layout';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, useWatch } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Switch } from '@/components/ui/switch';
@@ -22,17 +22,23 @@ import { useGetEventTypes } from '@/hooks/useGetEventTypes';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { EventStatusActive } from '@/components/Models/Constants';
+import { EventPlaceAndLocation } from '@/components/events/event-list';
 import moment from 'moment';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { CreateEvent, GetUserEvents } from '@/services/events';
 import EventData from '@/components/Models/EventData';
 import { AzureMapSearchAddressReverse, AzureMapSearchAddressReverse_Params } from '@/services/maps';
 import { useGetAzureKey } from '@/hooks/useGetAzureKey';
-import { AzureMapSearchAddressReverseResultItem } from '@/components/Models/AzureMapSearchAddressReverse';
 import { useLogin } from '@/hooks/useLogin';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router';
-import { ToastAction } from '@/components/ui/toast';
+import { Badge } from '@/components/ui/badge';
+
+const createMomentFromDateAndTime = (eventDate: Date, eventTimeStart: string) => {
+    const eventDateMoment = moment(eventDate);
+    const start = moment(`${eventDateMoment.format('YYYY-MM-DD')} ${eventTimeStart}`);
+    return start;
+};
 
 const createEventSchema = z.object({
     name: z.string().min(2, {
@@ -135,15 +141,14 @@ export const CreateEventPage = () => {
     function onSubmit(formValues: z.infer<typeof createEventSchema>) {
         const body = new EventData();
 
-        const eventDateMoment = moment(formValues.eventDate);
-        const start = moment(`${eventDateMoment.format('YYYY-MM-DD')} ${formValues.eventTimeStart}`);
-        const end = moment(`${eventDateMoment.format('YYYY-MM-DD')} ${formValues.eventTimeEnd}`);
+        const start = createMomentFromDateAndTime(formValues.eventDate, formValues.eventTimeStart);
+        const end = createMomentFromDateAndTime(formValues.eventDate, formValues.eventTimeEnd);
         const diffMinutes = end.diff(start, 'minutes');
         const durationHours = Math.floor(diffMinutes / 60);
         const durationMinutes = diffMinutes % 60;
         body.name = formValues.name ?? '';
         body.description = formValues.description ?? '';
-        body.eventDate = formValues.eventDate;
+        body.eventDate = start.toDate();
         body.durationHours = durationHours ?? 2;
         body.durationMinutes = durationMinutes ?? 0;
         body.eventTypeId = Number(formValues.eventTypeId);
@@ -254,7 +259,7 @@ export const CreateEventPage = () => {
                                         />
                                     </FormControl>
                                 </FormItem>
-                                {latitude && longitude && (
+                                {latitude && longitude ? (
                                     <>
                                         <FormItem className='col-span-12'>
                                             <GoogleMap
@@ -280,7 +285,7 @@ export const CreateEventPage = () => {
                                             </Button>
                                         </div>
                                     </>
-                                )}
+                                ) : null}
                             </div>
                         </TabsContent>
                         <TabsContent value='edit-detail'>
@@ -417,18 +422,27 @@ export const CreateEventPage = () => {
                             </div>
                         </TabsContent>
                         <TabsContent value='review'>
-                            {previewValues && (
+                            {previewValues ? (
                                 <>
-                                    <h4 className='text-lg'>{previewValues.name}</h4>
-                                    <p>
-                                        {eventTypes?.find((type) => `${type.id}` === previewValues.eventTypeId)?.name}
+                                    <h4 className='text-lg mb-4'>{previewValues.name}</h4>
+                                    <p className='mb-4'>
+                                        <Badge>
+                                            {
+                                                eventTypes?.find((type) => `${type.id}` === previewValues.eventTypeId)
+                                                    ?.name
+                                            }
+                                        </Badge>
                                     </p>
-                                    <p>
-                                        {previewValues.latitude}, {previewValues.longitude}
-                                    </p>
-                                    <p>
-                                        {moment(previewValues.eventDate).format('dddd, MMMM D, YYYY')}{' '}
-                                        {previewValues.eventTimeStart} - {previewValues.eventTimeEnd}
+                                    <p className='mb-4'>
+                                        <EventPlaceAndLocation
+                                            eventDate={createMomentFromDateAndTime(
+                                                previewValues.eventDate,
+                                                previewValues.eventTimeStart,
+                                            ).toDate()}
+                                            streetAddress={previewValues.streetAddress}
+                                            city={previewValues.city}
+                                            region={previewValues.region}
+                                        />
                                     </p>
                                     <GoogleMap
                                         defaultCenter={{ lat: latitude, lng: longitude }}
@@ -438,8 +452,7 @@ export const CreateEventPage = () => {
                                         <Marker position={{ lat: latitude, lng: longitude }} />
                                     </GoogleMap>
                                 </>
-                            )}
-
+                            ) : null}
                             <div className='col-span-12 flex gap-2 justify-end my-4'>
                                 <Button type='button' variant='outline' onClick={() => setStep('edit-detail')}>
                                     Back

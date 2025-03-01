@@ -189,7 +189,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                     <h4 className='font-bold !mr-2 !pb-2 !mt-0 border-b-[3px] border-primary flex items-center w-full'>
                         <div className='grow'>My Events ({myEventList.length})</div>
                         <Button asChild>
-                            <Link to='/manageeventdashboard'>
+                            <Link to='/events/create'>
                                 <Plus /> Create Event
                             </Link>
                         </Button>
