@@ -51,7 +51,7 @@ export const SiteHeader = (props: SiteHeaderProps) => {
                             <MainNav className='flex-1 !py-4 lg:!py-0' isUserLoaded={isUserLoaded} />
                             <div className={cn('flex flex-row gap-4')}>
                                 <Button asChild className='flex md:hidden xl:flex'>
-                                    <Link to='/manageeventdashboard'>
+                                    <Link to='/events/create'>
                                         <Plus /> Create an Event
                                     </Link>
                                 </Button>
