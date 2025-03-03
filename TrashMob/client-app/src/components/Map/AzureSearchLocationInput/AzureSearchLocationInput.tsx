@@ -1,9 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import _ from 'lodash';
 import { AzureMapSearchAddress, GeographicEntityType } from '@/services/maps';
 import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { useDebounce } from '@/hooks/useDebounce';
+import * as MapStore from '@/store/MapStore';
 import { cn } from '@/lib/utils';
 
 export type SearchLocationOption = {
@@ -124,7 +125,7 @@ export function AzureSearchLocationInput(props: AzureSearchLocationInputProps) {
     };
 
     const customInputProps: RenderInputProps = {
-        placeholder,
+        placeholder: placeholder ?? 'Location...',
         onChange: handleInputChange,
         value: query,
         onFocus: handleFocus,
@@ -142,7 +143,7 @@ export function AzureSearchLocationInput(props: AzureSearchLocationInputProps) {
                     renderInput(customInputProps)
                 ) : (
                     <CommandInput
-                        placeholder={placeholder}
+                        placeholder={placeholder ?? 'Location...'}
                         value={query}
                         onValueChange={(value) => setQuery(value)}
                         onFocus={handleFocus}
@@ -181,3 +182,15 @@ export function AzureSearchLocationInput(props: AzureSearchLocationInputProps) {
         </div>
     );
 }
+
+export const AzureSearchLocationInputWithKey = (props: Omit<AzureSearchLocationInputProps, 'azureKey'>) => {
+    const [azureKey, setAzureKey] = useState<string>('');
+
+    useEffect(() => {
+        MapStore.getOption().then((opts) => {
+            setAzureKey(opts.subscriptionKey);
+        });
+    }, []);
+
+    return <AzureSearchLocationInput {...props} azureKey={azureKey} />;
+};

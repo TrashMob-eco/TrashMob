@@ -1,5 +1,6 @@
-import { Map, MapProps, useMap } from '@vis.gl/react-google-maps';
+import { APIProvider, Map, MapProps, useMap } from '@vis.gl/react-google-maps';
 import { PropsWithChildren, useEffect } from 'react';
+import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
 import * as MapStore from '@/store/MapStore';
 import { useGetDefaultMapCenter } from '@/hooks/useGetDefaultMapCenter';
 
@@ -27,5 +28,17 @@ export const GoogleMap = (props: PropsWithChildren<MapProps>) => {
         >
             {children}
         </Map>
+    );
+};
+
+export const GoogleMapWithKey = (props: PropsWithChildren<MapProps>) => {
+    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey();
+
+    if (isLoading) return null;
+
+    return (
+        <APIProvider apiKey={googleApiKey || ''}>
+            <GoogleMap {...props} />
+        </APIProvider>
     );
 };
