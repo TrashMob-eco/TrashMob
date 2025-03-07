@@ -2,7 +2,7 @@ import * as React from 'react';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { Button, Col, Container, Form } from 'react-bootstrap';
-import { RouteComponentProps } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import EventData from '../Models/EventData';
 import UserData from '../Models/UserData';
@@ -11,19 +11,14 @@ import { ShareToSocialsDialog } from './ShareToSocialsDialog';
 import * as SharingMessages from '../../store/SharingMessages';
 import { DeleteEvent, GetEventById } from '../../services/events';
 import { Services } from '../../config/services.config';
+import { useLogin } from '@/hooks/useLogin';
 
-export interface CancelEventMatchParams {
-    eventId: string;
-}
-
-export interface CancelEventProps extends RouteComponentProps<CancelEventMatchParams> {
-    isUserLoaded: boolean;
-    currentUser: UserData;
-}
-
-export const CancelEvent: React.FC<CancelEventProps> = (props) => {
+export const CancelEvent: React.FC = () => {
+    const { eventId: paramEventId } = useParams<{ eventId: string }>() as { eventId: string };
+    const { currentUser } = useLogin();
+    const navigate = useNavigate();
     const [isDataLoaded, setIsDataLoaded] = React.useState<boolean>(false);
-    const [eventId, setEventId] = React.useState<string>(props.match.params.eventId);
+    const [eventId, setEventId] = React.useState<string>(paramEventId);
     const [eventName, setEventName] = React.useState<string>('New Event');
     const [cancellationReason, setCancellationReason] = React.useState<string>('');
     const [isSaveEnabled, setIsSaveEnabled] = React.useState<boolean>(false);
@@ -71,7 +66,7 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
     // This will handle Cancel button click event.
     function handleCancel(event: any) {
         event.preventDefault();
-        props.history.goBack();
+        navigate(-1);
     }
 
     // This will handle the submit form event.
@@ -131,7 +126,7 @@ export const CancelEvent: React.FC<CancelEventProps> = (props) => {
 
     const handleShowModal = (showModal: boolean) => {
         // if modal is being dismissed, route user back to previous page
-        if (!showModal) props.history.goBack();
+        if (!showModal) navigate(-1);
         else setShowSocialsModal(showModal);
     };
 

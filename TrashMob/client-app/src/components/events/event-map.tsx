@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
-import { AdvancedMarker, InfoWindow, useMap, MapProps, Pin } from '@vis.gl/react-google-maps';
-import { GoogleMap } from '../Map/GoogleMap';
+import { useRef, useState } from 'react';
+import { AdvancedMarker, InfoWindow, MapProps } from '@vis.gl/react-google-maps';
+import { GoogleMapWithKey as GoogleMap } from '../Map/GoogleMap';
 import { EventDetailInfoWindowHeader, EventDetailInfoWindowContent } from '../Map/EventInfoWindowContent';
 import EventData from '../Models/EventData';
 import UserData from '../Models/UserData';
@@ -22,11 +22,10 @@ interface EventsMapProps extends MapProps {
     events: EventData[];
     isUserLoaded: boolean;
     currentUser: UserData;
-    autoFitBounds?: boolean;
 }
 
 export const EventsMap = (props: EventsMapProps) => {
-    const { id, events, isUserLoaded, currentUser, gestureHandling, autoFitBounds = false, ...rest } = props;
+    const { id, events, isUserLoaded, currentUser, gestureHandling, ...rest } = props;
 
     // Load and add user's attendance to events
     const { data: myAttendanceList } = useQuery({
@@ -39,19 +38,6 @@ export const EventsMap = (props: EventsMapProps) => {
         const isAttending: boolean = (myAttendanceList || []).some((ev) => ev.id === event.id);
         return { ...event, isAttending };
     });
-
-    const map = useMap(id);
-
-    // Fit Map to show all events markers
-    useEffect(() => {
-        if (map && autoFitBounds && events.length) {
-            let bounds = new google.maps.LatLngBounds();
-            for (let event of events) {
-                bounds.extend({ lat: event.latitude, lng: event.longitude });
-            }
-            map.fitBounds(bounds);
-        }
-    }, [map, events, autoFitBounds]);
 
     /**
      *  Show Event InfoWindow when user hover marker

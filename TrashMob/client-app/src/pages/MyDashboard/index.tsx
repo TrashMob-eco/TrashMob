@@ -223,12 +223,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                     </CardHeader>
                     <CardContent>
                         {upcomingEventsMapView ? (
-                            <EventsMap
-                                id='upcomingEventsMap'
-                                events={upcomingEvents}
-                                isUserLoaded={isUserLoaded}
-                                currentUser={currentUser}
-                            />
+                            <EventsMap events={upcomingEvents} isUserLoaded={isUserLoaded} currentUser={currentUser} />
                         ) : (
                             <EventsTable events={upcomingEvents} currentUser={currentUser} />
                         )}
@@ -261,12 +256,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                     </CardHeader>
                     <CardContent>
                         {pastEventsMapView ? (
-                            <EventsMap
-                                id='pastEventsMap'
-                                events={pastEvents}
-                                isUserLoaded={isUserLoaded}
-                                currentUser={currentUser}
-                            />
+                            <EventsMap events={pastEvents} isUserLoaded={isUserLoaded} currentUser={currentUser} />
                         ) : (
                             <EventsTable events={pastEvents} currentUser={currentUser} />
                         )}

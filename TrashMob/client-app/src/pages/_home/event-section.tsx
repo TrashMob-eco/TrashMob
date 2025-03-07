@@ -6,8 +6,7 @@ import { EventsMap } from '@/components/events/event-map';
 import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
-import { APIProvider, useMap } from '@vis.gl/react-google-maps';
+import { useMap } from '@vis.gl/react-google-maps';
 import { useCallback, useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { GetFilteredEvents, GetFilteredEvents_Params } from '@/services/events';
@@ -20,7 +19,12 @@ import { GetAllEventsBeingAttendedByUser } from '@/services/events';
 
 import { EventList } from '@/components/events/event-list';
 import { useLogin } from '@/hooks/useLogin';
-import { getCompletedTimeranges, getThisweekendTimerange, getUpcomingTimeranges } from './utils/timerange';
+import {
+    getCompletedTimeranges,
+    getAllUpcomingTimerange,
+    getUpcomingTimeranges,
+    getLastDaysTimerange,
+} from './utils/timerange';
 import { EventStatus } from '@/enums/EventStatus';
 
 interface EventSectionProps {}
@@ -34,7 +38,7 @@ const useGetFilteredEvents = (params: GetFilteredEvents_Params) => {
     });
 };
 
-export const EventSectionComponent = (props: EventSectionProps) => {
+export const EventSection = (props: EventSectionProps) => {
     const { isUserLoaded, currentUser } = useLogin();
     const map = useMap();
     const defaultMapCenter = useGetDefaultMapCenter();
@@ -56,7 +60,7 @@ export const EventSectionComponent = (props: EventSectionProps) => {
     const [selectedStatuses, setSelectedStatuses] = useState<string>(EventStatus.UPCOMING);
 
     // Default timerange is This weekend
-    const [selectedTimeRange, setSelectedTimeRange] = useState<string>(getThisweekendTimerange());
+    const [selectedTimeRange, setSelectedTimeRange] = useState<string>(getAllUpcomingTimerange());
 
     const [selectedLocation, setSelectedLocation] = useState<SearchLocationOption>();
     const [view, setView] = useState<string>('map');
@@ -109,9 +113,10 @@ export const EventSectionComponent = (props: EventSectionProps) => {
 
     // Side Effect 2: When eventStatus change, set timeRangeOption accordingly
     useEffect(() => {
-        const timeRange = timeRangeOptions.find((tro) => tro.value === selectedTimeRange);
-        if (!timeRange) {
-            setSelectedTimeRange(timeRangeOptions[0].value);
+        if (selectedStatuses === EventStatus.COMPLETED) {
+            setSelectedTimeRange(getLastDaysTimerange(90));
+        } else {
+            setSelectedTimeRange(getAllUpcomingTimerange());
         }
     }, [timeRangeOptions, selectedStatuses]);
 
@@ -128,7 +133,7 @@ export const EventSectionComponent = (props: EventSectionProps) => {
     );
 
     return (
-        <section id='event-section' className='bg-[#FCFBF8]'>
+        <section id='events' className='bg-[#FCFBF8]'>
             <div className='container !py-20'>
                 <div className='flex flex-col gap-2'>
                     <div className='flex flex-col md:flex-row items-center gap-4 relative'>
@@ -244,17 +249,5 @@ export const EventSectionComponent = (props: EventSectionProps) => {
                 </div>
             </div>
         </section>
-    );
-};
-
-export const EventSection = (props: EventSectionProps) => {
-    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey();
-
-    if (isLoading) return null;
-
-    return (
-        <APIProvider apiKey={googleApiKey || ''}>
-            <EventSectionComponent {...props} />
-        </APIProvider>
     );
 };
