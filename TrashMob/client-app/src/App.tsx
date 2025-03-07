@@ -195,26 +195,8 @@ export const App: FC = () => {
                                         path='/mydashboard'
                                         element={<MyDashboard currentUser={currentUser} isUserLoaded={isUserLoaded} />}
                                     />
-                                    <Route
-                                        path='/becomeapartner'
-                                        element={
-                                            <PartnerRequest
-                                                currentUser={currentUser}
-                                                isUserLoaded={isUserLoaded}
-                                                mode='become'
-                                            />
-                                        }
-                                    />
-                                    <Route
-                                        path='/inviteapartner'
-                                        element={
-                                            <PartnerRequest
-                                                currentUser={currentUser}
-                                                isUserLoaded={isUserLoaded}
-                                                mode='send'
-                                            />
-                                        }
-                                    />
+                                    <Route path='/becomeapartner' element={<PartnerRequest mode='become' />} />
+                                    <Route path='/inviteapartner' element={<PartnerRequest mode='send' />} />
                                     <Route
                                         path='/siteadmin'
                                         element={<SiteAdmin currentUser={currentUser} isUserLoaded={isUserLoaded} />}

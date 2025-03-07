@@ -50,8 +50,8 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const { isUserLoaded, currentUser } = props;
     const location = useLocation();
     const navigate = useNavigate();
-
     const userId = currentUser.id;
+    const userPreferredLocation = { lat: currentUser.latitude, lng: currentUser.longitude };
 
     const [upcomingEventsMapView, setUpcomingEventsMapView] = useState<boolean>(false);
     const [pastEventsMapView, setPastEventsMapView] = useState<boolean>(false);
@@ -223,7 +223,12 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                     </CardHeader>
                     <CardContent>
                         {upcomingEventsMapView ? (
-                            <EventsMap events={upcomingEvents} isUserLoaded={isUserLoaded} currentUser={currentUser} />
+                            <EventsMap
+                                events={upcomingEvents}
+                                isUserLoaded={isUserLoaded}
+                                currentUser={currentUser}
+                                defaultCenter={userPreferredLocation}
+                            />
                         ) : (
                             <EventsTable events={upcomingEvents} currentUser={currentUser} />
                         )}
@@ -256,7 +261,12 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                     </CardHeader>
                     <CardContent>
                         {pastEventsMapView ? (
-                            <EventsMap events={pastEvents} isUserLoaded={isUserLoaded} currentUser={currentUser} />
+                            <EventsMap
+                                events={pastEvents}
+                                isUserLoaded={isUserLoaded}
+                                currentUser={currentUser}
+                                defaultCenter={userPreferredLocation}
+                            />
                         ) : (
                             <EventsTable events={pastEvents} currentUser={currentUser} />
                         )}
