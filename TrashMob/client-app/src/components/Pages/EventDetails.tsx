@@ -28,15 +28,9 @@ import { EventAttendeeTable } from '@/components/events/event-attendee-table';
 import { Calendar, Share2 } from 'lucide-react';
 import makeUrls from '@/lib/add-to-calendar';
 import { GoogleMap } from '../Map/GoogleMap';
+import { useLogin } from '@/hooks/useLogin';
 
-export interface DetailsMatchParams {
-    eventId: string;
-}
-
-export interface EventDetailsProps {
-    isUserLoaded: boolean;
-    currentUser: UserData;
-}
+export interface EventDetailsProps {}
 
 const useGetEventAttendees = (eventId: string) => {
     return useQuery({
@@ -55,15 +49,16 @@ const useGetEventsAttendedByUser = (userId: string) => {
     });
 };
 
-export const EventDetails: FC<EventDetailsProps> = ({ currentUser, isUserLoaded }) => {
-    const { eventId } = useParams<DetailsMatchParams>();
+export const EventDetails: FC<EventDetailsProps> = () => {
+    const { eventId } = useParams<{ eventId: string }>() as { eventId: string };
+    const { currentUser, isUserLoaded } = useLogin();
     const { data: event, isSuccess } = useGetEvent(eventId);
     const { data: eventType } = useGetEventType(event?.eventTypeId || 0);
     const { data: eventAttendees } = useGetEventAttendees(eventId);
     const { data: myAttendanceList } = useGetEventsAttendedByUser(currentUser.id);
     const [showModal, setShowSocialsModal] = useState<boolean>(false);
 
-    const isDataLoaded = isSuccess && isUserLoaded;
+    const isDataLoaded = isSuccess;
 
     const {
         name: eventName = 'New Event',
@@ -99,7 +94,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ currentUser, isUserLoaded 
             <HeroSection Title='View Events' Description='Learn, join, and inspire.' />
             {!isDataLoaded ? (
                 <p>
-                    <em>Loding...</em>
+                    <em>Loading...</em>
                 </p>
             ) : (
                 <>
@@ -119,14 +114,15 @@ export const EventDetails: FC<EventDetailsProps> = ({ currentUser, isUserLoaded 
                         <div className='flex justify-between items-end flex-col md:flex-row'>
                             <h2 className='font-semibold'>{eventName}</h2>
                             <div className='flex my-3 gap-2'>
-                                <RegisterBtn
-                                    eventId={eventId}
-                                    isAttending={isAttending}
-                                    isEventCompleted={isEventCompleted!}
-                                    currentUser={currentUser}
-                                    isUserLoaded={isUserLoaded}
-                                />
-
+                                {currentUser ? (
+                                    <RegisterBtn
+                                        eventId={eventId}
+                                        isAttending={isAttending}
+                                        isEventCompleted={isEventCompleted!}
+                                        currentUser={currentUser}
+                                        isUserLoaded={isUserLoaded}
+                                    />
+                                ) : null}
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <Button variant='outline'>

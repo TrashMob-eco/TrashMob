@@ -5,16 +5,18 @@ import * as MapStore from '@/store/MapStore';
 import { useGetDefaultMapCenter } from '@/hooks/useGetDefaultMapCenter';
 
 export const GoogleMap = (props: PropsWithChildren<MapProps>) => {
-    const { defaultCenter: defaultCenterProps, defaultZoom: defaultZoomProps, children, ...rest } = props;
-    const defaultCenter = useGetDefaultMapCenter();
+    const { defaultCenter: defaultCenterProps, defaultZoom: defaultZoomProps, children, id, ...rest } = props;
+    const userDefaultCenter = useGetDefaultMapCenter();
+
+    const defaultCenter = defaultCenterProps || userDefaultCenter;
 
     // Move Map when receiving new defaultCenterProps
-    const map = useMap();
+    const map = useMap(id);
     useEffect(() => {
-        if (map && defaultCenterProps) {
-            map.panTo(defaultCenterProps);
+        if (map && defaultCenter) {
+            map.panTo(defaultCenter);
         }
-    }, [map, defaultCenterProps]);
+    }, [map, defaultCenter]);
 
     return (
         <Map
@@ -23,7 +25,7 @@ export const GoogleMap = (props: PropsWithChildren<MapProps>) => {
             disableDefaultUI
             style={{ width: '100%', height: '500px' }}
             defaultZoom={defaultZoomProps || MapStore.defaultUserLocationZoom}
-            defaultCenter={defaultCenterProps || defaultCenter}
+            defaultCenter={defaultCenter}
             {...rest}
         >
             {children}
