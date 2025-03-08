@@ -57,7 +57,7 @@ export const EventDetailInfoWindowContent = (props: EventDetailInfoWindowContent
                     {postalCode || ''}
                 </p>
             </div>
-            <div className='d-flex justify-content-between mt-2'>
+            <div className='d-flex justify-content-between mt-2 tailwind'>
                 <span className='align-self-end'>
                     Created by
                     {createdByUserName}

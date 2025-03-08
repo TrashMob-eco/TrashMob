@@ -55,30 +55,6 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     private bool enableViewEventSummary;
 
     [ObservableProperty]
-    private bool enableViewEventDetails;
-
-    [ObservableProperty]
-    private bool enableViewEventPartners;
-
-    [ObservableProperty]
-    private bool enableViewEventLitterReports;
-
-    [ObservableProperty]
-    private bool enableViewEventAttendees;
-
-    [ObservableProperty]
-    private bool isDetailsVisible;
-
-    [ObservableProperty]
-    private bool isPartnersVisible;
-
-    [ObservableProperty]
-    private bool isLitterReportsVisible;
-
-    [ObservableProperty]
-    private bool isAttendeesVisible;
-
-    [ObservableProperty]
     private EventViewModel eventViewModel = new();
 
     private Event mobEvent = new();
@@ -154,14 +130,6 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
             EnableEditEvent = mobEvent.IsEventLead(userManager.CurrentUser.Id) && !mobEvent.IsCompleted();
             EnableViewEventSummary = mobEvent.IsCompleted();
-            EnableViewEventDetails = true;
-            EnableViewEventPartners = true;
-            EnableViewEventLitterReports = true;
-            EnableViewEventAttendees = true;
-            IsDetailsVisible = true;
-            IsPartnersVisible = false;
-            IsLitterReportsVisible = false;
-            IsAttendeesVisible = false;
 
             EnableStartTrackEventRoute = mobEvent.IsEventLead(userManager.CurrentUser.Id) && !mobEvent.IsCompleted();
             EnableStopTrackEventRoute = false;
@@ -208,42 +176,6 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
         IsLitterReportMapSelected = false;
         IsLitterReportListSelected = true;
         return Task.CompletedTask;
-    }
-
-    [RelayCommand]
-    private void ViewEventPartners()
-    {
-        IsDetailsVisible = false;
-        IsPartnersVisible = true;
-        IsLitterReportsVisible = false;
-        IsAttendeesVisible = false;
-    }
-
-    [RelayCommand]
-    private void ViewEventAttendees()
-    {
-        IsDetailsVisible = false;
-        IsPartnersVisible = false;
-        IsLitterReportsVisible = false;
-        IsAttendeesVisible = true;
-    }
-
-    [RelayCommand]
-    private void ViewLitterReports()
-    {
-        IsDetailsVisible = false;
-        IsPartnersVisible = false;
-        IsLitterReportsVisible = true;
-        IsAttendeesVisible = false;
-    }
-
-    [RelayCommand]
-    private void ViewEventDetails()
-    {
-        IsDetailsVisible = true;
-        IsPartnersVisible = false;
-        IsLitterReportsVisible = false;
-        IsAttendeesVisible = false;
     }
 
     private async Task LoadPartners()

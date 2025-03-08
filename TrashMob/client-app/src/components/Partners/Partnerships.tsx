@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import Ihca from '../assets/partnerships/logos/IHCA.png';
 import TroutUnlimited from '../assets/partnerships/logos/TROUTUNLIMITEDLogo.png';
 import Safetykits from '../assets/partnerships/Safetykits.svg';
@@ -12,10 +12,6 @@ import { HeroSection } from '../Customization/HeroSection';
 import { Button } from '../ui/button';
 
 export const Partnerships: FC<any> = () => {
-    React.useEffect(() => {
-        window.scrollTo(0, 0);
-    });
-
     return (
         <div className='tailwind'>
             <HeroSection Title='Partnerships' Description='Connecting you with volunteers.' />

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -63,7 +63,7 @@ export const MyPartnersTable = ({ items }: MyPartnersTableProps) => {
                                             </DropdownMenuItem>
                                         ) : (
                                             <DropdownMenuItem asChild>
-                                                <Link to={`/partnerdashboard/${displayPartner.id}`}>
+                                                <Link to={`/partnerdashboard/${displayPartner.id}/edit`}>
                                                     <SquareArrowRight />
                                                     <span>Activate Partnership</span>
                                                 </Link>

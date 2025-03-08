@@ -1,8 +1,5 @@
 namespace TrashMobMobile.Pages;
 
-using Microsoft.Maui.Controls.Maps;
-using Microsoft.Maui.Maps;
-
 [QueryProperty(nameof(EventId), nameof(EventId))]
 public partial class EditEventPage : ContentPage
 {
@@ -22,33 +19,6 @@ public partial class EditEventPage : ContentPage
     {
         base.OnNavigatedTo(args);
         await viewModel.Init(new Guid(EventId));
-        viewModel.UpdateMapLocation = UpdateMapLocation;
-        UpdateMapLocation();
-    }
-
-    private void UpdateMapLocation()
-    {
-        if (viewModel?.EventViewModel?.Address?.Location != null)
-        {
-            var mapSpan = new MapSpan(viewModel.EventViewModel.Address.Location, 0.05, 0.05);
-            eventLocationMap.InitialMapSpanAndroid = mapSpan;
-            eventLocationMap.MoveToRegion(mapSpan);
-            litterImagesMap.InitialMapSpanAndroid = mapSpan;
-            litterImagesMap.MoveToRegion(mapSpan);
-        }
-    }
-
-    private async void Pin_InfoWindowClicked(object sender, PinClickedEventArgs e)
-    {
-        var p = (Pin)sender;
-
-        var litterReportId = new Guid(p.AutomationId);
-
-        await viewModel.UpdateLitterAssignment(litterReportId);
-    }
-
-    private async void OnMapClicked(object sender, MapClickedEventArgs e)
-    {
-        await viewModel.ChangeLocation(e.Location);
+        Switcher.SelectedIndex = 0;
     }
 }

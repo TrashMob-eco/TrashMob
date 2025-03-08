@@ -11,15 +11,15 @@ import { Dispatch, SetStateAction } from 'react';
 type Option = { label: string; value: string };
 
 interface ISelectProps {
-    placeholder: string;
-    className: string;
+    placeholder?: string;
+    className?: string;
     options: Option[];
     selectedOptions: string[];
     setSelectedOptions: Dispatch<SetStateAction<string[]>>;
 }
 const MultiSelect = ({
     className,
-    placeholder,
+    placeholder = '',
     options: values,
     selectedOptions: selectedItems,
     setSelectedOptions: setSelectedItems,

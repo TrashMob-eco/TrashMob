@@ -1,15 +1,18 @@
 import * as React from 'react';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Form as ShadcnForm, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
+import { Loader2 } from 'lucide-react';
+
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Tooltip as ShadcnTooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import PhoneInput from 'react-phone-input-2';
 
 import { APIProvider, MapMouseEvent, useMap } from '@vis.gl/react-google-maps';
@@ -26,16 +29,15 @@ import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
 import { AzureSearchLocationInput, SearchLocationOption } from '../Map/AzureSearchLocationInput';
 import { useAzureMapSearchAddressReverse } from '../../hooks/useAzureMapSearchAddressReverse';
 import { PartnerType } from '@/enums/PartnerType';
+import { useLogin } from '@/hooks/useLogin';
 
 enum PartnerRequestMode {
     SEND = 'send',
     REQUEST = 'request',
 }
 
-interface PartnerRequestProps extends RouteComponentProps<any> {
+interface PartnerRequestProps {
     mode: string;
-    isUserLoaded: boolean;
-    currentUser: UserData;
 }
 
 interface FormInputs {
@@ -76,12 +78,25 @@ const formSchema = z.object({
 
 export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     const { mode } = props;
+    const { toast } = useToast();
+    const navigate = useNavigate();
+    const { currentUser } = useLogin();
+    const userPreferredLocation =
+        currentUser.latitude && currentUser.longitude
+            ? { lat: currentUser.latitude, lng: currentUser.longitude }
+            : null;
 
     const createPartnerRequest = useMutation({
         mutationKey: CreatePartnerRequest().key,
         mutationFn: CreatePartnerRequest().service,
         onSuccess: () => {
-            props.history.push('/');
+            toast({
+                variant: 'primary',
+                title: 'Request Submitted',
+                description:
+                    'We will review your application and will get back to you shortly. Thank you for your interest in joining us!',
+            });
+            navigate('/');
         },
     });
 
@@ -98,26 +113,29 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         },
     });
 
-    const onSubmit: SubmitHandler<FormInputs> = (data) => {
-        const body = new PartnerRequestData();
-        body.name = data.name ?? '';
-        body.email = data.email ?? '';
-        body.phone = data.phone ?? '';
-        body.website = data.website ?? '';
-        body.partnerRequestStatusId = Constants.PartnerRequestStatusSent;
-        body.notes = data.notes ?? '';
-        body.streetAddress = data.streetAddress ?? '';
-        body.city = data.city ?? '';
-        body.region = data.region ?? '';
-        body.country = data.country ?? '';
-        body.latitude = data.location.lat ?? 0;
-        body.longitude = data.location.lng ?? 0;
-        body.createdByUserId = props.currentUser.id;
-        body.partnerTypeId = Number(data.partnerTypeId);
-        body.isBecomeAPartnerRequest = mode !== PartnerRequestMode.SEND;
+    const onSubmit: SubmitHandler<FormInputs> = React.useCallback(
+        (data) => {
+            const body = new PartnerRequestData();
+            body.name = data.name ?? '';
+            body.email = data.email ?? '';
+            body.phone = data.phone ?? '';
+            body.website = data.website ?? '';
+            body.partnerRequestStatusId = Constants.PartnerRequestStatusSent;
+            body.notes = data.notes ?? '';
+            body.streetAddress = data.streetAddress ?? '';
+            body.city = data.city ?? '';
+            body.region = data.region ?? '';
+            body.country = data.country ?? '';
+            body.latitude = data.location.lat ?? 0;
+            body.longitude = data.location.lng ?? 0;
+            body.createdByUserId = currentUser?.id;
+            body.partnerTypeId = Number(data.partnerTypeId);
+            body.isBecomeAPartnerRequest = mode !== PartnerRequestMode.SEND;
 
-        createPartnerRequest.mutateAsync(body);
-    };
+            createPartnerRequest.mutateAsync(body);
+        },
+        [currentUser],
+    );
 
     const location = form.watch('location');
 
@@ -186,7 +204,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     // This will handle Cancel button click event.
     function handleCancel(event: any) {
         event.preventDefault();
-        props.history.push('/partnerships');
+        navigate('/partnerships');
     }
 
     return (
@@ -222,22 +240,22 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                         </p>
                     </CardContent>
                     <CardContent>
-                        <TooltipProvider>
-                            <ShadcnForm {...form}>
+                        <TooltipProvider delayDuration={0}>
+                            <Form {...form}>
                                 <form onSubmit={form.handleSubmit(onSubmit)} className='grid grid-cols-12 gap-4'>
                                     <FormField
                                         control={form.control}
                                         name='name'
                                         render={({ field }) => (
                                             <FormItem className='col-span-6'>
-                                                <ShadcnTooltip>
+                                                <Tooltip>
                                                     <TooltipTrigger>
                                                         <FormLabel>Partner Name</FormLabel>
                                                     </TooltipTrigger>
                                                     <TooltipContent className='max-w-64'>
                                                         {ToolTips.PartnerRequestName}
                                                     </TooltipContent>
-                                                </ShadcnTooltip>
+                                                </Tooltip>
                                                 <FormControl>
                                                     <Input {...field} />
                                                 </FormControl>
@@ -250,14 +268,14 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                                         name='partnerTypeId'
                                         render={({ field }) => (
                                             <FormItem className='col-span-6'>
-                                                <ShadcnTooltip>
+                                                <Tooltip>
                                                     <TooltipTrigger>
                                                         <FormLabel>Type</FormLabel>
                                                     </TooltipTrigger>
                                                     <TooltipContent className='max-w-64'>
                                                         {ToolTips.PartnerType}
                                                     </TooltipContent>
-                                                </ShadcnTooltip>
+                                                </Tooltip>
                                                 <FormControl>
                                                     <RadioGroup
                                                         onValueChange={field.onChange}
@@ -287,7 +305,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                                         name='email'
                                         render={({ field }) => (
                                             <FormItem className='col-span-6'>
-                                                <ShadcnTooltip>
+                                                <Tooltip>
                                                     <TooltipTrigger>
                                                         <FormLabel>Email</FormLabel>
                                                     </TooltipTrigger>
@@ -296,7 +314,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                                                             ? ToolTips.PartnerRequestInviteEmail
                                                             : ToolTips.PartnerRequestEmail}
                                                     </TooltipContent>
-                                                </ShadcnTooltip>
+                                                </Tooltip>
                                                 <FormControl>
                                                     <Input {...field} />
                                                 </FormControl>
@@ -309,14 +327,14 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                                         name='website'
                                         render={({ field }) => (
                                             <FormItem className='col-span-6'>
-                                                <ShadcnTooltip>
+                                                <Tooltip>
                                                     <TooltipTrigger>
                                                         <FormLabel>Website</FormLabel>
                                                     </TooltipTrigger>
                                                     <TooltipContent className='max-w-64'>
                                                         {ToolTips.PartnerRequestWebsite}
                                                     </TooltipContent>
-                                                </ShadcnTooltip>
+                                                </Tooltip>
                                                 <FormControl>
                                                     <Input {...field} />
                                                 </FormControl>
@@ -329,7 +347,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                                         name='phone'
                                         render={({ field }) => (
                                             <FormItem className='col-span-6'>
-                                                <ShadcnTooltip>
+                                                <Tooltip>
                                                     <TooltipTrigger>
                                                         <FormLabel>Phone</FormLabel>
                                                     </TooltipTrigger>
@@ -338,7 +356,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                                                             ? ToolTips.PartnerRequestInvitePhone
                                                             : ToolTips.PartnerRequestPhone}
                                                     </TooltipContent>
-                                                </ShadcnTooltip>
+                                                </Tooltip>
                                                 <FormControl>
                                                     <PhoneInput
                                                         country='us'
@@ -356,7 +374,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                                         name='notes'
                                         render={({ field }) => (
                                             <FormItem className='col-span-12'>
-                                                <ShadcnTooltip>
+                                                <Tooltip>
                                                     <TooltipTrigger>
                                                         <FormLabel>Notes</FormLabel>
                                                     </TooltipTrigger>
@@ -365,7 +383,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                                                             ? ToolTips.PartnerRequestInviteNotes
                                                             : ToolTips.PartnerRequestNotes}
                                                     </TooltipContent>
-                                                </ShadcnTooltip>
+                                                </Tooltip>
                                                 <FormControl>
                                                     <Textarea {...field} maxLength={2048} className='h-24' />
                                                 </FormControl>
@@ -381,7 +399,10 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                                                 <FormLabel>Choose a location!</FormLabel>
                                                 <FormControl>
                                                     <div className='relative w-full'>
-                                                        <GoogleMap onClick={handleClickMap}>
+                                                        <GoogleMap
+                                                            defaultCenter={userPreferredLocation}
+                                                            onClick={handleClickMap}
+                                                        >
                                                             <Marker
                                                                 position={field.value}
                                                                 draggable
@@ -444,10 +465,15 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                                         <Button variant='secondary' onClick={handleCancel}>
                                             Cancel
                                         </Button>
-                                        <Button type='submit'>Submit</Button>
+                                        <Button type='submit' disabled={createPartnerRequest.isLoading}>
+                                            {createPartnerRequest.isLoading ? (
+                                                <Loader2 className='animate-spin' />
+                                            ) : null}
+                                            Submit
+                                        </Button>
                                     </div>
                                 </form>
-                            </ShadcnForm>
+                            </Form>
                         </TooltipProvider>
                     </CardContent>
                 </Card>
@@ -468,4 +494,4 @@ const PartnerRequestWrapper = (props: PartnerRequestProps) => {
     );
 };
 
-export default withRouter(PartnerRequestWrapper);
+export default PartnerRequestWrapper;

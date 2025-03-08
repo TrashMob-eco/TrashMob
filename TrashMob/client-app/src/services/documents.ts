@@ -14,9 +14,9 @@ export const GetPartnerDocumentsByPartnerId = (params: GetPartnerDocumentsByPart
 
 export type GetPartnerDocumentsByDocumentId_Params = { documentId: string };
 export type GetPartnerDocumentsByDocumentId_Response = PartnerDocumentData;
-export const GetPartnerDocumentsByDocumentId = () => ({
-    key: ['/partnerdocuments/', 'get by documentId'],
-    service: async (params: GetPartnerDocumentsByDocumentId_Params) =>
+export const GetPartnerDocumentsByDocumentId = (params: GetPartnerDocumentsByDocumentId_Params) => ({
+    key: ['/partnerdocuments/', params.documentId],
+    service: async () =>
         ApiService('protected').fetchData<GetPartnerDocumentsByDocumentId_Response>({
             url: `/partnerdocuments/${params.documentId}`,
             method: 'get',

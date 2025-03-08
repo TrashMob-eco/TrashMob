@@ -1,6 +1,5 @@
 import { FC, useState, useEffect } from 'react';
 import { Button, Col, Container, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Guid } from 'guid-typescript';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import UserData from './Models/UserData';
@@ -12,17 +11,19 @@ import { ShareToSocialsDialog } from './EventManagement/ShareToSocialsDialog';
 import * as SharingMessages from '../store/SharingMessages';
 import { CreateEventSummary, GetEventById, GetEventSummaryById, UpdateEventSummary } from '../services/events';
 import { Services } from '../config/services.config';
+import { useParams } from 'react-router';
 
 export interface EventSummaryMatchParams {
     eventId: string;
 }
 
-export interface EventSummaryDashboardProps extends RouteComponentProps<EventSummaryMatchParams> {
+export interface EventSummaryDashboardProps {
     isUserLoaded: boolean;
     currentUser: UserData;
 }
 
 export const EventSummary: FC<EventSummaryDashboardProps> = (props) => {
+    const params = useParams<'eventId'>();
     const [actualNumberOfAttendees, setActualNumberOfAttendees] = useState<number>(0);
     const [numberOfBuckets, setNumberOfBuckets] = useState<number>(0);
     const [numberOfBags, setNumberOfBags] = useState<number>(0);
@@ -36,7 +37,7 @@ export const EventSummary: FC<EventSummaryDashboardProps> = (props) => {
     const [numberOfBucketsErrors, setNumberOfBucketsErrors] = useState<string>('');
     const [durationInMinutesErrors, setDurationInMinutesErrors] = useState<string>('');
     const [isSaveEnabled, setIsSaveEnabled] = useState<boolean>(false);
-    const [loadedEventId] = useState<string>(props.match.params.eventId);
+    const [loadedEventId] = useState<string>(params.eventId!);
     const [isOwner, setIsOwner] = useState<boolean>(false);
     const [eventName, setEventName] = useState<string>('New Event');
     const [eventDate, setEventDate] = useState<Date>(new Date());
@@ -68,7 +69,6 @@ export const EventSummary: FC<EventSummaryDashboardProps> = (props) => {
     });
 
     useEffect(() => {
-        window.scrollTo(0, 0);
         getEventById.refetch().then((res) => {
             if (res.data === undefined) return;
             setEventName(res.data.data.name);
@@ -435,4 +435,4 @@ export const EventSummary: FC<EventSummaryDashboardProps> = (props) => {
     );
 };
 
-export default withRouter(EventSummary);
+export default EventSummary;

@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { Col, Container, Row } from 'react-bootstrap';
 import { Guid } from 'guid-typescript';
 import { useQuery } from '@tanstack/react-query';
@@ -11,20 +11,23 @@ import { ManageEventAttendees } from './ManageEventAttendees';
 import { HeroSection } from '../Customization/HeroSection';
 import { GetEventById } from '../../services/events';
 import { Services } from '../../config/services.config';
+import { useParams } from 'react-router';
 
 export interface ManageEventDashboardMatchParams {
     eventId?: string;
 }
 
-export interface ManageEventDashboardProps extends RouteComponentProps<ManageEventDashboardMatchParams> {
+export interface ManageEventDashboardProps {
     isUserLoaded: boolean;
     currentUser: UserData;
 }
 
 const ManageEventDashboard: React.FC<ManageEventDashboardProps> = (props) => {
+    const navigate = useNavigate();
+    const params = useParams<'eventId'>();
     const [eventId, setEventId] = React.useState<string>('');
     const [isEventIdReady, setIsEventIdReady] = React.useState<boolean>();
-    const [loadedEventId, setLoadedEventId] = React.useState<string | undefined>(props.match?.params.eventId);
+    const [loadedEventId, setLoadedEventId] = React.useState<string | undefined>(params.eventId!);
     const [isEventComplete, setIsEventComplete] = React.useState<boolean>(false);
 
     const getEventById = useQuery({
@@ -51,12 +54,11 @@ const ManageEventDashboard: React.FC<ManageEventDashboardProps> = (props) => {
     }, [loadedEventId]);
 
     function handleEditCancel() {
-        props.history.push('/mydashboard');
+        navigate('/mydashboard');
     }
 
     function handleEditSave() {
-        props.history.push({
-            pathname: '/mydashboard',
+        navigate('/mydashboard', {
             state: {
                 newEventCreated: true,
             },
@@ -123,4 +125,4 @@ const ManageEventDashboard: React.FC<ManageEventDashboardProps> = (props) => {
     );
 };
 
-export default withRouter(ManageEventDashboard);
+export default ManageEventDashboard;

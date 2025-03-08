@@ -67,9 +67,9 @@ export const GetPartnerRequests = () => ({
 
 export type GetPartnerRequestById_Params = { id: string };
 export type GetPartnerRequestById_Response = PartnerRequestData;
-export const GetPartnerRequestById = () => ({
-    key: ['/partnerrequests', 'by id'],
-    service: async (params: GetPartnerRequestById_Params) =>
+export const GetPartnerRequestById = (params: GetPartnerRequestById_Params) => ({
+    key: ['/partnerrequests', params.id],
+    service: async () =>
         ApiService('protected').fetchData<GetPartnerRequestById_Response>({
             url: `/partnerrequests/${params.id}`,
             method: 'get',

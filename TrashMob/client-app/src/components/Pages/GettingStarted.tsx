@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import attitude from '../assets/gettingStarted/attitude.png';
 import bucket from '../assets/gettingStarted/bucket.png';
 import highways from '../assets/gettingStarted/highways.png';
@@ -9,10 +9,6 @@ import { HeroSection } from '../Customization/HeroSection';
 import { Button } from '../ui/button';
 
 export const GettingStarted: React.FC = () => {
-    React.useEffect(() => {
-        window.scrollTo(0, 0);
-    });
-
     return (
         <div className='tailwind'>
             <HeroSection Title='Getting Started' Description='Tips and tricks to get you out there.' />

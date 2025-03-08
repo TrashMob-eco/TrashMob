@@ -1,7 +1,6 @@
 import { FC, useCallback, useEffect, useState } from 'react';
-import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 import { APIProvider } from '@vis.gl/react-google-maps';
-import { Guid } from 'guid-typescript';
 import { useQuery } from '@tanstack/react-query';
 import EventData from '@/components/Models/EventData';
 import UserData from '@/components/Models/UserData';
@@ -11,20 +10,20 @@ import bucketplus from '@/components/assets/card/bucketplus.svg';
 import StatsData from '@/components/Models/StatsData';
 import DisplayPartnershipData from '@/components/Models/DisplayPartnershipData';
 import DisplayPartnerAdminInvitationData from '@/components/Models/DisplayPartnerAdminInvitationData';
-import { PartnerLocationEventRequests } from '@/components/Partners/PartnerLocationEventRequests';
+import DisplayPartnerLocationEventData from '@/components/Models/DisplayPartnerLocationEventServiceData';
 import { ShareToSocialsDialog } from '@/components/EventManagement/ShareToSocialsDialog';
 import { HeroSection } from '@/components/Customization/HeroSection';
 import * as SharingMessages from '@/store/SharingMessages';
 import { GetStatsForUser } from '@/services/stats';
 import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
-import { EventsMap } from '@/components/Map';
+import { EventsMap } from '@/components/events/event-map';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 import { Plus } from 'lucide-react';
-import { EventsTable } from '@/components/EventsTable/EventsTable';
+import { EventsTable } from '@/components/events/event-table';
 import { useGetUserEvents } from '@/hooks/useGetUserEvents';
 import { MyPartnersTable } from '@/pages/mydashboard/MyPartnersTable';
 import { MyPickupRequestsTable } from '@/pages/mydashboard/MyPickupRequestsTable';
@@ -34,24 +33,29 @@ import { AxiosResponse } from 'axios';
 import { GetPartnerRequestByUserId } from '@/services/partners';
 import { GetPartnerAdminsForUser } from '@/services/admin';
 import { GetPartnerAdminInvitationsByUser } from '@/services/invitations';
-import { GetEventPickupLocationsByUser } from '@/services/locations';
+import { GetEventPickupLocationsByUser, GetPartnerLocationEventServicesByUserId } from '@/services/locations';
 import PickupLocationData from '@/components/Models/PickupLocationData';
+import { useLocation } from 'react-router';
+import { PartnerEventRequestTable } from '@/components/Partners/partner-event-request-table';
 
 const isUpcomingEvent = (event: EventData) => new Date(event.eventDate) >= new Date();
 const isPastEvent = (event: EventData) => new Date(event.eventDate) < new Date();
 
-interface MyDashboardProps extends RouteComponentProps<any> {
+interface MyDashboardProps {
     isUserLoaded: boolean;
     currentUser: UserData;
 }
 
 const MyDashboard: FC<MyDashboardProps> = (props) => {
     const { isUserLoaded, currentUser } = props;
+    const location = useLocation();
+    const navigate = useNavigate();
     const userId = currentUser.id;
+    const userPreferredLocation = { lat: currentUser.latitude, lng: currentUser.longitude };
 
     const [upcomingEventsMapView, setUpcomingEventsMapView] = useState<boolean>(false);
     const [pastEventsMapView, setPastEventsMapView] = useState<boolean>(false);
-    const state = props.history.location.state as { newEventCreated: boolean };
+    const state = location.state as { newEventCreated: boolean };
     const [eventToShare, setEventToShare] = useState<EventData>();
     const [showModal, setShowSocialsModal] = useState<boolean>(false);
 
@@ -92,6 +96,17 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
         select: (res) => res.data,
     });
 
+    // Event Request
+    const { data: partnerEventServices, isLoading: isPartnerEventServicesLoading } = useQuery<
+        AxiosResponse<DisplayPartnerLocationEventData[]>,
+        unknown,
+        DisplayPartnerLocationEventData[]
+    >({
+        queryKey: GetPartnerLocationEventServicesByUserId({ userId }).key,
+        queryFn: GetPartnerLocationEventServicesByUserId({ userId }).service,
+        select: (res) => res.data,
+    });
+
     // getStatsForUser
     const { data: stats } = useQuery<AxiosResponse<StatsData>, unknown, StatsData>({
         queryKey: GetStatsForUser({ userId: currentUser.id }).key,
@@ -102,10 +117,6 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const totalBags = stats?.totalBags || 0;
     const totalHours = stats?.totalHours || 0;
     const totalEvents = stats?.totalEvents || 0;
-
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, []);
 
     const setSharingEvent = useCallback((newEventToShare: EventData, updateShowModal: boolean) => {
         setEventToShare(newEventToShare);
@@ -122,9 +133,9 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
 
             // replace state
             state.newEventCreated = false;
-            props.history.replace({ ...props.history.location, state });
+            navigate(location.pathname, { replace: true, state });
         }
-    }, [state, props.currentUser.id, props.history, myEventList, setSharingEvent]);
+    }, [state, props.currentUser.id, navigate, myEventList, setSharingEvent]);
 
     const handleEventView = (view: string, table: string) => {
         if (table === 'Upcoming events') {
@@ -178,7 +189,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                     <h4 className='font-bold !mr-2 !pb-2 !mt-0 border-b-[3px] border-primary flex items-center w-full'>
                         <div className='grow'>My Events ({myEventList.length})</div>
                         <Button asChild>
-                            <Link to='/manageeventdashboard'>
+                            <Link to='/events/create'>
                                 <Plus /> Create Event
                             </Link>
                         </Button>
@@ -213,10 +224,10 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                     <CardContent>
                         {upcomingEventsMapView ? (
                             <EventsMap
-                                id='upcomingEventsMap'
                                 events={upcomingEvents}
                                 isUserLoaded={isUserLoaded}
                                 currentUser={currentUser}
+                                defaultCenter={userPreferredLocation}
                             />
                         ) : (
                             <EventsTable events={upcomingEvents} currentUser={currentUser} />
@@ -251,10 +262,10 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                     <CardContent>
                         {pastEventsMapView ? (
                             <EventsMap
-                                id='pastEventsMap'
                                 events={pastEvents}
                                 isUserLoaded={isUserLoaded}
                                 currentUser={currentUser}
+                                defaultCenter={userPreferredLocation}
                             />
                         ) : (
                             <EventsTable events={pastEvents} currentUser={currentUser} />
@@ -303,10 +314,9 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                         <CardTitle className='text-primary'>Partner Event Requests</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <PartnerLocationEventRequests
-                            partnerLocationId={Guid.EMPTY}
-                            currentUser={props.currentUser}
-                            isUserLoaded={props.isUserLoaded}
+                        <PartnerEventRequestTable
+                            isLoading={isPartnerEventServicesLoading}
+                            data={partnerEventServices}
                         />
                     </CardContent>
                 </Card>
@@ -356,4 +366,4 @@ const MyDashboardWrapper = (props: MyDashboardProps) => {
     );
 };
 
-export default withRouter(MyDashboardWrapper);
+export default MyDashboardWrapper;
