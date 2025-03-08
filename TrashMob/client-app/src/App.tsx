@@ -64,6 +64,7 @@ import { PrivacyPolicy } from './pages/privacypolicy';
 
 import { PartnerContactType } from './enums/PartnerContactType';
 import { PartnerAdminInvite } from './pages/partnerdashboard/$partnerId/admins.invite';
+import { EditEventPage } from './pages/events/edit';
 
 const queryClient = new QueryClient();
 
@@ -136,6 +137,7 @@ export const App: FC = () => {
                                     />
                                     <Route path='/events'>
                                         <Route path='create' element={<CreateEventWrapper />} />
+                                        <Route path=':eventId/edit' element={<EditEventPage />} />
                                     </Route>
                                     <Route path='partnerdashboard'>
                                         <Route index element={<div>Partner Dashboard Index</div>} />
