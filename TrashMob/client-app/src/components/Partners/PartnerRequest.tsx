@@ -29,16 +29,15 @@ import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
 import { AzureSearchLocationInput, SearchLocationOption } from '../Map/AzureSearchLocationInput';
 import { useAzureMapSearchAddressReverse } from '../../hooks/useAzureMapSearchAddressReverse';
 import { PartnerType } from '@/enums/PartnerType';
+import { useLogin } from '@/hooks/useLogin';
 
 enum PartnerRequestMode {
     SEND = 'send',
     REQUEST = 'request',
 }
 
-interface PartnerRequestProps extends RouteComponentProps<any> {
+interface PartnerRequestProps {
     mode: string;
-    isUserLoaded: boolean;
-    currentUser: UserData;
 }
 
 interface FormInputs {
@@ -81,6 +80,11 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
     const { mode } = props;
     const { toast } = useToast();
     const navigate = useNavigate();
+    const { currentUser } = useLogin();
+    const userPreferredLocation =
+        currentUser.latitude && currentUser.longitude
+            ? { lat: currentUser.latitude, lng: currentUser.longitude }
+            : null;
 
     const createPartnerRequest = useMutation({
         mutationKey: CreatePartnerRequest().key,
@@ -109,26 +113,29 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         },
     });
 
-    const onSubmit: SubmitHandler<FormInputs> = (data) => {
-        const body = new PartnerRequestData();
-        body.name = data.name ?? '';
-        body.email = data.email ?? '';
-        body.phone = data.phone ?? '';
-        body.website = data.website ?? '';
-        body.partnerRequestStatusId = Constants.PartnerRequestStatusSent;
-        body.notes = data.notes ?? '';
-        body.streetAddress = data.streetAddress ?? '';
-        body.city = data.city ?? '';
-        body.region = data.region ?? '';
-        body.country = data.country ?? '';
-        body.latitude = data.location.lat ?? 0;
-        body.longitude = data.location.lng ?? 0;
-        body.createdByUserId = props.currentUser.id;
-        body.partnerTypeId = Number(data.partnerTypeId);
-        body.isBecomeAPartnerRequest = mode !== PartnerRequestMode.SEND;
+    const onSubmit: SubmitHandler<FormInputs> = React.useCallback(
+        (data) => {
+            const body = new PartnerRequestData();
+            body.name = data.name ?? '';
+            body.email = data.email ?? '';
+            body.phone = data.phone ?? '';
+            body.website = data.website ?? '';
+            body.partnerRequestStatusId = Constants.PartnerRequestStatusSent;
+            body.notes = data.notes ?? '';
+            body.streetAddress = data.streetAddress ?? '';
+            body.city = data.city ?? '';
+            body.region = data.region ?? '';
+            body.country = data.country ?? '';
+            body.latitude = data.location.lat ?? 0;
+            body.longitude = data.location.lng ?? 0;
+            body.createdByUserId = currentUser?.id;
+            body.partnerTypeId = Number(data.partnerTypeId);
+            body.isBecomeAPartnerRequest = mode !== PartnerRequestMode.SEND;
 
-        createPartnerRequest.mutateAsync(body);
-    };
+            createPartnerRequest.mutateAsync(body);
+        },
+        [currentUser],
+    );
 
     const location = form.watch('location');
 
@@ -392,7 +399,10 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                                                 <FormLabel>Choose a location!</FormLabel>
                                                 <FormControl>
                                                     <div className='relative w-full'>
-                                                        <GoogleMap onClick={handleClickMap}>
+                                                        <GoogleMap
+                                                            defaultCenter={userPreferredLocation}
+                                                            onClick={handleClickMap}
+                                                        >
                                                             <Marker
                                                                 position={field.value}
                                                                 draggable

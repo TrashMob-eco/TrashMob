@@ -188,10 +188,7 @@ export const App: FC = () => {
                                         path='/eventsummary/:eventId?'
                                         element={<EventSummary currentUser={currentUser} isUserLoaded={isUserLoaded} />}
                                     />
-                                    <Route
-                                        path='/cancelevent/:eventId'
-                                        element={<CancelEvent currentUser={currentUser} isUserLoaded={isUserLoaded} />}
-                                    />
+                                    <Route path='/cancelevent/:eventId' element={<CancelEvent />} />
                                     <Route
                                         path='/deletemydata'
                                         element={<DeleteMyData currentUser={currentUser} isUserLoaded={isUserLoaded} />}
@@ -200,26 +197,8 @@ export const App: FC = () => {
                                         path='/mydashboard'
                                         element={<MyDashboard currentUser={currentUser} isUserLoaded={isUserLoaded} />}
                                     />
-                                    <Route
-                                        path='/becomeapartner'
-                                        element={
-                                            <PartnerRequest
-                                                currentUser={currentUser}
-                                                isUserLoaded={isUserLoaded}
-                                                mode='become'
-                                            />
-                                        }
-                                    />
-                                    <Route
-                                        path='/inviteapartner'
-                                        element={
-                                            <PartnerRequest
-                                                currentUser={currentUser}
-                                                isUserLoaded={isUserLoaded}
-                                                mode='send'
-                                            />
-                                        }
-                                    />
+                                    <Route path='/becomeapartner' element={<PartnerRequest mode='become' />} />
+                                    <Route path='/inviteapartner' element={<PartnerRequest mode='send' />} />
                                     <Route
                                         path='/siteadmin'
                                         element={<SiteAdmin currentUser={currentUser} isUserLoaded={isUserLoaded} />}
@@ -248,10 +227,7 @@ export const App: FC = () => {
                                         path='/partnerrequestdetails/:partnerRequestId'
                                         element={<PartnerRequestDetails />}
                                     />
-                                    <Route
-                                        path='/eventdetails/:eventId?'
-                                        element={<EventDetails currentUser={currentUser} isUserLoaded={isUserLoaded} />}
-                                    />
+                                    <Route path='/eventdetails/:eventId?' element={<EventDetails />} />
                                     <Route path='/partnerships' element={<Partnerships />} />
                                     <Route path='/shop' element={<Shop />} />
                                     <Route path='/help' element={<Help />} />

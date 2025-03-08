@@ -50,8 +50,8 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     const { isUserLoaded, currentUser } = props;
     const location = useLocation();
     const navigate = useNavigate();
-
     const userId = currentUser.id;
+    const userPreferredLocation = { lat: currentUser.latitude, lng: currentUser.longitude };
 
     const [upcomingEventsMapView, setUpcomingEventsMapView] = useState<boolean>(false);
     const [pastEventsMapView, setPastEventsMapView] = useState<boolean>(false);
@@ -224,10 +224,10 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                     <CardContent>
                         {upcomingEventsMapView ? (
                             <EventsMap
-                                id='upcomingEventsMap'
                                 events={upcomingEvents}
                                 isUserLoaded={isUserLoaded}
                                 currentUser={currentUser}
+                                defaultCenter={userPreferredLocation}
                             />
                         ) : (
                             <EventsTable events={upcomingEvents} currentUser={currentUser} />
@@ -262,10 +262,10 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                     <CardContent>
                         {pastEventsMapView ? (
                             <EventsMap
-                                id='pastEventsMap'
                                 events={pastEvents}
                                 isUserLoaded={isUserLoaded}
                                 currentUser={currentUser}
+                                defaultCenter={userPreferredLocation}
                             />
                         ) : (
                             <EventsTable events={pastEvents} currentUser={currentUser} />
