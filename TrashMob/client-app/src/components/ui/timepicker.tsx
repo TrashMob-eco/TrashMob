@@ -1,4 +1,5 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import moment from 'moment';
 
 interface TimePickerProps {
     value: string;
@@ -25,7 +26,7 @@ export const TimePicker = (props: TimePickerProps) => {
             <SelectContent>
                 {timeRange.map((time) => (
                     <SelectItem key={time} value={time}>
-                        {time}
+                        {moment(time, ["HH:mm"]).format("h:mm A")}
                     </SelectItem>
                 ))}
             </SelectContent>
