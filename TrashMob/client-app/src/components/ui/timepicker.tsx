@@ -26,7 +26,7 @@ export const TimePicker = (props: TimePickerProps) => {
             <SelectContent>
                 {timeRange.map((time) => (
                     <SelectItem key={time} value={time}>
-                        {moment(time, ["HH:mm"]).format("h:mm A")}
+                        {moment(time, ['HH:mm']).format('h:mm A')}
                     </SelectItem>
                 ))}
             </SelectContent>
