@@ -12,7 +12,7 @@
 
         public async Task StartListening(IProgress<Location> positionChangedProgress, CancellationToken cancellationToken)
         {
-            var permission = await Permissions.CheckStatusAsync<Permissions.LocationAlways>();
+            var permission = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
             if (permission != PermissionStatus.Granted)
             {
                 permission = await Permissions.RequestAsync<Permissions.LocationAlways>();
@@ -29,6 +29,9 @@
                 manager.LocationsUpdated -= PositionChanged;
                 taskCompletionSource.TrySetResult();
             });
+            manager.PausesLocationUpdatesAutomatically = false;
+            manager.AllowsBackgroundLocationUpdates = true; // ✅ Ensures updates even in background
+            manager.StartUpdatingLocation(); // ✅ Ensure location tracking starts
             manager.LocationsUpdated += PositionChanged;
 
             void PositionChanged(object? sender, CLLocationsUpdatedEventArgs args)
