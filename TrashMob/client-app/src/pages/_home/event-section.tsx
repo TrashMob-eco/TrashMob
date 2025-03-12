@@ -160,7 +160,7 @@ export const EventSection = (props: EventSectionProps) => {
                         </div>
                         <div className='grow flex justify-end'>
                             <Button asChild className='md:flex'>
-                                <Link to='/manageeventdashboard'>
+                                <Link to='/events/create'>
                                     <Plus /> Create Event
                                 </Link>
                             </Button>

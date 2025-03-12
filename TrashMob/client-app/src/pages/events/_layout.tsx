@@ -1,9 +1,10 @@
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, ReactNode } from 'react';
 
 interface ManageEventDashboardLayoutProps {
     title: string;
+    aside?: ReactNode;
 }
 
 export const ManageEventDashboardLayout = (props: PropsWithChildren<ManageEventDashboardLayoutProps>) => {
@@ -13,7 +14,7 @@ export const ManageEventDashboardLayout = (props: PropsWithChildren<ManageEventD
             <section className=''>
                 <div className='container'>
                     <div className='grid grid-cols-12 py-5 gap-8'>
-                        <div className='col-span-4 '>
+                        <div className='col-span-4 space-y-8'>
                             <Card>
                                 <CardContent>
                                     <h2 className='text-primary mt-4 mb-5'>Manage Event</h2>
@@ -24,6 +25,7 @@ export const ManageEventDashboardLayout = (props: PropsWithChildren<ManageEventD
                                     </p>
                                 </CardContent>
                             </Card>
+                            {props.aside}
                         </div>
                         <div className='col-span-8'>
                             <Card>
