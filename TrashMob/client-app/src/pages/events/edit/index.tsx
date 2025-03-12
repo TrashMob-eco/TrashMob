@@ -1,8 +1,9 @@
-import { useCallback, useEffect, Fragment } from 'react';
+import { useCallback, useEffect, Fragment, useState } from 'react';
 import { useParams, Link } from 'react-router';
 import moment from 'moment';
 
 import compact from 'lodash/compact';
+import take from 'lodash/take';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -76,6 +77,8 @@ export const EditEventPage = () => {
 
     const { updateEvent, createEventPartnerLocationService, deleteEventPartnerLocationService } =
         useEditEventPageMutations();
+
+    const [showAllAttendees, setShowAllAttendees] = useState<boolean>(false);
 
     //  This will handle the submit form event.
     const requestService = (serviceTypeId: number, partnerLocationId: string, partnerLocName: string) => {
@@ -199,6 +202,8 @@ export const EditEventPage = () => {
         }
     }, [latitude, longitude, azureKey]);
 
+    const numAttendees = (eventAttendees || []).length;
+    const visibleEventAttendees = showAllAttendees ? eventAttendees || [] : take(eventAttendees, 10);
     return (
         <ManageEventDashboardLayout
             title='Edit an event'
@@ -206,11 +211,11 @@ export const EditEventPage = () => {
                 <>
                     <Card>
                         <CardHeader>
-                            <CardTitle>Attendees ({(eventAttendees || []).length})</CardTitle>
+                            <CardTitle>Attendees ({numAttendees})</CardTitle>
                         </CardHeader>
                         <CardContent className='grid gap-6'>
-                            {(eventAttendees || []).map((attendee) => (
-                                <div className='flex items-center justify-between space-x-4'>
+                            {visibleEventAttendees.map((attendee) => (
+                                <div key={attendee.id} className='flex items-center justify-between space-x-4'>
                                     <div className='flex items-center space-x-2'>
                                         <span className='relative flex shrink-0 overflow-hidden rounded-full h-8 w-8'>
                                             <UserRoundCheck />
@@ -224,6 +229,16 @@ export const EditEventPage = () => {
                                     </div>
                                 </div>
                             ))}
+                            {!showAllAttendees && numAttendees > 10 ? (
+                                <Button variant='link' onClick={() => setShowAllAttendees(true)}>
+                                    Show all {numAttendees} attendees
+                                </Button>
+                            ) : null}
+                            {showAllAttendees && numAttendees > 10 ? (
+                                <Button variant='link' onClick={() => setShowAllAttendees(false)}>
+                                    Show less
+                                </Button>
+                            ) : null}
                         </CardContent>
                     </Card>
                     <Card>
