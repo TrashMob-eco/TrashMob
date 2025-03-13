@@ -98,7 +98,7 @@ export const EventsTable = (props: EventTableProps) => {
                                             ) : null}
                                             {isEventOwner ? (
                                                 <DropdownMenuItem asChild>
-                                                    <Link to={`/manageeventdashboard/${event.id}`}>
+                                                    <Link to={`/events/${event.id}/edit`}>
                                                         <Pencil /> Manage event
                                                     </Link>
                                                 </DropdownMenuItem>

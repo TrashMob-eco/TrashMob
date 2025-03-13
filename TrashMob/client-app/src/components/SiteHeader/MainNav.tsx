@@ -21,6 +21,7 @@ export const MainNav = ({
                     return (
                         <a
                             href={nav.to}
+                            key={nav.name}
                             className='text-sm font-medium text-foreground no-underline transition-colors hover:text-[--primary] !p-2 !pl-0 !lg:pl-2'
                         >
                             {nav.name}

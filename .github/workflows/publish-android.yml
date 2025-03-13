@@ -32,4 +32,4 @@ jobs:
                     releaseFiles: ./*Signed.aab
                     track: internal
                     status: completed
-                    changesNotSentForReview: true
+                    changesNotSentForReview: false
