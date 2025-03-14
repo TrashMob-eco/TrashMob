@@ -23,7 +23,6 @@ import PartnerRequest from './components/Partners/PartnerRequest';
 import SiteAdmin from './components/Admin/SiteAdmin';
 import ManageEventDashboard from './components/EventManagement/ManageEventDashboard';
 import { Shop } from './components/Shop';
-import { CancelEvent } from './components/EventManagement/CancelEvent';
 
 import './custom.css';
 import 'react-phone-input-2/lib/style.css';
@@ -65,6 +64,7 @@ import { PrivacyPolicy } from './pages/privacypolicy';
 import { PartnerContactType } from './enums/PartnerContactType';
 import { PartnerAdminInvite } from './pages/partnerdashboard/$partnerId/admins.invite';
 import { EditEventPage } from './pages/events/edit';
+import { CancelEvent } from './pages/events/$eventId/delete';
 
 const queryClient = new QueryClient();
 
