@@ -33,7 +33,7 @@ export const AboutUs: React.FC = () => {
                     </div>
                 </div>
             </div>
-            <section className='bg-[url(/img/the-blowup-t06aN6vewaQ-unsplash1.png)] bg-no-repeat bg-cover'>
+            <section className='bg-[url(/img/the-blowup-t06aN6vewaQ-unsplash1.jpg)] bg-no-repeat bg-cover'>
                 <div className='flex items-center justify-center p-5'>
                     <div className='bg-[#212529]/95 p-12 rounded-2xl w-full max-w-7xl'>
                         <h1 className='font-bold text-center text-white'>Benefits of joining TrashMob</h1>
