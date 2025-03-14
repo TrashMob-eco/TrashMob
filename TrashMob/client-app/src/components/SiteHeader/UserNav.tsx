@@ -91,7 +91,7 @@ export const UserNav = (props: UserNavProps) => {
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                            <Link to='/manageeventdashboard'>
+                            <Link to='/events/create'>
                                 <Plus />
                                 <span>Add Event</span>
                             </Link>

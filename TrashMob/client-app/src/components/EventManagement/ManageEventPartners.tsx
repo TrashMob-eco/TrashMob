@@ -66,7 +66,7 @@ export const ManageEventPartners: React.FC<ManageEventPartnersProps> = (props) =
 
     const getEventPartnerLocationServicesByLocationId = useMutation({
         mutationKey: GetEventPartnerLocationServicesByLocationId().key,
-        mutationFn: GetEventPartnerLocationServicesByLocationId().service,
+        mutationFn: GetEventPartnerLocationServicesByLocationId().serviceAsync,
     });
 
     const createEventPartnerLocationService = useMutation({

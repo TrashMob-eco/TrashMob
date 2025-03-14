@@ -50,7 +50,7 @@ on:
 
 jobs:
     build:
-        runs-on: macos-14-large
+        runs-on: macos-14
         environment: ${{ inputs.environment }}
         name: iOS Build
 

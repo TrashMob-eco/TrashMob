@@ -349,7 +349,11 @@ export const CreateEventPage = () => {
                                         <FormItem className='col-span-3'>
                                             <FormLabel>Max attendee</FormLabel>
                                             <FormControl>
-                                                <Input type='number' {...field} />
+                                                <Input
+                                                    type='number'
+                                                    {...field}
+                                                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>

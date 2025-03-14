@@ -160,7 +160,7 @@
             partnerMessage = partnerMessage.Replace("{UserName}", user.UserName);
 
             var dashboardLink =
-                string.Format("https://www.trashmob.eco/manageeventdashboard/{0}", existingService.EventId);
+                string.Format("https://www.trashmob.eco/events/{0}/edit", existingService.EventId);
             partnerMessage = partnerMessage.Replace("{PartnerResponseUrl}", dashboardLink);
 
             var partnerRecipients = new List<EmailAddress>

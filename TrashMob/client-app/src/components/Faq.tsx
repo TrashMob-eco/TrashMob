@@ -49,10 +49,10 @@ const Events: React.FC = () => {
                     </p>
                     <h5 className='font-weight-500 mt-5'>How do I create an event?</h5>
                     <p className='para'>
-                        Create an event <a href='https://www.trashmob.eco/manageeventdashboard>'>here</a> by naming your
-                        event, setting a location, and filling in relevant details like date, time, and a description.
-                        Share your created event across your network by viewing the event details and clicking “share”.
-                        View your created events in your user dashboard.{' '}
+                        Create an event <a href='https://www.trashmob.eco/events/create>'>here</a> by naming your event,
+                        setting a location, and filling in relevant details like date, time, and a description. Share
+                        your created event across your network by viewing the event details and clicking “share”. View
+                        your created events in your user dashboard.{' '}
                     </p>
                     <h5 className='font-weight-500'>Why do I have to be a registered user to create an event?</h5>
                     <p className='para'>

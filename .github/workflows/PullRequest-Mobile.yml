@@ -13,8 +13,8 @@ on:
       - 'TrashMobMobileApp.sln'
 
 env:
-  DOTNET_VERSION: '8.0.x'   # set this to the dotnet version to use
-  DOTNET_VERSION2: '8.0.x'  # set this to the dotnet version to use
+  DOTNET_VERSION: '9.0.x'   # set this to the dotnet version to use
+  DOTNET_VERSION2: '9.0.x'  # set this to the dotnet version to use
   CONFIGURATION: Release      # Values: Debug, Release
   ENVIRONMENT: test         # Values: test, production
   IOS_BUNDLE_ID: 'eco.trashmobdev.trashmobmobile'   # Values: 'eco.trashmobdev.trashmobmobile', 'eco.trashmob'

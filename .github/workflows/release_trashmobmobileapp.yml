@@ -14,8 +14,8 @@ on:
   workflow_dispatch:
 
 env:
-  DOTNET_VERSION: '8.0.x'  # set this to the dotnet version to use
-  DOTNET_VERSION2: '8.0.x'  # set this to the dotnet version to use
+  DOTNET_VERSION: '9.0.x'  # set this to the dotnet version to use
+  DOTNET_VERSION2: '9.0.x'  # set this to the dotnet version to use
   CONFIGURATION: Release      # Values: Debug, Release
   ENVIRONMENT: production         # Values: test, production
   ANDROID_BUNDLE_ID: 'eco.trashmob.trashmobmobileapp'   # Values: 'eco.trashmobdev.trashmobmobileapp', 'eco.trashmob'

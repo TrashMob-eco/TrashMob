@@ -45,7 +45,7 @@ export const AdminEvents: React.FC<AdminEventsPropsType> = (props) => {
 
     const eventActionDropdownList = (eventId: string) => (
         <>
-            <Dropdown.Item onClick={() => navigate(`/manageeventdashboard/${eventId}`)}>
+            <Dropdown.Item onClick={() => navigate(`/events/${eventId}/edit`)}>
                 <Pencil />
                 Manage Event
             </Dropdown.Item>
