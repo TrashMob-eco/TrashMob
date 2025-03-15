@@ -9,7 +9,6 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from '@/components/ui/toaster';
 
 import { AboutUs } from './components/Pages/AboutUs';
-import ContactUs from './components/Pages/ContactUs';
 import EventSummary from './components/EventSummary';
 import { Faq } from './components/Faq';
 import { GettingStarted } from './components/Pages/GettingStarted';
@@ -64,6 +63,7 @@ import { PartnerContactType } from './enums/PartnerContactType';
 import { PartnerAdminInvite } from './pages/partnerdashboard/$partnerId/admins.invite';
 import { EditEventPage } from './pages/events/edit';
 import { CancelEvent } from './pages/events/$eventId/delete';
+import { ContactUsWrapper as ContactUs } from './pages/contactus';
 import { LocationPreferenceWrapper as LocationPreference } from './pages/locationpreference';
 
 const queryClient = new QueryClient();
