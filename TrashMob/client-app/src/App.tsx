@@ -24,7 +24,6 @@ import { Shop } from './components/Shop';
 
 import './custom.css';
 import 'react-phone-input-2/lib/style.css';
-import DeleteMyData from './components/Pages/DeleteMyData';
 import Waivers from './components/Waivers/Waivers';
 import PartnerRequestDetails from './components/Partners/PartnerRequestDetails';
 import { Partnerships } from './components/Partners/Partnerships';
@@ -58,6 +57,7 @@ import { PartnerSocialAcccountEdit } from './pages/partnerdashboard/$partnerId/s
 import { PartnerSocialAcccountCreate } from './pages/partnerdashboard/$partnerId/socials.create';
 import { PartnerAdmins } from './pages/partnerdashboard/$partnerId/admins';
 import { PrivacyPolicy } from './pages/privacypolicy';
+import { DeleteMyData } from './pages/deletemydata';
 
 import { PartnerContactType } from './enums/PartnerContactType';
 import { PartnerAdminInvite } from './pages/partnerdashboard/$partnerId/admins.invite';
@@ -189,10 +189,7 @@ export const App: FC = () => {
                                         element={<EventSummary currentUser={currentUser} isUserLoaded={isUserLoaded} />}
                                     />
                                     <Route path='/cancelevent/:eventId' element={<CancelEvent />} />
-                                    <Route
-                                        path='/deletemydata'
-                                        element={<DeleteMyData currentUser={currentUser} isUserLoaded={isUserLoaded} />}
-                                    />
+                                    <Route path='/deletemydata' element={<DeleteMyData />} />
                                     <Route
                                         path='/mydashboard'
                                         element={<MyDashboard currentUser={currentUser} isUserLoaded={isUserLoaded} />}
