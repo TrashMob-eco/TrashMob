@@ -22,12 +22,12 @@
         }
 
         [HttpPost]
-        public virtual async Task<IActionResult> Add([FromQuery] string captchaResponse, [FromBody] ContactRequest instance, CancellationToken cancellationToken)
+        public virtual async Task<IActionResult> Add([FromQuery] string captchaToken, [FromBody] ContactRequest instance, CancellationToken cancellationToken)
         {
             var secret = await Task.FromResult(secretRepository.Get("CaptchaSecretKey"));
 
             // Call the Google reCAPTCHA API to verify the user's response
-            var url = $"https://www.google.com/recaptcha/api/siteverify?secret={secret}&response={captchaResponse}";
+            var url = $"https://www.google.com/recaptcha/api/siteverify?secret={secret}&response={captchaToken}";
 
             // Make the request to the reCAPTCHA API
             var httpClient = new HttpClient();
