@@ -18,7 +18,6 @@ import { Board } from './components/Board';
 import { msalClient } from './store/AuthStore';
 import EventDetails from './components/Pages/EventDetails';
 import { NoMatch } from './components/NoMatch';
-import LocationPreference from './components/Pages/LocationPreference';
 import PartnerRequest from './components/Partners/PartnerRequest';
 import SiteAdmin from './components/Admin/SiteAdmin';
 import ManageEventDashboard from './components/EventManagement/ManageEventDashboard';
@@ -65,6 +64,7 @@ import { PartnerContactType } from './enums/PartnerContactType';
 import { PartnerAdminInvite } from './pages/partnerdashboard/$partnerId/admins.invite';
 import { EditEventPage } from './pages/events/edit';
 import { CancelEvent } from './pages/events/$eventId/delete';
+import { LocationPreferenceWrapper as LocationPreference } from './pages/locationpreference';
 
 const queryClient = new QueryClient();
 
@@ -203,16 +203,7 @@ export const App: FC = () => {
                                         path='/siteadmin'
                                         element={<SiteAdmin currentUser={currentUser} isUserLoaded={isUserLoaded} />}
                                     />
-                                    <Route
-                                        path='/locationpreference'
-                                        element={
-                                            <LocationPreference
-                                                currentUser={currentUser}
-                                                isUserLoaded={isUserLoaded}
-                                                onUserUpdated={handleUserUpdated}
-                                            />
-                                        }
-                                    />
+                                    <Route path='/locationpreference' element={<LocationPreference />} />
                                     <Route
                                         path='/waivers'
                                         element={
