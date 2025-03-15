@@ -27,7 +27,7 @@
         }
 
         [HttpGet]
-        [Route("CheckCaptcha")]
+        [Route("CheckCaptcha/{captchaResponse}")]
         public async Task<IActionResult> CheckCaptcha(string captchaResponse)
         {
             var secret = await Task.FromResult(secretRepository.Get("CaptchaSecretKey"));
