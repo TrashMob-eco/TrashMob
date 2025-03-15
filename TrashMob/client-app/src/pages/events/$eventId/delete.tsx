@@ -92,7 +92,7 @@ export const CancelEvent: React.FC = () => {
             <div className='w-full max-w-xl mx-auto py-16'>
                 <Card>
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-2'>
+                        <form onSubmit={form.handleSubmit(onSubmit)}>
                             <CardHeader>
                                 <CardTitle>Cancel Event</CardTitle>
                                 <CardDescription>
