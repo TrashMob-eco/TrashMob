@@ -86,7 +86,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     [ObservableProperty]
     private bool isLitterReportListSelected;
     
-    private Action UpdateRoutes;
+    public Action UpdateRoutes { get; set; } = () => { };
 
     [ObservableProperty]
     private DateTimeOffset routeStartTime;
@@ -108,14 +108,12 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
     public ObservableCollection<DisplayEventAttendeeRoute> EventAttendeeRoutes { get; set; } = [];
 
-    public async Task Init(Guid eventId, Action updRoutes)
+    public async Task Init(Guid eventId)
     {
         IsBusy = true;
 
         try
         {
-            UpdateRoutes = updRoutes;
-
             mobEvent = await mobEventManager.GetEventAsync(eventId);
             EventViewModel = mobEvent.ToEventViewModel(userManager.CurrentUser.Id);
 
