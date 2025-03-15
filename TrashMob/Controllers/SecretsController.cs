@@ -1,5 +1,6 @@
 ﻿namespace TrashMob.Controllers
 {
+    using System.Net.Http;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -26,11 +27,21 @@
         }
 
         [HttpGet]
-        [Route("GetCaptcha")]
-        public async Task<IActionResult> GetCaptchaSecret()
+        [Route("CheckCaptcha")]
+        public async Task<IActionResult> CheckCaptcha(string captchaResponse)
         {
             var secret = await Task.FromResult(secretRepository.Get("CaptchaSecretKey"));
-            return Ok(secret);
+
+            // Call the Google reCAPTCHA API to verify the user's response
+            var url = $"https://www.google.com/recaptcha/api/siteverify?secret={secret}&response={captchaResponse}";
+
+            // Make the request to the reCAPTCHA API
+            var httpClient = new HttpClient();
+            var response = await httpClient.PostAsync(url, null);
+            var responseString = await response.Content.ReadAsStringAsync();
+
+            // Return the response from the reCAPTCHA API
+            return Ok(responseString);
         }
     }
 }
