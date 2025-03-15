@@ -25,23 +25,5 @@
             var secret = await Task.FromResult(secretRepository.Get(name));
             return Ok(secret);
         }
-
-        [HttpGet]
-        [Route("CheckCaptcha")]
-        public async Task<IActionResult> CheckCaptcha([FromQuery] string captchaResponse)
-        {
-            var secret = await Task.FromResult(secretRepository.Get("CaptchaSecretKey"));
-
-            // Call the Google reCAPTCHA API to verify the user's response
-            var url = $"https://www.google.com/recaptcha/api/siteverify?secret={secret}&response={captchaResponse}";
-
-            // Make the request to the reCAPTCHA API
-            var httpClient = new HttpClient();
-            var response = await httpClient.PostAsync(url, null);
-            var responseString = await response.Content.ReadAsStringAsync();
-
-            // Return the response from the reCAPTCHA API
-            return Ok(responseString);
-        }
     }
 }
