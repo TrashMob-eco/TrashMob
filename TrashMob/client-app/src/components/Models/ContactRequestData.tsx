@@ -8,6 +8,8 @@ class ContactRequestData {
     name: string = '';
 
     message: string = '';
+
+    recaptchaToken: string = '';
 }
 
 export default ContactRequestData;
