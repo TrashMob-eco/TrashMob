@@ -4,6 +4,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
+    using TrashMob.Common;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence;
@@ -34,9 +35,11 @@
             var response = await httpClient.PostAsync(url, null, cancellationToken: cancellationToken);
             var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
-            if (!responseString.Contains("\"success\": true"))
+            var captchaResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<CaptchaResponse>(responseString);
+
+            if (captchaResponse.success != "true")
             {
-                return BadRequest("Invalid reCAPTCHA response.");
+                return BadRequest($"Invalid reCAPTCHA response: {captchaResponse.success}, {captchaResponse.error_codes}");
             }
 
             await manager.AddAsync(instance, cancellationToken).ConfigureAwait(false);
