@@ -126,15 +126,6 @@ export const App: FC = () => {
                         <div className='container-fluid px-0'>
                             <Routes>
                                 <Route element={<AuthLayout />}>
-                                    <Route
-                                        path='manageeventdashboard/:eventId?'
-                                        element={
-                                            <ManageEventDashboard
-                                                currentUser={currentUser}
-                                                isUserLoaded={isUserLoaded}
-                                            />
-                                        }
-                                    />
                                     <Route path='/events'>
                                         <Route path='create' element={<CreateEventWrapper />} />
                                         <Route path=':eventId/edit' element={<EditEventPage />} />
