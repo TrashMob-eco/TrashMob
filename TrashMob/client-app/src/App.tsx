@@ -9,7 +9,6 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from '@/components/ui/toaster';
 
 import { AboutUs } from './components/Pages/AboutUs';
-import ContactUs from './components/Pages/ContactUs';
 import EventSummary from './components/EventSummary';
 import { Faq } from './components/Faq';
 import { GettingStarted } from './components/Pages/GettingStarted';
@@ -18,7 +17,6 @@ import { Board } from './components/Board';
 import { msalClient } from './store/AuthStore';
 import EventDetails from './components/Pages/EventDetails';
 import { NoMatch } from './components/NoMatch';
-import LocationPreference from './components/Pages/LocationPreference';
 import PartnerRequest from './components/Partners/PartnerRequest';
 import SiteAdmin from './components/Admin/SiteAdmin';
 import ManageEventDashboard from './components/EventManagement/ManageEventDashboard';
@@ -26,7 +24,6 @@ import { Shop } from './components/Shop';
 
 import './custom.css';
 import 'react-phone-input-2/lib/style.css';
-import DeleteMyData from './components/Pages/DeleteMyData';
 import Waivers from './components/Waivers/Waivers';
 import PartnerRequestDetails from './components/Partners/PartnerRequestDetails';
 import { Partnerships } from './components/Partners/Partnerships';
@@ -60,11 +57,14 @@ import { PartnerSocialAcccountEdit } from './pages/partnerdashboard/$partnerId/s
 import { PartnerSocialAcccountCreate } from './pages/partnerdashboard/$partnerId/socials.create';
 import { PartnerAdmins } from './pages/partnerdashboard/$partnerId/admins';
 import { PrivacyPolicy } from './pages/privacypolicy';
+import { DeleteMyData } from './pages/deletemydata';
 
 import { PartnerContactType } from './enums/PartnerContactType';
 import { PartnerAdminInvite } from './pages/partnerdashboard/$partnerId/admins.invite';
 import { EditEventPage } from './pages/events/edit';
 import { CancelEvent } from './pages/events/$eventId/delete';
+import { ContactUsWrapper as ContactUs } from './pages/contactus';
+import { LocationPreferenceWrapper as LocationPreference } from './pages/locationpreference';
 
 const queryClient = new QueryClient();
 
@@ -126,15 +126,6 @@ export const App: FC = () => {
                         <div className='container-fluid px-0'>
                             <Routes>
                                 <Route element={<AuthLayout />}>
-                                    <Route
-                                        path='manageeventdashboard/:eventId?'
-                                        element={
-                                            <ManageEventDashboard
-                                                currentUser={currentUser}
-                                                isUserLoaded={isUserLoaded}
-                                            />
-                                        }
-                                    />
                                     <Route path='/events'>
                                         <Route path='create' element={<CreateEventWrapper />} />
                                         <Route path=':eventId/edit' element={<EditEventPage />} />
@@ -189,10 +180,7 @@ export const App: FC = () => {
                                         element={<EventSummary currentUser={currentUser} isUserLoaded={isUserLoaded} />}
                                     />
                                     <Route path='/cancelevent/:eventId' element={<CancelEvent />} />
-                                    <Route
-                                        path='/deletemydata'
-                                        element={<DeleteMyData currentUser={currentUser} isUserLoaded={isUserLoaded} />}
-                                    />
+                                    <Route path='/deletemydata' element={<DeleteMyData />} />
                                     <Route
                                         path='/mydashboard'
                                         element={<MyDashboard currentUser={currentUser} isUserLoaded={isUserLoaded} />}
@@ -203,16 +191,7 @@ export const App: FC = () => {
                                         path='/siteadmin'
                                         element={<SiteAdmin currentUser={currentUser} isUserLoaded={isUserLoaded} />}
                                     />
-                                    <Route
-                                        path='/locationpreference'
-                                        element={
-                                            <LocationPreference
-                                                currentUser={currentUser}
-                                                isUserLoaded={isUserLoaded}
-                                                onUserUpdated={handleUserUpdated}
-                                            />
-                                        }
-                                    />
+                                    <Route path='/locationpreference' element={<LocationPreference />} />
                                     <Route
                                         path='/waivers'
                                         element={
