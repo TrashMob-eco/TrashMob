@@ -546,7 +546,7 @@ public partial class CreateEventViewModel : BaseViewModel
             Events.Add(EventViewModel);
 
             // Assign the litter report to the event if it was passed in
-            if (initialLitterReport != null)
+            if (initialLitterReport != null && initialLitterReport != Guid.Empty)
             {
                 await eventLitterReportManager.AddLitterReportAsync(new EventLitterReport
                 {
