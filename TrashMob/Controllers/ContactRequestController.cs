@@ -30,22 +30,22 @@
                 return BadRequest("Captcha token is required.");
             }
 
-            var secret = await Task.FromResult(secretRepository.Get("CaptchaSecretKey"));
+            //var secret = await Task.FromResult(secretRepository.Get("CaptchaSecretKey"));
 
-            // Call the Google reCAPTCHA API to verify the user's response
-            var url = $"https://www.google.com/recaptcha/api/siteverify?secret={secret}&response={captchaToken}";
+            //// Call the Google reCAPTCHA API to verify the user's response
+            //var url = $"https://www.google.com/recaptcha/api/siteverify?secret={secret}&response={captchaToken}";
 
-            // Make the request to the reCAPTCHA API
-            var httpClient = new HttpClient();
-            var response = await httpClient.PostAsync(url, null, cancellationToken: cancellationToken);
-            var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
+            //// Make the request to the reCAPTCHA API
+            //var httpClient = new HttpClient();
+            //var response = await httpClient.PostAsync(url, null, cancellationToken: cancellationToken);
+            //var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
-            var captchaResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<CaptchaResponse>(responseString);
+            //var captchaResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<CaptchaResponse>(responseString);
 
-            if (captchaResponse.success != "true")
-            {
-                return BadRequest($"Invalid reCAPTCHA response: {captchaResponse.success}, {captchaResponse.error_codes}");
-            }
+            //if (captchaResponse.success != "true")
+            //{
+            //    return BadRequest($"Invalid reCAPTCHA response: {captchaResponse.success}, {captchaResponse.error_codes}");
+            //}
 
             await manager.AddAsync(instance, cancellationToken).ConfigureAwait(false);
 
