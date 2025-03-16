@@ -3,7 +3,7 @@ param region string
 
 var keyvault_name = 'kv-tm-${environment}-${region}'
 
-resource keyvault_name_resource 'Microsoft.KeyVault/vaults@2021-04-01-preview' = {
+resource keyvault_name_resource 'Microsoft.KeyVault/vaults@2024-11-01' = {
   name: keyvault_name
   location: region
   properties: {
