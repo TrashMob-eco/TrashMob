@@ -4,6 +4,7 @@
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
              xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
              xmlns:controls="clr-namespace:TrashMobMobile.Controls"
+             x:DataType="viewModels:ViewEventViewModel"
              x:Class="TrashMobMobile.Views.ViewEvent.TabDetails">
     <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" RowSpacing="3"
                       ColumnDefinitions="*, 2*, *">
@@ -67,7 +68,7 @@
                             Text="View Event Summary"
                             IsVisible="{Binding EnableViewEventSummary}"
                             Style="{StaticResource SecondarySmallButton}" />
-            <!--<Button Margin="5"
+            <Button Margin="5"
                             Grid.Row="0" 
                             Grid.Column="2" 
                             Command="{Binding RealTimeLocationTrackerCommand}" 
@@ -82,7 +83,7 @@
                             IsEnabled="{Binding EnableStopTrackEventRoute}"
                             IsVisible="{Binding EnableStopTrackEventRoute}"
                             Text="Stop Tracking" 
-                            Style="{StaticResource SecondarySmallButton}" />-->
+                            Style="{StaticResource SecondarySmallButton}" />
         </Grid>
     </Grid>
 </ContentView>
