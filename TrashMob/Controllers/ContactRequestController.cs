@@ -25,6 +25,11 @@
         [HttpPost]
         public virtual async Task<IActionResult> Add([FromQuery] string captchaToken, [FromBody] ContactRequest instance, CancellationToken cancellationToken)
         {
+            if (string.IsNullOrEmpty(captchaToken))
+            {
+                return BadRequest("Captcha token is required.");
+            }
+
             var secret = await Task.FromResult(secretRepository.Get("CaptchaSecretKey"));
 
             // Call the Google reCAPTCHA API to verify the user's response
