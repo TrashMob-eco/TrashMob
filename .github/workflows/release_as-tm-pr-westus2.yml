@@ -17,8 +17,8 @@ on:
 
 env:
   AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # set this to the path to your web app project, defaults to the repository root
-  DOTNET_VERSION: '8.0.x'  # set this to the dotnet version to use
-  DOTNET_VERSION2: '8.0.x'  # set this to the dotnet version to use
+  DOTNET_VERSION: '9.0.x'  # set this to the dotnet version to use
+  DOTNET_VERSION2: '9.0.x'  # set this to the dotnet version to use
   CONFIGURATION: Release
 
 jobs:
@@ -58,7 +58,7 @@ jobs:
       run: dotnet publish TrashMob\TrashMob.csproj --configuration ${{ env.CONFIGURATION }} --output "${{env.DOTNET_ROOT}}/trashmobwebapp" --no-restore
 
     - name: Upload artifact for deployment job
-      uses: actions/upload-artifact@v4.6.0
+      uses: actions/upload-artifact@v4.6.1
       with:
         name: .net-app
         path: "${{env.DOTNET_ROOT}}/trashmobwebapp"

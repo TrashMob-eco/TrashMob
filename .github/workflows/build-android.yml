@@ -140,7 +140,7 @@ jobs:
             cd TrashMobMobile
             jarsigner -keystore android/trashmobmobileapp.decrypted.jks -storepass "${{ secrets.android_keystore_password }}" -signedjar bin/${{ inputs.configuration }}/net9.0-android/publish/${{ inputs.bundle_id }}-Signed.aab bin/${{ inputs.configuration }}/net9.0-android/publish/${{ inputs.bundle_id }}.aab ${{ inputs.android_key_name }}
 
-        - uses: actions/upload-artifact@v4.6.0
+        - uses: actions/upload-artifact@v4.6.1
           with:
             name: artifacts-android-${{ env.semVer }}
             path: |
