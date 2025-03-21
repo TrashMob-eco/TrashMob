@@ -98,6 +98,13 @@ export const PickupLocationEditForm = (props: PickupLocationEditFormProps) => {
             });
             navigate(`/eventsummary/${eventId}`);
         },
+        onError: async (error: Error) => {
+            toast({
+                variant: 'destructive',
+                title: 'Pickup location update fail',
+                description: error.message,
+            });
+        },
     });
 
     const form = useForm<EditPickupLocationFields>({

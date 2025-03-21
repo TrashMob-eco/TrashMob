@@ -199,7 +199,7 @@ export const EditEventSummary = () => {
 
     if (!event) return null;
 
-    const isOwner = event.createdByUserId === currentUser.id
+    const isOwner = event.createdByUserId === currentUser.id;
     const isSubmitting = createEventSummary.isLoading || updateEventSummary.isLoading;
     return (
         <div className='tailwind'>
@@ -324,10 +324,10 @@ export const EditEventSummary = () => {
                             <CardFooter className='justify-between'>
                                 <Button variant='outline'>Cancel</Button>
                                 {isOwner ? (
-                                  <Button type='submit' disabled={isSubmitting}>
-                                      {isSubmitting ? <Loader2 className='animate-spin' /> : null}
-                                      Save
-                                  </Button>
+                                    <Button type='submit' disabled={isSubmitting}>
+                                        {isSubmitting ? <Loader2 className='animate-spin' /> : null}
+                                        Save
+                                    </Button>
                                 ) : null}
                             </CardFooter>
                         </form>
