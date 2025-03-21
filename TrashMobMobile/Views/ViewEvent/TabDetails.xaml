@@ -9,6 +9,7 @@
                       ColumnDefinitions="*, 2*, *">
 
         <controls:CustomMap x:Name="eventLocationMap" HeightRequest="200"
+                            HandlerProperties.DisconnectPolicy="Manual"
                               ItemsSource="{Binding Addresses}" Grid.Row="0" Grid.ColumnSpan="3">
             <maps:Map.ItemTemplate>
                 <DataTemplate x:DataType="viewModels:AddressViewModel">
