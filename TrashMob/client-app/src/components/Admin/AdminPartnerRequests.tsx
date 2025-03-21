@@ -1,7 +1,6 @@
 import * as React from 'react';
 
 import { Col, Container, Dropdown, Row } from 'react-bootstrap';
-import { CheckSquare, XSquare } from 'react-bootstrap-icons';
 import PhoneInput from 'react-phone-input-2';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import UserData from '../Models/UserData';
@@ -16,6 +15,7 @@ import {
     GetPartnerRequests,
     GetPartnerRequestStatuses,
 } from '../../services/partners';
+import { SquareCheck, SquareX } from 'lucide-react';
 
 interface AdminPartnerRequestsPropsType {
     isUserLoaded: boolean;
@@ -98,14 +98,14 @@ export const AdminPartnerRequests: React.FC<AdminPartnerRequestsPropsType> = (pr
                 disabled={!isBecomeAPartnerRequest || partnerRequestStatusId !== Constants.PartnerRequestStatusPending}
                 onClick={() => handleApprove(partnerRequestId, partnerRequestName)}
             >
-                <CheckSquare />
+                <SquareCheck />
                 Approve Partner
             </Dropdown.Item>
             <Dropdown.Item
                 disabled={!isBecomeAPartnerRequest || partnerRequestStatusId !== Constants.PartnerRequestStatusPending}
                 onClick={() => handleDeny(partnerRequestId, partnerRequestName)}
             >
-                <XSquare />
+                <SquareX />
                 Deny Partner
             </Dropdown.Item>
         </>

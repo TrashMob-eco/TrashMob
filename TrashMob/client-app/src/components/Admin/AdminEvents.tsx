@@ -1,13 +1,13 @@
 import * as React from 'react';
 
 import { Col, Container, Dropdown, Row } from 'react-bootstrap';
-import { Eye, Pencil, XSquare, SortDown } from 'react-bootstrap-icons';
 import { useQuery } from '@tanstack/react-query';
 import UserData from '../Models/UserData';
 import EventData from '../Models/EventData';
 import { GetAllEvents } from '../../services/events';
 import { Services } from '../../config/services.config';
 import { useNavigate } from 'react-router';
+import { ArrowDownWideNarrow, Eye, Pencil, SquareX } from 'lucide-react';
 
 interface AdminEventsPropsType {
     isUserLoaded: boolean;
@@ -50,7 +50,7 @@ export const AdminEvents: React.FC<AdminEventsPropsType> = (props) => {
                 Manage Event
             </Dropdown.Item>
             <Dropdown.Item onClick={() => navigate(`/cancelevent/${eventId}`)}>
-                <XSquare />
+                <SquareX />
                 Delete Event
             </Dropdown.Item>
             <Dropdown.Item onClick={() => navigate(`/eventdetails/${eventId}`)}>
@@ -84,12 +84,11 @@ export const AdminEvents: React.FC<AdminEventsPropsType> = (props) => {
         }
         return 0;
     };
-
     function SortDropdown() {
         return (
             <Dropdown>
                 <Dropdown.Toggle id='userBtn' className='mt-4 mb-5' variant='light'>
-                    <SortDown className='mr-3' size={32} color='#96ba00' aria-labelledby='sort-icon' />
+                    <ArrowDownWideNarrow className='mr-3' size={32} color='#96ba00' aria-labelledby='sort-icon' />
                     Sort
                 </Dropdown.Toggle>
                 <Dropdown.Menu className='shadow border-0'>
