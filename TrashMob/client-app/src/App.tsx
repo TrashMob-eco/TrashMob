@@ -9,7 +9,6 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from '@/components/ui/toaster';
 
 import { AboutUs } from './components/Pages/AboutUs';
-import EventSummary from './components/EventSummary';
 import { Faq } from './components/Faq';
 import { GettingStarted } from './components/Pages/GettingStarted';
 import MyDashboard from './pages/mydashboard';
@@ -141,10 +140,6 @@ export const App: FC = () => {
                                             />
                                         </Route>
                                     </Route>
-                                    <Route
-                                        path='/eventsummary2/:eventId?'
-                                        element={<EventSummary currentUser={currentUser} isUserLoaded={isUserLoaded} />}
-                                    />
                                     <Route path='partnerdashboard'>
                                         <Route index element={<div>Partner Dashboard Index</div>} />
                                         <Route path=':partnerId' element={<PartnerLayout />}>

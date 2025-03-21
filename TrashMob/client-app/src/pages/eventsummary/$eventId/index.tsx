@@ -24,6 +24,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import {
     DeleteEventPickupLocationById,
     GetEventPickupLocations,
+    GetHaulingPartnerLocation,
     SubmitEventPickupLocations,
 } from '@/services/locations';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -139,6 +140,15 @@ export const EditEventSummary = () => {
     }
     /** End of Pickup Locations */
 
+    /** Hauling Partners */
+    const { data: haulingPartnerLocation } = useQuery({
+        queryKey: GetHaulingPartnerLocation({ eventId }).key,
+        queryFn: GetHaulingPartnerLocation({ eventId }).service,
+        select: (res) => res.data,
+    });
+
+    /** End of Hauling Partners */
+
     const form = useForm<z.infer<typeof upsertEventSummarySchema>>({
         resolver: zodResolver(upsertEventSummarySchema),
         defaultValues: {},
@@ -192,8 +202,8 @@ export const EditEventSummary = () => {
     const isSubmitting = createEventSummary.isLoading || updateEventSummary.isLoading;
     return (
         <div className='tailwind'>
-            <div className='max-w-2xl mx-auto py-8'>
-                <Card className='mb-8'>
+            <div className='max-w-2xl mx-auto py-8 space-y-8'>
+                <Card>
                     <CardHeader>
                         <CardTitle>Enter Event Summary Information</CardTitle>
                         <CardDescription>Please enter information about how the event went.</CardDescription>
@@ -392,7 +402,14 @@ export const EditEventSummary = () => {
                                                     <Plus /> Add Pickup Location
                                                 </Link>
                                             </Button>
-                                            <Button variant='default' onClick={submitPickupLocations}>
+                                            <Button
+                                                variant='default'
+                                                disabled={submitEventPickupLocations.isLoading}
+                                                onClick={submitPickupLocations}
+                                            >
+                                                {submitEventPickupLocations.isLoading ? (
+                                                    <Loader2 className='animate-spin' />
+                                                ) : null}
                                                 Submit locations (
                                                 {(pickupLocations || []).filter((loc) => !loc.hasBeenSubmitted).length})
                                             </Button>
@@ -422,6 +439,33 @@ export const EditEventSummary = () => {
                             </div>
                         </DialogContent>
                     </Dialog>
+                </Card>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Hauling Partner Contacts</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Name</TableHead>
+                                    <TableHead>Email</TableHead>
+                                    <TableHead>Phone</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {(haulingPartnerLocation?.partnerLocationContacts || []).map((contact) => {
+                                    return (
+                                        <TableRow key={contact.id}>
+                                            <TableCell>{contact.name}</TableCell>
+                                            <TableCell>{contact.email}</TableCell>
+                                            <TableCell>{contact.phone}</TableCell>
+                                        </TableRow>
+                                    );
+                                })}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
                 </Card>
             </div>
         </div>
