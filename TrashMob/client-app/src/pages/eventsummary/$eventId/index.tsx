@@ -199,6 +199,7 @@ export const EditEventSummary = () => {
 
     if (!event) return null;
 
+    const isOwner = event.createdByUserId === currentUser.id
     const isSubmitting = createEventSummary.isLoading || updateEventSummary.isLoading;
     return (
         <div className='tailwind'>
@@ -237,6 +238,7 @@ export const EditEventSummary = () => {
                                                     <Input
                                                         {...field}
                                                         type='number'
+                                                        disabled={!isOwner}
                                                         onChange={(e) => field.onChange(e.target.valueAsNumber)}
                                                     />
                                                 </FormControl>
@@ -256,6 +258,7 @@ export const EditEventSummary = () => {
                                                     <Input
                                                         {...field}
                                                         type='number'
+                                                        disabled={!isOwner}
                                                         onChange={(e) => field.onChange(e.target.valueAsNumber)}
                                                     />
                                                 </FormControl>
@@ -275,6 +278,7 @@ export const EditEventSummary = () => {
                                                     <Input
                                                         {...field}
                                                         type='number'
+                                                        disabled={!isOwner}
                                                         onChange={(e) => field.onChange(e.target.valueAsNumber)}
                                                     />
                                                 </FormControl>
@@ -294,6 +298,7 @@ export const EditEventSummary = () => {
                                                     <Input
                                                         {...field}
                                                         type='number'
+                                                        disabled={!isOwner}
                                                         onChange={(e) => field.onChange(e.target.valueAsNumber)}
                                                     />
                                                 </FormControl>
@@ -308,7 +313,7 @@ export const EditEventSummary = () => {
                                             <FormItem className='col-span-12'>
                                                 <FormLabel tooltip={ToolTips.EventSummaryNotes}>Notes</FormLabel>
                                                 <FormControl>
-                                                    <Textarea {...field} rows={5} />
+                                                    <Textarea {...field} disabled={!isOwner} rows={5} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -318,10 +323,12 @@ export const EditEventSummary = () => {
                             </CardContent>
                             <CardFooter className='justify-between'>
                                 <Button variant='outline'>Cancel</Button>
-                                <Button type='submit' disabled={isSubmitting}>
-                                    {isSubmitting ? <Loader2 className='animate-spin' /> : null}
-                                    Save
-                                </Button>
+                                {isOwner ? (
+                                  <Button type='submit' disabled={isSubmitting}>
+                                      {isSubmitting ? <Loader2 className='animate-spin' /> : null}
+                                      Save
+                                  </Button>
+                                ) : null}
                             </CardFooter>
                         </form>
                     </Form>
