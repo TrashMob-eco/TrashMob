@@ -11,7 +11,7 @@ import { GetPartnerContactsByPartnerId } from '@/services/contact';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Ellipsis, Pencil, SquareX, Plus } from 'lucide-react';
 import { Link, Outlet, useMatch, useNavigate, useParams } from 'react-router';
-import { SidebarLayout } from './_layout.sidebar';
+import { SidebarLayout } from '../../layouts/_layout.sidebar';
 import { useState } from 'react';
 import { DeletePartnerLocation } from '@/services/locations';
 import { Badge } from '@/components/ui/badge';

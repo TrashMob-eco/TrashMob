@@ -19,7 +19,6 @@ import EventDetails from './components/Pages/EventDetails';
 import { NoMatch } from './components/NoMatch';
 import PartnerRequest from './components/Partners/PartnerRequest';
 import SiteAdmin from './components/Admin/SiteAdmin';
-import ManageEventDashboard from './components/EventManagement/ManageEventDashboard';
 import { Shop } from './components/Shop';
 
 import './custom.css';
@@ -65,6 +64,9 @@ import { EditEventPage } from './pages/events/edit';
 import { CancelEvent } from './pages/events/$eventId/delete';
 import { ContactUsWrapper as ContactUs } from './pages/contactus';
 import { LocationPreferenceWrapper as LocationPreference } from './pages/locationpreference';
+import { EditEventSummary } from './pages/eventsummary/$eventId';
+import { PickupLocationCreate } from './pages/eventsummary/$eventId/pickup-locations.create';
+import { PickupLocationEdit } from './pages/eventsummary/$eventId/pickup-locations.$locationId.edit';
 
 const queryClient = new QueryClient();
 
@@ -130,6 +132,19 @@ export const App: FC = () => {
                                         <Route path='create' element={<CreateEventWrapper />} />
                                         <Route path=':eventId/edit' element={<EditEventPage />} />
                                     </Route>
+                                    <Route path='/eventsummary'>
+                                        <Route path=':eventId' element={<EditEventSummary />}>
+                                            <Route path='pickup-locations/create' element={<PickupLocationCreate />} />
+                                            <Route
+                                                path='pickup-locations/:locationId/edit'
+                                                element={<PickupLocationEdit />}
+                                            />
+                                        </Route>
+                                    </Route>
+                                    <Route
+                                        path='/eventsummary2/:eventId?'
+                                        element={<EventSummary currentUser={currentUser} isUserLoaded={isUserLoaded} />}
+                                    />
                                     <Route path='partnerdashboard'>
                                         <Route index element={<div>Partner Dashboard Index</div>} />
                                         <Route path=':partnerId' element={<PartnerLayout />}>
@@ -175,10 +190,7 @@ export const App: FC = () => {
                                             </Route>
                                         </Route>
                                     </Route>
-                                    <Route
-                                        path='/eventsummary/:eventId?'
-                                        element={<EventSummary currentUser={currentUser} isUserLoaded={isUserLoaded} />}
-                                    />
+
                                     <Route path='/cancelevent/:eventId' element={<CancelEvent />} />
                                     <Route path='/deletemydata' element={<DeleteMyData />} />
                                     <Route

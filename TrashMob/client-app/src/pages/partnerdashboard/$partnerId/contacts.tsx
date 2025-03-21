@@ -17,7 +17,7 @@ import {
 import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Ellipsis, Pencil, SquareX, Plus } from 'lucide-react';
 import { Link, Outlet, useMatch, useNavigate, useParams } from 'react-router';
-import { SidebarLayout } from './_layout.sidebar';
+import { SidebarLayout } from '../../layouts/_layout.sidebar';
 import { useCallback, useState } from 'react';
 import { useGetPartnerLocations } from '@/hooks/useGetPartnerLocations';
 import PartnerLocationContactData from '@/components/Models/PartnerLocationContactData';

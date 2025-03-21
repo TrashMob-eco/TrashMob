@@ -1,6 +1,6 @@
 import { useQueries, UseQueryResult } from '@tanstack/react-query';
 import { useParams } from 'react-router';
-import { SidebarLayout } from './_layout.sidebar';
+import { SidebarLayout } from '../../layouts/_layout.sidebar';
 import { GetPartnerLocationEventServicesByLocationId } from '@/services/locations';
 import { useGetPartnerLocations } from '@/hooks/useGetPartnerLocations';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
