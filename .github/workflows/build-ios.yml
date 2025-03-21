@@ -118,7 +118,7 @@ jobs:
           run: dotnet publish TrashMobMobile/TrashMobMobile.csproj -c ${{ inputs.configuration }} -f net9.0-ios --self-contained /p:buildForSimulator=False /p:packageApp=True /p:ArchiveOnBuild=true /p:EnableAssemblyILStripping=true /p:PublishTrimmed=true
 
         - name: Upload iOS Artifact
-          uses: actions/upload-artifact@v4.6.1
+          uses: actions/upload-artifact@v4.6.2
           with:
             name: artifacts-ios-${{ inputs.build_number }}
             path: TrashMobMobile/bin/${{ inputs.configuration }}/net9.0-ios/ios-arm64/publish//*.ipa
