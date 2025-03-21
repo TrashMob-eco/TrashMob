@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Button, Col, Dropdown, Form, OverlayTrigger, ToggleButton, Tooltip } from 'react-bootstrap';
 import { Guid } from 'guid-typescript';
-import { Pencil, XSquare } from 'react-bootstrap-icons';
 import PhoneInput from 'react-phone-input-2';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import UserData from './Models/UserData';
@@ -26,6 +25,7 @@ import { useGetGoogleMapApiKey } from '../hooks/useGetGoogleMapApiKey';
 import { APIProvider, MapMouseEvent, Marker, useMap } from '@vis.gl/react-google-maps';
 import { useAzureMapSearchAddressReverse } from '../hooks/useAzureMapSearchAddressReverse';
 import { AzureSearchLocationInput, SearchLocationOption } from './Map/AzureSearchLocationInput';
+import { Pencil, SquareX } from 'lucide-react';
 
 export interface PickupLocationsDataProps {
     eventId: string;
@@ -378,7 +378,7 @@ export const PickupLocations: React.FC<PickupLocationsDataProps> = (props) => {
                 Edit Location
             </Dropdown.Item>
             <Dropdown.Item onClick={() => removePickupLocation(locationId)}>
-                <XSquare />
+                <SquareX />
                 Remove Location
             </Dropdown.Item>
         </>

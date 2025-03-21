@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Button, Container, Dropdown } from 'react-bootstrap';
 import { Guid } from 'guid-typescript';
-import { Eye } from 'react-bootstrap-icons';
 import { Link } from 'react-router';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import UserData from '../Models/UserData';
@@ -22,6 +21,7 @@ import {
     GetEventPartnerLocationServicesByLocationId,
     GetEventPartnerLocationServiceStatuses,
 } from '../../services/locations';
+import { Eye } from 'lucide-react';
 
 export interface ManageEventPartnersProps {
     eventId: string;
