@@ -36,7 +36,7 @@ export const AdminUsers: React.FC<AdminUsersPropsType> = (props) => {
             });
         }
     }, [props.isUserLoaded]);
-    
+
     // Handle Delete request for a user
     function handleDelete(id: string, name: string) {
         if (!window.confirm(`Are you sure you want to delete user with name: ${name}`)) return;

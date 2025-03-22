@@ -25,7 +25,12 @@ import {
     getUpcomingTimeranges,
     getLastDaysTimerange,
 } from './utils/timerange';
-import { EventStatus } from '@/enums/EventStatus';
+
+enum EventStatusFilter {
+    UPCOMING = 'upcoming',
+    COMPLETED = 'completed',
+    CANCELED = 'canceled',
+}
 
 interface EventSectionProps {}
 
@@ -52,12 +57,12 @@ export const EventSection = (props: EventSectionProps) => {
 
     /** Statuses */
     const statuses = [
-        { value: EventStatus.UPCOMING, label: 'Upcoming' },
-        { value: EventStatus.COMPLETED, label: 'Completed' },
+        { value: EventStatusFilter.UPCOMING, label: 'Upcoming' },
+        { value: EventStatusFilter.COMPLETED, label: 'Completed' },
     ];
 
     /** Filter Parameters */
-    const [selectedStatuses, setSelectedStatuses] = useState<string>(EventStatus.UPCOMING);
+    const [selectedStatuses, setSelectedStatuses] = useState<string>(EventStatusFilter.UPCOMING);
 
     // Default timerange is This weekend
     const [selectedTimeRange, setSelectedTimeRange] = useState<string>(getAllUpcomingTimerange());
@@ -67,7 +72,7 @@ export const EventSection = (props: EventSectionProps) => {
 
     /** Time Ranges */
     const timeRangeOptions =
-        selectedStatuses === EventStatus.UPCOMING ? getUpcomingTimeranges() : getCompletedTimeranges();
+        selectedStatuses === EventStatusFilter.UPCOMING ? getUpcomingTimeranges() : getCompletedTimeranges();
 
     /** Event List */
     const [startDate, endDate] = selectedTimeRange.split('|');
@@ -111,9 +116,9 @@ export const EventSection = (props: EventSectionProps) => {
             });
     }, [defaultMapCenter, azureSubscriptionKey]);
 
-    // Side Effect 2: When eventStatus change, set timeRangeOption accordingly
+    // Side Effect 2: When eventStatusFilter change, set timeRangeOption accordingly
     useEffect(() => {
-        if (selectedStatuses === EventStatus.COMPLETED) {
+        if (selectedStatuses === EventStatusFilter.COMPLETED) {
             setSelectedTimeRange(getLastDaysTimerange(90));
         } else {
             setSelectedTimeRange(getAllUpcomingTimerange());

@@ -19,7 +19,6 @@ import EventDetails from './components/Pages/EventDetails';
 import { NoMatch } from './components/NoMatch';
 import PartnerRequest from './components/Partners/PartnerRequest';
 import SiteAdmin from './components/Admin/SiteAdmin';
-import ManageEventDashboard from './components/EventManagement/ManageEventDashboard';
 import { Shop } from './components/Shop';
 
 import './custom.css';
@@ -67,6 +66,7 @@ import { ContactUsWrapper as ContactUs } from './pages/contactus';
 import { LocationPreferenceWrapper as LocationPreference } from './pages/locationpreference';
 import { SiteAdminLayout } from './pages/siteadmin/_layout';
 import { SiteAdminUsers } from './pages/siteadmin/users';
+import { SiteAdminEvents } from './pages/siteadmin/events/page';
 
 const queryClient = new QueryClient();
 
@@ -118,7 +118,7 @@ const AuthLayout = () => {
 
 const AuthSideAdminLayout = () => {
     const { currentUser, isUserLoaded } = useLogin();
-    if (!isUserLoaded) return <p>Loading</p>;
+    if (!isUserLoaded) return <div className='flex justify-center items-center py-8'>Loading</div>;
     if (isUserLoaded && !currentUser.isSiteAdmin) return <em>Access Denied</em>;
 
     return (
@@ -214,6 +214,7 @@ export const App: FC = () => {
                                     <Route element={<AuthSideAdminLayout />}>
                                         <Route path='/admin' element={<SiteAdminLayout />}>
                                             <Route path='users' element={<SiteAdminUsers />} />
+                                            <Route path='events' element={<SiteAdminEvents />} />
                                         </Route>
                                     </Route>
                                     <Route path='/locationpreference' element={<LocationPreference />} />
