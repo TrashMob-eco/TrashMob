@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Ban, Check, Ellipsis, Pencil, ToggleRight } from 'lucide-react';
 import { Link, Outlet, useMatch, useNavigate, useParams } from 'react-router';
-import { SidebarLayout } from './_layout.sidebar';
+import { SidebarLayout } from '../../layouts/_layout.sidebar';
 import { useState } from 'react';
 import {
     DeletePartnerLocationServiceByLocationIdAndServiceType,

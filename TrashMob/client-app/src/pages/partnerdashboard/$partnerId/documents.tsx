@@ -4,7 +4,7 @@ import { Link, Outlet, useMatch, useNavigate, useParams } from 'react-router';
 import { AxiosResponse } from 'axios';
 import { Ellipsis, Pencil, Plus, SquareX } from 'lucide-react';
 
-import { SidebarLayout } from './_layout.sidebar';
+import { SidebarLayout } from '../../layouts/_layout.sidebar';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,

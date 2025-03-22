@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import compact from 'lodash/compact';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,20 +16,29 @@ import { Textarea } from '@/components/ui/textarea';
 import * as ToolTips from '@/store/ToolTips';
 import * as MapStore from '@/store/MapStore';
 
-import { CreatePartnerLocations, GetLocationsByPartner } from '@/services/locations';
-import PartnerLocationData from '@/components/Models/PartnerLocationData';
+import {
+    CreateEventPickupLocation,
+    GetEventPickupLocationById,
+    GetEventPickupLocations,
+    UpdateEventPickupLocation,
+} from '@/services/locations';
 import { GoogleMap } from '@/components/Map/GoogleMap';
 import { APIProvider, MapMouseEvent, Marker, useMap } from '@vis.gl/react-google-maps';
-import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
 import { useAzureMapSearchAddressReverse } from '@/hooks/useAzureMapSearchAddressReverse';
 import { AzureSearchLocationInput, SearchLocationOption } from '@/components/Map/AzureSearchLocationInput';
+import { useGetAzureKey } from '@/hooks/useGetAzureKey';
+import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
+import PickupLocationData from '@/components/Models/PickupLocationData';
 
-interface FormInputs {
+interface EditPickupLocationFields {
+    id: string;
+    eventId: string;
+    latitude: number;
+    longitude: number;
+    hasBeenSubmitted: boolean;
+    hasBeenPickedUp: boolean;
     name: string;
-    isActive: boolean;
-    publicNotes: string;
-    privateNotes: string;
-    location: { lat: number; lng: number };
+    notes: string;
 
     // Auto
     streetAddress: string;
@@ -40,14 +49,15 @@ interface FormInputs {
 }
 
 const formSchema = z.object({
-    name: z.string({ required_error: 'Location Name cannot be empty.' }),
-    isActive: z.boolean(),
-    publicNotes: z.string({ required_error: 'Public notes cannot be empty.' }),
-    privateNotes: z.string(),
-    location: z.object({
-        lat: z.number().optional(),
-        lng: z.number().optional(),
-    }),
+    id: z.string(),
+    eventId: z.string(),
+    latitude: z.number().optional(),
+    longitude: z.number().optional(),
+    hasBeenSubmitted: z.boolean(),
+    hasBeenPickedUp: z.boolean(),
+    name: z.string(),
+    notes: z.string(),
+
     streetAddress: z.string().optional(),
     city: z.string().optional(),
     country: z.string().optional(),
@@ -55,61 +65,80 @@ const formSchema = z.object({
     postalCode: z.string().optional(),
 });
 
-interface PartnerLocationCreateFormProps {
-    azureSubscriptionKey: string;
-}
+interface PickupLocationEditFormProps {}
 
-export const PartnerLocationCreateForm = (props: PartnerLocationCreateFormProps) => {
-    const { azureSubscriptionKey } = props;
-    const { partnerId, locationId } = useParams<{ partnerId: string; locationId: string }>() as {
-        partnerId: string;
+export const PickupLocationEditForm = (props: PickupLocationEditFormProps) => {
+    const azureSubscriptionKey = useGetAzureKey();
+    const { eventId, locationId } = useParams<{ eventId: string; locationId: string }>() as {
+        eventId: string;
         locationId: string;
     };
+
+    const { data: pickupLocation } = useQuery({
+        queryKey: GetEventPickupLocationById({ locationId }).key,
+        queryFn: GetEventPickupLocationById({ locationId }).service,
+        select: (res) => res.data,
+    });
+
     const { toast } = useToast();
     const queryClient = useQueryClient();
     const navigate = useNavigate();
     const { mutate, isLoading: isSubmitting } = useMutation({
-        mutationKey: CreatePartnerLocations().key,
-        mutationFn: CreatePartnerLocations().service,
+        mutationKey: UpdateEventPickupLocation().key,
+        mutationFn: UpdateEventPickupLocation().service,
         onSuccess: () => {
             toast({
                 variant: 'primary',
-                title: 'Location created!',
+                title: 'Pickup Location updated!',
                 description: '',
             });
             queryClient.invalidateQueries({
-                queryKey: GetLocationsByPartner({ partnerId }).key,
+                queryKey: GetEventPickupLocations({ eventId }).key,
                 refetchType: 'all',
             });
-            navigate(`/partnerdashboard/${partnerId}/locations`);
+            navigate(`/eventsummary/${eventId}`);
+        },
+        onError: async (error: Error) => {
+            toast({
+                variant: 'destructive',
+                title: 'Pickup location update fail',
+                description: error.message,
+            });
         },
     });
 
-    const form = useForm<FormInputs>({
+    const form = useForm<EditPickupLocationFields>({
         resolver: zodResolver(formSchema),
-        defaultValues: {
-            location: { lat: MapStore.defaultLatitude, lng: MapStore.defaultLongitude },
-        },
+        defaultValues: {},
     });
 
-    const location = form.watch('location');
+    useEffect(() => {
+        if (pickupLocation) {
+            form.reset({
+                ...pickupLocation,
+            });
+        }
+    }, [pickupLocation]);
+
+    const latitude = form.watch('latitude');
+    const longitude = form.watch('longitude');
     const addrComponents = form.watch(['streetAddress', 'city', 'region', 'country', 'postalCode']);
 
-    const onSubmit: SubmitHandler<FormInputs> = (formValues) => {
-        const body = new PartnerLocationData();
+    const onSubmit: SubmitHandler<EditPickupLocationFields> = (formValues) => {
+        const body = new PickupLocationData();
         body.id = locationId;
-        body.partnerId = partnerId;
+        body.eventId = eventId;
         body.name = formValues.name ?? '';
+        body.notes = formValues.notes ?? '';
         body.streetAddress = formValues.streetAddress ?? '';
         body.city = formValues.city ?? '';
         body.region = formValues.region ?? '';
         body.country = formValues.country ?? '';
         body.postalCode = formValues.postalCode ?? '';
-        body.latitude = formValues.location.lat ?? 0;
-        body.longitude = formValues.location.lng ?? 0;
-        body.isActive = formValues.isActive;
-        body.publicNotes = formValues.publicNotes ?? '';
-        body.privateNotes = formValues.privateNotes ?? '';
+        body.latitude = formValues.latitude ?? 0;
+        body.longitude = formValues.longitude ?? 0;
+        body.hasBeenPickedUp = formValues.hasBeenPickedUp;
+        body.hasBeenSubmitted = formValues.hasBeenSubmitted;
         mutate(body);
     };
 
@@ -118,7 +147,8 @@ export const PartnerLocationCreateForm = (props: PartnerLocationCreateFormProps)
     const handleSelectSearchLocation = useCallback(
         async (location: SearchLocationOption) => {
             const { lat, lon } = location.position;
-            form.setValue('location', { lat, lng: lon });
+            form.setValue('latitude', lat);
+            form.setValue('longitude', lon);
 
             // side effect: Move Map Center
             if (map) map.panTo({ lat, lng: lon });
@@ -130,7 +160,8 @@ export const PartnerLocationCreateForm = (props: PartnerLocationCreateFormProps)
         if (e.detail.latLng) {
             const lat = e.detail.latLng.lat;
             const lng = e.detail.latLng.lng;
-            form.setValue('location', { lat, lng });
+            form.setValue('latitude', lat);
+            form.setValue('longitude', lng);
         }
     }, []);
 
@@ -138,14 +169,15 @@ export const PartnerLocationCreateForm = (props: PartnerLocationCreateFormProps)
         if (e.latLng) {
             const lat = e.latLng.lat();
             const lng = e.latLng.lng();
-            form.setValue('location', { lat, lng });
+            form.setValue('latitude', lat);
+            form.setValue('longitude', lng);
         }
     }, []);
 
     const { refetch: refetchAddressReverse } = useAzureMapSearchAddressReverse(
         {
-            lat: location?.lat,
-            long: location?.lng,
+            lat: latitude,
+            long: longitude,
             azureKey: azureSubscriptionKey || '',
         },
         { enabled: false },
@@ -178,7 +210,7 @@ export const PartnerLocationCreateForm = (props: PartnerLocationCreateFormProps)
                     name='name'
                     render={({ field }) => (
                         <FormItem className='col-span-6'>
-                            <FormLabel tooltip={ToolTips.PartnerContactName} required>
+                            <FormLabel tooltip={ToolTips.PickupLocationName} required>
                                 Name
                             </FormLabel>
                             <FormControl>
@@ -190,18 +222,18 @@ export const PartnerLocationCreateForm = (props: PartnerLocationCreateFormProps)
                 />
                 <FormField
                     control={form.control}
-                    name='isActive'
+                    name='hasBeenPickedUp'
                     render={({ field }) => (
-                        <FormItem className='col-span-6'>
-                            <FormLabel tooltip={ToolTips.PartnerLocationIsPartnerLocationActive}>Is Active</FormLabel>
+                        <FormItem className='col-span-3'>
+                            <FormLabel tooltip={ToolTips.PickupLocationHasBeenPickedUp}> </FormLabel>
                             <FormControl>
                                 <div className='flex items-center space-x-2 h-9'>
-                                    <Checkbox id='isActive' checked={field.value} onCheckedChange={field.onChange} />
+                                    <Checkbox id='hasBeenPickedUp' checked={field.value} disabled />
                                     <label
-                                        htmlFor='isActive'
+                                        htmlFor='hasBeenPickedUp'
                                         className='text-sm mb-0 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
                                     >
-                                        Active
+                                        Picked up?
                                     </label>
                                 </div>
                             </FormControl>
@@ -211,11 +243,32 @@ export const PartnerLocationCreateForm = (props: PartnerLocationCreateFormProps)
                 />
                 <FormField
                     control={form.control}
-                    name='publicNotes'
+                    name='hasBeenSubmitted'
+                    render={({ field }) => (
+                        <FormItem className='col-span-3'>
+                            <FormLabel> </FormLabel>
+                            <FormControl>
+                                <div className='flex items-center space-x-2 h-9'>
+                                    <Checkbox id='hasBeenSubmitted' checked={field.value} disabled />
+                                    <label
+                                        htmlFor='hasBeenSubmitted'
+                                        className='text-sm mb-0 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                                    >
+                                        Submitted?
+                                    </label>
+                                </div>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name='notes'
                     render={({ field }) => (
                         <FormItem className='col-span-12'>
-                            <FormLabel tooltip={ToolTips.PartnerLocationPublicNotes} required>
-                                Public Notes
+                            <FormLabel tooltip={ToolTips.PickupLocationNotes} required>
+                                Notes
                             </FormLabel>
                             <FormControl>
                                 <Textarea {...field} maxLength={1000} className='h-24' />
@@ -224,47 +277,40 @@ export const PartnerLocationCreateForm = (props: PartnerLocationCreateFormProps)
                         </FormItem>
                     )}
                 />
-                <FormField
-                    control={form.control}
-                    name='privateNotes'
-                    render={({ field }) => (
-                        <FormItem className='col-span-12'>
-                            <FormLabel tooltip={ToolTips.PartnerLocationPrivateNotes}>Private Notes</FormLabel>
-                            <FormControl>
-                                <Textarea {...field} maxLength={1000} className='h-24' />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
                 <div className='col-span-12'>
-                    <div className='relative w-full'>
-                        <GoogleMap
-                            defaultCenter={location}
-                            defaultZoom={15}
-                            onClick={handleClickMap}
-                            style={{ width: '100%', height: 250 }}
-                        >
-                            <Marker position={location} draggable onDragEnd={handleMarkerDragEnd} />
-                        </GoogleMap>
-                        {azureSubscriptionKey ? (
-                            <div style={{ position: 'absolute', top: 8, left: 8 }}>
-                                <AzureSearchLocationInput
-                                    azureKey={azureSubscriptionKey}
-                                    onSelectLocation={handleSelectSearchLocation}
+                    {latitude && longitude ? (
+                        <div className='relative w-full'>
+                            <GoogleMap
+                                defaultCenter={{ lat: latitude, lng: longitude }}
+                                defaultZoom={15}
+                                onClick={handleClickMap}
+                                style={{ width: '100%', height: 250 }}
+                            >
+                                <Marker
+                                    position={{ lat: latitude, lng: longitude }}
+                                    draggable
+                                    onDragEnd={handleMarkerDragEnd}
                                 />
-                            </div>
-                        ) : null}
-                    </div>
+                            </GoogleMap>
+                            {azureSubscriptionKey ? (
+                                <div style={{ position: 'absolute', top: 8, left: 8 }}>
+                                    <AzureSearchLocationInput
+                                        azureKey={azureSubscriptionKey}
+                                        onSelectLocation={handleSelectSearchLocation}
+                                    />
+                                </div>
+                            ) : null}
+                        </div>
+                    ) : null}
                     <div className='text-[0.8rem] font-medium text-muted my-2'>
-                        {location
+                        {latitude && longitude
                             ? `${compact(addrComponents).join(', ')}`
                             : `Click on the map to set the location for your Partner.`}
                     </div>
                 </div>
                 <div className='col-span-12 flex justify-end gap-2'>
                     <Button variant='secondary' data-test='cancel' asChild>
-                        <Link to={`/partnerdashboard/${partnerId}/locations`}>Cancel</Link>
+                        <Link to={`/eventsummary/${eventId}`}>Cancel</Link>
                     </Button>
                     <Button type='submit' disabled={isSubmitting}>
                         {isSubmitting ? <Loader2 className='animate-spin' /> : null}
@@ -276,21 +322,12 @@ export const PartnerLocationCreateForm = (props: PartnerLocationCreateFormProps)
     );
 };
 
-export const PartnerLocationCreate = () => {
+export const PickupLocationEdit = () => {
     const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey();
-    const [azureSubscriptionKey, setAzureSubscriptionKey] = useState<string>();
-
-    useEffect(() => {
-        MapStore.getOption().then((opts) => {
-            setAzureSubscriptionKey(opts.subscriptionKey);
-        });
-    }, []);
-
-    if (isLoading || !azureSubscriptionKey) return null;
-
+    if (isLoading) return null;
     return (
         <APIProvider apiKey={googleApiKey || ''}>
-            <PartnerLocationCreateForm azureSubscriptionKey={azureSubscriptionKey} />
+            <PickupLocationEditForm />
         </APIProvider>
     );
 };

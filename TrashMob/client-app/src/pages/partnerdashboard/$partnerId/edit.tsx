@@ -16,7 +16,7 @@ import * as ToolTips from '@/store/ToolTips';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { GetPartnerById, GetPartnerStatuses, GetPartnerTypes, UpdatePartner } from '@/services/partners';
 import PartnerData from '@/components/Models/PartnerData';
-import { SidebarLayout } from './_layout.sidebar';
+import { SidebarLayout } from '../../layouts/_layout.sidebar';
 
 interface FormInputs {
     name: string;
