@@ -1,16 +1,8 @@
-import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Ellipsis, SquareX } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuTrigger,
-    DropdownMenuContent,
-    DropdownMenuItem,
-} from '@/components/ui/dropdown-menu';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DeleteUserById, GetAllUsers } from '@/services/users';
+import { DataTable } from '@/components/ui/data-table';
+import { getColumns } from './users/columns';
 
 export const SiteAdminUsers = () => {
     const queryClient = useQueryClient();
@@ -24,72 +16,29 @@ export const SiteAdminUsers = () => {
     const deleteUserById = useMutation({
         mutationKey: DeleteUserById().key,
         mutationFn: DeleteUserById().service,
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: GetAllUsers().key,
+                refetchType: 'all',
+            });
+        }
     });
 
-    const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
     const removeUser = (userId: string, userName: string) => {
-        setIsDeletingId(userId);
         if (!window.confirm(`Are you sure you want to delete user with name: ${userName}?`)) return;
-
-        deleteUserById
-            .mutateAsync({ id: userId })
-            .then(async () => {
-                return queryClient.invalidateQueries({
-                    queryKey: GetAllUsers().key,
-                    refetchType: 'all',
-                });
-            })
-            .then(() => {
-                setIsDeletingId(null);
-            });
+        deleteUserById.mutateAsync({ id: userId })
     };
+
+    const columns = getColumns({ onDelete: removeUser })
+    const len = (users || []).length
 
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Users</CardTitle>
+                <CardTitle>Users ({ len })</CardTitle>
             </CardHeader>
             <CardContent>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>UserName</TableHead>
-                            <TableHead>Email</TableHead>
-                            <TableHead>City</TableHead>
-                            <TableHead>Region</TableHead>
-                            <TableHead>Country</TableHead>
-                            <TableHead>Postal Code</TableHead>
-                            <TableHead>Actions</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {(users || []).map((user) => (
-                            <TableRow key={user.id} className={isDeletingId === user.id ? 'opacity-20' : ''}>
-                                <TableCell>{user.userName}</TableCell>
-                                <TableCell>{user.email}</TableCell>
-                                <TableCell>{user.city}</TableCell>
-                                <TableCell>{user.region}</TableCell>
-                                <TableCell>{user.country}</TableCell>
-                                <TableCell>{user.postalCode}</TableCell>
-                                <TableCell>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant='ghost' size='icon'>
-                                                <Ellipsis />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent className='w-56'>
-                                            <DropdownMenuItem onClick={() => removeUser(user.id, user.userName)}>
-                                                <SquareX />
-                                                Delete User
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                <DataTable columns={columns} data={(users || [])} />
             </CardContent>
         </Card>
     );
