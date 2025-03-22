@@ -67,6 +67,7 @@ import { LocationPreferenceWrapper as LocationPreference } from './pages/locatio
 import { SiteAdminLayout } from './pages/siteadmin/_layout';
 import { SiteAdminUsers } from './pages/siteadmin/users';
 import { SiteAdminEvents } from './pages/siteadmin/events/page';
+import { SiteAdminPartners } from './pages/siteadmin/partners/page';
 
 const queryClient = new QueryClient();
 
@@ -215,6 +216,7 @@ export const App: FC = () => {
                                         <Route path='/admin' element={<SiteAdminLayout />}>
                                             <Route path='users' element={<SiteAdminUsers />} />
                                             <Route path='events' element={<SiteAdminEvents />} />
+                                            <Route path='partners' element={<SiteAdminPartners />} />
                                         </Route>
                                     </Route>
                                     <Route path='/locationpreference' element={<LocationPreference />} />
