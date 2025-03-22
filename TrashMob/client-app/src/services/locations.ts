@@ -113,9 +113,9 @@ export const GetEventPickupLocationsByUser = (params: GetEventPickupLocationsByU
 
 export type GetEventPickupLocationById_Params = { locationId: string };
 export type GetEventPickupLocationById_Response = PickupLocationData;
-export const GetEventPickupLocationById = () => ({
-    key: ['/pickuplocations/', 'getByLocationId'],
-    service: async (params: GetEventPickupLocationById_Params) =>
+export const GetEventPickupLocationById = (params: GetEventPickupLocationById_Params) => ({
+    key: ['/pickuplocations/', params],
+    service: async () =>
         ApiService('protected').fetchData<GetEventPickupLocationById_Response>({
             url: `/pickuplocations/${params.locationId}`,
             method: 'get',

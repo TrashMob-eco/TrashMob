@@ -9,7 +9,6 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from '@/components/ui/toaster';
 
 import { AboutUs } from './components/Pages/AboutUs';
-import EventSummary from './components/EventSummary';
 import { Faq } from './components/Faq';
 import { GettingStarted } from './components/Pages/GettingStarted';
 import MyDashboard from './pages/mydashboard';
@@ -64,6 +63,9 @@ import { EditEventPage } from './pages/events/edit';
 import { CancelEvent } from './pages/events/$eventId/delete';
 import { ContactUsWrapper as ContactUs } from './pages/contactus';
 import { LocationPreferenceWrapper as LocationPreference } from './pages/locationpreference';
+import { EditEventSummary } from './pages/eventsummary/$eventId';
+import { PickupLocationCreate } from './pages/eventsummary/$eventId/pickup-locations.create';
+import { PickupLocationEdit } from './pages/eventsummary/$eventId/pickup-locations.$locationId.edit';
 import { SiteAdminLayout } from './pages/siteadmin/_layout';
 import { SiteAdminUsers } from './pages/siteadmin/users';
 import { SiteAdminEvents } from './pages/siteadmin/events/page';
@@ -162,6 +164,15 @@ export const App: FC = () => {
                                         <Route path='create' element={<CreateEventWrapper />} />
                                         <Route path=':eventId/edit' element={<EditEventPage />} />
                                     </Route>
+                                    <Route path='/eventsummary'>
+                                        <Route path=':eventId' element={<EditEventSummary />}>
+                                            <Route path='pickup-locations/create' element={<PickupLocationCreate />} />
+                                            <Route
+                                                path='pickup-locations/:locationId/edit'
+                                                element={<PickupLocationEdit />}
+                                            />
+                                        </Route>
+                                    </Route>
                                     <Route path='partnerdashboard'>
                                         <Route index element={<div>Partner Dashboard Index</div>} />
                                         <Route path=':partnerId' element={<PartnerLayout />}>
@@ -207,10 +218,7 @@ export const App: FC = () => {
                                             </Route>
                                         </Route>
                                     </Route>
-                                    <Route
-                                        path='/eventsummary/:eventId?'
-                                        element={<EventSummary currentUser={currentUser} isUserLoaded={isUserLoaded} />}
-                                    />
+
                                     <Route path='/cancelevent/:eventId' element={<CancelEvent />} />
                                     <Route path='/deletemydata' element={<DeleteMyData />} />
                                     <Route

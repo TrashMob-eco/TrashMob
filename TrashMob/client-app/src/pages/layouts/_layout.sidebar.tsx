@@ -23,7 +23,7 @@ export const SidebarLayout = (props: SidebarLayoutProps) => {
                         <CardContent>{description}</CardContent>
                     </Card>
                 </div>
-                <div className='col-span-12 lg:col-span-8'>
+                <div className='col-span-12 lg:col-span-8 space-y-8'>
                     {useDefaultCard ? (
                         <Card>
                             <CardContent className='pt-6'>{children}</CardContent>
