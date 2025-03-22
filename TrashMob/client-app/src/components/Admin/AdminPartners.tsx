@@ -1,12 +1,12 @@
 import * as React from 'react';
 
 import { Col, Container, Dropdown, Row } from 'react-bootstrap';
-import { XSquare } from 'react-bootstrap-icons';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import PartnerData from '../Models/PartnerData';
 import UserData from '../Models/UserData';
 import { DeletePartnerById, GetPartners } from '../../services/partners';
 import { Services } from '../../config/services.config';
+import { SquareX } from 'lucide-react';
 
 interface AdminPartnersPropsType {
     isUserLoaded: boolean;
@@ -52,7 +52,7 @@ export const AdminPartners: React.FC<AdminPartnersPropsType> = (props) => {
 
     const partnerActionDropdownList = (partnerId: string, partnerName: string) => (
         <Dropdown.Item onClick={() => handleDelete(partnerId, partnerName)}>
-            <XSquare />
+            <SquareX />
             Delete Partner
         </Dropdown.Item>
     );

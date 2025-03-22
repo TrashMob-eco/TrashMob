@@ -290,8 +290,8 @@ export const EditEventPage = () => {
                                                                     onClick={() =>
                                                                         requestService(
                                                                             service.serviceTypeId,
-                                                                            partner.partnerLocationId,
-                                                                            partner.partnerLocationName,
+                                                                            partnerLocation.partnerLocationId,
+                                                                            partnerLocation.partnerLocationName,
                                                                         )
                                                                     }
                                                                 >
@@ -304,8 +304,8 @@ export const EditEventPage = () => {
                                                                     onClick={() =>
                                                                         removeServiceRequest(
                                                                             service.serviceTypeId,
-                                                                            partner.partnerLocationId,
-                                                                            partner.partnerLocationName,
+                                                                            partnerLocation.partnerLocationId,
+                                                                            partnerLocation.partnerLocationName,
                                                                         )
                                                                     }
                                                                 >

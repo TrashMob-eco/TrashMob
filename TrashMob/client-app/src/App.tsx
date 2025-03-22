@@ -66,6 +66,14 @@ import { LocationPreferenceWrapper as LocationPreference } from './pages/locatio
 import { EditEventSummary } from './pages/eventsummary/$eventId';
 import { PickupLocationCreate } from './pages/eventsummary/$eventId/pickup-locations.create';
 import { PickupLocationEdit } from './pages/eventsummary/$eventId/pickup-locations.$locationId.edit';
+import { SiteAdminLayout } from './pages/siteadmin/_layout';
+import { SiteAdminUsers } from './pages/siteadmin/users';
+import { SiteAdminEvents } from './pages/siteadmin/events/page';
+import { SiteAdminPartners } from './pages/siteadmin/partners/page';
+import { SiteAdminPartnerRequests } from './pages/siteadmin/partner-requests/page';
+import { Loader2 } from 'lucide-react';
+import { SiteAdminEmailTemplates } from './pages/siteadmin/email-templates';
+import { SiteAdminSendNotification } from './pages/siteadmin/send-notification';
 
 const queryClient = new QueryClient();
 
@@ -90,23 +98,48 @@ function ScrollToTop() {
     return null;
 }
 
+function AuthenticationLoadingComponent() {
+    return <p>Authentication in progress...</p>;
+}
+
+function AuthenticationErrorComponent(result: MsalAuthenticationResult) {
+    return (
+        <p>
+            An Error Occurred:
+            {result.error?.errorCode} {result.error?.errorMessage}
+        </p>
+    );
+}
+
 const AuthLayout = () => {
-    function ErrorComponent(error: MsalAuthenticationResult) {
-        return (
-            <p>
-                An Error Occurred:
-                {error}
-            </p>
-        );
-    }
-    function LoadingComponent() {
-        return <p>Authentication in progress...</p>;
-    }
     return (
         <MsalAuthenticationTemplate
             interactionType={InteractionType.Redirect}
-            errorComponent={ErrorComponent}
-            loadingComponent={LoadingComponent}
+            errorComponent={AuthenticationErrorComponent}
+            loadingComponent={AuthenticationLoadingComponent}
+        >
+            <Outlet />
+        </MsalAuthenticationTemplate>
+    );
+};
+
+const AuthSideAdminLayout = () => {
+    const { currentUser, isUserLoaded } = useLogin();
+    if (!isUserLoaded)
+        return (
+            <div className='tailwind'>
+                <div className='flex justify-center items-center py-16'>
+                    <Loader2 className='animate-spin mr-2' /> Loading
+                </div>
+            </div>
+        );
+    if (isUserLoaded && !currentUser.isSiteAdmin) return <em>Access Denied</em>;
+
+    return (
+        <MsalAuthenticationTemplate
+            interactionType={InteractionType.Redirect}
+            errorComponent={AuthenticationErrorComponent}
+            loadingComponent={AuthenticationLoadingComponent}
         >
             <Outlet />
         </MsalAuthenticationTemplate>
@@ -198,6 +231,16 @@ export const App: FC = () => {
                                         path='/siteadmin'
                                         element={<SiteAdmin currentUser={currentUser} isUserLoaded={isUserLoaded} />}
                                     />
+                                    <Route element={<AuthSideAdminLayout />}>
+                                        <Route path='/admin' element={<SiteAdminLayout />}>
+                                            <Route path='users' element={<SiteAdminUsers />} />
+                                            <Route path='events' element={<SiteAdminEvents />} />
+                                            <Route path='partners' element={<SiteAdminPartners />} />
+                                            <Route path='partner-requests' element={<SiteAdminPartnerRequests />} />
+                                            <Route path='email-templates' element={<SiteAdminEmailTemplates />} />
+                                            <Route path='send-notifications' element={<SiteAdminSendNotification />} />
+                                        </Route>
+                                    </Route>
                                     <Route path='/locationpreference' element={<LocationPreference />} />
                                     <Route
                                         path='/waivers'

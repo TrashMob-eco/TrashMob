@@ -1,11 +1,11 @@
 import * as React from 'react';
 
 import { Col, Container, Dropdown, Row } from 'react-bootstrap';
-import { XSquare } from 'react-bootstrap-icons';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import UserData from '../Models/UserData';
 import { DeleteUserById, GetAllUsers } from '../../services/users';
 import { Services } from '../../config/services.config';
+import { SquareX } from 'lucide-react';
 
 interface AdminUsersPropsType {
     isUserLoaded: boolean;
@@ -51,7 +51,7 @@ export const AdminUsers: React.FC<AdminUsersPropsType> = (props) => {
 
     const userActionDropdownList = (userId: string, userName: string) => (
         <Dropdown.Item onClick={() => handleDelete(userId, userName)}>
-            <XSquare />
+            <SquareX />
             Delete User
         </Dropdown.Item>
     );
