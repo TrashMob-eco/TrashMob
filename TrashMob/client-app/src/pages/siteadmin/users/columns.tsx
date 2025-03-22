@@ -11,7 +11,7 @@ import { DataTableColumnHeader } from '@/components/ui/data-table';
 import UserData from '@/components/Models/UserData';
 
 interface GetColumnsProps {
-  onDelete: (id: string, name: string) => void;
+    onDelete: (id: string, name: string) => void;
 }
 
 export const getColumns = ({ onDelete }: GetColumnsProps): ColumnDef<UserData>[] => [
@@ -52,10 +52,10 @@ export const getColumns = ({ onDelete }: GetColumnsProps): ColumnDef<UserData>[]
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className='w-56'>
-                      <DropdownMenuItem onClick={() => onDelete(user.id, user.userName)}>
-                          <SquareX />
-                          Delete User
-                      </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => onDelete(user.id, user.userName)}>
+                            <SquareX />
+                            Delete User
+                        </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             );

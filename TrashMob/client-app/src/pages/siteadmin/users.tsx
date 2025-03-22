@@ -21,24 +21,24 @@ export const SiteAdminUsers = () => {
                 queryKey: GetAllUsers().key,
                 refetchType: 'all',
             });
-        }
+        },
     });
 
     const removeUser = (userId: string, userName: string) => {
         if (!window.confirm(`Are you sure you want to delete user with name: ${userName}?`)) return;
-        deleteUserById.mutateAsync({ id: userId })
+        deleteUserById.mutateAsync({ id: userId });
     };
 
-    const columns = getColumns({ onDelete: removeUser })
-    const len = (users || []).length
+    const columns = getColumns({ onDelete: removeUser });
+    const len = (users || []).length;
 
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Users ({ len })</CardTitle>
+                <CardTitle>Users ({len})</CardTitle>
             </CardHeader>
             <CardContent>
-                <DataTable columns={columns} data={(users || [])} />
+                <DataTable columns={columns} data={users || []} />
             </CardContent>
         </Card>
     );
