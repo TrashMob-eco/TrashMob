@@ -178,7 +178,7 @@
         public override async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
             // Is the user the owner of the pickup location?
-            var entity = Manager.GetAsync(id, cancellationToken);
+            var entity = await Manager.GetAsync(id, cancellationToken);
 
             var authResult =
                 await AuthorizationService.AuthorizeAsync(User, entity, AuthorizationPolicyConstants.UserOwnsEntity);
@@ -186,7 +186,7 @@
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
                 // Does the user own the event?
-                var mobEvent = await eventManager.GetAsync(pickupLocation.EventId, cancellationToken);
+                var mobEvent = await eventManager.GetAsync(entity.EventId, cancellationToken);
 
                 authResult =
                     await AuthorizationService.AuthorizeAsync(User, mobEvent,
@@ -204,6 +204,5 @@
 
             return Ok(results);
         }
-
     }
 }
