@@ -65,6 +65,8 @@ import { EditEventPage } from './pages/events/edit';
 import { CancelEvent } from './pages/events/$eventId/delete';
 import { ContactUsWrapper as ContactUs } from './pages/contactus';
 import { LocationPreferenceWrapper as LocationPreference } from './pages/locationpreference';
+import { SiteAdminLayout } from './pages/siteadmin/_layout';
+import { SiteAdminUsers } from './pages/siteadmin/users';
 
 const queryClient = new QueryClient();
 
@@ -89,23 +91,41 @@ function ScrollToTop() {
     return null;
 }
 
+function AuthenticationLoadingComponent() {
+    return <p>Authentication in progress...</p>;
+}
+
+function AuthenticationErrorComponent(result: MsalAuthenticationResult) {
+    return (
+        <p>
+            An Error Occurred:
+            {result.error?.errorCode} {result.error?.errorMessage}
+        </p>
+    );
+}
+
 const AuthLayout = () => {
-    function ErrorComponent(error: MsalAuthenticationResult) {
-        return (
-            <p>
-                An Error Occurred:
-                {error}
-            </p>
-        );
-    }
-    function LoadingComponent() {
-        return <p>Authentication in progress...</p>;
-    }
     return (
         <MsalAuthenticationTemplate
             interactionType={InteractionType.Redirect}
-            errorComponent={ErrorComponent}
-            loadingComponent={LoadingComponent}
+            errorComponent={AuthenticationErrorComponent}
+            loadingComponent={AuthenticationLoadingComponent}
+        >
+            <Outlet />
+        </MsalAuthenticationTemplate>
+    );
+};
+
+const AuthSideAdminLayout = () => {
+    const { currentUser, isUserLoaded } = useLogin();
+    if (!isUserLoaded) return <p>Loading</p>;
+    if (isUserLoaded && !currentUser.isSiteAdmin) return <em>Access Denied</em>;
+
+    return (
+        <MsalAuthenticationTemplate
+            interactionType={InteractionType.Redirect}
+            errorComponent={AuthenticationErrorComponent}
+            loadingComponent={AuthenticationLoadingComponent}
         >
             <Outlet />
         </MsalAuthenticationTemplate>
@@ -191,6 +211,11 @@ export const App: FC = () => {
                                         path='/siteadmin'
                                         element={<SiteAdmin currentUser={currentUser} isUserLoaded={isUserLoaded} />}
                                     />
+                                    <Route element={<AuthSideAdminLayout />}>
+                                        <Route path='/admin' element={<SiteAdminLayout />}>
+                                            <Route path='users' element={<SiteAdminUsers />} />
+                                        </Route>
+                                    </Route>
                                     <Route path='/locationpreference' element={<LocationPreference />} />
                                     <Route
                                         path='/waivers'

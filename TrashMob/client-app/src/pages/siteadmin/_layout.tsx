@@ -1,22 +1,20 @@
 import { useCallback } from 'react';
-import { Outlet, useLocation, useNavigate, useParams } from 'react-router';
+import { Outlet, useLocation, useNavigate } from 'react-router';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-export const PartnerLayout = () => {
+export const SiteAdminLayout = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { partnerId } = useParams<{ partnerId: string }>() as { partnerId: string };
 
-    const pathPrefix = `/partnerdashboard/${partnerId}`;
+    const pathPrefix = `/admin`;
     const navs = [
-        { name: 'Service Requests', value: `${pathPrefix}` },
-        { name: 'Manage Partner', value: `${pathPrefix}/edit` },
-        { name: 'Manage Partner Locations', value: `${pathPrefix}/locations` },
-        { name: 'Manage Services', value: `${pathPrefix}/services` },
-        { name: 'Manage Partner Contacts', value: `${pathPrefix}/contacts` },
-        { name: 'Manage Partner Admins', value: `${pathPrefix}/admins` },
-        { name: 'Manage Partner Documents', value: `${pathPrefix}/documents` },
-        { name: 'Manage Partner Social Media Accounts', value: `${pathPrefix}/socials` },
+        { name: 'Manage Users', value: `${pathPrefix}/users` },
+        { name: 'Manage Events', value: `${pathPrefix}/events` },
+        { name: 'Manage Partners', value: `${pathPrefix}/partners` },
+        { name: 'Manage Partner Requests', value: `${pathPrefix}/partner-requests` },
+        { name: 'View Executive Summary', value: `${pathPrefix}/executive-summary` },
+        { name: 'Send Notifications', value: `${pathPrefix}/send-notifications` },
+        { name: 'View Email Templates', value: `${pathPrefix}/email-templates` },
     ];
 
     const handleValueChange = useCallback(
@@ -39,7 +37,9 @@ export const PartnerLayout = () => {
                     </TabsList>
                 </Tabs>
             </div>
-            <Outlet />
+            <div className='container mx-auto pb-4'>
+                <Outlet />
+            </div>
         </div>
     );
 };
