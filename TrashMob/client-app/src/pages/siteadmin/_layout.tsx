@@ -12,7 +12,7 @@ export const SiteAdminLayout = () => {
         { name: 'Manage Events', value: `${pathPrefix}/events` },
         { name: 'Manage Partners', value: `${pathPrefix}/partners` },
         { name: 'Manage Partner Requests', value: `${pathPrefix}/partner-requests` },
-        { name: 'View Executive Summary', value: `${pathPrefix}/executive-summary` },
+        // { name: 'View Executive Summary', value: `${pathPrefix}/executive-summary` },
         { name: 'Send Notifications', value: `${pathPrefix}/send-notifications` },
         { name: 'View Email Templates', value: `${pathPrefix}/email-templates` },
     ];

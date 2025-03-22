@@ -70,6 +70,7 @@ import { SiteAdminEvents } from './pages/siteadmin/events/page';
 import { SiteAdminPartners } from './pages/siteadmin/partners/page';
 import { SiteAdminPartnerRequests } from './pages/siteadmin/partner-requests/page';
 import { Loader2 } from 'lucide-react';
+import { SiteAdminEmailTemplates } from './pages/siteadmin/email-templates';
 
 const queryClient = new QueryClient();
 
@@ -227,6 +228,7 @@ export const App: FC = () => {
                                             <Route path='events' element={<SiteAdminEvents />} />
                                             <Route path='partners' element={<SiteAdminPartners />} />
                                             <Route path='partner-requests' element={<SiteAdminPartnerRequests />} />
+                                            <Route path='email-templates' element={<SiteAdminEmailTemplates />} />
                                         </Route>
                                     </Route>
                                     <Route path='/locationpreference' element={<LocationPreference />} />
