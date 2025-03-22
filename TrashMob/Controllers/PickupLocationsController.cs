@@ -62,7 +62,20 @@
                 }
             }
 
-            var result = await Manager.UpdateAsync(pickupLocation, UserId, cancellationToken).ConfigureAwait(false);
+            localPickupLocation.County = pickupLocation.County;
+            localPickupLocation.Latitude = pickupLocation.Latitude;
+            localPickupLocation.Longitude = pickupLocation.Longitude;
+            localPickupLocation.Name = pickupLocation.Name;
+            localPickupLocation.Notes = pickupLocation.Notes;
+            localPickupLocation.PostalCode = pickupLocation.PostalCode;
+            localPickupLocation.Region = pickupLocation.Region;
+            localPickupLocation.StreetAddress = pickupLocation.StreetAddress;
+            localPickupLocation.Country = pickupLocation.Country;
+            localPickupLocation.City = pickupLocation.City;
+            localPickupLocation.HasBeenPickedUp = pickupLocation.HasBeenPickedUp;
+            localPickupLocation.HasBeenSubmitted = pickupLocation.HasBeenSubmitted; 
+
+            var result = await Manager.UpdateAsync(localPickupLocation, UserId, cancellationToken).ConfigureAwait(false);
             TelemetryClient.TrackEvent(nameof(Update) + typeof(PickupLocation));
 
             return Ok(result);
