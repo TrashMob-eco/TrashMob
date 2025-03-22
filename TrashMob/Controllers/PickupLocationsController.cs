@@ -40,14 +40,26 @@
         [HttpPut]
         public async Task<IActionResult> Update(PickupLocation pickupLocation, CancellationToken cancellationToken)
         {
-            // Todo: Add security
+            var localPickupLocation = await Manager.GetAsync(pickupLocation.Id, cancellationToken);
+
+            // Does the user own the pickup location?
             var authResult =
-                await AuthorizationService.AuthorizeAsync(User, pickupLocation,
+                await AuthorizationService.AuthorizeAsync(User, localPickupLocation,
                     AuthorizationPolicyConstants.UserOwnsEntity);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
-                return Forbid();
+                // Does the user own the event?
+                var mobEvent = await eventManager.GetAsync(pickupLocation.EventId, cancellationToken);
+
+                authResult =
+                    await AuthorizationService.AuthorizeAsync(User, mobEvent,
+                        AuthorizationPolicyConstants.UserOwnsEntity);
+
+                if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+                {
+                    return Forbid();
+                }
             }
 
             var result = await Manager.UpdateAsync(pickupLocation, UserId, cancellationToken).ConfigureAwait(false);
@@ -161,5 +173,37 @@
 
             return Ok(url);
         }
+
+        [HttpDelete("{id}")]
+        public override async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
+        {
+            // Is the user the owner of the pickup location?
+            var entity = Manager.GetAsync(id, cancellationToken);
+
+            var authResult =
+                await AuthorizationService.AuthorizeAsync(User, entity, AuthorizationPolicyConstants.UserOwnsEntity);
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            {
+                // Does the user own the event?
+                var mobEvent = await eventManager.GetAsync(pickupLocation.EventId, cancellationToken);
+
+                authResult =
+                    await AuthorizationService.AuthorizeAsync(User, mobEvent,
+                        AuthorizationPolicyConstants.UserOwnsEntity);
+
+                if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+                {
+                    return Forbid();
+                }
+            }
+
+            var results = await Manager.DeleteAsync(id, cancellationToken).ConfigureAwait(false);
+
+            TelemetryClient.TrackEvent("Delete" + nameof(PickupLocation));
+
+            return Ok(results);
+        }
+
     }
 }
