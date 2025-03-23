@@ -17,7 +17,6 @@ import { msalClient } from './store/AuthStore';
 import EventDetails from './components/Pages/EventDetails';
 import { NoMatch } from './components/NoMatch';
 import PartnerRequest from './components/Partners/PartnerRequest';
-import SiteAdmin from './components/Admin/SiteAdmin';
 import { Shop } from './components/Shop';
 
 import './custom.css';
@@ -227,12 +226,8 @@ export const App: FC = () => {
                                     />
                                     <Route path='/becomeapartner' element={<PartnerRequest mode='become' />} />
                                     <Route path='/inviteapartner' element={<PartnerRequest mode='send' />} />
-                                    <Route
-                                        path='/siteadmin'
-                                        element={<SiteAdmin currentUser={currentUser} isUserLoaded={isUserLoaded} />}
-                                    />
                                     <Route element={<AuthSideAdminLayout />}>
-                                        <Route path='/admin' element={<SiteAdminLayout />}>
+                                        <Route path='/siteadmin' element={<SiteAdminLayout />}>
                                             <Route path='users' element={<SiteAdminUsers />} />
                                             <Route path='events' element={<SiteAdminEvents />} />
                                             <Route path='partners' element={<SiteAdminPartners />} />
