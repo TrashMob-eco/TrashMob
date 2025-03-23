@@ -171,7 +171,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                         { name: 'Bags', value: totalBags, img: bucketplus },
                     ].map((stat) => (
                         <div
-                            className='basis-full md:basis-[200px] md:max-w-[255px] md:grow bg-card !px-7 relative'
+                            className='basis-full md:basis-[200px] md:max-w-[255px] md:grow bg-card !px-7 relative rounded-lg'
                             key={stat.name}
                         >
                             <p className='text-[25px] font-medium !mt-6 !mb-3'>{stat.name}</p>
@@ -187,7 +187,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
             </div>
             <div className='container !my-12'>
                 <div className='flex justify-between'>
-                    <h4 className='font-bold !mr-2 !pb-2 !mt-0 border-b-[3px] border-primary flex items-center w-full'>
+                    <h4 className='font-bold text-3xl mr-2 pb-2 mt-0 border-b-[3px] border-primary flex items-center w-full'>
                         <div className='grow'>My Events ({myEventList.length})</div>
                         <Button asChild>
                             <Link to='/events/create'>
@@ -273,8 +273,8 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                         )}
                     </CardContent>
                 </Card>
-                <div className='flex flex-column mt-5 mb-3'>
-                    <h4 className='font-semibold mr-2 mt-0 pb-2 border-b-[3px] border-primary'>
+                <div className='flex flex-col mt-10 mb-3'>
+                    <h4 className='font-semibold text-3xl mr-2 mt-0 pb-2 border-b-[3px] border-primary'>
                         My Partnerships ({(myPartnerRequests || []).length + (myPartners || []).length})
                     </h4>
                     <div className='flex flex-row flex-wrap gap-4 !my-4'>

@@ -75,9 +75,9 @@ export const StatsSection = () => {
                 {statItems.map((item, i) => (
                     <div
                         key={item.id}
-                        className='bg-card min-w-[160px] !px-6 !py-4 shadow-sm flex flex-col items-center rounded-[11px]'
+                        className='bg-card min-w-[160px] !px-6 !py-4 shadow-sm flex flex-col items-center rounded-[11px] gap-2'
                     >
-                        <img src={item.icon} alt={item.alt} className='primary w-9 h-9' />
+                        <img src={item.icon} alt={item.alt} className='text-primary w-9 h-9' />
                         <h4 className='text-[32px] font-semibold text-primary !mt-2'>
                             <CountUp isCounting={isInViewPort} end={item.value} duration={3.2} />
                         </h4>

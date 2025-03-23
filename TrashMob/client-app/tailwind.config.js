@@ -1,11 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 
-import { scopedPreflightStyles, isolateInsideOfContainer } from 'tailwindcss-scoped-preflight';
-
 module.exports = {
     darkMode: ['class'],
     content: ['./index.html', './src/**/*.{ts,tsx,js,jsx}'],
-    important: '.tailwind',
     theme: {
         fontFamily: {
             sans: ['Lexend', 'Arial', 'sans-serif'],
@@ -64,10 +61,5 @@ module.exports = {
             },
         },
     },
-    plugins: [
-        require('tailwindcss-animate'),
-        scopedPreflightStyles({
-            isolationStrategy: isolateInsideOfContainer('.tailwind'),
-        }),
-    ],
+    plugins: [require('tailwindcss-animate')],
 };

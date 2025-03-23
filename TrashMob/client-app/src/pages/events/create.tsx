@@ -240,11 +240,11 @@ export const CreateEventPage = () => {
                                     value={step.key}
                                     className={cn(
                                         'grow border-t-2 border-muted bg-transparent rounded-none shadow-none flex flex-col items-start !pl-0 !pt-4',
-                                        'data-[state=active]:!border-[#96BA00]',
+                                        'data-[state=active]:!border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none',
                                     )}
                                 >
                                     <div className='text-primary'>Step {i + 1}</div>
-                                    <div className='text-muted text-sm'>{step.label}</div>
+                                    <div className='text-muted-foreground text-sm'>{step.label}</div>
                                 </TabsTrigger>
                             ))}
                         </TabsList>

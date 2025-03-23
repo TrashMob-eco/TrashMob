@@ -11,7 +11,6 @@ import { Toaster } from '@/components/ui/toaster';
 import { msalClient } from './store/AuthStore';
 import { Shop } from './components/Shop';
 
-import './custom.css';
 import 'react-phone-input-2/lib/style.css';
 import { SiteFooter } from './components/SiteFooter';
 import { SiteHeader } from './components/SiteHeader';
@@ -159,7 +158,7 @@ export const App: FC = () => {
     return (
         <QueryClientProvider client={queryClient}>
             <MsalProvider instance={msalClient}>
-                <div className='d-flex flex-column h-100'>
+                <div className='flex flex-col h-100'>
                     <BrowserRouter>
                         <ScrollToTop />
                         <SiteHeader currentUser={currentUser} isUserLoaded={isUserLoaded} />

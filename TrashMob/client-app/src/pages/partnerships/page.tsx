@@ -13,13 +13,13 @@ import { Button } from '@/components/ui/button';
 
 export const Partnerships: FC<any> = () => {
     return (
-        <div className='tailwind'>
+        <div>
             <HeroSection Title='Partnerships' Description='Connecting you with volunteers.' />
-            <section>
-                <div className='container !py-5'>
+            <section className='py-10'>
+                <div className='container py-5'>
                     <div className='grid grid-cols-12 gap-4'>
-                        <div className='col-span-12 sm:col-span-7'>
-                            <h1 className='font-semibold'>What are partnerships?</h1>
+                        <div className='col-span-12 sm:col-span-7 space-y-4'>
+                            <h1 className='font-semibold text-4xl mb-2'>What are partnerships?</h1>
                             <h4>
                                 Partnering with local cities and businesses can connect TrashMob event volunteers with
                                 the supplies and services they need.
@@ -33,7 +33,7 @@ export const Partnerships: FC<any> = () => {
                             </p>
                         </div>
                         <div className='col-span-12 sm:col-span-5 text-center sm:text-left'>
-                            <h1 className='font-semibold'>Our Partners</h1>
+                            <h1 className='font-semibold text-4xl mb-2'>Our Partners</h1>
                             <div className='flex flex-row justify-center sm:justify-start'>
                                 <a
                                     href='https://issaquahhighlands.com/'
@@ -56,10 +56,10 @@ export const Partnerships: FC<any> = () => {
                 </div>
             </section>
             <section className='bg-white'>
-                <div className='container py-5'>
+                <div className='container py-16'>
                     <div className='grid grid-cols-12 gap-x-4 gap-y-8'>
                         <div className='col-span-12 sm:col-span-6'>
-                            <div className='flex flex-column items-center text-center sm:items-start sm:!text-left'>
+                            <div className='flex flex-col space-y-4 items-center text-center sm:items-start sm:!text-left'>
                                 <p className='text-2xl'>
                                     No partner for your event? Invite local government or business to join TrashMob.eco
                                     as a partner!
@@ -70,7 +70,7 @@ export const Partnerships: FC<any> = () => {
                             </div>
                         </div>
                         <div className='col-span-12 sm:col-span-6'>
-                            <div className='flex flex-column items-center text-center sm:items-start sm:!text-left'>
+                            <div className='flex flex-col space-y-4 items-center text-center sm:items-start sm:!text-left'>
                                 <p className='text-2xl'>
                                     Have supplies and services to offer? Submit an application to become a TrashMob.eco
                                     partner!
@@ -83,27 +83,27 @@ export const Partnerships: FC<any> = () => {
                     </div>
                 </div>
             </section>
-            <section>
-                <div className='text-center py-5 px-0'>
-                    <h2 className='font-weight-bold mb-3'>Partnerships support the volunteers</h2>
+            <section className='py-16'>
+                <div className='text-center px-0'>
+                    <h2 className='font-bold text-4xl mb-3'>Partnerships support the volunteers</h2>
                     <span>Services and supplies offered can include:</span>
                     <div className='w-1/2 mx-auto grid grid-cols-4 !mt-12'>
                         <div className='col-span-4 sm:col-span-2 md:col-span-1'>
                             <div className='flex flex-col items-center !m-8'>
                                 <img src={Safetykits} alt='Safety kits' className='mt-0' />
-                                <span className='font-weight-bold mt-2'>Safety gear and roadside signs</span>
+                                <span className='font-bold mt-2'>Safety gear and roadside signs</span>
                             </div>
                         </div>
                         <div className='col-span-4 sm:col-span-2 md:col-span-1'>
                             <div className='flex flex-col items-center !m-8'>
                                 <img src={Supplies} alt='Supplies' className='mt-0' />
-                                <span className='font-weight-bold mt-2'>Pickup supplies such as garbage bags</span>
+                                <span className='font-bold mt-2'>Pickup supplies such as garbage bags</span>
                             </div>
                         </div>
                         <div className='col-span-4 sm:col-span-2 md:col-span-1'>
                             <div className='flex flex-col items-center !m-8'>
                                 <img src={TrashDisposal} alt='Trash Disposal & Hauling' className='mt-0' />
-                                <span className='font-weight-bold mt-2'>
+                                <span className='font-bold mt-2'>
                                     Use of existing dumpsters and hauling of trash to disposal site
                                 </span>
                             </div>
@@ -111,7 +111,7 @@ export const Partnerships: FC<any> = () => {
                         <div className='col-span-4 sm:col-span-2 md:col-span-1'>
                             <div className='flex flex-col items-center !m-8'>
                                 <img src={Dollarsign} alt='Dollar sign' className='mt-0' />
-                                <span className='font-weight-bold mt-2'>
+                                <span className='font-bold mt-2'>
                                     <a href='https://www.trashmob.eco/donate'>Donations</a> to TrashMob.eco fund
                                     development of our platform and programs
                                 </span>
@@ -120,11 +120,11 @@ export const Partnerships: FC<any> = () => {
                     </div>
                 </div>
             </section>
-            <section className='bg-card'>
-                <div className='container py-5'>
+            <section className='bg-card py-10'>
+                <div className='container'>
                     <div className='grid grid-cols-12 gap-8'>
-                        <div className='col-span-12 sm:col-span-7'>
-                            <h1 className='font-semibold'>Making the most out of partnerships</h1>
+                        <div className='col-span-12 sm:col-span-7 space-y-4'>
+                            <h1 className='font-semibold text-4xl'>Making the most out of partnerships</h1>
                             <p>
                                 A successful clean up event depends upon a team of volunteers and the support of
                                 partners: community businesses, organizations and governments. Volunteer organizers set

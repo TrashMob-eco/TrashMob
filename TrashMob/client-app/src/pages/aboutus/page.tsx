@@ -9,9 +9,9 @@ export const AboutUs: React.FC = () => {
         <div className='tailwind'>
             <div className='mt-1 bg-card px-8'>
                 <div className='max-w-6xl mx-auto grid grid-cols-12'>
-                    <div className='col-span-12 lg:col-span-5 pb-20'>
-                        <h2>What is a TrashMob?</h2>
-                        <p className='font-weight-bold'>
+                    <div className='col-span-12 lg:col-span-5 pb-20 space-y-4'>
+                        <h2 className='text-3xl leading-relaxed mt-10 mb-2'>What is a TrashMob?</h2>
+                        <p className='font-bold'>
                             A TrashMob is a group of citizens who are willing to take an hour or two out of their lives
                             to get together and clean up their communities.
                         </p>
@@ -29,7 +29,7 @@ export const AboutUs: React.FC = () => {
                         </Button>
                     </div>
                     <div className='col-span-12 lg:col-span-7 flex justify-center lg:justify-end'>
-                        <img src='/img/trashcan-artwork.png' alt='trash cans' className='h-75' />
+                        <img src='/img/trashcan-artwork.png' alt='trash cans' className='max-h-[400px]' />
                     </div>
                 </div>
             </div>
@@ -77,7 +77,7 @@ export const AboutUs: React.FC = () => {
                     ].map((item, index) => (
                         <div className='timeline-step relative' key={index}>
                             <div className='timeline-content w-[14rem] flex flex-col items-center text-center relative z-10'>
-                                <div className='inner-circle bg-primary w-12 h-12 text-black rounded-full flex items-center justify-center font-bold text-base relative'>
+                                <div className='inner-circle bg-primary text-primary-foreground w-12 h-12 text-black rounded-full flex items-center justify-center font-bold text-base relative'>
                                     {padStart(`${index + 1}`, 2, '0')}
                                 </div>
                                 <h6 className='font-bold mt-3 mb-1 px-3'>{item.title}</h6>
