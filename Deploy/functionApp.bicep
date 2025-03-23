@@ -6,7 +6,7 @@ param storageAccountName string
 @secure()
 param storageAccountKey string
 
-resource functionApp 'Microsoft.Web/sites@2020-06-01' = {
+resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
   name: functionAppName
   location: region
   kind: 'functionapp'
