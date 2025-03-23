@@ -8,5 +8,7 @@ export const useGetPartnerRequestStatuses = () => {
         queryKey: GetPartnerRequestStatuses().key,
         queryFn: GetPartnerRequestStatuses().service,
         select: (res) => res.data,
+        staleTime: 5 * 60 * 1000,
+        cacheTime: 5 * 60 * 1000,
     });
 };

@@ -271,7 +271,7 @@ export const EditEventPage = () => {
                                                             {status.id === 0 ? (
                                                                 <CircleDashed color='#c7c7c7' />
                                                             ) : (
-                                                                <Check color='#96ba00' />
+                                                                <Check color='#005C4C' />
                                                             )}
                                                         </span>
                                                         <div className='grow'>
@@ -290,8 +290,8 @@ export const EditEventPage = () => {
                                                                     onClick={() =>
                                                                         requestService(
                                                                             service.serviceTypeId,
-                                                                            partner.partnerLocationId,
-                                                                            partner.partnerLocationName,
+                                                                            partnerLocation.partnerLocationId,
+                                                                            partnerLocation.partnerLocationName,
                                                                         )
                                                                     }
                                                                 >
@@ -304,8 +304,8 @@ export const EditEventPage = () => {
                                                                     onClick={() =>
                                                                         removeServiceRequest(
                                                                             service.serviceTypeId,
-                                                                            partner.partnerLocationId,
-                                                                            partner.partnerLocationName,
+                                                                            partnerLocation.partnerLocationId,
+                                                                            partnerLocation.partnerLocationName,
                                                                         )
                                                                     }
                                                                 >

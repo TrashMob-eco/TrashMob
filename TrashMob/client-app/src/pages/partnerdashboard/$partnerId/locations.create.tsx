@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import compact from 'lodash/compact';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,12 +16,7 @@ import { Textarea } from '@/components/ui/textarea';
 import * as ToolTips from '@/store/ToolTips';
 import * as MapStore from '@/store/MapStore';
 
-import {
-    CreatePartnerLocations,
-    GetLocationsByPartner,
-    GetPartnerLocations,
-    UpdatePartnerLocations,
-} from '@/services/locations';
+import { CreatePartnerLocations, GetLocationsByPartner } from '@/services/locations';
 import PartnerLocationData from '@/components/Models/PartnerLocationData';
 import { GoogleMap } from '@/components/Map/GoogleMap';
 import { APIProvider, MapMouseEvent, Marker, useMap } from '@vis.gl/react-google-maps';

@@ -20,7 +20,7 @@ export const SiteHeader = (props: SiteHeaderProps) => {
 
     return (
         <div className='tailwind'>
-            <div className='border-b shadow-md shadow-black/10 bg-white py-3'>
+            <div className='border-b shadow-md shadow-black/10 bg-white py-4'>
                 <div className='container'>
                     <div className='flex items-center flex-wrap flex-row'>
                         <a className='-ml-2 grow lg:grow-0' href='/'>

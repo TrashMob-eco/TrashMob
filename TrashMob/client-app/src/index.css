@@ -91,7 +91,7 @@
     }
 
     .container {
-        @apply mx-auto;
+        @apply mx-auto !max-w-[1140px] px-[15px];
     }
 }
 
@@ -112,6 +112,7 @@ body {
         sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-color: #eee;
 }
 
 code {

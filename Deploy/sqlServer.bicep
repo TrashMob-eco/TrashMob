@@ -9,7 +9,7 @@ param sqlAdminPassword string
 var servers_db_name = 'sql-tm-${environment}-${region}'
 var db_Name = 'db-tm-${environment}-${region}'
 
-resource servers_db_name_resource 'Microsoft.Sql/servers@2020-11-01-preview' = {
+resource servers_db_name_resource 'Microsoft.Sql/servers@2021-11-01' = {
   name: servers_db_name
   location: region
   properties: {
@@ -20,7 +20,7 @@ resource servers_db_name_resource 'Microsoft.Sql/servers@2020-11-01-preview' = {
   }
 }
 
-resource servers_db_name_tm_ 'Microsoft.Sql/servers/databases@2020-11-01-preview' = {
+resource servers_db_name_tm_ 'Microsoft.Sql/servers/databases@2021-11-01' = {
   parent: servers_db_name_resource
   name: db_Name
   location: region
@@ -40,7 +40,7 @@ resource servers_db_name_tm_ 'Microsoft.Sql/servers/databases@2020-11-01-preview
   }
 }
 
-resource servers_db_name_AllowAllWindowsAzureIps 'Microsoft.Sql/servers/firewallRules@2020-11-01-preview' = {
+resource servers_db_name_AllowAllWindowsAzureIps 'Microsoft.Sql/servers/firewallRules@2021-11-01' = {
   parent: servers_db_name_resource
   name: 'AllowAllWindowsAzureIps'
   properties: {

@@ -25,7 +25,12 @@ import {
     getUpcomingTimeranges,
     getLastDaysTimerange,
 } from './utils/timerange';
-import { EventStatus } from '@/enums/EventStatus';
+
+enum EventStatusFilter {
+    UPCOMING = 'upcoming',
+    COMPLETED = 'completed',
+    CANCELED = 'canceled',
+}
 
 interface EventSectionProps {}
 
@@ -52,12 +57,12 @@ export const EventSection = (props: EventSectionProps) => {
 
     /** Statuses */
     const statuses = [
-        { value: EventStatus.UPCOMING, label: 'Upcoming' },
-        { value: EventStatus.COMPLETED, label: 'Completed' },
+        { value: EventStatusFilter.UPCOMING, label: 'Upcoming' },
+        { value: EventStatusFilter.COMPLETED, label: 'Completed' },
     ];
 
     /** Filter Parameters */
-    const [selectedStatuses, setSelectedStatuses] = useState<string>(EventStatus.UPCOMING);
+    const [selectedStatuses, setSelectedStatuses] = useState<string>(EventStatusFilter.UPCOMING);
 
     // Default timerange is This weekend
     const [selectedTimeRange, setSelectedTimeRange] = useState<string>(getAllUpcomingTimerange());
@@ -67,7 +72,7 @@ export const EventSection = (props: EventSectionProps) => {
 
     /** Time Ranges */
     const timeRangeOptions =
-        selectedStatuses === EventStatus.UPCOMING ? getUpcomingTimeranges() : getCompletedTimeranges();
+        selectedStatuses === EventStatusFilter.UPCOMING ? getUpcomingTimeranges() : getCompletedTimeranges();
 
     /** Event List */
     const [startDate, endDate] = selectedTimeRange.split('|');
@@ -111,9 +116,9 @@ export const EventSection = (props: EventSectionProps) => {
             });
     }, [defaultMapCenter, azureSubscriptionKey]);
 
-    // Side Effect 2: When eventStatus change, set timeRangeOption accordingly
+    // Side Effect 2: When eventStatusFilter change, set timeRangeOption accordingly
     useEffect(() => {
-        if (selectedStatuses === EventStatus.COMPLETED) {
+        if (selectedStatuses === EventStatusFilter.COMPLETED) {
             setSelectedTimeRange(getLastDaysTimerange(90));
         } else {
             setSelectedTimeRange(getAllUpcomingTimerange());
@@ -150,9 +155,9 @@ export const EventSection = (props: EventSectionProps) => {
                                         <input
                                             type='text'
                                             {...inputProps}
-                                            className='w-72 text-primary placeholder:text-[rgba(150,186,0,0.5)] font-semibold text-4xl mb-0 !py-2 border-b-4 border-primary bg-[#FCFBF8] outline-none'
+                                            className='w-72 text-primary placeholder:text-primary/50 font-semibold text-4xl mb-0 !py-2 border-b-4 border-primary bg-[#FCFBF8] outline-none'
                                         />
-                                        <Pencil className='!w-8 !h-8 text-white fill-[#96BA00]' />
+                                        <Pencil className='!w-8 !h-8 text-white fill-primary' />
                                     </div>
                                 )}
                                 onSelectLocation={handleSelectSearchLocation}
@@ -210,13 +215,13 @@ export const EventSection = (props: EventSectionProps) => {
                         <ToggleGroup value={view} onValueChange={setView} type='single' variant='outline'>
                             <ToggleGroupItem
                                 value='list'
-                                className='data-[state=on]:!bg-[#96BA00] data-[state=on]:text-primary-foreground'
+                                className='data-[state=on]:bg-primary data-[state=on]:text-primary-foreground'
                             >
                                 <List />
                             </ToggleGroupItem>
                             <ToggleGroupItem
                                 value='map'
-                                className='data-[state=on]:!bg-[#96BA00] data-[state=on]:text-primary-foreground'
+                                className='data-[state=on]:bg-primary data-[state=on]:text-primary-foreground'
                             >
                                 <Map />
                             </ToggleGroupItem>

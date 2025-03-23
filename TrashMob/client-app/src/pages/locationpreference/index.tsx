@@ -200,10 +200,10 @@ export const LocationPreference = () => {
         if (!map || radiusRef.current) return;
 
         const radiusCircle = new google.maps.Circle({
-            strokeColor: '#96ba00',
+            strokeColor: '#005C4C',
             strokeOpacity: 0.8,
             strokeWeight: 2,
-            fillColor: '#96ba00',
+            fillColor: '#005C4C',
             fillOpacity: 0.2,
             clickable: false,
             map,

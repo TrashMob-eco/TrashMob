@@ -46,7 +46,7 @@ export const SiteFooter = () => {
                     <div className='border-t border-white !mt-8 md:!mt-12 text-white'>
                         <div className='flex flex-col md:flex-row gap-8'>
                             <div className='basis-3/4'>
-                                <div className='text-[13px] font-[Montserrat] font-serif font-medium'>
+                                <div className='text-[13px] font-[Montserrat] font-serif font-medium pt-[14px]'>
                                     <p className='mb-1 text-sm text-center md:!text-start'>
                                         Copyright &copy; 2025 TRASHMOB.ECO - All rights reserved.
                                     </p>
@@ -66,7 +66,7 @@ export const SiteFooter = () => {
                                         rel='noreferrer noopener'
                                         className={socialClassName}
                                     >
-                                        <i className='!mt-0 fa-brands fa-instagram text-center' />
+                                        <i className='!mt-0 fa-brands fa-instagram text-center text-black' />
                                     </a>
                                     <a
                                         href='https://www.youtube.com/channel/UC2LgFmXFCA8kdkxd4IJ51BA'
@@ -74,7 +74,7 @@ export const SiteFooter = () => {
                                         rel='noreferrer noopener'
                                         className={socialClassName}
                                     >
-                                        <i className='!mt-0 fa-brands fa-youtube text-center' />
+                                        <i className='!mt-0 fa-brands fa-youtube text-center text-black' />
                                     </a>
                                     <a
                                         href='https://www.facebook.com/trashmob.eco/'
@@ -82,7 +82,7 @@ export const SiteFooter = () => {
                                         rel='noreferrer noopener'
                                         className={socialClassName}
                                     >
-                                        <i className='!mt-0 fab fa-facebook-f text-center' />
+                                        <i className='!mt-0 fab fa-facebook-f text-center text-black' />
                                     </a>
                                     <a
                                         href='https://twitter.com/TrashMobEco'
@@ -90,7 +90,7 @@ export const SiteFooter = () => {
                                         rel='noreferrer noopener'
                                         className={socialClassName}
                                     >
-                                        <i className='!mt-0 fab fa-twitter text-center' />
+                                        <i className='!mt-0 fab fa-twitter text-center text-black' />
                                     </a>
                                     {/* <a
                                         href='https://profiles.eco/trashmob?ref=tm'
