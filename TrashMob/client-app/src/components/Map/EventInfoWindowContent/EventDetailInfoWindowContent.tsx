@@ -13,7 +13,7 @@ type EventDetailInfoWindowContentProps = {
 };
 
 export const EventDetailInfoWindowHeader = (props: EventData) => (
-    <h5 className='mt-1 font-weight-bold' style={{ fontFamily: 'Poppins' }}>
+    <h5 className='mt-1 font-bold' style={{ fontFamily: 'Poppins' }}>
         {props.name}
     </h5>
 );
@@ -47,7 +47,7 @@ export const EventDetailInfoWindowContent = (props: EventDetailInfoWindowContent
     return (
         <div style={{ width: 500, overflowX: 'auto' }}>
             <div>
-                {!hideTitle && <h5 className='mt-1 font-weight-bold'>{name}</h5>}
+                {!hideTitle && <h5 className='mt-1 font-bold'>{name}</h5>}
                 <p className='my-3 event-list-event-type p-2 rounded'>{eventType?.name}</p>
                 <p className='m-0'>
                     {date},{time}

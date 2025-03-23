@@ -155,9 +155,9 @@ export const EventSection = (props: EventSectionProps) => {
                                         <input
                                             type='text'
                                             {...inputProps}
-                                            className='w-72 text-primary placeholder:text-[rgba(150,186,0,0.5)] font-semibold text-4xl mb-0 !py-2 border-b-4 border-primary bg-[#FCFBF8] outline-none'
+                                            className='w-72 text-primary placeholder:text-primary/50 font-semibold text-4xl mb-0 !py-2 border-b-4 border-primary bg-[#FCFBF8] outline-none'
                                         />
-                                        <Pencil className='!w-8 !h-8 text-white fill-[#96BA00]' />
+                                        <Pencil className='!w-8 !h-8 text-white fill-primary' />
                                     </div>
                                 )}
                                 onSelectLocation={handleSelectSearchLocation}
@@ -215,13 +215,13 @@ export const EventSection = (props: EventSectionProps) => {
                         <ToggleGroup value={view} onValueChange={setView} type='single' variant='outline'>
                             <ToggleGroupItem
                                 value='list'
-                                className='data-[state=on]:!bg-[#96BA00] data-[state=on]:text-primary-foreground'
+                                className='data-[state=on]:bg-primary data-[state=on]:text-primary-foreground'
                             >
                                 <List />
                             </ToggleGroupItem>
                             <ToggleGroupItem
                                 value='map'
-                                className='data-[state=on]:!bg-[#96BA00] data-[state=on]:text-primary-foreground'
+                                className='data-[state=on]:bg-primary data-[state=on]:text-primary-foreground'
                             >
                                 <Map />
                             </ToggleGroupItem>

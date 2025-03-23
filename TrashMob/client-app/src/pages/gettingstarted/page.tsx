@@ -13,7 +13,7 @@ export const GettingStarted: React.FC = () => {
         <div className='tailwind'>
             <HeroSection Title='Getting Started' Description='Tips and tricks to get you out there.' />
             <section className='bg-card !py-5 !px-4'>
-                <h2 className='font-semibold text-center'>The Basics</h2>
+                <h2 className='font-semibold text-center text-[40px] mt-10 mb-2'>The Basics</h2>
                 <div className='flex flex-col md:flex-row'>
                     <div className='basis-full md:basis-1/4'>
                         <div className='flex flex-col w-full max-w-[300px] mx-auto mb-5 text-center'>
@@ -117,7 +117,7 @@ export const GettingStarted: React.FC = () => {
                 <div className='container !py-24'>
                     <div className='flex flex-col md:flex-row gap-8 items-center'>
                         <div className='w-full md:basis-1/2'>
-                            <h1 className='font-semibold'>Safety is Essential!</h1>
+                            <h2 className='font-semibold'>Safety is Essential!</h2>
                             <h4 className='mt-5'>
                                 All TrashMob.eco event leads and attendees are required to watch our safety video.
                                 Please take a few minutes to review it now!
@@ -139,7 +139,7 @@ export const GettingStarted: React.FC = () => {
                 <div className='container !py-24'>
                     <div className='flex flex-col md:flex-row gap-8 items-center'>
                         <div className='w-full md:basis-1/2'>
-                            <h1 className='font-semibold'>But what about the highways?</h1>
+                            <h2 className='font-semibold'>But what about the highways?</h2>
                             <h4 className='!mt-5'>
                                 Please check with your Department of Transportation before creating a highway cleanup
                                 event, and follow all of their guidance. Safety is the number one priority!

@@ -66,7 +66,7 @@ const Waivers: React.FC<WaiversProps> = () => {
     return (
         <div className='tailwind'>
             <HeroSection Title='Waiver' Description='Safety first!' />
-            <div className='container'>
+            <div className='container prose space-y-4 py-12'>
                 <h2 className='font-medium text-3xl'>TrashMob.eco Waiver</h2>
                 <p className='p-18'>
                     You will only need to sign this waiver once unless we have to change the legalese.

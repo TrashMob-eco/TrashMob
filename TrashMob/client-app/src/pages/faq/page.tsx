@@ -139,8 +139,8 @@ export const Faq: React.FC = () => {
                     </Card>
                 ) : null}
             </div>
-            <div className='bg-card py-5 text-center'>
-                <h1 className='font-weight-500 text-center'>Are we missing something?</h1>
+            <div className='bg-card py-12 text-center space-y-4'>
+                <h1 className='font-weight-500 text-4xl text-center'>Are we missing something?</h1>
                 <h4 className='text-center'>Let us know by reaching out.</h4>
                 <Button asChild>
                     <Link to='/contactus'>Contact Us</Link>
