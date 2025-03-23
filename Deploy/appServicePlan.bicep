@@ -1,7 +1,7 @@
 param region string
 param appServicePlanName string
 
-resource serverfarms_tmplan_name_resource 'Microsoft.Web/serverfarms@2018-02-01' = {
+resource serverfarms_tmplan_name_resource 'Microsoft.Web/serverfarms@2024-04-01' = {
   name: appServicePlanName
   location: region
   sku: {
