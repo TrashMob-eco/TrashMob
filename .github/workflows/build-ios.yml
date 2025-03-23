@@ -100,7 +100,7 @@ jobs:
             echo "MD_APPLE_SDK_ROOT=/Applications/Xcode_16.2.app" >> $GITHUB_ENV
 
         - name: Import Code-Signing Certificates
-          uses: Apple-Actions/import-codesign-certs@v3
+          uses: Apple-Actions/import-codesign-certs@v4
           with:
             p12-file-base64: ${{ secrets.ios_signing_certificate }}
             p12-password: ${{ secrets.ios_signing_certificate_password }}
