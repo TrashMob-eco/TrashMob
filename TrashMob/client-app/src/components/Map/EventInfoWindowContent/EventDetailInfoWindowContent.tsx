@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import { useGetEventType } from '../../../hooks/useGetEventType';
 import { RegisterBtn } from '../../Customization/RegisterBtn';
 import EventData from '../../Models/EventData';
@@ -57,14 +58,14 @@ export const EventDetailInfoWindowContent = (props: EventDetailInfoWindowContent
                     {postalCode || ''}
                 </p>
             </div>
-            <div className='d-flex justify-content-between mt-2 tailwind'>
-                <span className='align-self-end'>
+            <div className='flex justify-between mt-2'>
+                <span className='self-end'>
                     Created by
                     {createdByUserName}
                 </span>
-                <button className='btn btn-outline mr-0'>
+                <Button variant='outline' className='mr-0' asChild>
                     <a href={`/eventdetails/${id}`}>View Details</a>
-                </button>
+                </Button>
                 <RegisterBtn
                     eventId={id}
                     isAttending={isAttending ? 'Yes' : 'No'}

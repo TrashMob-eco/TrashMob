@@ -64,7 +64,7 @@ export const ShareToSocialsDialog = (props: ShareToSocialDialogProps) => {
                     {props.eventToShare ? (
                         <div className='flex flex-col !mb-4'>
                             <h6>{props.eventToShare.name}</h6>
-                            <div className='d-flex flex-row align-items-center mb-2'>
+                            <div className='flex flex-row align-items-center mb-2'>
                                 <MapPin className='!mr-2' />
                                 {compact([
                                     props.eventToShare.streetAddress,
@@ -73,7 +73,7 @@ export const ShareToSocialsDialog = (props: ShareToSocialDialogProps) => {
                                 ]).join(', ')}
                             </div>
 
-                            <div className='d-flex flex-row align-items-center'>
+                            <div className='flex flex-row align-items-center'>
                                 <Clock className='mr-2' />
                                 {moment(props.eventToShare).format('L [at] LT')}
                             </div>
@@ -138,7 +138,7 @@ export const ShareToSocialsDialog = (props: ShareToSocialDialogProps) => {
                     </div>
                 </div>
                 <DialogFooter>
-                    <Button variant='secondary' onClick={() => handleShow(false)}>
+                    <Button onClick={() => handleShow(false)}>
                         Close
                     </Button>
                 </DialogFooter>

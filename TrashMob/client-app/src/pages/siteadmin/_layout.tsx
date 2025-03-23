@@ -29,7 +29,7 @@ export const SiteAdminLayout = () => {
             <div className='container mx-auto my-4'>
                 <h1 className='scroll-m-20 pb-4 text-3xl font-light tracking-tight first:mt-0'>Site Administration</h1>
                 <Tabs value={location.pathname} onValueChange={handleValueChange}>
-                    <TabsList className='w-full h-14'>
+                    <TabsList className='w-full'>
                         {navs.map((nav, idx) => (
                             <TabsTrigger className='whitespace-normal' value={nav.value} key={`tab-${idx}`}>
                                 {nav.name}
