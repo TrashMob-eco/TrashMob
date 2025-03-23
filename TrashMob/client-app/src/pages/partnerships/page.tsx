@@ -1,15 +1,15 @@
 import React, { FC } from 'react';
 import { Link } from 'react-router';
-import Ihca from '../assets/partnerships/logos/IHCA.png';
-import TroutUnlimited from '../assets/partnerships/logos/TROUTUNLIMITEDLogo.png';
-import Safetykits from '../assets/partnerships/Safetykits.svg';
-import Supplies from '../assets/partnerships/Supplies.svg';
-import TrashDisposal from '../assets/partnerships/TrashDisposal.svg';
-import Dollarsign from '../assets/partnerships/dollarsign.svg';
-import Garbage from '../assets/partnerships/garbage.png';
+import Ihca from '@/components/assets/partnerships/logos/IHCA.png';
+import TroutUnlimited from '@/components/assets/partnerships/logos/TROUTUNLIMITEDLogo.png';
+import Safetykits from '@/components/assets/partnerships/Safetykits.svg';
+import Supplies from '@/components/assets/partnerships/Supplies.svg';
+import TrashDisposal from '@/components/assets/partnerships/TrashDisposal.svg';
+import Dollarsign from '@/components/assets/partnerships/dollarsign.svg';
+import Garbage from '@/components/assets/partnerships/garbage.png';
 
-import { HeroSection } from '../Customization/HeroSection';
-import { Button } from '../ui/button';
+import { HeroSection } from '@/components/Customization/HeroSection';
+import { Button } from '@/components/ui/button';
 
 export const Partnerships: FC<any> = () => {
     return (

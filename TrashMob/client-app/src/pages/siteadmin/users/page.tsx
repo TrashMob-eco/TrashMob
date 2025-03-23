@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DeleteUserById, GetAllUsers } from '@/services/users';
 import { DataTable } from '@/components/ui/data-table';
-import { getColumns } from './users/columns';
+import { getColumns } from './columns';
 
 export const SiteAdminUsers = () => {
     const queryClient = useQueryClient();

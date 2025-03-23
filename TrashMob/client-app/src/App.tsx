@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
-
 import { BrowserRouter, Outlet, Route, Routes, useLocation } from 'react-router';
+import { Loader2 } from 'lucide-react';
 
 import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
 import { InteractionType } from '@azure/msal-browser';
@@ -8,37 +8,53 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from '@/components/ui/toaster';
 
-import { AboutUs } from './components/Pages/AboutUs';
-import { Faq } from './components/Faq';
-import { GettingStarted } from './components/Pages/GettingStarted';
-import MyDashboard from './pages/mydashboard';
-import { Board } from './components/Board';
 import { msalClient } from './store/AuthStore';
-import EventDetails from './components/Pages/EventDetails';
-import { NoMatch } from './components/NoMatch';
-import PartnerRequest from './components/Partners/PartnerRequest';
 import { Shop } from './components/Shop';
 
 import './custom.css';
 import 'react-phone-input-2/lib/style.css';
-import Waivers from './components/Waivers/Waivers';
-import PartnerRequestDetails from './components/Partners/PartnerRequestDetails';
-import { Partnerships } from './components/Partners/Partnerships';
-import { Help } from './components/Pages/Help';
 import { SiteFooter } from './components/SiteFooter';
 import { SiteHeader } from './components/SiteHeader';
 import { useLogin } from './hooks/useLogin';
+import { PartnerContactType } from './enums/PartnerContactType';
 
 /** 2024 pages */
 import { Home } from './pages/_home';
-import { CreateEventWrapper } from './pages/events/create';
 import { TermsOfService } from './pages/termsofservice';
 import { VolunteerOpportunities } from './pages/volunteeropportunities';
-import { PartnerEdit } from './pages/partnerdashboard/$partnerId/edit';
+import { PrivacyPolicy } from './pages/privacypolicy';
+import { Help } from './pages/help/page';
+import { Faq } from './pages/faq/page';
+import { AboutUs } from './pages/aboutus/page';
+import { ContactUsWrapper as ContactUs } from './pages/contactus';
+import { GettingStarted } from './pages/gettingstarted/page';
+import { Board } from './pages/board/page';
+
+/** User */
+import MyDashboard from './pages/mydashboard';
+import { LocationPreferenceWrapper as LocationPreference } from './pages/locationpreference';
+import { DeleteMyData } from './pages/deletemydata';
+import Waivers from './pages/waivers/page';
+
+/** Events */
+import { CreateEventWrapper } from './pages/events/create';
+import { EventDetails } from './pages/eventdetails/$eventId/page';
+import { EditEventPage } from './pages/events/edit';
+import { CancelEvent } from './pages/events/$eventId/delete';
+import { EditEventSummary } from './pages/eventsummary/$eventId';
+import { PickupLocationCreate } from './pages/eventsummary/$eventId/pickup-locations.create';
+import { PickupLocationEdit } from './pages/eventsummary/$eventId/pickup-locations.$locationId.edit';
+
+/** Partners */
+import { Partnerships } from './pages/partnerships/page';
+import { BecomeAPartnerPage } from './pages/_partnerRequest/becomeapartner';
+import { InviteAPartnerPage } from './pages/_partnerRequest/inviteapartner';
+import { PartnerRequestDetails } from './pages/partnerrequestdetails/page';
+import { PartnerIndex } from './pages/partnerdashboard/$partnerId';
 import { PartnerLayout } from './pages/partnerdashboard/$partnerId/_layout';
+import { PartnerEdit } from './pages/partnerdashboard/$partnerId/edit';
 import { PartnerLocations } from './pages/partnerdashboard/$partnerId/locations';
 import { PartnerContacts } from './pages/partnerdashboard/$partnerId/contacts';
-import { PartnerIndex } from './pages/partnerdashboard/$partnerId';
 import { PartnerContactEdit } from './pages/partnerdashboard/$partnerId/contacts.$contactId.edit';
 import { PartnerContactCreate } from './pages/partnerdashboard/$partnerId/contacts.create';
 import { PartnerLocationEdit } from './pages/partnerdashboard/$partnerId/locations.$locationId.edit';
@@ -53,26 +69,17 @@ import { PartnerSocialMediaAccounts } from './pages/partnerdashboard/$partnerId/
 import { PartnerSocialAcccountEdit } from './pages/partnerdashboard/$partnerId/socials.$accountId.edit';
 import { PartnerSocialAcccountCreate } from './pages/partnerdashboard/$partnerId/socials.create';
 import { PartnerAdmins } from './pages/partnerdashboard/$partnerId/admins';
-import { PrivacyPolicy } from './pages/privacypolicy';
-import { DeleteMyData } from './pages/deletemydata';
-
-import { PartnerContactType } from './enums/PartnerContactType';
 import { PartnerAdminInvite } from './pages/partnerdashboard/$partnerId/admins.invite';
-import { EditEventPage } from './pages/events/edit';
-import { CancelEvent } from './pages/events/$eventId/delete';
-import { ContactUsWrapper as ContactUs } from './pages/contactus';
-import { LocationPreferenceWrapper as LocationPreference } from './pages/locationpreference';
-import { EditEventSummary } from './pages/eventsummary/$eventId';
-import { PickupLocationCreate } from './pages/eventsummary/$eventId/pickup-locations.create';
-import { PickupLocationEdit } from './pages/eventsummary/$eventId/pickup-locations.$locationId.edit';
+
+/** SiteAdmin */
 import { SiteAdminLayout } from './pages/siteadmin/_layout';
-import { SiteAdminUsers } from './pages/siteadmin/users';
+import { SiteAdminUsers } from './pages/siteadmin/users/page';
 import { SiteAdminEvents } from './pages/siteadmin/events/page';
 import { SiteAdminPartners } from './pages/siteadmin/partners/page';
 import { SiteAdminPartnerRequests } from './pages/siteadmin/partner-requests/page';
-import { Loader2 } from 'lucide-react';
 import { SiteAdminEmailTemplates } from './pages/siteadmin/email-templates';
 import { SiteAdminSendNotification } from './pages/siteadmin/send-notification';
+import { NoMatch } from './pages/nomatch';
 
 const queryClient = new QueryClient();
 
@@ -220,31 +227,21 @@ export const App: FC = () => {
 
                                     <Route path='/cancelevent/:eventId' element={<CancelEvent />} />
                                     <Route path='/deletemydata' element={<DeleteMyData />} />
-                                    <Route
-                                        path='/mydashboard'
-                                        element={<MyDashboard currentUser={currentUser} isUserLoaded={isUserLoaded} />}
-                                    />
-                                    <Route path='/becomeapartner' element={<PartnerRequest mode='become' />} />
-                                    <Route path='/inviteapartner' element={<PartnerRequest mode='send' />} />
-                                    <Route element={<AuthSideAdminLayout />}>
-                                        <Route path='/siteadmin' element={<SiteAdminLayout />}>
-                                            <Route path='users' element={<SiteAdminUsers />} />
-                                            <Route path='events' element={<SiteAdminEvents />} />
-                                            <Route path='partners' element={<SiteAdminPartners />} />
-                                            <Route path='partner-requests' element={<SiteAdminPartnerRequests />} />
-                                            <Route path='email-templates' element={<SiteAdminEmailTemplates />} />
-                                            <Route path='send-notifications' element={<SiteAdminSendNotification />} />
-                                        </Route>
-                                    </Route>
+                                    <Route path='/mydashboard' element={<MyDashboard />} />
+                                    <Route path='/becomeapartner' element={<BecomeAPartnerPage />} />
+                                    <Route path='/inviteapartner' element={<InviteAPartnerPage />} />
                                     <Route path='/locationpreference' element={<LocationPreference />} />
-                                    <Route
-                                        path='/waivers'
-                                        element={
-                                            isUserLoaded ? (
-                                                <Waivers currentUser={currentUser} onUserUpdated={handleUserUpdated} />
-                                            ) : null
-                                        }
-                                    />
+                                    <Route path='/waivers' element={<Waivers />} />
+                                </Route>
+                                <Route element={<AuthSideAdminLayout />}>
+                                    <Route path='/siteadmin' element={<SiteAdminLayout />}>
+                                        <Route path='users' element={<SiteAdminUsers />} />
+                                        <Route path='events' element={<SiteAdminEvents />} />
+                                        <Route path='partners' element={<SiteAdminPartners />} />
+                                        <Route path='partner-requests' element={<SiteAdminPartnerRequests />} />
+                                        <Route path='email-templates' element={<SiteAdminEmailTemplates />} />
+                                        <Route path='send-notifications' element={<SiteAdminSendNotification />} />
+                                    </Route>
                                 </Route>
                                 <Route>
                                     <Route

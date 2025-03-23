@@ -6,9 +6,8 @@ import * as ToolTips from '@/store/ToolTips';
 import { getPartnerRequestStatus } from '@/store/partnerRequestStatusHelper';
 import { getPartnerType } from '@/store/partnerTypeHelper';
 import { GetPartnerRequestById, GetPartnerRequestStatuses, GetPartnerTypes } from '@/services/partners';
-import { APIProvider, Marker } from '@vis.gl/react-google-maps';
-import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
-import { GoogleMap } from '@/components/Map/GoogleMap';
+import { Marker } from '@vis.gl/react-google-maps';
+import { GoogleMapWithKey as GoogleMap } from '@/components/Map/GoogleMap';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,12 +20,12 @@ export interface PartnerRequestDetailsMatchParams {
 
 export const PartnerRequestDetails: React.FC = () => {
     const { partnerRequestId } = useParams<'partnerRequestId'>();
-    const history = useNavigate();
+    const navigate = useNavigate();
 
     // Get PartnerRequest
     const { data, isLoading } = useQuery({
-        queryKey: GetPartnerRequestById({ id: partnerRequestId }).key,
-        queryFn: GetPartnerRequestById({ id: partnerRequestId }).service,
+        queryKey: GetPartnerRequestById({ id: partnerRequestId! }).key,
+        queryFn: GetPartnerRequestById({ id: partnerRequestId! }).service,
         select: (res) => res.data,
     });
 
@@ -55,7 +54,7 @@ export const PartnerRequestDetails: React.FC = () => {
     // This will handle Cancel button click event.
     function handleCancel(event: any) {
         event.preventDefault();
-        history.push('/mydashboard');
+        navigate('/mydashboard');
     }
 
     if (!data || isLoading || isStatusesLoading || isTypeLoading) {
@@ -239,17 +238,3 @@ export const PartnerRequestDetails: React.FC = () => {
         </div>
     );
 };
-
-const PartnerRequestDetailsWrapper = () => {
-    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey();
-
-    if (isLoading) return null;
-
-    return (
-        <APIProvider apiKey={googleApiKey || ''}>
-            <PartnerRequestDetails />
-        </APIProvider>
-    );
-};
-
-export default PartnerRequestDetailsWrapper;

@@ -1,12 +1,12 @@
 import * as React from 'react';
-import linkedIn from './assets/card/linkedin.svg';
-import JoeBeernink from './assets/boardOfDirectors/JoeBeernink.jpg';
-import DarylBarber from './assets/boardOfDirectors/darylbarber.jpg';
-import JacquelineHayot from './assets/boardOfDirectors/JacquelineHayot.jpg';
-import KevinGleason from './assets/boardOfDirectors/KevinGleason.jpg';
-import SandraMau from './assets/boardOfDirectors/SandraMau.jpg';
-import CynthiaMitchell from './assets/boardOfDirectors/CynthiaMitchell.jpg';
-import { HeroSection } from './Customization/HeroSection';
+import linkedIn from '@/components/assets/card/linkedin.svg';
+import JoeBeernink from '@/components/assets/boardOfDirectors/JoeBeernink.jpg';
+import DarylBarber from '@/components/assets/boardOfDirectors/darylbarber.jpg';
+import JacquelineHayot from '@/components/assets/boardOfDirectors/JacquelineHayot.jpg';
+import KevinGleason from '@/components/assets/boardOfDirectors/KevinGleason.jpg';
+import SandraMau from '@/components/assets/boardOfDirectors/SandraMau.jpg';
+import CynthiaMitchell from '@/components/assets/boardOfDirectors/CynthiaMitchell.jpg';
+import { HeroSection } from '@/components/Customization/HeroSection';
 
 const boards = [
     {
