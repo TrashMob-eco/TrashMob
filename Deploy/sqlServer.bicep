@@ -20,7 +20,7 @@ resource servers_db_name_resource 'Microsoft.Sql/servers@2021-11-01' = {
   }
 }
 
-resource servers_db_name_tm_ 'Microsoft.Sql/servers/databases@2020-11-01-preview' = {
+resource servers_db_name_tm_ 'Microsoft.Sql/servers/databases@2021-11-01' = {
   parent: servers_db_name_resource
   name: db_Name
   location: region
