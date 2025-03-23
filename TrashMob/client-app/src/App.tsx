@@ -228,10 +228,7 @@ export const App: FC = () => {
 
                                     <Route path='/cancelevent/:eventId' element={<CancelEvent />} />
                                     <Route path='/deletemydata' element={<DeleteMyData />} />
-                                    <Route
-                                        path='/mydashboard'
-                                        element={<MyDashboard currentUser={currentUser} isUserLoaded={isUserLoaded} />}
-                                    />
+                                    <Route path='/mydashboard' element={<MyDashboard />} />
                                     <Route path='/becomeapartner' element={<BecomeAPartnerPage />} />
                                     <Route path='/inviteapartner' element={<InviteAPartnerPage />} />
                                     <Route
