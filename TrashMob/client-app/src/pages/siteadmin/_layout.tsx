@@ -6,7 +6,7 @@ export const SiteAdminLayout = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const pathPrefix = `/admin`;
+    const pathPrefix = `/siteadmin`;
     const navs = [
         { name: 'Manage Users', value: `${pathPrefix}/users` },
         { name: 'Manage Events', value: `${pathPrefix}/events` },

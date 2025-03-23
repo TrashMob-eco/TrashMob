@@ -9,7 +9,6 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from '@/components/ui/toaster';
 
 import { msalClient } from './store/AuthStore';
-import SiteAdmin from './components/Admin/SiteAdmin';
 import { Shop } from './components/Shop';
 
 import './custom.css';
@@ -74,7 +73,7 @@ import { PartnerAdminInvite } from './pages/partnerdashboard/$partnerId/admins.i
 
 /** SiteAdmin */
 import { SiteAdminLayout } from './pages/siteadmin/_layout';
-import { SiteAdminUsers } from './pages/siteadmin/users';
+import { SiteAdminUsers } from './pages/siteadmin/users/page';
 import { SiteAdminEvents } from './pages/siteadmin/events/page';
 import { SiteAdminPartners } from './pages/siteadmin/partners/page';
 import { SiteAdminPartnerRequests } from './pages/siteadmin/partner-requests/page';
@@ -231,22 +230,18 @@ export const App: FC = () => {
                                     <Route path='/mydashboard' element={<MyDashboard />} />
                                     <Route path='/becomeapartner' element={<BecomeAPartnerPage />} />
                                     <Route path='/inviteapartner' element={<InviteAPartnerPage />} />
-                                    <Route
-                                        path='/siteadmin'
-                                        element={<SiteAdmin currentUser={currentUser} isUserLoaded={isUserLoaded} />}
-                                    />
-                                    <Route element={<AuthSideAdminLayout />}>
-                                        <Route path='/admin' element={<SiteAdminLayout />}>
-                                            <Route path='users' element={<SiteAdminUsers />} />
-                                            <Route path='events' element={<SiteAdminEvents />} />
-                                            <Route path='partners' element={<SiteAdminPartners />} />
-                                            <Route path='partner-requests' element={<SiteAdminPartnerRequests />} />
-                                            <Route path='email-templates' element={<SiteAdminEmailTemplates />} />
-                                            <Route path='send-notifications' element={<SiteAdminSendNotification />} />
-                                        </Route>
-                                    </Route>
                                     <Route path='/locationpreference' element={<LocationPreference />} />
                                     <Route path='/waivers' element={<Waivers />} />
+                                </Route>
+                                <Route element={<AuthSideAdminLayout />}>
+                                    <Route path='/siteadmin' element={<SiteAdminLayout />}>
+                                        <Route path='users' element={<SiteAdminUsers />} />
+                                        <Route path='events' element={<SiteAdminEvents />} />
+                                        <Route path='partners' element={<SiteAdminPartners />} />
+                                        <Route path='partner-requests' element={<SiteAdminPartnerRequests />} />
+                                        <Route path='email-templates' element={<SiteAdminEmailTemplates />} />
+                                        <Route path='send-notifications' element={<SiteAdminSendNotification />} />
+                                    </Route>
                                 </Route>
                                 <Route>
                                     <Route
