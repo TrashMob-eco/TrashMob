@@ -138,9 +138,7 @@ export const ShareToSocialsDialog = (props: ShareToSocialDialogProps) => {
                     </div>
                 </div>
                 <DialogFooter>
-                    <Button onClick={() => handleShow(false)}>
-                        Close
-                    </Button>
+                    <Button onClick={() => handleShow(false)}>Close</Button>
                 </DialogFooter>
             </DialogPlainContent>
         </Dialog>
