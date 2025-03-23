@@ -15,29 +15,27 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import PhoneInput from 'react-phone-input-2';
 
-import { APIProvider, MapMouseEvent, useMap } from '@vis.gl/react-google-maps';
+import { MapMouseEvent, useMap } from '@vis.gl/react-google-maps';
 import { useMutation } from '@tanstack/react-query';
-import * as ToolTips from '../../store/ToolTips';
-import PartnerRequestData from '../Models/PartnerRequestData';
-import UserData from '../Models/UserData';
-import * as Constants from '../Models/Constants';
-import * as MapStore from '../../store/MapStore';
-import { CreatePartnerRequest } from '../../services/partners';
-import { GoogleMap } from '../Map/GoogleMap';
+import * as ToolTips from '@/store/ToolTips';
+import PartnerRequestData from '@/components/Models/PartnerRequestData';
+import * as Constants from '@/components/Models/Constants';
+import * as MapStore from '@/store/MapStore';
+import { CreatePartnerRequest } from '@/services/partners';
+import { GoogleMapWithKey as GoogleMap } from '@/components/Map/GoogleMap';
 import { Marker } from '@vis.gl/react-google-maps';
-import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
-import { AzureSearchLocationInput, SearchLocationOption } from '../Map/AzureSearchLocationInput';
-import { useAzureMapSearchAddressReverse } from '../../hooks/useAzureMapSearchAddressReverse';
+import { AzureSearchLocationInput, SearchLocationOption } from '@/components/Map/AzureSearchLocationInput';
+import { useAzureMapSearchAddressReverse } from '@/hooks/useAzureMapSearchAddressReverse';
 import { PartnerType } from '@/enums/PartnerType';
 import { useLogin } from '@/hooks/useLogin';
 
-enum PartnerRequestMode {
+export enum PartnerRequestMode {
     SEND = 'send',
     REQUEST = 'request',
 }
 
-interface PartnerRequestProps {
-    mode: string;
+interface PartnerRequestFormProps {
+    mode: PartnerRequestMode;
 }
 
 interface FormInputs {
@@ -76,7 +74,7 @@ const formSchema = z.object({
     postalCode: z.string().optional(),
 });
 
-export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
+export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => {
     const { mode } = props;
     const { toast } = useToast();
     const navigate = useNavigate();
@@ -139,7 +137,8 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
 
     const location = form.watch('location');
 
-    const title = mode === 'send' ? 'Send invite to join TrashMob as a partner' : 'Apply to become a partner';
+    const title =
+        mode === PartnerRequestMode.SEND ? 'Send invite to join TrashMob as a partner' : 'Apply to become a partner';
 
     const [azureSubscriptionKey, setAzureSubscriptionKey] = React.useState<string>();
 
@@ -310,7 +309,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                                                         <FormLabel>Email</FormLabel>
                                                     </TooltipTrigger>
                                                     <TooltipContent className='max-w-64'>
-                                                        {mode === 'send'
+                                                        {mode === PartnerRequestMode.SEND
                                                             ? ToolTips.PartnerRequestInviteEmail
                                                             : ToolTips.PartnerRequestEmail}
                                                     </TooltipContent>
@@ -352,7 +351,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                                                         <FormLabel>Phone</FormLabel>
                                                     </TooltipTrigger>
                                                     <TooltipContent className='max-w-64'>
-                                                        {mode === 'send'
+                                                        {mode === PartnerRequestMode.SEND
                                                             ? ToolTips.PartnerRequestInvitePhone
                                                             : ToolTips.PartnerRequestPhone}
                                                     </TooltipContent>
@@ -379,7 +378,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                                                         <FormLabel>Notes</FormLabel>
                                                     </TooltipTrigger>
                                                     <TooltipContent className='max-w-64'>
-                                                        {mode === 'send'
+                                                        {mode === PartnerRequestMode.SEND
                                                             ? ToolTips.PartnerRequestInviteNotes
                                                             : ToolTips.PartnerRequestNotes}
                                                     </TooltipContent>
@@ -400,7 +399,7 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
                                                 <FormControl>
                                                     <div className='relative w-full'>
                                                         <GoogleMap
-                                                            defaultCenter={userPreferredLocation}
+                                                            defaultCenter={userPreferredLocation ?? undefined}
                                                             onClick={handleClickMap}
                                                         >
                                                             <Marker
@@ -481,17 +480,3 @@ export const PartnerRequest: React.FC<PartnerRequestProps> = (props) => {
         </div>
     );
 };
-
-const PartnerRequestWrapper = (props: PartnerRequestProps) => {
-    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey();
-
-    if (isLoading) return null;
-
-    return (
-        <APIProvider apiKey={googleApiKey || ''}>
-            <PartnerRequest {...props} />
-        </APIProvider>
-    );
-};
-
-export default PartnerRequestWrapper;

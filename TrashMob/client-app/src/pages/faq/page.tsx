@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { Link } from 'react-router';
-import events from './assets/faq/Event.svg';
-import attendees from './assets/faq/Attendees.svg';
-import volunteer from './assets/faq/volunteer.svg';
-import { HeroSection } from './Customization/HeroSection';
-import { Button } from './ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import events from '@/components/assets/faq/Event.svg';
+import attendees from '@/components/assets/faq/Attendees.svg';
+import volunteer from '@/components/assets/faq/volunteer.svg';
+import { HeroSection } from '@/components/Customization/HeroSection';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const faqs = [
     {
