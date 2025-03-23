@@ -40,7 +40,7 @@ resource servers_db_name_tm_ 'Microsoft.Sql/servers/databases@2020-11-01-preview
   }
 }
 
-resource servers_db_name_AllowAllWindowsAzureIps 'Microsoft.Sql/servers/firewallRules@2020-11-01-preview' = {
+resource servers_db_name_AllowAllWindowsAzureIps 'Microsoft.Sql/servers/firewallRules@2021-11-01' = {
   parent: servers_db_name_resource
   name: 'AllowAllWindowsAzureIps'
   properties: {
