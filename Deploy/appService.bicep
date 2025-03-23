@@ -7,7 +7,7 @@ param alwaysOn bool = true
 
 var serverfarms_tmplan_externalid = '/subscriptions/${subscriptionId}/resourceGroups/${rgName}/providers/Microsoft.Web/serverfarms/${appServicePlanName}'
 
-resource sites_tm_name_resource 'Microsoft.Web/sites@2018-11-01' = {
+resource sites_tm_name_resource 'Microsoft.Web/sites@2024-04-01' = {
   name: appServiceName
   location: region
   tags: {
