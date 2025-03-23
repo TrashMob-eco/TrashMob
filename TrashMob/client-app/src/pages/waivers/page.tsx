@@ -2,30 +2,29 @@ import React from 'react';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
-import UserData from '../Models/UserData';
-import { HeroSection } from '../Customization/HeroSection';
-import { GetUserById, UpdateUser } from '../../services/users';
-import { Logo } from '../Logo';
+import UserData from '@/components/Models/UserData';
+import { HeroSection } from '@/components/Customization/HeroSection';
+import { GetUserById, UpdateUser } from '@/services/users';
+import { Logo } from '@/components/Logo';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '../ui/checkbox';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useLogin } from '@/hooks/useLogin';
 
 type WaiverFormInputs = {
     userId: string;
     accepted: boolean;
 };
 
-export interface WaiversProps {
-    currentUser: UserData;
-    onUserUpdated: () => void;
-}
+export interface WaiversProps {}
 
 export const CurrentTrashMobWaiverVersion = {
     versionId: '1.0',
     versionDate: new Date(2023, 6, 1, 0, 0, 0, 0),
 };
 
-const Waivers: React.FC<WaiversProps> = ({ currentUser, onUserUpdated }) => {
+const Waivers: React.FC<WaiversProps> = () => {
     const navigate = useNavigate();
+    const { isUserLoaded, currentUser, handleUserUpdated: onUserUpdated } = useLogin();
     const queryClient = useQueryClient();
     const userId = currentUser.id;
 
@@ -61,6 +60,8 @@ const Waivers: React.FC<WaiversProps> = ({ currentUser, onUserUpdated }) => {
             trashMobWaiverVersion: CurrentTrashMobWaiverVersion.versionId,
         });
     };
+
+    if (!isUserLoaded) return null;
 
     return (
         <div className='tailwind'>

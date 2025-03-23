@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { Link } from 'react-router';
-import attitude from '../assets/gettingStarted/attitude.png';
-import bucket from '../assets/gettingStarted/bucket.png';
-import highways from '../assets/gettingStarted/highways.png';
-import picker from '../assets/gettingStarted/picker.png';
-import workgloves from '../assets/gettingStarted/workgloves.png';
-import { HeroSection } from '../Customization/HeroSection';
-import { Button } from '../ui/button';
+import attitude from '@/components/assets/gettingStarted/attitude.png';
+import bucket from '@/components/assets/gettingStarted/bucket.png';
+import highways from '@/components/assets/gettingStarted/highways.png';
+import picker from '@/components/assets/gettingStarted/picker.png';
+import workgloves from '@/components/assets/gettingStarted/workgloves.png';
+import { HeroSection } from '@/components/Customization/HeroSection';
+import { Button } from '@/components/ui/button';
 
 export const GettingStarted: React.FC = () => {
     return (

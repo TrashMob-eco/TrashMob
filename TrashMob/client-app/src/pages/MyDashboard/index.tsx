@@ -1,53 +1,54 @@
 import { FC, useCallback, useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate, useLocation } from 'react-router';
 import { APIProvider } from '@vis.gl/react-google-maps';
 import { useQuery } from '@tanstack/react-query';
+import { Plus } from 'lucide-react';
+import { AxiosResponse } from 'axios';
+
+import * as SharingMessages from '@/store/SharingMessages';
+
 import EventData from '@/components/Models/EventData';
-import UserData from '@/components/Models/UserData';
-import twofigure from '@/components/assets/card/twofigure.svg';
-import calendarclock from '@/components/assets/card/calendarclock.svg';
-import bucketplus from '@/components/assets/card/bucketplus.svg';
+import PickupLocationData from '@/components/Models/PickupLocationData';
 import StatsData from '@/components/Models/StatsData';
 import DisplayPartnershipData from '@/components/Models/DisplayPartnershipData';
 import DisplayPartnerAdminInvitationData from '@/components/Models/DisplayPartnerAdminInvitationData';
 import DisplayPartnerLocationEventData from '@/components/Models/DisplayPartnerLocationEventServiceData';
+
+import twofigure from '@/components/assets/card/twofigure.svg';
+import calendarclock from '@/components/assets/card/calendarclock.svg';
+import bucketplus from '@/components/assets/card/bucketplus.svg';
 import { ShareToSocialsDialog } from '@/components/EventManagement/ShareToSocialsDialog';
 import { HeroSection } from '@/components/Customization/HeroSection';
-import * as SharingMessages from '@/store/SharingMessages';
-import { GetStatsForUser } from '@/services/stats';
-import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
 import { EventsMap } from '@/components/events/event-map';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-
-import { Plus } from 'lucide-react';
 import { EventsTable } from '@/components/events/event-table';
-import { useGetUserEvents } from '@/hooks/useGetUserEvents';
-import { MyPartnersTable } from '@/pages/mydashboard/MyPartnersTable';
-import { MyPickupRequestsTable } from '@/pages/mydashboard/MyPickupRequestsTable';
-import { MyPartnersRequestTable } from '@/pages/mydashboard/MyPartnersRequestTable';
-import { PartnerAdminInvitationsTable } from '@/pages/mydashboard/PartnerAdminInvitationsTable';
-import { AxiosResponse } from 'axios';
+import { PartnerEventRequestTable } from '@/components/Partners/partner-event-request-table';
+
+import { GetStatsForUser } from '@/services/stats';
 import { GetPartnerRequestByUserId } from '@/services/partners';
 import { GetPartnerAdminsForUser } from '@/services/admin';
 import { GetPartnerAdminInvitationsByUser } from '@/services/invitations';
 import { GetEventPickupLocationsByUser, GetPartnerLocationEventServicesByUserId } from '@/services/locations';
-import PickupLocationData from '@/components/Models/PickupLocationData';
-import { useLocation } from 'react-router';
-import { PartnerEventRequestTable } from '@/components/Partners/partner-event-request-table';
+
+import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
+import { useGetUserEvents } from '@/hooks/useGetUserEvents';
+import { useLogin } from '@/hooks/useLogin';
+
+import { MyPartnersTable } from '@/pages/mydashboard/MyPartnersTable';
+import { MyPickupRequestsTable } from '@/pages/mydashboard/MyPickupRequestsTable';
+import { MyPartnersRequestTable } from '@/pages/mydashboard/MyPartnersRequestTable';
+import { PartnerAdminInvitationsTable } from '@/pages/mydashboard/PartnerAdminInvitationsTable';
 
 const isUpcomingEvent = (event: EventData) => new Date(event.eventDate) >= new Date();
 const isPastEvent = (event: EventData) => new Date(event.eventDate) < new Date();
 
-interface MyDashboardProps {
-    isUserLoaded: boolean;
-    currentUser: UserData;
-}
+interface MyDashboardProps {}
 
-const MyDashboard: FC<MyDashboardProps> = (props) => {
-    const { isUserLoaded, currentUser } = props;
+const MyDashboard: FC<MyDashboardProps> = () => {
+    const { isUserLoaded, currentUser } = useLogin();
     const location = useLocation();
     const navigate = useNavigate();
     const userId = currentUser.id;
@@ -126,7 +127,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
     useEffect(() => {
         if (state?.newEventCreated) {
             const myFilteredList = myEventList
-                .filter((event) => event.createdByUserId === props.currentUser.id)
+                .filter((event) => event.createdByUserId === currentUser.id)
                 .sort((a, b) => (a.createdDate < b.createdDate ? 1 : -1));
 
             setSharingEvent(myFilteredList[0], true);
@@ -135,7 +136,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
             state.newEventCreated = false;
             navigate(location.pathname, { replace: true, state });
         }
-    }, [state, props.currentUser.id, navigate, myEventList, setSharingEvent]);
+    }, [state, currentUser.id, navigate, myEventList, setSharingEvent]);
 
     const handleEventView = (view: string, table: string) => {
         if (table === 'Upcoming events') {
@@ -160,7 +161,7 @@ const MyDashboard: FC<MyDashboardProps> = (props) => {
                         show={showModal}
                         handleShow={setShowSocialsModal}
                         modalTitle='Share Event'
-                        message={SharingMessages.getEventShareMessage(eventToShare, props.currentUser.id)}
+                        message={SharingMessages.getEventShareMessage(eventToShare, currentUser.id)}
                     />
                 ) : null}
                 <div className='!pt-12 flex flex-row flex-wrap gap-8 justify-center'>

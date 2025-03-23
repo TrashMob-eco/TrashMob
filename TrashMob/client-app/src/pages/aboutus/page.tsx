@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Link } from 'react-router';
 import padStart from 'lodash/padStart';
 import { GettingStartSection } from '@/pages/_home/getting-start-section';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 
 export const AboutUs: React.FC = () => {
     return (

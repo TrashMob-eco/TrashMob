@@ -3,15 +3,14 @@ import { useParams } from 'react-router';
 import { APIProvider } from '@vis.gl/react-google-maps';
 import moment from 'moment';
 import { useQuery } from '@tanstack/react-query';
-import UserData from '../Models/UserData';
-import * as MapStore from '../../store/MapStore';
-import { MarkerWithInfoWindow, EventInfoWindowContent } from '../Map';
-import { ShareToSocialsDialog } from '../EventManagement/ShareToSocialsDialog';
-import { RegisterBtn } from '../Customization/RegisterBtn';
-import { HeroSection } from '../Customization/HeroSection';
-import * as SharingMessages from '../../store/SharingMessages';
-import { GetAllEventsBeingAttendedByUser, GetEventAttendees } from '../../services/events';
-import { useGetGoogleMapApiKey } from '../../hooks/useGetGoogleMapApiKey';
+import * as MapStore from '@/store/MapStore';
+import { MarkerWithInfoWindow, EventInfoWindowContent } from '@/components/Map';
+import { ShareToSocialsDialog } from '@/components/EventManagement/ShareToSocialsDialog';
+import { RegisterBtn } from '@/components/Customization/RegisterBtn';
+import { HeroSection } from '@/components/Customization/HeroSection';
+import * as SharingMessages from '@/store/SharingMessages';
+import { GetAllEventsBeingAttendedByUser, GetEventAttendees } from '@/services/events';
+import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
 import { useGetEvent } from '@/hooks/useGetEvent';
 import { useGetEventType } from '@/hooks/useGetEventType';
 import { Button } from '@/components/ui/button';
@@ -27,7 +26,7 @@ import { EventAttendeeTable } from '@/components/events/event-attendee-table';
 
 import { Calendar, Share2 } from 'lucide-react';
 import makeUrls from '@/lib/add-to-calendar';
-import { GoogleMap } from '../Map/GoogleMap';
+import { GoogleMapWithKey as GoogleMap } from '@/components/Map/GoogleMap';
 import { useLogin } from '@/hooks/useLogin';
 
 export interface EventDetailsProps {}
@@ -188,12 +187,12 @@ export const EventDetails: FC<EventDetailsProps> = () => {
                     </div>
                     <div className='container mx-auto'>
                         <hr />
-                        <h2 className='font-semibold font-size-xl mt-5 mb-4'>
+                        <h2 className='font-semibold text-xl mt-5 mb-4'>
                             <span>Attendees ({(eventAttendees || []).length})</span>
                         </h2>
                         <p className='font-semibold m-0 my-4'>
                             Max Number of Participants:
-                            <span className='ml-2 color-grey'>{maxNumberOfParticipants}</span>
+                            <span className='ml-2 text-muted-foreground'>{maxNumberOfParticipants}</span>
                         </p>
                         <EventAttendeeTable users={eventAttendees || []} event={event} />
                     </div>
@@ -202,17 +201,3 @@ export const EventDetails: FC<EventDetailsProps> = () => {
         </div>
     );
 };
-
-const EventDetailWrapper = (props: EventDetailsProps) => {
-    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey();
-
-    if (isLoading) return null;
-
-    return (
-        <APIProvider apiKey={googleApiKey || ''}>
-            <EventDetails {...props} />
-        </APIProvider>
-    );
-};
-
-export default EventDetailWrapper;
