@@ -25,7 +25,6 @@ import 'react-phone-input-2/lib/style.css';
 import Waivers from './components/Waivers/Waivers';
 import PartnerRequestDetails from './components/Partners/PartnerRequestDetails';
 import { Partnerships } from './components/Partners/Partnerships';
-import { Help } from './components/Pages/Help';
 import { SiteFooter } from './components/SiteFooter';
 import { SiteHeader } from './components/SiteHeader';
 import { useLogin } from './hooks/useLogin';
@@ -74,6 +73,7 @@ import { SiteAdminPartnerRequests } from './pages/siteadmin/partner-requests/pag
 import { Loader2 } from 'lucide-react';
 import { SiteAdminEmailTemplates } from './pages/siteadmin/email-templates';
 import { SiteAdminSendNotification } from './pages/siteadmin/send-notification';
+import { Help } from './pages/help/page';
 
 const queryClient = new QueryClient();
 
