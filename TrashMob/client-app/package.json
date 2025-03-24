@@ -58,7 +58,7 @@
         "build": "vite build",
         "test": "vitest",
         "lint": "npx @biomejs/biome lint ./src",
-        "format": "prettier . --write"
+        "format": "npx @biomejs/biome format --write ./src"
     },
     "browserslist": {
         "production": [
