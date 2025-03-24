@@ -75,9 +75,9 @@
     "devDependencies": {
         "@tanstack/react-query-devtools": "^4.36.1",
         "@testing-library/dom": "^10.4.0",
-        "@testing-library/jest-dom": "^5.17.0",
-        "@testing-library/react": "^11.2.7",
-        "@testing-library/user-event": "^12.8.3",
+        "@testing-library/jest-dom": "^6.0.0",
+        "@testing-library/react": "^16.0.0",
+        "@testing-library/user-event": "^14.0.0",
         "@types/google.maps": "^3.58.1",
         "@types/jest": "^29.0.0",
         "@types/lodash": "^4.17.13",
