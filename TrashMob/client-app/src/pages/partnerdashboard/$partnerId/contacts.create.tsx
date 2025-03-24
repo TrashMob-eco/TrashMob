@@ -217,7 +217,7 @@ export const PartnerContactCreate = () => {
                                     </SelectTrigger>
                                     <SelectContent>
                                         {(locations || []).map((loc) => (
-                                            <SelectItem value={`${loc.id}`}>{loc.name}</SelectItem>
+                                            <SelectItem key={`${loc.id}`} value={`${loc.id}`}>{loc.name}</SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>

@@ -1,4 +1,4 @@
-import { APIProvider, Map, MapProps, useMap } from '@vis.gl/react-google-maps';
+import { APIProvider, Map as ReactGoogleMap, MapProps, useMap } from '@vis.gl/react-google-maps';
 import { PropsWithChildren, useEffect } from 'react';
 import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
 import * as MapStore from '@/store/MapStore';
@@ -19,7 +19,7 @@ export const GoogleMap = (props: PropsWithChildren<MapProps>) => {
     }, [map, defaultCenter]);
 
     return (
-        <Map
+        <ReactGoogleMap
             mapId='6f295631d841c617'
             gestureHandling={props.gestureHandling ?? 'greedy'}
             disableDefaultUI
@@ -29,7 +29,7 @@ export const GoogleMap = (props: PropsWithChildren<MapProps>) => {
             {...rest}
         >
             {children}
-        </Map>
+        </ReactGoogleMap>
     );
 };
 

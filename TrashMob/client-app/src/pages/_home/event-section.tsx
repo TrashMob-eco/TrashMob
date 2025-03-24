@@ -12,7 +12,7 @@ import { useQuery } from '@tanstack/react-query';
 import { GetFilteredEvents, GetFilteredEvents_Params } from '@/services/events';
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItemAlt, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { List, Map, Plus, Pencil } from 'lucide-react';
+import { List, MapIcon, Plus, Pencil } from 'lucide-react';
 import { useGetDefaultMapCenter } from '@/hooks/useGetDefaultMapCenter';
 import { AzureMapSearchAddressReverse } from '@/services/maps';
 import { GetAllEventsBeingAttendedByUser } from '@/services/events';
@@ -223,7 +223,7 @@ export const EventSection = (props: EventSectionProps) => {
                                 value='map'
                                 className='data-[state=on]:bg-primary data-[state=on]:text-primary-foreground'
                             >
-                                <Map />
+                                <MapIcon />
                             </ToggleGroupItem>
                         </ToggleGroup>
                     </div>

@@ -112,7 +112,7 @@ export const PartnerServiceEnable = () => {
                                     </SelectTrigger>
                                     <SelectContent>
                                         {(locations || []).map((loc) => (
-                                            <SelectItem value={`${loc.id}`}>{loc.name}</SelectItem>
+                                            <SelectItem key={`${st.id}`} value={`${loc.id}`}>{loc.name}</SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
@@ -136,7 +136,7 @@ export const PartnerServiceEnable = () => {
                                     </SelectTrigger>
                                     <SelectContent>
                                         {(serviceTypes || []).map((st) => (
-                                            <SelectItem value={`${st.id}`}>{st.name}</SelectItem>
+                                            <SelectItem key={`${st.id}`} value={`${st.id}`}>{st.name}</SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>

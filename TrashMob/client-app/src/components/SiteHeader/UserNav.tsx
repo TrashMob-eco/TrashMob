@@ -9,11 +9,10 @@ import {
 import {
     ChevronDown,
     CircleUserRound,
-    CircleHelp,
     Gauge,
     IdCard,
     LogOut,
-    Map,
+    MapIcon,
     Plus,
     User,
     UserRoundX,
@@ -102,7 +101,7 @@ export const UserNav = (props: UserNavProps) => {
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                             <Link to='/locationpreference'>
-                                <Map />
+                                <MapIcon />
                                 <span>My Location Preference</span>
                             </Link>
                         </DropdownMenuItem>
