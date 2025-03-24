@@ -6,17 +6,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-    ChevronDown,
-    CircleUserRound,
-    Gauge,
-    IdCard,
-    LogOut,
-    MapIcon,
-    Plus,
-    User,
-    UserRoundX,
-} from 'lucide-react';
+import { ChevronDown, CircleUserRound, Gauge, IdCard, LogOut, MapIcon, Plus, User, UserRoundX } from 'lucide-react';
 import { Link } from 'react-router';
 import { cn } from '@/lib/utils';
 import UserData from '../Models/UserData';
