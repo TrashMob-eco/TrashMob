@@ -57,7 +57,7 @@
         "start": "vite",
         "build": "vite build",
         "test": "vitest",
-        "lint": "eslint . --fix",
+        "lint": "npx @biomejs/biome lint ./src",
         "format": "prettier . --write"
     },
     "browserslist": {
@@ -73,6 +73,7 @@
         ]
     },
     "devDependencies": {
+        "@biomejs/biome": "1.9.4",
         "@tanstack/react-query-devtools": "^4.36.1",
         "@testing-library/dom": "^10.4.0",
         "@testing-library/jest-dom": "^6.0.0",
