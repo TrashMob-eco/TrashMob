@@ -14,7 +14,7 @@ on:
             - "TrashMob/client-app/**"
    
 jobs:
-    eslint-prettier:
+    lint-format:
         runs-on: windows-2022
         if: ${{ !github.event.pull_request.draft }}
         defaults:
