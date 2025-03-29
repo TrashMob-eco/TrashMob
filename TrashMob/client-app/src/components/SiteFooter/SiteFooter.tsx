@@ -37,7 +37,7 @@ export const SiteFooter = () => {
                                     {nav.title}
                                 </Link>
                             ) : (
-                                <a href={nav.href} className={cn(navClassName)}>
+                                <a href={nav.href} key={nav.href} className={cn(navClassName)}>
                                     {nav.title}
                                 </a>
                             );

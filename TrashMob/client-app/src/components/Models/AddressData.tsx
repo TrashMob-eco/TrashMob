@@ -1,10 +1,10 @@
 class AddressData {
-    'summary': {
+    summary: {
         queryTime: number;
         numResults: number;
     };
 
-    'addresses': [
+    addresses: [
         {
             address: {
                 streetName: '';

@@ -6,18 +6,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-    ChevronDown,
-    CircleUserRound,
-    CircleHelp,
-    Gauge,
-    IdCard,
-    LogOut,
-    Map,
-    Plus,
-    User,
-    UserRoundX,
-} from 'lucide-react';
+import { ChevronDown, CircleUserRound, Gauge, IdCard, LogOut, MapIcon, Plus, User, UserRoundX } from 'lucide-react';
 import { Link } from 'react-router';
 import { cn } from '@/lib/utils';
 import UserData from '../Models/UserData';
@@ -102,7 +91,7 @@ export const UserNav = (props: UserNavProps) => {
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                             <Link to='/locationpreference'>
-                                <Map />
+                                <MapIcon />
                                 <span>My Location Preference</span>
                             </Link>
                         </DropdownMenuItem>

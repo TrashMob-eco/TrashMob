@@ -81,7 +81,7 @@ export const Board: React.FC = () => {
             <HeroSection Title='Board of Directors' Description='Meet our team!' />
             <div className='container my-5 pb-5'>
                 {boards.map((board) => (
-                    <div className='p-4 mt-24 bg-card shadow-lg !rounded-lg'>
+                    <div key={board.name} className='p-4 mt-24 bg-card shadow-lg !rounded-lg'>
                         <div className='flex flex-col md:flex-row gap-8'>
                             <div className='basis-full md:basis-6/12 lg:basis-5/12'>
                                 <img

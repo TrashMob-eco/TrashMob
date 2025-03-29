@@ -387,7 +387,7 @@ export const EditEventSummary = () => {
                                                                 Edit Pickup Location
                                                             </Link>
                                                         </DropdownMenuItem>
-                                                        {true || loc.hasBeenSubmitted ? (
+                                                        {loc.hasBeenSubmitted ? (
                                                             <DropdownMenuItem
                                                                 onClick={() => removePickupLocation(loc.id, loc.name)}
                                                             >
