@@ -4,9 +4,7 @@ import { GettingStartSection } from './getting-start-section';
 import { HeroSection } from './hero-section';
 import { WhatIsTrashmobSection } from './whatistrashmob-section';
 
-interface HomeProps {}
-
-export const Home = (props: HomeProps) => {
+export const Home = () => {
     return (
         <div className='tailwind'>
             <HeroSection />
