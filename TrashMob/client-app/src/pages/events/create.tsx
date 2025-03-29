@@ -33,6 +33,7 @@ import { useLogin } from '@/hooks/useLogin';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router';
 import { Badge } from '@/components/ui/badge';
+import { Loader2 } from 'lucide-react';
 
 const createMomentFromDateAndTime = (eventDate: Date, eventTimeStart: string) => {
     const eventDateMoment = moment(eventDate);
@@ -110,7 +111,7 @@ export const CreateEventPage = () => {
             isEventPublic: true,
             maxNumberOfParticipants: 10,
             locationConfirmed: false,
-            createdByUserId: `1`,
+            createdByUserId: currentUser.id,
             eventStatusId: EventStatusActive,
         },
     });
@@ -461,7 +462,9 @@ export const CreateEventPage = () => {
                                 <Button type='button' variant='outline' onClick={() => setStep('edit-detail')}>
                                     Back
                                 </Button>
-                                <Button type='submit'>Create Event</Button>
+                                <Button type='submit' disabled={createEvent.isLoading}>
+                                    {createEvent.isLoading ? <Loader2 className='animate-spin' /> : null} Create Event
+                                </Button>
                             </div>
                         </TabsContent>
                     </Tabs>

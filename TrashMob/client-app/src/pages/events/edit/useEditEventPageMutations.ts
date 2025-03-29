@@ -8,7 +8,6 @@ import {
     CreateEventPartnerLocationService,
     DeleteEventPartnerLocationService,
     GetEventPartnerLocationServicesByLocationId,
-    GetEventPartnerLocationServiceStatuses,
 } from '@/services/locations';
 import { useToast } from '@/hooks/use-toast';
 
@@ -38,6 +37,13 @@ export const useEditEventPageMutations = () => {
                 },
             });
         },
+        onError: (error: Error) => {
+            toast({
+                variant: 'destructive',
+                title: 'Update Event Error',
+                description: error.message,
+            });
+        },
     });
 
     const createEventPartnerLocationService = useMutation({
@@ -52,7 +58,7 @@ export const useEditEventPageMutations = () => {
             toast({
                 duration: 10000,
                 variant: 'primary',
-                title: `Service requested!`,
+                title: 'Service requested!',
             });
         },
     });
@@ -69,7 +75,7 @@ export const useEditEventPageMutations = () => {
             toast({
                 duration: 10000,
                 variant: 'primary',
-                title: `Service removed!`,
+                title: 'Service removed!',
             });
         },
     });
