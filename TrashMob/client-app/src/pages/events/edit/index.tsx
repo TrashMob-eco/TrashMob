@@ -24,10 +24,11 @@ import EventData from '@/components/Models/EventData';
 import { AzureMapSearchAddressReverse, AzureMapSearchAddressReverse_Params } from '@/services/maps';
 import { useGetAzureKey } from '@/hooks/useGetAzureKey';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Check, CircleDashed, UserRoundCheck } from 'lucide-react';
+import { Check, CircleDashed, Loader2, UserRoundCheck } from 'lucide-react';
 import EventPartnerLocationServiceData from '@/components/Models/EventPartnerLocationServiceData';
 import { useEditEventPageQueries } from './useEditEventPageQueries';
 import { useEditEventPageMutations } from './useEditEventPageMutations';
+import { useLogin } from '@/hooks/useLogin';
 
 const createMomentFromDateAndTime = (eventDate: Date, eventTimeStart: string) => {
     const eventDateMoment = moment(eventDate);
@@ -55,12 +56,12 @@ const updateEventSchema = z.object({
     isEventPublic: z.boolean(),
     createdByUserId: z.string(),
     eventStatusId: z.number(),
-    locationConfirmed: z.boolean(),
 });
 
 export const EditEventPage = () => {
     const { eventId } = useParams<{ eventId: string }>() as { eventId: string };
     const azureKey = useGetAzureKey();
+    const { currentUser } = useLogin();
 
     const {
         // Masterdata
@@ -102,16 +103,15 @@ export const EditEventPage = () => {
 
     useEffect(() => {
         if (!event) return;
-
         form.reset({
             name: event.name,
             description: event.description,
-            eventDate: event.eventDate,
-            eventTimeStart: moment(event.eventDate).format('hh:mm'),
+            eventDate: moment(event.eventDate).toDate(),
+            eventTimeStart: moment(event.eventDate).format('HH:mm'),
             eventTimeEnd: moment(event.eventDate)
                 .add(event.durationHours, 'hours')
                 .add(event.durationMinutes, 'minutes')
-                .format('hh:mm'),
+                .format('HH:mm'),
             eventTypeId: `${event.eventTypeId}`,
             streetAddress: event.streetAddress,
             city: event.city,
@@ -135,6 +135,7 @@ export const EditEventPage = () => {
         const diffMinutes = end.diff(start, 'minutes');
         const durationHours = Math.floor(diffMinutes / 60);
         const durationMinutes = diffMinutes % 60;
+        body.id = eventId;
         body.name = formValues.name ?? '';
         body.description = formValues.description ?? '';
         body.eventDate = start.toDate();
@@ -151,7 +152,8 @@ export const EditEventPage = () => {
         body.maxNumberOfParticipants = formValues.maxNumberOfParticipants ?? 0;
         body.isEventPublic = formValues.isEventPublic;
         body.eventStatusId = formValues.eventStatusId;
-
+        body.createdByUserId = formValues.createdByUserId;
+        body.lastUpdatedByUserId = currentUser.id;
         updateEvent.mutate(body);
     }
 
@@ -185,9 +187,6 @@ export const EditEventPage = () => {
             form.setValue('region', firstResult.address.countrySubdivisionName);
             form.setValue('country', firstResult.address.country);
             form.setValue('postalCode', firstResult.address.postalCode);
-
-            // Set Event default name
-            form.setValue('name', `Clean up ${firstResult.address.streetName}, ${firstResult.address.municipality}`);
         }
     };
 
@@ -485,7 +484,9 @@ export const EditEventPage = () => {
                             <Button type='button' variant='outline' asChild>
                                 <Link to='/mydashboard'>Back</Link>
                             </Button>
-                            <Button type='submit'>Save</Button>
+                            <Button type='submit' disabled={updateEvent.isLoading}>
+                                {updateEvent.isLoading ? <Loader2 className='animate-spin' /> : null} Save
+                            </Button>
                         </div>
                     </div>
                 </form>

@@ -36,7 +36,6 @@ export const CancelEvent: React.FC = () => {
         mutationKey: DeleteEvent().key,
         mutationFn: DeleteEvent().service,
         onSuccess: async (_data, variables) => {
-            console.log('onSuccess', { _data, variables });
             handleShowModal(true);
 
             toast({
