@@ -24,7 +24,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { EventsTable } from '@/components/events/event-table';
+import { EventsTable } from './events-table/table';
+
 import { PartnerEventRequestTable } from '@/components/Partners/partner-event-request-table';
 
 import { GetStatsForUser } from '@/services/stats';
@@ -202,8 +203,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                     <CardHeader>
                         <div className='flex flex-row'>
                             <CardTitle className='grow text-primary'>
-                                Upcoming events (
-                                {myEventList.filter((event) => new Date(event.eventDate) >= new Date()).length})
+                                Upcoming events ({upcomingEvents.length})
                             </CardTitle>
                             <RadioGroup
                                 value={upcomingEventsMapView ? 'map' : 'list'}
