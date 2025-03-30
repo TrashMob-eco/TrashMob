@@ -19,28 +19,7 @@ public partial class ViewEventPage : ContentPage
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        await viewModel.Init(new Guid(EventId), UpdateRoutes);
+        await viewModel.Init(new Guid(EventId));
         Switcher.SelectedIndex = 0;
-    }
-
-    private void UpdateRoutes()
-    {
-        //eventLocationMap.MapElements.Clear();
-
-        //foreach (var route in viewModel.EventAttendeeRoutes)
-        //{
-        //    var polyline = new Polyline
-        //    {
-        //        StrokeColor = Color.FromArgb("c7d762"),
-        //        StrokeWidth = 5,
-        //    };
-
-        //    foreach (var location in route.Locations)
-        //    {
-        //        polyline.Geopath.Add(new Location(location.Latitude, location.Longitude));
-        //    }
-
-        //    eventLocationMap.MapElements.Add(polyline);
-        //}
     }
 }
