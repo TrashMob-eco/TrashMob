@@ -27,7 +27,6 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
@@ -95,7 +94,7 @@ export const DataTable = <TData, TValue>({ columns, data }: DataTableProps<TData
                     )}
                 </TableBody>
             </Table>
-            <DataTablePagination table={table} />
+            {data.length > table.getRowModel().rows.length ? <DataTablePagination table={table} /> : null}
         </div>
     );
 };
