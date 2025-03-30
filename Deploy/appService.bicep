@@ -124,7 +124,7 @@ resource sites_tm_name_sites_tm_name_azurewebsites_net 'Microsoft.Web/sites/host
   }
 }
 
-resource sites_tm_name_Microsoft_AspNetCore_AzureAppServices_SiteExtension 'Microsoft.Web/sites/siteextensions@2018-11-01' = {
+resource sites_tm_name_Microsoft_AspNetCore_AzureAppServices_SiteExtension 'Microsoft.Web/sites/siteextensions@2024-04-01' = {
   parent: sites_tm_name_resource
   name: 'Microsoft.AspNetCore.AzureAppServices.SiteExtension'
 }
