@@ -1,4 +1,5 @@
 import { FC, useCallback, useEffect, useState } from 'react';
+import orderBy from 'lodash/orderBy';
 import { Link, useNavigate, useLocation } from 'react-router';
 import { APIProvider } from '@vis.gl/react-google-maps';
 import { useQuery } from '@tanstack/react-query';
@@ -63,7 +64,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
     const { data: userEvents } = useGetUserEvents(userId);
     const myEventList = userEvents || [];
     const upcomingEvents = myEventList.filter(isUpcomingEvent);
-    const pastEvents = myEventList.filter(isPastEvent);
+    const pastEvents = orderBy(myEventList.filter(isPastEvent), ['eventDate'], ['desc']);
 
     const { data: myPartnerRequests } = useQuery<
         AxiosResponse<DisplayPartnershipData[]>,
@@ -239,10 +240,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                 <Card className='mb-4'>
                     <CardHeader>
                         <div className='flex flex-row'>
-                            <CardTitle className='grow text-primary'>
-                                Past events (
-                                {myEventList.filter((event) => new Date(event.eventDate) < new Date()).length})
-                            </CardTitle>
+                            <CardTitle className='grow text-primary'>Past events ({pastEvents.length})</CardTitle>
                             <RadioGroup
                                 value={pastEventsMapView ? 'map' : 'list'}
                                 onValueChange={(value) => handleEventView(value, 'Past events')}
