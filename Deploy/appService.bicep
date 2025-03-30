@@ -47,7 +47,7 @@ resource sites_tm_name_resource 'Microsoft.Web/sites@2018-11-01' = {
   }
 }
 
-resource sites_tm_name_web 'Microsoft.Web/sites/config@2018-11-01' = {
+resource sites_tm_name_web 'Microsoft.Web/sites/config@2024-04-01' = {
   parent: sites_tm_name_resource
   name: 'web'
   properties: {
