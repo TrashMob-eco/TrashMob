@@ -3,7 +3,6 @@ import linkedIn from '@/components/assets/card/linkedin.svg';
 import JoeBeernink from '@/components/assets/boardOfDirectors/JoeBeernink.jpg';
 import DarylBarber from '@/components/assets/boardOfDirectors/darylbarber.jpg';
 import JacquelineHayot from '@/components/assets/boardOfDirectors/JacquelineHayot.jpg';
-import KevinGleason from '@/components/assets/boardOfDirectors/KevinGleason.jpg';
 import SandraMau from '@/components/assets/boardOfDirectors/SandraMau.jpg';
 import CynthiaMitchell from '@/components/assets/boardOfDirectors/CynthiaMitchell.jpg';
 import { HeroSection } from '@/components/Customization/HeroSection';
@@ -49,17 +48,6 @@ const boards = [
             'Joe grew up on a small farm in Southern Ontario, Canada, working and playing in the great outdoors, graduated with a degree in Space Science from York University in Toronto in 1994, and moved to the US in 1996. He previously lived in Michigan and Colorado before making Washington State his home in 1999.',
             'In 2021, Joe was inspired by Edgar McGregor, a climate activist in California, to get out and start cleaning up his community. After seeing just how much work needed to be done, Joe envisioned a website that enabled like-minded people to get out and start cleaning the environment together, and the idea for TrashMob.eco was born.',
             'Joe resides in Issaquah, WA with his 2 kids.',
-        ],
-    },
-    {
-        name: 'Kevin Gleason',
-        img: KevinGleason,
-        linkedin: 'https://www.linkedin.com/in/kevin-gleason-78a9236/',
-        position: 'Member at large',
-        detail: [
-            'Kevin Gleason currently is Vice President New York Life and Chief Compliance Officer at MainStay Funds and Index IQ ETFs. He is a seasoned legal and compliance professional with over 25 years of experience working for 5 Fortune Five Hundred diversified financial services organizations.',
-            'Mr. Gleason has advised and transacted business globally on 5 continents including across Europe, the Middle East, Asia, and South America. He has counseled C-suite executives and boards of directors on the creation of compliance and ethics programs; the development of controls, training, testing, conflicts identification, and risk assessments; and the structuring of governance frameworks.',
-            'Mr. Gleason has a law degree and a masters in financial services law. He has earned an MBA from The University of Chicago and BA from University of Notre Dame. He is or has been a board member at Arizona Science Center, National Society of Compliance Professionals, and Journal of Financial Compliance. He is a frequent speaker at and contributor to industry events and publications.',
         ],
     },
     {
