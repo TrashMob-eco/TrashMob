@@ -78,7 +78,7 @@ export const EventsTable = (props: EventTableProps) => {
                                     {event.createdByUserId === props.currentUser.id ? 'Lead' : ' Attendee'}
                                 </TableCell>
                                 <TableCell>{moment(event.eventDate).format('MM/DD/YYYY')}</TableCell>
-                                <TableCell>{moment(event.eventDate).format('hh:mm A')}</TableCell>
+                                <TableCell>{moment(event.eventDate).format('h:mm A')}</TableCell>
                                 <TableCell>{_compact([event.streetAddress, event.city]).join(', ')}</TableCell>
                                 <TableCell className='btn py-0'>
                                     <DropdownMenu>
