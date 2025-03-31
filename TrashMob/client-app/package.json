@@ -43,7 +43,7 @@
         "react-hook-form": "^7.54.2",
         "react-phone-input-2": "^2.15.1",
         "react-router": "^7.4.0",
-        "react-share": "^4.4.1",
+        "react-share": "^5.0.0",
         "tailwind-merge": "^2.5.4",
         "tailwindcss-animate": "^1.0.7",
         "use-count-up": "^3.0.1",
