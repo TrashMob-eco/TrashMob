@@ -1,6 +1,5 @@
 import { FC, useState } from 'react';
 import { useParams } from 'react-router';
-import { APIProvider } from '@vis.gl/react-google-maps';
 import moment from 'moment';
 import { useQuery } from '@tanstack/react-query';
 import * as MapStore from '@/store/MapStore';
@@ -10,7 +9,6 @@ import { RegisterBtn } from '@/components/Customization/RegisterBtn';
 import { HeroSection } from '@/components/Customization/HeroSection';
 import * as SharingMessages from '@/store/SharingMessages';
 import { GetAllEventsBeingAttendedByUser, GetEventAttendees } from '@/services/events';
-import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
 import { useGetEvent } from '@/hooks/useGetEvent';
 import { useGetEventType } from '@/hooks/useGetEventType';
 import { Button } from '@/components/ui/button';
@@ -117,7 +115,7 @@ export const EventDetails: FC<EventDetailsProps> = () => {
                                     <RegisterBtn
                                         eventId={eventId}
                                         isAttending={isAttending}
-                                        isEventCompleted={isEventCompleted!}
+                                        isEventCompleted={isEventCompleted}
                                         currentUser={currentUser}
                                         isUserLoaded={isUserLoaded}
                                     />
@@ -160,7 +158,7 @@ export const EventDetails: FC<EventDetailsProps> = () => {
                             </div>
                         </div>
                         <Badge>{eventType?.name}</Badge>
-                        <p className='mt-4 text-muted'>{description}</p>
+                        <p className='mt-4 mb-8 text-foreground'>{description}</p>
                         <div className='!mb-8'>
                             <EventPlaceAndLocation {...event} />
                         </div>
