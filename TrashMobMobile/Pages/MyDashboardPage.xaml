@@ -62,7 +62,7 @@
                     VerticalOptions="Center"
                     HorizontalOptions="Start"
                     HorizontalTextAlignment="Center"
-                    Margin="10, 0, 10, 0" />
+                    Margin="10, 0, 10, 1" />
 
                 <CollectionView x:Name="UpcomingEventsCollection"
                                 ItemsSource="{Binding UpcomingEvents}"
