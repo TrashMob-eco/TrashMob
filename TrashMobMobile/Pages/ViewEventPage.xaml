@@ -15,7 +15,7 @@
             <Label
                     Text="{Binding EventViewModel.Name}" Style="{StaticResource Headline}"
                     VerticalOptions="Center"
-                    Margin="5" />
+                    Margin="4" />
 
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
