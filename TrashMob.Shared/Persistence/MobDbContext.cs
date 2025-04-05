@@ -37,6 +37,8 @@
 
         public virtual DbSet<InvitationStatus> InvitationStatuses { get; set; }
 
+        public virtual DbSet<JobOpportunity> JobOpportunities { get; set; }
+
         public virtual DbSet<MessageRequest> MessageRequests { get; set; }
 
         public virtual DbSet<NonEventUserNotification> NonEventUserNotifications { get; set; }
@@ -118,6 +120,17 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ContactRequests_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<JobOpportunity>(entity =>
+            {
+                entity.ToTable("JobOpportunities");
+
+                entity.Property(e => e.Title).HasMaxLength(150);
+
+                entity.Property(e => e.TagLine).HasMaxLength(250);
+
+                entity.Property(e => e.FullDescription).HasMaxLength(5000);
             });
 
             modelBuilder.Entity<PartnerDocument>(entity =>

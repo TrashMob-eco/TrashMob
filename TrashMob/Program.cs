@@ -26,7 +26,6 @@ namespace TrashMob
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Identity.Web;
     using Microsoft.AspNetCore.HttpOverrides;
-    using NetTopologySuite.IO;
     using NetTopologySuite.IO.Converters;
 
     public class Program
