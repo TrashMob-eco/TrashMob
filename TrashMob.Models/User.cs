@@ -10,6 +10,9 @@ namespace TrashMob.Models
             EventsUpdated = new HashSet<Event>();
             UserNotifications = new HashSet<UserNotification>();
             NonEventUserNotifications = new HashSet<NonEventUserNotification>();
+            JobOpportunitiesCreated = new HashSet<JobOpportunity>();
+            JobOpportunitiesUpdated = new HashSet<JobOpportunity>();
+            PartnersUpdated = new HashSet<Partner>();
             PartnersCreated = new HashSet<Partner>();
             PartnersUpdated = new HashSet<Partner>();
             EventAttendees = new HashSet<EventAttendee>();
@@ -93,6 +96,10 @@ namespace TrashMob.Models
         public virtual ICollection<IftttTrigger> IftttTriggersCreated { get; set; }
 
         public virtual ICollection<IftttTrigger> IftttTriggersUpdated { get; set; }
+
+        public virtual ICollection<JobOpportunity> JobOpportunitiesCreated { get; set; }
+
+        public virtual ICollection<JobOpportunity> JobOpportunitiesUpdated { get; set; }
 
         public virtual ICollection<PartnerDocument> PartnerDocumentsCreated { get; set; }
 
