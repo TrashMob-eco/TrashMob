@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TrashMob.Migrations
 {
     /// <inheritdoc />
-    public partial class AddJobOpportunities : Migration
+    public partial class AddJobOpportunities2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -29,17 +29,15 @@ namespace TrashMob.Migrations
                 {
                     table.PrimaryKey("PK_JobOpportunities", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_JobOpportunities_Users_CreatedByUserId",
+                        name: "FK_JobOpportunities_User_CreatedBy",
                         column: x => x.CreatedByUserId,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_JobOpportunities_Users_LastUpdatedByUserId",
+                        name: "FK_JobOpportunities_User_LastUpdatedBy",
                         column: x => x.LastUpdatedByUserId,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(

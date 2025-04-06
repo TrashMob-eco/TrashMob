@@ -131,6 +131,18 @@
                 entity.Property(e => e.TagLine).HasMaxLength(250);
 
                 entity.Property(e => e.FullDescription).HasMaxLength(5000);
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.JobOpportunitiesCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_JobOpportunities_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.JobOpportunitiesUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_JobOpportunities_User_LastUpdatedBy");
             });
 
             modelBuilder.Entity<PartnerDocument>(entity =>

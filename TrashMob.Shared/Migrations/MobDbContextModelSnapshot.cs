@@ -2456,16 +2456,16 @@ namespace TrashMob.Migrations
             modelBuilder.Entity("TrashMob.Models.JobOpportunity", b =>
                 {
                     b.HasOne("TrashMob.Models.User", "CreatedByUser")
-                        .WithMany()
+                        .WithMany("JobOpportunitiesCreated")
                         .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_JobOpportunities_User_CreatedBy");
 
                     b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
-                        .WithMany()
+                        .WithMany("JobOpportunitiesUpdated")
                         .HasForeignKey("LastUpdatedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_JobOpportunities_User_LastUpdatedBy");
 
                     b.Navigation("CreatedByUser");
 
@@ -3162,6 +3162,10 @@ namespace TrashMob.Migrations
                     b.Navigation("IftttTriggersCreated");
 
                     b.Navigation("IftttTriggersUpdated");
+
+                    b.Navigation("JobOpportunitiesCreated");
+
+                    b.Navigation("JobOpportunitiesUpdated");
 
                     b.Navigation("LitterImagesCreated");
 
