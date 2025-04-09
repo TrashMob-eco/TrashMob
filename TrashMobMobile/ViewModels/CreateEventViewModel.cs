@@ -188,6 +188,34 @@ public partial class CreateEventViewModel : BaseViewModel
         Backward
     }
 
+    public async Task UpdateLitterAssignment(Guid litterReportId)
+    {
+        var eventLitterReport = EventLitterReports.FirstOrDefault(l => l.Id == litterReportId);
+
+        if (eventLitterReport != null && eventLitterReport.CanRemoveFromEvent)
+        {
+            await eventLitterReport.RemoveLitterReportFromEvent();
+        }
+        else
+        {
+            if (eventLitterReport != null)
+            {
+                await eventLitterReport.AddLitterReportToEvent();
+            }
+            else
+            {
+                var litterReport = RawLitterReports.FirstOrDefault(l => l.Id == litterReportId);
+                if (litterReport != null)
+                {
+                    var eventLitterReportViewModel = litterReport.ToEventLitterReportViewModel(NotificationService, eventLitterReportManager, EventViewModel.Id);
+                    await eventLitterReportViewModel.AddLitterReportToEvent();
+                }
+            }
+        }
+
+        await LoadLitterReports();
+    }
+
     private void ValidateViewModel()
     {
         EventDurationError = string.Empty;
@@ -518,7 +546,7 @@ public partial class CreateEventViewModel : BaseViewModel
             Events.Add(EventViewModel);
 
             // Assign the litter report to the event if it was passed in
-            if (initialLitterReport != null)
+            if (initialLitterReport != null && initialLitterReport != Guid.Empty)
             {
                 await eventLitterReportManager.AddLitterReportAsync(new EventLitterReport
                 {

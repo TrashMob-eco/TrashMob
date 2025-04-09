@@ -37,11 +37,18 @@ export type GetEventPartnerLocationServicesByLocationId_Params = {
     locationId: string;
 };
 export type GetEventPartnerLocationServicesByLocationId_Response = DisplayEventPartnerLocationServiceData[];
-export const GetEventPartnerLocationServicesByLocationId = () => ({
-    key: ['/eventpartnerlocationservices', 'by location id'],
-    service: async (params: GetEventPartnerLocationServicesByLocationId_Params) =>
+export const GetEventPartnerLocationServicesByLocationId = (
+    params?: GetEventPartnerLocationServicesByLocationId_Params,
+) => ({
+    key: ['/eventpartnerlocationservices', params || 'by location id'],
+    service: async () =>
         ApiService('protected').fetchData<GetEventPartnerLocationServicesByLocationId_Response>({
-            url: `/eventpartnerlocationservices/${params.eventId}/${params.locationId}`,
+            url: `/eventpartnerlocationservices/${params?.eventId}/${params?.locationId}`,
+            method: 'get',
+        }),
+    serviceAsync: async (asyncParams: GetEventPartnerLocationServicesByLocationId_Params) =>
+        ApiService('protected').fetchData<GetEventPartnerLocationServicesByLocationId_Response>({
+            url: `/eventpartnerlocationservices/${asyncParams.eventId}/${asyncParams.locationId}`,
             method: 'get',
         }),
 });
@@ -106,9 +113,9 @@ export const GetEventPickupLocationsByUser = (params: GetEventPickupLocationsByU
 
 export type GetEventPickupLocationById_Params = { locationId: string };
 export type GetEventPickupLocationById_Response = PickupLocationData;
-export const GetEventPickupLocationById = () => ({
-    key: ['/pickuplocations/', 'getByLocationId'],
-    service: async (params: GetEventPickupLocationById_Params) =>
+export const GetEventPickupLocationById = (params: GetEventPickupLocationById_Params) => ({
+    key: ['/pickuplocations/', params],
+    service: async () =>
         ApiService('protected').fetchData<GetEventPickupLocationById_Response>({
             url: `/pickuplocations/${params.locationId}`,
             method: 'get',
@@ -236,9 +243,11 @@ export type GetPartnerLocationServiceByLocationIdAndServiceType_Params = {
     serviceTypeId: number;
 };
 export type GetPartnerLocationServiceByLocationIdAndServiceType_Response = PartnerLocationServiceData;
-export const GetPartnerLocationServiceByLocationIdAndServiceType = () => ({
-    key: ['/partnerlocationservices/', 'get by location id and service type id'],
-    service: async (params: GetPartnerLocationServiceByLocationIdAndServiceType_Params) =>
+export const GetPartnerLocationServiceByLocationIdAndServiceType = (
+    params: GetPartnerLocationServiceByLocationIdAndServiceType_Params,
+) => ({
+    key: ['/partnerlocationservices/', params],
+    service: async () =>
         ApiService('protected').fetchData<GetPartnerLocationServiceByLocationIdAndServiceType_Response>({
             url: `/partnerlocationservices/${params.locationId}/${params.serviceTypeId}`,
             method: 'get',
@@ -265,7 +274,7 @@ export const CreateLocationService = () => ({
     key: ['/partnerlocationservices', 'create'],
     service: async (body: CreateLocationService_Body) =>
         ApiService('protected').fetchData<CreateLocationService_Response, CreateLocationService_Body>({
-            url: '/partnerlocations',
+            url: '/partnerlocationservices',
             method: 'post',
             data: body,
         }),
@@ -277,7 +286,7 @@ export const UpdateLocationService = () => ({
     key: ['/partnerlocationservices', 'update'],
     service: async (body: UpdateLocationService_Body) =>
         ApiService('protected').fetchData<UpdateLocationService_Response, UpdateLocationService_Body>({
-            url: '/partnerlocations',
+            url: '/partnerlocationservices',
             method: 'put',
             data: body,
         }),
@@ -287,9 +296,11 @@ export type GetPartnerLocationEventServicesByLocationId_Params = {
     locationId: string;
 };
 export type GetPartnerLocationEventServicesByLocationId_Response = DisplayPartnerLocationEventData[];
-export const GetPartnerLocationEventServicesByLocationId = () => ({
-    key: ['/partnerlocationeventservices/', 'by locationId'],
-    service: async (params: GetPartnerLocationEventServicesByLocationId_Params) =>
+export const GetPartnerLocationEventServicesByLocationId = (
+    params: GetPartnerLocationEventServicesByLocationId_Params,
+) => ({
+    key: ['/partnerlocationeventservices/', params],
+    service: async () =>
         ApiService('protected').fetchData<GetPartnerLocationEventServicesByLocationId_Response>({
             url: `/partnerlocationeventservices/${params.locationId}`,
             method: 'get',

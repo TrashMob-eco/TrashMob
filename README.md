@@ -276,7 +276,7 @@ In Debug mode, by default, the Android package format is set to apk, and does no
 2. Right click on the TrashMobMobileApp project
 3. Select "Properties"
 4. Go to the Android Settings / Options
-5. Change the Android Package Format for Debug & net8.0-android to "bundle" instead of "apk".
+5. Change the Android Package Format for Debug & net9.0-android to "bundle" instead of "apk".
 6. Save your changes and push to your branch.
 
 Note: this may make deployments to your local emulator slower (more data must be copied into the emulator session). You can change this back to "apk" for local development, but failure to switch it back to "bundle" before checkin will cause the PR build to fail. There may be a way to pass this setting in on the command line for the publish step. That has not yet been investigated.

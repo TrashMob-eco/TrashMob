@@ -1,15 +1,16 @@
-import React, { FC, useState } from 'react';
-import { Button } from 'react-bootstrap';
-import { RouteComponentProps, useHistory } from 'react-router-dom';
+import { FC, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router';
 import { getApiConfig, msalClient } from '../../store/AuthStore';
 import EventAttendeeData from '../Models/EventAttendeeData';
 import UserData from '../Models/UserData';
 import { DisplayEvent } from '../MainEvents';
-import { CurrentTrashMobWaiverVersion } from '../Waivers/Waivers';
+import { CurrentTrashMobWaiverVersion } from '../../pages/waivers/page';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { GetTrashMobWaivers } from '../../services/waivers';
 import { AddEventAttendee, GetAllEventsBeingAttendedByUser } from '../../services/events';
+import { cn } from '@/lib/utils';
 
 interface RegisterBtnProps {
     currentUser: UserData;
@@ -27,7 +28,7 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
     isEventCompleted,
 }) => {
     const userId = currentUser.id;
-    const history = useHistory();
+    const navigate = useNavigate();
     const [registered, setRegistered] = useState<boolean>(false);
     const queryClient = useQueryClient();
 
@@ -45,7 +46,7 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
             queryClient.invalidateQueries(GetAllEventsBeingAttendedByUser({ userId }).key);
 
             // re-direct user to event details page once they are registered
-            history.push(`/eventdetails/${eventId}`);
+            navigate(`/eventdetails/${eventId}`);
         },
     });
 
@@ -65,7 +66,7 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
             CurrentTrashMobWaiverVersion.versionDate.toISOString();
         if (waiver?.isWaiverEnabled && (isTrashMobWaiverOutOfDate || currentUser.trashMobWaiverVersion === '')) {
             sessionStorage.setItem('targetUrl', window.location.pathname);
-            history.push('/waivers');
+            navigate('/waivers');
         }
 
         const accounts = msalClient.getAllAccounts();
@@ -86,9 +87,9 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
 
     return (
         <Button
-            id='addAttendee'
-            className='btn btn-primary action btn-128'
-            hidden={!isUserLoaded || isAttending === 'Yes' || registered || isEventCompleted}
+            className={cn({
+                hidden: !isUserLoaded || isAttending === 'Yes' || registered || isEventCompleted,
+            })}
             onClick={() => handleAttend(eventId)}
         >
             {registered ? 'Attended!' : 'Attend'}

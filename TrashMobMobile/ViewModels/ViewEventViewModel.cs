@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
@@ -54,30 +55,6 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     private bool enableViewEventSummary;
 
     [ObservableProperty]
-    private bool enableViewEventDetails;
-
-    [ObservableProperty]
-    private bool enableViewEventPartners;
-
-    [ObservableProperty]
-    private bool enableViewEventLitterReports;
-
-    [ObservableProperty]
-    private bool enableViewEventAttendees;
-
-    [ObservableProperty]
-    private bool isDetailsVisible;
-
-    [ObservableProperty]
-    private bool isPartnersVisible;
-
-    [ObservableProperty]
-    private bool isLitterReportsVisible;
-
-    [ObservableProperty]
-    private bool isAttendeesVisible;
-
-    [ObservableProperty]
     private EventViewModel eventViewModel = new();
 
     private Event mobEvent = new();
@@ -108,6 +85,14 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
     [ObservableProperty]
     private bool isLitterReportListSelected;
+    
+    private Action UpdateRoutes;
+
+    [ObservableProperty]
+    private DateTimeOffset routeStartTime;
+
+    [ObservableProperty]
+    private DateTimeOffset routeEndTime;
 
     public ObservableCollection<EventPartnerLocationViewModel> AvailablePartners { get; set; } = new();
 
@@ -121,12 +106,16 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
     public ObservableCollection<EventAttendeeViewModel> EventAttendees { get; set; } = [];
 
-    public async Task Init(Guid eventId)
+    public ObservableCollection<DisplayEventAttendeeRoute> EventAttendeeRoutes { get; set; } = [];
+
+    public async Task Init(Guid eventId, Action updRoutes)
     {
         IsBusy = true;
 
         try
         {
+            UpdateRoutes = updRoutes;
+
             mobEvent = await mobEventManager.GetEventAsync(eventId);
             EventViewModel = mobEvent.ToEventViewModel(userManager.CurrentUser.Id);
 
@@ -141,14 +130,6 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
             EnableEditEvent = mobEvent.IsEventLead(userManager.CurrentUser.Id) && !mobEvent.IsCompleted();
             EnableViewEventSummary = mobEvent.IsCompleted();
-            EnableViewEventDetails = true;
-            EnableViewEventPartners = true;
-            EnableViewEventLitterReports = true;
-            EnableViewEventAttendees = true;
-            IsDetailsVisible = true;
-            IsPartnersVisible = false;
-            IsLitterReportsVisible = false;
-            IsAttendeesVisible = false;
 
             EnableStartTrackEventRoute = mobEvent.IsEventLead(userManager.CurrentUser.Id) && !mobEvent.IsCompleted();
             EnableStopTrackEventRoute = false;
@@ -160,6 +141,16 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             await GetAttendeeCount();
             await LoadPartners();
             await LoadLitterReports();
+
+            var routes = await eventAttendeeRouteRestService.GetEventAttendeeRoutesForEventAsync(eventId);
+            EventAttendeeRoutes.Clear();
+
+            foreach (var eventAttendeeRoute in routes)
+            {
+                EventAttendeeRoutes.Add(eventAttendeeRoute);
+            }
+
+            UpdateRoutes();
 
             IsBusy = false;
         }
@@ -185,42 +176,6 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
         IsLitterReportMapSelected = false;
         IsLitterReportListSelected = true;
         return Task.CompletedTask;
-    }
-
-    [RelayCommand]
-    private void ViewEventPartners()
-    {
-        IsDetailsVisible = false;
-        IsPartnersVisible = true;
-        IsLitterReportsVisible = false;
-        IsAttendeesVisible = false;
-    }
-
-    [RelayCommand]
-    private void ViewEventAttendees()
-    {
-        IsDetailsVisible = false;
-        IsPartnersVisible = false;
-        IsLitterReportsVisible = false;
-        IsAttendeesVisible = true;
-    }
-
-    [RelayCommand]
-    private void ViewLitterReports()
-    {
-        IsDetailsVisible = false;
-        IsPartnersVisible = false;
-        IsLitterReportsVisible = true;
-        IsAttendeesVisible = false;
-    }
-
-    [RelayCommand]
-    private void ViewEventDetails()
-    {
-        IsDetailsVisible = true;
-        IsPartnersVisible = false;
-        IsLitterReportsVisible = false;
-        IsAttendeesVisible = false;
     }
 
     private async Task LoadPartners()
@@ -337,8 +292,6 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
         await Shell.Current.GoToAsync($"{nameof(EditEventPage)}?EventId={EventViewModel.Id}");
     }
     
-    private Microsoft.Maui.Devices.Sensors.Location? currentLocation;
-    
     public ObservableCollection<Microsoft.Maui.Devices.Sensors.Location> Locations { get; } = [];
 
     [RelayCommand(IncludeCancelCommand = true, AllowConcurrentExecutions = false)]
@@ -346,12 +299,15 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     {
         if (EnableStartTrackEventRoute)
         {
+            RouteStartTime = DateTimeOffset.Now;
+            RouteEndTime = DateTimeOffset.Now;
             EnableStopTrackEventRoute = true;
             EnableStartTrackEventRoute = false;
         }
 
         cancellationToken.Register(async () =>
         {
+            RouteEndTime = DateTimeOffset.Now;
             await SaveRoute();
             Locations.Clear();
             EnableStopTrackEventRoute = false;
@@ -360,17 +316,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
         var progress = new Progress<Microsoft.Maui.Devices.Sensors.Location>(location =>
         {
-            if (currentLocation is null)
-            {
-                currentLocation = location;
-            }
-            else
-            {
-                Locations.Remove(currentLocation);
-                currentLocation = location;
-            }
-
-            Locations.Add(currentLocation);
+            location.Timestamp = DateTimeOffset.Now;
+            Locations.Add(location);
         });
 
         await Geolocator.Default.StartListening(progress, cancellationToken);
@@ -396,7 +343,9 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             {
                 EventId = mobEvent.Id,
                 UserId = userManager.CurrentUser.Id,
-                Locations = GetSortableLocations()
+                Locations = GetSortableLocations(),
+                StartTime = RouteStartTime,
+                EndTime = RouteEndTime,
             });
         }
         catch (Exception ex)

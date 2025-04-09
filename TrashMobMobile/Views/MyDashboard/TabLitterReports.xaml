@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:TrashMobMobile.Controls"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             x:Class="TrashMobMobile.Views.MyDashboard.TabLitterReports">
+    <VerticalStackLayout>
+        <controls:TMPicker Title="Created Date Range"
+                                   HeightRequest="40"
+                                   Margin="10, 0, 10, 0"
+                                   ItemsSource="{Binding CreatedDateRanges}"
+                                   SelectedItem="{Binding SelectedCreatedDateRange, Mode=TwoWay}" />
+
+        <Label Text="There are no litter reports matching the selected criteria." IsVisible="{Binding AreNoLitterReportsFound}" Margin="10" />
+
+        <CollectionView x:Name="LitterReportCollection"
+                                ItemsSource="{Binding LitterReports}"
+                                SelectedItem="{Binding SelectedLitterReport}"
+                                SelectionMode="Single"
+                                Margin="10, 0, 10, 0"
+                                MaximumHeightRequest="250"
+                                IsVisible="{Binding AreLitterReportsFound}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="viewModels:LitterReportViewModel">
+                    <Border Style="{StaticResource RoundBorder}" Margin="5">
+                        <Grid ColumnDefinitions="*, *"
+                                      RowDefinitions="Auto, Auto, Auto, Auto"
+                                      x:Name="LitterReportItem" RowSpacing="3">
+
+                            <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Small" />
+                            <Label Text="{Binding LitterReportStatus}" Grid.Row="0" Grid.Column="1"
+                                           FontSize="Micro" />
+                            <Label Text="{Binding CreatedDate}" Grid.Row="1" Grid.Column="0"
+                                           Grid.ColumnSpan="1" FontSize="Micro" />
+                            <Label Text="{Binding Description}" Grid.Row="1" Grid.Column="1" FontSize="Micro" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </VerticalStackLayout>
+</ContentView>

@@ -11,8 +11,8 @@ on:
   workflow_dispatch:
 
 env:
-  DOTNET_VERSION: '8.0.x'  # set this to the dotnet version to use
-  DOTNET_VERSION2: '8.0.x'  # set this to the dotnet version to use
+  DOTNET_VERSION: '9.0.x'  # set this to the dotnet version to use
+  DOTNET_VERSION2: '9.0.x'  # set this to the dotnet version to use
   CONFIGURATION: Release      # Values: Debug, Release
   ENVIRONMENT: test         # Values: test, production
   IOS_BUNDLE_ID: 'eco.trashmobdev.trashmobmobile'   # Values: 'eco.trashmobdev.trashmobmobile', 'eco.trashmob'
@@ -31,13 +31,13 @@ jobs:
           fetch-depth: 0
 
       - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v3.0.0
+        uses: gittools/actions/gitversion/setup@v3.1.11
         with:
           versionSpec: '5.x'
 
       - name: Determine Version
         id: version_step # step id used as reference for output values
-        uses: gittools/actions/gitversion/execute@v3.0.0
+        uses: gittools/actions/gitversion/execute@v3.1.11
 
       - name: Set Offsets
         env:

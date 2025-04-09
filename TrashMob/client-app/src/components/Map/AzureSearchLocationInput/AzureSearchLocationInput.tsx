@@ -1,9 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import _ from 'lodash';
-import { AzureMapSearchAddress } from '@/services/maps';
+import { AzureMapSearchAddress, GeographicEntityType } from '@/services/maps';
 import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { useDebounce } from '@/hooks/useDebounce';
+import * as MapStore from '@/store/MapStore';
 import { cn } from '@/lib/utils';
 
 export type SearchLocationOption = {
@@ -36,6 +37,8 @@ export type RenderInputProps = {
 export type AzureSearchLocationInputProps = {
     azureKey: string;
     onSelectLocation: (position: SearchLocationOption) => void;
+    entityType?: GeographicEntityType[];
+    placeholder?: string;
     className?: string;
     inputClassName?: string;
     listClassName?: string;
@@ -43,7 +46,16 @@ export type AzureSearchLocationInputProps = {
 };
 
 export function AzureSearchLocationInput(props: AzureSearchLocationInputProps) {
-    const { azureKey, onSelectLocation, className = '', inputClassName = '', listClassName = '', renderInput } = props;
+    const {
+        azureKey,
+        onSelectLocation,
+        entityType,
+        placeholder = 'Location...',
+        className = '',
+        inputClassName = '',
+        listClassName = '',
+        renderInput,
+    } = props;
     const [showSuggestion, setShowSuggestion] = React.useState<boolean>(false);
     const [query, setQuery] = React.useState<string>('');
     const debouncedQuery = useDebounce<string>(query, 200); // delay 200ms
@@ -70,7 +82,7 @@ export function AzureSearchLocationInput(props: AzureSearchLocationInputProps) {
     } = useQuery<{ options: SearchLocationOption[]; totalResults: number }>({
         queryKey: AzureMapSearchAddress().key(debouncedQuery),
         queryFn: async () => {
-            const response = await AzureMapSearchAddress().service({ azureKey, query: debouncedQuery });
+            const response = await AzureMapSearchAddress().service({ azureKey, query: debouncedQuery, entityType });
             const { data } = response;
             return {
                 options: data.results.map((item) => ({
@@ -91,6 +103,7 @@ export function AzureSearchLocationInput(props: AzureSearchLocationInputProps) {
         if (!suggestion) return;
 
         onSelectLocation(suggestion);
+        setQuery('');
         setShowSuggestion(false);
     };
 
@@ -112,7 +125,7 @@ export function AzureSearchLocationInput(props: AzureSearchLocationInputProps) {
     };
 
     const customInputProps: RenderInputProps = {
-        placeholder: 'Location...',
+        placeholder: placeholder ?? 'Location...',
         onChange: handleInputChange,
         value: query,
         onFocus: handleFocus,
@@ -130,7 +143,7 @@ export function AzureSearchLocationInput(props: AzureSearchLocationInputProps) {
                     renderInput(customInputProps)
                 ) : (
                     <CommandInput
-                        placeholder='Location...'
+                        placeholder={placeholder ?? 'Location...'}
                         value={query}
                         onValueChange={(value) => setQuery(value)}
                         onFocus={handleFocus}
@@ -138,7 +151,11 @@ export function AzureSearchLocationInput(props: AzureSearchLocationInputProps) {
                     />
                 )}
                 <CommandList
-                    className={cn('max-w-[300px] hidden', { flex: showSuggestion && query.length > 1 }, listClassName)}
+                    className={cn(
+                        'hidden [&.cmdk-list-sizer]:w-full',
+                        { flex: showSuggestion && query.length > 1 },
+                        listClassName,
+                    )}
                 >
                     {isLoading || isFetching ? (
                         <div className='p-2 text-sm text-gray-500'>Loading...</div>
@@ -165,3 +182,15 @@ export function AzureSearchLocationInput(props: AzureSearchLocationInputProps) {
         </div>
     );
 }
+
+export const AzureSearchLocationInputWithKey = (props: Omit<AzureSearchLocationInputProps, 'azureKey'>) => {
+    const [azureKey, setAzureKey] = useState<string>('');
+
+    useEffect(() => {
+        MapStore.getOption().then((opts) => {
+            setAzureKey(opts.subscriptionKey);
+        });
+    }, []);
+
+    return <AzureSearchLocationInput {...props} azureKey={azureKey} />;
+};

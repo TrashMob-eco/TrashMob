@@ -37,7 +37,7 @@
             var displayEventAttendeeRoutes = result.Select(x => x.ToDisplayEventAttendeeRoute()).ToList();
 
             TelemetryClient.TrackEvent(nameof(GetEventAttendeeRoutes));
-            return Ok(result);
+            return Ok(displayEventAttendeeRoutes);
         }
 
         [HttpGet("byuserid/{userId}")]

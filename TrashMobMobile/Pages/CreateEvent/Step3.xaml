@@ -31,7 +31,7 @@
                     <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
                            Text="{Binding EventViewModel.Address.DisplayAddress }" FontAttributes="Bold"
                            Margin="10, 0, 10, 0" />
-                    <maps:Map Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" x:Name="eventLocationMap"
+                    <controls:CustomMap Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" x:Name="eventLocationMap"
                               ItemsSource="{Binding Events}">
                         <maps:Map.ItemTemplate>
                             <DataTemplate x:DataType="viewModels:EventViewModel">
@@ -41,7 +41,7 @@
                                           Label="{Binding Name}" />
                             </DataTemplate>
                         </maps:Map.ItemTemplate>
-                    </maps:Map>
+                    </controls:CustomMap>
                     <Label Grid.Row="5" 
                            Grid.Column="0" 
                            Text="About this event" 

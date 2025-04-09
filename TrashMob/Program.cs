@@ -26,6 +26,7 @@ namespace TrashMob
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Identity.Web;
     using Microsoft.AspNetCore.HttpOverrides;
+    using NetTopologySuite.IO.Converters;
 
     public class Program
     {
@@ -136,6 +137,8 @@ namespace TrashMob
                 {
                     x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
                     x.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                    x.JsonSerializerOptions.NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals;
+                    x.JsonSerializerOptions.Converters.Add(new GeoJsonConverterFactory());
                 });
 
             builder.Services.AddDbContext<MobDbContext>(c => c.UseLazyLoadingProxies());

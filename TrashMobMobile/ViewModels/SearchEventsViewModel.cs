@@ -4,12 +4,13 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
+using TrashMob.Models.Poco;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
 public partial class SearchEventsViewModel(IMobEventManager mobEventManager, 
                                            INotificationService notificationService,
-                                           IUserManager userManager) 
+                                           IUserManager userManager)
     : BaseViewModel(notificationService)
 {
     private readonly IMobEventManager mobEventManager = mobEventManager;
@@ -33,6 +34,10 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
     public ObservableCollection<string> RegionCollection { get; set; } = [];
     public ObservableCollection<string> CityCollection { get; set; } = [];
 
+    public ObservableCollection<string> UpcomingDateRanges { get; set; } = [];
+
+    public ObservableCollection<string> CompletedDateRanges { get; set; } = [];
+
     [ObservableProperty]
     private bool isMapSelected;
 
@@ -46,7 +51,52 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
     private bool isCompletedSelected;
 
     [ObservableProperty]
-    private bool isBothSelected;
+    private bool areEventsFound;
+
+    [ObservableProperty]
+    private bool areNoEventsFound;
+
+    private string selectedUpcomingDateRange = DateRanges.Today;
+
+    private string selectedCompletedDateRange = DateRanges.Yesterday;
+
+    public string SelectedUpcomingDateRange
+    {
+        get => selectedUpcomingDateRange;
+        set
+        {
+            if (value == null)
+            {
+                return;
+            }
+
+            if (selectedUpcomingDateRange != value)
+            {
+                selectedUpcomingDateRange = value;
+                OnPropertyChanged();
+                HandleUpcomingDateRangeSelected();
+            }
+        }
+    }
+
+    public string SelectedCompletedDateRange
+    {
+        get => selectedCompletedDateRange;
+        set
+        {
+            if (value == null)
+            {
+                return;
+            }
+
+            if (selectedCompletedDateRange != value)
+            {
+                selectedCompletedDateRange = value;
+                OnPropertyChanged();
+                HandleCompletedDateRangeSelected();
+            }
+        }
+    }
 
     public string? SelectedCountry
     {
@@ -112,9 +162,21 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
             IsListSelected = false;
             IsUpcomingSelected = true;
             IsCompletedSelected = false;
-            IsBothSelected = false;
             UserLocation = userManager.CurrentUser.GetAddress();
-            await RefreshEvents();
+
+            foreach (var date in DateRanges.UpcomingRangeDictionary)
+            {
+                UpcomingDateRanges.Add(date.Key);
+            }
+
+            SelectedUpcomingDateRange = DateRanges.ThisMonth;
+
+            foreach (var date in DateRanges.CompletedRangeDictionary)
+            {
+                CompletedDateRanges.Add(date.Key);
+            }
+
+            SelectedCompletedDateRange = DateRanges.LastMonth;
 
             IsBusy = false;
 
@@ -136,12 +198,32 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
     private async Task RefreshEvents()
     {
         Events.Clear();
+        AreEventsFound = false;
+        AreNoEventsFound = true;
 
-        locations = await mobEventManager.GetLocationsByTimeRangeAsync(DateTimeOffset.Now.AddDays(-180),
-            DateTimeOffset.Now);
+        DateTimeOffset startDate;
+        DateTimeOffset endDate;
+
+        if (IsUpcomingSelected)
+        {
+            startDate = DateTimeOffset.Now.Date.AddDays(DateRanges.UpcomingRangeDictionary[SelectedUpcomingDateRange].Item1);
+            endDate = DateTimeOffset.Now.Date.AddDays(DateRanges.UpcomingRangeDictionary[SelectedUpcomingDateRange].Item2);
+        }
+        else
+        {
+            startDate = DateTimeOffset.Now.Date.AddDays(DateRanges.CompletedRangeDictionary[SelectedCompletedDateRange].Item1);
+            endDate = DateTimeOffset.Now.Date.AddDays(DateRanges.CompletedRangeDictionary[SelectedCompletedDateRange].Item2);
+        }
+
+        locations = await mobEventManager.GetLocationsByTimeRangeAsync(startDate, endDate);
         CountryCollection.Clear();
         RegionCollection.Clear();
         CityCollection.Clear();
+
+        if (locations == null || !locations.Any())
+        {
+            return;
+        }
 
         var countries = locations.Select(l => l.Country).Distinct();
 
@@ -153,22 +235,58 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
             }
         }
 
+        var eventFilter = new EventFilter
+        {
+            StartDate = startDate,
+            EndDate = endDate,
+            PageIndex = 0,
+            PageSize = 100,
+            EventStatusId = null,
+        };
+
+        var events = await mobEventManager.GetFilteredEventsAsync(eventFilter);
+
         if (IsUpcomingSelected)
         {
-            RawEvents = await mobEventManager.GetActiveEventsAsync();
-        }
-        else if (IsCompletedSelected)
-        {
-            RawEvents = await mobEventManager.GetCompletedEventsAsync();
+            RawEvents = events.Where(e => !e.IsCompleted());
         }
         else
         {
-            RawEvents = await mobEventManager.GetAllEventsAsync();
+            RawEvents = events.Where(e => e.IsCompleted());
+        }
+
+        if (!RawEvents.Any())
+        {
+            return;
         }
 
         var countryList = RawEvents.Select(e => e.Country).Distinct();
 
         UpdateEventReportViewModels();
+    }
+
+    private async void HandleUpcomingDateRangeSelected()
+    {
+        IsBusy = true;
+
+        if (IsUpcomingSelected)
+        {
+            await RefreshEvents();
+        }
+
+        IsBusy = false;
+    }
+
+    private async void HandleCompletedDateRangeSelected()
+    {
+        IsBusy = true;
+
+        if (IsCompletedSelected)
+        {
+            await RefreshEvents();
+        }
+
+        IsBusy = false;
     }
 
     private void HandleCountrySelected(string? selectedCountry)
@@ -190,6 +308,11 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
     private void RefreshRegionList()
     {
         RegionCollection.Clear();
+
+        if (!locations.Any(l => l.Country == selectedCountry))
+        {
+            return;
+        }
 
         var regions = locations.Where(l => l.Country == selectedCountry).Select(l => l.Region).Distinct();
 
@@ -221,6 +344,11 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
     private void RefreshCityList()
     {
         CityCollection.Clear();
+
+        if (!locations.Any(l => l.Country == selectedCountry && l.Region == selectedRegion))
+        {
+            return;
+        }
 
         var cities = locations.Where(l => l.Country == selectedCountry && l.Region == selectedRegion)
             .Select(l => l.City).Distinct();
@@ -258,6 +386,9 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
             
             Events.Add(vm);
         }
+
+        AreEventsFound = Events.Any();
+        AreNoEventsFound = !Events.Any();
     }
 
     [RelayCommand]
@@ -266,8 +397,7 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
         IsBusy = true;
 
         IsUpcomingSelected = true;
-        IsCompletedSelected = false; 
-        IsBothSelected = false;
+        IsCompletedSelected = false;
 
         await RefreshEvents();
 
@@ -281,21 +411,6 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
 
         IsUpcomingSelected = false;
         IsCompletedSelected = true;
-        IsBothSelected = false;
-
-        await RefreshEvents();
-
-        IsBusy = false;
-    }
-
-    [RelayCommand]
-    private async Task ViewBoth()
-    {
-        IsBusy = true;
-
-        IsUpcomingSelected = false;
-        IsCompletedSelected = false;
-        IsBothSelected = true;
 
         await RefreshEvents();
 

@@ -73,20 +73,24 @@ public class CustomMapHandler : MapHandler
         }
 
         var span = map.InitialMapSpanAndroid;
-        var ne = new LatLng(span.Center.Latitude + span.LatitudeDegrees / 2,
-            span.Center.Longitude + span.LongitudeDegrees / 2);
-        var sw = new LatLng(span.Center.Latitude - span.LatitudeDegrees / 2,
-            span.Center.Longitude - span.LongitudeDegrees / 2);
-        var update = CameraUpdateFactory.NewLatLngBounds(new LatLngBounds(sw, ne), 0);
 
-        try
+        if (span != null)
         {
-            Map.MoveCamera(update);
-            _setInitialMapSpan = true;
-        }
-        catch (Exception)
-        {
-            // ignored
+            var ne = new LatLng(span.Center.Latitude + span.LatitudeDegrees / 2,
+                span.Center.Longitude + span.LongitudeDegrees / 2);
+            var sw = new LatLng(span.Center.Latitude - span.LatitudeDegrees / 2,
+                span.Center.Longitude - span.LongitudeDegrees / 2);
+            var update = CameraUpdateFactory.NewLatLngBounds(new LatLngBounds(sw, ne), 0);
+
+            try
+            {
+                Map.MoveCamera(update);
+                _setInitialMapSpan = true;
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
     }
 

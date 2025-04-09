@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:TrashMobMobile.Controls"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             x:Class="TrashMobMobile.Views.MyDashboard.TabUpcomingEvents">
+    <VerticalStackLayout>
+        <controls:TMPicker Title="Upcoming Date Range"
+                                   HeightRequest="40"
+                                   Margin="10, 0, 10, 0"
+                                   ItemsSource="{Binding UpcomingDateRanges}"
+                                   SelectedItem="{Binding SelectedUpcomingDateRange, Mode=TwoWay}" />
+
+        <Label Text="There are no upcoming events matching the selected criteria." IsVisible="{Binding AreNoUpcomingEventsFound}" Margin="10" />
+
+        <CollectionView x:Name="UpcomingEventsCollection"
+                                ItemsSource="{Binding UpcomingEvents}"
+                                SelectedItem="{Binding UpcomingSelectedEvent}"
+                                SelectionMode="Single"
+                                Margin="10, 0, 10, 0"
+                                MaximumHeightRequest="250"
+                                IsVisible="{Binding AreUpcomingEventsFound}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="viewModels:EventViewModel">
+                    <Border Style="{StaticResource RoundBorder}" Margin="5">
+                        <Grid ColumnDefinitions="*, *"
+                                      RowDefinitions="Auto, Auto, Auto, Auto"
+                                      x:Name="EventItem">
+
+                            <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Small" />
+                            <Label Text="{Binding DisplayDate}" Grid.Row="1" Grid.ColumnSpan="2"
+                                           FontSize="Micro" />
+                            <Label Text="{Binding DisplayTime}" Grid.Row="1" Grid.Column="1" FontSize="Micro" />
+                            <Label Text="{Binding Address.DisplayAddress}" Grid.Row="2" Grid.ColumnSpan="2"
+                                           FontSize="Micro" />
+                            <Label Text="{Binding UserRoleForEvent}" Grid.Row="3" FontSize="Micro" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </VerticalStackLayout>
+</ContentView>

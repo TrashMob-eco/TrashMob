@@ -58,13 +58,13 @@ jobs:
             fetch-depth: 0
 
         - name: Install GitVersion
-          uses: gittools/actions/gitversion/setup@v3.0.0
+          uses: gittools/actions/gitversion/setup@v3.1.11
           with:
             versionSpec: '5.x'
   
         - name: Determine Version
           id: version_step # step id used as reference for output values
-          uses: gittools/actions/gitversion/execute@v3.0.0
+          uses: gittools/actions/gitversion/execute@v3.1.11
   
         - name: Update Build Number
           run: |
@@ -121,7 +121,7 @@ jobs:
 
         - name: Publish Android Mobile App
           run: |
-            dotnet publish TrashMobMobile/TrashMobMobile.csproj -c:${{ inputs.configuration }} -f:net8.0-android --no-restore /p:AndroidPackageFormat="aab"
+            dotnet publish TrashMobMobile/TrashMobMobile.csproj -c:${{ inputs.configuration }} -f:net9.0-android --no-restore /p:AndroidPackageFormat="aab"
 
         # Store Android Signing Keystore and password in Secrets using base64 encoding
         # https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/certutil
@@ -138,10 +138,10 @@ jobs:
           shell: bash
           run: |
             cd TrashMobMobile
-            jarsigner -keystore android/trashmobmobileapp.decrypted.jks -storepass "${{ secrets.android_keystore_password }}" -signedjar bin/${{ inputs.configuration }}/net8.0-android/publish/${{ inputs.bundle_id }}-Signed.aab bin/${{ inputs.configuration }}/net8.0-android/publish/${{ inputs.bundle_id }}.aab ${{ inputs.android_key_name }}
+            jarsigner -keystore android/trashmobmobileapp.decrypted.jks -storepass "${{ secrets.android_keystore_password }}" -signedjar bin/${{ inputs.configuration }}/net9.0-android/publish/${{ inputs.bundle_id }}-Signed.aab bin/${{ inputs.configuration }}/net9.0-android/publish/${{ inputs.bundle_id }}.aab ${{ inputs.android_key_name }}
 
-        - uses: actions/upload-artifact@v3.2.1
+        - uses: actions/upload-artifact@v4.6.2
           with:
             name: artifacts-android-${{ env.semVer }}
             path: |
-              TrashMobMobile\bin\${{ inputs.configuration }}\net8.0-android\publish\*.aab
+              TrashMobMobile\bin\${{ inputs.configuration }}\net9.0-android\publish\*.aab

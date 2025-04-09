@@ -22,6 +22,27 @@ export const GetEventTypes = () => ({
         }),
 });
 
+export type GetFilteredEvents_Params = {
+    city?: string;
+    region?: string;
+    country?: string;
+    startDate?: string;
+    endDate?: string;
+    createdByUserId?: string;
+};
+export type GetFilteredEvents_Response = EventData[];
+
+export const GetFilteredEvents = (params: GetFilteredEvents_Params) => ({
+    key: ['/events/filteredevents', params],
+    service: () => {
+        return ApiService('public').fetchData<GetFilteredEvents_Response>({
+            url: '/events/filteredevents',
+            method: 'post',
+            data: params,
+        });
+    },
+});
+
 export type GetAllEvents_Response = EventData[];
 export const GetAllEvents = () => ({
     key: ['/events'],

@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
+using TrashMob.Models.Poco;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
@@ -23,7 +24,7 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
     private string? selectedRegion;
 
     [ObservableProperty]
-    private AddressViewModel userLocation;
+    private AddressViewModel? userLocation;
 
     private IEnumerable<LitterReport> RawLitterReports { get; set; } = [];
 
@@ -32,6 +33,8 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
     public ObservableCollection<string> CountryCollection { get; set; } = [];
     public ObservableCollection<string> RegionCollection { get; set; } = [];
     public ObservableCollection<string> CityCollection { get; set; } = [];
+
+    public ObservableCollection<string> CreatedDateRanges { get; set; } = [];
 
     [ObservableProperty]
     private bool isMapSelected;
@@ -49,7 +52,31 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
     private bool isCleanedSelected;
 
     [ObservableProperty]
-    private bool isAllSelected;
+    private bool areLitterReportsFound;
+
+    [ObservableProperty]
+    private bool areNoLitterReportsFound;
+
+    private string selectedCreatedDateRange = DateRanges.LastWeek;
+
+    public string SelectedCreatedDateRange
+    {
+        get => selectedCreatedDateRange;
+        set
+        {
+            if (value == null)
+            {
+                return;
+            }
+
+            if (selectedCreatedDateRange != value)
+            {
+                selectedCreatedDateRange = value;
+                OnPropertyChanged();
+                HandleCreatedDateRangeSelected();
+            }
+        }
+    }
 
     public string? SelectedCountry
     {
@@ -142,10 +169,16 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
             IsNewSelected = true;
             IsAssignedSelected = false;
             IsCleanedSelected = false;
-            IsAllSelected = false;
 
             UserLocation = userManager.CurrentUser.GetAddress();
-            await RefreshLitterReports();
+
+            foreach (var date in DateRanges.CreatedDateRangeDictionary)
+            {
+                CreatedDateRanges.Add(date.Key);
+            }
+
+            SelectedCreatedDateRange = DateRanges.LastMonth;
+
             IsBusy = false;
             await NotificationService.Notify("Litter Report list has been refreshed.");
         }
@@ -164,8 +197,14 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
 
     private async Task RefreshLitterReports()
     {
+        AreLitterReportsFound = false;
+        AreNoLitterReportsFound = true;
+
         LitterReports.Clear();
 
+        DateTimeOffset startDate = DateTimeOffset.Now.Date.AddDays(DateRanges.CreatedDateRangeDictionary[SelectedCreatedDateRange].Item1);
+        DateTimeOffset endDate = DateTimeOffset.Now.Date.AddDays(DateRanges.CreatedDateRangeDictionary[SelectedCreatedDateRange].Item2);
+     
         locations = await litterReportManager.GetLocationsByTimeRangeAsync(DateTimeOffset.Now.AddDays(-180),
             DateTimeOffset.Now);
         CountryCollection.Clear();
@@ -182,24 +221,40 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
             }
         }
 
+        var litterReportFilter = new LitterReportFilter
+        {
+            StartDate = startDate,
+            EndDate = endDate,
+            PageIndex = 0,
+            PageSize = 1000,
+            IncludeLitterImages = true,
+        };
+
         if (IsAssignedSelected)
         {
-            RawLitterReports = await litterReportManager.GetAssignedLitterReportsAsync();
+            litterReportFilter.LitterReportStatusId = (int)LitterReportStatusEnum.Assigned;
         }
         else if (IsNewSelected)
         {
-            RawLitterReports = await litterReportManager.GetNewLitterReportsAsync();
+            litterReportFilter.LitterReportStatusId = (int)LitterReportStatusEnum.New;
         }
         else if (IsCleanedSelected)
         {
-            RawLitterReports = await litterReportManager.GetCleanedLitterReportsAsync();
-        }
-        else
-        {
-            RawLitterReports = await litterReportManager.GetAllLitterReportsAsync();
+            litterReportFilter.LitterReportStatusId = (int)LitterReportStatusEnum.Cleaned;
         }
 
+        RawLitterReports = await litterReportManager.GetLitterReportsAsync(litterReportFilter, ImageSizeEnum.Thumb, true);
+
         UpdateLitterReportViewModels();
+    }
+
+    private async void HandleCreatedDateRangeSelected()
+    {
+        IsBusy = true;
+
+        await RefreshLitterReports();
+
+        IsBusy = false;
     }
 
     private void HandleCountrySelected(string? selectedCountry)
@@ -300,6 +355,9 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
 
             LitterReports.Add(vm);
         }
+
+        AreLitterReportsFound = LitterReports.Any();
+        AreNoLitterReportsFound = !LitterReports.Any();
     }
 
     [RelayCommand]
@@ -324,7 +382,6 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
         IsNewSelected = true;
         IsAssignedSelected = false;
         IsCleanedSelected = false;
-        IsAllSelected = false;
 
         await RefreshLitterReports();
 
@@ -339,7 +396,6 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
         IsNewSelected = false;
         IsAssignedSelected = true;
         IsCleanedSelected = false;
-        IsAllSelected = false;
 
         await RefreshLitterReports();
 
@@ -354,22 +410,6 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
         IsNewSelected = false;
         IsAssignedSelected = false;
         IsCleanedSelected = true;
-        IsAllSelected = false;
-
-        await RefreshLitterReports();
-
-        IsBusy = false;
-    }
-
-    [RelayCommand]
-    private async Task ViewAll()
-    {
-        IsBusy = true;
-
-        IsNewSelected = false;
-        IsAssignedSelected = false;
-        IsCleanedSelected = false;
-        IsAllSelected = true;
 
         await RefreshLitterReports();
 

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             xmlns:controls="clr-namespace:TrashMobMobile.Controls"
+             x:Class="TrashMobMobile.Views.ViewEvent.TabDetails">
+    <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" RowSpacing="3"
+                      ColumnDefinitions="*, 2*, *">
+
+        <controls:CustomMap x:Name="eventLocationMap" HeightRequest="200"
+                            HandlerProperties.DisconnectPolicy="Manual"
+                              ItemsSource="{Binding Addresses}" Grid.Row="0" Grid.ColumnSpan="3">
+            <maps:Map.ItemTemplate>
+                <DataTemplate x:DataType="viewModels:AddressViewModel">
+                    <controls:CustomPin Location="{Binding Location}"
+                                          Address="{Binding StreetAddress}"
+                                          ImageSource="{Binding IconFile}"                                          
+                                          Label="{Binding AddressType}" />
+                </DataTemplate>
+            </maps:Map.ItemTemplate>
+        </controls:CustomMap>
+
+        <Label Grid.Row="1" Grid.Column="0" Text="{Binding EventViewModel.DisplayDate}"
+                           FontAttributes="Bold" Grid.ColumnSpan="2" />
+        <Label Grid.Row="1" Grid.Column="3" Text="{Binding EventViewModel.DisplayTime}" />
+        <Label Grid.Row="2" Grid.Column="0" Text="{Binding SelectedEventType}" Style="{StaticResource LongText}" Margin="20, 0, 0, 0"
+                           Grid.ColumnSpan="2" />
+        <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding DisplayDuration}" Style="{StaticResource LongText}" Margin="20, 0, 0, 0" />
+        <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
+                           Text="{Binding EventViewModel.Address.DisplayAddress }" Style="{StaticResource LongText}" Margin="20, 0, 0, 0" />
+        <Label Grid.Row="6" Grid.Column="0" Text="About this event" FontAttributes="Bold"
+                           Grid.ColumnSpan="2" />
+        <Label Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding EventViewModel.Description}" Style="{StaticResource LongText}" Margin="20, 0, 0, 0"
+                           FontSize="Micro" />
+        <Label Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding WhatToExpect}" Style="{StaticResource LongText}" Margin="20, 0, 0, 0"
+                           FontSize="Micro" />
+        <Label Grid.Row="9" Grid.Column="0" Text="Attendees" />
+        <Label Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding AttendeeCount}" Style="{StaticResource LongText}" Margin="20, 0, 0, 0" />
+
+        <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="*, *, *, *"
+                      MaximumWidthRequest="400" Grid.Row="11" Grid.ColumnSpan="2">
+            <Button Margin="5"
+                            Grid.Row="0" 
+                            Grid.Column="0" 
+                            Text="Register" 
+                            Command="{Binding RegisterCommand}"
+                            IsVisible="{Binding EnableRegister}"
+                            Style="{StaticResource PrimarySmallButton}" />
+            <Button Margin="5"
+                            Grid.Row="0" 
+                            Grid.Column="0" 
+                            Text="Unregister" 
+                            Command="{Binding UnregisterCommand}"
+                            IsVisible="{Binding EnableUnregister}"
+                            Style="{StaticResource PrimarySmallButton}" />
+            <Button Margin="5"
+                            Grid.Row="0" 
+                            Grid.Column="0" 
+                            Text="Edit Event" 
+                            Command="{Binding EditEventCommand}"
+                            IsVisible="{Binding EnableEditEvent}"
+                            Style="{StaticResource PrimarySmallButton}" />
+            <Button Margin="5"
+                            Grid.Row="0" 
+                            Grid.Column="1" 
+                            Command="{Binding ViewEventSummaryCommand}" 
+                            Text="View Event Summary"
+                            IsVisible="{Binding EnableViewEventSummary}"
+                            Style="{StaticResource SecondarySmallButton}" />
+            <!--<Button Margin="5"
+                            Grid.Row="0" 
+                            Grid.Column="2" 
+                            Command="{Binding RealTimeLocationTrackerCommand}" 
+                            IsVisible="{Binding EnableStartTrackEventRoute}"
+                            IsEnabled="{Binding EnableStartTrackEventRoute}"
+                            Text="Start Tracking" 
+                            Style="{StaticResource SecondarySmallButton}" />
+            <Button Margin="5"
+                            Grid.Row="0" 
+                            Grid.Column="2" 
+                            Command="{Binding RealTimeLocationTrackerCancelCommand}" 
+                            IsEnabled="{Binding EnableStopTrackEventRoute}"
+                            IsVisible="{Binding EnableStopTrackEventRoute}"
+                            Text="Stop Tracking" 
+                            Style="{StaticResource SecondarySmallButton}" />-->
+        </Grid>
+    </Grid>
+</ContentView>

@@ -11,49 +11,20 @@ public class MobEventRestService(IHttpClientFactory httpClientFactory) : RestSer
 {
     protected override string Controller => "events";
 
-    public async Task<IEnumerable<Event>> GetActiveEventsAsync(CancellationToken cancellationToken = default)
+    public async Task<PaginatedList<Event>> GetFilteredEventsAsync(EventFilter filter, CancellationToken cancellationToken = default)
     {
-        var mobEvents = new List<Event>();
-
-        var requestUri = $"{Controller}/active";
-        var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken);
-        response.EnsureSuccessStatusCode();
-        var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        mobEvents = JsonConvert.DeserializeObject<List<Event>>(content);
-
-        return mobEvents;
-    }
-
-    public async Task<IEnumerable<Event>> GetCompletedEventsAsync(CancellationToken cancellationToken = default)
-    {
-        var mobEvents = new List<Event>();
-
-        var requestUri = $"{Controller}/completed";
-        var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken);
-        response.EnsureSuccessStatusCode();
-        var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        mobEvents = JsonConvert.DeserializeObject<List<Event>>(content);
-
-        return mobEvents;
-    }
-
-    public async Task<IEnumerable<Event>> GetAllEventsAsync(CancellationToken cancellationToken = default)
-    {
-        var mobEvents = new List<Event>();
-
-        var requestUri = $"{Controller}";
-        var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken);
-        response.EnsureSuccessStatusCode();
-        var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        mobEvents = JsonConvert.DeserializeObject<List<Event>>(content);
-
-        return mobEvents;
-    }
-
-    public async Task<PaginatedList<Event>> GetFilteredEventsAsync(GeneralFilter filter, CancellationToken cancellationToken = default)
-    {
-        var content = JsonContent.Create(filter, typeof(GeneralFilter), null, SerializerOptions);
+        var content = JsonContent.Create(filter, typeof(EventFilter), null, SerializerOptions);
         var requestUri = $"{Controller}/pagedfilteredevents";
+        var response = await AnonymousHttpClient.PostAsync(requestUri, content, cancellationToken);
+        response.EnsureSuccessStatusCode();
+        var returnContent = await response.Content.ReadAsStringAsync(cancellationToken);
+        return JsonConvert.DeserializeObject<PaginatedList<Event>>(returnContent);
+    }
+
+    public async Task<PaginatedList<Event>> GetUserEventsAsync(EventFilter filter, Guid userId, CancellationToken cancellationToken = default)
+    {
+        var content = JsonContent.Create(filter, typeof(EventFilter), null, SerializerOptions);
+        var requestUri = $"{Controller}/pageduserevents/{userId}";
         var response = await AnonymousHttpClient.PostAsync(requestUri, content, cancellationToken);
         response.EnsureSuccessStatusCode();
         var returnContent = await response.Content.ReadAsStringAsync(cancellationToken);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { Menu, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { MainNav } from './MainNav';
@@ -20,7 +20,7 @@ export const SiteHeader = (props: SiteHeaderProps) => {
 
     return (
         <div className='tailwind'>
-            <div className='border-b shadow-md shadow-black/10 bg-white py-3'>
+            <div className='border-b shadow-md shadow-black/10 bg-white py-4'>
                 <div className='container'>
                     <div className='flex items-center flex-wrap flex-row'>
                         <a className='-ml-2 grow lg:grow-0' href='/'>
@@ -51,7 +51,7 @@ export const SiteHeader = (props: SiteHeaderProps) => {
                             <MainNav className='flex-1 !py-4 lg:!py-0' isUserLoaded={isUserLoaded} />
                             <div className={cn('flex flex-row gap-4')}>
                                 <Button asChild className='flex md:hidden xl:flex'>
-                                    <Link to='/manageeventdashboard'>
+                                    <Link to='/events/create'>
                                         <Plus /> Create an Event
                                     </Link>
                                 </Button>

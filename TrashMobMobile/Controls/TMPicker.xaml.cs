@@ -1,7 +1,6 @@
-using System.Collections;
-
 namespace TrashMobMobile.Controls;
 
+using System.Collections;
 using Maui.BindableProperty.Generator.Core;
 
 public partial class TMPicker : ContentView
@@ -34,6 +33,11 @@ public partial class TMPicker : ContentView
     private void TitlePropertyChanged(string newValue)
     {
         WrappedPicker.Title = newValue;
+    }
+
+    private void WrappedPicker_OnSelectedIndexChanged(object? sender, EventArgs e)
+    {
+        SelectedItem = ((BorderlessPicker) sender).SelectedItem;
     }
 }
 

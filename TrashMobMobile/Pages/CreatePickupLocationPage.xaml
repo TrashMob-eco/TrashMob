@@ -42,7 +42,7 @@
 
                 <Image x:Name="pickupPhoto" IsVisible="false" MaximumHeightRequest="200" />
 
-                <maps:Map x:Name="pickupLocationMap" ItemsSource="{Binding PickupLocations}">
+                <controls:CustomMap x:Name="pickupLocationMap" ItemsSource="{Binding PickupLocations}">
                     <maps:Map.ItemTemplate>
                         <DataTemplate x:DataType="viewModels:PickupLocationViewModel">
                             <controls:CustomPin Location="{Binding Address.Location}"
@@ -51,7 +51,7 @@
                                       Label="{Binding Name}" />
                         </DataTemplate>
                     </maps:Map.ItemTemplate>
-                </maps:Map>
+                </controls:CustomMap>
 
                 <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="*, *">
                     <VerticalStackLayout Grid.Row="0" Grid.ColumnSpan="2">

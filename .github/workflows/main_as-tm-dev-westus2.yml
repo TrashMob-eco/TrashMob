@@ -17,8 +17,8 @@ on:
    
 
 env:
-  DOTNET_VERSION: '8.0.x'  # set this to the dotnet version to use
-  DOTNET_VERSION2: '8.0.x'  # set this to the dotnet version to use
+  DOTNET_VERSION: '9.0.x'  # set this to the dotnet version to use
+  DOTNET_VERSION2: '9.0.x'  # set this to the dotnet version to use
   CONFIGURATION: Debug
 
 jobs:
@@ -33,13 +33,13 @@ jobs:
         fetch-depth: 0
 
     - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v3.0.0
+      uses: gittools/actions/gitversion/setup@v3.1.11
       with:
         versionSpec: '5.x'
 
     - name: Determine Version
       id: version_step # step id used as reference for output values
-      uses: gittools/actions/gitversion/execute@v3.0.0
+      uses: gittools/actions/gitversion/execute@v3.1.11
 
     - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
       uses: actions/setup-dotnet@v4
@@ -58,7 +58,7 @@ jobs:
       run: dotnet publish TrashMob\TrashMob.csproj --configuration ${{ env.CONFIGURATION }} --output "${{env.DOTNET_ROOT}}/trashmobwebapp" --no-restore
 
     - name: Upload artifact for deployment job
-      uses: actions/upload-artifact@v3.2.1
+      uses: actions/upload-artifact@v4.6.2
       with:
         name: .net-app
         path: "${{env.DOTNET_ROOT}}/trashmobwebapp"
@@ -72,7 +72,7 @@ jobs:
 
     steps:
     - name: Download artifact from build job
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: .net-app
 

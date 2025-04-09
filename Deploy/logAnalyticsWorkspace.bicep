@@ -3,7 +3,7 @@ param region string
 
 var workspaces_law_tm_name = 'law-tm-${environment}-${region}'
 
-resource workspaces_law_tm_name_resource 'microsoft.operationalinsights/workspaces@2020-10-01' = {
+resource workspaces_law_tm_name_resource 'microsoft.operationalinsights/workspaces@2023-09-01' = {
   name: workspaces_law_tm_name
   location: region
   properties: {

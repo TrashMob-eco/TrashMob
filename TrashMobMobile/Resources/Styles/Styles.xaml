@@ -3,7 +3,8 @@
 
 <ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-                    xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps">
+                    xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
+                    xmlns:controls="clr-namespace:TrashMobMobile.Controls">
 
     <Style TargetType="ActivityIndicator">
         <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
@@ -285,6 +286,27 @@
         </Setter>
     </Style>
 
+    <Style TargetType="Label" x:Key="LongText">
+        <Setter Property="TextColor"
+                Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="FontFamily" Value="LexendRegular" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal" />
+                    <VisualState x:Name="Disabled">
+                        <VisualState.Setters>
+                            <Setter Property="TextColor"
+                                    Value="{AppThemeBinding Light={StaticResource DisabledText}, Dark={StaticResource DisabledDarkText}}" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+
     <Style TargetType="Span">
         <Setter Property="TextColor"
                 Value="{AppThemeBinding Light={StaticResource PrimaryText}, Dark={StaticResource PrimaryDarkText}}" />
@@ -322,6 +344,13 @@
     </Style>
 
     <Style TargetType="maps:Map">
+        <Setter Property="IsShowingUser" Value="True" />
+        <Setter Property="Margin" Value="10" />
+        <Setter Property="HeightRequest" Value="300" />
+        <Setter Property="IsScrollEnabled" Value="True" />
+    </Style>
+
+    <Style TargetType="controls:CustomMap">
         <Setter Property="IsShowingUser" Value="True" />
         <Setter Property="Margin" Value="10" />
         <Setter Property="HeightRequest" Value="300" />

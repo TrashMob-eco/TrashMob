@@ -19,6 +19,7 @@ export type AzureMapSearchAddressReverseResultItem = {
         };
         countrySubdivisionName: string;
     };
+    id: string;
     position: string;
     dataSources: {
         geometry: {

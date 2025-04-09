@@ -96,6 +96,7 @@
         "no-restricted-globals": "off",
         "no-irregular-whitespace": "off",
         "react/function-component-definition": "off",
+        "react/jsx-no-constructed-context-values": "off",
         "react/no-unstable-nested-components": "off",
         "react/no-unescaped-entities": "off",
         "react/react-in-jsx-scope": "off",
