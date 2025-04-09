@@ -273,7 +273,7 @@
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(64);
+                    .HasMaxLength(256);
 
                 entity.Property(e => e.Region)
                     .IsRequired()
