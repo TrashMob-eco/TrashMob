@@ -16,8 +16,8 @@ public static class MauiProgram
             .UseMauiApp<App>()
             .UseMauiMaps()
             .UseSharpnadoTabs(loggerEnable: false);
-            
-            builder.ConfigureMauiHandlers(handlers =>
+
+        builder.ConfigureMauiHandlers(handlers =>
             {
 #if ANDROID || IOS || MACCATALYST
                 handlers.AddHandler<Microsoft.Maui.Controls.Maps.Map, CustomMapHandler>();
@@ -33,34 +33,33 @@ public static class MauiProgram
                 fonts.AddFont("googlematerialdesignicons-webfont.ttf", "GoogleMaterialIcons");
             });
 
-            //Sentry AOT SHA initialization issues in ipad air
-            if (DeviceInfo.Name != null && !DeviceInfo.Name.Contains("iPad Air"))
-            {
-                builder.UseSentry(options =>
-                {
-                    // The DSN is the only required setting.
-                    options.Dsn =
-                        "https://4be7fb697cee47ce9554bb64f7d6a476@o4505460799045632.ingest.sentry.io/4505460800225280";
+#if !IOS
+        builder.UseSentry(options =>
+        {
+            // The DSN is the only required setting.
+            options.Dsn =
+                "https://4be7fb697cee47ce9554bb64f7d6a476@o4505460799045632.ingest.sentry.io/4505460800225280";
 
-                    // Use debug mode if you want to see what the SDK is doing.
-                    // Debug messages are written to stdout with Console.Writeline,
-                    // and are viewable in your IDE's debug console or with 'adb logcat', etc.
-                    // This option is not recommended when deploying your application.
-                    options.Debug = false;
+            // Use debug mode if you want to see what the SDK is doing.
+            // Debug messages are written to stdout with Console.Writeline,
+            // and are viewable in your IDE's debug console or with 'adb logcat', etc.
+            // This option is not recommended when deploying your application.
+            options.Debug = false;
 
-                    // Set TracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
-                    // We recommend adjusting this value in production.
-                    options.TracesSampleRate = 1.0;
+            // Set TracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
+            // We recommend adjusting this value in production.
+            options.TracesSampleRate = 1.0;
 
-                    // Other Sentry options can be set here.
-                    options.CaptureFailedRequests = true;
-                });
-            }
-
+            // Other Sentry options can be set here.
+            options.CaptureFailedRequests = true;
+        });
+#endif
 
         // Services
         builder.Services.AddSingleton<AuthHandler>();
+#if !IOS
         builder.Services.AddTransient<SentryHttpMessageHandler>();
+#endif        
         builder.Services.AddTrashMobServices();
         builder.Services.AddRestClientServices(builder.Configuration);
 

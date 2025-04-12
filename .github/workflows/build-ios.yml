@@ -50,7 +50,7 @@ on:
 
 jobs:
     build:
-        runs-on: macos-14-large
+        runs-on: macos-14
         environment: ${{ inputs.environment }}
         name: iOS Build
 
@@ -90,7 +90,7 @@ jobs:
           run: |
             dotnet nuget locals all --clear
             dotnet workload install maui --ignore-failed-sources
-            dotnet workload install maui-ios --source https://api.nuget.org/v3/index.json
+            dotnet workload install maui-ios --version 9.0.200 --source https://api.nuget.org/v3/index.json
 
         - name: Set XCode Version
           if: runner.os == 'macOS'
