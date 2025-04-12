@@ -245,3 +245,30 @@
 1. **As an administrator, I want to be able to integrate with IFTTT so that I can automatically posting new partners to social media with the correct tags.**
 1. **As an administrator, I want to be able to integrate with IFTTT so that I can automatically post event summaries to social media with the correct tags.**
 1. **As an administrator, I want to be able to integrate with IFTTT so that I can automatically post event reminders to social media with the correct tags.**
+
+## TrashMob Teams
+1. **As a user, I want to be able to join a TrashMob team so that I can participate in events with my friends.**
+1. **A leader of the team can invite me to join the team by sending me an email.**
+	1.	**The email should include a link to the team page.**
+	1.  **The user can accept or decline the invitation.** 
+1. **As a user, I want to be able to leave a TrashMob team.**
+1. **As a user, I want to be able to create a TrashMob team so that I can organize events with my friends.**
+1. **As a user, I want to be able to see a list of TrashMob teams so that I can join one.**
+1. **As a user, I want to be able to see a map of TrashMob teams so that I can join one.**
+1. **As a user, I want to be able to see a list of events that my TrashMob team is participating in so that I can join them.**
+1. **As a user, I want to be able to see a map of events that my TrashMob team is participating in so that I can join them.**
+1. **As a user, I want to be able to see a list of events that my TrashMob team has participated in so that I can track our impact.**
+1. **As a user, I want to be able to see a map of events that my TrashMob team has participated in so that I can track our impact.**
+1. **As a user, I want to be able to see a list of events that my TrashMob team has created so that I can track our impact.**
+1. **As a user, I want to be able to see a map of events that my TrashMob team has created so that I can track our impact.**
+1. **As a user, I want to be able to see a list of events that my TrashMob team has attended so that I can track our impact.**
+1. **As a Team leader, I want to be able to remove a member from my TrashMob team so that I can manage the team.**
+1. **As a Team leader, I want to be able to remove a team from the site so that I can manage the team.**
+	1.	**If I am the team leader, I cannot remove myself as leader of the team without selecting someone else to lead the team first**
+1. **As a Team leader, I want to be able to see a list of members of my TrashMob team so that I can manage the team.**
+1. **As a Team leader, I want to be able to promote a member of my TrashMob team to a co-leader so that they can manage the team.**
+1. **As a Team leader, I want to be able to demote a member of my TrashMob team from a co-leader to a member so that I can manage the team.**
+1. 
+
+
+1. 
