@@ -15,7 +15,7 @@ const generateTimeRange = (start: number, end: number): string[] => {
     return times;
 };
 
-const timeRange = generateTimeRange(9, 20);
+const timeRange = generateTimeRange(7, 20);
 
 export const TimePicker = (props: TimePickerProps) => {
     return (
