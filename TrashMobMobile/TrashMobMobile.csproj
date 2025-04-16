@@ -79,6 +79,10 @@
 	  <None Remove="Resources\Images\bannerlogo_light.png" />
 	</ItemGroup>
 
+	<PropertyGroup Condition=" '$(TargetFramework)' == 'net9.0-ios' And '$(Configuration)' == 'Release' ">
+		<MtouchLink>None</MtouchLink>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Maui" Version="11.2.0" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />

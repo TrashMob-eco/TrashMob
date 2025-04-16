@@ -32,8 +32,7 @@ public static class MauiProgram
                 fonts.AddFont("Lexend-SemiBold.ttf", "LexendSemibold");
                 fonts.AddFont("googlematerialdesignicons-webfont.ttf", "GoogleMaterialIcons");
             });
-
-#if !IOS
+        
         builder.UseSentry(options =>
         {
             // The DSN is the only required setting.
@@ -53,13 +52,10 @@ public static class MauiProgram
             // Other Sentry options can be set here.
             options.CaptureFailedRequests = true;
         });
-#endif
 
         // Services
         builder.Services.AddSingleton<AuthHandler>();
-#if !IOS
         builder.Services.AddTransient<SentryHttpMessageHandler>();
-#endif        
         builder.Services.AddTrashMobServices();
         builder.Services.AddRestClientServices(builder.Configuration);
 
