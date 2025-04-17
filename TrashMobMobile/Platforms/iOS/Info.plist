@@ -66,15 +66,5 @@
     </array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-    <key>NSCalendarsUsageDescription</key>
-    <string>This app does not access your calendar.</string>
-    <key>NSContactsUsageDescription</key>
-    <string>This app does not access your contacts.</string>
-    <key>NSAppleMusicUsageDescription</key>
-    <string>This app does not access your music library.</string>
-    <key>NSSiriUsageDescription</key>
-    <string>This app does not use Siri.</string>
-    <key>NSBluetoothAlwaysUsageDescription</key>
-    <string>This app does not use Bluetooth.</string>
   </dict>
 </plist>
