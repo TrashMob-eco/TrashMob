@@ -80,7 +80,7 @@
 	</ItemGroup>
 
 	<PropertyGroup Condition=" '$(TargetFramework)' == 'net9.0-ios' And '$(Configuration)' == 'Release' ">
-		<MtouchLink>None</MtouchLink>
+		<MtouchLink>SdkOnly</MtouchLink>
 	</PropertyGroup>
 
 	<ItemGroup>
