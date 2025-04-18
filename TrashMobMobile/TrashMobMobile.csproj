@@ -81,6 +81,9 @@
 
 	<PropertyGroup Condition=" '$(TargetFramework)' == 'net9.0-ios' And '$(Configuration)' == 'Release' ">
 		<MtouchLink>SdkOnly</MtouchLink>
+		<PackageApp>true</PackageApp>
+		<ArchiveOnBuild>true</ArchiveOnBuild>
+		<BuildForSimulator>false</BuildForSimulator>
 	</PropertyGroup>
 
 	<ItemGroup>
