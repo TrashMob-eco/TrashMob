@@ -240,10 +240,10 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                 <Card className='mb-4'>
                     <CardHeader>
                         <div className='flex flex-row'>
-                            <CardTitle className='grow text-primary'>Past events ({pastEvents.length})</CardTitle>
+                            <CardTitle className='grow text-primary'>Completed events ({pastEvents.length})</CardTitle>
                             <RadioGroup
                                 value={pastEventsMapView ? 'map' : 'list'}
-                                onValueChange={(value) => handleEventView(value, 'Past events')}
+                                onValueChange={(value) => handleEventView(value, 'Completed events')}
                                 className='grid-cols-2'
                                 orientation='horizontal'
                             >
