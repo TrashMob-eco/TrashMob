@@ -41,8 +41,8 @@ const createMomentFromDateAndTime = (eventDate: Date, eventTimeStart: string) =>
     return start;
 };
 
-const MAX_EVENT_NAME_LENGTH = 50;
-const MAX_EVENT_DESC_LENGTH = 255;
+const MAX_EVENT_NAME_LENGTH = 256;
+const MAX_EVENT_DESC_LENGTH = 2048;
 
 const createEventSchema = z.object({
     name: z
