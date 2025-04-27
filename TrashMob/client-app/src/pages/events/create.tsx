@@ -113,7 +113,7 @@ export const CreateEventPage = () => {
         resolver: zodResolver(createEventSchema),
         defaultValues: {
             eventTypeId: '1',
-            eventDate: moment().startOf('isoWeek').add(1, 'week').day('saturday').toDate(),
+            eventDate: moment().add(1, 'day').toDate(),
             eventTimeStart: '9:00',
             eventTimeEnd: '11:00',
             isEventPublic: true,
