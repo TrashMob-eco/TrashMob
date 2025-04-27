@@ -10,8 +10,8 @@ export const WhatIsTrashmobSection = () => {
         <section id='introduction' className='bg-card'>
             <div ref={viewportRef} />
             <div className='mx-auto max-w-screen-xl py-8'>
-                <div className='px-8 flex flex-col items-center md:grid md:auto-rows-auto md:grid-cols-5 md:gap-x-4'>
-                    <div className='col-span-3'>
+                <div className='px-8 items-center md:grid md:auto-rows-auto md:grid-cols-5 md:gap-x-4'>
+                    <div className='col-span-12 md:col-span-3'>
                         <h3
                             className={cn(
                                 '!mt-0 !mb-8 text-[40px] font-semibold',
@@ -25,14 +25,21 @@ export const WhatIsTrashmobSection = () => {
                             What is a TrashMob?
                         </h3>
                     </div>
-                    <div className='row-span-4 col-start-4 col-span-2'>
-                        <img
-                            src='/img/jeremy-bezanger-u5mCQ-c5oSI-unsplash.jpg'
-                            alt='What is Trashmob'
-                            className={cn('!mt-0', 'transition-all duration-1000 delay-1000 ease-out', {
-                                'opacity-100 translate-y-0': isInViewPort,
-                                'opacity-0 translate-y-20': !isInViewPort,
-                            })}
+                    <div className='row-span-4 col-span-12 md:col-start-4 md:col-span-2'>
+                        <iframe
+                            className={cn(
+                                'aspect-video w-full mt-0',
+                                'transition-all duration-1000 delay-1000 ease-out',
+                                {
+                                    'opacity-100 translate-y-0': isInViewPort,
+                                    'opacity-0 translate-y-20': !isInViewPort,
+                                },
+                            )}
+                            src='https://www.youtube.com/embed/ylOBeVHRtuM?si=5oYDCAMdywNBmp_A'
+                            title='Trashmob introduction video'
+                            allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+                            referrerPolicy='strict-origin-when-cross-origin'
+                            allowFullScreen
                         />
                     </div>
                     <div className='row-span-3 col-start-1 col-span-3'>
