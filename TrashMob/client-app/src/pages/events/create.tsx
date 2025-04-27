@@ -41,11 +41,19 @@ const createMomentFromDateAndTime = (eventDate: Date, eventTimeStart: string) =>
     return start;
 };
 
+const MAX_EVENT_NAME_LENGTH = 256;
+const MAX_EVENT_DESC_LENGTH = 2048;
+
 const createEventSchema = z.object({
-    name: z.string().min(2, {
-        message: 'Event name must be at least 2 characters.',
+    name: z
+        .string()
+        .min(2, { message: 'Event name must be at least 2 characters.' })
+        .max(MAX_EVENT_NAME_LENGTH, {
+            message: `Event name must be shorter than ${MAX_EVENT_NAME_LENGTH} characters.`,
+        }),
+    description: z.string().max(MAX_EVENT_DESC_LENGTH, {
+        message: `Event description must be shorter than ${MAX_EVENT_DESC_LENGTH} characters.`,
     }),
-    description: z.string(),
     eventDate: z.date(),
     eventTimeStart: z.string(),
     eventTimeEnd: z.string(),
@@ -200,6 +208,8 @@ export const CreateEventPage = () => {
         }
     }, []);
 
+    const eventName = form.watch('name');
+    const eventDescription = form.watch('description');
     const latitude = form.watch('latitude');
     const longitude = form.watch('longitude');
 
@@ -300,7 +310,18 @@ export const CreateEventPage = () => {
                                             <FormControl>
                                                 <Input placeholder='New Event' {...field} />
                                             </FormControl>
-                                            <FormMessage />
+                                            <div className='flex justify-between'>
+                                                <div className='grow'>
+                                                    <FormMessage />
+                                                </div>
+                                                <FormDescription
+                                                    className={cn('text-right', {
+                                                        'text-destructive': eventName.length > MAX_EVENT_NAME_LENGTH,
+                                                    })}
+                                                >
+                                                    {eventName.length}/{MAX_EVENT_NAME_LENGTH}
+                                                </FormDescription>
+                                            </div>
                                         </FormItem>
                                     )}
                                 />
@@ -412,7 +433,19 @@ export const CreateEventPage = () => {
                                                     {...field}
                                                 />
                                             </FormControl>
-                                            <FormMessage />
+                                            <div className='flex justify-between'>
+                                                <div className='grow'>
+                                                    <FormMessage />
+                                                </div>
+                                                <FormDescription
+                                                    className={cn('text-right', {
+                                                        'text-destructive':
+                                                            (eventDescription || '').length > MAX_EVENT_DESC_LENGTH,
+                                                    })}
+                                                >
+                                                    {(eventDescription || '').length}/{MAX_EVENT_DESC_LENGTH}
+                                                </FormDescription>
+                                            </div>
                                         </FormItem>
                                     )}
                                 />
