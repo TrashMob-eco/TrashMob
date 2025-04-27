@@ -49,6 +49,7 @@ const useGetEventsAttendedByUser = (userId: string) => {
 export const EventDetails: FC<EventDetailsProps> = () => {
     const { eventId } = useParams<{ eventId: string }>() as { eventId: string };
     const { currentUser, isUserLoaded } = useLogin();
+    console.log({ currentUser, isUserLoaded });
     const { data: event, isSuccess } = useGetEvent(eventId);
     const { data: eventType } = useGetEventType(event?.eventTypeId || 0);
     const { data: eventAttendees } = useGetEventAttendees(eventId);
@@ -183,17 +184,19 @@ export const EventDetails: FC<EventDetailsProps> = () => {
                             </GoogleMap>
                         ) : null}
                     </div>
-                    <div className='container mx-auto'>
-                        <hr />
-                        <h2 className='font-semibold text-xl mt-5 mb-4'>
-                            <span>Attendees ({(eventAttendees || []).length})</span>
-                        </h2>
-                        <p className='font-semibold m-0 my-4'>
-                            Max Number of Participants:
-                            <span className='ml-2 text-muted-foreground'>{maxNumberOfParticipants}</span>
-                        </p>
-                        <EventAttendeeTable users={eventAttendees || []} event={event} />
-                    </div>
+                    {currentUser ? (
+                        <div className='container mx-auto mb-16'>
+                            <hr />
+                            <h2 className='font-semibold text-xl mt-5 mb-4'>
+                                <span>Attendees ({(eventAttendees || []).length})</span>
+                            </h2>
+                            <p className='font-semibold m-0 my-4'>
+                                Max Number of Participants:
+                                <span className='ml-2 text-muted-foreground'>{maxNumberOfParticipants}</span>
+                            </p>
+                            <EventAttendeeTable users={eventAttendees || []} event={event} />
+                        </div>
+                    ) : null}
                 </>
             )}
         </div>

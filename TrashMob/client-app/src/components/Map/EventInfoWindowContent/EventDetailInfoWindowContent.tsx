@@ -3,6 +3,7 @@ import { useGetEventType } from '../../../hooks/useGetEventType';
 import { RegisterBtn } from '../../Customization/RegisterBtn';
 import EventData from '../../Models/EventData';
 import UserData from '../../Models/UserData';
+import { isCompletedEvent } from '@/lib/event-helpers';
 
 type EventDetailInfoWindowContentProps = {
     event: EventData & {
@@ -45,6 +46,8 @@ export const EventDetailInfoWindowContent = (props: EventDetailInfoWindowContent
         timeZoneName: 'short',
     });
 
+    const eventDetailUrl = isCompletedEvent(event) ? `/eventsummary/${id}` : `/eventdetails/${id}`;
+
     return (
         <div style={{ width: 500, overflowX: 'auto' }}>
             <div>
@@ -64,7 +67,7 @@ export const EventDetailInfoWindowContent = (props: EventDetailInfoWindowContent
                     {createdByUserName}
                 </span>
                 <Button variant='outline' className='mr-0' asChild>
-                    <a href={`/eventdetails/${id}`}>View Details</a>
+                    <a href={eventDetailUrl}>View Details</a>
                 </Button>
                 <RegisterBtn
                     eventId={id}

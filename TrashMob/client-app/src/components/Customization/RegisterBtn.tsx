@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router';
 import { getApiConfig, msalClient } from '../../store/AuthStore';
 import EventAttendeeData from '../Models/EventAttendeeData';
 import UserData from '../Models/UserData';
-import { DisplayEvent } from '../MainEvents';
 import { CurrentTrashMobWaiverVersion } from '../../pages/waivers/page';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -14,8 +13,8 @@ import { cn } from '@/lib/utils';
 
 interface RegisterBtnProps {
     currentUser: UserData;
-    eventId: DisplayEvent['id'];
-    isAttending: DisplayEvent['isAttending'];
+    eventId: string;
+    isAttending: string;
     isUserLoaded: boolean;
     isEventCompleted: boolean;
 }
