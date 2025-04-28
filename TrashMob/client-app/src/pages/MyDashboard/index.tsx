@@ -177,7 +177,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                             key={stat.name}
                         >
                             <p className='text-[25px] font-medium !mt-6 !mb-3'>{stat.name}</p>
-                            <p className='text-primary !mt-0 text-[55px]'>{stat.value}</p>
+                            <p className='text-primary !mt-0 text-[46px]'>{stat.value}</p>
                             <img
                                 src={stat.img}
                                 alt={stat.name}
