@@ -13,8 +13,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
  * - Can show required asterisk
  */
 type EnhancedFormLabelProps = React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> & {
-    tooltip?: string;
-    required?: boolean;
+    readonly tooltip?: string;
+    readonly required?: boolean;
 };
 
 const EnhancedFormLabel = React.forwardRef<React.ElementRef<typeof LabelPrimitive.Root>, EnhancedFormLabelProps>(
@@ -27,9 +27,9 @@ const EnhancedFormLabel = React.forwardRef<React.ElementRef<typeof LabelPrimitiv
                     <Tooltip>
                         <TooltipTrigger>
                             <Label
-                                ref={ref}
                                 className={cn(error && 'text-destructive', className)}
                                 htmlFor={formItemId}
+                                ref={ref}
                                 {...props}
                             />
                             {required ? <span className='text-destructive'>*</span> : ''}
@@ -41,7 +41,7 @@ const EnhancedFormLabel = React.forwardRef<React.ElementRef<typeof LabelPrimitiv
         }
 
         return (
-            <Label ref={ref} className={cn(error && 'text-destructive', className)} htmlFor={formItemId} {...props} />
+            <Label className={cn(error && 'text-destructive', className)} htmlFor={formItemId} ref={ref} {...props} />
         );
     },
 );

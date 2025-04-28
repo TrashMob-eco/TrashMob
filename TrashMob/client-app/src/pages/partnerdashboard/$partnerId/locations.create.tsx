@@ -56,7 +56,7 @@ const formSchema = z.object({
 });
 
 interface PartnerLocationCreateFormProps {
-    azureSubscriptionKey: string;
+    readonly azureSubscriptionKey: string;
 }
 
 export const PartnerLocationCreateForm = (props: PartnerLocationCreateFormProps) => {
@@ -172,13 +172,13 @@ export const PartnerLocationCreateForm = (props: PartnerLocationCreateFormProps)
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className='grid grid-cols-12 gap-4'>
+            <form className='grid grid-cols-12 gap-4' onSubmit={form.handleSubmit(onSubmit)}>
                 <FormField
                     control={form.control}
                     name='name'
                     render={({ field }) => (
                         <FormItem className='col-span-6'>
-                            <FormLabel tooltip={ToolTips.PartnerContactName} required>
+                            <FormLabel required tooltip={ToolTips.PartnerContactName}>
                                 Name
                             </FormLabel>
                             <FormControl>
@@ -196,10 +196,10 @@ export const PartnerLocationCreateForm = (props: PartnerLocationCreateFormProps)
                             <FormLabel tooltip={ToolTips.PartnerLocationIsPartnerLocationActive}>Is Active</FormLabel>
                             <FormControl>
                                 <div className='flex items-center space-x-2 h-9'>
-                                    <Checkbox id='isActive' checked={field.value} onCheckedChange={field.onChange} />
+                                    <Checkbox checked={field.value} id='isActive' onCheckedChange={field.onChange} />
                                     <label
-                                        htmlFor='isActive'
                                         className='text-sm mb-0 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                                        htmlFor='isActive'
                                     >
                                         Active
                                     </label>
@@ -214,11 +214,11 @@ export const PartnerLocationCreateForm = (props: PartnerLocationCreateFormProps)
                     name='publicNotes'
                     render={({ field }) => (
                         <FormItem className='col-span-12'>
-                            <FormLabel tooltip={ToolTips.PartnerLocationPublicNotes} required>
+                            <FormLabel required tooltip={ToolTips.PartnerLocationPublicNotes}>
                                 Public Notes
                             </FormLabel>
                             <FormControl>
-                                <Textarea {...field} maxLength={1000} className='h-24' />
+                                <Textarea {...field} className='h-24' maxLength={1000} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -231,7 +231,7 @@ export const PartnerLocationCreateForm = (props: PartnerLocationCreateFormProps)
                         <FormItem className='col-span-12'>
                             <FormLabel tooltip={ToolTips.PartnerLocationPrivateNotes}>Private Notes</FormLabel>
                             <FormControl>
-                                <Textarea {...field} maxLength={1000} className='h-24' />
+                                <Textarea {...field} className='h-24' maxLength={1000} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -245,7 +245,7 @@ export const PartnerLocationCreateForm = (props: PartnerLocationCreateFormProps)
                             onClick={handleClickMap}
                             style={{ width: '100%', height: 250 }}
                         >
-                            <Marker position={location} draggable onDragEnd={handleMarkerDragEnd} />
+                            <Marker draggable onDragEnd={handleMarkerDragEnd} position={location} />
                         </GoogleMap>
                         {azureSubscriptionKey ? (
                             <div style={{ position: 'absolute', top: 8, left: 8 }}>
@@ -263,10 +263,10 @@ export const PartnerLocationCreateForm = (props: PartnerLocationCreateFormProps)
                     </div>
                 </div>
                 <div className='col-span-12 flex justify-end gap-2'>
-                    <Button variant='secondary' data-test='cancel' asChild>
+                    <Button asChild data-test='cancel' variant='secondary'>
                         <Link to={`/partnerdashboard/${partnerId}/locations`}>Cancel</Link>
                     </Button>
-                    <Button type='submit' disabled={isSubmitting}>
+                    <Button disabled={isSubmitting} type='submit'>
                         {isSubmitting ? <Loader2 className='animate-spin' /> : null}
                         Save
                     </Button>

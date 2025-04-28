@@ -10,8 +10,8 @@ import { Logo } from '../Logo';
 import { Divider } from './Divider';
 
 interface SiteHeaderProps {
-    currentUser: UserData;
-    isUserLoaded: boolean;
+    readonly currentUser: UserData;
+    readonly isUserLoaded: boolean;
 }
 
 export const SiteHeader = (props: SiteHeaderProps) => {
@@ -27,10 +27,10 @@ export const SiteHeader = (props: SiteHeaderProps) => {
                             <Logo className='w-[165px]' />
                         </a>
                         <Button
-                            className='lg:hidden w-10 h-10 [&_svg]:size-6'
-                            variant='outline'
                             aria-label='Toggle menu'
+                            className='lg:hidden w-10 h-10 [&_svg]:size-6'
                             onClick={() => setShow(!show)}
+                            variant='outline'
                         >
                             <Menu strokeWidth={1} />
                         </Button>

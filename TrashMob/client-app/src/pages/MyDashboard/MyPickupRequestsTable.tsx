@@ -14,8 +14,8 @@ import PickupLocationData from '@/components/Models/PickupLocationData';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 type MyPicupRequestsTableProps = {
-    userId: string;
-    items: PickupLocationData[];
+    readonly userId: string;
+    readonly items: PickupLocationData[];
 };
 
 export const MyPickupRequestsTable = ({ items, userId }: MyPicupRequestsTableProps) => {
@@ -50,7 +50,7 @@ export const MyPickupRequestsTable = ({ items, userId }: MyPicupRequestsTablePro
                         <TableCell className='py-0'>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant='ghost' size='icon'>
+                                    <Button size='icon' variant='ghost'>
                                         <Ellipsis />
                                     </Button>
                                 </DropdownMenuTrigger>

@@ -2,10 +2,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ReactNode } from 'react';
 
 interface SidebarLayoutProps {
-    title: string;
-    description: string;
-    children: ReactNode;
-    useDefaultCard?: boolean;
+    readonly title: string;
+    readonly description: string;
+    readonly children: ReactNode;
+    readonly useDefaultCard?: boolean;
 }
 
 export const SidebarLayout = (props: SidebarLayoutProps) => {

@@ -8,7 +8,7 @@ export const HeroSection = () => {
     const { ref: viewportRef, isInViewPort } = useIsInViewport();
 
     return (
-        <section id='hero-section' ref={viewportRef} className='relative'>
+        <section className='relative' id='hero-section' ref={viewportRef}>
             <div
                 className={cn(
                     'absolute w-full h-full left-0 top-0 z-0',
@@ -37,7 +37,7 @@ export const HeroSection = () => {
                             'opacity-0 translate-y-10': !isInViewPort,
                         })}
                     >
-                        <Button size='lg' asChild>
+                        <Button asChild size='lg'>
                             <Link to='/gettingstarted'>Join us today</Link>
                         </Button>
                     </div>
@@ -53,17 +53,17 @@ export const HeroSection = () => {
                     >
                         <a href='https://play.google.com/store/apps/details?id=eco.trashmob.trashmobmobileapp'>
                             <img
-                                className='android mt-0 -ml-2 h-14'
                                 alt='Get it on Google Play'
+                                className='android mt-0 -ml-2 h-14'
                                 src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'
                             />
                         </a>
 
                         <a href='https://apps.apple.com/us/app/trashmob/id1599996743?itscg=30200&itsct=apps_box_badge&mttnsubad=1599996743'>
                             <img
-                                src='https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/en-us?releaseDate=1682899200'
                                 alt='Download on the App Store'
                                 className='m-0 h-10'
+                                src='https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/en-us?releaseDate=1682899200'
                             />
                         </a>
                     </div>

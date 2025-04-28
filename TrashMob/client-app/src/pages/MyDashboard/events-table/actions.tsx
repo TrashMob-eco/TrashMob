@@ -13,10 +13,10 @@ import type UserData from '@/components/Models/UserData';
 import { useToast } from '@/hooks/use-toast';
 
 interface EventActionsProps {
-    event: EventData;
-    currentUser: UserData;
-    onShareEvent: (event: EventData) => void;
-    onUnregisterEvent: (id: string, name: string) => void;
+    readonly event: EventData;
+    readonly currentUser: UserData;
+    readonly onShareEvent: (event: EventData) => void;
+    readonly onUnregisterEvent: (id: string, name: string) => void;
 }
 
 export const EventActions = (props: EventActionsProps) => {
@@ -37,7 +37,7 @@ export const EventActions = (props: EventActionsProps) => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant='ghost' size='icon'>
+                <Button size='icon' variant='ghost'>
                     <Ellipsis />
                 </Button>
             </DropdownMenuTrigger>

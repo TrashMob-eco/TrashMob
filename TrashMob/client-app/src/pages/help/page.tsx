@@ -210,13 +210,13 @@ export const Help: React.FC = () => {
 
     return (
         <div className='tailwind'>
-            <HeroSection Title='Site Help' Description='Answering your questions!' />
+            <HeroSection Description='Answering your questions!' Title='Site Help' />
             <div className='container mx-auto my-5 pt-5 space-y-4'>
                 <div className='flex flex-col sm:flex-row gap-4'>
                     {tabContents.map((tabContent, ind) => (
                         <Card
-                            key={ind}
                             className={`grow basis-1/3 ${selectedTab === tabContent.category && 'border-primary'}`}
+                            key={ind}
                             onClick={() => setSelectedTab(tabContent.category)}
                         >
                             <CardHeader>
@@ -224,7 +224,7 @@ export const Help: React.FC = () => {
                                 <CardDescription>{tabContent.desc}</CardDescription>
                             </CardHeader>
                             <div className='flex justify-end'>
-                                <img src={tabContent.icon} alt='icon' className='mt-0 max-w-24' />
+                                <img alt='icon' className='mt-0 max-w-24' src={tabContent.icon} />
                             </div>
                         </Card>
                     ))}

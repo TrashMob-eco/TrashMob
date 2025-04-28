@@ -71,8 +71,8 @@ export const PartnerServices = () => {
 
     return (
         <SidebarLayout
-            title='Partner Services'
             description='This page allows you set up the services offered by a partner location. That is, what capabilities are you willing to provide to TrashMob.eco users to help them clean up the local community? This support is crucial to the success of TrashMob.eco volunteers, and we appreciate your help!'
+            title='Partner Services'
             useDefaultCard={false}
         >
             <div className='space-y-4'>
@@ -99,13 +99,13 @@ export const PartnerServices = () => {
                                         );
                                         return (
                                             <TableRow
-                                                key={serviceType.id}
                                                 className={
                                                     isDeletingId?.locationId === location.id &&
                                                     isDeletingId?.serviceTypeId === serviceType.id
                                                         ? 'opacity-20'
                                                         : ''
                                                 }
+                                                key={serviceType.id}
                                             >
                                                 <TableCell>{serviceType.name}</TableCell>
                                                 <TableCell className='text-center'>
@@ -114,7 +114,7 @@ export const PartnerServices = () => {
                                                             <Check /> Enabled
                                                         </Badge>
                                                     ) : (
-                                                        <Badge variant='default' className='bg-white text-muted'>
+                                                        <Badge className='bg-white text-muted' variant='default'>
                                                             <Ban />
                                                             Disabled
                                                         </Badge>
@@ -123,7 +123,7 @@ export const PartnerServices = () => {
                                                 <TableCell>{locationService?.notes}</TableCell>
                                                 <TableCell className='text-right'>
                                                     {!locationService ? (
-                                                        <Button size='sm' variant='outline' asChild>
+                                                        <Button asChild size='sm' variant='outline'>
                                                             <Link
                                                                 to={`enable?locationId=${location.id}&serviceTypeId=${serviceType.id}`}
                                                             >
@@ -133,7 +133,7 @@ export const PartnerServices = () => {
                                                     ) : (
                                                         <DropdownMenu>
                                                             <DropdownMenuTrigger asChild>
-                                                                <Button variant='ghost' size='icon'>
+                                                                <Button size='icon' variant='ghost'>
                                                                     <Ellipsis />
                                                                 </Button>
                                                             </DropdownMenuTrigger>
@@ -165,8 +165,8 @@ export const PartnerServices = () => {
                             </Table>
                         </CardContent>
                         <Dialog
-                            open={!!isEnabling}
                             onOpenChange={() => navigate(`/partnerdashboard/${partnerId}/services`)}
+                            open={!!isEnabling}
                         >
                             <DialogContent
                                 className='sm:max-w-[600px] overflow-y-scroll max-h-screen'
@@ -181,8 +181,8 @@ export const PartnerServices = () => {
                             </DialogContent>
                         </Dialog>
                         <Dialog
-                            open={!!isEditing}
                             onOpenChange={() => navigate(`/partnerdashboard/${partnerId}/services`)}
+                            open={!!isEditing}
                         >
                             <DialogContent
                                 className='sm:max-w-[600px] overflow-y-scroll max-h-screen'

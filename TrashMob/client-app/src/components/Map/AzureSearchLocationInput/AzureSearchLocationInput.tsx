@@ -35,14 +35,14 @@ export type RenderInputProps = {
 };
 
 export type AzureSearchLocationInputProps = {
-    azureKey: string;
-    onSelectLocation: (position: SearchLocationOption) => void;
-    entityType?: GeographicEntityType[];
-    placeholder?: string;
-    className?: string;
-    inputClassName?: string;
-    listClassName?: string;
-    renderInput?: (props: RenderInputProps) => React.ReactNode;
+    readonly azureKey: string;
+    readonly onSelectLocation: (position: SearchLocationOption) => void;
+    readonly entityType?: GeographicEntityType[];
+    readonly placeholder?: string;
+    readonly className?: string;
+    readonly inputClassName?: string;
+    readonly listClassName?: string;
+    readonly renderInput?: (props: RenderInputProps) => React.ReactNode;
 };
 
 export function AzureSearchLocationInput(props: AzureSearchLocationInputProps) {
@@ -135,19 +135,19 @@ export function AzureSearchLocationInput(props: AzureSearchLocationInputProps) {
     return (
         <div className='tailwind'>
             <Command
+                className={cn('!rounded-lg border md:min-w-[200px] relative', { 'shadow-md': open }, className)}
                 ref={commandRef}
                 shouldFilter={false}
-                className={cn('!rounded-lg border md:min-w-[200px] relative', { 'shadow-md': open }, className)}
             >
                 {renderInput ? (
                     renderInput(customInputProps)
                 ) : (
                     <CommandInput
+                        className={cn('!mb-0', inputClassName)}
+                        onFocus={handleFocus}
+                        onValueChange={(value) => setQuery(value)}
                         placeholder={placeholder ?? 'Location...'}
                         value={query}
-                        onValueChange={(value) => setQuery(value)}
-                        onFocus={handleFocus}
-                        className={cn('!mb-0', inputClassName)}
                     />
                 )}
                 <CommandList
@@ -161,13 +161,13 @@ export function AzureSearchLocationInput(props: AzureSearchLocationInputProps) {
                         <div className='p-2 text-sm text-gray-500'>Loading...</div>
                     ) : suggestionGroups.length ? (
                         suggestionGroups.map((group) => (
-                            <CommandGroup heading={group.groupName} key={group.groupName} className='border-b'>
+                            <CommandGroup className='border-b' heading={group.groupName} key={group.groupName}>
                                 {group.items.map((item) => (
                                     <CommandItem
-                                        key={item.id}
-                                        value={item.id}
                                         className='font-light !py-3 cursor-pointer'
+                                        key={item.id}
                                         onSelect={handleSelectSuggestion}
+                                        value={item.id}
                                     >
                                         {item.displayAddress}
                                     </CommandItem>

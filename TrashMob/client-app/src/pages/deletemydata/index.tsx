@@ -30,8 +30,8 @@ export const DeleteMyData: FC<DeleteMyDataProps> = (props) => {
     return (
         <div className='tailwind'>
             <HeroSection
-                Title='Delete your account?'
                 Description='TrashMob members are making the world a better place!'
+                Title='Delete your account?'
             />
             <div className='container mx-auto py-5'>
                 <Card>
@@ -48,7 +48,7 @@ export const DeleteMyData: FC<DeleteMyDataProps> = (props) => {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Button variant='destructive' onClick={handleDelete}>
+                        <Button onClick={handleDelete} variant='destructive'>
                             Delete Account
                         </Button>
                     </CardContent>

@@ -138,7 +138,7 @@ export const EventSection = (props: EventSectionProps) => {
     );
 
     return (
-        <section id='events' className='bg-[#FCFBF8]'>
+        <section className='bg-[#FCFBF8]' id='events'>
             <div className='container !py-20'>
                 <div className='flex flex-col gap-2'>
                     <div className='flex flex-col md:flex-row items-center gap-4 relative'>
@@ -146,10 +146,11 @@ export const EventSection = (props: EventSectionProps) => {
                         <div className='relative z-10 h-[60px]'>
                             <AzureSearchLocationInput
                                 azureKey={azureSubscriptionKey}
-                                entityType={['Municipality']}
-                                placeholder={selectedLocation ? selectedLocation.address.municipality : 'Location ...'}
                                 className='!rounded-none !border-none !shadow-none !bg-transparent'
+                                entityType={['Municipality']}
                                 listClassName='!rounded-lg border md:min-w-[200px] relative shadow-md bg-card !mt-2'
+                                onSelectLocation={handleSelectSearchLocation}
+                                placeholder={selectedLocation ? selectedLocation.address.municipality : 'Location ...'}
                                 renderInput={(inputProps) => (
                                     <div className='w-fit flex flex-row items-center'>
                                         <input
@@ -160,7 +161,6 @@ export const EventSection = (props: EventSectionProps) => {
                                         <Pencil className='!w-8 !h-8 text-white fill-primary' />
                                     </div>
                                 )}
-                                onSelectLocation={handleSelectSearchLocation}
                             />
                         </div>
                         <div className='grow flex justify-end'>
@@ -173,15 +173,13 @@ export const EventSection = (props: EventSectionProps) => {
                     </div>
                     <div className='py-4'>
                         <Tabs
+                            className='w-full rounded-none bg-transparent p-0'
                             defaultValue={selectedStatuses}
                             onValueChange={setSelectedStatuses}
-                            className='w-full rounded-none bg-transparent p-0'
                         >
                             <TabsList className='bg-transparent gap-2 w-full justify-center md:w-auto md:justify-start '>
                                 {statuses.map((status) => (
                                     <TabsTrigger
-                                        key={status.value}
-                                        value={status.value}
                                         className={cn(
                                             'relative !px-2 h-9 rounded-[2px] border-b-2 border-b-transparent bg-transparent font-semibold text-muted-foreground shadow-none transition-none',
                                             "after:content-[''] after:w-0 after:h-0.5 after:absolute after:left-0 after:-bottom-3",
@@ -190,6 +188,8 @@ export const EventSection = (props: EventSectionProps) => {
                                             'transition-all duration-300 ease-in-out',
                                             'after:transition-all after:duration-300 after:ease-in-out',
                                         )}
+                                        key={status.value}
+                                        value={status.value}
                                     >
                                         {status.label}
                                     </TabsTrigger>
@@ -198,7 +198,7 @@ export const EventSection = (props: EventSectionProps) => {
                         </Tabs>
                     </div>
                     <div className='flex flex-row gap-4 mb-2'>
-                        <Select value={selectedTimeRange} onValueChange={setSelectedTimeRange}>
+                        <Select onValueChange={setSelectedTimeRange} value={selectedTimeRange}>
                             <SelectTrigger className='w-48'>
                                 <SelectValue placeholder='Time' />
                             </SelectTrigger>
@@ -212,16 +212,16 @@ export const EventSection = (props: EventSectionProps) => {
                         </Select>
 
                         <div className='flex-1' />
-                        <ToggleGroup value={view} onValueChange={setView} type='single' variant='outline'>
+                        <ToggleGroup onValueChange={setView} type='single' value={view} variant='outline'>
                             <ToggleGroupItem
-                                value='list'
                                 className='data-[state=on]:bg-primary data-[state=on]:text-primary-foreground'
+                                value='list'
                             >
                                 <List />
                             </ToggleGroupItem>
                             <ToggleGroupItem
-                                value='map'
                                 className='data-[state=on]:bg-primary data-[state=on]:text-primary-foreground'
+                                value='map'
                             >
                                 <Map />
                             </ToggleGroupItem>
@@ -233,22 +233,22 @@ export const EventSection = (props: EventSectionProps) => {
                     </div>
                     {view === 'map' ? (
                         <EventsMap
-                            events={eventsWithAttendance || []}
-                            isUserLoaded={isUserLoaded}
                             currentUser={currentUser}
-                            gestureHandling='greedy'
                             defaultCenter={
                                 selectedLocation
                                     ? { lat: selectedLocation.position.lat, lng: selectedLocation.position.lon }
                                     : undefined
                             }
                             defaultZoom={13}
+                            events={eventsWithAttendance || []}
+                            gestureHandling='greedy'
+                            isUserLoaded={isUserLoaded}
                         />
                     ) : (
                         <EventList
+                            currentUser={currentUser}
                             events={eventsWithAttendance || []}
                             isUserLoaded={isUserLoaded}
-                            currentUser={currentUser}
                         />
                     )}
                 </div>

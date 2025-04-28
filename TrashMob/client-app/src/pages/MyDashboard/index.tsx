@@ -155,15 +155,15 @@ const MyDashboard: FC<MyDashboardProps> = () => {
 
     return (
         <div className='tailwind'>
-            <HeroSection Title='Dashboard' Description="See how much you've done!" />
+            <HeroSection Description="See how much you've done!" Title='Dashboard' />
             <div className='container !mt-12 !pb-12'>
                 {eventToShare ? (
                     <ShareToSocialsDialog
                         eventToShare={eventToShare}
-                        show={showModal}
                         handleShow={setShowSocialsModal}
-                        modalTitle='Share Event'
                         message={SharingMessages.getEventShareMessage(eventToShare, currentUser.id)}
+                        modalTitle='Share Event'
+                        show={showModal}
                     />
                 ) : null}
                 <div className='!pt-12 flex flex-row flex-wrap gap-8 justify-center'>
@@ -179,9 +179,9 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                             <p className='text-[25px] font-medium !mt-6 !mb-3'>{stat.name}</p>
                             <p className='text-primary !mt-0 text-[46px]'>{stat.value}</p>
                             <img
-                                src={stat.img}
                                 alt={stat.name}
                                 className='absolute right-8 bottom-0 w-[95px] h-[95px]'
+                                src={stat.img}
                             />
                         </div>
                     ))}
@@ -207,17 +207,17 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                                 Upcoming events ({upcomingEvents.length})
                             </CardTitle>
                             <RadioGroup
-                                value={upcomingEventsMapView ? 'map' : 'list'}
-                                onValueChange={(value) => handleEventView(value, 'Upcoming events')}
                                 className='grid-cols-2'
+                                onValueChange={(value) => handleEventView(value, 'Upcoming events')}
                                 orientation='horizontal'
+                                value={upcomingEventsMapView ? 'map' : 'list'}
                             >
                                 <div className='flex items-center space-x-2'>
-                                    <RadioGroupItem value='list' id='upcomingevents-list' />
+                                    <RadioGroupItem id='upcomingevents-list' value='list' />
                                     <Label htmlFor='upcomingevents-list'>List view</Label>
                                 </div>
                                 <div className='flex items-center space-x-2'>
-                                    <RadioGroupItem value='map' id='upcomingevents-map' />
+                                    <RadioGroupItem id='upcomingevents-map' value='map' />
                                     <Label htmlFor='upcomingevents-map'>Map view</Label>
                                 </div>
                             </RadioGroup>
@@ -226,13 +226,13 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                     <CardContent>
                         {upcomingEventsMapView ? (
                             <EventsMap
-                                events={upcomingEvents}
-                                isUserLoaded={isUserLoaded}
                                 currentUser={currentUser}
                                 defaultCenter={userPreferredLocation}
+                                events={upcomingEvents}
+                                isUserLoaded={isUserLoaded}
                             />
                         ) : (
-                            <EventsTable events={upcomingEvents} currentUser={currentUser} />
+                            <EventsTable currentUser={currentUser} events={upcomingEvents} />
                         )}
                     </CardContent>
                 </Card>
@@ -242,17 +242,17 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                         <div className='flex flex-row'>
                             <CardTitle className='grow text-primary'>Completed events ({pastEvents.length})</CardTitle>
                             <RadioGroup
-                                value={pastEventsMapView ? 'map' : 'list'}
-                                onValueChange={(value) => handleEventView(value, 'Completed events')}
                                 className='grid-cols-2'
+                                onValueChange={(value) => handleEventView(value, 'Completed events')}
                                 orientation='horizontal'
+                                value={pastEventsMapView ? 'map' : 'list'}
                             >
                                 <div className='flex items-center space-x-2'>
-                                    <RadioGroupItem value='list' id='pastevents-list' />
+                                    <RadioGroupItem id='pastevents-list' value='list' />
                                     <Label htmlFor='pastevents-list'>List view</Label>
                                 </div>
                                 <div className='flex items-center space-x-2'>
-                                    <RadioGroupItem value='map' id='pastevents-map' />
+                                    <RadioGroupItem id='pastevents-map' value='map' />
                                     <Label htmlFor='pastevents-map'>Map view</Label>
                                 </div>
                             </RadioGroup>
@@ -261,13 +261,13 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                     <CardContent>
                         {pastEventsMapView ? (
                             <EventsMap
-                                events={pastEvents}
-                                isUserLoaded={isUserLoaded}
                                 currentUser={currentUser}
                                 defaultCenter={userPreferredLocation}
+                                events={pastEvents}
+                                isUserLoaded={isUserLoaded}
                             />
                         ) : (
-                            <EventsTable events={pastEvents} currentUser={currentUser} />
+                            <EventsTable currentUser={currentUser} events={pastEvents} />
                         )}
                     </CardContent>
                 </Card>
@@ -276,10 +276,10 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                         My Partnerships ({(myPartnerRequests || []).length + (myPartners || []).length})
                     </h4>
                     <div className='flex flex-row flex-wrap gap-4 !my-4'>
-                        <Button variant='outline' asChild>
+                        <Button asChild variant='outline'>
                             <Link to='/inviteapartner'>Send invitation to join TrashMob.eco as a partner</Link>
                         </Button>
-                        <Button variant='outline' asChild>
+                        <Button asChild variant='outline'>
                             <Link to='/becomeapartner'>Apply to become a partner</Link>
                         </Button>
                     </div>
@@ -314,8 +314,8 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                     </CardHeader>
                     <CardContent>
                         <PartnerEventRequestTable
-                            isLoading={isPartnerEventServicesLoading}
                             data={partnerEventServices}
+                            isLoading={isPartnerEventServicesLoading}
                         />
                     </CardContent>
                 </Card>
@@ -328,7 +328,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                     </CardHeader>
                     <CardContent>
                         <div className='overflow-auto'>
-                            <MyPickupRequestsTable userId={currentUser.id} items={myPickupRequests || []} />
+                            <MyPickupRequestsTable items={myPickupRequests || []} userId={currentUser.id} />
                         </div>
                     </CardContent>
                 </Card>
@@ -342,8 +342,8 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                     <CardContent>
                         <div className='overflow-auto'>
                             <PartnerAdminInvitationsTable
-                                userId={currentUser.id}
                                 items={myPartnerAdminInvitations || []}
+                                userId={currentUser.id}
                             />
                         </div>
                     </CardContent>

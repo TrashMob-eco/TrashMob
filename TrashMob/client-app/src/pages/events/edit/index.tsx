@@ -205,7 +205,6 @@ export const EditEventPage = () => {
     const visibleEventAttendees = showAllAttendees ? eventAttendees || [] : take(eventAttendees, 10);
     return (
         <ManageEventDashboardLayout
-            title='Edit an event'
             aside={
                 <>
                     <Card>
@@ -214,7 +213,7 @@ export const EditEventPage = () => {
                         </CardHeader>
                         <CardContent className='grid gap-6'>
                             {visibleEventAttendees.map((attendee) => (
-                                <div key={attendee.id} className='flex items-center justify-between space-x-4'>
+                                <div className='flex items-center justify-between space-x-4' key={attendee.id}>
                                     <div className='flex items-center space-x-2'>
                                         <span className='relative flex shrink-0 overflow-hidden rounded-full h-8 w-8'>
                                             <UserRoundCheck />
@@ -229,12 +228,12 @@ export const EditEventPage = () => {
                                 </div>
                             ))}
                             {!showAllAttendees && numAttendees > 10 ? (
-                                <Button variant='link' onClick={() => setShowAllAttendees(true)}>
+                                <Button onClick={() => setShowAllAttendees(true)} variant='link'>
                                     Show all {numAttendees} attendees
                                 </Button>
                             ) : null}
                             {showAllAttendees && numAttendees > 10 ? (
-                                <Button variant='link' onClick={() => setShowAllAttendees(false)}>
+                                <Button onClick={() => setShowAllAttendees(false)} variant='link'>
                                     Show less
                                 </Button>
                             ) : null}
@@ -262,8 +261,8 @@ export const EditEventPage = () => {
                                             if (!status || !serviceType) return;
                                             return (
                                                 <div
-                                                    key={`${partnerLocation.partnerLocationId}-${service.serviceTypeId}`}
                                                     className='flex items-center justify-between space-x-4 py-2'
+                                                    key={`${partnerLocation.partnerLocationId}-${service.serviceTypeId}`}
                                                 >
                                                     <div className='flex items-center w-full space-x-2'>
                                                         <span className='relative flex shrink-0 overflow-hidden rounded-full h-8 w-8'>
@@ -284,8 +283,6 @@ export const EditEventPage = () => {
                                                         <div>
                                                             {status.id === 0 ? (
                                                                 <Button
-                                                                    size='sm'
-                                                                    variant='outline'
                                                                     onClick={() =>
                                                                         requestService(
                                                                             service.serviceTypeId,
@@ -293,13 +290,13 @@ export const EditEventPage = () => {
                                                                             partnerLocation.partnerLocationName,
                                                                         )
                                                                     }
+                                                                    size='sm'
+                                                                    variant='outline'
                                                                 >
                                                                     Request
                                                                 </Button>
                                                             ) : (
                                                                 <Button
-                                                                    size='sm'
-                                                                    variant='destructive'
                                                                     onClick={() =>
                                                                         removeServiceRequest(
                                                                             service.serviceTypeId,
@@ -307,6 +304,8 @@ export const EditEventPage = () => {
                                                                             partnerLocation.partnerLocationName,
                                                                         )
                                                                     }
+                                                                    size='sm'
+                                                                    variant='destructive'
                                                                 >
                                                                     Remove
                                                                 </Button>
@@ -323,9 +322,10 @@ export const EditEventPage = () => {
                     </Card>
                 </>
             }
+            title='Edit an event'
         >
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-2'>
+                <form className='space-y-2' onSubmit={form.handleSubmit(onSubmit)}>
                     <div className='grid gap-4 grid-cols-12'>
                         <FormField
                             control={form.control}
@@ -347,7 +347,7 @@ export const EditEventPage = () => {
                                 <FormItem className='col-span-6'>
                                     <FormLabel>Event Type</FormLabel>
                                     <FormControl>
-                                        <Select value={field.value} onValueChange={field.onChange}>
+                                        <Select onValueChange={field.onChange} value={field.value}>
                                             <SelectTrigger className='w-full'>
                                                 <SelectValue placeholder='Clean up Type' />
                                             </SelectTrigger>
@@ -439,8 +439,8 @@ export const EditEventPage = () => {
                                     <FormLabel>Description</FormLabel>
                                     <FormControl>
                                         <Textarea
-                                            placeholder='Type your message here.'
                                             className='resize-none'
+                                            placeholder='Type your message here.'
                                             {...field}
                                         />
                                     </FormControl>
@@ -452,16 +452,16 @@ export const EditEventPage = () => {
                             <>
                                 <div className='col-span-12'>
                                     <GoogleMap
-                                        id='locationPicker'
                                         defaultCenter={{ lat: event.latitude, lng: event.longitude }}
                                         defaultZoom={16}
-                                        style={{ width: '100%', height: '300px' }}
+                                        id='locationPicker'
                                         onClick={handleClickMap}
+                                        style={{ width: '100%', height: '300px' }}
                                     >
                                         <Marker
-                                            position={{ lat: event.latitude, lng: event.longitude }}
                                             draggable
                                             onDragEnd={handleMarkerDragEnd}
+                                            position={{ lat: event.latitude, lng: event.longitude }}
                                         />
                                     </GoogleMap>
                                     <FormDescription className='flex justify-between'>
@@ -481,10 +481,10 @@ export const EditEventPage = () => {
                             </>
                         ) : null}
                         <div className='col-span-12 flex gap-2 justify-end my-4'>
-                            <Button type='button' variant='outline' asChild>
+                            <Button asChild type='button' variant='outline'>
                                 <Link to='/mydashboard'>Back</Link>
                             </Button>
-                            <Button type='submit' disabled={updateEvent.isLoading}>
+                            <Button disabled={updateEvent.isLoading} type='submit'>
                                 {updateEvent.isLoading ? <Loader2 className='animate-spin' /> : null} Save
                             </Button>
                         </div>

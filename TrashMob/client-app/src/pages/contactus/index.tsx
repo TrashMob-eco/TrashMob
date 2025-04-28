@@ -135,16 +135,16 @@ export const ContactUs = () => {
                                 <div style={{ opacity: 0, position: 'absolute', top: '-999px' }}>
                                     <input
                                         {...form.register('humanDontSeeThisField')}
-                                        tabIndex={-1}
                                         autoComplete='off'
+                                        tabIndex={-1}
                                     />
                                 </div>
                             </CardContent>
                             <CardFooter className='flex gap-2 justify-end'>
-                                <Button variant='outline' onClick={() => navigate('/')}>
+                                <Button onClick={() => navigate('/')} variant='outline'>
                                     Back
                                 </Button>
-                                <Button type='submit' disabled={createContactRequest.isLoading} variant='default'>
+                                <Button disabled={createContactRequest.isLoading} type='submit' variant='default'>
                                     {createContactRequest.isLoading ? <Loader2 className='animate-spin' /> : null}
                                     Submit
                                 </Button>

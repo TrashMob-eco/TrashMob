@@ -117,8 +117,8 @@ export const PartnerAdmins = () => {
 
     return (
         <SidebarLayout
-            title='Edit Partner Admins'
             description='This page allows you to add more administrators to this partner so you can share the load of maintaining the configuration of the partner. You can invite new administrators by clicking the Invite Administrator button, and entering their email address into the text box and clicking "Send Invitation." The email address you set will be sent an invite to join TrashMob.eco if they are not already a user. Once they have joined TrashMob.eco and are logged in, they will see an invitation in their Dashboard. They can Accept or Decline the invitation from there.'
+            title='Edit Partner Admins'
             useDefaultCard={false}
         >
             <div className='space-y-4'>
@@ -151,7 +151,7 @@ export const PartnerAdmins = () => {
                                             <TableCell className='text-right'>
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
-                                                        <Button variant='ghost' size='icon'>
+                                                        <Button size='icon' variant='ghost'>
                                                             <Ellipsis />
                                                         </Button>
                                                     </DropdownMenuTrigger>
@@ -172,7 +172,7 @@ export const PartnerAdmins = () => {
                         </Table>
                     </CardContent>
                 </Card>
-                <Dialog open={!!isInviting} onOpenChange={() => navigate(`/partnerdashboard/${partnerId}/admins`)}>
+                <Dialog onOpenChange={() => navigate(`/partnerdashboard/${partnerId}/admins`)} open={!!isInviting}>
                     <DialogContent className='sm:max-w-[680px]' onOpenAutoFocus={(e) => e.preventDefault()}>
                         <DialogHeader>
                             <DialogTitle>Invite Admin</DialogTitle>
@@ -206,7 +206,7 @@ export const PartnerAdmins = () => {
                                             <TableCell className='text-right'>
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
-                                                        <Button variant='ghost' size='icon'>
+                                                        <Button size='icon' variant='ghost'>
                                                             <Ellipsis />
                                                         </Button>
                                                     </DropdownMenuTrigger>

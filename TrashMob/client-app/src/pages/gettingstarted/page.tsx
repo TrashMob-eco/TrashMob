@@ -11,13 +11,13 @@ import { Button } from '@/components/ui/button';
 export const GettingStarted: React.FC = () => {
     return (
         <div className='tailwind'>
-            <HeroSection Title='Getting Started' Description='Tips and tricks to get you out there.' />
+            <HeroSection Description='Tips and tricks to get you out there.' Title='Getting Started' />
             <section className='bg-card !py-5 !px-4'>
                 <h2 className='font-semibold text-center text-[40px] mt-10 mb-2'>The Basics</h2>
                 <div className='flex flex-col md:flex-row'>
                     <div className='basis-full md:basis-1/4'>
                         <div className='flex flex-col w-full max-w-[300px] mx-auto mb-5 text-center'>
-                            <img src={workgloves} className='!w-25 !h-25 mx-auto' alt='Work gloves' />
+                            <img alt='Work gloves' className='!w-25 !h-25 mx-auto' src={workgloves} />
                             <h6 className='font-semibold mt-2'>Work gloves</h6>
                             <span className='mt-4'>
                                 We recommend{' '}
@@ -30,7 +30,7 @@ export const GettingStarted: React.FC = () => {
                     </div>
                     <div className='basis-full md:basis-1/4'>
                         <div className='flex flex-col w-full max-w-[300px] mx-auto mb-5 text-center'>
-                            <img src={bucket} className='!w-25 !h-25 mx-auto' alt='bucket' />
+                            <img alt='bucket' className='!w-25 !h-25 mx-auto' src={bucket} />
                             <h6 className='font-semibold mt-2'>A bucket</h6>
                             <span className='mt-4'>
                                 Any 5 gallon pail will do. If you don’t want to buy one, many restaurants and
@@ -41,7 +41,7 @@ export const GettingStarted: React.FC = () => {
                     </div>
                     <div className='basis-full md:basis-1/4'>
                         <div className='flex flex-col w-full max-w-[300px] mx-auto mb-5 text-center'>
-                            <img src={picker} className='!w-25 !h-25 mx-auto' alt='bucket' />
+                            <img alt='bucket' className='!w-25 !h-25 mx-auto' src={picker} />
                             <h6 className='font-semibold mt-2'>A grabber tool</h6>
                             <span className='mt-4'>
                                 While not essential, we recommend a grabber tool because they help make grabbing trash
@@ -53,7 +53,7 @@ export const GettingStarted: React.FC = () => {
                     </div>
                     <div className='basis-full md:basis-1/4'>
                         <div className='flex flex-col w-full max-w-[300px] mx-auto mb-5 text-center'>
-                            <img src={attitude} className='!w-25 !h-25 mx-auto' alt='bucket' />
+                            <img alt='bucket' className='!w-25 !h-25 mx-auto' src={attitude} />
                             <h6 className='font-semibold mt-2'>A good attitude</h6>
                             <span className='mt-4'>
                                 Your attitude is just as important as your tools. A positive attitude increases the
@@ -125,11 +125,11 @@ export const GettingStarted: React.FC = () => {
                         </div>
                         <div className='w-full md:basis-1/2'>
                             <iframe
+                                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+                                allowFullScreen
                                 className='w-full aspect-video'
                                 src='https://www.youtube.com/embed/naMY0kfyERc'
                                 title='YouTube video player'
-                                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
-                                allowFullScreen
                             />
                         </div>
                     </div>
@@ -155,7 +155,7 @@ export const GettingStarted: React.FC = () => {
                             <p className='font-light'>And never, ever, pick on or beside railways.</p>
                         </div>
                         <div className='w-full md:basis-1/2'>
-                            <img src={highways} alt='highway overpasses' className='max-w-full' />
+                            <img alt='highway overpasses' className='max-w-full' src={highways} />
                         </div>
                     </div>
                 </div>

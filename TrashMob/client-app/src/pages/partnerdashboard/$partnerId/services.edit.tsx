@@ -120,23 +120,23 @@ export const PartnerServiceEdit = (props: PartnerServiceEditProps) => {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className='grid grid-cols-12 gap-4'>
+            <form className='grid grid-cols-12 gap-4' onSubmit={form.handleSubmit(onSubmit)}>
                 <FormField
                     control={form.control}
                     name='partnerLocationId'
                     render={({ field }) => (
                         <FormItem className='col-span-6'>
-                            <FormLabel tooltip={ToolTips.PartnerContactName} required>
+                            <FormLabel required tooltip={ToolTips.PartnerContactName}>
                                 Location
                             </FormLabel>
                             <FormControl>
-                                <Select value={`${field.value}`} onValueChange={field.onChange} disabled>
+                                <Select disabled onValueChange={field.onChange} value={`${field.value}`}>
                                     <SelectTrigger className='w-full'>
                                         <SelectValue placeholder='Location' />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {(locations || []).map((loc) => (
-                                            <SelectItem value={`${loc.id}`}>{loc.name}</SelectItem>
+                                            <SelectItem key={loc.id} value={`${loc.id}`}>{loc.name}</SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
@@ -150,17 +150,17 @@ export const PartnerServiceEdit = (props: PartnerServiceEditProps) => {
                     name='serviceTypeId'
                     render={({ field }) => (
                         <FormItem className='col-span-6'>
-                            <FormLabel tooltip={ToolTips.PartnerContactName} required>
+                            <FormLabel required tooltip={ToolTips.PartnerContactName}>
                                 Service Type
                             </FormLabel>
                             <FormControl>
-                                <Select value={`${field.value}`} onValueChange={field.onChange} disabled>
+                                <Select disabled onValueChange={field.onChange} value={`${field.value}`}>
                                     <SelectTrigger className='w-full'>
                                         <SelectValue placeholder='Service Type' />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {(serviceTypes || []).map((st) => (
-                                            <SelectItem value={`${st.id}`}>{st.name}</SelectItem>
+                                            <SelectItem key={loc.id} value={`${st.id}`}>{st.name}</SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
@@ -177,13 +177,13 @@ export const PartnerServiceEdit = (props: PartnerServiceEditProps) => {
                             <FormControl>
                                 <div className='flex items-center space-x-2 h-9'>
                                     <Checkbox
-                                        id='isAutoApproved'
                                         checked={field.value}
+                                        id='isAutoApproved'
                                         onCheckedChange={field.onChange}
                                     />
                                     <label
-                                        htmlFor='isAutoApproved'
                                         className='text-sm mb-0 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                                        htmlFor='isAutoApproved'
                                     >
                                         Auto Approved
                                     </label>
@@ -201,13 +201,13 @@ export const PartnerServiceEdit = (props: PartnerServiceEditProps) => {
                             <FormControl>
                                 <div className='flex items-center space-x-2 h-9'>
                                     <Checkbox
-                                        id='isAutoApproved'
                                         checked={field.value}
+                                        id='isAutoApproved'
                                         onCheckedChange={field.onChange}
                                     />
                                     <label
-                                        htmlFor='isAutoApproved'
                                         className='text-sm mb-0 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                                        htmlFor='isAutoApproved'
                                     >
                                         Advance Notice Required
                                     </label>
@@ -222,21 +222,21 @@ export const PartnerServiceEdit = (props: PartnerServiceEditProps) => {
                     name='notes'
                     render={({ field }) => (
                         <FormItem className='col-span-12'>
-                            <FormLabel tooltip={ToolTips.PartnerLocationPublicNotes} required>
+                            <FormLabel required tooltip={ToolTips.PartnerLocationPublicNotes}>
                                 Notes
                             </FormLabel>
                             <FormControl>
-                                <Textarea {...field} maxLength={1000} className='h-24' />
+                                <Textarea {...field} className='h-24' maxLength={1000} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
                 <div className='col-span-12 flex justify-end gap-2'>
-                    <Button variant='secondary' data-test='cancel' asChild>
+                    <Button asChild data-test='cancel' variant='secondary'>
                         <Link to={`/partnerdashboard/${partnerId}/services`}>Cancel</Link>
                     </Button>
-                    <Button type='submit' disabled={isSubmitting}>
+                    <Button disabled={isSubmitting} type='submit'>
                         {isSubmitting ? <Loader2 className='animate-spin' /> : null}
                         Save
                     </Button>

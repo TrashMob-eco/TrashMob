@@ -76,13 +76,13 @@ export const PartnerAdminInvite = () => {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className='grid grid-cols-12 gap-4'>
+            <form className='grid grid-cols-12 gap-4' onSubmit={form.handleSubmit(onSubmit)}>
                 <FormField
                     control={form.control}
                     name='email'
                     render={({ field }) => (
                         <FormItem className='col-span-12'>
-                            <FormLabel tooltip={ToolTips.PartnerUserNameSearch} required>
+                            <FormLabel required tooltip={ToolTips.PartnerUserNameSearch}>
                                 Enter the Email to Send Invitation to
                             </FormLabel>
                             <FormControl>
@@ -93,10 +93,10 @@ export const PartnerAdminInvite = () => {
                     )}
                 />
                 <div className='col-span-12 flex justify-end gap-2'>
-                    <Button variant='secondary' data-test='cancel' asChild>
+                    <Button asChild data-test='cancel' variant='secondary'>
                         <Link to={`/partnerdashboard/${partnerId}/admins`}>Cancel</Link>
                     </Button>
-                    <Button type='submit' disabled={isSubmitting}>
+                    <Button disabled={isSubmitting} type='submit'>
                         {isSubmitting ? <Loader2 className='animate-spin' /> : null}
                         Send Invite
                     </Button>

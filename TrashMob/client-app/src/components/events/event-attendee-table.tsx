@@ -3,15 +3,15 @@ import UserData from '../Models/UserData';
 import EventData from '../Models/EventData';
 
 interface EventAttendeeTableProps {
-    users: UserData[];
-    event: EventData;
+    readonly users: UserData[];
+    readonly event: EventData;
 }
 
 export const EventAttendeeTable = (props: EventAttendeeTableProps) => {
     const { users, event } = props;
     return (
         <div className='overflow-auto'>
-            <Table className='table table-striped' aria-labelledby='tableLabel'>
+            <Table aria-labelledby='tableLabel' className='table table-striped'>
                 <TableHeader>
                     <TableRow className='bg-ice'>
                         <TableHead>User Name</TableHead>

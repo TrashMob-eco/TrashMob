@@ -196,13 +196,13 @@ export const PickupLocationCreateForm = (props: PickupLocationCreateFormProps) =
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className='grid grid-cols-12 gap-4'>
+            <form className='grid grid-cols-12 gap-4' onSubmit={form.handleSubmit(onSubmit)}>
                 <FormField
                     control={form.control}
                     name='name'
                     render={({ field }) => (
                         <FormItem className='col-span-6'>
-                            <FormLabel tooltip={ToolTips.PickupLocationName} required>
+                            <FormLabel required tooltip={ToolTips.PickupLocationName}>
                                 Name
                             </FormLabel>
                             <FormControl>
@@ -221,13 +221,13 @@ export const PickupLocationCreateForm = (props: PickupLocationCreateFormProps) =
                             <FormControl>
                                 <div className='flex items-center space-x-2 h-9'>
                                     <Checkbox
-                                        id='hasBeenPickedUp'
                                         checked={field.value}
+                                        id='hasBeenPickedUp'
                                         onCheckedChange={field.onChange}
                                     />
                                     <label
-                                        htmlFor='hasBeenPickedUp'
                                         className='text-sm mb-0 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                                        htmlFor='hasBeenPickedUp'
                                     >
                                         Picked up?
                                     </label>
@@ -246,13 +246,13 @@ export const PickupLocationCreateForm = (props: PickupLocationCreateFormProps) =
                             <FormControl>
                                 <div className='flex items-center space-x-2 h-9'>
                                     <Checkbox
-                                        id='hasBeenSubmitted'
                                         checked={field.value}
+                                        id='hasBeenSubmitted'
                                         onCheckedChange={field.onChange}
                                     />
                                     <label
-                                        htmlFor='hasBeenSubmitted'
                                         className='text-sm mb-0 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                                        htmlFor='hasBeenSubmitted'
                                     >
                                         Submitted?
                                     </label>
@@ -267,11 +267,11 @@ export const PickupLocationCreateForm = (props: PickupLocationCreateFormProps) =
                     name='notes'
                     render={({ field }) => (
                         <FormItem className='col-span-12'>
-                            <FormLabel tooltip={ToolTips.PickupLocationNotes} required>
+                            <FormLabel required tooltip={ToolTips.PickupLocationNotes}>
                                 Notes
                             </FormLabel>
                             <FormControl>
-                                <Textarea {...field} maxLength={1000} className='h-24' />
+                                <Textarea {...field} className='h-24' maxLength={1000} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -287,9 +287,9 @@ export const PickupLocationCreateForm = (props: PickupLocationCreateFormProps) =
                                 style={{ width: '100%', height: 250 }}
                             >
                                 <Marker
-                                    position={{ lat: latitude, lng: longitude }}
                                     draggable
                                     onDragEnd={handleMarkerDragEnd}
+                                    position={{ lat: latitude, lng: longitude }}
                                 />
                             </GoogleMap>
                             {azureSubscriptionKey ? (
@@ -309,10 +309,10 @@ export const PickupLocationCreateForm = (props: PickupLocationCreateFormProps) =
                     </div>
                 </div>
                 <div className='col-span-12 flex justify-end gap-2'>
-                    <Button variant='secondary' data-test='cancel' asChild>
+                    <Button asChild data-test='cancel' variant='secondary'>
                         <Link to={`/eventsummary/${eventId}`}>Cancel</Link>
                     </Button>
-                    <Button type='submit' disabled={isSubmitting}>
+                    <Button disabled={isSubmitting} type='submit'>
                         {isSubmitting ? <Loader2 className='animate-spin' /> : null}
                         Save
                     </Button>

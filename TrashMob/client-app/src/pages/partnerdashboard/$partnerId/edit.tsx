@@ -123,17 +123,17 @@ export const PartnerEdit = () => {
 
     return (
         <SidebarLayout
-            title='Edit Partner Information'
             description='This page allows you to add basic details about your organization. Public notes may be shown to TrashMob.eco users on the partnership page. Think of this as a blurb or a tag line you may want to add to let users know more about your organization in general.'
+            title='Edit Partner Information'
         >
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className='grid grid-cols-12 gap-4'>
+                <form className='grid grid-cols-12 gap-4' onSubmit={form.handleSubmit(onSubmit)}>
                     <FormField
                         control={form.control}
                         name='name'
                         render={({ field }) => (
                             <FormItem className='col-span-6'>
-                                <FormLabel tooltip={ToolTips.PartnerName} required>
+                                <FormLabel required tooltip={ToolTips.PartnerName}>
                                     Partner Name
                                 </FormLabel>
                                 <FormControl>
@@ -148,7 +148,7 @@ export const PartnerEdit = () => {
                         name='website'
                         render={({ field }) => (
                             <FormItem className='col-span-6'>
-                                <FormLabel tooltip={ToolTips.PartnerWebsite} required>
+                                <FormLabel required tooltip={ToolTips.PartnerWebsite}>
                                     Website
                                 </FormLabel>
                                 <FormControl>
@@ -163,13 +163,13 @@ export const PartnerEdit = () => {
                         name='partnerStatusId'
                         render={({ field }) => (
                             <FormItem className='col-span-6'>
-                                <FormLabel tooltip={ToolTips.PartnerStatus} required>
+                                <FormLabel required tooltip={ToolTips.PartnerStatus}>
                                     Partner Status
                                 </FormLabel>
                                 <FormControl>
                                     <Select
-                                        value={`${field.value}`}
                                         onValueChange={(val) => field.onChange(Number(val))}
+                                        value={`${field.value}`}
                                     >
                                         <SelectTrigger>
                                             <SelectValue placeholder='-- Select Partner Status --' />
@@ -192,13 +192,13 @@ export const PartnerEdit = () => {
                         name='partnerTypeId'
                         render={({ field }) => (
                             <FormItem className='col-span-6'>
-                                <FormLabel tooltip={ToolTips.PartnerType} required>
+                                <FormLabel required tooltip={ToolTips.PartnerType}>
                                     Partner Type
                                 </FormLabel>
                                 <FormControl>
                                     <Select
-                                        value={`${field.value}`}
                                         onValueChange={(val) => field.onChange(Number(val))}
+                                        value={`${field.value}`}
                                     >
                                         <SelectTrigger>
                                             <SelectValue placeholder='-- Select Partner Type --' />
@@ -221,11 +221,11 @@ export const PartnerEdit = () => {
                         name='publicNotes'
                         render={({ field }) => (
                             <FormItem className='col-span-12'>
-                                <FormLabel tooltip={ToolTips.PartnerPublicNotes} required>
+                                <FormLabel required tooltip={ToolTips.PartnerPublicNotes}>
                                     Public Notes
                                 </FormLabel>
                                 <FormControl>
-                                    <Textarea {...field} maxLength={2048} className='h-24' />
+                                    <Textarea {...field} className='h-24' maxLength={2048} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -238,7 +238,7 @@ export const PartnerEdit = () => {
                             <FormItem className='col-span-12'>
                                 <FormLabel tooltip={ToolTips.PartnerPrivateNotes}>Private Notes</FormLabel>
                                 <FormControl>
-                                    <Textarea {...field} maxLength={2048} className='h-24' />
+                                    <Textarea {...field} className='h-24' maxLength={2048} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -272,7 +272,7 @@ export const PartnerEdit = () => {
                     />
                     <div className='col-span-12 flex justify-end gap-2'>
                         <Button variant='secondary'>Cancel</Button>
-                        <Button type='submit' disabled={isSubmitting}>
+                        <Button disabled={isSubmitting} type='submit'>
                             {isSubmitting ? <Loader2 className='animate-spin' /> : null}
                             Save
                         </Button>

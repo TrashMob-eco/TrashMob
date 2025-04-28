@@ -47,7 +47,7 @@ export const VolunteerOpportunities: React.FC = () => {
 
     return (
         <div className='tailwind'>
-            <HeroSection Title='Recruiting' Description='We’d love to have you join us.' />
+            <HeroSection Description='We’d love to have you join us.' Title='Recruiting' />
             <div className='container mx-auto'>
                 <div className='grid grid-cols-12 gap-4'>
                     <div className='col-span-12'>

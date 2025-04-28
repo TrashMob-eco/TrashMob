@@ -68,7 +68,7 @@ const useGetPartnerContactById = (type: PartnerContactType, contactId: string) =
 };
 
 interface PartnerContactEditProps {
-    type: PartnerContactType;
+    readonly type: PartnerContactType;
 }
 
 function isPartnerLocationContact(
@@ -184,7 +184,7 @@ export const PartnerContactEdit = (props: PartnerContactEditProps) => {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className='grid grid-cols-12 gap-4'>
+            <form className='grid grid-cols-12 gap-4' onSubmit={form.handleSubmit(onSubmit)}>
                 <FormField
                     control={form.control}
                     name='partnerLocationId'
@@ -193,9 +193,9 @@ export const PartnerContactEdit = (props: PartnerContactEditProps) => {
                             <FormLabel>This contact is for</FormLabel>
                             <FormControl>
                                 <Select
-                                    value={field.value}
-                                    onValueChange={field.onChange}
                                     disabled={contactType === PartnerContactType.ORGANIZATION_WIDE}
+                                    onValueChange={field.onChange}
+                                    value={field.value}
                                 >
                                     <SelectTrigger className='w-full'>
                                         <SelectValue placeholder='Organization-wide' />
@@ -218,7 +218,7 @@ export const PartnerContactEdit = (props: PartnerContactEditProps) => {
                     name='name'
                     render={({ field }) => (
                         <FormItem className='col-span-6'>
-                            <FormLabel tooltip={ToolTips.PartnerContactName} required>
+                            <FormLabel required tooltip={ToolTips.PartnerContactName}>
                                 Name
                             </FormLabel>
                             <FormControl>
@@ -233,7 +233,7 @@ export const PartnerContactEdit = (props: PartnerContactEditProps) => {
                     name='email'
                     render={({ field }) => (
                         <FormItem className='col-span-6'>
-                            <FormLabel tooltip={ToolTips.PartnerContactEmail} required>
+                            <FormLabel required tooltip={ToolTips.PartnerContactEmail}>
                                 Email
                             </FormLabel>
                             <FormControl>
@@ -248,15 +248,15 @@ export const PartnerContactEdit = (props: PartnerContactEditProps) => {
                     name='phone'
                     render={({ field }) => (
                         <FormItem className='col-span-6'>
-                            <FormLabel tooltip={ToolTips.PartnerContactPhone} required>
+                            <FormLabel required tooltip={ToolTips.PartnerContactPhone}>
                                 Phone
                             </FormLabel>
                             <FormControl>
                                 <PhoneInput
                                     country='us'
-                                    value={field.value}
-                                    onChange={field.onChange}
                                     inputProps={{ ref: field.ref }}
+                                    onChange={field.onChange}
+                                    value={field.value}
                                 />
                             </FormControl>
                             <FormMessage />
@@ -268,21 +268,21 @@ export const PartnerContactEdit = (props: PartnerContactEditProps) => {
                     name='notes'
                     render={({ field }) => (
                         <FormItem className='col-span-12'>
-                            <FormLabel tooltip={ToolTips.PartnerContactNotes} required>
+                            <FormLabel required tooltip={ToolTips.PartnerContactNotes}>
                                 Notes
                             </FormLabel>
                             <FormControl>
-                                <Textarea {...field} maxLength={1000} className='h-24' />
+                                <Textarea {...field} className='h-24' maxLength={1000} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
                 <div className='col-span-12 flex justify-end gap-2'>
-                    <Button variant='secondary' data-test='cancel' asChild>
+                    <Button asChild data-test='cancel' variant='secondary'>
                         <Link to={`/partnerdashboard/${partnerId}/contacts`}>Cancel</Link>
                     </Button>
-                    <Button type='submit' disabled={isSubmitting}>
+                    <Button disabled={isSubmitting} type='submit'>
                         {isSubmitting ? <Loader2 className='animate-spin' /> : null}
                         Save
                     </Button>

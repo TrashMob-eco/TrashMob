@@ -15,7 +15,7 @@ import { Ellipsis, Pencil, SquareArrowRight } from 'lucide-react';
 import { PartnerStatusActive } from '@/components/Models/Constants';
 
 type MyPartnersTableProps = {
-    items: DisplayPartnershipData[];
+    readonly items: DisplayPartnershipData[];
 };
 
 export const MyPartnersTable = ({ items }: MyPartnersTableProps) => {
@@ -49,7 +49,7 @@ export const MyPartnersTable = ({ items }: MyPartnersTableProps) => {
                             <TableCell className='py-0'>
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button variant='ghost' size='icon'>
+                                        <Button size='icon' variant='ghost'>
                                             <Ellipsis />
                                         </Button>
                                     </DropdownMenuTrigger>

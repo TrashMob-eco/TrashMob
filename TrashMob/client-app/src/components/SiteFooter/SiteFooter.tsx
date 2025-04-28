@@ -23,21 +23,21 @@ export const SiteFooter = () => {
             <div className='bg-[#212529] relative !py-10 overflow-hidden'>
                 <Logo
                     className='w-[900px] absolute z-0 left-[20%] md:left-[40%] inset-y-1/2 -translate-y-[25rem] opacity-10'
-                    showTagline={false}
                     showBrandName={false}
+                    showTagline={false}
                 />
                 <div className='container relative z-1'>
                     <div className='w-72 md:w-96 max-w-full mb-5 mx-auto md:!mx-0'>
-                        <Logo fill='#fff' className='opacity-40' />
+                        <Logo className='opacity-40' fill='#fff' />
                     </div>
                     <div className='grid grid-rows-9 grid-cols-1 md:grid-rows-3 md:grid-cols-3 gap-4 gap-x-8 md:grid-flow-col'>
                         {footerNavs.map((nav) => {
                             return nav.href.startsWith('/') ? (
-                                <Link to={nav.href} key={nav.href} className={cn(navClassName)}>
+                                <Link className={cn(navClassName)} key={nav.href} to={nav.href}>
                                     {nav.title}
                                 </Link>
                             ) : (
-                                <a href={nav.href} className={cn(navClassName)}>
+                                <a className={cn(navClassName)} href={nav.href}>
                                     {nav.title}
                                 </a>
                             );
@@ -61,34 +61,34 @@ export const SiteFooter = () => {
                             <div className='basis-1/4'>
                                 <div className='flex flex-row justify-start md:justify-end !mt-4 gap-2'>
                                     <a
-                                        href='https://www.instagram.com/trashmobinfo'
-                                        target='_blank'
-                                        rel='noreferrer noopener'
                                         className={socialClassName}
+                                        href='https://www.instagram.com/trashmobinfo'
+                                        rel='noreferrer noopener'
+                                        target='_blank'
                                     >
                                         <i className='!mt-0 fa-brands fa-instagram text-center text-black' />
                                     </a>
                                     <a
-                                        href='https://www.youtube.com/channel/UC2LgFmXFCA8kdkxd4IJ51BA'
-                                        target='_blank'
-                                        rel='noreferrer noopener'
                                         className={socialClassName}
+                                        href='https://www.youtube.com/channel/UC2LgFmXFCA8kdkxd4IJ51BA'
+                                        rel='noreferrer noopener'
+                                        target='_blank'
                                     >
                                         <i className='!mt-0 fa-brands fa-youtube text-center text-black' />
                                     </a>
                                     <a
-                                        href='https://www.facebook.com/trashmob.eco/'
-                                        target='_blank'
-                                        rel='noreferrer noopener'
                                         className={socialClassName}
+                                        href='https://www.facebook.com/trashmob.eco/'
+                                        rel='noreferrer noopener'
+                                        target='_blank'
                                     >
                                         <i className='!mt-0 fab fa-facebook-f text-center text-black' />
                                     </a>
                                     <a
-                                        href='https://twitter.com/TrashMobEco'
-                                        target='_blank'
-                                        rel='noreferrer noopener'
                                         className={socialClassName}
+                                        href='https://twitter.com/TrashMobEco'
+                                        rel='noreferrer noopener'
+                                        target='_blank'
                                     >
                                         <i className='!mt-0 fab fa-twitter text-center text-black' />
                                     </a>

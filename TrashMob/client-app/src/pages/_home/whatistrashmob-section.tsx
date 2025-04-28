@@ -7,7 +7,7 @@ export const WhatIsTrashmobSection = () => {
     const { ref: viewportRef, isInViewPort } = useIsInViewport<HTMLDivElement>();
 
     return (
-        <section id='introduction' className='bg-card'>
+        <section className='bg-card' id='introduction'>
             <div ref={viewportRef} />
             <div className='mx-auto max-w-screen-xl py-8'>
                 <div className='px-8 items-center md:grid md:auto-rows-auto md:grid-cols-5 md:gap-x-4'>
@@ -27,6 +27,8 @@ export const WhatIsTrashmobSection = () => {
                     </div>
                     <div className='row-span-4 col-span-12 md:col-start-4 md:col-span-2'>
                         <iframe
+                            allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+                            allowFullScreen
                             className={cn(
                                 'aspect-video w-full mt-0',
                                 'transition-all duration-1000 delay-1000 ease-out',
@@ -35,11 +37,9 @@ export const WhatIsTrashmobSection = () => {
                                     'opacity-0 translate-y-20': !isInViewPort,
                                 },
                             )}
+                            referrerPolicy='strict-origin-when-cross-origin'
                             src='https://www.youtube.com/embed/ylOBeVHRtuM?si=5oYDCAMdywNBmp_A'
                             title='Trashmob introduction video'
-                            allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
-                            referrerPolicy='strict-origin-when-cross-origin'
-                            allowFullScreen
                         />
                     </div>
                     <div className='row-span-3 col-start-1 col-span-3'>

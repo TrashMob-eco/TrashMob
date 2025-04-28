@@ -79,13 +79,13 @@ export const CancelEvent: React.FC = () => {
         <div className='tailwind'>
             {event ? (
                 <ShareToSocialsDialog
-                    eventToShare={event}
-                    show={showModal}
-                    handleShow={handleShowModal}
-                    modalTitle='Share Event Cancellation'
-                    message={SharingMessages.getCancellationMessage(event, cancellationReason)}
-                    eventLink='https://www.trashmob.eco'
                     emailSubject='TrashMob Event Cancellation'
+                    eventLink='https://www.trashmob.eco'
+                    eventToShare={event}
+                    handleShow={handleShowModal}
+                    message={SharingMessages.getCancellationMessage(event, cancellationReason)}
+                    modalTitle='Share Event Cancellation'
+                    show={showModal}
                 />
             ) : null}
             <div className='w-full max-w-xl mx-auto py-16'>
@@ -116,12 +116,12 @@ export const CancelEvent: React.FC = () => {
                                 />
                             </CardContent>
                             <CardFooter className='flex gap-2 justify-end'>
-                                <Button variant='outline' onClick={handleCancel}>
+                                <Button onClick={handleCancel} variant='outline'>
                                     Back
                                 </Button>
                                 <Button
-                                    type='submit'
                                     disabled={!form.formState.isValid || deleteEvent.isLoading}
+                                    type='submit'
                                     variant='destructive'
                                 >
                                     {deleteEvent.isLoading ? <Loader2 className='animate-spin' /> : null}

@@ -10,7 +10,6 @@ export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 function Calendar({ className, classNames, showOutsideDays = true, ...props }: CalendarProps) {
     return (
         <DayPicker
-            showOutsideDays={showOutsideDays}
             className={cn('p-3', className)}
             classNames={{
                 months: 'flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0',
@@ -55,6 +54,7 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
                     <ChevronRightIcon className={cn('h-4 w-4', className)} {...props} />
                 ),
             }}
+            showOutsideDays={showOutsideDays}
             {...props}
         />
     );

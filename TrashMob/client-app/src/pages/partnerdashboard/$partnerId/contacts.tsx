@@ -124,8 +124,8 @@ export const PartnerContacts = () => {
 
     return (
         <SidebarLayout
-            title='Edit Partner Contacts'
             description='This page allows you to add more contacts to this partner so you can share the load of responding to questions for this partner.'
+            title='Edit Partner Contacts'
             useDefaultCard={false}
         >
             <div className='space-y-4'>
@@ -150,14 +150,14 @@ export const PartnerContacts = () => {
                             </TableHeader>
                             <TableBody>
                                 {(organizationWideContacts || []).map((row) => (
-                                    <TableRow key={row.name} className={isDeletingId === row?.id ? 'opacity-20' : ''}>
+                                    <TableRow className={isDeletingId === row?.id ? 'opacity-20' : ''} key={row.name}>
                                         <TableCell>{row.name}</TableCell>
                                         <TableCell>{row.email}</TableCell>
                                         <TableCell>{formatPhone(row.phone)}</TableCell>
                                         <TableCell>
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
-                                                    <Button variant='ghost' size='icon'>
+                                                    <Button size='icon' variant='ghost'>
                                                         <Ellipsis />
                                                     </Button>
                                                 </DropdownMenuTrigger>
@@ -179,7 +179,7 @@ export const PartnerContacts = () => {
                                 ))}
                                 <TableRow>
                                     <TableCell colSpan={4}>
-                                        <Button variant='ghost' className='w-full' asChild>
+                                        <Button asChild className='w-full' variant='ghost'>
                                             <Link to='create'>
                                                 <Plus /> Add Organization Contact
                                             </Link>
@@ -225,7 +225,7 @@ export const PartnerContacts = () => {
                                             <TableCell>
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
-                                                        <Button variant='ghost' size='icon'>
+                                                        <Button size='icon' variant='ghost'>
                                                             <Ellipsis />
                                                         </Button>
                                                     </DropdownMenuTrigger>
@@ -257,7 +257,7 @@ export const PartnerContacts = () => {
                                 })}
                                 <TableRow>
                                     <TableCell colSpan={5}>
-                                        <Button variant='ghost' className='w-full' asChild>
+                                        <Button asChild className='w-full' variant='ghost'>
                                             <Link to={`create?contactType=${PartnerContactType.LOCATION_SPECIFIC}`}>
                                                 <Plus /> Add Location-specific Contact
                                             </Link>
@@ -268,7 +268,7 @@ export const PartnerContacts = () => {
                         </Table>
                     </CardContent>
                 </Card>
-                <Dialog open={!!isEdit} onOpenChange={() => navigate(`/partnerdashboard/${partnerId}/contacts`)}>
+                <Dialog onOpenChange={() => navigate(`/partnerdashboard/${partnerId}/contacts`)} open={!!isEdit}>
                     <DialogContent className='sm:max-w-[680px]' onOpenAutoFocus={(e) => e.preventDefault()}>
                         <DialogHeader>
                             <DialogTitle>Edit Contact</DialogTitle>
@@ -278,7 +278,7 @@ export const PartnerContacts = () => {
                         </div>
                     </DialogContent>
                 </Dialog>
-                <Dialog open={!!isCreate} onOpenChange={() => navigate(`/partnerdashboard/${partnerId}/contacts`)}>
+                <Dialog onOpenChange={() => navigate(`/partnerdashboard/${partnerId}/contacts`)} open={!!isCreate}>
                     <DialogContent className='sm:max-w-[680px]' onOpenAutoFocus={(e) => e.preventDefault()}>
                         <DialogHeader>
                             <DialogTitle>Create Contact</DialogTitle>

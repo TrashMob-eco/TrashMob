@@ -66,23 +66,23 @@ const boards = [
 export const Board: React.FC = () => {
     return (
         <div className='tailwind'>
-            <HeroSection Title='Board of Directors' Description='Meet our team!' />
+            <HeroSection Description='Meet our team!' Title='Board of Directors' />
             <div className='container my-5 pb-5'>
                 {boards.map((board) => (
-                    <div className='p-4 mt-24 bg-card shadow-lg !rounded-lg'>
+                    <div className='p-4 mt-24 bg-card shadow-lg !rounded-lg' key={board.name}>
                         <div className='flex flex-col md:flex-row gap-8'>
                             <div className='basis-full md:basis-6/12 lg:basis-5/12'>
                                 <img
-                                    src={board.img}
                                     alt={board.name}
                                     className='mx-auto md:mx-0 mt-0 h-100 object-cover !rounded-md'
+                                    src={board.img}
                                 />
                             </div>
                             <div className='basis-full md:basis-6/12 lg:basis-7/12'>
                                 <div className='flex justify-between items-center'>
                                     <h2 className='m-0 font-medium text-3xl color-primary'>{board.name}</h2>
                                     <a href={board.linkedin}>
-                                        <img src={linkedIn} alt='linkedin icon' className='mt-0 object-cover' />
+                                        <img alt='linkedin icon' className='mt-0 object-cover' src={linkedIn} />
                                     </a>
                                 </div>
                                 <h5 className='my-3 font-medium text-[#696b72]'>{board.position}</h5>

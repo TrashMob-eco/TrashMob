@@ -6,12 +6,12 @@ import UserData from '../../Models/UserData';
 import { isCompletedEvent } from '@/lib/event-helpers';
 
 type EventDetailInfoWindowContentProps = {
-    event: EventData & {
+    readonly event: EventData & {
         isAttending?: boolean;
     };
-    hideTitle?: boolean;
-    isUserLoaded: boolean;
-    currentUser: UserData;
+    readonly hideTitle?: boolean;
+    readonly isUserLoaded: boolean;
+    readonly currentUser: UserData;
 };
 
 export const EventDetailInfoWindowHeader = (props: EventData) => (
@@ -66,14 +66,14 @@ export const EventDetailInfoWindowContent = (props: EventDetailInfoWindowContent
                     Created by
                     {createdByUserName}
                 </span>
-                <Button variant='outline' className='mr-0' asChild>
+                <Button asChild className='mr-0' variant='outline'>
                     <a href={eventDetailUrl}>View Details</a>
                 </Button>
                 <RegisterBtn
+                    currentUser={currentUser}
                     eventId={id}
                     isAttending={isAttending ? 'Yes' : 'No'}
                     isEventCompleted={new Date(eventDate) < new Date()}
-                    currentUser={currentUser}
                     isUserLoaded={isUserLoaded}
                 />
             </div>

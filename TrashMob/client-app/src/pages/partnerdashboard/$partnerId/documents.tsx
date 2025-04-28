@@ -63,8 +63,8 @@ export const PartnerDocuments = () => {
 
     return (
         <SidebarLayout
-            title='Edit Partner Documents'
             description='This page allows you and the TrashMob administrators to track documents relevant to the partnership. i.e. Volunteer Organizational Agreements or special waivers if needed. Note that this page will have more functionality added in the future to allow uploading filled out documents.'
+            title='Edit Partner Documents'
         >
             <div>
                 <Table>
@@ -77,13 +77,13 @@ export const PartnerDocuments = () => {
                     </TableHeader>
                     <TableBody>
                         {(documents || []).map((row) => (
-                            <TableRow key={row.id} className={isDeletingId === row.id ? 'opacity-20' : ''}>
+                            <TableRow className={isDeletingId === row.id ? 'opacity-20' : ''} key={row.id}>
                                 <TableCell>{row.name}</TableCell>
                                 <TableCell>{row.url}</TableCell>
                                 <TableCell>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
-                                            <Button variant='ghost' size='icon'>
+                                            <Button size='icon' variant='ghost'>
                                                 <Ellipsis />
                                             </Button>
                                         </DropdownMenuTrigger>
@@ -105,7 +105,7 @@ export const PartnerDocuments = () => {
                         ))}
                         <TableRow>
                             <TableCell colSpan={3}>
-                                <Button variant='ghost' className='w-full' asChild>
+                                <Button asChild className='w-full' variant='ghost'>
                                     <Link to='create'>
                                         <Plus /> Add Document
                                     </Link>
@@ -114,7 +114,7 @@ export const PartnerDocuments = () => {
                         </TableRow>
                     </TableBody>
                 </Table>
-                <Dialog open={!!isEdit} onOpenChange={() => navigate(`/partnerdashboard/${partnerId}/locations`)}>
+                <Dialog onOpenChange={() => navigate(`/partnerdashboard/${partnerId}/locations`)} open={!!isEdit}>
                     <DialogContent
                         className='sm:max-w-[600px] overflow-y-scroll max-h-screen'
                         onOpenAutoFocus={(e) => e.preventDefault()}
@@ -127,7 +127,7 @@ export const PartnerDocuments = () => {
                         </div>
                     </DialogContent>
                 </Dialog>
-                <Dialog open={!!isCreate} onOpenChange={() => navigate(`/partnerdashboard/${partnerId}/locations`)}>
+                <Dialog onOpenChange={() => navigate(`/partnerdashboard/${partnerId}/locations`)} open={!!isCreate}>
                     <DialogContent
                         className='sm:max-w-[600px] overflow-y-scroll max-h-screen'
                         onOpenAutoFocus={(e) => e.preventDefault()}

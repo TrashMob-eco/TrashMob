@@ -26,10 +26,10 @@ export const EventPlaceAndLocation = (
             <MapPin />
             <div>
                 <a
-                    href={`https://google.com/maps/place/${event.streetAddress}+${event.city}+${event.region}+${event.postalCode}+${event.country}`}
-                    target='_blank'
                     className='text-foreground hover:underline'
+                    href={`https://google.com/maps/place/${event.streetAddress}+${event.city}+${event.region}+${event.postalCode}+${event.country}`}
                     rel='noopener noreferrer'
+                    target='_blank'
                 >
                     {compact([event.streetAddress, event.city, event.region]).join(', ')}
                 </a>
@@ -39,16 +39,16 @@ export const EventPlaceAndLocation = (
 };
 
 interface EventListItemProps {
-    event: EventData;
-    isUserLoaded: boolean;
-    currentUser: UserData;
+    readonly event: EventData;
+    readonly isUserLoaded: boolean;
+    readonly currentUser: UserData;
 }
 
 export const EventListItem = (props: EventListItemProps) => {
     const { event, isUserLoaded, currentUser } = props;
     const { data: eventType } = useGetEventType(event.eventTypeId);
     return (
-        <Card key={event.id} className='!border-[#8AB4AD]'>
+        <Card className='!border-[#8AB4AD]' key={event.id}>
             <CardHeader className='!p-4 flex-row'>
                 <CardTitle className='grow'>{event.name}</CardTitle>
                 <div className='flex gap-2'>
@@ -65,17 +65,17 @@ export const EventListItem = (props: EventListItemProps) => {
                 <EventPlaceAndLocation {...event} />
             </CardContent>
             <CardFooter className='!p-4 !pt-0 flex justify-between'>
-                <Button variant='outline' asChild>
+                <Button asChild variant='outline'>
                     <Link to={`/eventdetails/${event.id}`}>
                         View Event <ArrowRight />
                     </Link>
                 </Button>
                 <RegisterBtn
-                    eventId={event.id}
-                    isUserLoaded={isUserLoaded}
                     currentUser={currentUser}
+                    eventId={event.id}
                     isAttending={event.isAttending ? 'Yes' : 'No'}
                     isEventCompleted={new Date(event.eventDate) < new Date()}
+                    isUserLoaded={isUserLoaded}
                 />
             </CardFooter>
         </Card>
@@ -83,16 +83,16 @@ export const EventListItem = (props: EventListItemProps) => {
 };
 
 interface EventListProps {
-    events: EventData[];
-    isUserLoaded: boolean;
-    currentUser: UserData;
+    readonly events: EventData[];
+    readonly isUserLoaded: boolean;
+    readonly currentUser: UserData;
 }
 
 export const EventList = ({ events, isUserLoaded, currentUser }: EventListProps) => {
     return (
         <div className='flex flex-col gap-4'>
             {(events || []).map((event) => (
-                <EventListItem key={event.id} event={event} isUserLoaded={isUserLoaded} currentUser={currentUser} />
+                <EventListItem currentUser={currentUser} event={event} isUserLoaded={isUserLoaded} key={event.id} />
             ))}
         </div>
     );

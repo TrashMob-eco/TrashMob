@@ -18,8 +18,8 @@ import { GetPartnerAdminsForUser } from '@/services/admin';
 import DisplayPartnerAdminInvitationData from '@/components/Models/DisplayPartnerAdminInvitationData';
 
 type PartnerAdminInvitationTableProps = {
-    items: DisplayPartnerAdminInvitationData[];
-    userId: string;
+    readonly items: DisplayPartnerAdminInvitationData[];
+    readonly userId: string;
 };
 
 export const PartnerAdminInvitationsTable = ({ userId, items }: PartnerAdminInvitationTableProps) => {
@@ -64,7 +64,7 @@ export const PartnerAdminInvitationsTable = ({ userId, items }: PartnerAdminInvi
                         <TableCell className='py-0'>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant='ghost' size='icon'>
+                                    <Button size='icon' variant='ghost'>
                                         <Ellipsis />
                                     </Button>
                                 </DropdownMenuTrigger>

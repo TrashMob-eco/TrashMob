@@ -5,7 +5,7 @@ export const MainNav = ({
     className,
     isUserLoaded,
     ...props
-}: React.HTMLAttributes<HTMLElement> & { isUserLoaded: boolean }) => {
+}: React.HTMLAttributes<HTMLElement> & { readonly isUserLoaded: boolean }) => {
     const mainNavItems = [
         { name: 'Getting Started', to: '/gettingstarted' },
         ...(isUserLoaded ? [{ name: 'My Dashboard', to: '/mydashboard' }] : []),
@@ -20,9 +20,9 @@ export const MainNav = ({
                 if (nav.component === 'a') {
                     return (
                         <a
+                            className='text-sm font-medium text-foreground no-underline transition-colors hover:text-[--primary] !p-2 !pl-0 !lg:pl-2'
                             href={nav.to}
                             key={nav.name}
-                            className='text-sm font-medium text-foreground no-underline transition-colors hover:text-[--primary] !p-2 !pl-0 !lg:pl-2'
                         >
                             {nav.name}
                         </a>
@@ -30,9 +30,9 @@ export const MainNav = ({
                 } else {
                     return (
                         <Link
-                            to={nav.to}
-                            key={nav.name}
                             className='text-sm font-medium text-foreground no-underline transition-colors hover:text-[--primary] !p-2 !pl-0 !lg:pl-2'
+                            key={nav.name}
+                            to={nav.to}
                         >
                             {nav.name}
                         </Link>

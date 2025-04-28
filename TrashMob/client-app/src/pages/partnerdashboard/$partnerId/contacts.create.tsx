@@ -158,7 +158,7 @@ export const PartnerContactCreate = () => {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className='grid grid-cols-12 gap-4'>
+            <form className='grid grid-cols-12 gap-4' onSubmit={form.handleSubmit(onSubmit)}>
                 <FormField
                     control={form.control}
                     name='contactType'
@@ -166,28 +166,28 @@ export const PartnerContactCreate = () => {
                         <FormItem className='col-span-12 pt-3'>
                             <Card>
                                 <CardContent className='px-4 py-3'>
-                                    <RadioGroup value={field.value} onValueChange={field.onChange} className='flex'>
+                                    <RadioGroup className='flex' onValueChange={field.onChange} value={field.value}>
                                         <div className='basis-1/2 flex items-start space-x-2'>
                                             <RadioGroupItem
-                                                value={PartnerContactType.ORGANIZATION_WIDE}
-                                                id={PartnerContactType.ORGANIZATION_WIDE}
                                                 className='mt-2'
+                                                id={PartnerContactType.ORGANIZATION_WIDE}
+                                                value={PartnerContactType.ORGANIZATION_WIDE}
                                             />
-                                            <Label htmlFor={PartnerContactType.ORGANIZATION_WIDE} className='!mx-4'>
+                                            <Label className='!mx-4' htmlFor={PartnerContactType.ORGANIZATION_WIDE}>
                                                 <div>Organization-wide Contact</div>
                                                 <div className='text-sm text-muted font-normal mt-1'>
                                                     This contact applies to the entire organization.
                                                 </div>
                                             </Label>
                                         </div>
-                                        <Separator orientation='vertical' className='min-h-[64px]' />
+                                        <Separator className='min-h-[64px]' orientation='vertical' />
                                         <div className='basis-1/2 flex items-start space-x-2'>
                                             <RadioGroupItem
-                                                value={PartnerContactType.LOCATION_SPECIFIC}
-                                                id={PartnerContactType.LOCATION_SPECIFIC}
                                                 className='mt-2'
+                                                id={PartnerContactType.LOCATION_SPECIFIC}
+                                                value={PartnerContactType.LOCATION_SPECIFIC}
                                             />
-                                            <Label htmlFor={PartnerContactType.LOCATION_SPECIFIC} className='!mx-4'>
+                                            <Label className='!mx-4' htmlFor={PartnerContactType.LOCATION_SPECIFIC}>
                                                 <div>Location-specific Contact</div>
                                                 <div className='text-sm text-muted font-normal mt-1'>
                                                     This contact is for a specific location.
@@ -208,16 +208,16 @@ export const PartnerContactCreate = () => {
                             <FormLabel>This contact is for</FormLabel>
                             <FormControl>
                                 <Select
-                                    value={field.value}
-                                    onValueChange={field.onChange}
                                     disabled={contactType === PartnerContactType.ORGANIZATION_WIDE}
+                                    onValueChange={field.onChange}
+                                    value={field.value}
                                 >
                                     <SelectTrigger className='w-full'>
                                         <SelectValue placeholder='Organization-wide' />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {(locations || []).map((loc) => (
-                                            <SelectItem value={`${loc.id}`}>{loc.name}</SelectItem>
+                                            <SelectItem key={loc.id} value={`${loc.id}`}>{loc.name}</SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
@@ -231,7 +231,7 @@ export const PartnerContactCreate = () => {
                     name='name'
                     render={({ field }) => (
                         <FormItem className='col-span-6'>
-                            <FormLabel tooltip={ToolTips.PartnerContactName} required>
+                            <FormLabel required tooltip={ToolTips.PartnerContactName}>
                                 Name
                             </FormLabel>
                             <FormControl>
@@ -246,7 +246,7 @@ export const PartnerContactCreate = () => {
                     name='email'
                     render={({ field }) => (
                         <FormItem className='col-span-6'>
-                            <FormLabel tooltip={ToolTips.PartnerContactEmail} required>
+                            <FormLabel required tooltip={ToolTips.PartnerContactEmail}>
                                 Email
                             </FormLabel>
                             <FormControl>
@@ -261,15 +261,15 @@ export const PartnerContactCreate = () => {
                     name='phone'
                     render={({ field }) => (
                         <FormItem className='col-span-6'>
-                            <FormLabel tooltip={ToolTips.PartnerContactPhone} required>
+                            <FormLabel required tooltip={ToolTips.PartnerContactPhone}>
                                 Phone
                             </FormLabel>
                             <FormControl>
                                 <PhoneInput
                                     country='us'
-                                    value={field.value}
-                                    onChange={field.onChange}
                                     inputProps={{ ref: field.ref }}
+                                    onChange={field.onChange}
+                                    value={field.value}
                                 />
                             </FormControl>
                             <FormMessage />
@@ -282,21 +282,21 @@ export const PartnerContactCreate = () => {
                     name='notes'
                     render={({ field }) => (
                         <FormItem className='col-span-12'>
-                            <FormLabel tooltip={ToolTips.PartnerContactNotes} required>
+                            <FormLabel required tooltip={ToolTips.PartnerContactNotes}>
                                 Notes
                             </FormLabel>
                             <FormControl>
-                                <Textarea {...field} maxLength={1000} className='h-24' />
+                                <Textarea {...field} className='h-24' maxLength={1000} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
                 <div className='col-span-12 flex justify-end gap-2'>
-                    <Button variant='secondary' data-test='cancel' asChild>
+                    <Button asChild data-test='cancel' variant='secondary'>
                         <Link to={`/partnerdashboard/${partnerId}/contacts`}>Cancel</Link>
                     </Button>
-                    <Button type='submit' disabled={isSubmitting}>
+                    <Button disabled={isSubmitting} type='submit'>
                         {isSubmitting ? <Loader2 className='animate-spin' /> : null}
                         Save
                     </Button>

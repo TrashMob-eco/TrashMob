@@ -11,7 +11,7 @@ export class TermsOfServiceVersion {
 export const TermsOfService: FC = () => {
     return (
         <div className='tailwind'>
-            <HeroSection Title='Terms of Service' Description='Transparency matters to us.' />
+            <HeroSection Description='Transparency matters to us.' Title='Terms of Service' />
             <div className='py-5 mx-auto container'>
                 <h5 className='font-semibold mt-5'>1. Terms</h5>
 
@@ -105,7 +105,7 @@ export const TermsOfService: FC = () => {
                 <p className='mt-5'>The team at TrashMob.eco</p>
                 <div className='mb-5'>
                     <div className='p-0'>
-                        <img src={logo} className='p-0 m-0 pl-2 mb-5' alt='TrashMob Logo' />
+                        <img alt='TrashMob Logo' className='p-0 m-0 pl-2 mb-5' src={logo} />
                     </div>
                 </div>
             </div>

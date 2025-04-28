@@ -25,9 +25,9 @@ import { getApiConfig, getB2CPolicies, msalClient } from '@/store/AuthStore';
 import React from 'react';
 
 interface UserNavProps {
-    currentUser: UserData;
-    isUserLoaded: boolean;
-    className?: string;
+    readonly currentUser: UserData;
+    readonly isUserLoaded: boolean;
+    readonly className?: string;
 }
 
 export const UserNav = (props: UserNavProps) => {
@@ -70,7 +70,7 @@ export const UserNav = (props: UserNavProps) => {
     return (
         <div className={cn('flex flex-row item-center basis-full lg:basis-0', className)}>
             {!isUserLoaded && (
-                <Button variant='outline' className='text-current border-primary' onClick={signIn}>
+                <Button className='text-current border-primary' onClick={signIn} variant='outline'>
                     Sign in
                 </Button>
             )}

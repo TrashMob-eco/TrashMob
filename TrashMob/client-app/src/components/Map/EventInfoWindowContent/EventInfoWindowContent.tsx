@@ -1,7 +1,7 @@
 type EventInfoWindowContentProps = {
-    title: string;
-    date: string;
-    time: string;
+    readonly title: string;
+    readonly date: string;
+    readonly time: string;
 };
 
 export const EventInfoWindowContent = ({ title, date, time }: EventInfoWindowContentProps) => {

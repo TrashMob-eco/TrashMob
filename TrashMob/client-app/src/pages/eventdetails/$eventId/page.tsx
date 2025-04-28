@@ -89,7 +89,7 @@ export const EventDetails: FC<EventDetailsProps> = () => {
 
     return (
         <div className='tailwind'>
-            <HeroSection Title='View Events' Description='Learn, join, and inspire.' />
+            <HeroSection Description='Learn, join, and inspire.' Title='View Events' />
             {!isDataLoaded ? (
                 <p>
                     <em>Loading...</em>
@@ -99,25 +99,25 @@ export const EventDetails: FC<EventDetailsProps> = () => {
                     <div className='container mx-auto my-5'>
                         <ShareToSocialsDialog
                             eventToShare={event}
-                            show={showModal}
                             handleShow={setShowSocialsModal}
-                            modalTitle='Share Event'
                             message={SharingMessages.getEventDetailsMessage(
                                 startDateTime.toDate(),
                                 city,
                                 createdByUserId,
                                 currentUser.id,
                             )}
+                            modalTitle='Share Event'
+                            show={showModal}
                         />
                         <div className='flex justify-between items-end flex-col md:flex-row'>
                             <h2 className='font-semibold'>{eventName}</h2>
                             <div className='flex my-3 gap-2'>
                                 {currentUser ? (
                                     <RegisterBtn
+                                        currentUser={currentUser}
                                         eventId={eventId}
                                         isAttending={isAttending}
                                         isEventCompleted={isEventCompleted}
-                                        currentUser={currentUser}
                                         isUserLoaded={isUserLoaded}
                                     />
                                 ) : null}
@@ -135,7 +135,7 @@ export const EventDetails: FC<EventDetailsProps> = () => {
                                             <a href={urls.google}>Google</a>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem asChild>
-                                            <a href={urls.ics} download={eventName}>
+                                            <a download={eventName} href={urls.ics}>
                                                 Outlook
                                             </a>
                                         </DropdownMenuItem>
@@ -148,10 +148,10 @@ export const EventDetails: FC<EventDetailsProps> = () => {
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                                 <Button
-                                    variant='outline'
                                     onClick={() => {
                                         setShowSocialsModal(true);
                                     }}
+                                    variant='outline'
                                 >
                                     <Share2 />
                                     Share
@@ -165,21 +165,21 @@ export const EventDetails: FC<EventDetailsProps> = () => {
                         </div>
                         {latitude && longitude ? (
                             <GoogleMap
-                                gestureHandling='greedy'
                                 defaultCenter={{ lat: latitude, lng: longitude }}
                                 defaultZoom={MapStore.defaultUserLocationZoom}
+                                gestureHandling='greedy'
                             >
                                 <MarkerWithInfoWindow
-                                    position={{ lat: latitude, lng: longitude }}
-                                    infoWindowTrigger='hover'
-                                    infoWindowProps={{ headerDisabled: true }}
                                     infoWindowContent={
                                         <EventInfoWindowContent
-                                            title={eventName}
                                             date={moment(startDateTime).local().format('LL')}
                                             time={moment(startDateTime).local().format('LTS Z')}
+                                            title={eventName}
                                         />
                                     }
+                                    infoWindowProps={{ headerDisabled: true }}
+                                    infoWindowTrigger='hover'
+                                    position={{ lat: latitude, lng: longitude }}
                                 />
                             </GoogleMap>
                         ) : null}
@@ -194,7 +194,7 @@ export const EventDetails: FC<EventDetailsProps> = () => {
                                 Max Number of Participants:
                                 <span className='ml-2 text-muted-foreground'>{maxNumberOfParticipants}</span>
                             </p>
-                            <EventAttendeeTable users={eventAttendees || []} event={event} />
+                            <EventAttendeeTable event={event} users={eventAttendees || []} />
                         </div>
                     ) : null}
                 </>

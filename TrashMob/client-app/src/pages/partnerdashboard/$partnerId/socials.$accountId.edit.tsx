@@ -114,17 +114,17 @@ export const PartnerSocialAcccountEdit = () => {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className='grid grid-cols-12 gap-4'>
+            <form className='grid grid-cols-12 gap-4' onSubmit={form.handleSubmit(onSubmit)}>
                 <FormField
                     control={form.control}
                     name='socialMediaAccountTypeId'
                     render={({ field }) => (
                         <FormItem className='col-span-4'>
-                            <FormLabel tooltip={ToolTips.SocialMediaAccountType} required>
+                            <FormLabel required tooltip={ToolTips.SocialMediaAccountType}>
                                 Account Type
                             </FormLabel>
                             <FormControl>
-                                <Select value={`${field.value}`} onValueChange={(val) => field.onChange(Number(val))}>
+                                <Select onValueChange={(val) => field.onChange(Number(val))} value={`${field.value}`}>
                                     <SelectTrigger className='w-full'>
                                         <SelectValue placeholder='Service Type' />
                                     </SelectTrigger>
@@ -146,7 +146,7 @@ export const PartnerSocialAcccountEdit = () => {
                     name='accountIdentifier'
                     render={({ field }) => (
                         <FormItem className='col-span-5'>
-                            <FormLabel tooltip={ToolTips.SocialMediaAccountName} required>
+                            <FormLabel required tooltip={ToolTips.SocialMediaAccountName}>
                                 Account Name
                             </FormLabel>
                             <FormControl>
@@ -164,10 +164,10 @@ export const PartnerSocialAcccountEdit = () => {
                             <FormLabel> </FormLabel>
                             <FormControl>
                                 <div className='flex items-center space-x-2 h-9'>
-                                    <Checkbox id='isActive' checked={field.value} onCheckedChange={field.onChange} />
+                                    <Checkbox checked={field.value} id='isActive' onCheckedChange={field.onChange} />
                                     <label
-                                        htmlFor='isActive'
                                         className='text-sm mb-0 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                                        htmlFor='isActive'
                                     >
                                         Is Active
                                     </label>
@@ -178,10 +178,10 @@ export const PartnerSocialAcccountEdit = () => {
                     )}
                 />
                 <div className='col-span-12 flex justify-end gap-2'>
-                    <Button variant='secondary' asChild>
+                    <Button asChild variant='secondary'>
                         <Link to={`/partnerdashboard/${partnerId}/socials`}>Cancel</Link>
                     </Button>
-                    <Button type='submit' disabled={isSubmitting}>
+                    <Button disabled={isSubmitting} type='submit'>
                         {isSubmitting ? <Loader2 className='animate-spin' /> : null}
                         Save
                     </Button>

@@ -24,12 +24,12 @@ export const AboutUs: React.FC = () => {
                             all litter being cleaned up contributes to our goal of making this planet of ours a little
                             better for the next generation.
                         </p>
-                        <Button className='mt-2' asChild>
+                        <Button asChild className='mt-2'>
                             <Link to='/'>Find an event</Link>
                         </Button>
                     </div>
                     <div className='col-span-12 lg:col-span-7 flex justify-center lg:justify-end'>
-                        <img src='/img/trashcan-artwork.png' alt='trash cans' className='max-h-[400px]' />
+                        <img alt='trash cans' className='max-h-[400px]' src='/img/trashcan-artwork.png' />
                     </div>
                 </div>
             </div>
@@ -56,7 +56,7 @@ export const AboutUs: React.FC = () => {
             </section>
             <section className='bg-card pb-5'>
                 <h2 className='font-bold text-center py-5'>The Journey</h2>
-                <div id='timeline-steps' className='flex justify-center flex-wrap'>
+                <div className='flex justify-center flex-wrap' id='timeline-steps'>
                     {[
                         {
                             title: 'The Inspiration that florished',

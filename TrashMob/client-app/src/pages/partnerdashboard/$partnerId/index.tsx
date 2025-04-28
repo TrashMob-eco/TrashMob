@@ -26,8 +26,8 @@ export const PartnerIndex = () => {
 
     return (
         <SidebarLayout
-            title='Partner Location Service Requests'
             description='This page allows you to respond to requests from TrashMob.eco users to help them clean up the local community. When a new event is set up, and a user selects one of your services the location contacts will be notified to accept or decline the request here.'
+            title='Partner Location Service Requests'
             useDefaultCard={false}
         >
             <div className='space-y-4'>
@@ -37,8 +37,8 @@ export const PartnerIndex = () => {
                     </CardHeader>
                     <CardContent>
                         <PartnerEventRequestTable
-                            isLoading={isLoading || eventRequestsByLocation.some((query) => query.isLoading)}
                             data={eventRequests}
+                            isLoading={isLoading || eventRequestsByLocation.some((query) => query.isLoading)}
                         />
                     </CardContent>
                 </Card>

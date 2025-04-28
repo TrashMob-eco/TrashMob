@@ -55,8 +55,8 @@ export const PartnerLocations = () => {
 
     return (
         <SidebarLayout
-            title='Edit Partner Locations'
             description='A partner location can be thought of as an instance of a business franchise, or the location of a municipal office or yard. You can have as many locations within a community as you want to set up. Each location can offer different services, and have different contact information associated with it. For instance, City Hall may provide starter kits and supplies, but only the public utilities yard offers hauling and disposal. A partner location must have at least one contact set up in order to be ready for events to use them. It must also be Active.'
+            title='Edit Partner Locations'
         >
             <div>
                 <Table>
@@ -72,7 +72,7 @@ export const PartnerLocations = () => {
                     </TableHeader>
                     <TableBody>
                         {(rows || []).map((row) => (
-                            <TableRow key={row.id} className={isDeletingId === row.id ? 'opacity-20' : ''}>
+                            <TableRow className={isDeletingId === row.id ? 'opacity-20' : ''} key={row.id}>
                                 <TableCell>{row.name}</TableCell>
                                 <TableCell>{row.city}</TableCell>
                                 <TableCell>{row.region}</TableCell>
@@ -91,7 +91,7 @@ export const PartnerLocations = () => {
                                 <TableCell>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
-                                            <Button variant='ghost' size='icon'>
+                                            <Button size='icon' variant='ghost'>
                                                 <Ellipsis />
                                             </Button>
                                         </DropdownMenuTrigger>
@@ -113,7 +113,7 @@ export const PartnerLocations = () => {
                         ))}
                         <TableRow>
                             <TableCell colSpan={6}>
-                                <Button variant='ghost' className='w-full' asChild>
+                                <Button asChild className='w-full' variant='ghost'>
                                     <Link to='create'>
                                         <Plus /> Add Location
                                     </Link>
@@ -122,7 +122,7 @@ export const PartnerLocations = () => {
                         </TableRow>
                     </TableBody>
                 </Table>
-                <Dialog open={!!isEdit} onOpenChange={() => navigate(`/partnerdashboard/${partnerId}/locations`)}>
+                <Dialog onOpenChange={() => navigate(`/partnerdashboard/${partnerId}/locations`)} open={!!isEdit}>
                     <DialogContent
                         className='sm:max-w-[600px] overflow-y-scroll max-h-screen'
                         onOpenAutoFocus={(e) => e.preventDefault()}
@@ -135,7 +135,7 @@ export const PartnerLocations = () => {
                         </div>
                     </DialogContent>
                 </Dialog>
-                <Dialog open={!!isCreate} onOpenChange={() => navigate(`/partnerdashboard/${partnerId}/locations`)}>
+                <Dialog onOpenChange={() => navigate(`/partnerdashboard/${partnerId}/locations`)} open={!!isCreate}>
                     <DialogContent
                         className='sm:max-w-[600px] overflow-y-scroll max-h-screen'
                         onOpenAutoFocus={(e) => e.preventDefault()}

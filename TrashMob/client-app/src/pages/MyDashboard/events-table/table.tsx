@@ -8,8 +8,8 @@ import { ShareToSocialsDialog } from '@/components/EventManagement/ShareToSocial
 import * as SharingMessages from '@/store/SharingMessages';
 
 interface EventTableProps {
-    currentUser: UserData;
-    events: EventData[];
+    readonly currentUser: UserData;
+    readonly events: EventData[];
 }
 export const EventsTable = (props: EventTableProps) => {
     const { events, currentUser } = props;
@@ -37,10 +37,10 @@ export const EventsTable = (props: EventTableProps) => {
             {eventToShare ? (
                 <ShareToSocialsDialog
                     eventToShare={eventToShare}
-                    show={!!eventToShare}
                     handleShow={() => setEventToShare(null)}
-                    modalTitle='Share Event'
                     message={SharingMessages.getEventShareMessage(eventToShare, props.currentUser.id)}
+                    modalTitle='Share Event'
+                    show={!!eventToShare}
                 />
             ) : null}
             <DataTable columns={columns} data={events || []} />

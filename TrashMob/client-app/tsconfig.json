@@ -27,6 +27,6 @@
             "@/*": ["./src/*"]
         }
     },
-    "include": ["src", "tests"],
+    "include": ["src", "tests", "eslint.config.mjs"],
     "exclude": ["node_modules", "typings", "types"]
 }

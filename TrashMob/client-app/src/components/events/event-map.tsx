@@ -18,10 +18,10 @@ const colors = {
 };
 
 interface EventsMapProps extends MapProps {
-    id?: string;
-    events: EventData[];
-    isUserLoaded: boolean;
-    currentUser: UserData;
+    readonly id?: string;
+    readonly events: EventData[];
+    readonly isUserLoaded: boolean;
+    readonly currentUser: UserData;
 }
 
 export const EventsMap = (props: EventsMapProps) => {
@@ -50,20 +50,20 @@ export const EventsMap = (props: EventsMapProps) => {
 
     return (
         <div ref={ref}>
-            <GoogleMap id={id} gestureHandling={gestureHandling} {...rest}>
+            <GoogleMap gestureHandling={gestureHandling} id={id} {...rest}>
                 {eventsWithAttendance.map((event) => {
                     const isCompleted = moment(event.eventDate).isBefore(new Date());
                     return (
                         <AdvancedMarker
-                            key={event.id}
-                            ref={(el) => {
-                                markersRef.current[event.id] = el!;
-                            }}
                             className={cn({
                                 'animate-[bounce_1s_both_3s]': isInViewPort,
                             })}
-                            position={{ lat: event.latitude, lng: event.longitude }}
+                            key={event.id}
                             onMouseEnter={(e) => setShowingEventId(event.id)}
+                            position={{ lat: event.latitude, lng: event.longitude }}
+                            ref={(el) => {
+                                markersRef.current[event.id] = el!;
+                            }}
                         >
                             <EventPin color={isCompleted ? colors.completed : colors.upcoming} size={48} />
                         </AdvancedMarker>
@@ -76,10 +76,10 @@ export const EventsMap = (props: EventsMapProps) => {
                         onClose={() => setShowingEventId('')}
                     >
                         <EventDetailInfoWindowContent
+                            currentUser={currentUser}
                             event={showingEvent}
                             hideTitle
                             isUserLoaded={isUserLoaded}
-                            currentUser={currentUser}
                         />
                     </InfoWindow>
                 ) : null}

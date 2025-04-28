@@ -242,17 +242,17 @@ export const CreateEventPage = () => {
     return (
         <ManageEventDashboardLayout title='Create an event'>
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-2'>
+                <form className='space-y-2' onSubmit={form.handleSubmit(onSubmit)}>
                     <Tabs value={step}>
                         <TabsList className='mb-4 mt-4 bg-transparent gap-x-8 w-full'>
                             {steps.map((step, i) => (
                                 <TabsTrigger
-                                    key={step.key}
-                                    value={step.key}
                                     className={cn(
                                         'grow border-t-2 border-muted bg-transparent rounded-none shadow-none flex flex-col items-start !pl-0 !pt-4',
                                         'data-[state=active]:!border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none',
                                     )}
+                                    key={step.key}
+                                    value={step.key}
                                 >
                                     <div className='text-primary'>Step {i + 1}</div>
                                     <div className='text-muted-foreground text-sm'>{step.label}</div>
@@ -265,8 +265,8 @@ export const CreateEventPage = () => {
                                     <FormControl>
                                         <AzureSearchLocationInput
                                             className='w-full'
-                                            placeholder='Search for address'
                                             onSelectLocation={handleSelectSearchLocation}
+                                            placeholder='Search for address'
                                         />
                                     </FormControl>
                                 </FormItem>
@@ -274,16 +274,16 @@ export const CreateEventPage = () => {
                                     <>
                                         <FormItem className='col-span-12'>
                                             <GoogleMap
-                                                id='locationPicker'
                                                 defaultCenter={{ lat: latitude, lng: longitude }}
                                                 defaultZoom={16}
-                                                style={{ width: '100%', height: '300px' }}
+                                                id='locationPicker'
                                                 onClick={handleClickMap}
+                                                style={{ width: '100%', height: '300px' }}
                                             >
                                                 <Marker
-                                                    position={{ lat: latitude, lng: longitude }}
                                                     draggable
                                                     onDragEnd={handleMarkerDragEnd}
+                                                    position={{ lat: latitude, lng: longitude }}
                                                 />
                                             </GoogleMap>
                                             <FormDescription>
@@ -291,7 +291,7 @@ export const CreateEventPage = () => {
                                             </FormDescription>
                                         </FormItem>
                                         <div className='col-span-12 flex gap-2 justify-end'>
-                                            <Button type='button' onClick={() => setStep('edit-detail')}>
+                                            <Button onClick={() => setStep('edit-detail')} type='button'>
                                                 Next
                                             </Button>
                                         </div>
@@ -332,7 +332,7 @@ export const CreateEventPage = () => {
                                         <FormItem className='col-span-6'>
                                             <FormLabel>Event Type</FormLabel>
                                             <FormControl>
-                                                <Select value={field.value} onValueChange={field.onChange}>
+                                                <Select onValueChange={field.onChange} value={field.value}>
                                                     <SelectTrigger className='w-full'>
                                                         <SelectValue placeholder='Clean up Type' />
                                                     </SelectTrigger>
@@ -428,8 +428,8 @@ export const CreateEventPage = () => {
                                             <FormLabel>Description</FormLabel>
                                             <FormControl>
                                                 <Textarea
-                                                    placeholder='Type your message here.'
                                                     className='resize-none'
+                                                    placeholder='Type your message here.'
                                                     {...field}
                                                 />
                                             </FormControl>
@@ -450,10 +450,10 @@ export const CreateEventPage = () => {
                                     )}
                                 />
                                 <div className='col-span-12 flex gap-2 justify-end'>
-                                    <Button type='button' variant='outline' onClick={() => setStep('pick-location')}>
+                                    <Button onClick={() => setStep('pick-location')} type='button' variant='outline'>
                                         Back
                                     </Button>
-                                    <Button type='button' onClick={saveDetail}>
+                                    <Button onClick={saveDetail} type='button'>
                                         Next
                                     </Button>
                                 </div>
@@ -473,13 +473,13 @@ export const CreateEventPage = () => {
                                     </p>
                                     <p className='mb-4'>
                                         <EventPlaceAndLocation
+                                            city={previewValues.city}
                                             eventDate={createMomentFromDateAndTime(
                                                 previewValues.eventDate,
                                                 previewValues.eventTimeStart,
                                             ).toDate()}
-                                            streetAddress={previewValues.streetAddress}
-                                            city={previewValues.city}
                                             region={previewValues.region}
+                                            streetAddress={previewValues.streetAddress}
                                         />
                                     </p>
                                     <GoogleMap
@@ -492,10 +492,10 @@ export const CreateEventPage = () => {
                                 </>
                             ) : null}
                             <div className='col-span-12 flex gap-2 justify-end my-4'>
-                                <Button type='button' variant='outline' onClick={() => setStep('edit-detail')}>
+                                <Button onClick={() => setStep('edit-detail')} type='button' variant='outline'>
                                     Back
                                 </Button>
-                                <Button type='submit' disabled={createEvent.isLoading}>
+                                <Button disabled={createEvent.isLoading} type='submit'>
                                     {createEvent.isLoading ? <Loader2 className='animate-spin' /> : null} Create Event
                                 </Button>
                             </div>

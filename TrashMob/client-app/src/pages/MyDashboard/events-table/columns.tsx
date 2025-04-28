@@ -56,8 +56,8 @@ export const getColumns = ({
         header: 'Actions',
         cell: ({ row }) => (
             <EventActions
-                event={row.original}
                 currentUser={currentUser}
+                event={row.original}
                 onShareEvent={onShareEvent}
                 onUnregisterEvent={onUnregisterEvent}
             />

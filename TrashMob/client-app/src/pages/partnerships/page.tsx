@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 export const Partnerships: FC<any> = () => {
     return (
         <div>
-            <HeroSection Title='Partnerships' Description='Connecting you with volunteers.' />
+            <HeroSection Description='Connecting you with volunteers.' Title='Partnerships' />
             <section className='py-10'>
                 <div className='container py-5'>
                     <div className='grid grid-cols-12 gap-4'>
@@ -36,19 +36,19 @@ export const Partnerships: FC<any> = () => {
                             <h1 className='font-semibold text-4xl mb-2'>Our Partners</h1>
                             <div className='flex flex-row justify-center sm:justify-start'>
                                 <a
-                                    href='https://issaquahhighlands.com/'
-                                    target='_blank'
-                                    rel='noreferrer'
                                     className='m-2'
+                                    href='https://issaquahhighlands.com/'
+                                    rel='noreferrer'
+                                    target='_blank'
                                 >
                                     <img
-                                        src={Ihca}
                                         alt='Issaquah Highlands Community Association'
                                         className='h-20 mx-auto'
+                                        src={Ihca}
                                     />
                                 </a>
-                                <a href='https://troutunlimited.org' target='_blank' rel='noreferrer' className='m-2'>
-                                    <img src={TroutUnlimited} alt='Trout Unlimited' className='h-20 mx-auto' />
+                                <a className='m-2' href='https://troutunlimited.org' rel='noreferrer' target='_blank'>
+                                    <img alt='Trout Unlimited' className='h-20 mx-auto' src={TroutUnlimited} />
                                 </a>
                             </div>
                         </div>
@@ -90,19 +90,19 @@ export const Partnerships: FC<any> = () => {
                     <div className='w-1/2 mx-auto grid grid-cols-4 !mt-12'>
                         <div className='col-span-4 sm:col-span-2 md:col-span-1'>
                             <div className='flex flex-col items-center !m-8'>
-                                <img src={Safetykits} alt='Safety kits' className='mt-0' />
+                                <img alt='Safety kits' className='mt-0' src={Safetykits} />
                                 <span className='font-bold mt-2'>Safety gear and roadside signs</span>
                             </div>
                         </div>
                         <div className='col-span-4 sm:col-span-2 md:col-span-1'>
                             <div className='flex flex-col items-center !m-8'>
-                                <img src={Supplies} alt='Supplies' className='mt-0' />
+                                <img alt='Supplies' className='mt-0' src={Supplies} />
                                 <span className='font-bold mt-2'>Pickup supplies such as garbage bags</span>
                             </div>
                         </div>
                         <div className='col-span-4 sm:col-span-2 md:col-span-1'>
                             <div className='flex flex-col items-center !m-8'>
-                                <img src={TrashDisposal} alt='Trash Disposal & Hauling' className='mt-0' />
+                                <img alt='Trash Disposal & Hauling' className='mt-0' src={TrashDisposal} />
                                 <span className='font-bold mt-2'>
                                     Use of existing dumpsters and hauling of trash to disposal site
                                 </span>
@@ -110,7 +110,7 @@ export const Partnerships: FC<any> = () => {
                         </div>
                         <div className='col-span-4 sm:col-span-2 md:col-span-1'>
                             <div className='flex flex-col items-center !m-8'>
-                                <img src={Dollarsign} alt='Dollar sign' className='mt-0' />
+                                <img alt='Dollar sign' className='mt-0' src={Dollarsign} />
                                 <span className='font-bold mt-2'>
                                     <a href='https://www.trashmob.eco/donate'>Donations</a> to TrashMob.eco fund
                                     development of our platform and programs
@@ -139,7 +139,7 @@ export const Partnerships: FC<any> = () => {
                             </p>
                         </div>
                         <div className='col-span-12 sm:col-span-5'>
-                            <img src={Garbage} alt='garbage bags being picked up' className='mt-0 m-auto' />
+                            <img alt='garbage bags being picked up' className='mt-0 m-auto' src={Garbage} />
                         </div>
                     </div>
                 </div>

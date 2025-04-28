@@ -84,8 +84,8 @@ export const PartnerSocialMediaAccounts = () => {
 
     return (
         <SidebarLayout
-            title='Edit Partner Social Media Accounts'
             description='This page allows you to add a list of social media accounts you would like to have tagged when you approve a partnership request to both help spread the word about what TrashMob.eco users are doing within your community, and how your organization is helping your community. This feature is still in development, but adding the information when you set things up now will help when this feature fully launches.'
+            title='Edit Partner Social Media Accounts'
         >
             <div>
                 <Table>
@@ -99,7 +99,7 @@ export const PartnerSocialMediaAccounts = () => {
                     </TableHeader>
                     <TableBody>
                         {(socialAccounts || []).map((row) => (
-                            <TableRow key={row.id} className={isDeletingId === row.id ? 'opacity-20' : ''}>
+                            <TableRow className={isDeletingId === row.id ? 'opacity-20' : ''} key={row.id}>
                                 <TableCell>{getSocialMediaAccountType(row.socialMediaAccountTypeId).name}</TableCell>
                                 <TableCell>{row.accountIdentifier}</TableCell>
                                 <TableCell>
@@ -113,7 +113,7 @@ export const PartnerSocialMediaAccounts = () => {
                                 <TableCell>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
-                                            <Button variant='ghost' size='icon'>
+                                            <Button size='icon' variant='ghost'>
                                                 <Ellipsis />
                                             </Button>
                                         </DropdownMenuTrigger>
@@ -135,7 +135,7 @@ export const PartnerSocialMediaAccounts = () => {
                         ))}
                         <TableRow>
                             <TableCell colSpan={4}>
-                                <Button variant='ghost' className='w-full' asChild>
+                                <Button asChild className='w-full' variant='ghost'>
                                     <Link to='create'>
                                         <Plus /> Add Social Media Account
                                     </Link>
@@ -144,7 +144,7 @@ export const PartnerSocialMediaAccounts = () => {
                         </TableRow>
                     </TableBody>
                 </Table>
-                <Dialog open={!!isEdit} onOpenChange={() => navigate(`/partnerdashboard/${partnerId}/locations`)}>
+                <Dialog onOpenChange={() => navigate(`/partnerdashboard/${partnerId}/locations`)} open={!!isEdit}>
                     <DialogContent
                         className='sm:max-w-[600px] overflow-y-scroll max-h-screen'
                         onOpenAutoFocus={(e) => e.preventDefault()}
@@ -157,7 +157,7 @@ export const PartnerSocialMediaAccounts = () => {
                         </div>
                     </DialogContent>
                 </Dialog>
-                <Dialog open={!!isCreate} onOpenChange={() => navigate(`/partnerdashboard/${partnerId}/locations`)}>
+                <Dialog onOpenChange={() => navigate(`/partnerdashboard/${partnerId}/locations`)} open={!!isCreate}>
                     <DialogContent
                         className='sm:max-w-[600px] overflow-y-scroll max-h-screen'
                         onOpenAutoFocus={(e) => e.preventDefault()}

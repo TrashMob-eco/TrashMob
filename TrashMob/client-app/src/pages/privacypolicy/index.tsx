@@ -17,7 +17,7 @@ export class PrivacyPolicyVersion {
 export const PrivacyPolicy: React.FC = () => {
     return (
         <div>
-            <HeroSection Title='Privacy policy' Description='Making your privacy a priority.' />
+            <HeroSection Description='Making your privacy a priority.' Title='Privacy policy' />
             <div className='container my-5 prose space-y-4'>
                 <h2 className='font-medium text-3xl'>Privacy Policy for TrashMob</h2>
 

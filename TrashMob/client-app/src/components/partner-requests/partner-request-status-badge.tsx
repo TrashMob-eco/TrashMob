@@ -3,7 +3,7 @@ import { useGetPartnerRequestStatuses } from '@/hooks/useGetPartnerRequestStatus
 import { useMemo } from 'react';
 
 interface PartnerRequestStatusBadgeProps {
-    statusId: number;
+    readonly statusId: number;
 }
 
 export const PartnerRequestStatusBadge = ({ statusId }: PartnerRequestStatusBadgeProps) => {

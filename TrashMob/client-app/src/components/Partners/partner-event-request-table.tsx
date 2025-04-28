@@ -33,8 +33,8 @@ const useGetEventPartnerLocationServiceStatuses = () => {
 };
 
 interface PartnerEventRequestTableProps {
-    isLoading: boolean;
-    data?: DisplayPartnerLocationEventServiceData[];
+    readonly isLoading: boolean;
+    readonly data?: DisplayPartnerLocationEventServiceData[];
 }
 export const PartnerEventRequestTable = ({ isLoading, data }: PartnerEventRequestTableProps) => {
     const queryClient = useQueryClient();
@@ -109,13 +109,13 @@ export const PartnerEventRequestTable = ({ isLoading, data }: PartnerEventReques
             <TableBody>
                 {isLoading ? (
                     <TableRow>
-                        <TableCell colSpan={7} className='text-center'>
+                        <TableCell className='text-center' colSpan={7}>
                             <Loader2 className='animate-spin mx-auto my-4' />
                         </TableCell>
                     </TableRow>
                 ) : data && data.length === 0 ? (
                     <TableRow>
-                        <TableCell colSpan={7} className='text-center'>
+                        <TableCell className='text-center' colSpan={7}>
                             <div className='mx-auto my-4'>There are no event requests for this partner.</div>
                         </TableCell>
                     </TableRow>
@@ -124,8 +124,8 @@ export const PartnerEventRequestTable = ({ isLoading, data }: PartnerEventReques
                     const status = getStatus(eventRequest.eventPartnerLocationStatusId);
                     return (
                         <TableRow
-                            key={`${eventRequest.eventId}-${index}`}
                             className={isUpdating === eventRequest.eventId ? 'opacity-20' : ''}
+                            key={`${eventRequest.eventId}-${index}`}
                         >
                             <TableCell>{eventRequest.partnerLocationName}</TableCell>
                             <TableCell>{eventRequest.eventName}</TableCell>
@@ -142,7 +142,7 @@ export const PartnerEventRequestTable = ({ isLoading, data }: PartnerEventReques
                             <TableCell>
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button variant='ghost' size='icon'>
+                                        <Button size='icon' variant='ghost'>
                                             <Ellipsis />
                                         </Button>
                                     </DropdownMenuTrigger>

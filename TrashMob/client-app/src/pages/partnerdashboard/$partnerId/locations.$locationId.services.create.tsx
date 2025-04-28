@@ -72,7 +72,7 @@ export const PartnerLocationServiceCreate = (props: PartnerServiceCreateProps) =
     const onSubmit: SubmitHandler<FormInputs> = (formValues) => {
         const body = new PartnerLocationServiceData();
         body.partnerLocationId = locationId;
-        body.serviceTypeId = Number(formValues.serviceTypeId) ?? 0;
+        body.serviceTypeId = Number(formValues.serviceTypeId) || 0;
         body.notes = formValues.notes;
         body.isAutoApproved = formValues.isAutoApproved;
         body.isAdvanceNoticeRequired = formValues.isAdvanceNoticeRequired;
@@ -82,20 +82,20 @@ export const PartnerLocationServiceCreate = (props: PartnerServiceCreateProps) =
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className='grid grid-cols-12 gap-4'>
+            <form className='grid grid-cols-12 gap-4' onSubmit={form.handleSubmit(onSubmit)}>
                 <FormField
                     control={form.control}
                     name='serviceTypeId'
                     render={({ field }) => (
                         <FormItem className='col-span-4'>
-                            <FormLabel tooltip={ToolTips.PartnerContactName} required>
+                            <FormLabel required tooltip={ToolTips.PartnerContactName}>
                                 Service Type
                             </FormLabel>
                             <FormControl>
                                 <Select
-                                    value={`${field.value}`}
                                     disabled
                                     onValueChange={(val) => field.onChange(Number(val))}
+                                    value={`${field.value}`}
                                 >
                                     <SelectTrigger>
                                         <SelectValue placeholder='-- Select Partner Status --' />
@@ -122,13 +122,13 @@ export const PartnerLocationServiceCreate = (props: PartnerServiceCreateProps) =
                             <FormControl>
                                 <div className='flex items-center space-x-2 h-9'>
                                     <Checkbox
-                                        id='isAutoApproved'
                                         checked={field.value}
+                                        id='isAutoApproved'
                                         onCheckedChange={field.onChange}
                                     />
                                     <label
-                                        htmlFor='isAutoApproved'
                                         className='text-sm mb-0 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                                        htmlFor='isAutoApproved'
                                     >
                                         Auto Approved
                                     </label>
@@ -147,13 +147,13 @@ export const PartnerLocationServiceCreate = (props: PartnerServiceCreateProps) =
                             <FormControl>
                                 <div className='flex items-center space-x-2 h-9'>
                                     <Checkbox
-                                        id='isAutoApproved'
                                         checked={field.value}
+                                        id='isAutoApproved'
                                         onCheckedChange={field.onChange}
                                     />
                                     <label
-                                        htmlFor='isAutoApproved'
                                         className='text-sm mb-0 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                                        htmlFor='isAutoApproved'
                                     >
                                         Advance Notice Required
                                     </label>
@@ -168,21 +168,21 @@ export const PartnerLocationServiceCreate = (props: PartnerServiceCreateProps) =
                     name='notes'
                     render={({ field }) => (
                         <FormItem className='col-span-12'>
-                            <FormLabel tooltip={ToolTips.PartnerLocationPublicNotes} required>
+                            <FormLabel required tooltip={ToolTips.PartnerLocationPublicNotes}>
                                 Notes
                             </FormLabel>
                             <FormControl>
-                                <Textarea {...field} maxLength={1000} className='h-24' />
+                                <Textarea {...field} className='h-24' maxLength={1000} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
                 <div className='col-span-12 flex justify-end gap-2'>
-                    <Button variant='secondary' data-test='cancel' asChild>
+                    <Button asChild data-test='cancel' variant='secondary'>
                         <Link to={`/partnerdashboard/${partnerId}/locations`}>Cancel</Link>
                     </Button>
-                    <Button type='submit' disabled={isSubmitting}>
+                    <Button disabled={isSubmitting} type='submit'>
                         {isSubmitting ? <Loader2 className='animate-spin' /> : null}
                         Enable
                     </Button>

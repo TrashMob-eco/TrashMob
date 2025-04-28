@@ -11,11 +11,11 @@ import { Dispatch, SetStateAction } from 'react';
 type Option = { label: string; value: string };
 
 interface ISelectProps {
-    placeholder?: string;
-    className?: string;
-    options: Option[];
-    selectedOptions: string[];
-    setSelectedOptions: Dispatch<SetStateAction<string[]>>;
+    readonly placeholder?: string;
+    readonly className?: string;
+    readonly options: Option[];
+    readonly selectedOptions: string[];
+    readonly setSelectedOptions: Dispatch<SetStateAction<string[]>>;
 }
 const MultiSelect = ({
     className,
@@ -43,7 +43,7 @@ const MultiSelect = ({
         <div className={className}>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild className='w-full'>
-                    <Button variant='outline' className='w-full flex items-center justify-between'>
+                    <Button className='w-full flex items-center justify-between' variant='outline'>
                         <div>{placeholder}</div>
                         <ChevronDown className='h-4 w-4 opacity-50' />
                     </Button>
@@ -52,10 +52,10 @@ const MultiSelect = ({
                     {values.map((value: ISelectProps['options'][0], index: number) => {
                         return (
                             <DropdownMenuCheckboxItem
-                                onSelect={(e) => e.preventDefault()}
-                                key={index}
                                 checked={isOptionSelected(value.value)}
+                                key={index}
                                 onCheckedChange={() => handleSelectChange(value.value)}
+                                onSelect={(e) => e.preventDefault()}
                             >
                                 {value.label}
                             </DropdownMenuCheckboxItem>

@@ -2,8 +2,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import moment from 'moment';
 
 interface TimePickerProps {
-    value: string;
-    onChange: (value: string) => void;
+    readonly value: string;
+    readonly onChange: (value: string) => void;
 }
 
 const generateTimeRange = (start: number, end: number): string[] => {
@@ -19,7 +19,7 @@ const timeRange = generateTimeRange(7, 20);
 
 export const TimePicker = (props: TimePickerProps) => {
     return (
-        <Select value={props.value} onValueChange={props.onChange}>
+        <Select onValueChange={props.onChange} value={props.value}>
             <SelectTrigger className='w-full'>
                 <SelectValue placeholder='When' />
             </SelectTrigger>

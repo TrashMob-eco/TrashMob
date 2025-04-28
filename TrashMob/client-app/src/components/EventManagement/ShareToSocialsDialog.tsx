@@ -19,13 +19,13 @@ import {
 } from 'react-share';
 
 interface ShareToSocialDialogProps {
-    eventToShare?: any;
-    show: boolean;
-    handleShow: (value: boolean) => void;
-    modalTitle: string;
-    eventLink?: string;
-    message: string;
-    emailSubject?: string;
+    readonly eventToShare?: any;
+    readonly show: boolean;
+    readonly handleShow: (value: boolean) => void;
+    readonly modalTitle: string;
+    readonly eventLink?: string;
+    readonly message: string;
+    readonly emailSubject?: string;
 }
 
 export const ShareToSocialsDialog = (props: ShareToSocialDialogProps) => {
@@ -83,51 +83,51 @@ export const ShareToSocialsDialog = (props: ShareToSocialDialogProps) => {
                     <div>
                         Share a link
                         <div className='flex flex-row !gap-2 !my-4'>
-                            <FacebookShareButton className='socials-modal-icon' url={eventLink} hashtag='#litter'>
-                                <FacebookIcon size={32} round />
+                            <FacebookShareButton className='socials-modal-icon' hashtag='#litter' url={eventLink}>
+                                <FacebookIcon round size={32} />
                             </FacebookShareButton>
                             <TwitterShareButton
                                 className='socials-modal-icon'
-                                title={parseShareMessage('twitter')}
                                 hashtags={['litter']}
+                                title={parseShareMessage('twitter')}
                                 url={eventLink}
                                 via='TrashMobEco'
                             >
-                                <TwitterIcon size={32} round />
+                                <TwitterIcon round size={32} />
                             </TwitterShareButton>
                             <LinkedinShareButton className='socials-modal-icon' url={eventLink}>
-                                <LinkedinIcon size={32} round />
+                                <LinkedinIcon round size={32} />
                             </LinkedinShareButton>
                             <WhatsappShareButton
                                 className='socials-modal-icon'
-                                url={eventLink}
                                 title={parseShareMessage('whatsapp')}
+                                url={eventLink}
                             >
-                                <WhatsappIcon size={32} round />
+                                <WhatsappIcon round size={32} />
                             </WhatsappShareButton>
                             <EmailShareButton
+                                body={parseShareMessage('email')}
                                 className='socials-modal-icon'
-                                url={eventLink}
                                 subject={
                                     props.emailSubject ??
                                     `Join me at this TrashMob.eco event in ${props.eventToShare.city}!`
                                 }
-                                body={parseShareMessage('email')}
+                                url={eventLink}
                             >
-                                <EmailIcon size={32} round />
+                                <EmailIcon round size={32} />
                             </EmailShareButton>
                         </div>
                         <div className='bg-[#f0f0f1] p-2 flex flex-row items-center gap-2 max-w-[450px]'>
                             <div className='grow overflow-hidden'>
                                 <div className='text-xs text-muted'>Event link</div>
-                                <a href={eventLink} className='text-sm truncate block'>
+                                <a className='text-sm truncate block' href={eventLink}>
                                     {eventLink}
                                 </a>
                             </div>
                             <TooltipProvider delayDuration={0}>
                                 <Tooltip open={copiedLink}>
                                     <TooltipTrigger asChild>
-                                        <Button className='basis-9 shrink-0' size='icon' onClick={handleCopyLink}>
+                                        <Button className='basis-9 shrink-0' onClick={handleCopyLink} size='icon'>
                                             <Copy />
                                         </Button>
                                     </TooltipTrigger>

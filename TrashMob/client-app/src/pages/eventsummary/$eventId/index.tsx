@@ -210,7 +210,7 @@ export const EditEventSummary = () => {
                         <CardDescription>Please enter information about how the event went.</CardDescription>
                     </CardHeader>
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-2'>
+                        <form className='space-y-2' onSubmit={form.handleSubmit(onSubmit)}>
                             <CardContent>
                                 <div className='grid grid-cols-2'>
                                     <div className='col-span-1'>
@@ -237,9 +237,9 @@ export const EditEventSummary = () => {
                                                 <FormControl>
                                                     <Input
                                                         {...field}
-                                                        type='number'
                                                         disabled={!isOwner}
                                                         onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                                                        type='number'
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
@@ -257,9 +257,9 @@ export const EditEventSummary = () => {
                                                 <FormControl>
                                                     <Input
                                                         {...field}
-                                                        type='number'
                                                         disabled={!isOwner}
                                                         onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                                                        type='number'
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
@@ -277,9 +277,9 @@ export const EditEventSummary = () => {
                                                 <FormControl>
                                                     <Input
                                                         {...field}
-                                                        type='number'
                                                         disabled={!isOwner}
                                                         onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                                                        type='number'
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
@@ -297,9 +297,9 @@ export const EditEventSummary = () => {
                                                 <FormControl>
                                                     <Input
                                                         {...field}
-                                                        type='number'
                                                         disabled={!isOwner}
                                                         onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                                                        type='number'
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
@@ -324,7 +324,7 @@ export const EditEventSummary = () => {
                             <CardFooter className='justify-between'>
                                 <Button variant='outline'>Cancel</Button>
                                 {isOwner ? (
-                                    <Button type='submit' disabled={isSubmitting}>
+                                    <Button disabled={isSubmitting} type='submit'>
                                         {isSubmitting ? <Loader2 className='animate-spin' /> : null}
                                         Save
                                     </Button>
@@ -376,7 +376,7 @@ export const EditEventSummary = () => {
                                             <TableCell>
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
-                                                        <Button variant='ghost' size='icon'>
+                                                        <Button size='icon' variant='ghost'>
                                                             <Ellipsis />
                                                         </Button>
                                                     </DropdownMenuTrigger>
@@ -387,7 +387,7 @@ export const EditEventSummary = () => {
                                                                 Edit Pickup Location
                                                             </Link>
                                                         </DropdownMenuItem>
-                                                        {true || loc.hasBeenSubmitted ? (
+                                                        {loc.hasBeenSubmitted ? (
                                                             <DropdownMenuItem
                                                                 onClick={() => removePickupLocation(loc.id, loc.name)}
                                                             >
@@ -404,15 +404,15 @@ export const EditEventSummary = () => {
                                 <TableRow>
                                     <TableCell colSpan={4}>
                                         <div className='flex justify-between gap-2'>
-                                            <Button variant='ghost' asChild>
+                                            <Button asChild variant='ghost'>
                                                 <Link to='pickup-locations/create'>
                                                     <Plus /> Add Pickup Location
                                                 </Link>
                                             </Button>
                                             <Button
-                                                variant='default'
                                                 disabled={submitEventPickupLocations.isLoading}
                                                 onClick={submitPickupLocations}
+                                                variant='default'
                                             >
                                                 {submitEventPickupLocations.isLoading ? (
                                                     <Loader2 className='animate-spin' />
@@ -426,7 +426,7 @@ export const EditEventSummary = () => {
                             </TableBody>
                         </Table>
                     </CardContent>
-                    <Dialog open={!!isCreate} onOpenChange={() => navigate(`/eventsummary/${eventId}`)}>
+                    <Dialog onOpenChange={() => navigate(`/eventsummary/${eventId}`)} open={!!isCreate}>
                         <DialogContent className='sm:max-w-[680px]' onOpenAutoFocus={(e) => e.preventDefault()}>
                             <DialogHeader>
                                 <DialogTitle>Create Pickup Location</DialogTitle>
@@ -436,7 +436,7 @@ export const EditEventSummary = () => {
                             </div>
                         </DialogContent>
                     </Dialog>
-                    <Dialog open={!!isEdit} onOpenChange={() => navigate(`/eventsummary/${eventId}`)}>
+                    <Dialog onOpenChange={() => navigate(`/eventsummary/${eventId}`)} open={!!isEdit}>
                         <DialogContent className='sm:max-w-[680px]' onOpenAutoFocus={(e) => e.preventDefault()}>
                             <DialogHeader>
                                 <DialogTitle>Edit Pickup Location</DialogTitle>

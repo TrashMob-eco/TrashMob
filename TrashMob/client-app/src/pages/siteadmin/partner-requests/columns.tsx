@@ -33,7 +33,7 @@ export const getColumns = ({ onApprove, onDeny }: GetColumnsProps): ColumnDef<Pa
         accessorKey: 'website',
         header: 'Website',
         cell: ({ row }) => (
-            <a href={row.getValue('website')} target='_blank' rel='noreferrer'>
+            <a href={row.getValue('website')} rel='noreferrer' target='_blank'>
                 {row.getValue('website')}
             </a>
         ),
@@ -79,7 +79,7 @@ export const getColumns = ({ onApprove, onDeny }: GetColumnsProps): ColumnDef<Pa
                 <div className='text-right'>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant='ghost' size='icon'>
+                            <Button size='icon' variant='ghost'>
                                 <Ellipsis />
                             </Button>
                         </DropdownMenuTrigger>

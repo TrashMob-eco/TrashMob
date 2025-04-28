@@ -37,8 +37,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { cn } from '@/lib/utils';
 
 interface DataTableProps<TData, TValue> {
-    columns: ColumnDef<TData, TValue>[];
-    data: TData[];
+    readonly columns: ColumnDef<TData, TValue>[];
+    readonly data: TData[];
 }
 
 export const DataTable = <TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) => {
@@ -77,7 +77,7 @@ export const DataTable = <TData, TValue>({ columns, data }: DataTableProps<TData
                 <TableBody>
                     {table.getRowModel().rows?.length ? (
                         table.getRowModel().rows.map((row) => (
-                            <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                            <TableRow data-state={row.getIsSelected() && 'selected'} key={row.id}>
                                 {row.getVisibleCells().map((cell) => (
                                     <TableCell key={cell.id}>
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -87,7 +87,7 @@ export const DataTable = <TData, TValue>({ columns, data }: DataTableProps<TData
                         ))
                     ) : (
                         <TableRow>
-                            <TableCell colSpan={columns.length} className='h-24 text-center'>
+                            <TableCell className='h-24 text-center' colSpan={columns.length}>
                                 No results.
                             </TableCell>
                         </TableRow>
@@ -102,7 +102,7 @@ export const DataTable = <TData, TValue>({ columns, data }: DataTableProps<TData
 /** Pagination */
 
 interface DataTablePaginationProps<TData> {
-    table: TanstackTable<TData>;
+    readonly table: TanstackTable<TData>;
 }
 
 export function DataTablePagination<TData>({ table }: DataTablePaginationProps<TData>) {
@@ -121,10 +121,10 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
                 <div className='flex items-center space-x-2'>
                     <p className='text-sm font-medium'>Rows per page</p>
                     <Select
-                        value={`${table.getState().pagination.pageSize}`}
                         onValueChange={(value) => {
                             table.setPageSize(Number(value));
                         }}
+                        value={`${table.getState().pagination.pageSize}`}
                     >
                         <SelectTrigger className='h-8 w-[70px]'>
                             <SelectValue placeholder={table.getState().pagination.pageSize} />
@@ -143,37 +143,37 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
                 </div>
                 <div className='flex items-center space-x-2'>
                     <Button
-                        variant='outline'
                         className='hidden h-8 w-8 p-0 lg:flex'
-                        onClick={() => table.setPageIndex(0)}
                         disabled={!table.getCanPreviousPage()}
+                        onClick={() => table.setPageIndex(0)}
+                        variant='outline'
                     >
                         <span className='sr-only'>Go to first page</span>
                         <ChevronsLeft />
                     </Button>
                     <Button
-                        variant='outline'
                         className='h-8 w-8 p-0'
-                        onClick={() => table.previousPage()}
                         disabled={!table.getCanPreviousPage()}
+                        onClick={() => table.previousPage()}
+                        variant='outline'
                     >
                         <span className='sr-only'>Go to previous page</span>
                         <ChevronLeft />
                     </Button>
                     <Button
-                        variant='outline'
                         className='h-8 w-8 p-0'
-                        onClick={() => table.nextPage()}
                         disabled={!table.getCanNextPage()}
+                        onClick={() => table.nextPage()}
+                        variant='outline'
                     >
                         <span className='sr-only'>Go to next page</span>
                         <ChevronRight />
                     </Button>
                     <Button
-                        variant='outline'
                         className='hidden h-8 w-8 p-0 lg:flex'
-                        onClick={() => table.setPageIndex(table.getPageCount() - 1)}
                         disabled={!table.getCanNextPage()}
+                        onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                        variant='outline'
                     >
                         <span className='sr-only'>Go to last page</span>
                         <ChevronsRight />
@@ -186,8 +186,8 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
 
 /** Column Header */
 interface DataTableColumnHeaderProps<TData, TValue> extends React.HTMLAttributes<HTMLDivElement> {
-    column: Column<TData, TValue>;
-    title: string;
+    readonly column: Column<TData, TValue>;
+    readonly title: string;
 }
 
 export function DataTableColumnHeader<TData, TValue>({
@@ -203,7 +203,7 @@ export function DataTableColumnHeader<TData, TValue>({
         <div className={cn('flex items-center space-x-2', className)}>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant='ghost' size='sm' className='-ml-3 h-8 data-[state=open]:bg-accent'>
+                    <Button className='-ml-3 h-8 data-[state=open]:bg-accent' size='sm' variant='ghost'>
                         <span>{title}</span>
                         {column.getIsSorted() === 'desc' ? (
                             <ArrowDown />

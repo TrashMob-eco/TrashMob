@@ -94,10 +94,10 @@ export const SiteAdminSendNotification = () => {
                         />
                     </CardContent>
                     <CardFooter className='flex gap-2 justify-end'>
-                        <Button variant='outline' onClick={() => navigate('/')}>
+                        <Button onClick={() => navigate('/')} variant='outline'>
                             Cancel
                         </Button>
-                        <Button type='submit' disabled={createMessageRequest.isLoading} variant='default'>
+                        <Button disabled={createMessageRequest.isLoading} type='submit' variant='default'>
                             {createMessageRequest.isLoading ? <Loader2 className='animate-spin' /> : null}
                             Send
                         </Button>

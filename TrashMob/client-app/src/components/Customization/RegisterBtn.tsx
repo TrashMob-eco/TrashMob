@@ -12,11 +12,11 @@ import { AddEventAttendee, GetAllEventsBeingAttendedByUser } from '../../service
 import { cn } from '@/lib/utils';
 
 interface RegisterBtnProps {
-    currentUser: UserData;
-    eventId: string;
-    isAttending: string;
-    isUserLoaded: boolean;
-    isEventCompleted: boolean;
+    readonly currentUser: UserData;
+    readonly eventId: string;
+    readonly isAttending: string;
+    readonly isUserLoaded: boolean;
+    readonly isEventCompleted: boolean;
 }
 
 export const RegisterBtn: FC<RegisterBtnProps> = ({

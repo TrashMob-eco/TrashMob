@@ -119,8 +119,8 @@ function AuthenticationErrorComponent(result: MsalAuthenticationResult) {
 const AuthLayout = () => {
     return (
         <MsalAuthenticationTemplate
-            interactionType={InteractionType.Redirect}
             errorComponent={AuthenticationErrorComponent}
+            interactionType={InteractionType.Redirect}
             loadingComponent={AuthenticationLoadingComponent}
         >
             <Outlet />
@@ -142,8 +142,8 @@ const AuthSideAdminLayout = () => {
 
     return (
         <MsalAuthenticationTemplate
-            interactionType={InteractionType.Redirect}
             errorComponent={AuthenticationErrorComponent}
+            interactionType={InteractionType.Redirect}
             loadingComponent={AuthenticationLoadingComponent}
         >
             <Outlet />
@@ -166,100 +166,100 @@ export const App: FC = () => {
                             <Routes>
                                 <Route element={<AuthLayout />}>
                                     <Route path='/events'>
-                                        <Route path='create' element={<CreateEventWrapper />} />
-                                        <Route path=':eventId/edit' element={<EditEventPage />} />
+                                        <Route element={<CreateEventWrapper />} path='create' />
+                                        <Route element={<EditEventPage />} path=':eventId/edit' />
                                     </Route>
                                     <Route path='/eventsummary'>
-                                        <Route path=':eventId' element={<EditEventSummary />}>
-                                            <Route path='pickup-locations/create' element={<PickupLocationCreate />} />
+                                        <Route element={<EditEventSummary />} path=':eventId'>
+                                            <Route element={<PickupLocationCreate />} path='pickup-locations/create' />
                                             <Route
-                                                path='pickup-locations/:locationId/edit'
                                                 element={<PickupLocationEdit />}
+                                                path='pickup-locations/:locationId/edit'
                                             />
                                         </Route>
                                     </Route>
                                     <Route path='partnerdashboard'>
-                                        <Route index element={<div>Partner Dashboard Index</div>} />
-                                        <Route path=':partnerId' element={<PartnerLayout />}>
-                                            <Route index element={<PartnerIndex />} />
-                                            <Route path='edit' element={<PartnerEdit />} />
-                                            <Route path='locations' element={<PartnerLocations />}>
-                                                <Route path='create' element={<PartnerLocationCreate />} />
-                                                <Route path=':locationId/edit' element={<PartnerLocationEdit />} />
+                                        <Route element={<div>Partner Dashboard Index</div>} index />
+                                        <Route element={<PartnerLayout />} path=':partnerId'>
+                                            <Route element={<PartnerIndex />} index />
+                                            <Route element={<PartnerEdit />} path='edit' />
+                                            <Route element={<PartnerLocations />} path='locations'>
+                                                <Route element={<PartnerLocationCreate />} path='create' />
+                                                <Route element={<PartnerLocationEdit />} path=':locationId/edit' />
                                             </Route>
-                                            <Route path='services' element={<PartnerServices />}>
-                                                <Route path='enable' element={<PartnerServiceEnable />} />
-                                                <Route path='edit' element={<PartnerServiceEdit />} />
+                                            <Route element={<PartnerServices />} path='services'>
+                                                <Route element={<PartnerServiceEnable />} path='enable' />
+                                                <Route element={<PartnerServiceEdit />} path='edit' />
                                             </Route>
-                                            <Route path='contacts' element={<PartnerContacts />}>
-                                                <Route path='create' element={<PartnerContactCreate />} />
+                                            <Route element={<PartnerContacts />} path='contacts'>
+                                                <Route element={<PartnerContactCreate />} path='create' />
                                                 <Route
-                                                    path=':contactId/edit'
                                                     element={
                                                         <PartnerContactEdit
                                                             type={PartnerContactType.ORGANIZATION_WIDE}
                                                         />
                                                     }
+                                                    path=':contactId/edit'
                                                 />
                                                 <Route
-                                                    path='by-location/:contactId/edit'
                                                     element={
                                                         <PartnerContactEdit
                                                             type={PartnerContactType.LOCATION_SPECIFIC}
                                                         />
                                                     }
+                                                    path='by-location/:contactId/edit'
                                                 />
                                             </Route>
-                                            <Route path='admins' element={<PartnerAdmins />}>
-                                                <Route path='invite' element={<PartnerAdminInvite />} />
+                                            <Route element={<PartnerAdmins />} path='admins'>
+                                                <Route element={<PartnerAdminInvite />} path='invite' />
                                             </Route>
-                                            <Route path='documents' element={<PartnerDocuments />}>
-                                                <Route path=':documentId/edit' element={<PartnerDocumentEdit />} />
-                                                <Route path='create' element={<PartnerDocumentCreate />} />
+                                            <Route element={<PartnerDocuments />} path='documents'>
+                                                <Route element={<PartnerDocumentEdit />} path=':documentId/edit' />
+                                                <Route element={<PartnerDocumentCreate />} path='create' />
                                             </Route>
-                                            <Route path='socials' element={<PartnerSocialMediaAccounts />}>
-                                                <Route path=':accountId/edit' element={<PartnerSocialAcccountEdit />} />
-                                                <Route path='create' element={<PartnerSocialAcccountCreate />} />
+                                            <Route element={<PartnerSocialMediaAccounts />} path='socials'>
+                                                <Route element={<PartnerSocialAcccountEdit />} path=':accountId/edit' />
+                                                <Route element={<PartnerSocialAcccountCreate />} path='create' />
                                             </Route>
                                         </Route>
                                     </Route>
 
-                                    <Route path='/cancelevent/:eventId' element={<CancelEvent />} />
-                                    <Route path='/deletemydata' element={<DeleteMyData />} />
-                                    <Route path='/mydashboard' element={<MyDashboard />} />
-                                    <Route path='/becomeapartner' element={<BecomeAPartnerPage />} />
-                                    <Route path='/inviteapartner' element={<InviteAPartnerPage />} />
-                                    <Route path='/locationpreference' element={<LocationPreference />} />
-                                    <Route path='/waivers' element={<Waivers />} />
+                                    <Route element={<CancelEvent />} path='/cancelevent/:eventId' />
+                                    <Route element={<DeleteMyData />} path='/deletemydata' />
+                                    <Route element={<MyDashboard />} path='/mydashboard' />
+                                    <Route element={<BecomeAPartnerPage />} path='/becomeapartner' />
+                                    <Route element={<InviteAPartnerPage />} path='/inviteapartner' />
+                                    <Route element={<LocationPreference />} path='/locationpreference' />
+                                    <Route element={<Waivers />} path='/waivers' />
                                 </Route>
                                 <Route element={<AuthSideAdminLayout />}>
-                                    <Route path='/siteadmin' element={<SiteAdminLayout />}>
-                                        <Route path='users' element={<SiteAdminUsers />} />
-                                        <Route path='events' element={<SiteAdminEvents />} />
-                                        <Route path='partners' element={<SiteAdminPartners />} />
-                                        <Route path='partner-requests' element={<SiteAdminPartnerRequests />} />
-                                        <Route path='email-templates' element={<SiteAdminEmailTemplates />} />
-                                        <Route path='send-notifications' element={<SiteAdminSendNotification />} />
+                                    <Route element={<SiteAdminLayout />} path='/siteadmin'>
+                                        <Route element={<SiteAdminUsers />} path='users' />
+                                        <Route element={<SiteAdminEvents />} path='events' />
+                                        <Route element={<SiteAdminPartners />} path='partners' />
+                                        <Route element={<SiteAdminPartnerRequests />} path='partner-requests' />
+                                        <Route element={<SiteAdminEmailTemplates />} path='email-templates' />
+                                        <Route element={<SiteAdminSendNotification />} path='send-notifications' />
                                     </Route>
                                 </Route>
                                 <Route>
                                     <Route
-                                        path='/partnerrequestdetails/:partnerRequestId'
                                         element={<PartnerRequestDetails />}
+                                        path='/partnerrequestdetails/:partnerRequestId'
                                     />
-                                    <Route path='/eventdetails/:eventId?' element={<EventDetails />} />
-                                    <Route path='/partnerships' element={<Partnerships />} />
-                                    <Route path='/shop' element={<Shop />} />
-                                    <Route path='/help' element={<Help />} />
-                                    <Route path='/aboutus' element={<AboutUs />} />
-                                    <Route path='/board' element={<Board />} />
-                                    <Route path='/contactus' element={<ContactUs />} />
-                                    <Route path='/faq' element={<Faq />} />
-                                    <Route path='/gettingstarted' element={<GettingStarted />} />
-                                    <Route path='/privacypolicy' element={<PrivacyPolicy />} />
-                                    <Route path='/termsofservice' element={<TermsOfService />} />
-                                    <Route path='/volunteeropportunities' element={<VolunteerOpportunities />} />
-                                    <Route path='/' element={<Home />} />
+                                    <Route element={<EventDetails />} path='/eventdetails/:eventId?' />
+                                    <Route element={<Partnerships />} path='/partnerships' />
+                                    <Route element={<Shop />} path='/shop' />
+                                    <Route element={<Help />} path='/help' />
+                                    <Route element={<AboutUs />} path='/aboutus' />
+                                    <Route element={<Board />} path='/board' />
+                                    <Route element={<ContactUs />} path='/contactus' />
+                                    <Route element={<Faq />} path='/faq' />
+                                    <Route element={<GettingStarted />} path='/gettingstarted' />
+                                    <Route element={<PrivacyPolicy />} path='/privacypolicy' />
+                                    <Route element={<TermsOfService />} path='/termsofservice' />
+                                    <Route element={<VolunteerOpportunities />} path='/volunteeropportunities' />
+                                    <Route element={<Home />} path='/' />
                                 </Route>
                                 <Route element={<NoMatch />} />
                             </Routes>

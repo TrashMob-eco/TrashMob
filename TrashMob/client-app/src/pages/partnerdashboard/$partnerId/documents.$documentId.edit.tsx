@@ -104,13 +104,13 @@ export const PartnerDocumentEdit = () => {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className='grid grid-cols-12 gap-4'>
+            <form className='grid grid-cols-12 gap-4' onSubmit={form.handleSubmit(onSubmit)}>
                 <FormField
                     control={form.control}
                     name='name'
                     render={({ field }) => (
                         <FormItem className='col-span-12'>
-                            <FormLabel tooltip={ToolTips.PartnerDocumentName} required>
+                            <FormLabel required tooltip={ToolTips.PartnerDocumentName}>
                                 Document Name
                             </FormLabel>
                             <FormControl>
@@ -125,7 +125,7 @@ export const PartnerDocumentEdit = () => {
                     name='url'
                     render={({ field }) => (
                         <FormItem className='col-span-12'>
-                            <FormLabel tooltip={ToolTips.PartnerDocumentUrl} required>
+                            <FormLabel required tooltip={ToolTips.PartnerDocumentUrl}>
                                 Document Url
                             </FormLabel>
                             <FormControl>
@@ -136,10 +136,10 @@ export const PartnerDocumentEdit = () => {
                     )}
                 />
                 <div className='col-span-12 flex justify-end gap-2'>
-                    <Button variant='secondary' data-test='cancel' asChild>
+                    <Button asChild data-test='cancel' variant='secondary'>
                         <Link to={`/partnerdashboard/${partnerId}/documents`}>Cancel</Link>
                     </Button>
-                    <Button type='submit' disabled={isSubmitting}>
+                    <Button disabled={isSubmitting} type='submit'>
                         {isSubmitting ? <Loader2 className='animate-spin' /> : null}
                         Save
                     </Button>

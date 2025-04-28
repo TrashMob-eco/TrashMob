@@ -29,10 +29,10 @@ export const PartnerLayout = () => {
     return (
         <div className='tailwind'>
             <div className='container mx-auto my-4'>
-                <Tabs value={location.pathname} onValueChange={handleValueChange}>
+                <Tabs onValueChange={handleValueChange} value={location.pathname}>
                     <TabsList className='w-full h-14'>
                         {navs.map((nav, idx) => (
-                            <TabsTrigger className='whitespace-normal' value={nav.value} key={`tab-${idx}`}>
+                            <TabsTrigger className='whitespace-normal' key={`tab-${idx}`} value={nav.value}>
                                 {nav.name}
                             </TabsTrigger>
                         ))}

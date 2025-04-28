@@ -228,14 +228,14 @@ export const LocationPreference = () => {
 
     return (
         <div className='tailwind'>
-            <HeroSection Title='Set your location' Description='Get notified for events near you!' />
+            <HeroSection Description='Get notified for events near you!' Title='Set your location' />
             <div className='container mx-auto py-5'>
                 <Card>
                     <CardHeader>
                         <CardTitle>Location preferences</CardTitle>
                     </CardHeader>
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-2'>
+                        <form className='space-y-2' onSubmit={form.handleSubmit(onSubmit)}>
                             <CardContent>
                                 <div className='grid grid-cols-12 gap-4'>
                                     <div className='col-span-12'>
@@ -246,20 +246,20 @@ export const LocationPreference = () => {
                                                     onClick={handleClickMap}
                                                 >
                                                     <MarkerWithInfoWindow
-                                                        position={{ lat: latitude, lng: longitude }}
                                                         draggable
-                                                        onDragEnd={handleMarkerDragEnd}
-                                                        infoWindowTrigger='hover'
+                                                        infoWindowContent={
+                                                            <EventInfoWindowContent
+                                                                date={date}
+                                                                time={time}
+                                                                title="User's Base Location"
+                                                            />
+                                                        }
                                                         infoWindowProps={{
                                                             headerDisabled: true,
                                                         }}
-                                                        infoWindowContent={
-                                                            <EventInfoWindowContent
-                                                                title="User's Base Location"
-                                                                date={date}
-                                                                time={time}
-                                                            />
-                                                        }
+                                                        infoWindowTrigger='hover'
+                                                        onDragEnd={handleMarkerDragEnd}
+                                                        position={{ lat: latitude, lng: longitude }}
                                                     />
                                                 </GoogleMap>
                                                 {azureSubscriptionKey ? (
@@ -286,8 +286,8 @@ export const LocationPreference = () => {
                                                 <FormControl>
                                                     <Input
                                                         {...field}
-                                                        type='number'
                                                         onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                                                        type='number'
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
@@ -302,10 +302,10 @@ export const LocationPreference = () => {
                                                 <FormLabel> </FormLabel>
                                                 <FormControl>
                                                     <Select
-                                                        value={field.value ? DistanceUnit.KM : DistanceUnit.MILE}
                                                         onValueChange={(unit) =>
                                                             field.onChange(unit === DistanceUnit.KM)
                                                         }
+                                                        value={field.value ? DistanceUnit.KM : DistanceUnit.MILE}
                                                     >
                                                         <SelectTrigger className='w-full'>
                                                             <SelectValue placeholder='Unit' />
@@ -364,10 +364,10 @@ export const LocationPreference = () => {
                                 </div>
                             </CardContent>
                             <CardFooter className='flex gap-2 justify-end'>
-                                <Button variant='outline' onClick={handleCancel}>
+                                <Button onClick={handleCancel} variant='outline'>
                                     Discard
                                 </Button>
-                                <Button type='submit' disabled={updateUser.isLoading} variant='default'>
+                                <Button disabled={updateUser.isLoading} type='submit' variant='default'>
                                     {updateUser.isLoading ? <Loader2 className='animate-spin' /> : null}
                                     Save
                                 </Button>

@@ -14,7 +14,7 @@ import { useGetPartnerRequestStatuses } from '@/hooks/useGetPartnerRequestStatus
 import { Ellipsis, Eye } from 'lucide-react';
 
 type MyPartnersRequestTableProps = {
-    items: DisplayPartnershipData[];
+    readonly items: DisplayPartnershipData[];
 };
 export const MyPartnersRequestTable = ({ items }: MyPartnersRequestTableProps) => {
     const { data: partnerStatusList } = useGetPartnerStatuses();
@@ -47,7 +47,7 @@ export const MyPartnersRequestTable = ({ items }: MyPartnersRequestTableProps) =
                             <TableCell className='py-0'>
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button variant='ghost' size='icon'>
+                                        <Button size='icon' variant='ghost'>
                                             <Ellipsis />
                                         </Button>
                                     </DropdownMenuTrigger>

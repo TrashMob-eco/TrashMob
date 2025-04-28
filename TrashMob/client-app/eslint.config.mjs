@@ -1,0 +1,188 @@
+import { defineConfig, globalIgnores } from 'eslint/config';
+import react from 'eslint-plugin-react';
+import typescriptEslint from '@typescript-eslint/eslint-plugin';
+import _import from 'eslint-plugin-import';
+import testingLibrary from 'eslint-plugin-testing-library';
+import jest from 'eslint-plugin-jest';
+import { fixupPluginRules } from '@eslint/compat';
+import globals from 'globals';
+import tsParser from '@typescript-eslint/parser';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import js from '@eslint/js';
+import { FlatCompat } from '@eslint/eslintrc';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const compat = new FlatCompat({
+    baseDirectory: __dirname,
+    recommendedConfig: js.configs.recommended,
+    allConfig: js.configs.all,
+});
+
+export default defineConfig([
+    globalIgnores([
+        '**/node_modules',
+        '**/public',
+        '**/coverage',
+        '**/build',
+        '**/dist',
+        '**/vite.config.ts',
+        '**/tailwind.config.js',
+        '**/postcss.config.js',
+    ]),
+    {
+        extends: compat.extends(
+            'eslint:recommended',
+            'plugin:@typescript-eslint/eslint-recommended',
+            'plugin:@typescript-eslint/recommended',
+            'plugin:react/all',
+            'prettier',
+        ),
+
+        plugins: {
+            react,
+            '@typescript-eslint': typescriptEslint,
+            import: fixupPluginRules(_import),
+            'testing-library': testingLibrary,
+            jest,
+        },
+
+        languageOptions: {
+            globals: {
+                ...globals.browser,
+                ...globals.jest,
+            },
+
+            parser: tsParser,
+            ecmaVersion: 'latest',
+            sourceType: 'module',
+
+            parserOptions: {
+                ecmaFeatures: {
+                    jsx: true,
+                },
+
+                project: './tsconfig.json',
+            },
+        },
+
+        settings: {
+            react: {
+                version: 'detect',
+            },
+        },
+
+        rules: {
+            indent: 'off',
+            'linebreak-style': ['error', 'windows'],
+            'no-use-before-define': 'off',
+            'vars-on-top': 'off',
+            'max-len': 'off',
+            semi: 'off',
+            'arrow-parens': 'off',
+            'function-paren-newline': 'off',
+            'prefer-destructuring': 'off',
+            'dot-notation': 'off',
+            'no-extra-boolean-cast': 'off',
+            'no-multiple-empty-lines': 'off',
+            'jsx-quotes': 'off',
+            'padded-blocks': 'off',
+            'object-curly-newline': 'off',
+            'no-unused-vars': 'off',
+            'no-else-return': 'off',
+            'eol-last': 'off',
+            'brace-style': 'off',
+            'operator-linebreak': 'off',
+            'prefer-template': 'off',
+            'object-curly-spacing': 'off',
+            'lines-between-class-members': 'off',
+            'comma-spacing': 'off',
+            'spaced-comment': 'off',
+            'comma-dangle': 'off',
+            'no-multi-spaces': 'off',
+            'max-classes-per-file': 'off',
+            'no-prototype-builtins': 'off',
+            'no-useless-return': 'off',
+            'no-console': 'off',
+            'default-case': 'off',
+            'no-trailing-spaces': 'off',
+            'object-shorthand': 'off',
+            'implicit-arrow-linebreak': 'off',
+            'prefer-const': 'off',
+            'space-infix-ops': 'off',
+            'unicode-bom': 'off',
+            'no-underscore-dangle': 'off',
+            'no-param-reassign': 'off',
+            'no-plusplus': 'off',
+            'no-await-in-loop': 'off',
+            'class-methods-use-this': 'off',
+            'prefer-object-spread': 'off',
+            'no-restricted-syntax': 'off',
+            'no-nested-ternary': 'off',
+            'keyword-spacing': 'off',
+            'no-mixed-operators': 'off',
+            'arrow-body-style': 'off',
+            'one-var': 'off',
+            'one-var-declaration-per-line': 'off',
+            eqeqeq: 'off',
+            radix: 'off',
+            'no-shadow': 'off',
+            'no-alert': 'off',
+            camelcase: 'off',
+            'no-empty': 'off',
+            'no-inner-declarations': 'off',
+            'no-undef': 'off',
+            'consistent-return': 'off',
+            'no-restricted-globals': 'off',
+            'no-irregular-whitespace': 'off',
+            'react/function-component-definition': 'off',
+            'react/forbid-component-props': 'off',
+            'react/jsx-no-constructed-context-values': 'off',
+            'react/jsx-handler-names': 'off',
+            'react/no-multi-comp': 'off',
+            'react/no-unstable-nested-components': 'off',
+            'react/no-unescaped-entities': 'off',
+            'react/react-in-jsx-scope': 'off',
+            'react/no-unused-prop-types': 'off',
+            'react/destructuring-assignment': 'off',
+            'react/iframe-missing-sandbox': 'off',
+            'react/no-array-index-key': 'off',
+            'react/no-unknown-property': 'off',
+            'react/hook-use-state': 'off',
+            'react/button-has-type': 'off',
+            'react/prop-types': 'off',
+            'react/jsx-max-depth': 'off',
+            'react/jsx-no-literals': 'off',
+            'react/no-danger': 'off',
+            'react/require-default-props': 'off',
+            'react/jsx-filename-extension': 'off',
+            'react/jsx-one-expression-per-line': 'off',
+            'react/jsx-indent': 'off',
+            'react/jsx-wrap-multilines': 'off',
+            'react/jsx-indent-props': 'off',
+            'react/jsx-no-bind': 'off',
+            'react/jsx-props-no-spreading': 'off',
+            'react/jsx-tag-spacing': 'off',
+            'react/jsx-closing-bracket-location': 'off',
+            'react/jsx-no-useless-fragment': 'off',
+            'react-hooks/exhaustive-deps': 'off',
+            'import/extensions': 'off',
+            'import/order': 'off',
+            'import/no-unresolved': 'off',
+            'import/no-extraneous-dependencies': 'off',
+            'import/prefer-default-export': 'off',
+            'import/newline-after-import': 'off',
+            'import/no-duplicates': 'off',
+            'jsx-a11y/no-noninteractive-element-to-interactive-role': 'off',
+            'jsx-a11y/click-events-have-key-events': 'off',
+            'jsx-a11y/label-has-associated-control': 'off',
+            'jsx-a11y/no-static-element-interactions': 'off',
+            'jsx-a11y/control-has-associated-label': 'off',
+            '@typescript-eslint/no-explicit-any': 'off',
+            '@typescript-eslint/no-unused-vars': 'off',
+            '@typescript-eslint/ban-ts-comment': 'off',
+            '@typescript-eslint/no-this-alias': 'off',
+        },
+    },
+]);

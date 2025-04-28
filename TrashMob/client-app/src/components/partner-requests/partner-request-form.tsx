@@ -35,7 +35,7 @@ export enum PartnerRequestMode {
 }
 
 interface PartnerRequestFormProps {
-    mode: PartnerRequestMode;
+    readonly mode: PartnerRequestMode;
 }
 
 interface FormInputs {
@@ -241,7 +241,7 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
                     <CardContent>
                         <TooltipProvider delayDuration={0}>
                             <Form {...form}>
-                                <form onSubmit={form.handleSubmit(onSubmit)} className='grid grid-cols-12 gap-4'>
+                                <form className='grid grid-cols-12 gap-4' onSubmit={form.handleSubmit(onSubmit)}>
                                     <FormField
                                         control={form.control}
                                         name='name'
@@ -277,9 +277,9 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
                                                 </Tooltip>
                                                 <FormControl>
                                                     <RadioGroup
-                                                        onValueChange={field.onChange}
-                                                        defaultValue={field.value}
                                                         className='flex flex-row space-y-1 h-9 items-center'
+                                                        defaultValue={field.value}
+                                                        onValueChange={field.onChange}
                                                     >
                                                         <FormItem className='flex items-center space-x-3 space-y-0'>
                                                             <FormControl>
@@ -359,9 +359,9 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
                                                 <FormControl>
                                                     <PhoneInput
                                                         country='us'
-                                                        value={field.value}
-                                                        onChange={field.onChange}
                                                         inputClass='flex h-9 !w-full rounded-md border border-input bg-transparent pr-3 py-1 text-base shadow-sm '
+                                                        onChange={field.onChange}
+                                                        value={field.value}
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
@@ -384,7 +384,7 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
                                                     </TooltipContent>
                                                 </Tooltip>
                                                 <FormControl>
-                                                    <Textarea {...field} maxLength={2048} className='h-24' />
+                                                    <Textarea {...field} className='h-24' maxLength={2048} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -403,9 +403,9 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
                                                             onClick={handleClickMap}
                                                         >
                                                             <Marker
-                                                                position={field.value}
                                                                 draggable
                                                                 onDragEnd={handleMarkerDragEnd}
+                                                                position={field.value}
                                                             />
                                                         </GoogleMap>
                                                         {azureSubscriptionKey ? (
@@ -461,10 +461,10 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
                                         )}
                                     />
                                     <div className='col-span-12 flex justify-end gap-2'>
-                                        <Button variant='secondary' onClick={handleCancel}>
+                                        <Button onClick={handleCancel} variant='secondary'>
                                             Cancel
                                         </Button>
-                                        <Button type='submit' disabled={createPartnerRequest.isLoading}>
+                                        <Button disabled={createPartnerRequest.isLoading} type='submit'>
                                             {createPartnerRequest.isLoading ? (
                                                 <Loader2 className='animate-spin' />
                                             ) : null}

@@ -93,7 +93,7 @@ export const PartnerRequestDetails: React.FC = () => {
                                                 {ToolTips.PartnerRequestName}
                                             </TooltipContent>
                                         </Tooltip>
-                                        <Input type='text' disabled value={data.name} />
+                                        <Input disabled type='text' value={data.name} />
                                     </div>
                                     <div className='space-y-2 col-span-4'>
                                         <Tooltip>
@@ -102,7 +102,7 @@ export const PartnerRequestDetails: React.FC = () => {
                                             </TooltipTrigger>
                                             <TooltipContent className='max-w-96'>{ToolTips.PartnerType}</TooltipContent>
                                         </Tooltip>
-                                        <Input type='text' disabled value={partnerType || ''} />
+                                        <Input disabled type='text' value={partnerType || ''} />
                                     </div>
                                     <div className='space-y-2 col-span-4'>
                                         <Tooltip>
@@ -113,7 +113,7 @@ export const PartnerRequestDetails: React.FC = () => {
                                                 {ToolTips.PartnerRequestStatus}
                                             </TooltipContent>
                                         </Tooltip>
-                                        <Input type='text' disabled value={partnerRequestStatus || ''} />
+                                        <Input disabled type='text' value={partnerRequestStatus || ''} />
                                     </div>
                                     <div className='space-y-2 col-span-5'>
                                         <Tooltip>
@@ -124,7 +124,7 @@ export const PartnerRequestDetails: React.FC = () => {
                                                 {ToolTips.PartnerRequestEmail}
                                             </TooltipContent>
                                         </Tooltip>
-                                        <Input type='text' disabled value={data.email} />
+                                        <Input disabled type='text' value={data.email} />
                                     </div>
                                     <div className='space-y-2 col-span-7'>
                                         <Tooltip>
@@ -135,7 +135,7 @@ export const PartnerRequestDetails: React.FC = () => {
                                                 {ToolTips.PartnerRequestPhone}
                                             </TooltipContent>
                                         </Tooltip>
-                                        <Input type='text' disabled value={data.phone} />
+                                        <Input disabled type='text' value={data.phone} />
                                     </div>
                                     <div className='space-y-2 col-span-12'>
                                         <Tooltip>
@@ -146,7 +146,7 @@ export const PartnerRequestDetails: React.FC = () => {
                                                 {ToolTips.PartnerRequestWebsite}
                                             </TooltipContent>
                                         </Tooltip>
-                                        <Input type='text' disabled value={data.website} />
+                                        <Input disabled type='text' value={data.website} />
                                     </div>
                                     <div className='space-y-2 col-span-12'>
                                         <Tooltip>
@@ -157,19 +157,19 @@ export const PartnerRequestDetails: React.FC = () => {
                                                 {ToolTips.PartnerRequestNotes}
                                             </TooltipContent>
                                         </Tooltip>
-                                        <Input type='text' disabled value={data.notes} />
+                                        <Input disabled type='text' value={data.notes} />
                                     </div>
                                     <div className='space-y-2 col-span-12'>
                                         <Label>Street Address</Label>
-                                        <Input type='text' disabled value={data.streetAddress} />
+                                        <Input disabled type='text' value={data.streetAddress} />
                                     </div>
                                     <div className='space-y-2 col-span-6'>
                                         <Label>City</Label>
-                                        <Input type='text' disabled value={data.city} />
+                                        <Input disabled type='text' value={data.city} />
                                     </div>
                                     <div className='space-y-2 col-span-6'>
                                         <Label>Postal Code</Label>
-                                        <Input type='text' disabled value={data.postalCode} />
+                                        <Input disabled type='text' value={data.postalCode} />
                                     </div>
                                     <div className='space-y-2 col-span-6'>
                                         <Tooltip>
@@ -180,7 +180,7 @@ export const PartnerRequestDetails: React.FC = () => {
                                                 {ToolTips.PartnerRequestRegion}
                                             </TooltipContent>
                                         </Tooltip>
-                                        <Input type='text' disabled value={data.region} />
+                                        <Input disabled type='text' value={data.region} />
                                     </div>
                                     <div className='space-y-2 col-span-6'>
                                         <Tooltip>
@@ -191,7 +191,7 @@ export const PartnerRequestDetails: React.FC = () => {
                                                 {ToolTips.PartnerRequestCountry}
                                             </TooltipContent>
                                         </Tooltip>
-                                        <Input type='text' disabled value={data.country} />
+                                        <Input disabled type='text' value={data.country} />
                                     </div>
                                     <div className='col-span-12'>
                                         <GoogleMap
@@ -199,8 +199,8 @@ export const PartnerRequestDetails: React.FC = () => {
                                             defaultZoom={11}
                                         >
                                             <Marker
-                                                position={{ lat: data.latitude, lng: data.longitude }}
                                                 draggable={false}
+                                                position={{ lat: data.latitude, lng: data.longitude }}
                                             />
                                         </GoogleMap>
                                     </div>
@@ -213,7 +213,7 @@ export const PartnerRequestDetails: React.FC = () => {
                                                 {ToolTips.PartnerRequestCreatedDate}
                                             </TooltipContent>
                                         </Tooltip>
-                                        <Input type='text' disabled value={moment(data.createdDate).toString()} />
+                                        <Input disabled type='text' value={moment(data.createdDate).toString()} />
                                     </div>
                                     <div className='space-y-2 col-span-6'>
                                         <Tooltip>
@@ -224,7 +224,7 @@ export const PartnerRequestDetails: React.FC = () => {
                                                 {ToolTips.PartnerRequestLastUpdatedDate}
                                             </TooltipContent>
                                         </Tooltip>
-                                        <Input type='text' disabled value={moment(data.lastUpdatedDate).toString()} />
+                                        <Input disabled type='text' value={moment(data.lastUpdatedDate).toString()} />
                                     </div>
                                     <div className='col-span-12'>
                                         <Button onClick={handleCancel}>Cancel</Button>

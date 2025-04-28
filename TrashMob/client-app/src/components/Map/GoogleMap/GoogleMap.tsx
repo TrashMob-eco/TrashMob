@@ -20,12 +20,12 @@ export const GoogleMap = (props: PropsWithChildren<MapProps>) => {
 
     return (
         <Map
-            mapId='6f295631d841c617'
-            gestureHandling={props.gestureHandling ?? 'greedy'}
-            disableDefaultUI
-            style={{ width: '100%', height: '500px' }}
-            defaultZoom={defaultZoomProps || MapStore.defaultUserLocationZoom}
             defaultCenter={defaultCenter}
+            defaultZoom={defaultZoomProps || MapStore.defaultUserLocationZoom}
+            disableDefaultUI
+            gestureHandling={props.gestureHandling ?? 'greedy'}
+            mapId='6f295631d841c617'
+            style={{ width: '100%', height: '500px' }}
             {...rest}
         >
             {children}

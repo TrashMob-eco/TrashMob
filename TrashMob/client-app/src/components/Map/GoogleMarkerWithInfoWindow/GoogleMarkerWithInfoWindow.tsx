@@ -8,9 +8,9 @@ import {
 } from '@vis.gl/react-google-maps';
 
 type MarkerWithInfoWindowProps = AdvancedMarkerProps & {
-    infoWindowTrigger: 'click' | 'hover' | 'hover-persist';
-    infoWindowProps?: InfoWindowProps;
-    infoWindowContent: JSX.Element;
+    readonly infoWindowTrigger: 'click' | 'hover' | 'hover-persist';
+    readonly infoWindowProps?: InfoWindowProps;
+    readonly infoWindowContent: JSX.Element;
 };
 
 export const GoogleMarkerWithInfoWindow = (props: MarkerWithInfoWindowProps) => {

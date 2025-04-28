@@ -3,14 +3,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PropsWithChildren, ReactNode } from 'react';
 
 interface ManageEventDashboardLayoutProps {
-    title: string;
-    aside?: ReactNode;
+    readonly title: string;
+    readonly aside?: ReactNode;
 }
 
 export const ManageEventDashboardLayout = (props: PropsWithChildren<ManageEventDashboardLayoutProps>) => {
     return (
         <div className='tailwind'>
-            <HeroSection Title='Manage Event' Description='We can’t wait to see the results.' />
+            <HeroSection Description='We can’t wait to see the results.' Title='Manage Event' />
             <section className=''>
                 <div className='container'>
                     <div className='grid grid-cols-12 py-5 gap-8'>

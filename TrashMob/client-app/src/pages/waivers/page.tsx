@@ -65,7 +65,7 @@ const Waivers: React.FC<WaiversProps> = () => {
 
     return (
         <div className='tailwind'>
-            <HeroSection Title='Waiver' Description='Safety first!' />
+            <HeroSection Description='Safety first!' Title='Waiver' />
             <div className='container prose space-y-4 py-12'>
                 <h2 className='font-medium text-3xl'>TrashMob.eco Waiver</h2>
                 <p className='p-18'>
@@ -139,28 +139,28 @@ const Waivers: React.FC<WaiversProps> = () => {
                         </li>
                     </ol>
                 </div>
-                <form onSubmit={handleSubmit(onSubmit)} className='mt-4'>
+                <form className='mt-4' onSubmit={handleSubmit(onSubmit)}>
                     <Controller
-                        name='accepted'
                         control={control}
-                        rules={{ required: true }}
+                        name='accepted'
                         render={({ field }) => (
                             <div className='flex items-center space-x-2 !mb-4'>
                                 <Checkbox
-                                    id='i-have-read-and-accept'
                                     checked={field.value}
+                                    id='i-have-read-and-accept'
                                     onCheckedChange={field.onChange}
                                 />
                                 <label
-                                    htmlFor='i-have-read-and-accept'
                                     className='text-sm font-medium !mb-0 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                                    htmlFor='i-have-read-and-accept'
                                 >
                                     I HAVE READ THIS RELEASE AND WAIVER FORM
                                 </label>
                             </div>
                         )}
+                        rules={{ required: true }}
                     />
-                    <Button disabled={!isValid} type='submit' className='font-semibold'>
+                    <Button className='font-semibold' disabled={!isValid} type='submit'>
                         Sign Waiver
                     </Button>
                 </form>

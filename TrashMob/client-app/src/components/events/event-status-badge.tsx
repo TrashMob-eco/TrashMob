@@ -2,7 +2,7 @@ import { Badge } from '@/components/ui/badge';
 import { EventStatus } from '@/enums/EventStatus';
 
 interface EventStatusBadgeProps {
-    statusId: number;
+    readonly statusId: number;
 }
 
 export const EventStatusBadge = ({ statusId }: EventStatusBadgeProps) => {
@@ -15,7 +15,7 @@ export const EventStatusBadge = ({ statusId }: EventStatusBadgeProps) => {
             return <Badge variant='success'>Completed</Badge>;
         case EventStatus.Canceled:
             return (
-                <Badge variant='destructive' className='bg-destructive/75'>
+                <Badge className='bg-destructive/75' variant='destructive'>
                     Canceled
                 </Badge>
             );
