@@ -28,6 +28,54 @@
         {
             var requestUri = Controller + "/byeventid/" + eventId;
 
+            var sortLocation1 = new SortableLocation()
+            {
+                Latitude = 47.6062,
+                Longitude = -122.3321,
+                SortOrder = 1,
+            };
+
+            var sortLocation2 = new SortableLocation()
+            {
+                Latitude = 47.6062,
+                Longitude = -122.3322,
+                SortOrder = 2,
+            };
+
+            var sortLocation3 = new SortableLocation()
+            {
+                Latitude = 47.6063,
+                Longitude = -122.3321,
+                SortOrder = 3,
+            };
+
+            var sortLocation4 = new SortableLocation()
+            {
+                Latitude = 47.6063,
+                Longitude = -122.3322,
+                SortOrder = 4,
+            };
+
+            var sortables = new List<SortableLocation>
+            {
+                sortLocation1,
+                sortLocation2,
+                sortLocation3,
+                sortLocation4
+            };
+
+            var mockEventRoute = new DisplayEventAttendeeRoute()
+            {
+                EndTime = DateTimeOffset.Now,
+                EventId = eventId,
+                Id = Guid.NewGuid(),
+                Locations = sortables,
+                StartTime = DateTimeOffset.Now.AddHours(-1),
+                UserId = Guid.NewGuid(),
+            };
+
+            return [mockEventRoute];
+
             using (var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken))
             {
                 response.EnsureSuccessStatusCode();
