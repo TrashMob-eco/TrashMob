@@ -29,6 +29,7 @@
             services.AddScoped<IBaseManager<EventSummary>, EventSummaryManager>();
             services.AddScoped<ILookupManager<EventType>, LookupManager<EventType>>();
             services.AddScoped<ILookupManager<InvitationStatus>, LookupManager<InvitationStatus>>();
+            services.AddScoped<IKeyedManager<JobOpportunity>, KeyedManager<JobOpportunity>>();
             services.AddScoped<IKeyedManager<MessageRequest>, MessageRequestManager>();
             services.AddScoped<IKeyedManager<Partner>, KeyedManager<Partner>>();
             services.AddScoped<IKeyedManager<PartnerDocument>, PartnerDocumentManager>();
@@ -106,6 +107,7 @@
             services.AddScoped<ILookupRepository<EventType>, LookupRepository<EventType>>();
             services.AddScoped<IBaseRepository<IftttTrigger>, BaseRepository<IftttTrigger>>();
             services.AddScoped<ILookupRepository<InvitationStatus>, LookupRepository<InvitationStatus>>();
+            services.AddScoped<IKeyedRepository<JobOpportunity>, KeyedRepository<JobOpportunity>>();
             services.AddScoped<IKeyedRepository<LitterImage>, KeyedRepository<LitterImage>>();
             services.AddScoped<IKeyedRepository<LitterReport>, KeyedRepository<LitterReport>>();
             services.AddScoped<IKeyedRepository<MessageRequest>, KeyedRepository<MessageRequest>>();
