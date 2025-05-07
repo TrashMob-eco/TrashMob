@@ -12,6 +12,7 @@ export const MainNav = ({
         { name: 'Events', to: '/#events', component: 'a' },
         { name: 'Donate', to: 'https://donate.stripe.com/14k9DN2EnfAog9O3cc' },
         { name: 'Shop', to: '/shop' },
+        { name: 'Help', to: '/help' },
     ];
 
     return (
