@@ -107,11 +107,11 @@ export const EditEventPage = () => {
             name: event.name,
             description: event.description,
             eventDate: moment(event.eventDate).toDate(),
-            eventTimeStart: moment(event.eventDate).format('HH:mm'),
+            eventTimeStart: moment(event.eventDate).format('H:mm'),
             eventTimeEnd: moment(event.eventDate)
                 .add(event.durationHours, 'hours')
                 .add(event.durationMinutes, 'minutes')
-                .format('HH:mm'),
+                .format('H:mm'),
             eventTypeId: `${event.eventTypeId}`,
             streetAddress: event.streetAddress,
             city: event.city,
@@ -384,7 +384,7 @@ export const EditEventPage = () => {
                             name='maxNumberOfParticipants'
                             render={({ field }) => (
                                 <FormItem className='col-span-3'>
-                                    <FormLabel>Max attendee</FormLabel>
+                                    <FormLabel>Max attendees</FormLabel>
                                     <FormControl>
                                         <Input type='number' {...field} />
                                     </FormControl>
