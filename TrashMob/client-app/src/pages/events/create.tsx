@@ -369,7 +369,7 @@ export const CreateEventPage = () => {
                                     name='maxNumberOfParticipants'
                                     render={({ field }) => (
                                         <FormItem className='col-span-3'>
-                                            <FormLabel>Max attendee</FormLabel>
+                                            <FormLabel>Max attendees</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     type='number'
@@ -471,6 +471,7 @@ export const CreateEventPage = () => {
                                             }
                                         </Badge>
                                     </p>
+                                    <p className='mb-4'>{previewValues.description}</p>
                                     <p className='mb-4'>
                                         <EventPlaceAndLocation
                                             eventDate={createMomentFromDateAndTime(
