@@ -27,6 +27,7 @@ namespace TrashMob
     using Microsoft.Identity.Web;
     using Microsoft.AspNetCore.HttpOverrides;
     using NetTopologySuite.IO.Converters;
+    using Azure.Storage.Blobs;
 
     public class Program
     {
@@ -154,6 +155,7 @@ namespace TrashMob
             builder.Services.AddRepositories();
 
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+            var blobStorageUrl = builder.Configuration.GetValue<Uri>("StorageAccountUri");
 
             if (builder.Environment.IsDevelopment())
             {
@@ -164,7 +166,7 @@ namespace TrashMob
                     {
                         VisualStudioTenantId = builder.Configuration.GetValue<string>("TrashMobBackendTenantId"),
                     }));
-                    azureClientFactoryBuilder.AddBlobServiceClient(builder.Configuration.GetValue<Uri>("StorageAccountUri"));
+                    azureClientFactoryBuilder.AddBlobServiceClient(blobStorageUrl);
                 });
             }
             else
@@ -174,11 +176,13 @@ namespace TrashMob
                     azureClientFactoryBuilder.UseCredential(new DefaultAzureCredential());
 
                     azureClientFactoryBuilder.AddSecretClient(builder.Configuration.GetValue<Uri>("VaultUri"));
-                    azureClientFactoryBuilder.AddBlobServiceClient(builder.Configuration.GetValue<Uri>("StorageAccountUri"));
+                    azureClientFactoryBuilder.AddBlobServiceClient(blobStorageUrl);
                 });
 
                 builder.Services.AddScoped<IKeyVaultManager, KeyVaultManager>();
             }
+
+            builder.Services.AddScoped(serviceProvider => new BlobServiceClient(blobStorageUrl));
 
             builder.Services.AddSwaggerGen(options =>
             {
