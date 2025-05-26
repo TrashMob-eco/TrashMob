@@ -12,8 +12,11 @@
 
     public class PartnerAdminManager : BaseManager<PartnerAdmin>, IPartnerAdminManager
     {
-        public PartnerAdminManager(IBaseRepository<PartnerAdmin> partnerAdminRepository) : base(partnerAdminRepository)
+        private readonly IKeyedRepository<Partner> partnerRepository;
+
+        public PartnerAdminManager(IBaseRepository<PartnerAdmin> partnerAdminRepository, IKeyedRepository<Partner> partnerRepository) : base(partnerAdminRepository)
         {
+            this.partnerRepository = partnerRepository;
         }
 
         public async Task<IEnumerable<User>> GetAdminsForPartnerAsync(Guid partnerId,
@@ -41,6 +44,13 @@
                 .Include(t => t.Partner)
                 .Select(t => t.Partner)
                 .ToListAsync(cancellationToken);
+
+            var partners = partnerRepository.Get()
+                .Where(p => p.CreatedByUserId == userId)
+                .ToList();
+
+            results.AddRange(partners);
+            results = results.Distinct().ToList();
 
             return results;
         }
