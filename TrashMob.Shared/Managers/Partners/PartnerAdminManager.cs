@@ -37,7 +37,7 @@
             CancellationToken cancellationToken = default)
         {
             var results = await Repository.Get()
-                .Where(t => t.UserId == userId)
+                .Where(t => t.UserId == userId || t.Partner.CreatedByUserId == userId)
                 .Include(t => t.Partner)
                 .Select(t => t.Partner)
                 .ToListAsync(cancellationToken);
