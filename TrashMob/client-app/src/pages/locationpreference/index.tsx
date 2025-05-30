@@ -15,18 +15,18 @@ import { EnhancedFormLabel as FormLabel } from '@/components/ui/custom/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItemAlt, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { MarkerWithInfoWindow, EventInfoWindowContent } from '@/components/Map';
-import { GoogleMap } from '@/components/Map/GoogleMap';
+import { GoogleMapWithKey as GoogleMap } from '@/components/Map/GoogleMap';
 import { Button } from '@/components/ui/button';
 import { GetUserById, UpdateUser } from '@/services/users';
 import { AzureSearchLocationInput, SearchLocationOption } from '@/components/Map/AzureSearchLocationInput';
-import { APIProvider, MapMouseEvent, useMap } from '@vis.gl/react-google-maps';
+import { MapMouseEvent, useMap } from '@vis.gl/react-google-maps';
 import { useAzureMapSearchAddressReverse } from '@/hooks/useAzureMapSearchAddressReverse';
 import { useMapStore } from '@/hooks/useMapStore';
 import { useLogin } from '@/hooks/useLogin';
 import { useToast } from '@/hooks/use-toast';
-import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
 import UserData from '@/components/Models/UserData';
 import moment from 'moment';
+import { useGetDefaultMapCenter } from '@/hooks/useGetDefaultMapCenter';
 
 enum DistanceUnit {
     KM = 'km',
@@ -52,6 +52,7 @@ export const LocationPreference = () => {
     const { toast } = useToast();
     const { currentUser, handleUserUpdated } = useLogin();
     const { azureSubscriptionKey } = useMapStore();
+    const userDefaultCenter = useGetDefaultMapCenter();
 
     const { data: user } = useQuery({
         queryKey: GetUserById({ userId: currentUser.id }).key,
@@ -86,8 +87,8 @@ export const LocationPreference = () => {
         if (!user) return;
 
         form.reset({
-            latitude: user.latitude,
-            longitude: user.longitude,
+            latitude: user.latitude || userDefaultCenter.lat,
+            longitude: user.longitude || userDefaultCenter.lng,
             city: user.city,
             region: user.region,
             postalCode: user.postalCode,
@@ -137,6 +138,7 @@ export const LocationPreference = () => {
 
     const latitude = form.watch('latitude');
     const longitude = form.watch('longitude');
+
     const travelLimitForLocalEvents = form.watch('travelLimitForLocalEvents');
     const prefersMetric = form.watch('prefersMetric');
 
@@ -377,17 +379,5 @@ export const LocationPreference = () => {
                 </Card>
             </div>
         </div>
-    );
-};
-
-export const LocationPreferenceWrapper = () => {
-    const { data: googleApiKey, isLoading } = useGetGoogleMapApiKey();
-
-    if (isLoading) return null;
-
-    return (
-        <APIProvider apiKey={googleApiKey || ''}>
-            <LocationPreference />
-        </APIProvider>
     );
 };
