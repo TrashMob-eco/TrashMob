@@ -11,6 +11,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DatePicker } from '@/components/ui/datepicker';
 import { Textarea } from '@/components/ui/textarea';
@@ -274,9 +275,18 @@ export const EditEventPage = () => {
                                                             )}
                                                         </span>
                                                         <div className='grow'>
-                                                            <p className='text-sm font-medium leading-none m-0'>
-                                                                {serviceType?.name}
-                                                            </p>
+                                                            <HoverCard openDelay={0}>
+                                                                <HoverCardTrigger asChild>
+                                                                    <p className='text-sm font-medium leading-none m-0 cursor-pointer'>
+                                                                        {serviceType?.name}
+                                                                    </p>
+                                                                </HoverCardTrigger>
+                                                                <HoverCardContent align='start'>
+                                                                    <p className='text-xs'>
+                                                                        {service.partnerLocationServicePublicNotes}
+                                                                    </p>
+                                                                </HoverCardContent>
+                                                            </HoverCard>
                                                             <p className='text-xs text-muted-foreground m-0'>
                                                                 {status.id === 0 ? 'Not Requested' : 'Requested'}
                                                             </p>
