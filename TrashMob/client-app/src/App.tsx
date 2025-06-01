@@ -31,7 +31,7 @@ import { Board } from './pages/board/page';
 
 /** User */
 import MyDashboard from './pages/mydashboard';
-import { LocationPreferenceWrapper as LocationPreference } from './pages/locationpreference';
+import { LocationPreference } from './pages/locationpreference';
 import { DeleteMyData } from './pages/deletemydata';
 import Waivers from './pages/waivers/page';
 

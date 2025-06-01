@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from 'react';
+import moment from 'moment';
 import { useParams } from 'react-router';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -35,7 +36,7 @@ const formSchema = z.object({
     partnerStatusId: z.number(),
     partnerTypeId: z.number(),
     publicNotes: z.string({ required_error: 'Notes cannot be empty' }),
-    privateNotes: z.string(),
+    privateNotes: z.string().optional(),
 });
 
 const useGetPartnerStatuses = () =>
@@ -60,6 +61,7 @@ const useGetPartnerById = (partnerId: string) =>
     });
 
 export const PartnerEdit = () => {
+    const queryClient = useQueryClient();
     const { partnerId } = useParams<{ partnerId: string }>() as { partnerId: string };
     const { toast } = useToast();
 
@@ -71,6 +73,11 @@ export const PartnerEdit = () => {
         mutationKey: UpdatePartner().key,
         mutationFn: UpdatePartner().service,
         onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: GetPartnerById({ partnerId }).key,
+                refetchType: 'all',
+            });
+
             toast({
                 variant: 'primary',
                 title: 'Saved!',
@@ -95,8 +102,8 @@ export const PartnerEdit = () => {
         if (currentValues) {
             form.reset({
                 ...currentValues,
-                createdDate: `${currentValues.createdDate}`,
-                lastUpdatedDate: `${currentValues.lastUpdatedDate}`,
+                createdDate: moment(currentValues.createdDate).format('lll'),
+                lastUpdatedDate: moment(currentValues.lastUpdatedDate).format('lll'),
             });
         }
     }, [currentValues]);

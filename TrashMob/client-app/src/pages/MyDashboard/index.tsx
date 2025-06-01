@@ -1,4 +1,5 @@
 import { FC, useCallback, useEffect, useState } from 'react';
+import uniqBy from 'lodash/uniqBy';
 import orderBy from 'lodash/orderBy';
 import { Link, useNavigate, useLocation } from 'react-router';
 import { APIProvider } from '@vis.gl/react-google-maps';
@@ -80,7 +81,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
     const { data: myPartners } = useQuery<AxiosResponse<DisplayPartnershipData[]>, unknown, DisplayPartnershipData[]>({
         queryKey: GetPartnerAdminsForUser({ userId }).key,
         queryFn: GetPartnerAdminsForUser({ userId }).service,
-        select: (res) => res.data,
+        select: (res) => uniqBy(res.data, 'id'),
     });
 
     const { data: myPartnerAdminInvitations } = useQuery<
