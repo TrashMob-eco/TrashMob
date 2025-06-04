@@ -301,7 +301,7 @@ export const LocationPreference = () => {
                                         name='prefersMetric'
                                         render={({ field }) => (
                                             <FormItem className='col-span-2'>
-                                                <FormLabel> </FormLabel>
+                                                <FormLabel>&nbsp;</FormLabel>
                                                 <FormControl>
                                                     <Select
                                                         value={field.value ? DistanceUnit.KM : DistanceUnit.MILE}
