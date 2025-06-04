@@ -16,12 +16,7 @@ import { Textarea } from '@/components/ui/textarea';
 import * as ToolTips from '@/store/ToolTips';
 import * as MapStore from '@/store/MapStore';
 
-import {
-    CreateEventPickupLocation,
-    GetEventPickupLocationById,
-    GetEventPickupLocations,
-    UpdateEventPickupLocation,
-} from '@/services/locations';
+import { GetEventPickupLocationById, GetEventPickupLocations, UpdateEventPickupLocation } from '@/services/locations';
 import { GoogleMap } from '@/components/Map/GoogleMap';
 import { APIProvider, MapMouseEvent, Marker, useMap } from '@vis.gl/react-google-maps';
 import { useAzureMapSearchAddressReverse } from '@/hooks/useAzureMapSearchAddressReverse';
@@ -225,7 +220,7 @@ export const PickupLocationEditForm = (props: PickupLocationEditFormProps) => {
                     name='hasBeenPickedUp'
                     render={({ field }) => (
                         <FormItem className='col-span-3'>
-                            <FormLabel tooltip={ToolTips.PickupLocationHasBeenPickedUp}> </FormLabel>
+                            <FormLabel tooltip={ToolTips.PickupLocationHasBeenPickedUp}>&nbsp;</FormLabel>
                             <FormControl>
                                 <div className='flex items-center space-x-2 h-9'>
                                     <Checkbox id='hasBeenPickedUp' checked={field.value} disabled />
@@ -246,7 +241,7 @@ export const PickupLocationEditForm = (props: PickupLocationEditFormProps) => {
                     name='hasBeenSubmitted'
                     render={({ field }) => (
                         <FormItem className='col-span-3'>
-                            <FormLabel> </FormLabel>
+                            <FormLabel>&nbsp;</FormLabel>
                             <FormControl>
                                 <div className='flex items-center space-x-2 h-9'>
                                     <Checkbox id='hasBeenSubmitted' checked={field.value} disabled />
