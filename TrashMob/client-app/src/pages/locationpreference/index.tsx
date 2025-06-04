@@ -52,7 +52,7 @@ export const LocationPreference = () => {
     const { toast } = useToast();
     const { currentUser, handleUserUpdated } = useLogin();
     const { azureSubscriptionKey } = useMapStore();
-    const userDefaultCenter = useGetDefaultMapCenter();
+    const siteDefaultCenter = useGetDefaultMapCenter();
 
     const { data: user } = useQuery({
         queryKey: GetUserById({ userId: currentUser.id }).key,
@@ -87,8 +87,8 @@ export const LocationPreference = () => {
         if (!user) return;
 
         form.reset({
-            latitude: user.latitude || userDefaultCenter.lat,
-            longitude: user.longitude || userDefaultCenter.lng,
+            latitude: user.latitude || siteDefaultCenter.lat,
+            longitude: user.longitude || siteDefaultCenter.lng,
             city: user.city,
             region: user.region,
             postalCode: user.postalCode,
