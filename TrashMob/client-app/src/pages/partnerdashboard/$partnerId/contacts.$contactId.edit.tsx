@@ -23,7 +23,6 @@ import {
     UpdatePartnerLocationContact,
 } from '@/services/contact';
 import PartnerContactData from '@/components/Models/PartnerContactData';
-import * as Constants from '@/components/Models/Constants';
 import { useLogin } from '@/hooks/useLogin';
 import PartnerLocationContactData from '@/components/Models/PartnerLocationContactData';
 import { PartnerContactType } from '@/enums/PartnerContactType';
@@ -43,7 +42,7 @@ const formSchema = z.object({
     partnerLocationId: z.string().optional(),
     name: z.string({ required_error: 'Name cannot be blank.' }),
     email: z.string().email(),
-    phone: z.string().regex(Constants.RegexPhoneNumber, { message: 'Please enter a valid phone number.' }),
+    phone: z.string().optional(),
     notes: z
         .string({ required_error: 'Notes cannot be empty.' })
         .min(1, 'Notes cannot be empty.')
@@ -248,9 +247,7 @@ export const PartnerContactEdit = (props: PartnerContactEditProps) => {
                     name='phone'
                     render={({ field }) => (
                         <FormItem className='col-span-6'>
-                            <FormLabel tooltip={ToolTips.PartnerContactPhone} required>
-                                Phone
-                            </FormLabel>
+                            <FormLabel tooltip={ToolTips.PartnerContactPhone}>Phone</FormLabel>
                             <FormControl>
                                 <PhoneInput
                                     country='us'
