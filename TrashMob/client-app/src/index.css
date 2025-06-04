@@ -104,7 +104,7 @@
         .form-control {
             @apply border-none bg-transparent pl-8;
         }
-        .flag-dropdown  {
+        .flag-dropdown {
             @apply bg-transparent border-none;
         }
         .arrow {
@@ -136,5 +136,3 @@ body {
 code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
-
-

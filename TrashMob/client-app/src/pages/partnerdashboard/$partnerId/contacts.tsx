@@ -146,7 +146,13 @@ export const PartnerContacts = () => {
                                     <TableRow key={row.name} className={isDeletingId === row?.id ? 'opacity-20' : ''}>
                                         <TableCell>{row.name}</TableCell>
                                         <TableCell>{row.email}</TableCell>
-                                        <TableCell><PhoneInput value={row.phone} disabled containerClass='display' /></TableCell>
+                                        <TableCell>
+                                            {row.phone ? (
+                                                <PhoneInput value={row.phone} disabled containerClass='display' />
+                                            ) : (
+                                                '-'
+                                            )}
+                                        </TableCell>
                                         <TableCell>
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
@@ -215,7 +221,11 @@ export const PartnerContacts = () => {
                                             <TableCell>{row.name}</TableCell>
                                             <TableCell>{row.email}</TableCell>
                                             <TableCell>
-                                                <PhoneInput value={row.phone} disabled containerClass='display' />
+                                                {row.phone ? (
+                                                    <PhoneInput value={row.phone} disabled containerClass='display' />
+                                                ) : (
+                                                    '-'
+                                                )}
                                             </TableCell>
                                             <TableCell>
                                                 <DropdownMenu>
