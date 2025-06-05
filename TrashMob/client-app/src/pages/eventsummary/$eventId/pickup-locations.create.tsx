@@ -30,8 +30,6 @@ import { useGetEvent } from '@/hooks/useGetEvent';
 interface CreatePickupLocationFields {
     latitude: number;
     longitude: number;
-    hasBeenSubmitted: boolean;
-    hasBeenPickedUp: boolean;
     name: string;
     notes: string;
 
@@ -46,8 +44,6 @@ interface CreatePickupLocationFields {
 const formSchema = z.object({
     latitude: z.number().optional(),
     longitude: z.number().optional(),
-    hasBeenSubmitted: z.boolean(),
-    hasBeenPickedUp: z.boolean(),
     name: z.string(),
     notes: z.string(),
 
@@ -91,10 +87,7 @@ export const PickupLocationCreateForm = (props: PickupLocationCreateFormProps) =
 
     const form = useForm<CreatePickupLocationFields>({
         resolver: zodResolver(formSchema),
-        defaultValues: {
-            hasBeenPickedUp: false,
-            hasBeenSubmitted: false,
-        },
+        defaultValues: {},
     });
 
     useEffect(() => {
@@ -128,8 +121,14 @@ export const PickupLocationCreateForm = (props: PickupLocationCreateFormProps) =
         body.postalCode = formValues.postalCode ?? '';
         body.latitude = formValues.latitude ?? 0;
         body.longitude = formValues.longitude ?? 0;
-        body.hasBeenPickedUp = formValues.hasBeenPickedUp;
-        body.hasBeenSubmitted = formValues.hasBeenSubmitted;
+
+        /**
+         * Note: At the moment, CreatePickupLocation API accept hasBeenPickedUp and hasBeenSubmitted
+         * in the payload and user can send "true" to mark pickup = true and submit = true
+         * It should not accept hasBeenPickedUp and hasBeenSubmitted in payload
+         */
+        body.hasBeenPickedUp = false;
+        body.hasBeenSubmitted = false;
         body.createdByUserId = currentUser.id;
         mutate(body);
     };
@@ -207,56 +206,6 @@ export const PickupLocationCreateForm = (props: PickupLocationCreateFormProps) =
                             </FormLabel>
                             <FormControl>
                                 <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name='hasBeenPickedUp'
-                    render={({ field }) => (
-                        <FormItem className='col-span-3'>
-                            <FormLabel tooltip={ToolTips.PickupLocationHasBeenPickedUp}> </FormLabel>
-                            <FormControl>
-                                <div className='flex items-center space-x-2 h-9'>
-                                    <Checkbox
-                                        id='hasBeenPickedUp'
-                                        checked={field.value}
-                                        onCheckedChange={field.onChange}
-                                    />
-                                    <label
-                                        htmlFor='hasBeenPickedUp'
-                                        className='text-sm mb-0 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
-                                    >
-                                        Picked up?
-                                    </label>
-                                </div>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name='hasBeenSubmitted'
-                    render={({ field }) => (
-                        <FormItem className='col-span-3'>
-                            <FormLabel> </FormLabel>
-                            <FormControl>
-                                <div className='flex items-center space-x-2 h-9'>
-                                    <Checkbox
-                                        id='hasBeenSubmitted'
-                                        checked={field.value}
-                                        onCheckedChange={field.onChange}
-                                    />
-                                    <label
-                                        htmlFor='hasBeenSubmitted'
-                                        className='text-sm mb-0 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
-                                    >
-                                        Submitted?
-                                    </label>
-                                </div>
                             </FormControl>
                             <FormMessage />
                         </FormItem>

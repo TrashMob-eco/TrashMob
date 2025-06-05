@@ -63,7 +63,7 @@ export const EventActions = (props: EventActionsProps) => {
                     </Link>
                 </DropdownMenuItem>
                 {!isEventOwner && !isCompleted ? (
-                    <DropdownMenuItem onClick={() => onUnregisterEvent(event.id, currentUser.userName)}>
+                    <DropdownMenuItem onClick={() => onUnregisterEvent(event.id, event.name)}>
                         <UserRoundX /> Unregister for event
                     </DropdownMenuItem>
                 ) : null}

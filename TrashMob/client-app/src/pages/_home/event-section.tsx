@@ -123,7 +123,7 @@ export const EventSection = (props: EventSectionProps) => {
         } else {
             setSelectedTimeRange(getAllUpcomingTimerange());
         }
-    }, [timeRangeOptions, selectedStatuses]);
+    }, [selectedStatuses]);
 
     /**
      * Events

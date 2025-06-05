@@ -23,6 +23,9 @@ import { APIProvider, MapMouseEvent, Marker, useMap } from '@vis.gl/react-google
 import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
 import { useAzureMapSearchAddressReverse } from '@/hooks/useAzureMapSearchAddressReverse';
 import { AzureSearchLocationInput, SearchLocationOption } from '@/components/Map/AzureSearchLocationInput';
+import { useGetDefaultMapCenter } from '@/hooks/useGetDefaultMapCenter';
+import { useGetUserById } from '@/hooks/useGetUserById';
+import { useLogin } from '@/hooks/useLogin';
 
 interface FormInputs {
     name: string;
@@ -66,6 +69,8 @@ export const PartnerLocationCreateForm = (props: PartnerLocationCreateFormProps)
         locationId: string;
     };
     const { toast } = useToast();
+    const { currentUser } = useLogin();
+    const { data: user } = useGetUserById(currentUser.id);
     const queryClient = useQueryClient();
     const navigate = useNavigate();
     const { mutate, isLoading: isSubmitting } = useMutation({
@@ -87,10 +92,17 @@ export const PartnerLocationCreateForm = (props: PartnerLocationCreateFormProps)
 
     const form = useForm<FormInputs>({
         resolver: zodResolver(formSchema),
-        defaultValues: {
-            location: { lat: MapStore.defaultLatitude, lng: MapStore.defaultLongitude },
-        },
+        defaultValues: {},
     });
+
+    useEffect(() => {
+        form.reset({
+            location: {
+                lat: user?.latitude ?? MapStore.defaultLatitude,
+                lng: user?.longitude ?? MapStore.defaultLongitude,
+            },
+        });
+    }, [user]);
 
     const location = form.watch('location');
     const addrComponents = form.watch(['streetAddress', 'city', 'region', 'country', 'postalCode']);

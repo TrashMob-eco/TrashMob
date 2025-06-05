@@ -212,14 +212,16 @@ export const EditEventSummary = () => {
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-2'>
                             <CardContent>
-                                <div className='grid grid-cols-2'>
+                                <div className='grid grid-cols-2 mb-4'>
                                     <div className='col-span-1'>
                                         <Label>Event Name</Label>
-                                        <p className='text-muted text-sm'>{event.name}</p>
+                                        <p className='text-muted-foreground text-sm'>{event.name}</p>
                                     </div>
                                     <div className='col-span-1'>
                                         <Label>Event Date</Label>
-                                        <p className='text-muted text-sm'>{moment(event?.eventDate).format('LL')}</p>
+                                        <p className='text-muted-foreground text-sm'>
+                                            {moment(event?.eventDate).format('LL')}
+                                        </p>
                                     </div>
                                 </div>
                                 <div className='grid gap-4 grid-cols-12'>

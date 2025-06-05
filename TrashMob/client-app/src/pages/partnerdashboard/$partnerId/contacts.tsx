@@ -20,17 +20,10 @@ import { Link, Outlet, useMatch, useNavigate, useParams } from 'react-router';
 import { SidebarLayout } from '../../layouts/_layout.sidebar';
 import { useCallback, useState } from 'react';
 import { useGetPartnerLocations } from '@/hooks/useGetPartnerLocations';
-import PartnerLocationContactData from '@/components/Models/PartnerLocationContactData';
 import { Badge } from '@/components/ui/badge';
 import { PartnerContactType } from '@/enums/PartnerContactType';
 import { getIndexedColor } from '@/lib/color';
-
-const formatPhone = (phone: string) => {
-    function splitIntoChunks(str: string, size: number): string[] {
-        return str.match(new RegExp(`.{1,${size}}`, 'g')) || [];
-    }
-    return splitIntoChunks(`+${phone}`, 3).join(' ');
-};
+import PhoneInput from 'react-phone-input-2';
 
 const useGetOrganizationWideContacts = (partnerId: string) => {
     return useQuery({
@@ -153,7 +146,13 @@ export const PartnerContacts = () => {
                                     <TableRow key={row.name} className={isDeletingId === row?.id ? 'opacity-20' : ''}>
                                         <TableCell>{row.name}</TableCell>
                                         <TableCell>{row.email}</TableCell>
-                                        <TableCell>{formatPhone(row.phone)}</TableCell>
+                                        <TableCell>
+                                            {row.phone ? (
+                                                <PhoneInput value={row.phone} disabled containerClass='display' />
+                                            ) : (
+                                                '-'
+                                            )}
+                                        </TableCell>
                                         <TableCell>
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
@@ -221,7 +220,13 @@ export const PartnerContacts = () => {
                                             </TableCell>
                                             <TableCell>{row.name}</TableCell>
                                             <TableCell>{row.email}</TableCell>
-                                            <TableCell>{formatPhone(row.phone)}</TableCell>
+                                            <TableCell>
+                                                {row.phone ? (
+                                                    <PhoneInput value={row.phone} disabled containerClass='display' />
+                                                ) : (
+                                                    '-'
+                                                )}
+                                            </TableCell>
                                             <TableCell>
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
