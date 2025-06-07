@@ -224,7 +224,7 @@ namespace TrashMobJobs
 
         private static async Task<int> CountNewLitterReports(ILogger log, SqlConnection conn)
         {
-            var sql = "SELECT count(*) FROM dbo.LitterReports where LitterReportStatusId == " +
+            var sql = "SELECT count(*) FROM dbo.LitterReports where LitterReportStatusId = " +
                       LitterReportStatusEnum.New;
             var numberOfLitterReports = 0;
 
@@ -243,7 +243,7 @@ namespace TrashMobJobs
 
         private static async Task<int> CountCleanedLitterReports(ILogger log, SqlConnection conn)
         {
-            var sql = "SELECT count(*) FROM dbo.LitterReports where LitterReportStatusId == " +
+            var sql = "SELECT count(*) FROM dbo.LitterReports where LitterReportStatusId = " +
                       LitterReportStatusEnum.Cleaned;
             var numberOfLitterReports = 0;
 
