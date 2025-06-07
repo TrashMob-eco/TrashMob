@@ -182,7 +182,7 @@ namespace TrashMob
                 builder.Services.AddScoped<IKeyVaultManager, KeyVaultManager>();
             }
 
-            builder.Services.AddScoped(serviceProvider => new BlobServiceClient(blobStorageUrl));
+            // builder.Services.AddScoped(serviceProvider => new BlobServiceClient(blobStorageUrl));
 
             builder.Services.AddSwaggerGen(options =>
             {
