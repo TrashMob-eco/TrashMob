@@ -156,6 +156,7 @@ namespace TrashMob
 
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
             var blobStorageUrl = builder.Configuration.GetValue<Uri>("StorageAccountUri");
+            builder.Services.AddScoped(serviceProvider => new BlobServiceClient(blobStorageUrl));
 
             if (builder.Environment.IsDevelopment())
             {
@@ -181,8 +182,6 @@ namespace TrashMob
 
                 builder.Services.AddScoped<IKeyVaultManager, KeyVaultManager>();
             }
-
-            builder.Services.AddScoped(serviceProvider => new BlobServiceClient(blobStorageUrl));
 
             builder.Services.AddSwaggerGen(options =>
             {
