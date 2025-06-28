@@ -17,7 +17,7 @@ on:
 
 env:
   AZURE_FUNCTIONAPP_NAME: fa-tm-dev-westus2
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: TrashMobJobs/publish
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: TrashMobJobs
   CONFIGURATION: Release
   DOTNET_VERSION: '9.0.x' # set this to the dotnet version to use
   DOTNET_CORE_VERSION_INPROC: 9.0.x
