@@ -64,6 +64,7 @@ jobs:
       with:
         app-name: 'fa-tm-dev-westus2'
         slot-name: 'production'
+        sku: flexconsumption
         package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_98a8860f496e4feea3f4f70f508f3d16 }}
+        publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
   
