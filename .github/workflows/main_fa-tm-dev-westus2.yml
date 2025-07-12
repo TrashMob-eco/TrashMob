@@ -17,53 +17,67 @@ on:
 
 env:
   AZURE_FUNCTIONAPP_NAME: fa-tm-dev-westus2
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: TrashMobJobs/publish
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: TrashMobJobs
   CONFIGURATION: Release
-  DOTNET_CORE_VERSION: 8.0.x
+  DOTNET_VERSION: '9.0.x' # set this to the dotnet version to use
+  DOTNET_CORE_VERSION_INPROC: 9.0.x
   WORKING_DIRECTORY: TrashMobJobs
-  DOTNET_CORE_VERSION_INPROC: 8.0.x
 
 jobs:
   build-and-deploy:
     runs-on: windows-latest
     environment: test
+    permissions:
+      id-token: write #This is required for requesting the JWT
+      contents: read #This is required for actions/checkout
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v3.1.11
-      with:
-        versionSpec: '5.x'
-  
-    - name: Determine Version
-      id: version_step # step id used as reference for output values
-      uses: gittools/actions/gitversion/execute@v3.1.11
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v3.1.11
+        with:        
+          versionSpec: '5.x'
 
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
-    - name: Setup .NET Core (for inproc extensions)
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: ${{ env.DOTNET_CORE_VERSION_INPROC }}
-        
-    - name: Restore
-      run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
-    
-    - name: Publish
-      run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore --output "${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}"
+      - name: Determine Version
+        id: version_step # step id used as reference for output values
+        uses: gittools/actions/gitversion/execute@v3.1.11
 
-    - name: 'Run Azure Functions Action'
-      uses: Azure/functions-action@v1
-      id: fa
-      with:
-        app-name: 'fa-tm-dev-westus2'
-        slot-name: 'production'
-        package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_98a8860f496e4feea3f4f70f508f3d16 }}
-  
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
+      
+      - name: Setup .NET Core (for inproc extensions)
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_CORE_VERSION_INPROC }}
+
+      - name: Restore
+        run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
+
+      - name: 'Resolve Project Dependencies Using Dotnet'
+        shell: pwsh
+        run: |
+          pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+          dotnet build --configuration Release --output ./output
+          popd
+      
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: 'Run Azure Functions Action'
+        uses: Azure/functions-action@v1
+        id: fa
+        with:
+          app-name: 'fa-tm-dev-westus2'
+          slot-name: 'Production'
+          package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
+          
