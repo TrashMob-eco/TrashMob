@@ -3,7 +3,6 @@ import linkedIn from '@/components/assets/card/linkedin.svg';
 import JoeBeernink from '@/components/assets/boardOfDirectors/JoeBeernink.jpg';
 import DarylBarber from '@/components/assets/boardOfDirectors/darylbarber.jpg';
 import JacquelineHayot from '@/components/assets/boardOfDirectors/JacquelineHayot.jpg';
-import SandraMau from '@/components/assets/boardOfDirectors/SandraMau.jpg';
 import CynthiaMitchell from '@/components/assets/boardOfDirectors/CynthiaMitchell.jpg';
 import { HeroSection } from '@/components/Customization/HeroSection';
 
@@ -49,18 +48,7 @@ const boards = [
             'In 2021, Joe was inspired by Edgar McGregor, a climate activist in California, to get out and start cleaning up his community. After seeing just how much work needed to be done, Joe envisioned a website that enabled like-minded people to get out and start cleaning the environment together, and the idea for TrashMob.eco was born.',
             'Joe resides in Issaquah, WA with his 2 kids.',
         ],
-    },
-    {
-        name: 'Sandra Mau',
-        img: SandraMau,
-        linkedin: 'https://www.linkedin.com/in/sandramau/',
-        position: '',
-        detail: [
-            'Sandra is VP of Product for Cloud Solutions at Clarivate (NYSE:CLVT). Prior to joining Clarivate via acquisition, she was the CEO and Founder of TrademarkVision, an award-winning AI/Computer Vision startup doing visual brand protection.',
-            "Sandra is very active in supporting tech and startup communities. She was the Founding Chair of IEEE QLD Women in Engineering, and listed as one of Australia's Top 50 Female Programmers by Pollenizer 2014, and one of Australia's Top 100 Most Influential Engineers by Engineer's Australia 2015. She's also a regular participant in hackathons including past GovHacks and International Women's Day. She was recognised in 2018 by Pittsburgh Business Times with the Pittsburgh Innovator Award and by QUT with the Innovation and Entrepreneurship Outstanding Alumni Award.",
-            'She holds a Masters in Robotics from Carnegie Mellon University, a Bachelors in Engineering Science (Aerospace) from University of Toronto, and an MBA from Queensland University of Technology (QUT).',
-        ],
-    },
+    }
 ];
 
 export const Board: React.FC = () => {
