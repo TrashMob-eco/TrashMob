@@ -48,7 +48,7 @@ const boards = [
             'In 2021, Joe was inspired by Edgar McGregor, a climate activist in California, to get out and start cleaning up his community. After seeing just how much work needed to be done, Joe envisioned a website that enabled like-minded people to get out and start cleaning the environment together, and the idea for TrashMob.eco was born.',
             'Joe resides in Issaquah, WA with his 2 kids.',
         ],
-    }
+    },
 ];
 
 export const Board: React.FC = () => {
