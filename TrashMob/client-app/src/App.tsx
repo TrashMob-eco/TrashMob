@@ -76,6 +76,9 @@ import { SiteAdminUsers } from './pages/siteadmin/users/page';
 import { SiteAdminEvents } from './pages/siteadmin/events/page';
 import { SiteAdminPartners } from './pages/siteadmin/partners/page';
 import { SiteAdminPartnerRequests } from './pages/siteadmin/partner-requests/page';
+import { SiteAdminJobOpportunities } from './pages/siteadmin/job-opportunities/page';
+import { SiteAdminJobOpportunityCreate } from './pages/siteadmin/job-opportunities/create';
+import { SiteAdminJobOpportunityEdit } from './pages/siteadmin/job-opportunities/$jobId.edit';
 import { SiteAdminEmailTemplates } from './pages/siteadmin/email-templates';
 import { SiteAdminSendNotification } from './pages/siteadmin/send-notification';
 import { NoMatch } from './pages/nomatch';
@@ -238,6 +241,10 @@ export const App: FC = () => {
                                         <Route path='events' element={<SiteAdminEvents />} />
                                         <Route path='partners' element={<SiteAdminPartners />} />
                                         <Route path='partner-requests' element={<SiteAdminPartnerRequests />} />
+                                        <Route path='job-opportunities' element={<SiteAdminJobOpportunities />}>
+                                            <Route path=':jobId/edit' element={<SiteAdminJobOpportunityEdit />} />
+                                            <Route path='create' element={<SiteAdminJobOpportunityCreate />} />
+                                        </Route>
                                         <Route path='email-templates' element={<SiteAdminEmailTemplates />} />
                                         <Route path='send-notifications' element={<SiteAdminSendNotification />} />
                                     </Route>
