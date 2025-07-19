@@ -61,7 +61,7 @@ export const GettingStartSection = () => {
                                     strokeWidth='0.2'
                                 />
                             </svg>
-                            <span className='!mt-4 text-2xl'>Work gloves</span>
+                            <span className='mt-4! text-2xl'>Work gloves</span>
                         </div>
                         <div
                             className={cn(
@@ -111,7 +111,7 @@ export const GettingStartSection = () => {
                                     strokeLinecap='round'
                                 />
                             </svg>
-                            <span className='!mt-4 text-2xl'>A bucket</span>
+                            <span className='mt-4! text-2xl'>A bucket</span>
                         </div>
                         <div
                             className={cn(
@@ -137,7 +137,7 @@ export const GettingStartSection = () => {
                                     strokeLinecap='round'
                                 />
                             </svg>
-                            <span className='!mt-4 text-2xl'>A good attitude</span>
+                            <span className='mt-4! text-2xl'>A good attitude</span>
                         </div>
                     </div>
                     <Button size='lg' asChild>

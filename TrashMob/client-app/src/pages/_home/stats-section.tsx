@@ -70,15 +70,15 @@ export const StatsSection = () => {
     ];
 
     return (
-        <div className='container !py-20' ref={viewportRef}>
+        <div className='container py-20!' ref={viewportRef}>
             <div className='flex flex-wrap gap-4 flex-row justify-center lg:justify-between'>
                 {statItems.map((item, i) => (
                     <div
                         key={item.id}
-                        className='bg-card min-w-[160px] !px-6 !py-4 shadow-sm flex flex-col items-center rounded-[11px] gap-2'
+                        className='bg-card min-w-[160px] px-6! py-4! shadow-xs flex flex-col items-center rounded-[11px] gap-2'
                     >
                         <img src={item.icon} alt={item.alt} className='text-primary w-9 h-9' />
-                        <h4 className='text-[32px] font-semibold text-primary !mt-2'>
+                        <h4 className='text-[32px] font-semibold text-primary mt-2!'>
                             <CountUp isCounting={isInViewPort} end={item.value} duration={3.2} />
                         </h4>
                         <span className='text-sm font-semibold'>{item.title}</span>

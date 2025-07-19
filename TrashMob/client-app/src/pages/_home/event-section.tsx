@@ -139,7 +139,7 @@ export const EventSection = (props: EventSectionProps) => {
 
     return (
         <section id='events' className='bg-[#FCFBF8]'>
-            <div className='container !py-20'>
+            <div className='container py-20!'>
                 <div className='flex flex-col gap-2'>
                     <div className='flex flex-col md:flex-row items-center gap-4 relative'>
                         <h3 className='my-0 font-semibold'>Events near</h3>
@@ -148,16 +148,16 @@ export const EventSection = (props: EventSectionProps) => {
                                 azureKey={azureSubscriptionKey}
                                 entityType={['Municipality']}
                                 placeholder={selectedLocation ? selectedLocation.address.municipality : 'Location ...'}
-                                className='!rounded-none !border-none !shadow-none !bg-transparent'
-                                listClassName='!rounded-lg border md:min-w-[200px] relative shadow-md bg-card !mt-2'
+                                className='rounded-none! border-none! shadow-none! bg-transparent!'
+                                listClassName='rounded-lg! border md:min-w-[200px] relative shadow-md bg-card mt-2!'
                                 renderInput={(inputProps) => (
                                     <div className='w-fit flex flex-row items-center'>
                                         <input
                                             type='text'
                                             {...inputProps}
-                                            className='w-72 text-primary placeholder:text-primary/50 font-semibold text-4xl mb-0 !py-2 border-b-4 border-primary bg-[#FCFBF8] outline-none'
+                                            className='w-72 text-primary placeholder:text-primary/50 font-semibold text-4xl mb-0 py-2! border-b-4 border-primary bg-[#FCFBF8] outline-hidden'
                                         />
-                                        <Pencil className='!w-8 !h-8 text-white fill-primary' />
+                                        <Pencil className='w-8! h-8! text-white fill-primary' />
                                     </div>
                                 )}
                                 onSelectLocation={handleSelectSearchLocation}
@@ -183,10 +183,10 @@ export const EventSection = (props: EventSectionProps) => {
                                         key={status.value}
                                         value={status.value}
                                         className={cn(
-                                            'relative !px-2 h-9 rounded-[2px] border-b-2 border-b-transparent bg-transparent font-semibold text-muted-foreground shadow-none transition-none',
+                                            'relative px-2! h-9 rounded-[2px] border-b-2 border-b-transparent bg-transparent font-semibold text-muted-foreground shadow-none transition-none',
                                             "after:content-[''] after:w-0 after:h-0.5 after:absolute after:left-0 after:-bottom-3",
-                                            'after:data-[state=active]:bg-[#005B4C] after:data-[state=active]:w-full',
-                                            'data-[state=active]:!bg-[#B0CCC8] data-[state=active]:text-foreground',
+                                            'data-[state=active]:after:bg-[#005B4C] data-[state=active]:after:w-full',
+                                            'data-[state=active]:bg-[#B0CCC8]! data-[state=active]:text-foreground',
                                             'transition-all duration-300 ease-in-out',
                                             'after:transition-all after:duration-300 after:ease-in-out',
                                         )}
