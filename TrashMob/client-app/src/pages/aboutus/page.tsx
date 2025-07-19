@@ -76,7 +76,7 @@ export const AboutUs: React.FC = () => {
                         },
                     ].map((item, index) => (
                         <div className='timeline-step relative' key={index}>
-                            <div className='timeline-content w-[14rem] flex flex-col items-center text-center relative z-10'>
+                            <div className='timeline-content w-56 flex flex-col items-center text-center relative z-10'>
                                 <div className='inner-circle bg-primary text-primary-foreground w-12 h-12 text-black rounded-full flex items-center justify-center font-bold text-base relative'>
                                     {padStart(`${index + 1}`, 2, '0')}
                                 </div>

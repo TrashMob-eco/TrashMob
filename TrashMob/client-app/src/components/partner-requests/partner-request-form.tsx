@@ -208,7 +208,7 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
 
     return (
         <div className='tailwind'>
-            <div className='container !py-12'>
+            <div className='container py-12!'>
                 <Card className=''>
                     <CardHeader>
                         <CardTitle className='text-4xl text-primary'>{title}</CardTitle>
@@ -361,7 +361,7 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
                                                         country='us'
                                                         value={field.value}
                                                         onChange={field.onChange}
-                                                        inputClass='flex h-9 !w-full rounded-md border border-input bg-transparent pr-3 py-1 text-base shadow-sm '
+                                                        inputClass='flex h-9 w-full! rounded-md border border-input bg-transparent pr-3 py-1 text-base shadow-xs '
                                                     />
                                                 </FormControl>
                                                 <FormMessage />

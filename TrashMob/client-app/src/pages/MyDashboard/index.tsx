@@ -157,7 +157,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
     return (
         <div className='tailwind'>
             <HeroSection Title='Dashboard' Description="See how much you've done!" />
-            <div className='container !mt-12 !pb-12'>
+            <div className='container mt-12! pb-12!'>
                 {eventToShare ? (
                     <ShareToSocialsDialog
                         eventToShare={eventToShare}
@@ -167,18 +167,18 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                         message={SharingMessages.getEventShareMessage(eventToShare, currentUser.id)}
                     />
                 ) : null}
-                <div className='!pt-12 flex flex-row flex-wrap gap-8 justify-center'>
+                <div className='pt-12! flex flex-row flex-wrap gap-8 justify-center'>
                     {[
                         { name: 'Events', value: totalEvents, img: twofigure },
                         { name: 'Hours', value: totalHours, img: calendarclock },
                         { name: 'Bags', value: totalBags, img: bucketplus },
                     ].map((stat) => (
                         <div
-                            className='basis-full md:basis-[200px] md:max-w-[255px] md:grow bg-card !px-7 relative rounded-lg'
+                            className='basis-full md:basis-[200px] md:max-w-[255px] md:grow bg-card px-7! relative rounded-lg'
                             key={stat.name}
                         >
-                            <p className='text-[25px] font-medium !mt-6 !mb-3'>{stat.name}</p>
-                            <p className='text-primary !mt-0 text-[46px]'>{stat.value}</p>
+                            <p className='text-[25px] font-medium mt-6! mb-3!'>{stat.name}</p>
+                            <p className='text-primary mt-0! text-[46px]'>{stat.value}</p>
                             <img
                                 src={stat.img}
                                 alt={stat.name}
@@ -188,7 +188,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                     ))}
                 </div>
             </div>
-            <div className='container !my-12'>
+            <div className='container my-12!'>
                 <div className='flex justify-between'>
                     <h4 className='font-bold text-3xl mr-2 pb-2 mt-0 border-b-[3px] border-primary flex items-center w-full'>
                         <div className='grow'>My Events ({myEventList.length})</div>
@@ -276,7 +276,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                     <h4 className='font-semibold text-3xl mr-2 mt-0 pb-2 border-b-[3px] border-primary'>
                         My Partnerships ({(myPartnerRequests || []).length + (myPartners || []).length})
                     </h4>
-                    <div className='flex flex-row flex-wrap gap-4 !my-4'>
+                    <div className='flex flex-row flex-wrap gap-4 my-4!'>
                         <Button variant='outline' asChild>
                             <Link to='/inviteapartner'>Send invitation to join TrashMob.eco as a partner</Link>
                         </Button>

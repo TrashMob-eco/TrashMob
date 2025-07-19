@@ -23,7 +23,7 @@ export const MainNav = ({
                         <a
                             href={nav.to}
                             key={nav.name}
-                            className='text-sm font-medium text-foreground no-underline transition-colors hover:text-[--primary] !p-2 !pl-0 !lg:pl-2'
+                            className='text-sm font-medium text-foreground no-underline transition-colors hover:text-(--primary) p-2! pl-0! !lg:pl-2'
                         >
                             {nav.name}
                         </a>
@@ -33,7 +33,7 @@ export const MainNav = ({
                         <Link
                             to={nav.to}
                             key={nav.name}
-                            className='text-sm font-medium text-foreground no-underline transition-colors hover:text-[--primary] !p-2 !pl-0 !lg:pl-2'
+                            className='text-sm font-medium text-foreground no-underline transition-colors hover:text-(--primary) p-2! pl-0! !lg:pl-2'
                         >
                             {nav.name}
                         </Link>

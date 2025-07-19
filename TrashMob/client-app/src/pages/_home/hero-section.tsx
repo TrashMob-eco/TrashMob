@@ -13,10 +13,10 @@ export const HeroSection = () => {
                 className={cn(
                     'absolute w-full h-full left-0 top-0 z-0',
                     "lg:bg-[url('/img/globe2-minified.png')] bg-no-repeat bg-contain",
-                    'opacity-0 bg-[position:160%_0%]',
+                    'opacity-0 bg-position-[160%_0%]',
                     'transition-all duration-1000 delay-100 ease-out',
                     {
-                        'opacity-100 lg:!bg-[position:130%_0%] xl:!bg-[position:105%_0%]': isInViewPort,
+                        'opacity-100 lg:bg-position-[130%_0%]! xl:bg-position-[105%_0%]!': isInViewPort,
                     },
                 )}
             />

@@ -137,7 +137,7 @@ export function AzureSearchLocationInput(props: AzureSearchLocationInputProps) {
             <Command
                 ref={commandRef}
                 shouldFilter={false}
-                className={cn('!rounded-lg border md:min-w-[200px] relative', { 'shadow-md': open }, className)}
+                className={cn('rounded-lg! border md:min-w-[200px] relative', { 'shadow-md': open }, className)}
             >
                 {renderInput ? (
                     renderInput(customInputProps)
@@ -147,7 +147,7 @@ export function AzureSearchLocationInput(props: AzureSearchLocationInputProps) {
                         value={query}
                         onValueChange={(value) => setQuery(value)}
                         onFocus={handleFocus}
-                        className={cn('!mb-0', inputClassName)}
+                        className={cn('mb-0!', inputClassName)}
                     />
                 )}
                 <CommandList
@@ -166,7 +166,7 @@ export function AzureSearchLocationInput(props: AzureSearchLocationInputProps) {
                                     <CommandItem
                                         key={item.id}
                                         value={item.id}
-                                        className='font-light !py-3 cursor-pointer'
+                                        className='font-light py-3! cursor-pointer'
                                         onSelect={handleSelectSuggestion}
                                     >
                                         {item.displayAddress}

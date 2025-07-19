@@ -2,8 +2,8 @@ import { Link } from 'react-router';
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/Logo';
 
-const navClassName = 'text-center md:!text-start text-white text-[13px] uppercase font-medium';
-const socialClassName = 'w-7 h-7 bg-white !rounded-md flex justify-center items-center';
+const navClassName = 'text-center md:text-start! text-white text-[13px] uppercase font-medium';
+const socialClassName = 'w-7 h-7 bg-white rounded-md! flex justify-center items-center';
 
 export const SiteFooter = () => {
     const footerNavs = [
@@ -20,14 +20,14 @@ export const SiteFooter = () => {
 
     return (
         <footer className='tailwind'>
-            <div className='bg-[#212529] relative !py-10 overflow-hidden'>
+            <div className='bg-[#212529] relative py-10! overflow-hidden'>
                 <Logo
-                    className='w-[900px] absolute z-0 left-[20%] md:left-[40%] inset-y-1/2 -translate-y-[25rem] opacity-10'
+                    className='w-[900px] absolute z-0 left-[20%] md:left-[40%] inset-y-1/2 -translate-y-100 opacity-10'
                     showTagline={false}
                     showBrandName={false}
                 />
                 <div className='container relative z-1'>
-                    <div className='w-72 md:w-96 max-w-full mb-5 mx-auto md:!mx-0'>
+                    <div className='w-72 md:w-96 max-w-full mb-5 mx-auto md:mx-0!'>
                         <Logo fill='#fff' className='opacity-40' />
                     </div>
                     <div className='grid grid-rows-9 grid-cols-1 md:grid-rows-3 md:grid-cols-3 gap-4 gap-x-8 md:grid-flow-col'>
@@ -43,30 +43,30 @@ export const SiteFooter = () => {
                             );
                         })}
                     </div>
-                    <div className='border-t border-white !mt-8 md:!mt-12 text-white'>
+                    <div className='border-t border-white mt-8! md:mt-12! text-white'>
                         <div className='flex flex-col md:flex-row gap-8'>
                             <div className='basis-3/4'>
                                 <div className='text-[13px] font-[Montserrat] font-serif font-medium pt-[14px]'>
-                                    <p className='mb-1 text-sm text-center md:!text-start'>
+                                    <p className='mb-1 text-sm text-center md:text-start!'>
                                         Copyright &copy; 2025 TRASHMOB.ECO - All rights reserved.
                                     </p>
-                                    <p className='my-2 text-xs text-center md:!text-start'>
+                                    <p className='my-2 text-xs text-center md:text-start!'>
                                         TrashMob is a non-profit, 501(c)(3) organization based in Washington State, USA.
                                     </p>
-                                    <p className='my-2 text-xs text-center md:!text-start'>
+                                    <p className='my-2 text-xs text-center md:text-start!'>
                                         US Federal Employer Id (EIN): 88-1286026
                                     </p>
                                 </div>
                             </div>
                             <div className='basis-1/4'>
-                                <div className='flex flex-row justify-start md:justify-end !mt-4 gap-2'>
+                                <div className='flex flex-row justify-start md:justify-end mt-4! gap-2'>
                                     <a
                                         href='https://www.instagram.com/trashmobinfo'
                                         target='_blank'
                                         rel='noreferrer noopener'
                                         className={socialClassName}
                                     >
-                                        <i className='!mt-0 fa-brands fa-instagram text-center text-black' />
+                                        <i className='mt-0! fa-brands fa-instagram text-center text-black' />
                                     </a>
                                     <a
                                         href='https://www.youtube.com/channel/UC2LgFmXFCA8kdkxd4IJ51BA'
@@ -74,7 +74,7 @@ export const SiteFooter = () => {
                                         rel='noreferrer noopener'
                                         className={socialClassName}
                                     >
-                                        <i className='!mt-0 fa-brands fa-youtube text-center text-black' />
+                                        <i className='mt-0! fa-brands fa-youtube text-center text-black' />
                                     </a>
                                     <a
                                         href='https://www.facebook.com/trashmob.eco/'
@@ -82,7 +82,7 @@ export const SiteFooter = () => {
                                         rel='noreferrer noopener'
                                         className={socialClassName}
                                     >
-                                        <i className='!mt-0 fab fa-facebook-f text-center text-black' />
+                                        <i className='mt-0! fab fa-facebook-f text-center text-black' />
                                     </a>
                                     <a
                                         href='https://twitter.com/TrashMobEco'
@@ -90,7 +90,7 @@ export const SiteFooter = () => {
                                         rel='noreferrer noopener'
                                         className={socialClassName}
                                     >
-                                        <i className='!mt-0 fab fa-twitter text-center text-black' />
+                                        <i className='mt-0! fab fa-twitter text-center text-black' />
                                     </a>
                                     {/* <a
                                         href='https://profiles.eco/trashmob?ref=tm'
@@ -110,7 +110,7 @@ export const SiteFooter = () => {
                                         rel='noreferrer noopener'
                                         className={socialClassName}
                                     >
-                                        <i className='!mt-0 fa-brands fa-linkedin' />
+                                        <i className='mt-0! fa-brands fa-linkedin' />
                                     </a> */}
                                 </div>
                             </div>

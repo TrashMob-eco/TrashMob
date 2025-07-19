@@ -62,10 +62,10 @@ export const ShareToSocialsDialog = (props: ShareToSocialDialogProps) => {
                 </DialogHeader>
                 <div className='grid gap-4 py-4'>
                     {props.eventToShare ? (
-                        <div className='flex flex-col !mb-4'>
+                        <div className='flex flex-col mb-4!'>
                             <h6>{props.eventToShare.name}</h6>
                             <div className='flex flex-row align-items-center mb-2'>
-                                <MapPin className='!mr-2' />
+                                <MapPin className='mr-2!' />
                                 {compact([
                                     props.eventToShare.streetAddress,
                                     props.eventToShare.city,
@@ -82,7 +82,7 @@ export const ShareToSocialsDialog = (props: ShareToSocialDialogProps) => {
                     <hr />
                     <div>
                         Share a link
-                        <div className='flex flex-row !gap-2 !my-4'>
+                        <div className='flex flex-row gap-2! my-4!'>
                             <FacebookShareButton className='socials-modal-icon' url={eventLink} hashtag='#litter'>
                                 <FacebookIcon size={32} round />
                             </FacebookShareButton>

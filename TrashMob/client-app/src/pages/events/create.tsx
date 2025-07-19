@@ -250,8 +250,8 @@ export const CreateEventPage = () => {
                                     key={step.key}
                                     value={step.key}
                                     className={cn(
-                                        'grow border-t-2 border-muted bg-transparent rounded-none shadow-none flex flex-col items-start !pl-0 !pt-4',
-                                        'data-[state=active]:!border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none',
+                                        'grow border-t-2 border-muted bg-transparent rounded-none shadow-none flex flex-col items-start pl-0! pt-4!',
+                                        'data-[state=active]:border-primary! data-[state=active]:bg-transparent data-[state=active]:shadow-none',
                                     )}
                                 >
                                     <div className='text-primary'>Step {i + 1}</div>

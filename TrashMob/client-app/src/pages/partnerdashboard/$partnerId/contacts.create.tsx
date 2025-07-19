@@ -172,7 +172,7 @@ export const PartnerContactCreate = () => {
                                                 id={PartnerContactType.ORGANIZATION_WIDE}
                                                 className='mt-2'
                                             />
-                                            <Label htmlFor={PartnerContactType.ORGANIZATION_WIDE} className='!mx-4'>
+                                            <Label htmlFor={PartnerContactType.ORGANIZATION_WIDE} className='mx-4!'>
                                                 <div>Organization-wide Contact</div>
                                                 <div className='text-sm text-muted font-normal mt-1'>
                                                     This contact applies to the entire organization.
@@ -186,7 +186,7 @@ export const PartnerContactCreate = () => {
                                                 id={PartnerContactType.LOCATION_SPECIFIC}
                                                 className='mt-2'
                                             />
-                                            <Label htmlFor={PartnerContactType.LOCATION_SPECIFIC} className='!mx-4'>
+                                            <Label htmlFor={PartnerContactType.LOCATION_SPECIFIC} className='mx-4!'>
                                                 <div>Location-specific Contact</div>
                                                 <div className='text-sm text-muted font-normal mt-1'>
                                                     This contact is for a specific location.
