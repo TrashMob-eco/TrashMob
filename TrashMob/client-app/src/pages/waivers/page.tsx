@@ -145,7 +145,7 @@ const Waivers: React.FC<WaiversProps> = () => {
                         control={control}
                         rules={{ required: true }}
                         render={({ field }) => (
-                            <div className='flex items-center space-x-2 !mb-4'>
+                            <div className='flex items-center space-x-2 mb-4!'>
                                 <Checkbox
                                     id='i-have-read-and-accept'
                                     checked={field.value}
@@ -153,7 +153,7 @@ const Waivers: React.FC<WaiversProps> = () => {
                                 />
                                 <label
                                     htmlFor='i-have-read-and-accept'
-                                    className='text-sm font-medium !mb-0 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                                    className='text-sm font-medium mb-0! leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
                                 >
                                     I HAVE READ THIS RELEASE AND WAIVER FORM
                                 </label>

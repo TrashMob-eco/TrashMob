@@ -34,10 +34,10 @@ export const SiteHeader = (props: SiteHeaderProps) => {
                         >
                             <Menu strokeWidth={1} />
                         </Button>
-                        <Divider className='!ml-4 hidden lg:block' />
+                        <Divider className='ml-4! hidden lg:block' />
                         <div
                             className={cn(
-                                'flex flex-1 !px-4',
+                                'flex flex-1 px-4!',
                                 'overflow-hidden transition-all duration-300',
                                 'items-start justify-between flex-col basis-full',
                                 'lg:items-center lg:justify-between lg:flex-row lg:basis-0',
@@ -48,7 +48,7 @@ export const SiteHeader = (props: SiteHeaderProps) => {
                                 },
                             )}
                         >
-                            <MainNav className='flex-1 !py-4 lg:!py-0' isUserLoaded={isUserLoaded} />
+                            <MainNav className='flex-1 py-4! lg:py-0!' isUserLoaded={isUserLoaded} />
                             <div className={cn('flex flex-row gap-4')}>
                                 <Button asChild className='flex md:hidden xl:flex'>
                                     <Link to='/events/create'>
