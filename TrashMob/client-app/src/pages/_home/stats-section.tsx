@@ -70,7 +70,7 @@ export const StatsSection = () => {
     ];
 
     return (
-        <div className='container py-20!' ref={viewportRef}>
+        <div className='container py-10' ref={viewportRef}>
             <div className='flex flex-wrap gap-4 flex-row justify-center lg:justify-between'>
                 {statItems.map((item, i) => (
                     <div
