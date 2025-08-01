@@ -34,18 +34,16 @@ export const VolunteerOpportunities: React.FC = () => {
                                 <CardTitle>Looking to contribute to the growth of TrashMob.eco?</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <p className='p-18'>
+                                <p>
                                     There are many ways to get involved in the growth of TrashMob.eco besides picking
                                     litter.
                                 </p>
-                                <p className='p-18'>
+                                <p>
                                     On this page are a few ways you can contribute from the comfort of your own home! We
                                     encourage you to reach out even if you don't have all the preferred skills.
                                 </p>
-                                <p className='p-18'>
-                                    If you are interested in any of these opportunities, contact us at{' '}
-                                </p>
-                                <p className='p-18 color-primary'>info@trashmob.eco.</p>
+                                <p>If you are interested in any of these opportunities, contact us at </p>
+                                <p className='text-primary'>info@trashmob.eco.</p>
                             </CardContent>
                         </Card>
                     </div>
