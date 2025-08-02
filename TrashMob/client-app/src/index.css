@@ -176,6 +176,24 @@ layer(base);
             @apply hidden;
         }
     }
+
+    .react-tel-input {
+        .form-control {
+            @apply font-sans;
+        }
+    }
+    .react-tel-input.display {
+        @apply font-sans bg-transparent;
+        .form-control {
+            @apply border-none bg-transparent pl-8;
+        }
+        .flag-dropdown {
+            @apply bg-transparent border-none;
+        }
+        .arrow {
+            @apply hidden;
+        }
+    }
 }
 
 body {
