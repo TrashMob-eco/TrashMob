@@ -163,3 +163,8 @@ export const PickupLocationCreatedDate = 'Date this record was created.';
 export const PickupLocationLastUpdatedDate = 'Date this record was last updated.';
 export const WaiverFullName = 'Enter your full legal name.';
 export const CopyToClipboard = 'Copied to clipboard!';
+
+export const JobOpportunityTitle = 'Enter Job title';
+export const JobOpportunityTagLine = 'Enter Job tag line';
+export const JobOpportunityFullDescription = 'Enter Job description';
+export const JobOpportunityIsActive = 'Whether or not this job will be active';

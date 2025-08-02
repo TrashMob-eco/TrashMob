@@ -68,9 +68,7 @@ const Waivers: React.FC<WaiversProps> = () => {
             <HeroSection Title='Waiver' Description='Safety first!' />
             <div className='container prose space-y-4 py-12'>
                 <h2 className='font-medium text-3xl'>TrashMob.eco Waiver</h2>
-                <p className='p-18'>
-                    You will only need to sign this waiver once unless we have to change the legalese.
-                </p>
+                <p>You will only need to sign this waiver once unless we have to change the legalese.</p>
 
                 <hr />
                 <div>
@@ -145,7 +143,7 @@ const Waivers: React.FC<WaiversProps> = () => {
                         control={control}
                         rules={{ required: true }}
                         render={({ field }) => (
-                            <div className='flex items-center space-x-2 !mb-4'>
+                            <div className='flex items-center space-x-2 mb-4!'>
                                 <Checkbox
                                     id='i-have-read-and-accept'
                                     checked={field.value}
@@ -153,7 +151,7 @@ const Waivers: React.FC<WaiversProps> = () => {
                                 />
                                 <label
                                     htmlFor='i-have-read-and-accept'
-                                    className='text-sm font-medium !mb-0 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                                    className='text-sm font-medium mb-0! leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
                                 >
                                     I HAVE READ THIS RELEASE AND WAIVER FORM
                                 </label>
@@ -164,8 +162,8 @@ const Waivers: React.FC<WaiversProps> = () => {
                         Sign Waiver
                     </Button>
                 </form>
-                <p className='p-18 mb-5'>Thank you!</p>
-                <p className='p-18'>The team at TrashMob.eco.</p>
+                <p className='mb-5'>Thank you!</p>
+                <p>The team at TrashMob.eco.</p>
                 <div className='mb-5'>
                     <Logo className='w-96 max-w-full' />
                 </div>

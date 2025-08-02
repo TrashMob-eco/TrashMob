@@ -48,8 +48,8 @@ export const EventListItem = (props: EventListItemProps) => {
     const { event, isUserLoaded, currentUser } = props;
     const { data: eventType } = useGetEventType(event.eventTypeId);
     return (
-        <Card key={event.id} className='!border-[#8AB4AD]'>
-            <CardHeader className='!p-4 flex-row'>
+        <Card key={event.id} className='border-[#8AB4AD]!'>
+            <CardHeader className='p-4! flex-row'>
                 <CardTitle className='grow'>{event.name}</CardTitle>
                 <div className='flex gap-2'>
                     {eventType ? (
@@ -61,10 +61,10 @@ export const EventListItem = (props: EventListItemProps) => {
                     {event.createdByUserId === currentUser.id ? <HostingBadge /> : null}
                 </div>
             </CardHeader>
-            <CardContent className='!p-4 !pt-0'>
+            <CardContent className='p-4! pt-0!'>
                 <EventPlaceAndLocation {...event} />
             </CardContent>
-            <CardFooter className='!p-4 !pt-0 flex justify-between'>
+            <CardFooter className='p-4! pt-0! flex justify-between'>
                 <Button variant='outline' asChild>
                     <Link to={`/eventdetails/${event.id}`}>
                         View Event <ArrowRight />
