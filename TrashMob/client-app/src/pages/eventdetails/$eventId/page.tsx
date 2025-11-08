@@ -160,7 +160,7 @@ export const EventDetails: FC<EventDetailsProps> = () => {
                         </div>
                         <Badge>{eventType?.name}</Badge>
                         <p className='mt-4 mb-8 text-foreground'>{description}</p>
-                        <div className='!mb-8'>
+                        <div className='mb-8!'>
                             <EventPlaceAndLocation {...event} />
                         </div>
                         {latitude && longitude ? (

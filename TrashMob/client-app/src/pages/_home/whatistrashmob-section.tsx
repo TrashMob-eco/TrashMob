@@ -9,12 +9,12 @@ export const WhatIsTrashmobSection = () => {
     return (
         <section id='introduction' className='bg-card'>
             <div ref={viewportRef} />
-            <div className='mx-auto max-w-screen-xl py-8'>
+            <div className='mx-auto max-w-(--breakpoint-xl) py-8'>
                 <div className='px-8 items-center md:grid md:auto-rows-auto md:grid-cols-5 md:gap-x-4'>
                     <div className='col-span-12 md:col-span-3'>
                         <h3
                             className={cn(
-                                '!mt-0 !mb-8 text-[40px] font-semibold',
+                                'mt-0! mb-8! text-[40px] font-semibold',
                                 'transition-all duration-1000 delay-300 ease-out',
                                 {
                                     'opacity-100 translate-y-0': isInViewPort,
@@ -45,7 +45,7 @@ export const WhatIsTrashmobSection = () => {
                     <div className='row-span-3 col-start-1 col-span-3'>
                         <p
                             className={cn(
-                                '!mt-8 md:!mt-0 !mb-16 text-center md:!text-left text-2xl font-normal',
+                                'mt-8! md:mt-0! mb-16! text-center md:text-left! text-2xl font-normal',
                                 'transition-all duration-1000 delay-500 ease-out',
                                 {
                                     'opacity-100 translate-y-0': isInViewPort,

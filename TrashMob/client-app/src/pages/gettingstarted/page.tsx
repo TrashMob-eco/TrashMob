@@ -12,12 +12,12 @@ export const GettingStarted: React.FC = () => {
     return (
         <div className='tailwind'>
             <HeroSection Title='Getting Started' Description='Tips and tricks to get you out there.' />
-            <section className='bg-card !py-5 !px-4'>
+            <section className='bg-card py-5! px-4!'>
                 <h2 className='font-semibold text-center text-[40px] mt-10 mb-2'>The Basics</h2>
                 <div className='flex flex-col md:flex-row'>
                     <div className='basis-full md:basis-1/4'>
                         <div className='flex flex-col w-full max-w-[300px] mx-auto mb-5 text-center'>
-                            <img src={workgloves} className='!w-25 !h-25 mx-auto' alt='Work gloves' />
+                            <img src={workgloves} className='w-25! h-25! mx-auto' alt='Work gloves' />
                             <h6 className='font-semibold mt-2'>Work gloves</h6>
                             <span className='mt-4'>
                                 We recommend{' '}
@@ -30,7 +30,7 @@ export const GettingStarted: React.FC = () => {
                     </div>
                     <div className='basis-full md:basis-1/4'>
                         <div className='flex flex-col w-full max-w-[300px] mx-auto mb-5 text-center'>
-                            <img src={bucket} className='!w-25 !h-25 mx-auto' alt='bucket' />
+                            <img src={bucket} className='w-25! h-25! mx-auto' alt='bucket' />
                             <h6 className='font-semibold mt-2'>A bucket</h6>
                             <span className='mt-4'>
                                 Any 5 gallon pail will do. If you don’t want to buy one, many restaurants and
@@ -41,7 +41,7 @@ export const GettingStarted: React.FC = () => {
                     </div>
                     <div className='basis-full md:basis-1/4'>
                         <div className='flex flex-col w-full max-w-[300px] mx-auto mb-5 text-center'>
-                            <img src={picker} className='!w-25 !h-25 mx-auto' alt='bucket' />
+                            <img src={picker} className='w-25! h-25! mx-auto' alt='bucket' />
                             <h6 className='font-semibold mt-2'>A grabber tool</h6>
                             <span className='mt-4'>
                                 While not essential, we recommend a grabber tool because they help make grabbing trash
@@ -53,7 +53,7 @@ export const GettingStarted: React.FC = () => {
                     </div>
                     <div className='basis-full md:basis-1/4'>
                         <div className='flex flex-col w-full max-w-[300px] mx-auto mb-5 text-center'>
-                            <img src={attitude} className='!w-25 !h-25 mx-auto' alt='bucket' />
+                            <img src={attitude} className='w-25! h-25! mx-auto' alt='bucket' />
                             <h6 className='font-semibold mt-2'>A good attitude</h6>
                             <span className='mt-4'>
                                 Your attitude is just as important as your tools. A positive attitude increases the
@@ -64,8 +64,8 @@ export const GettingStarted: React.FC = () => {
                     </div>
                 </div>
             </section>
-            <section className='!py-12 !px-6 bg-[url(/img/trashcangroup.jpg)] bg-no-repeat bg-cover bg-center'>
-                <div className='container text-white bg-foreground/95 rounded-2xl !p-12'>
+            <section className='py-12! px-6! bg-[url(/img/trashcangroup.jpg)] bg-no-repeat bg-cover bg-center'>
+                <div className='container text-white bg-foreground/95 rounded-2xl p-12!'>
                     <h4>TrashMob tips</h4>
                     <ol className='list-none px-0 mt-5'>
                         <li className='mb-4'>
@@ -114,7 +114,7 @@ export const GettingStarted: React.FC = () => {
                 </div>
             </section>
             <section className='bg-card'>
-                <div className='container !py-24'>
+                <div className='container py-24!'>
                     <div className='flex flex-col md:flex-row gap-8 items-center'>
                         <div className='w-full md:basis-1/2'>
                             <h2 className='font-semibold'>Safety is Essential!</h2>
@@ -136,11 +136,11 @@ export const GettingStarted: React.FC = () => {
                 </div>
             </section>
             <section className='bg-background'>
-                <div className='container !py-24'>
+                <div className='container py-24!'>
                     <div className='flex flex-col md:flex-row gap-8 items-center'>
                         <div className='w-full md:basis-1/2'>
                             <h2 className='font-semibold'>But what about the highways?</h2>
-                            <h4 className='!mt-5'>
+                            <h4 className='mt-5!'>
                                 Please check with your Department of Transportation before creating a highway cleanup
                                 event, and follow all of their guidance. Safety is the number one priority!
                             </h4>
@@ -160,7 +160,7 @@ export const GettingStarted: React.FC = () => {
                     </div>
                 </div>
             </section>
-            <section className='bg-card !py-12 flex flex-col justify-center text-center'>
+            <section className='bg-card py-12! flex flex-col justify-center text-center'>
                 <h2 className='font-semibold'>Ready to go?</h2>
                 <span>Find your first event now.</span>
                 <div className='px-5 mb-5'>
