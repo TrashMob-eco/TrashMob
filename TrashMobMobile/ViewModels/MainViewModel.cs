@@ -18,13 +18,7 @@ public partial class MainViewModel(IAuthService authService,
     INotificationService notificationService,
     IUserManager userManager) : BaseViewModel(notificationService)
 {
-    private readonly IAuthService authService = authService;
-    private readonly IMobEventManager mobEventManager = mobEventManager;
-    private readonly ILitterReportManager litterReportManager = litterReportManager;
-    private readonly IStatsRestService statsRestService = statsRestService;
-    private readonly IUserRestService userRestService = userRestService;
     private readonly INotificationService notificationService = notificationService;
-    private readonly IUserManager userManager = userManager;
 
 #nullable disable
     private EventViewModel selectedEvent;
