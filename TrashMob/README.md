@@ -1,30 +1,37 @@
-# TrashMob.eco Website
+# TrashMob
 
-## Overview and Project Layout
+## Overview
 
-This project contains the code for the TrashMob.eco website. 
+The `TrashMob` project is the main web application for the TrashMob platform, designed to help communities organize and participate in trash cleanup events. It provides APIs, web pages, and integrations for managing events, users, locations, and reporting.
 
-The client-side of the site is written in ReactJS using the Bootstrap UX Framework. The code for this part of the project is in the client-app folder.
+## Key Contents
 
-The server side of the site is written in ASP.NET Core 8.0. 
+- **ASP.NET Core Web Application**: Built with .NET 9, serving both API endpoints and web pages.
+- **Single Page Application (SPA)**: Integrated React client app located in `client-app/`.
+- **Entity Framework Core**: Data access using SQL Server and SQLite providers.
+- **Authentication & Authorization**: Uses Microsoft Identity for secure user management.
+- **Azure Integrations**: Key Vault, Blob Storage, and Application Insights for secrets, file storage, and monitoring.
+- **Geo Data Support**: NetTopologySuite for spatial and geographic operations.
+- **Email Notifications**: SendGrid integration for event and user communications.
+- **API Documentation**: Swagger (Swashbuckle) for interactive API docs.
 
-## Components and Integrations
+## Project Structure
 
-The site integrates with the following backend components as seen in the diagram below
+- `Controllers/` - API and MVC controllers for handling requests.
+- `client-app/` - React SPA source code.
+- `appsettings.json` - Application configuration.
+- `Models/` - Data models and DTOs.
+- `wwwroot/` - Static web assets.
+- `Properties/` - Project properties and launch settings.
 
-![Site Integrations](../TrashMobArchitecture.png)
+## Helpful Links
 
-| Component Name | Function | Notes |
-| --- | --- | --- |
-| Azure AD B2C | Authentication Provider | |
-| Azure SQL Database | Stores the event-related data | |
-| Azure Maps | Handles the display of maps on the site | |
-| Application Insights | Metrics Tracking | |
-| Azure KeyVault | Secrets Management | |
-| Log Analytics | Logging | |
+- [Mobile App User Stories](https://github.com/TrashMob-eco/TrashMob/blob/main/MobileAppUserStories.md)
+- [Website User Stories](https://github.com/TrashMob-eco/TrashMob/blob/main/WebsiteUserStories.md)
 
-## General Notes
+## Getting Started
 
-TBD
+1. Ensure you have [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) and [Node.js](https://nodejs.org/) installed.
+2. Restore dependencies:
 
 
