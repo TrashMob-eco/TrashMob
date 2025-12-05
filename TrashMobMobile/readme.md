@@ -12,6 +12,19 @@ TrashMobMobile is a cross-platform mobile application built with .NET MAUI, targ
 - **Contact & Support**: Reach out to organizers or support via the Contact Us page.
 - **Partner Locations**: View and interact with partner location services.
 
+## Special Business Logic
+
+TrashMobMobile implements several business rules to ensure a robust and user-friendly experience:
+
+- **Event Registration & Validation**: Users can only register for events if registration is enabled and they meet eligibility criteria. The app prevents duplicate registrations and enforces event capacity limits.
+- **Event Creation & Editing**: When creating or editing events, the app validates required fields (such as date, time, and location) and ensures logical consistency (e.g., end time must be after start time).
+- **Address Management**: Custom logic in address view models ensures that only valid and geocoded addresses are displayed on maps and used for event locations.
+- **Contact Requests**: The Contact Us feature includes validation for required fields and email format before allowing submission.
+- **Partner Location Services**: Integration with partner services includes checks for service availability and user permissions.
+- **Event Cancellation**: Only authorized users can cancel events, and cancellation triggers notifications to registered attendees.
+
+These business rules are primarily implemented in the ViewModels layer, leveraging the MVVM pattern for maintainability and testability.
+
 ## Project Structure
 
 - `Views/`: Contains XAML views for pages such as event details, dashboard, and contact forms.
