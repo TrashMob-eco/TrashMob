@@ -31,7 +31,7 @@
             }
             else
             {
-                litterReport.CreatedDate = DateTime.MinValue;
+                litterReport.CreatedDate = DateTimeOffset.MinValue;
             }
 
             if (litterReport.LitterImages == null)
