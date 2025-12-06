@@ -86,6 +86,13 @@ jobs:
           with:
             dotnet-version: ${{ inputs.dotnet_version }}
 
+        - name: List available Xcode versions
+          if: runner.os == 'macOS'
+          shell: bash
+          run: |
+            ls /Applications | grep Xcode || true
+            xcodebuild -version || true
+
         - name: Install MAUI Workload
           env:
             DOTNET_MULTILEVEL_LOOKUP: 0
