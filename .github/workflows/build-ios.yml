@@ -50,7 +50,7 @@ on:
 
 jobs:
     build:
-        runs-on: macos-14
+        runs-on: macos-15
         environment: ${{ inputs.environment }}
         name: iOS Build
 
@@ -106,8 +106,8 @@ jobs:
           if: runner.os == 'macOS'
           shell: bash
           run: |
-            sudo xcode-select -s "/Applications/Xcode_16.2.app"
-            echo "MD_APPLE_SDK_ROOT=/Applications/Xcode_16.2.app" >> $GITHUB_ENV
+            sudo xcode-select -s "/Applications/Xcode_16.2.0.app" || sudo xcode-select -s "/Applications/Xcode_16.2.app"
+            echo "MD_APPLE_SDK_ROOT=$(xcode-select -p)" >> $GITHUB_ENV
 
         - name: Import Code-Signing Certificates
           uses: Apple-Actions/import-codesign-certs@v3
