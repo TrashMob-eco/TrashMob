@@ -92,8 +92,8 @@ jobs:
             DOTNET_ROLL_FORWARD: Disable
           run: |
             dotnet nuget locals all --clear
-            dotnet workload install maui --ignore-failed-sources --source https://api.nuget.org/v3/index.json --sdk-version ${{ inputs.dotnet_version }}
-            dotnet workload install maui-ios --ignore-failed-sources --source https://api.nuget.org/v3/index.json --sdk-version ${{ inputs.dotnet_version }}
+            dotnet workload install maui --ignore-failed-sources --source https://api.nuget.org/v3/index.json
+            dotnet workload install maui-ios --ignore-failed-sources --source https://api.nuget.org/v3/index.json
 
         - name: Set XCode Version
           if: runner.os == 'macOS'
