@@ -50,7 +50,7 @@ on:
 
 jobs:
     build:
-        runs-on: macos-14
+        runs-on: macos-15
         environment: ${{ inputs.environment }}
         name: iOS Build
 
@@ -86,18 +86,27 @@ jobs:
           with:
             dotnet-version: ${{ inputs.dotnet_version }}
 
-        - name: Install MAUI Workload
-          run: |
-            dotnet nuget locals all --clear
-            dotnet workload install maui --ignore-failed-sources
-            dotnet workload install maui-ios --version 9.0.200 --source https://api.nuget.org/v3/index.json
-
-        - name: Set XCode Version
+        - name: List available Xcode versions
           if: runner.os == 'macOS'
           shell: bash
           run: |
-            sudo xcode-select -s "/Applications/Xcode_16.2.app"
-            echo "MD_APPLE_SDK_ROOT=/Applications/Xcode_16.2.app" >> $GITHUB_ENV
+            ls /Applications | grep Xcode || true
+            xcodebuild -version || true
+
+        - name: Install MAUI Workload
+          env:
+            DOTNET_MULTILEVEL_LOOKUP: 0
+            DOTNET_ROLL_FORWARD: Disable
+          run: |
+            dotnet nuget locals all --clear
+            dotnet workload install maui --ignore-failed-sources --source https://api.nuget.org/v3/index.json
+            dotnet workload install maui-ios --ignore-failed-sources --source https://api.nuget.org/v3/index.json
+
+        - name: Set XCode Version
+          if: runner.os == 'macOS'
+          uses: maxim-lobanov/setup-xcode@v1
+          with:
+            xcode-version: '26.0.1'
 
         - name: Import Code-Signing Certificates
           uses: Apple-Actions/import-codesign-certs@v3

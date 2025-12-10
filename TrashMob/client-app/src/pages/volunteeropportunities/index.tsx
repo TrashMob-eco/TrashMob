@@ -58,7 +58,9 @@ export const VolunteerOpportunities: React.FC = () => {
                                         <CardContent>
                                             <p>{opp.tagLine}</p>
                                             <Collapsible className='group'>
-                                                <CollapsibleContent>{opp.fullDescription}</CollapsibleContent>
+                                                <CollapsibleContent>
+                                                    <span dangerouslySetInnerHTML={{ __html: opp.fullDescription }} />
+                                                </CollapsibleContent>
                                                 <CollapsibleTrigger>
                                                     <span className='text-primary group-data-[state=open]:hidden'>
                                                         See more
