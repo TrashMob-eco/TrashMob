@@ -12,7 +12,6 @@ namespace TrashMobJobs
     using TrashMob.Shared.Persistence;
     using Microsoft.Extensions.Azure;
     using Azure.Identity;
-    using System.Dynamic;
 
     public class Program
     {
