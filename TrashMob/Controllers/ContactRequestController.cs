@@ -22,7 +22,15 @@
             this.secretRepository = secretRepository;
         }
 
+        /// <summary>
+        /// Adds a new contact request after validating captcha.
+        /// </summary>
+        /// <param name="captchaToken">The captcha token.</param>
+        /// <param name="instance">The contact request instance.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         [HttpPost]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
         public virtual async Task<IActionResult> Add([FromQuery] string captchaToken, [FromBody] ContactRequest instance, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(captchaToken))

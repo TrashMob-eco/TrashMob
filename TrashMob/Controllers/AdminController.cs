@@ -1,6 +1,7 @@
 ﻿namespace TrashMob.Controllers
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
@@ -10,6 +11,7 @@
     using TrashMob.Security;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Poco;
 
     [Route("api/admin")]
     public class AdminController : SecureController
@@ -23,9 +25,16 @@
             this.emailManager = emailManager;
         }
 
+        /// <summary>
+        /// Updates a partner request. Admin only.
+        /// </summary>
+        /// <param name="userId">The ID of the user performing the update.</param>
+        /// <param name="partnerRequest">The partner request to update.</param>
+        /// <remarks>Returns the updated partner request.</remarks>
         [HttpPut("partnerrequestupdate/{userId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
         [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(PartnerRequest), 200)]
         public async Task<IActionResult> UpdatePartnerRequest(Guid userId, PartnerRequest partnerRequest,
             CancellationToken cancellationToken)
         {
@@ -36,9 +45,13 @@
             return Ok(result);
         }
 
+        /// <summary>
+        /// Gets a list of all email templates. Admin only.
+        /// </summary>
         [HttpGet("emailTemplates")]
         [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
         [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(IEnumerable<EmailTemplate>), 200)]
         public async Task<IActionResult> GetEmails(CancellationToken cancellationToken)
         {
             var result = await emailManager.GetEmailTemplatesAsync(cancellationToken).ConfigureAwait(false);

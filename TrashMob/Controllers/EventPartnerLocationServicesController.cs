@@ -1,12 +1,14 @@
 ﻿namespace TrashMob.Controllers
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Models;
+    using TrashMob.Models.Poco;
     using TrashMob.Security;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
@@ -33,7 +35,13 @@
             this.partnerLocationContactManager = partnerLocationContactManager;
         }
 
+        /// <summary>
+        /// Gets a list of all event partner location services for a given event.
+        /// </summary>
+        /// <param name="eventId">The event ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         [HttpGet("{eventId}")]
+        [ProducesResponseType(typeof(IEnumerable<DisplayEventPartnerLocation>), 200)]
         public async Task<IActionResult> GetEventPartnerLocationServicesByEvent(Guid eventId,
             CancellationToken cancellationToken)
         {
@@ -43,7 +51,13 @@
             return Ok(displayEventPartners);
         }
 
+        /// <summary>
+        /// Gets the hauling partner location for a given event.
+        /// </summary>
+        /// <param name="eventId">The event ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         [HttpGet("gethaulingpartnerlocation/{eventId}")]
+        [ProducesResponseType(typeof(PartnerLocation), 200)]
         public async Task<IActionResult> GetHaulingPartnerLocation(Guid eventId, CancellationToken cancellationToken)
         {
             var partnerLocation =
@@ -52,7 +66,14 @@
             return Ok(partnerLocation);
         }
 
+        /// <summary>
+        /// Gets a list of event partner location services for a specific event and partner location.
+        /// </summary>
+        /// <param name="eventId">The event ID.</param>
+        /// <param name="partnerLocationId">The partner location ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         [HttpGet("{eventId}/{partnerLocationId}")]
+        [ProducesResponseType(typeof(IEnumerable<DisplayEventPartnerLocationService>), 200)]
         public async Task<IActionResult> GetEventPartnerLocationServices(Guid eventId, Guid partnerLocationId,
             CancellationToken cancellationToken)
         {
@@ -63,8 +84,17 @@
             return Ok(displayEventPartners);
         }
 
+        /// <summary>
+        /// Updates an event partner location service. Requires write scope.
+        /// </summary>
+        /// <param name="eventPartnerLocationService">The event partner location service to update.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>The updated event partner location service.</remarks>
         [HttpPut]
         [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(EventPartnerLocationService), 200)]
+        [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(void), 404)]
         public async Task<IActionResult> UpdateEventPartnerLocationService(
             EventPartnerLocationService eventPartnerLocationService, CancellationToken cancellationToken = default)
         {
@@ -91,8 +121,19 @@
             return Ok(updatedEventPartnerLocationService);
         }
 
+        /// <summary>
+        /// Approves an event partner location service. Requires write scope.
+        /// </summary>
+        /// <param name="eventId">The event ID.</param>
+        /// <param name="partnerLocationId">The partner location ID.</param>
+        /// <param name="serviceId">The service ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>The approved event partner location service.</remarks>
         [HttpPut("accept/{eventId}/{partnerLocationId}/{serviceId}")]
         [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(EventPartnerLocationService), 200)]
+        [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(void), 404)]
         public async Task<IActionResult> ApproveEventPartnerLocationService(Guid eventId, Guid partnerLocationId,
             int serviceId, CancellationToken cancellationToken = default)
         {
@@ -133,8 +174,19 @@
             return Ok(updatedEventPartnerLocationService);
         }
 
+        /// <summary>
+        /// Declines an event partner location service. Requires write scope.
+        /// </summary>
+        /// <param name="eventId">The event ID.</param>
+        /// <param name="partnerLocationId">The partner location ID.</param>
+        /// <param name="serviceId">The service ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>The declined event partner location service.</remarks>
         [HttpPut("decline/{eventId}/{partnerLocationId}/{serviceId}")]
         [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(EventPartnerLocationService), 200)]
+        [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(void), 404)]
         public async Task<IActionResult> DeclineEventPartnerLocationService(Guid eventId, Guid partnerLocationId,
             int serviceId, CancellationToken cancellationToken = default)
         {
@@ -175,8 +227,17 @@
             return Ok(updatedEventPartnerLocationService);
         }
 
+        /// <summary>
+        /// Adds a new event partner location service. Requires write scope.
+        /// </summary>
+        /// <param name="eventPartnerLocationService">The event partner location service to add.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>Returns the newly created event partner location service.</remarks>
         [HttpPost]
         [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(EventPartnerLocationService), 200)]
+        [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(void), 404)]
         public async Task<IActionResult> AddEventPartnerLocationService(
             EventPartnerLocationService eventPartnerLocationService, CancellationToken cancellationToken)
         {
@@ -203,8 +264,19 @@
             return Ok(result);
         }
 
+        /// <summary>
+        /// Deletes an event partner location service by event, partner location, and service type. Requires write scope.
+        /// </summary>
+        /// <param name="eventId">The event ID.</param>
+        /// <param name="partnerLocationId">The partner location ID.</param>
+        /// <param name="serviceTypeId">The service type ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>Returns the number of entities deleted.</remarks>
         [HttpDelete("{eventId}/{partnerLocationId}/{serviceTypeId}")]
         [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(int), 200)]
+        [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(void), 404)]
         public async Task<IActionResult> DeleteEventPartnerLocationService(Guid eventId, Guid partnerLocationId,
             int serviceTypeId, CancellationToken cancellationToken)
         {
