@@ -490,7 +490,7 @@
           <DisplayName>Validate user input data and return loyaltyNumber claim</DisplayName>
           <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.RestfulProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
           <Metadata>
-            <Item Key="ServiceUrl">{RESTApi}/SignUpValidate</Item>
+            <Item Key="ServiceUrl">{RESTApi}/ValidateUserProfile</Item>
             <Item Key="AuthenticationType">ApiKeyHeader</Item>
             <Item Key="SendClaimsIn">Body</Item>
           </Metadata>
@@ -508,7 +508,7 @@
           <DisplayName>Validate user input data and return loyaltyNumber claim</DisplayName>
           <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.RestfulProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
           <Metadata>
-            <Item Key="ServiceUrl">{RESTApi}/SignupUser</Item>
+            <Item Key="ServiceUrl">{RESTApi}/SignUpUser</Item>
             <Item Key="AuthenticationType">ApiKeyHeader</Item>
             <Item Key="SendClaimsIn">Body</Item>
           </Metadata>

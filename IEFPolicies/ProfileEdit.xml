@@ -63,7 +63,7 @@
           <DisplayName>Delete user from db</DisplayName>
           <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.RestfulProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
           <Metadata>
-            <Item Key="ServiceUrl">{RESTApi}/UpdateUserProfileValidate</Item>
+            <Item Key="ServiceUrl">{RESTApi}/ValidateUserProfile</Item>
             <Item Key="AuthenticationType">ApiKeyHeader</Item>
             <Item Key="SendClaimsIn">Body</Item>
           </Metadata>
