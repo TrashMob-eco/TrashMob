@@ -1,7 +1,6 @@
 namespace TrashMobJobs
 {
     using System;
-    using System.Threading.Tasks;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
@@ -15,12 +14,19 @@ namespace TrashMobJobs
 
     public class Program
     {
-        public static async Task Main()
+        public static void Main(string[] args)
         {
-            var host = new HostBuilder()
-                .ConfigureAppConfiguration(c => { c.AddEnvironmentVariables(); })
-                .ConfigureFunctionsWorkerDefaults()
-                .ConfigureServices(services =>
+            CreateHostBuilder(args).Build().Run();
+        }
+
+        public static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            return Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((context, config) =>
+                {
+                    config.AddEnvironmentVariables();
+                })
+                .ConfigureServices((hostContext, services) =>
                 {
                     ServiceBuilder.AddManagers(services);
                     ServiceBuilder.AddRepositories(services);
@@ -30,13 +36,13 @@ namespace TrashMobJobs
                     Uri blobStorageUrl = new(Environment.GetEnvironmentVariable("StorageAccountUri") ??
                         throw new InvalidOperationException("The environment variable 'StorageAccountUri' is not set or is empty."));
 
-                    var environment = Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT") ??
-                        throw new InvalidOperationException("The environment variable 'AZURE_FUNCTIONS_ENVIRONMENT' is not set or is empty.");
+                    var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ??
+                        throw new InvalidOperationException("The environment variable 'ASPNETCORE_ENVIRONMENT' is not set or is empty.");
 
-                    if (environment == "Local")
+                    if (environment == "Development")
                     {
-                        string tenantId = new(Environment.GetEnvironmentVariable("TrashMobBackendTenantId") ??
-                            throw new InvalidOperationException("The environment variable 'TrashMobBackendTenantId' is not set or is empty."));
+                        string tenantId = Environment.GetEnvironmentVariable("TrashMobBackendTenantId") ??
+                            throw new InvalidOperationException("The environment variable 'TrashMobBackendTenantId' is not set or is empty.");
 
                         services.AddScoped<IKeyVaultManager, LocalKeyVaultManager>();
                         services.AddAzureClients(azureClientFactoryBuilder =>
@@ -62,10 +68,11 @@ namespace TrashMobJobs
 
                         services.AddScoped<IKeyVaultManager, KeyVaultManager>();
                     }
-                })
-                .Build();
 
-            await host.RunAsync().ConfigureAwait(false);
+                    // Register Background Services
+                    services.AddHostedService<StatGeneratorWorker>();
+                    services.AddHostedService<UserNotifierWorker>();
+                });
         }
     }
 }
