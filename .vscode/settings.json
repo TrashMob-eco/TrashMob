@@ -1,5 +1,5 @@
 {
-    "azureFunctions.deploySubpath": "TrashMobJobs/bin/Release/net7.0/publish",
+    "azureFunctions.deploySubpath": "TrashMobJobs/bin/Release/net10.0/publish",
     "azureFunctions.projectLanguage": "C#",
     "azureFunctions.projectRuntime": "~4",
     "debug.internalConsoleOptions": "neverOpen",

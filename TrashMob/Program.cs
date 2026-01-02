@@ -1,33 +1,34 @@
 namespace TrashMob
 {
-    using System;
-    using System.Text;
-    using System.Text.Json.Nodes;
-    using System.Text.Json.Serialization;
     using Azure.Extensions.AspNetCore.Configuration.Secrets;
     using Azure.Identity;
     using Azure.Security.KeyVault.Secrets;
+    using Azure.Storage.Blobs;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Hosting;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.OpenApi.Models;
-    using TrashMob.Security;
-    using TrashMob.Shared.Managers.Interfaces;
-    using TrashMob.Shared.Managers;
-    using TrashMob.Shared.Persistence;
-    using TrashMob.Shared;
-    using System.Text.Json;
+    using Microsoft.AspNetCore.HttpOverrides;
     using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Azure;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Identity.Web;
-    using Microsoft.AspNetCore.HttpOverrides;
+    using Microsoft.OpenApi;
     using NetTopologySuite.IO.Converters;
-    using Azure.Storage.Blobs;
+    using System;
+    using System.Collections.Generic;
+    using System.Text;
+    using System.Text.Json;
+    using System.Text.Json.Nodes;
+    using System.Text.Json.Serialization;
+    using TrashMob.Security;
+    using TrashMob.Shared;
+    using TrashMob.Shared.Managers;
+    using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Persistence;
 
     public class Program
     {
@@ -196,19 +197,9 @@ namespace TrashMob
                     BearerFormat = "JWT",
                     Scheme = "Bearer"
                 });
-                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
                 {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type=ReferenceType.SecurityScheme,
-                                Id="Bearer"
-                            }
-                        },
-                        Array.Empty<string>()
-                    }
+                    [new OpenApiSecuritySchemeReference("bearer", document)] = []
                 });
             });
 
