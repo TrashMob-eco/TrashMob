@@ -12,8 +12,6 @@ import { msalClient } from './store/AuthStore';
 import { Shop } from './components/Shop';
 
 import 'react-phone-input-2/lib/style.css';
-import { SiteFooter } from './components/SiteFooter';
-import { SiteHeader } from './components/SiteHeader';
 import { useLogin } from './hooks/useLogin';
 import { PartnerContactType } from './enums/PartnerContactType';
 
@@ -43,6 +41,9 @@ import { CancelEvent } from './pages/events/$eventId/delete';
 import { EditEventSummary } from './pages/eventsummary/$eventId';
 import { PickupLocationCreate } from './pages/eventsummary/$eventId/pickup-locations.create';
 import { PickupLocationEdit } from './pages/eventsummary/$eventId/pickup-locations.$locationId.edit';
+
+/** Litters */
+import { CreateLitterWithMapKey } from './pages/litters/create';
 
 /** Partners */
 import { Partnerships } from './pages/partnerships/page';
@@ -82,6 +83,8 @@ import { SiteAdminJobOpportunityEdit } from './pages/siteadmin/job-opportunities
 import { SiteAdminEmailTemplates } from './pages/siteadmin/email-templates';
 import { SiteAdminSendNotification } from './pages/siteadmin/send-notification';
 import { NoMatch } from './pages/nomatch';
+import { DefaultLayout } from './layouts/DefaultLayout';
+import { ModalLayout } from './layouts/ModalLayout';
 
 const queryClient = new QueryClient();
 
@@ -156,17 +159,14 @@ const AuthSideAdminLayout = () => {
 
 export const App: FC = () => {
     useInitializeApp();
-    const { currentUser, isUserLoaded, handleUserUpdated } = useLogin();
-
     return (
         <QueryClientProvider client={queryClient}>
             <MsalProvider instance={msalClient}>
-                <div className='flex flex-col h-100'>
+                <div className='min-h-dvh'>
                     <BrowserRouter>
                         <ScrollToTop />
-                        <SiteHeader currentUser={currentUser} isUserLoaded={isUserLoaded} />
-                        <div className='container-fluid px-0'>
-                            <Routes>
+                        <Routes>
+                            <Route element={<DefaultLayout />}>
                                 <Route element={<AuthLayout />}>
                                     <Route path='/events'>
                                         <Route path='create' element={<CreateEventWrapper />} />
@@ -268,10 +268,16 @@ export const App: FC = () => {
                                     <Route path='/volunteeropportunities' element={<VolunteerOpportunities />} />
                                     <Route path='/' element={<Home />} />
                                 </Route>
-                                <Route element={<NoMatch />} />
-                            </Routes>
-                        </div>
-                        <SiteFooter />
+                            </Route>
+                            
+                            {/* Other Layout: ie. Fullscreen page */}
+                            <Route element={<ModalLayout />}>
+                                <Route path='/litters'>
+                                    <Route path='create' element={<CreateLitterWithMapKey />} />
+                                </Route>
+                            </Route>
+                            <Route element={<NoMatch />} />
+                        </Routes>
                     </BrowserRouter>
                 </div>
             </MsalProvider>

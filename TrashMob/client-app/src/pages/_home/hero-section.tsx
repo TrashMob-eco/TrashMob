@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/Logo';
 import { useIsInViewport } from '@/hooks/useIsInViewport';
 import { cn } from '@/lib/utils';
+import { MapPin } from 'lucide-react';
 
 export const HeroSection = () => {
     const { ref: viewportRef, isInViewPort } = useIsInViewport();
@@ -37,9 +38,21 @@ export const HeroSection = () => {
                             'opacity-0 translate-y-10': !isInViewPort,
                         })}
                     >
-                        <Button size='lg' asChild>
-                            <Link to='/gettingstarted'>Join us today</Link>
-                        </Button>
+                        <div className="flex gap-4">
+                            <Button size='lg' asChild>
+                                <Link to='/gettingstarted'>Join us today</Link>
+                            </Button>
+                            <Button
+                                asChild
+                                size="lg"
+                                variant="outline"
+                                className="border-emerald-800 text-emerald-900 hover:bg-emerald-50"
+                            >
+                                <Link to="/report">
+                                    <MapPin className="mr-2 h-5 w-5" />Report trash
+                                </Link>
+                            </Button>
+                        </div>
                     </div>
                     <div
                         className={cn(
