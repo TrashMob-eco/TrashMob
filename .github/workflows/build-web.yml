@@ -22,7 +22,7 @@ jobs:
               working-directory: ./TrashMob/client-app
         steps:
             -   name: Checkout code
-                uses: actions/checkout@v4
+                uses: actions/checkout@v6
                 
             -   name: Cache dependencies
                 id: cache-npm
@@ -51,7 +51,7 @@ jobs:
               working-directory: ./TrashMob/client-app
         steps:
             -   name: Checkout code
-                uses: actions/checkout@v4
+                uses: actions/checkout@v6
                 
             -   name: Cache dependencies
                 id: cache-npm
