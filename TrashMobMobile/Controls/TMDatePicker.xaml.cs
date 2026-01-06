@@ -15,7 +15,7 @@ public partial class TMDatePicker : ContentView
 
     private void WrappedDatePicker_DateSelected(object? sender, DateChangedEventArgs e)
     {
-        Date = WrappedDatePicker.Date;
+        Date = WrappedDatePicker.Date ?? default;
     }
 
     private void DateTimePropertyChanged(DateTime newValue)
