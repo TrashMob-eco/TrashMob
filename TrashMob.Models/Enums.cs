@@ -83,4 +83,11 @@
         Cleaned = 3,
         Cancelled = 4,
     }
+
+    public enum WeightUnitEnum
+    {
+        None = 0,
+        Pound = 1,
+        Kilogram = 2,
+    }
 }

@@ -1,8 +1,8 @@
 ﻿namespace TrashMob.Shared.Persistence
 {
-    using System;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
+    using System;
     using TrashMob.Models;
     using TrashMob.Shared.Engine;
 
@@ -82,6 +82,8 @@
         public virtual DbSet<UserNotificationType> UserNotificationTypes { get; set; }
 
         public virtual DbSet<Waiver> WaiverStatuses { get; set; }
+
+        public virtual DbSet<WeightUnit> WeightUnits { get; set; }
 
         public virtual DbSet<LitterReportStatus> LitterReportStatuses { get; set; }
 
@@ -552,11 +554,19 @@
 
                 entity.Property(e => e.Notes).HasMaxLength(2048);
 
+                entity.Property(e => e.PickedWeightUnitId).HasDefaultValue(0);
+
                 entity.HasOne(d => d.Event)
                     .WithMany()
                     .HasForeignKey(d => d.EventId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_EventSummary_Events");
+
+                entity.HasOne(d => d.PickedWeightUnit)
+                    .WithMany()
+                    .HasForeignKey(d => d.PickedWeightUnitId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventSummary_PickedWeightUnits");
 
                 entity.HasOne(d => d.CreatedByUser)
                     .WithMany(p => p.EventSummariesCreated)
@@ -643,7 +653,7 @@
                         Id = 13, Name = "Social Event", Description = "Social Event", DisplayOrder = 13, IsActive = true,
                     },
                     new EventType
-                        { Id = 14, Name = "Other", Description = "Other", DisplayOrder = 16, IsActive = true },
+                    { Id = 14, Name = "Other", Description = "Other", DisplayOrder = 16, IsActive = true },
                     new EventType
                     {
                         Id = 15, Name = "Snow Removal", Description = "Snow Removal", DisplayOrder = 15, IsActive = true,
@@ -1452,7 +1462,7 @@
                     .HasConstraintName("FK_LitterImage_LastUpdatedBy");
             });
 
-            modelBuilder.Entity<LitterReport>(entity =>
+            modelBuilder.Entity<Models.LitterReport>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
@@ -1514,6 +1524,43 @@
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_EventLitterReport_LastUpdatedBy");
             });
+
+            modelBuilder.Entity<WeightUnit>(entity =>
+                {
+                    entity.Property(e => e.Id).ValueGeneratedNever();
+
+                    entity.Property(e => e.Description);
+
+                    entity.Property(e => e.Name)
+                        .IsRequired()
+                        .HasMaxLength(50);
+
+                    entity.HasData(
+                            new WeightUnit
+                            {
+                                Id = (int)WeightUnitEnum.None,
+                                Name = "None",
+                                Description = "Weight unit not set",
+                                DisplayOrder = 1,
+                                IsActive = true,
+                            },
+                            new WeightUnit
+                            {
+                                Id = (int)WeightUnitEnum.Pound,
+                                Name = "lb",
+                                Description = "Weight in Imperial Pounds",
+                                DisplayOrder = 2,
+                                IsActive = true,
+                            },
+                            new WeightUnit
+                            {
+                                Id = (int)WeightUnitEnum.Kilogram,
+                                Name = "kg",
+                                Description = "Weight in Kilograms",
+                                DisplayOrder = 3,
+                                IsActive = true,
+                            });
+                });
         }
     }
 }

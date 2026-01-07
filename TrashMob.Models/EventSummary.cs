@@ -14,8 +14,14 @@ namespace TrashMob.Models
 
         public int ActualNumberOfAttendees { get; set; }
 
+        public int PickedWeight { get; set; }
+
+        public int PickedWeightUnitId { get; set; }
+
         public string Notes { get; set; }
 
         public virtual Event Event { get; set; }
+
+        public virtual WeightUnit PickedWeightUnit { get; set; }
     }
 }
