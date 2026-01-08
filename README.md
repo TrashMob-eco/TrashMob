@@ -39,7 +39,7 @@ Fantastic! We want to build this out to be best platform on the internet! But be
 
 ## Getting Started - Development
 
-1. You must install the .NET 8 SDK
+1. You must install the .NET 10 SDK
 1. Install Visual Studio Code
 1. Connect to github and clone the repo
 1. Send your github id to info@trashmob.eco to be added as a contributor to the repository
@@ -158,7 +158,7 @@ The mobile app is written using .NET MAUI. It requires a few prerequisites in or
 1. Send your github id to info@trashmob.eco to be added as a contributor to the repository and on Azure subscription
 1. Clone Repository
 1. Download & Install [VS Code](https://code.visualstudio.com/download)
-1. Download & Install [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+1. Download & Install [.NET 10 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
 1. Install the [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-windows?tabs=azure-cli)
 1. Run `az login` command to login to Azure
 1. Navigate to TashMob/TrashMob directory and run this command to start the Web API and Client App servers. `dotnet run --environment Development`
@@ -213,7 +213,7 @@ In the Trashmob/client-app project folder, run the following command:
 Instructions to come for the `Sign In` to have access to all pages.
 
 ## To Update the Database Model
-The project uses Entity Framework Core V8 Model-First database updates.
+The project uses Entity Framework Core V10 Model-First database updates.
 
 1. Update the models / MobDbContext as needed in the repo.
 2. To create the migration, do either of the following steps
