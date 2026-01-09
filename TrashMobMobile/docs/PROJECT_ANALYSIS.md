@@ -21,6 +21,7 @@ If you want the analysis to include the broader TrashMob ecosystem (API/web/back
 - docs/analysis/platform-specific.md
 - docs/analysis/models-and-data.md
 - docs/analysis/build-and-dependencies.md
+- docs/analysis/ci-cd-pipelines.md
 - docs/analysis/open-questions.md
 
 ## How to use this documentation
