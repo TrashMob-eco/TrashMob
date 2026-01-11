@@ -17,17 +17,11 @@
 
         public async Task<X509Certificate2> GetCertificateAsync(string certificateSecretName)
         {
-            var secret = await secretClient.GetSecretAsync(certificateSecretName).ConfigureAwait(false);
-
-            if (secret == null)
-            {
-                throw new InvalidOperationException(
-                    $"Unable to find certificate with secret name {certificateSecretName}");
-            }
+            var secret = await secretClient.GetSecretAsync(certificateSecretName).ConfigureAwait(false) 
+                ?? throw new InvalidOperationException($"Unable to find certificate with secret name {certificateSecretName}");
 
             var pfxBytes = Convert.FromBase64String(secret.Value.Value);
-            return new X509Certificate2(pfxBytes, string.Empty,
-                X509KeyStorageFlags.Exportable | X509KeyStorageFlags.EphemeralKeySet);
+            return X509CertificateLoader.LoadCertificate(pfxBytes);
         }
 
         public string GetSecret(string secretName)
