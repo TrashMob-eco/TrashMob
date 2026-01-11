@@ -8,10 +8,11 @@
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaFeatures": {
-          "jsx": true
+            "jsx": true
         },
         "sourceType": "module",
         "project": "./tsconfig.json",
+        "tsconfigRootDir": ".",
         "ecmaVersion": "latest"
     },
     "plugins": [
@@ -34,9 +35,9 @@
     ],
     "rules": {
         "indent": "off",
-        "linebreak-style": ["error", "windows"],
+        "linebreak-style": "off",
         "no-use-before-define": "off",
-        "vars-on-top":"off",
+        "vars-on-top": "off",
         "max-len": "off",
         "semi": "off",
         "arrow-parens": "off",
@@ -74,7 +75,7 @@
         "no-underscore-dangle": "off",
         "no-param-reassign": "off",
         "no-plusplus": "off",
-        "no-await-in-loop":"off",
+        "no-await-in-loop": "off",
         "class-methods-use-this": "off",
         "prefer-object-spread": "off",
         "no-restricted-syntax": "off",
@@ -83,7 +84,7 @@
         "no-mixed-operators": "off",
         "arrow-body-style": "off",
         "one-var": "off",
-        "one-var-declaration-per-line": "off",        
+        "one-var-declaration-per-line": "off",
         "eqeqeq": "off",
         "radix": "off",
         "no-shadow": "off",
