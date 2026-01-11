@@ -30,6 +30,7 @@
         /// </summary>
         /// <param name="userId">The ID of the user performing the update.</param>
         /// <param name="partnerRequest">The partner request to update.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>Returns the updated partner request.</remarks>
         [HttpPut("partnerrequestupdate/{userId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]

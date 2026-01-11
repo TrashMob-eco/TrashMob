@@ -15,7 +15,7 @@
     using TrashMob.Security;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
-    
+
     [Route("api/eventlitterreports")]
     public class EventLitterReportsController(IEventLitterReportManager eventLitterReportManager, IUserManager userManager) : SecureController
     {

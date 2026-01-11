@@ -79,25 +79,15 @@
         /// Retrieves a specific user associated with a partner.
         /// </summary>
         /// <param name="partnerId">The unique identifier of the partner the user belongs to.</param>
-        /// <param name="userId">The unique identifier of the user to retrieve.
-        /// 
-        /// </param>
-        /// <param name="cancellationToken">
-        /// Token to cancel the operation.
-        /// </param>
-        /// <remarks>
-        /// The partner user if found and the caller is authorized.
-        /// </remarks>
-        /// <response code="200">
-        /// Returns the partner user.
-        /// </response>
-        /// <response code="403">
-        /// Returned when the caller is not authenticated or is not authorized to access this partner.
-        /// </response>
-        /// <response code="404">
-        /// Returned when the specified user does not exist for the given partner.
-        /// </response>
+        /// <param name="userId">The unique identifier of the user to retrieve.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="200">Returns the partner user.</response>
+        /// <response code="403">Returned when the caller is not authenticated or is not authorized to access this partner.</response>
+        /// <response code="404">Returned when the specified user does not exist for the given partner.</response>
         [HttpGet("{partnerId}/{userId}")]
+        [ProducesResponseType(typeof(PartnerAdmin), 200)]
+        [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(void), 404)]
         public async Task<IActionResult> GetPartnerUser(Guid partnerId, Guid userId,
             CancellationToken cancellationToken = default)
         {
