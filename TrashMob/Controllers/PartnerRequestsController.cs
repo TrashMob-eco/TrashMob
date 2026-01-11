@@ -5,6 +5,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using TrashMob.Models;
     using TrashMob.Security;
@@ -90,7 +91,7 @@
         /// <remarks>Returns a list of partner requests.</remarks>
         [HttpGet]
         [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
-        [ProducesResponseType(typeof(IEnumerable<PartnerRequest>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<PartnerRequest>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetPartnerRequests(CancellationToken cancellationToken)
         {
             return Ok(await partnerRequestManager.GetAsync(cancellationToken));
@@ -104,7 +105,7 @@
         /// <remarks>Returns the partner request.</remarks>
         [HttpGet("{partnerRequestId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
-        [ProducesResponseType(typeof(PartnerRequest), 200)]
+        [ProducesResponseType(typeof(PartnerRequest), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetPartnerRequest(Guid partnerRequestId, CancellationToken cancellationToken)
         {
             return Ok(await partnerRequestManager.GetAsync(partnerRequestId, cancellationToken).ConfigureAwait(false));
@@ -118,7 +119,7 @@
         /// <remarks>Returns a list of partner requests for the user.</remarks>
         [HttpGet("byuserid/{userId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
-        [ProducesResponseType(typeof(IEnumerable<PartnerRequest>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<PartnerRequest>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetPartnerRequestsByUser(Guid userId, CancellationToken cancellationToken)
         {
             return Ok(await partnerRequestManager.GetByCreatedUserIdAsync(userId, cancellationToken)

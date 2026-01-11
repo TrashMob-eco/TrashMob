@@ -6,6 +6,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Identity.Web.Resource;
@@ -28,7 +29,7 @@
         /// <param name="eventId">The event ID.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         [HttpGet("{eventId}")]
-        [ProducesResponseType(typeof(IEnumerable<EventLitterReport>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<EventLitterReport>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEventLitterReports(Guid eventId, CancellationToken cancellationToken)
         {
             var result = await eventLitterReportManager.GetByParentIdAsync(eventId, cancellationToken)
@@ -46,7 +47,7 @@
         /// <param name="litterReportId">The litter report ID.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         [HttpGet("GetByLitterReportId/{litterReportId}")]
-        [ProducesResponseType(typeof(FullEventLitterReport), 200)]
+        [ProducesResponseType(typeof(FullEventLitterReport), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEventLitterReportByLitterReportId(Guid litterReportId, CancellationToken cancellationToken)
         {
             var result = await eventLitterReportManager.GetAsync(l => l.LitterReportId == litterReportId, cancellationToken)
@@ -68,9 +69,9 @@
         /// <remarks>The updated event litter report.</remarks>
         [HttpPut]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(EventLitterReport), 200)]
-        [ProducesResponseType(typeof(void), 403)]
-        [ProducesResponseType(typeof(void), 404)]
+        [ProducesResponseType(typeof(EventLitterReport), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateEventLitterReport(EventLitterReport eventLitterReport,
             CancellationToken cancellationToken)
         {
@@ -111,7 +112,7 @@
         [HttpPost]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         public async Task<IActionResult> AddEventLitterReport(EventLitterReport eventLitterReport,
             CancellationToken cancellationToken)
         {

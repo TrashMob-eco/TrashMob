@@ -6,6 +6,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Identity.Web.Resource;
@@ -29,7 +30,7 @@
         /// </summary>
         /// <param name="cancellationToken">Cancellation token.</param>
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<Event>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<Event>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEvents(CancellationToken cancellationToken)
         {
             var result = await eventManager.GetAsync(cancellationToken).ConfigureAwait(false);
@@ -42,7 +43,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         [HttpGet]
         [Route("active")]
-        [ProducesResponseType(typeof(List<DisplayEvent>), 200)]
+        [ProducesResponseType(typeof(List<DisplayEvent>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetActiveEvents(CancellationToken cancellationToken)
         {
             var results = await eventManager.GetActiveEventsAsync(cancellationToken).ConfigureAwait(false);
@@ -64,7 +65,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         [HttpGet]
         [Route("completed")]
-        [ProducesResponseType(typeof(List<DisplayEvent>), 200)]
+        [ProducesResponseType(typeof(List<DisplayEvent>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetCompletedEvents(CancellationToken cancellationToken)
         {
             var results = await eventManager.GetCompletedEventsAsync(cancellationToken).ConfigureAwait(false);
@@ -89,7 +90,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         [HttpGet]
         [Route("notcanceled")]
-        [ProducesResponseType(typeof(List<DisplayEvent>), 200)]
+        [ProducesResponseType(typeof(List<DisplayEvent>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetNotCanceledEvents(CancellationToken cancellationToken)
         {
             var results = await eventManager.GetAsync(cancellationToken).ConfigureAwait(false);
@@ -117,7 +118,7 @@
         [Route("eventsuserisattending/{userId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobReadScope)]
-        [ProducesResponseType(typeof(IEnumerable<Event>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<Event>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEventsUserIsAttending(Guid userId, CancellationToken cancellationToken)
         {
             var result = await eventAttendeeManager
@@ -135,7 +136,7 @@
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobReadScope)]
         [Route("userevents/{userId}/{futureEventsOnly}")]
-        [ProducesResponseType(typeof(IEnumerable<Event>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<Event>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetUserEvents(Guid userId, bool futureEventsOnly,
             CancellationToken cancellationToken)
         {
@@ -158,7 +159,7 @@
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobReadScope)]
         [Route("canceleduserevents/{userId}/{futureEventsOnly}")]
-        [ProducesResponseType(typeof(IEnumerable<Event>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<Event>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetCanceledUserEvents(Guid userId, bool futureEventsOnly,
             CancellationToken cancellationToken)
         {
@@ -178,7 +179,7 @@
         /// <param name="id">The ID of the event.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(Event), 200)]
+        [ProducesResponseType(typeof(Event), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEvent(Guid id, CancellationToken cancellationToken = default)
         {
             var mobEvent = await eventManager.GetAsync(id, cancellationToken).ConfigureAwait(false);
@@ -198,7 +199,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         [HttpPost]
         [Route("filteredevents")]
-        [ProducesResponseType(typeof(IEnumerable<Event>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<Event>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetFilteredEvents([FromBody] EventFilter filter,
             CancellationToken cancellationToken)
         {
@@ -222,7 +223,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         [HttpPost]
         [Route("pageduserevents/{userId}")]
-        [ProducesResponseType(typeof(PaginatedList<Event>), 200)]
+        [ProducesResponseType(typeof(PaginatedList<Event>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetPagedUserEvents([FromBody] EventFilter filter, Guid userId, CancellationToken cancellationToken)
         {
             var result1 = await eventManager.GetUserEventsAsync(filter, userId, cancellationToken)
@@ -250,7 +251,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         [HttpPost]
         [Route("pagedfilteredevents")]
-        [ProducesResponseType(typeof(PaginatedList<Event>), 200)]
+        [ProducesResponseType(typeof(PaginatedList<Event>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetPagedFilteredEvents([FromBody] EventFilter filter,
             CancellationToken cancellationToken)
         {
@@ -280,7 +281,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         [HttpGet]
         [Route("locationsbytimerange")]
-        [ProducesResponseType(typeof(IEnumerable<Location>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<Location>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEventLocationsByTimeRange([FromQuery] DateTimeOffset? startTime,
             [FromQuery] DateTimeOffset? endTime, CancellationToken cancellationToken)
         {
@@ -298,9 +299,9 @@
         /// <remarks>Returns the updated event.</remarks>
         [HttpPut]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(Event), 200)]
-        [ProducesResponseType(typeof(void), 403)]
-        [ProducesResponseType(typeof(void), 404)]
+        [ProducesResponseType(typeof(Event), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateEvent(Event mobEvent, CancellationToken cancellationToken)
         {
             var authResult =
@@ -338,7 +339,7 @@
         [HttpPost]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(Event), 200)]
+        [ProducesResponseType(typeof(Event), StatusCodes.Status200OK)]
         public async Task<IActionResult> AddEvent(Event mobEvent, CancellationToken cancellationToken)
         {
             var newEvent = await eventManager.AddAsync(mobEvent, UserId, cancellationToken).ConfigureAwait(false);
@@ -355,8 +356,8 @@
         /// <remarks>Returns the ID of the deleted event.</remarks>
         [HttpDelete]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(Guid), 200)]
-        [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> DeleteEvent(EventCancellationRequest eventCancellationRequest,
             CancellationToken cancellationToken)
         {

@@ -6,6 +6,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Models;
@@ -27,7 +28,7 @@
         /// <param name="userId">The user ID.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         [HttpGet("{eventId}/{userId}")]
-        [ProducesResponseType(typeof(IEnumerable<EventAttendeeRoute>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<EventAttendeeRoute>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEventAttendeeRoutes(Guid eventId, Guid userId, CancellationToken cancellationToken)
         {
             var result = (await eventAttendeeRouteManager.GetByParentIdAsync(eventId, cancellationToken).ConfigureAwait(false)).Where(e => e.CreatedByUserId == userId);
@@ -42,7 +43,7 @@
         /// <param name="eventId">The event ID.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         [HttpGet("byeventid/{eventId}")]
-        [ProducesResponseType(typeof(IEnumerable<DisplayEventAttendeeRoute>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<DisplayEventAttendeeRoute>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEventAttendeeRoutesByEventId(Guid eventId, CancellationToken cancellationToken)
         {
             var result = await eventAttendeeRouteManager.GetByParentIdAsync(eventId, cancellationToken).ConfigureAwait(false);
@@ -59,7 +60,7 @@
         /// <param name="userId">The user ID.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         [HttpGet("byuserid/{userId}")]
-        [ProducesResponseType(typeof(IEnumerable<EventAttendeeRoute>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<EventAttendeeRoute>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEventAttendeeRoutesByUserId(Guid userId, CancellationToken cancellationToken)
         {
             var result = await eventAttendeeRouteManager.GetByCreatedUserIdAsync(userId, cancellationToken).ConfigureAwait(false);
@@ -75,8 +76,8 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>Returns an enumarable of event attendee routes for the route ID.</remarks>
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(IEnumerable<EventAttendeeRoute>), 200)]
-        [ProducesResponseType(typeof(void), 404)]
+        [ProducesResponseType(typeof(IEnumerable<EventAttendeeRoute>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetEventAttendeeRoute(Guid id, CancellationToken cancellationToken)
         {
             var result = await eventAttendeeRouteManager.GetAsync(x => x.Id == id, cancellationToken).ConfigureAwait(false);
@@ -98,8 +99,8 @@
         /// <remarks>The updated event attendee route.</remarks>
         [HttpPut]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(EventAttendeeRoute), 200)]
-        [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(EventAttendeeRoute), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> UpdateEventAttendeeRoute(DisplayEventAttendeeRoute displayEventAttendeeRoute,
             CancellationToken cancellationToken)
         {
@@ -128,7 +129,7 @@
         [HttpPost]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         public async Task<IActionResult> AddEventAttendeeRoute(DisplayEventAttendeeRoute displayEventAttendeeRoute,
             CancellationToken cancellationToken)
         {

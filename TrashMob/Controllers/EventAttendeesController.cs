@@ -6,6 +6,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Identity.Web.Resource;
@@ -32,7 +33,7 @@
         /// <param name="eventId">The event ID.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         [HttpGet("{eventId}")]
-        [ProducesResponseType(typeof(IEnumerable<DisplayUser>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<DisplayUser>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEventAttendees(Guid eventId, CancellationToken cancellationToken)
         {
             var result =
@@ -50,9 +51,9 @@
         /// <remarks>Returns the updated event attendee.</remarks>
         [HttpPut]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(EventAttendee), 200)]
-        [ProducesResponseType(typeof(void), 403)]
-        [ProducesResponseType(typeof(void), 404)]
+        [ProducesResponseType(typeof(EventAttendee), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateEventAttendee(EventAttendee eventAttendee,
             CancellationToken cancellationToken)
         {

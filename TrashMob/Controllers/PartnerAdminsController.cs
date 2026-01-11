@@ -48,7 +48,7 @@ namespace TrashMob.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>Returns a list of partner admins.</remarks>
         [HttpGet("{partnerId}")]
-        [ProducesResponseType(typeof(IEnumerable<PartnerAdmin>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<PartnerAdmin>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetPartnerAdmins(Guid partnerId, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
@@ -87,9 +87,9 @@ namespace TrashMob.Controllers
         /// <response code="403">Returned when the caller is not authenticated or is not authorized to access this partner.</response>
         /// <response code="404">Returned when the specified user does not exist for the given partner.</response>
         [HttpGet("{partnerId}/{userId}")]
-        [ProducesResponseType(typeof(PartnerAdmin), 200)]
-        [ProducesResponseType(typeof(void), 403)]
-        [ProducesResponseType(typeof(void), 404)]
+        [ProducesResponseType(typeof(PartnerAdmin), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetPartnerUser(Guid partnerId, Guid userId,
             CancellationToken cancellationToken = default)
         {

@@ -5,6 +5,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Models;
@@ -35,7 +36,7 @@
         [HttpPut("partnerrequestupdate/{userId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(PartnerRequest), 200)]
+        [ProducesResponseType(typeof(PartnerRequest), StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdatePartnerRequest(Guid userId, PartnerRequest partnerRequest,
             CancellationToken cancellationToken)
         {
@@ -52,7 +53,7 @@
         [HttpGet("emailTemplates")]
         [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(IEnumerable<EmailTemplate>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<EmailTemplate>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEmails(CancellationToken cancellationToken)
         {
             var result = await emailManager.GetEmailTemplatesAsync(cancellationToken).ConfigureAwait(false);

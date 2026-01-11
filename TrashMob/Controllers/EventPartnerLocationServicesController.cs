@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Models;
@@ -41,7 +42,7 @@
         /// <param name="eventId">The event ID.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         [HttpGet("{eventId}")]
-        [ProducesResponseType(typeof(IEnumerable<DisplayEventPartnerLocation>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<DisplayEventPartnerLocation>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEventPartnerLocationServicesByEvent(Guid eventId,
             CancellationToken cancellationToken)
         {
@@ -57,7 +58,7 @@
         /// <param name="eventId">The event ID.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         [HttpGet("gethaulingpartnerlocation/{eventId}")]
-        [ProducesResponseType(typeof(PartnerLocation), 200)]
+        [ProducesResponseType(typeof(PartnerLocation), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetHaulingPartnerLocation(Guid eventId, CancellationToken cancellationToken)
         {
             var partnerLocation =
@@ -73,7 +74,7 @@
         /// <param name="partnerLocationId">The partner location ID.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         [HttpGet("{eventId}/{partnerLocationId}")]
-        [ProducesResponseType(typeof(IEnumerable<DisplayEventPartnerLocationService>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<DisplayEventPartnerLocationService>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEventPartnerLocationServices(Guid eventId, Guid partnerLocationId,
             CancellationToken cancellationToken)
         {
@@ -92,9 +93,9 @@
         /// <remarks>The updated event partner location service.</remarks>
         [HttpPut]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(EventPartnerLocationService), 200)]
-        [ProducesResponseType(typeof(void), 403)]
-        [ProducesResponseType(typeof(void), 404)]
+        [ProducesResponseType(typeof(EventPartnerLocationService), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateEventPartnerLocationService(
             EventPartnerLocationService eventPartnerLocationService, CancellationToken cancellationToken = default)
         {
@@ -131,9 +132,9 @@
         /// <remarks>The approved event partner location service.</remarks>
         [HttpPut("accept/{eventId}/{partnerLocationId}/{serviceId}")]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(EventPartnerLocationService), 200)]
-        [ProducesResponseType(typeof(void), 403)]
-        [ProducesResponseType(typeof(void), 404)]
+        [ProducesResponseType(typeof(EventPartnerLocationService), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ApproveEventPartnerLocationService(Guid eventId, Guid partnerLocationId,
             int serviceId, CancellationToken cancellationToken = default)
         {
@@ -184,9 +185,9 @@
         /// <remarks>The declined event partner location service.</remarks>
         [HttpPut("decline/{eventId}/{partnerLocationId}/{serviceId}")]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(EventPartnerLocationService), 200)]
-        [ProducesResponseType(typeof(void), 403)]
-        [ProducesResponseType(typeof(void), 404)]
+        [ProducesResponseType(typeof(EventPartnerLocationService), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeclineEventPartnerLocationService(Guid eventId, Guid partnerLocationId,
             int serviceId, CancellationToken cancellationToken = default)
         {
@@ -235,9 +236,9 @@
         /// <remarks>Returns the newly created event partner location service.</remarks>
         [HttpPost]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(EventPartnerLocationService), 200)]
-        [ProducesResponseType(typeof(void), 403)]
-        [ProducesResponseType(typeof(void), 404)]
+        [ProducesResponseType(typeof(EventPartnerLocationService), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> AddEventPartnerLocationService(
             EventPartnerLocationService eventPartnerLocationService, CancellationToken cancellationToken)
         {
@@ -274,9 +275,9 @@
         /// <remarks>Returns the number of entities deleted.</remarks>
         [HttpDelete("{eventId}/{partnerLocationId}/{serviceTypeId}")]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(int), 200)]
-        [ProducesResponseType(typeof(void), 403)]
-        [ProducesResponseType(typeof(void), 404)]
+        [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteEventPartnerLocationService(Guid eventId, Guid partnerLocationId,
             int serviceTypeId, CancellationToken cancellationToken)
         {
