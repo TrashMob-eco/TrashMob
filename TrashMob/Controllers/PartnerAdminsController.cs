@@ -13,6 +13,9 @@
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Poco;
 
+    /// <summary>
+    /// Controller for managing partner admins, including retrieval and assignment.
+    /// </summary>
     [Authorize]
     [Route("api/partneradmins")]
     public class PartnerAdminsController : SecureController
@@ -21,6 +24,12 @@
         private readonly IKeyedManager<Partner> partnerManager;
         private readonly IKeyedManager<User> userManager;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PartnerAdminsController"/> class.
+        /// </summary>
+        /// <param name="userManager">The user manager.</param>
+        /// <param name="partnerAdminManager">The partner admin manager.</param>
+        /// <param name="partnerManager">The partner manager.</param>
         public PartnerAdminsController(IKeyedManager<User> userManager,
             IPartnerAdminManager partnerAdminManager,
             IKeyedManager<Partner> partnerManager)
@@ -30,7 +39,14 @@
             this.partnerAdminManager = partnerAdminManager;
         }
 
+        /// <summary>
+        /// Gets all partner admins for a given partner.
+        /// </summary>
+        /// <param name="partnerId">The partner ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>Returns a list of partner admins.</remarks>
         [HttpGet("{partnerId}")]
+        [ProducesResponseType(typeof(IEnumerable<PartnerAdmin>), 200)]
         public async Task<IActionResult> GetPartnerAdmins(Guid partnerId, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
@@ -45,6 +61,12 @@
             return Ok(await partnerAdminManager.GetAdminsForPartnerAsync(partnerId, cancellationToken));
         }
 
+        /// <summary>
+        /// Gets all partners for a given user. Requires a valid user.
+        /// </summary>
+        /// <param name="userId">The user ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>List of partners for the user.</remarks>
         [HttpGet("getpartnersforuser/{userId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> GetPartnersForUser(Guid userId, CancellationToken cancellationToken)
@@ -53,6 +75,28 @@
             return Ok(partners);
         }
 
+        /// <summary>
+        /// Retrieves a specific user associated with a partner.
+        /// </summary>
+        /// <param name="partnerId">The unique identifier of the partner the user belongs to.</param>
+        /// <param name="userId">The unique identifier of the user to retrieve.
+        /// 
+        /// </param>
+        /// <param name="cancellationToken">
+        /// Token to cancel the operation.
+        /// </param>
+        /// <remarks>
+        /// The partner user if found and the caller is authorized.
+        /// </remarks>
+        /// <response code="200">
+        /// Returns the partner user.
+        /// </response>
+        /// <response code="403">
+        /// Returned when the caller is not authenticated or is not authorized to access this partner.
+        /// </response>
+        /// <response code="404">
+        /// Returned when the specified user does not exist for the given partner.
+        /// </response>
         [HttpGet("{partnerId}/{userId}")]
         public async Task<IActionResult> GetPartnerUser(Guid partnerId, Guid userId,
             CancellationToken cancellationToken = default)
@@ -108,7 +152,15 @@
             return Ok(users);
         }
 
+        /// <summary>
+        /// Adds a user as a partner admin.
+        /// </summary>
+        /// <param name="partnerId">The partner ID.</param>
+        /// <param name="userId">The user ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>Returns the created partner admin.</remarks>
         [HttpPost("{partnerId}/{userId}")]
+        [ProducesResponseType(typeof(PartnerAdmin), 201)]
         public async Task<IActionResult> AddPartnerUser(Guid partnerId, Guid userId,
             CancellationToken cancellationToken)
         {

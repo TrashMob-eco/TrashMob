@@ -13,9 +13,17 @@
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
 
+    /// <summary>
+    /// Controller for managing users, including retrieval, update, and deletion operations.
+    /// </summary>
     [Route("api/users")]
     public class UsersController(IUserManager userManager) : SecureController
     {
+        /// <summary>
+        /// Retrieves all users. Admin access required.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>List of all users.</remarks>
         [HttpGet]
         [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
         public async Task<IActionResult> GetUsers(CancellationToken cancellationToken)
@@ -24,6 +32,12 @@
             return Ok(result);
         }
 
+        /// <summary>
+        /// Retrieves a user by their username.
+        /// </summary>
+        /// <param name="userName">The username of the user.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>User details if found.</remarks>
         [HttpGet("getuserbyusername/{userName}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> GetUser(string userName, CancellationToken cancellationToken)
@@ -38,6 +52,12 @@
             return Ok(user);
         }
 
+        /// <summary>
+        /// Retrieves a user by their email address.
+        /// </summary>
+        /// <param name="email">The email address of the user.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>User details if found.</remarks>
         [HttpGet("getuserbyemail/{email}")]
         [Authorize(Policy = "ValidUser")]
         public async Task<IActionResult> GetUserByEmail(string email, CancellationToken cancellationToken)
@@ -52,6 +72,13 @@
             return Ok(user);
         }
 
+        /// <summary>
+        /// Verifies the uniqueness of a username for a given user ID.
+        /// </summary>
+        /// <param name="userId">The ID of the user.</param>
+        /// <param name="userName">The username to check.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>Conflict if the username is taken by another user, otherwise OK.</remarks>
         [HttpGet("verifyunique/{userId}/{userName}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> VerifyUnique(Guid userId, string userName, CancellationToken cancellationToken)
@@ -71,6 +98,12 @@
             return Ok();
         }
 
+        /// <summary>
+        /// Retrieves a user by their internal ID.
+        /// </summary>
+        /// <param name="id">The internal ID of the user.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>User details if found.</remarks>
         [HttpGet("{id}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> GetUserByInternalId(Guid id, CancellationToken cancellationToken = default)
@@ -87,6 +120,12 @@
 
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        /// <summary>
+        /// Updates a user's details.
+        /// </summary>
+        /// <param name="user">The user object with updated details.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>Updated user details.</remarks>
         [HttpPut]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> PutUser(User user, CancellationToken cancellationToken)
@@ -108,6 +147,12 @@
             }
         }
 
+        /// <summary>
+        /// Deletes a user by their ID.
+        /// </summary>
+        /// <param name="id">The ID of the user to delete.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>The ID of the deleted user.</remarks>
         [HttpDelete("{id}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]

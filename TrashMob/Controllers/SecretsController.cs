@@ -7,16 +7,28 @@
     using TrashMob.Security;
     using TrashMob.Shared.Persistence.Interfaces;
 
+    /// <summary>
+    /// Controller for managing application secrets.
+    /// </summary>
     [Route("api/secrets")]
     public class SecretsController : SecureController
     {
         private readonly ISecretRepository secretRepository;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SecretsController"/> class.
+        /// </summary>
+        /// <param name="secretRepository">The secret repository.</param>
         public SecretsController(ISecretRepository secretRepository)
         {
             this.secretRepository = secretRepository;
         }
 
+        /// <summary>
+        /// Gets a secret by name. Requires a valid user.
+        /// </summary>
+        /// <param name="name">The name of the secret.</param>
+        /// <remarks>The secret value.</remarks>
         [HttpGet]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [Route("{name}")]
