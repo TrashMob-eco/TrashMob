@@ -3,6 +3,7 @@
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using TrashMob.Common;
     using TrashMob.Models;
@@ -22,7 +23,15 @@
             this.secretRepository = secretRepository;
         }
 
+        /// <summary>
+        /// Adds a new contact request after validating captcha.
+        /// </summary>
+        /// <param name="captchaToken">The captcha token.</param>
+        /// <param name="instance">The contact request instance.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         [HttpPost]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), 400)]
         public virtual async Task<IActionResult> Add([FromQuery] string captchaToken, [FromBody] ContactRequest instance, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(captchaToken))

@@ -30,6 +30,9 @@
         Task<PartnerLocation> GetHaulingPartnerLocationForEvent(Guid eventId,
             CancellationToken cancellationToken = default);
 
+        /// <summary>
+        /// Returns the number of entities deleted
+        /// </summary>
         Task<int> DeleteAsync(Guid eventId, Guid partnerLocationId, int serviceTypeId,
             CancellationToken cancellationToken = default);
     }
