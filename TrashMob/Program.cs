@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
@@ -19,6 +20,8 @@ using Microsoft.Identity.Web;
 using Microsoft.OpenApi;
 using NetTopologySuite.IO.Converters;
 using System;
+using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -200,6 +203,21 @@ public class Program
             {
                 [new OpenApiSecuritySchemeReference("bearer", document)] = []
             });
+            
+            // Ensure documentation can be read by Swagger 
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies()
+                .Where(a => !a.IsDynamic);
+
+            foreach (var assembly in assemblies)
+            {
+                var xmlFile = $"{assembly.GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+
+                if (File.Exists(xmlPath))
+                {
+                    options.IncludeXmlComments(xmlPath);
+                }
+            }
         });
 
         var app = builder.Build();
