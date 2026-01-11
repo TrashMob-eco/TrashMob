@@ -49,6 +49,7 @@
             services.AddScoped<IKeyedManager<NonEventUserNotification>, KeyedManager<NonEventUserNotification>>();
             services.AddScoped<IKeyedManager<User>, UserManager>();
             services.AddScoped<IKeyedManager<UserNotification>, UserNotificationManager>();
+            services.AddScoped<ILookupManager<WeightUnit>, LookupManager<WeightUnit>>();
             services.AddScoped<IKeyedManager<LitterReport>, LitterReportManager>();
             services.AddScoped<IKeyedManager<LitterImage>, LitterImageManager>();
 
@@ -132,6 +133,7 @@
             services.AddScoped<IKeyedRepository<User>, KeyedRepository<User>>();
             services.AddScoped<IKeyedRepository<UserNotification>, KeyedRepository<UserNotification>>();
             services.AddScoped<IKeyedRepository<Waiver>, KeyedRepository<Waiver>>();
+            services.AddScoped<ILookupRepository<WeightUnit>, LookupRepository<WeightUnit>>();
 
             return services;
         }
