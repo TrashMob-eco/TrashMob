@@ -1,4 +1,6 @@
-﻿namespace TrashMob.Controllers
+﻿using Microsoft.AspNetCore.Http;
+
+namespace TrashMob.Controllers
 {
     using System;
     using System.Collections.Generic;
@@ -112,7 +114,20 @@
             return Ok(partnerUser);
         }
 
+        /// <summary>
+        /// Retrieves the list of users associated with a partner.
+        /// </summary>
+        /// <param name="partnerId">The unique identifier of the partner whose users are being requested.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <response code="200">Returns the list of users associated with the partner.</response>
+        /// <response code="401">The request was made by an unauthenticated user.</response>
+        /// <response code="403">The authenticated user is not authorized to access users for the specified partner.</response>
+        /// <response code="404">No users were found for the specified partner.</response>
         [HttpGet("users/{partnerId}")]
+        [ProducesResponseType(typeof(IEnumerable<DisplayUser>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetUsers(Guid partnerId, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
