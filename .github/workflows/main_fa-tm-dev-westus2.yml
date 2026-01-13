@@ -47,12 +47,12 @@ jobs:
         uses: gittools/actions/gitversion/execute@v3.1.11
 
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
       
       - name: Setup .NET Core (for inproc extensions)
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: ${{ env.DOTNET_CORE_VERSION_INPROC }}
 
