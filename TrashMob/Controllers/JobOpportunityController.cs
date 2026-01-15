@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.ApplicationInsights;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TrashMob.Models;
 using TrashMob.Security;
@@ -12,15 +16,49 @@ namespace TrashMob.Controllers;
 /// Controller for managing job opportunities, including CRUD operations.
 /// </summary>
 [Route("api/jobopportunities")]
-public class JobOpportunitiesController : KeyedController<JobOpportunity>
+[ApiController]
+public class JobOpportunitiesController : ControllerBase
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="JobOpportunitiesController"/> class.
-    /// </summary>
-    /// <param name="jobOpportunityManager">The job opportunity manager.</param>
-    public JobOpportunitiesController(IKeyedManager<JobOpportunity> jobOpportunityManager)
-        : base(jobOpportunityManager)
+    private readonly IAuthorizationService authorizationService;
+    private readonly IJobManager jobManager;
+    private readonly TelemetryClient telemetryClient;
+    
+    private Guid UserId
     {
+        get
+        {
+            if (HttpContext.Items.TryGetValue("UserId", out var value) &&
+                value is Guid userId)
+            {
+                return userId;
+            }
+
+            return Guid.Empty;
+        }
+    }
+
+    public JobOpportunitiesController(
+        IAuthorizationService authorizationService,
+        IJobManager jobManager,
+        TelemetryClient telemetryClient
+        )
+    {
+        this.authorizationService = authorizationService;
+        this.jobManager = jobManager;
+        this.telemetryClient = telemetryClient;
+    }
+    
+    /// <summary>
+    /// Gets a list of all job opportunities.
+    /// </summary>
+    /// <param name="isActive">When true, only return active jobs</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<JobOpportunity>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetJobsAsync([FromQuery] bool isActive, CancellationToken cancellationToken)
+    {
+        var result = await jobManager.GetJobsAsync(isActive, cancellationToken).ConfigureAwait(false);
+        return Ok(result);
     }
 
     /// <summary>
@@ -32,7 +70,7 @@ public class JobOpportunitiesController : KeyedController<JobOpportunity>
     [HttpGet("{jobOpportunityId}")]
     public async Task<IActionResult> Get(Guid jobOpportunityId, CancellationToken cancellationToken)
     {
-        return Ok(await Manager.GetAsync(jobOpportunityId, cancellationToken).ConfigureAwait(false));
+        return Ok(await jobManager.GetAsync(jobOpportunityId, cancellationToken).ConfigureAwait(false));
     }
 
     /// <summary>
@@ -44,7 +82,7 @@ public class JobOpportunitiesController : KeyedController<JobOpportunity>
     [HttpPut]
     public async Task<IActionResult> Update(JobOpportunity jobOpportunity, CancellationToken cancellationToken)
     {
-        var authResult = await AuthorizationService.AuthorizeAsync(User, jobOpportunity,
+        var authResult = await authorizationService.AuthorizeAsync(User, jobOpportunity,
             AuthorizationPolicyConstants.UserIsAdmin);
 
         if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
@@ -52,8 +90,8 @@ public class JobOpportunitiesController : KeyedController<JobOpportunity>
             return Forbid();
         }
 
-        var result = await Manager.UpdateAsync(jobOpportunity, UserId, cancellationToken).ConfigureAwait(false);
-        TelemetryClient.TrackEvent(nameof(Update) + typeof(JobOpportunity));
+        var result = await jobManager.UpdateAsync(jobOpportunity, UserId, cancellationToken).ConfigureAwait(false);
+        telemetryClient.TrackEvent(nameof(Update) + typeof(JobOpportunity));
 
         return Ok(result);
     }
@@ -65,9 +103,9 @@ public class JobOpportunitiesController : KeyedController<JobOpportunity>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <remarks>The newly created job opportunity.</remarks>
     [HttpPost]
-    public override async Task<IActionResult> Add(JobOpportunity jobOpportunity, CancellationToken cancellationToken)
+    public async Task<IActionResult> Add(JobOpportunity jobOpportunity, CancellationToken cancellationToken)
     {
-        var authResult = await AuthorizationService.AuthorizeAsync(User, jobOpportunity,
+        var authResult = await authorizationService.AuthorizeAsync(User, jobOpportunity,
             AuthorizationPolicyConstants.UserIsAdmin);
 
         if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
@@ -75,8 +113,8 @@ public class JobOpportunitiesController : KeyedController<JobOpportunity>
             return Forbid();
         }
 
-        var result = await Manager.AddAsync(jobOpportunity, UserId, cancellationToken).ConfigureAwait(false);
-        TelemetryClient.TrackEvent(nameof(Add) + typeof(JobOpportunity));
+        var result = await jobManager.AddAsync(jobOpportunity, UserId, cancellationToken).ConfigureAwait(false);
+        telemetryClient.TrackEvent(nameof(Add) + typeof(JobOpportunity));
 
         return Ok(result);
     }
@@ -88,9 +126,9 @@ public class JobOpportunitiesController : KeyedController<JobOpportunity>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <remarks>The result of the delete operation.</remarks>
     [HttpDelete("{jobOpportunityId}")]
-    public override async Task<IActionResult> Delete(Guid jobOpportunityId, CancellationToken cancellationToken)
+    public async Task<IActionResult> Delete(Guid jobOpportunityId, CancellationToken cancellationToken)
     {
-        var authResult = await AuthorizationService.AuthorizeAsync(User, jobOpportunityId,
+        var authResult = await authorizationService.AuthorizeAsync(User, jobOpportunityId,
             AuthorizationPolicyConstants.UserIsAdmin);
 
         if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
@@ -98,8 +136,8 @@ public class JobOpportunitiesController : KeyedController<JobOpportunity>
             return Forbid();
         }
 
-        var result = await Manager.DeleteAsync(jobOpportunityId, cancellationToken).ConfigureAwait(false);
-        TelemetryClient.TrackEvent(nameof(Add) + typeof(JobOpportunity));
+        var result = await jobManager.DeleteAsync(jobOpportunityId, cancellationToken).ConfigureAwait(false);
+        telemetryClient.TrackEvent(nameof(Add) + typeof(JobOpportunity));
 
         return Ok(result);
     }
