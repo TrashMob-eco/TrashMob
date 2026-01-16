@@ -48,6 +48,10 @@
                               eventSummaries.Sum(es => es.NumberOfBuckets) / 3;
             stats.TotalHours = eventSummaries.Sum(es => es.DurationInMinutes * es.ActualNumberOfAttendees / 60);
             stats.TotalParticipants = eventSummaries.Sum(es => es.ActualNumberOfAttendees);
+            stats.TotalWeightInPounds = eventSummaries.Where(e => e.PickedWeightUnitId == (int)WeightUnitEnum.Pound).Sum(e => e.PickedWeight) +
+                                       eventSummaries.Where(e => e.PickedWeightUnitId == (int)WeightUnitEnum.Kilogram).Sum(e => (int)(e.PickedWeight * 2.20462));
+            stats.TotalWeightInKilograms = eventSummaries.Where(e => e.PickedWeightUnitId == (int)WeightUnitEnum.Kilogram).Sum(e => e.PickedWeight) +
+                                         eventSummaries.Where(e => e.PickedWeightUnitId == (int)WeightUnitEnum.Pound).Sum(e => (int)(e.PickedWeight * 0.453592));
 
             var litterReports = await litterReportManager.GetAsync(cancellationToken);
             stats.TotalLitterReportsClosed = litterReports.Count(lr => lr.LitterReportStatusId == (int)LitterReportStatusEnum.Cleaned);
@@ -73,6 +77,10 @@
             stats.TotalBags = eventSummaries.Sum(es => es.NumberOfBags) +
                               eventSummaries.Sum(es => es.NumberOfBuckets) / 3;
             stats.TotalHours = eventSummaries.Sum(es => es.DurationInMinutes) / 60;
+            stats.TotalWeightInPounds = eventSummaries.Where(e => e.PickedWeightUnitId == (int)WeightUnitEnum.Pound).Sum(e => e.PickedWeight) +
+                                       eventSummaries.Where(e => e.PickedWeightUnitId == (int)WeightUnitEnum.Kilogram).Sum(e => (int)(e.PickedWeight * 2.20462));
+            stats.TotalWeightInKilograms = eventSummaries.Where(e => e.PickedWeightUnitId == (int)WeightUnitEnum.Kilogram).Sum(e => e.PickedWeight) +
+                                         eventSummaries.Where(e => e.PickedWeightUnitId == (int)WeightUnitEnum.Pound).Sum(e => (int)(e.PickedWeight * 0.453592));
             var litterReports = await litterReportManager.GetAsync(cancellationToken);
             var eventLitterReports = await eventLitterReportManager.GetAsync(cancellationToken);
 
