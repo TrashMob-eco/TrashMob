@@ -99,6 +99,8 @@ export const EventSummaryNumberOfBags =
 export const EventSummaryNumberOfBuckets =
     'If you were dumping buckets of trash into dumpsters, how many buckets did you gather?';
 export const EventSummaryDurationInMinutes = 'How long did the event last in minutes';
+export const EventSummaryPickedWeight = 'ALERT! please generate proper tooltip';
+export const EventSummaryPickedWeightUnit = 'Get a proper tooltip';
 export const EventSummaryNotes =
     'Record any notes about what went well or what could have gone better, or reminders for the next time at this location.';
 export const EventCancellationReason =
@@ -168,3 +170,4 @@ export const JobOpportunityTitle = 'Enter Job title';
 export const JobOpportunityTagLine = 'Enter Job tag line';
 export const JobOpportunityFullDescription = 'Enter Job description';
 export const JobOpportunityIsActive = 'Whether or not this job will be active';
+

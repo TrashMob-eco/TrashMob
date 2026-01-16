@@ -35,12 +35,16 @@ import { useToast } from '@/hooks/use-toast';
 import EventSummaryData from '@/components/Models/EventSummaryData';
 import { useLogin } from '@/hooks/useLogin';
 import { CreateEventSummary, GetEventSummaryById, UpdateEventSummary } from '@/services/events';
+import { GetWeightUnits } from '../../../services/weight-units';
+import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const upsertEventSummarySchema = z.object({
     actualNumberOfAttendees: z.number(),
     durationInMinutes: z.number(),
     numberOfBags: z.number(),
     numberOfBuckets: z.number(),
+    pickedWeight: z.number(),
+    pickedWeightUnitId: z.number(),
     notes: z.string(),
     createdByUserId: z.string(),
 });
@@ -55,6 +59,12 @@ export const EditEventSummary = () => {
     const { data: eventSummary } = useQuery({
         queryKey: GetEventSummaryById({ eventId }).key,
         queryFn: GetEventSummaryById({ eventId }).service,
+        select: (res) => res.data,
+    });
+
+    const { data: weightUnits } = useQuery({
+        queryKey: GetWeightUnits().key,
+        queryFn: GetWeightUnits().service,
         select: (res) => res.data,
     });
 
@@ -161,6 +171,9 @@ export const EditEventSummary = () => {
                 durationInMinutes: eventSummary?.durationInMinutes ?? event.durationHours * 60 + event.durationMinutes,
                 numberOfBags: eventSummary?.numberOfBags ?? 0,
                 numberOfBuckets: eventSummary?.numberOfBuckets ?? 0,
+                pickedWeight: eventSummary?.pickedWeight ?? 0,
+                //weightUnitId: 
+                weightUnits: weightUnits,
                 notes: eventSummary?.notes ?? '',
                 createdByUserId: eventSummary?.createdByUserId ?? Guid.EMPTY,
             });
@@ -174,6 +187,7 @@ export const EditEventSummary = () => {
         body.numberOfBags = formValues.numberOfBags;
         body.numberOfBuckets = formValues.numberOfBuckets;
         body.durationInMinutes = formValues.durationInMinutes;
+        body.pickedWeight = formValues.pickedWeight;
         body.notes = formValues.notes ?? '';
         body.createdByUserId = currentUser.id;
         body.createdDate = new Date();
@@ -303,6 +317,50 @@ export const EditEventSummary = () => {
                                                         disabled={!isOwner}
                                                         onChange={(e) => field.onChange(e.target.valueAsNumber)}
                                                     />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name='pickedWeight'
+                                        render={({ field }) => (
+                                            <FormItem className='col-span-12 sm:col-span-6'>
+                                                <FormLabel tooltip={ToolTips.EventSummaryPickedWeight}>
+                                                    Picked Weight
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        {...field}
+                                                        type='number'
+                                                        disabled={!isOwner}
+                                                        onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name='pickedWeightUnitId'
+                                        render={({ field }) => (
+                                            <FormItem className='col-span-12 sm:col-span-6'>
+                                                <FormLabel tooltip={ToolTips.EventSummaryPickedWeightUnit}>Weight Unit</FormLabel>
+                                                <FormControl>
+                                                    <Select value='0' onValueChange={field.onChange} disabled={!isOwner}>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder='Weigth Unit' />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {(weightUnits || []).map((type) => (
+                                                                <SelectItem key={type.id} value={`${type.id}`}>
+                                                                    {type.name}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
