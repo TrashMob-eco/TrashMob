@@ -18,7 +18,7 @@ Creates an Azure Container Registry to store Docker images.
 
 **Parameters:**
 - `region` - Azure region
-- `containerRegistryName` - Name of the registry (e.g., acrtmldevwestus2)
+- `containerRegistryName` - Name of the registry (e.g., acrtmdevwestus2)
 - `environment` - Environment tag (dev, staging, prod)
 
 ### 2. containerAppsEnvironment.bicep
@@ -38,7 +38,7 @@ Deploys the TrashMob web application as a Container App.
 - `containerAppName` - Name of the container app
 - `containerAppsEnvironmentId` - Resource ID of the Container Apps Environment
 - `containerRegistryName` - ACR name
-- `containerImage` - Full image name (e.g., acrtmldevwestus2.azurecr.io/trashmob:latest)
+- `containerImage` - Full image name (e.g., acrtmdevwestus2.azurecr.io/trashmob:latest)
 - `keyVaultName` - Key Vault name for secrets
 - `environment` - Environment tag
 - `minReplicas` - Minimum number of replicas (default: 1)
