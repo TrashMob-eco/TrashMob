@@ -87,7 +87,7 @@ jobs:
               storageAccountName=${{ env.STORAGE_ACCOUNT_NAME }} \
               region=${{ env.REGION }} \
               environment=pr \
-              cronExpression='0 0 */6 * * *'
+              cronExpression='0 */6 * * *'
 
       - name: Grant Permissions to Container App Job
         run: |
