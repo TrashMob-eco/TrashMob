@@ -8,6 +8,10 @@
 
         public int TotalEvents { get; set; }
 
+        public int TotalWeightInPounds { get; set; }
+
+        public int TotalWeightInKilograms { get; set; }
+
         public int TotalParticipants { get; set; }
 
         public int TotalLitterReportsSubmitted { get; set; }
