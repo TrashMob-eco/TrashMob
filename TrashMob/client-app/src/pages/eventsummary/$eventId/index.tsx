@@ -172,7 +172,6 @@ export const EditEventSummary = () => {
                 numberOfBags: eventSummary?.numberOfBags ?? 0,
                 numberOfBuckets: eventSummary?.numberOfBuckets ?? 0,
                 pickedWeight: eventSummary?.pickedWeight ?? 0,
-                //weightUnitId: 
                 weightUnits: weightUnits,
                 notes: eventSummary?.notes ?? '',
                 createdByUserId: eventSummary?.createdByUserId ?? Guid.EMPTY,
