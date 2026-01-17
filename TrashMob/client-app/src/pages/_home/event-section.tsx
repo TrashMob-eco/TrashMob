@@ -12,7 +12,7 @@ import { useQuery } from '@tanstack/react-query';
 import { GetFilteredEvents, GetFilteredEvents_Params } from '@/services/events';
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItemAlt, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { List, Map, Plus, Pencil } from 'lucide-react';
+import { List, Map, Plus, Pencil, MessageSquareWarningIcon } from 'lucide-react';
 import { useGetDefaultMapCenter } from '@/hooks/useGetDefaultMapCenter';
 import { AzureMapSearchAddressReverse } from '@/services/maps';
 import { GetAllEventsBeingAttendedByUser } from '@/services/events';
@@ -163,10 +163,15 @@ export const EventSection = (props: EventSectionProps) => {
                                 onSelectLocation={handleSelectSearchLocation}
                             />
                         </div>
-                        <div className='grow flex justify-end'>
+                        <div className='grow flex justify-end gap-4'>
                             <Button asChild className='md:flex'>
                                 <Link to='/events/create'>
                                     <Plus /> Create Event
+                                </Link>
+                            </Button>
+                            <Button asChild variant="outline" className='flex md:hidden xl:flex border-emerald-800 text-emerald-900 hover:bg-emerald-50'>
+                                <Link to='/litters/create'>
+                                    <MessageSquareWarningIcon /> Report litter
                                 </Link>
                             </Button>
                         </div>
