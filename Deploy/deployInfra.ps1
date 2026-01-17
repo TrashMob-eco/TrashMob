@@ -35,7 +35,21 @@ az deployment group create --template-file ".\azureMaps.bicep" -g $rgName --para
 az deployment group create --template-file ".\storageAccount.bicep" -g $rgName --parameters storageAccountName=$storageAccountName region=$region
 az deployment group create --template-file ".\sqlServer.bicep" -g $rgName --parameters environment=$environment region=$region sqlAdminPassword=$sqlAdminPassword
 az deployment group create --template-file ".\sqlDatabase.bicep" -g $rgName --parameters environment=$environment region=$region
-az deployment group create --template-file ".\keyVault.bicep" -g $rgName --parameters environment=$environment region=$region
+
+# Get existing Key Vault access policies to preserve them during deployment
+Write-Host "Checking for existing Key Vault access policies..." -ForegroundColor Yellow
+$existingPolicies = az keyvault show --name $keyVaultName --resource-group $rgName --query "properties.accessPolicies" 2>$null
+if ($existingPolicies) {
+    Write-Host "Found existing access policies. Preserving them during deployment." -ForegroundColor Green
+    # Save to temporary file to pass as parameter
+    $existingPolicies | Out-File -FilePath ".\temp_policies.json" -Encoding UTF8
+    az deployment group create --template-file ".\keyVault.bicep" -g $rgName --parameters environment=$environment region=$region accessPolicies="@temp_policies.json"
+    Remove-Item ".\temp_policies.json" -ErrorAction SilentlyContinue
+} else {
+    Write-Host "No existing Key Vault found or no access policies. Creating new Key Vault." -ForegroundColor Yellow
+    az deployment group create --template-file ".\keyVault.bicep" -g $rgName --parameters environment=$environment region=$region
+}
+
 az deployment group create --template-file ".\appServicePlan.bicep" -g $rgName --parameters appServicePlanName=$appServicePlanName region=$region
 az deployment group create --template-file ".\appService.bicep" -g $rgName --parameters appServicePlanName=$appServicePlanName appServiceName=$appServiceName region=$region subscriptionId=$subscriptionId rgName=$rgName alwaysOn=$alwaysOn
 az deployment group create --template-file ".\logAnalyticsWorkspace.bicep" -g $rgName --parameters environment=$environment region=$region

@@ -96,20 +96,23 @@ jobs:
             -o tsv)
           echo "Principal ID: $PRINCIPAL_ID"
 
-          echo "Granting Key Vault access to Container App managed identity..."
-          az keyvault set-policy \
+          echo "Checking if Key Vault access policy already exists..."
+          EXISTING_POLICY=$(az keyvault show \
             --name ${{ env.KEY_VAULT_NAME }} \
-            --object-id $PRINCIPAL_ID \
-            --secret-permissions get list
+            --query "properties.accessPolicies[?objectId=='$PRINCIPAL_ID'].objectId" \
+            -o tsv)
 
-          echo "Verifying Key Vault access policies..."
-          az keyvault show \
-            --name ${{ env.KEY_VAULT_NAME }} \
-            --query "properties.accessPolicies[?objectId=='$PRINCIPAL_ID']" \
-            -o json
-
-          echo "Waiting 30 seconds for permissions to propagate..."
-          sleep 30
+          if [ -z "$EXISTING_POLICY" ]; then
+            echo "Access policy not found. Granting Key Vault access..."
+            az keyvault set-policy \
+              --name ${{ env.KEY_VAULT_NAME }} \
+              --object-id $PRINCIPAL_ID \
+              --secret-permissions get list
+            echo "Waiting 30 seconds for permissions to propagate..."
+            sleep 30
+          else
+            echo "Access policy already exists for principal $PRINCIPAL_ID"
+          fi
 
       - name: Restart Container App
         run: |
