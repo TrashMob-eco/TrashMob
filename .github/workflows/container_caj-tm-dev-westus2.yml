@@ -15,7 +15,7 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_CONTAINER_REGISTRY: acrtmldevwestus2
+  AZURE_CONTAINER_REGISTRY: acrtmdevwestus2
   CONTAINER_APP_JOB_NAME: caj-tm-dev-westus2
   RESOURCE_GROUP: rg-trashmob-dev-westus2
   IMAGE_NAME: trashmobjobs
