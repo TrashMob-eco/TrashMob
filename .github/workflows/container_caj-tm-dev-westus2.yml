@@ -1,0 +1,102 @@
+# Workflow for building and deploying TrashMobJobs as a container job to Azure Container Apps
+
+name: TrashMobDev - Container App Job
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/container_caj-tm-dev-westus2.yml'
+      - 'TrashMobJobs/**'
+      - 'TrashMob.Models/**'
+      - 'TrashMob.Shared/**'
+      - 'Deploy/containerAppJob.bicep'
+  workflow_dispatch:
+
+env:
+  AZURE_CONTAINER_REGISTRY: acrtmldevwestus2
+  CONTAINER_APP_JOB_NAME: caj-tm-dev-westus2
+  RESOURCE_GROUP: rg-trashmob-dev-westus2
+  IMAGE_NAME: trashmobjobs
+  CONTAINER_APPS_ENVIRONMENT: cae-tm-dev-westus2
+  KEY_VAULT_NAME: kv-tm-dev-westus2
+  AZURE_MAPS_NAME: map-tm-dev-westus2
+  STORAGE_ACCOUNT_NAME: stortmldevwestus2
+  REGION: westus2
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v3.1.11
+        with:
+          versionSpec: '5.x'
+
+      - name: Determine Version
+        id: version_step
+        uses: gittools/actions/gitversion/execute@v3.1.11
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Login to Azure Container Registry
+        run: |
+          az acr login --name ${{ env.AZURE_CONTAINER_REGISTRY }}
+
+      - name: Build and push Docker image
+        run: |
+          IMAGE_TAG=${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ steps.version_step.outputs.semVer }}
+          IMAGE_TAG_LATEST=${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest
+
+          docker build -f TrashMobJobs/Dockerfile -t $IMAGE_TAG -t $IMAGE_TAG_LATEST .
+          docker push $IMAGE_TAG
+          docker push $IMAGE_TAG_LATEST
+
+      - name: Deploy to Azure Container Apps Job
+        run: |
+          SUBSCRIPTION_ID="${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+          CONTAINER_IMAGE="${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ steps.version_step.outputs.semVer }}"
+          CONTAINER_APPS_ENV_ID="/subscriptions/$SUBSCRIPTION_ID/resourceGroups/${{ env.RESOURCE_GROUP }}/providers/Microsoft.App/managedEnvironments/${{ env.CONTAINER_APPS_ENVIRONMENT }}"
+
+          az deployment group create \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --template-file Deploy/containerAppJob.bicep \
+            --parameters \
+              containerAppJobName=${{ env.CONTAINER_APP_JOB_NAME }} \
+              containerAppsEnvironmentId=$CONTAINER_APPS_ENV_ID \
+              containerRegistryName=${{ env.AZURE_CONTAINER_REGISTRY }} \
+              containerImage=$CONTAINER_IMAGE \
+              keyVaultName=${{ env.KEY_VAULT_NAME }} \
+              azureMapsName=${{ env.AZURE_MAPS_NAME }} \
+              storageAccountName=${{ env.STORAGE_ACCOUNT_NAME }} \
+              region=${{ env.REGION }} \
+              environment=dev \
+              cronExpression='0 */6 * * *'
+
+      - name: Verify Container App Job
+        run: |
+          az containerapp job show \
+            --name ${{ env.CONTAINER_APP_JOB_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --query "properties.configuration.scheduleTriggerConfig.cronExpression" \
+            -o tsv
+
+      - name: Logout from Azure
+        if: always()
+        run: az logout
