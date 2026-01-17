@@ -70,6 +70,7 @@ namespace TrashMobJobs
                     }
 
                     // Register Background Services
+                    // Todo... these don't need to background services and should run at different schedules
                     services.AddHostedService<StatGeneratorWorker>();
                     services.AddHostedService<UserNotifierWorker>();
                 });
