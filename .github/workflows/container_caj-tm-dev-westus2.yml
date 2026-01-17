@@ -22,7 +22,7 @@ env:
   CONTAINER_APPS_ENVIRONMENT: cae-tm-dev-westus2
   KEY_VAULT_NAME: kv-tm-dev-westus2
   AZURE_MAPS_NAME: map-tm-dev-westus2
-  STORAGE_ACCOUNT_NAME: stortmldevwestus2
+  STORAGE_ACCOUNT_NAME: stortmdevwestus2
   REGION: westus2
 
 jobs:
