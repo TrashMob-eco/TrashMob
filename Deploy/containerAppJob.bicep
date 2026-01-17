@@ -91,17 +91,5 @@ resource containerAppJob 'Microsoft.App/jobs@2024-03-01' = {
 // Note: Key Vault access policy and Storage role assignment are granted in the GitHub workflow using Azure CLI
 // to avoid requiring the deployment identity to have Key Vault and role assignment permissions
 
-// Grant the container app job managed identity access to the storage account
-// Storage Blob Data Contributor role (ba92f5b4-2d11-453d-a403-e96b0029c9fe)
-resource storageRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(storageAccount.id, containerAppJob.id, 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')
-  scope: storageAccount
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')
-    principalId: containerAppJob.identity.principalId
-    principalType: 'ServicePrincipal'
-  }
-}
-
 output containerAppJobName string = containerAppJob.name
 output principalId string = containerAppJob.identity.principalId
