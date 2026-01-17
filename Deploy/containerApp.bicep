@@ -4,6 +4,7 @@ param containerAppsEnvironmentId string
 param containerRegistryName string
 param containerImage string
 param keyVaultName string
+param storageAccountName string
 param environment string
 param minReplicas int = 1
 param maxReplicas int = 3
@@ -14,6 +15,10 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' e
 
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
   name: keyVaultName
+}
+
+resource storageAccount 'Microsoft.Storage/storageAccounts@2024-01-01' existing = {
+  name: storageAccountName
 }
 
 resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
@@ -62,6 +67,10 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
             {
               name: 'VaultUri'
               value: keyVault.properties.vaultUri
+            }
+            {
+              name: 'StorageAccountUri'
+              value: 'https://${storageAccount.name}.blob.${az.environment().suffixes.storage}/'
             }
             {
               name: 'ASPNETCORE_HTTP_PORTS'
