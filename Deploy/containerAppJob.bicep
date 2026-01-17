@@ -17,6 +17,10 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
   name: keyVaultName
 }
 
+resource storageAccount 'Microsoft.Storage/storageAccounts@2024-01-01' existing = {
+  name: storageAccountName
+}
+
 resource containerAppJob 'Microsoft.App/jobs@2024-03-01' = {
   name: containerAppJobName
   location: region
@@ -70,6 +74,10 @@ resource containerAppJob 'Microsoft.App/jobs@2024-03-01' = {
               name: 'InstanceName'
               value: 'as-tm-${environment}-${region}'
             }
+            {
+              name: 'StorageAccountUri'
+              value: 'https://${storageAccount.name}.blob.${az.environment().suffixes.storage}/'
+            }
           ]
         }
       ]
@@ -97,6 +105,18 @@ resource keyVaultAccessPolicy 'Microsoft.KeyVault/vaults/accessPolicies@2023-07-
         }
       }
     ]
+  }
+}
+
+// Grant the container app job managed identity access to the storage account
+// Storage Blob Data Contributor role (ba92f5b4-2d11-453d-a403-e96b0029c9fe)
+resource storageRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(storageAccount.id, containerAppJob.id, 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')
+  scope: storageAccount
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')
+    principalId: containerAppJob.identity.principalId
+    principalType: 'ServicePrincipal'
   }
 }
 
