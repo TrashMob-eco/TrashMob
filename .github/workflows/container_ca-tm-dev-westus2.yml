@@ -86,7 +86,7 @@ jobs:
               minReplicas=1 \
               maxReplicas=3
 
-      - name: Verify Key Vault Access
+      - name: Grant Key Vault Access
         run: |
           echo "Getting Container App managed identity..."
           PRINCIPAL_ID=$(az containerapp show \
@@ -96,7 +96,13 @@ jobs:
             -o tsv)
           echo "Principal ID: $PRINCIPAL_ID"
 
-          echo "Checking Key Vault access policies..."
+          echo "Granting Key Vault access to Container App managed identity..."
+          az keyvault set-policy \
+            --name ${{ env.KEY_VAULT_NAME }} \
+            --object-id $PRINCIPAL_ID \
+            --secret-permissions get list
+
+          echo "Verifying Key Vault access policies..."
           az keyvault show \
             --name ${{ env.KEY_VAULT_NAME }} \
             --query "properties.accessPolicies[?objectId=='$PRINCIPAL_ID']" \

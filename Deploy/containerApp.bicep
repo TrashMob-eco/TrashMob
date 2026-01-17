@@ -91,25 +91,8 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
   }
 }
 
-// Grant the container app managed identity access to the key vault
-// Using a unique name based on the principal ID to ensure idempotency
-resource keyVaultAccessPolicy 'Microsoft.KeyVault/vaults/accessPolicies@2023-07-01' = {
-  name: '${keyVault.name}/add'
-  properties: {
-    accessPolicies: [
-      {
-        tenantId: subscription().tenantId
-        objectId: containerApp.identity.principalId
-        permissions: {
-          secrets: [
-            'get'
-            'list'
-          ]
-        }
-      }
-    ]
-  }
-}
+// Note: Key Vault access policy is granted in the GitHub workflow using Azure CLI
+// to avoid requiring the deployment identity to have Key Vault access policy permissions
 
 output containerAppFqdn string = containerApp.properties.configuration.ingress.fqdn
 output containerAppName string = containerApp.name
