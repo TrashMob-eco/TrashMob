@@ -18,7 +18,7 @@ GitHub OIDC allows workflows to authenticate to Azure without storing credential
 
 ```
 GitHub Workflows
-├── main branch → dev environment → Dev Subscription
+├── main branch → test environment → Dev Subscription
 └── release branch → production environment → Production Subscription
 
 Azure AD App Registration (shared)
@@ -141,11 +141,11 @@ These secrets are shared across all environments and should be set at the **repo
 
 GitHub Environments allow different subscriptions for dev vs production.
 
-### Create Dev Environment
+### Configure Test Environment
 
 1. Go to: `https://github.com/TrashMob-eco/TrashMob/settings/environments`
-2. Click "New environment"
-3. Name: `dev`
+2. The `test` environment should already exist
+3. Click on `test` to configure it
 4. Click "Configure environment"
 5. Under "Environment secrets", add:
    - Name: `AZURE_SUBSCRIPTION_ID`
@@ -243,7 +243,7 @@ echo "Set these at repository level:"
 echo "  AZURE_CLIENT_ID = $APP_ID"
 echo "  AZURE_TENANT_ID = $TENANT_ID"
 echo ""
-echo "Set these in 'dev' environment:"
+echo "Set these in 'test' environment:"
 echo "  AZURE_SUBSCRIPTION_ID = $DEV_SUB"
 echo ""
 echo "Set these in 'production' environment:"
@@ -262,7 +262,7 @@ chmod +x verify-oidc.sh
 
 ### Dev Workflows (main branch)
 - **Branch**: `main`
-- **Environment**: `dev`
+- **Environment**: `test`
 - **Subscription**: Dev subscription (from environment secret)
 - **Workflows**:
   - `container_ca-tm-dev-westus2.yml`
