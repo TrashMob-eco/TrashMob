@@ -86,12 +86,18 @@ Multi-stage Docker build for the jobs service.
 
 ## GitHub Actions Workflows
 
-### Web App: container_ca-tm-dev-westus2.yml
-Builds and deploys the TrashMob web application as a container.
+### Development Workflows
+
+#### Web App: container_ca-tm-dev-westus2.yml
+Builds and deploys the TrashMob web application as a container to the **dev** environment.
 
 **Triggers:**
 - Push to `main` branch affecting TrashMob files
 - Manual workflow dispatch
+
+**Environment:** dev
+**Resources:** ca-tm-dev-westus2, acrtmdevwestus2
+**Scaling:** 1-3 replicas
 
 **Steps:**
 1. Checkout code with GitVersion
@@ -100,12 +106,54 @@ Builds and deploys the TrashMob web application as a container.
 4. Deploy to Container App using bicep template
 5. Output Container App URL
 
-### Jobs: container_caj-tm-dev-westus2.yml
-Builds and deploys TrashMobJobs as a scheduled container job.
+#### Jobs: container_caj-tm-dev-westus2.yml
+Builds and deploys TrashMobJobs as a scheduled container job to the **dev** environment.
 
 **Triggers:**
 - Push to `main` branch affecting TrashMobJobs files
 - Manual workflow dispatch
+
+**Environment:** dev
+**Resources:** caj-tm-dev-westus2, acrtmdevwestus2
+**Schedule:** Every 6 hours
+
+**Steps:**
+1. Checkout code with GitVersion
+2. Login to Azure using OIDC
+3. Build and push Docker image to ACR
+4. Deploy to Container App Job using bicep template
+5. Verify job configuration
+
+### Production Workflows
+
+#### Web App: release_ca-tm-pr-westus2.yml
+Builds and deploys the TrashMob web application as a container to the **production** environment.
+
+**Triggers:**
+- Push to `release` branch affecting TrashMob files
+- Manual workflow dispatch
+
+**Environment:** pr (production)
+**Resources:** ca-tm-pr-westus2, acrtmprwestus2
+**Scaling:** 2-10 replicas (higher capacity for production)
+
+**Steps:**
+1. Checkout code with GitVersion
+2. Login to Azure using OIDC
+3. Build and push Docker image to ACR (with version tag and latest)
+4. Deploy to Container App using bicep template
+5. Output Container App URL
+
+#### Jobs: release_caj-tm-pr-westus2.yml
+Builds and deploys TrashMobJobs as a scheduled container job to the **production** environment.
+
+**Triggers:**
+- Push to `release` branch affecting TrashMobJobs files
+- Manual workflow dispatch
+
+**Environment:** pr (production)
+**Resources:** caj-tm-pr-westus2, acrtmprwestus2
+**Schedule:** Every 6 hours
 
 **Steps:**
 1. Checkout code with GitVersion
@@ -149,15 +197,15 @@ Builds and deploys TrashMobJobs as a scheduled container job.
 
 For the `dev` environment in `westus2` region:
 
-| Resource Type | Name |
-|--------------|------|
-| Container Registry | `acrtmldevwestus2` |
-| Container Apps Environment | `cae-tm-dev-westus2` |
-| Container App (Web) | `ca-tm-dev-westus2` |
-| Container App Job | `caj-tm-dev-westus2` |
-| Resource Group | `rg-trashmob-dev-westus2` |
-| Key Vault | `kv-tm-dev-westus2` |
-| Log Analytics | `log-tm-dev-westus2` |
+| Resource Type | Dev Environment | Production Environment |
+|--------------|-----------------|------------------------|
+| Container Registry | `acrtmdevwestus2` | `acrtmprwestus2` |
+| Container Apps Environment | `cae-tm-dev-westus2` | `cae-tm-pr-westus2` |
+| Container App (Web) | `ca-tm-dev-westus2` | `ca-tm-pr-westus2` |
+| Container App Job | `caj-tm-dev-westus2` | `caj-tm-pr-westus2` |
+| Resource Group | `rg-trashmob-dev-westus2` | `rg-trashmob-pr-westus2` |
+| Key Vault | `kv-tm-dev-westus2` | `kv-tm-pr-westus2` |
+| Log Analytics | `log-tm-dev-westus2` | `log-tm-pr-westus2` |
 
 **Note:** Container Registry names cannot contain hyphens, hence the different naming pattern.
 
