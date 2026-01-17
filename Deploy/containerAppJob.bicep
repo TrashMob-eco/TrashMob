@@ -88,25 +88,8 @@ resource containerAppJob 'Microsoft.App/jobs@2024-03-01' = {
   }
 }
 
-// Grant the container app job managed identity access to the key vault
-resource keyVaultAccessPolicy 'Microsoft.KeyVault/vaults/accessPolicies@2023-07-01' = {
-  parent: keyVault
-  name: 'add'
-  properties: {
-    accessPolicies: [
-      {
-        tenantId: subscription().tenantId
-        objectId: containerAppJob.identity.principalId
-        permissions: {
-          secrets: [
-            'get'
-            'list'
-          ]
-        }
-      }
-    ]
-  }
-}
+// Note: Key Vault access policy and Storage role assignment are granted in the GitHub workflow using Azure CLI
+// to avoid requiring the deployment identity to have Key Vault and role assignment permissions
 
 // Grant the container app job managed identity access to the storage account
 // Storage Blob Data Contributor role (ba92f5b4-2d11-453d-a403-e96b0029c9fe)
