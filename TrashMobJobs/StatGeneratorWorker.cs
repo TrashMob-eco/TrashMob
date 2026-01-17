@@ -4,7 +4,6 @@ namespace TrashMobJobs
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-    using Cronos;
     using Microsoft.Data.SqlClient;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
@@ -16,35 +15,15 @@ namespace TrashMobJobs
     public class StatGeneratorWorker : BackgroundService
     {
         private readonly ILogger<StatGeneratorWorker> logger;
-        private readonly CronExpression cronExpression;
 
         public StatGeneratorWorker(ILogger<StatGeneratorWorker> logger)
         {
             this.logger = logger;
-            // Runs once a day at midnight UTC
-            cronExpression = CronExpression.Parse("0 0 0 */1 * *");
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                var next = cronExpression.GetNextOccurrence(DateTimeOffset.UtcNow, TimeZoneInfo.Utc);
-                if (next.HasValue)
-                {
-                    var delay = next.Value - DateTimeOffset.UtcNow;
-                    if (delay.TotalMilliseconds > 0)
-                    {
-                        logger.LogInformation("StatGenerator waiting until {NextRun}", next.Value);
-                        await Task.Delay(delay, stoppingToken);
-                    }
-                }
-
-                if (!stoppingToken.IsCancellationRequested)
-                {
-                    await RunAsync(stoppingToken);
-                }
-            }
+            await RunAsync(stoppingToken);
         }
 
         private async Task RunAsync(CancellationToken cancellationToken)
