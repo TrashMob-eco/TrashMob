@@ -17,6 +17,11 @@ $appInsightsName = "ai-tm-${environment}-${region}"
 $appServiceName = "as-tm-${environment}-${region}"
 $appServicePlanName = "asp-tm-${environment}-${region}"
 $functionAppName = "fa-tm-${environment}-${region}"
+$containerRegistryName = "acrtm${environment}${region}"
+$containerAppsEnvironmentName = "cae-tm-${environment}-${region}"
+$containerAppName = "ca-tm-${environment}-${region}"
+$containerAppJobName = "caj-tm-${environment}-${region}"
+$logAnalyticsWorkspaceName = "log-tm-${environment}-${region}"
 
 # Make sure we are logged in to Azure and in to the correct subscription id
 az login
@@ -71,3 +76,20 @@ az keyvault set-policy --name $keyVaultName --object-id $principal2Id --secret-p
 
 # Set the secret in the App Settings for the function. Need to update this to use KeyVault directly in the future, but couldn't get the function app to work on first few attempts
 az functionapp config appsettings set --name $functionAppName --subscription $subscriptionId --resource-group $rgName --settings "TMDBServerConnectionString=$sqlKey" "SendGridApiKey=$sendGridApiKey" "InstanceName=$appServiceName" "AzureMapsKey=$mapKey"
+
+# Deploy Container Infrastructure
+Write-Host "Deploying Container Registry..." -ForegroundColor Green
+az deployment group create --template-file ".\containerRegistry.bicep" -g $rgName --parameters containerRegistryName=$containerRegistryName region=$region environment=$environment
+
+Write-Host "Deploying Container Apps Environment..." -ForegroundColor Green
+az deployment group create --template-file ".\containerAppsEnvironment.bicep" -g $rgName --parameters containerAppsEnvironmentName=$containerAppsEnvironmentName region=$region logAnalyticsWorkspaceName=$logAnalyticsWorkspaceName environment=$environment
+
+# Note: Container App and Container App Job deployments will be done via GitHub Actions with actual container images
+# Uncomment the following lines after container images are built and pushed to the registry
+# Write-Host "Deploying Container App for Web Application..." -ForegroundColor Green
+# $webContainerImage = "$containerRegistryName.azurecr.io/trashmob:latest"
+# az deployment group create --template-file ".\containerApp.bicep" -g $rgName --parameters containerAppName=$containerAppName containerAppsEnvironmentId="/subscriptions/$subscriptionId/resourceGroups/$rgName/providers/Microsoft.App/managedEnvironments/$containerAppsEnvironmentName" containerRegistryName=$containerRegistryName containerImage=$webContainerImage keyVaultName=$keyVaultName region=$region environment=$environment
+
+# Write-Host "Deploying Container App Job for TrashMobJobs..." -ForegroundColor Green
+# $jobContainerImage = "$containerRegistryName.azurecr.io/trashmobjobs:latest"
+# az deployment group create --template-file ".\containerAppJob.bicep" -g $rgName --parameters containerAppJobName=$containerAppJobName containerAppsEnvironmentId="/subscriptions/$subscriptionId/resourceGroups/$rgName/providers/Microsoft.App/managedEnvironments/$containerAppsEnvironmentName" containerRegistryName=$containerRegistryName containerImage=$jobContainerImage keyVaultName=$keyVaultName azureMapsName=$azureMapsName storageAccountName=$storageAccountName region=$region environment=$environment
