@@ -86,6 +86,39 @@ jobs:
               minReplicas=2 \
               maxReplicas=10
 
+      - name: Verify Key Vault Access
+        run: |
+          echo "Getting Container App managed identity..."
+          PRINCIPAL_ID=$(az containerapp show \
+            --name ${{ env.CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --query identity.principalId \
+            -o tsv)
+          echo "Principal ID: $PRINCIPAL_ID"
+
+          echo "Checking Key Vault access policies..."
+          az keyvault show \
+            --name ${{ env.KEY_VAULT_NAME }} \
+            --query "properties.accessPolicies[?objectId=='$PRINCIPAL_ID']" \
+            -o json
+
+          echo "Waiting 30 seconds for permissions to propagate..."
+          sleep 30
+
+      - name: Restart Container App
+        run: |
+          echo "Restarting container app to pick up Key Vault permissions..."
+          REVISION=$(az containerapp revision list \
+            --name ${{ env.CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --query "[0].name" \
+            -o tsv)
+
+          az containerapp revision restart \
+            --name ${{ env.CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --revision $REVISION
+
       - name: Get Container App URL
         id: get-url
         run: |
