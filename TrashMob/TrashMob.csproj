@@ -75,6 +75,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Remove="client-app\src\components\Models\WeightUnit.tsx" />
+    <TypeScriptCompile Remove="client-app\src\services\weight-units.tsx" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="client-app\public\TME_FB_SharedImage4_1200x630.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

@@ -11,6 +11,10 @@ class EventSummaryData {
 
     durationInMinutes: number = 0;
 
+    pickedWeight: number = 0;
+
+    pickedWeightUnitId: number = 0;
+
     notes: string = '';
 
     createdByUserId: string = Guid.EMPTY;
