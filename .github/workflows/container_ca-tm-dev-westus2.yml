@@ -21,6 +21,7 @@ env:
   IMAGE_NAME: trashmob
   CONTAINER_APPS_ENVIRONMENT: cae-tm-dev-westus2
   KEY_VAULT_NAME: kv-tm-dev-westus2
+  STORAGE_ACCOUNT_NAME: stortmdevwestus2
   REGION: westus2
 
 jobs:
@@ -81,6 +82,7 @@ jobs:
               containerRegistryName=${{ env.AZURE_CONTAINER_REGISTRY }} \
               containerImage=$CONTAINER_IMAGE \
               keyVaultName=${{ env.KEY_VAULT_NAME }} \
+              storageAccountName=${{ env.STORAGE_ACCOUNT_NAME }} \
               region=${{ env.REGION }} \
               environment=dev \
               minReplicas=1 \
