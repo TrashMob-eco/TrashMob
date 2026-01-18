@@ -1,0 +1,142 @@
+# Workflow for building and deploying Strapi CMS as a container to Azure Container Apps
+
+name: TrashMobDev - Strapi CMS Container App
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/container_strapi-tm-dev-westus2.yml'
+      - 'Strapi/**'
+      - 'Deploy/containerAppStrapi.bicep'
+  workflow_dispatch:
+
+env:
+  AZURE_CONTAINER_REGISTRY: acrtmdevwestus2
+  CONTAINER_APP_NAME: ca-strapi-tm-dev-westus2
+  RESOURCE_GROUP: rg-trashmob-dev-westus2
+  IMAGE_NAME: trashmob-strapi
+  CONTAINER_APPS_ENVIRONMENT: cae-tm-dev-westus2
+  KEY_VAULT_NAME: kv-tm-dev-westus2
+  SQL_SERVER_NAME: sql-tm-dev-westus2
+  REGION: westus2
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: test
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v3.1.11
+        with:
+          versionSpec: '5.x'
+
+      - name: Determine Version
+        id: version_step
+        uses: gittools/actions/gitversion/execute@v3.1.11
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Login to Azure Container Registry
+        run: |
+          az acr login --name ${{ env.AZURE_CONTAINER_REGISTRY }}
+
+      - name: Build and push Docker image
+        run: |
+          IMAGE_TAG=${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ steps.version_step.outputs.semVer }}
+          IMAGE_TAG_LATEST=${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest
+
+          docker build -f Strapi/Dockerfile -t $IMAGE_TAG -t $IMAGE_TAG_LATEST ./Strapi
+          docker push $IMAGE_TAG
+          docker push $IMAGE_TAG_LATEST
+
+      - name: Get Strapi secrets from Key Vault
+        id: get-secrets
+        run: |
+          DB_PASSWORD=$(az keyvault secret show --name strapi-db-password --vault-name ${{ env.KEY_VAULT_NAME }} --query value -o tsv)
+          echo "::add-mask::$DB_PASSWORD"
+          echo "db_password=$DB_PASSWORD" >> $GITHUB_OUTPUT
+
+          ADMIN_JWT_SECRET=$(az keyvault secret show --name strapi-admin-jwt-secret --vault-name ${{ env.KEY_VAULT_NAME }} --query value -o tsv)
+          echo "::add-mask::$ADMIN_JWT_SECRET"
+          echo "admin_jwt_secret=$ADMIN_JWT_SECRET" >> $GITHUB_OUTPUT
+
+          API_TOKEN_SALT=$(az keyvault secret show --name strapi-api-token-salt --vault-name ${{ env.KEY_VAULT_NAME }} --query value -o tsv)
+          echo "::add-mask::$API_TOKEN_SALT"
+          echo "api_token_salt=$API_TOKEN_SALT" >> $GITHUB_OUTPUT
+
+          APP_KEYS=$(az keyvault secret show --name strapi-app-keys --vault-name ${{ env.KEY_VAULT_NAME }} --query value -o tsv)
+          echo "::add-mask::$APP_KEYS"
+          echo "app_keys=$APP_KEYS" >> $GITHUB_OUTPUT
+
+          TRANSFER_TOKEN_SALT=$(az keyvault secret show --name strapi-transfer-token-salt --vault-name ${{ env.KEY_VAULT_NAME }} --query value -o tsv)
+          echo "::add-mask::$TRANSFER_TOKEN_SALT"
+          echo "transfer_token_salt=$TRANSFER_TOKEN_SALT" >> $GITHUB_OUTPUT
+
+      - name: Deploy Strapi Database
+        run: |
+          az deployment group create \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --template-file Deploy/sqlDatabaseStrapi.bicep \
+            --parameters \
+              environment=dev \
+              region=${{ env.REGION }}
+
+      - name: Deploy to Azure Container Apps
+        run: |
+          SUBSCRIPTION_ID="${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+          CONTAINER_IMAGE="${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ steps.version_step.outputs.semVer }}"
+          CONTAINER_APPS_ENV_ID="/subscriptions/$SUBSCRIPTION_ID/resourceGroups/${{ env.RESOURCE_GROUP }}/providers/Microsoft.App/managedEnvironments/${{ env.CONTAINER_APPS_ENVIRONMENT }}"
+
+          az deployment group create \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --template-file Deploy/containerAppStrapi.bicep \
+            --parameters \
+              containerAppName=${{ env.CONTAINER_APP_NAME }} \
+              containerAppsEnvironmentId=$CONTAINER_APPS_ENV_ID \
+              containerRegistryName=${{ env.AZURE_CONTAINER_REGISTRY }} \
+              containerImage=$CONTAINER_IMAGE \
+              keyVaultName=${{ env.KEY_VAULT_NAME }} \
+              region=${{ env.REGION }} \
+              environment=dev \
+              strapiDatabaseHost=${{ env.SQL_SERVER_NAME }}.database.windows.net \
+              strapiDatabaseName=db-strapi-dev-westus2 \
+              strapiDatabaseUsername=dbadmin \
+              strapiDatabasePassword="${{ steps.get-secrets.outputs.db_password }}" \
+              strapiAdminJwtSecret="${{ steps.get-secrets.outputs.admin_jwt_secret }}" \
+              strapiApiTokenSalt="${{ steps.get-secrets.outputs.api_token_salt }}" \
+              strapiAppKeys="${{ steps.get-secrets.outputs.app_keys }}" \
+              strapiTransferTokenSalt="${{ steps.get-secrets.outputs.transfer_token_salt }}"
+
+      - name: Verify Strapi Container Health
+        run: |
+          echo "Waiting for Strapi container to be ready..."
+          sleep 60
+
+          FQDN=$(az containerapp show \
+            --name ${{ env.CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --query properties.configuration.ingress.fqdn \
+            -o tsv)
+
+          echo "Strapi Internal FQDN: $FQDN"
+          echo "Note: Strapi is internal-only and accessed via TrashMob API proxy"
+
+      - name: Logout from Azure
+        if: always()
+        run: az logout

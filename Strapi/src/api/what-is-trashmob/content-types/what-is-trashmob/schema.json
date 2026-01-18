@@ -1,0 +1,50 @@
+{
+  "kind": "singleType",
+  "collectionName": "what_is_trashmob_sections",
+  "info": {
+    "singularName": "what-is-trashmob",
+    "pluralName": "what-is-trashmobs",
+    "displayName": "What Is TrashMob Section",
+    "description": "Introduction section explaining what TrashMob is"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "heading": {
+      "type": "string",
+      "required": true,
+      "default": "What is a TrashMob?",
+      "maxLength": 100
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "youtubeVideoUrl": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "primaryButtonText": {
+      "type": "string",
+      "default": "Learn more",
+      "maxLength": 50
+    },
+    "primaryButtonLink": {
+      "type": "string",
+      "default": "/aboutus",
+      "maxLength": 255
+    },
+    "secondaryButtonText": {
+      "type": "string",
+      "default": "View Upcoming Events",
+      "maxLength": 50
+    },
+    "secondaryButtonLink": {
+      "type": "string",
+      "default": "/#events",
+      "maxLength": 255
+    }
+  }
+}

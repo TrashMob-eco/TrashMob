@@ -4,11 +4,26 @@ param containerAppsEnvironmentId string
 param containerRegistryName string
 param containerImage string
 param keyVaultName string
-param storageAccountName string
 param environment string
 param minReplicas int = 1
-param maxReplicas int = 3
-param strapiContainerAppName string = ''
+param maxReplicas int = 2
+
+// Strapi database configuration
+param strapiDatabaseHost string
+param strapiDatabaseName string
+param strapiDatabaseUsername string
+@secure()
+param strapiDatabasePassword string
+
+// Strapi secrets
+@secure()
+param strapiAdminJwtSecret string
+@secure()
+param strapiApiTokenSalt string
+@secure()
+param strapiAppKeys string
+@secure()
+param strapiTransferTokenSalt string
 
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' existing = {
   name: containerRegistryName
@@ -16,10 +31,6 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' e
 
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
   name: keyVaultName
-}
-
-resource storageAccount 'Microsoft.Storage/storageAccounts@2024-01-01' existing = {
-  name: storageAccountName
 }
 
 resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
@@ -32,8 +43,8 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
     managedEnvironmentId: containerAppsEnvironmentId
     configuration: {
       ingress: {
-        external: true
-        targetPort: 8080
+        external: false  // Internal only - accessed via TrashMob API proxy
+        targetPort: 1337
         transport: 'auto'
         allowInsecure: false
       }
@@ -49,6 +60,26 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
           name: 'registry-password'
           value: containerRegistry.listCredentials().passwords[0].value
         }
+        {
+          name: 'database-password'
+          value: strapiDatabasePassword
+        }
+        {
+          name: 'admin-jwt-secret'
+          value: strapiAdminJwtSecret
+        }
+        {
+          name: 'api-token-salt'
+          value: strapiApiTokenSalt
+        }
+        {
+          name: 'app-keys'
+          value: strapiAppKeys
+        }
+        {
+          name: 'transfer-token-salt'
+          value: strapiTransferTokenSalt
+        }
       ]
     }
     template: {
@@ -62,36 +93,68 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
           }
           env: [
             {
-              name: 'ASPNETCORE_ENVIRONMENT'
-              value: 'Production'
+              name: 'DATABASE_CLIENT'
+              value: 'mssql'
             }
             {
-              name: 'VaultUri'
-              value: keyVault.properties.vaultUri
+              name: 'DATABASE_HOST'
+              value: strapiDatabaseHost
             }
             {
-              name: 'StorageAccountUri'
-              value: 'https://${storageAccount.name}.blob.${az.environment().suffixes.storage}/'
+              name: 'DATABASE_PORT'
+              value: '1433'
             }
             {
-              name: 'ASPNETCORE_HTTP_PORTS'
-              value: '8080'
+              name: 'DATABASE_NAME'
+              value: strapiDatabaseName
             }
             {
-              name: 'EnableSwagger'
-              value: environment != 'prod' ? 'true' : 'false'
+              name: 'DATABASE_USERNAME'
+              value: strapiDatabaseUsername
             }
             {
-              name: 'StrapiBaseUrl'
-              value: strapiContainerAppName != '' ? 'http://${strapiContainerAppName}' : ''
+              name: 'DATABASE_PASSWORD'
+              secretRef: 'database-password'
+            }
+            {
+              name: 'DATABASE_SSL'
+              value: 'true'
+            }
+            {
+              name: 'ADMIN_JWT_SECRET'
+              secretRef: 'admin-jwt-secret'
+            }
+            {
+              name: 'API_TOKEN_SALT'
+              secretRef: 'api-token-salt'
+            }
+            {
+              name: 'APP_KEYS'
+              secretRef: 'app-keys'
+            }
+            {
+              name: 'TRANSFER_TOKEN_SALT'
+              secretRef: 'transfer-token-salt'
+            }
+            {
+              name: 'NODE_ENV'
+              value: 'production'
+            }
+            {
+              name: 'HOST'
+              value: '0.0.0.0'
+            }
+            {
+              name: 'PORT'
+              value: '1337'
             }
           ]
           probes: [
             {
               type: 'liveness'
               httpGet: {
-                path: '/health/live'
-                port: 8080
+                path: '/_health'
+                port: 1337
               }
               initialDelaySeconds: 60
               periodSeconds: 30
@@ -101,8 +164,8 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
             {
               type: 'readiness'
               httpGet: {
-                path: '/health'
-                port: 8080
+                path: '/_health'
+                port: 1337
               }
               initialDelaySeconds: 30
               periodSeconds: 10
@@ -115,16 +178,6 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
       scale: {
         minReplicas: minReplicas
         maxReplicas: maxReplicas
-        rules: [
-          {
-            name: 'http-scaling'
-            http: {
-              metadata: {
-                concurrentRequests: '100'
-              }
-            }
-          }
-        ]
       }
     }
   }
@@ -132,9 +185,6 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
     environment: environment
   }
 }
-
-// Note: Key Vault access policy is granted in the GitHub workflow using Azure CLI
-// to avoid requiring the deployment identity to have Key Vault access policy permissions
 
 output containerAppFqdn string = containerApp.properties.configuration.ingress.fqdn
 output containerAppName string = containerApp.name

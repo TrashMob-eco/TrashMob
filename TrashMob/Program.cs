@@ -189,6 +189,17 @@ public class Program
 
         // builder.Services.AddScoped(serviceProvider => new BlobServiceClient(blobStorageUrl));
 
+        // Add HttpClient for Strapi CMS
+        builder.Services.AddHttpClient("Strapi", client =>
+        {
+            var strapiUrl = builder.Configuration["StrapiBaseUrl"];
+            if (!string.IsNullOrEmpty(strapiUrl))
+            {
+                client.BaseAddress = new Uri(strapiUrl);
+            }
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+        });
+
         builder.Services.AddHealthChecks()
             .AddSqlServer(
                 builder.Configuration["TMDBServerConnectionString"] ?? string.Empty,
