@@ -2,8 +2,16 @@
 {
     using System.Text;
 
+    /// <summary>
+    /// Provides extension methods for the Event class.
+    /// </summary>
     public static class EventExtensions
     {
+        /// <summary>
+        /// Formats the event's address components into a single formatted address string.
+        /// </summary>
+        /// <param name="mobEvent">The event to get the address from.</param>
+        /// <returns>A formatted address string combining street address, city, region, postal code, and country.</returns>
         public static string EventAddress(this Event mobEvent)
         {
             var eventAddress = new StringBuilder();

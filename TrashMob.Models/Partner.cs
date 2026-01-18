@@ -1,9 +1,15 @@
-﻿#nullable disable
+#nullable disable
 
 namespace TrashMob.Models
 {
+    /// <summary>
+    /// Represents a partner organization that supports TrashMob events.
+    /// </summary>
     public class Partner : KeyedModel
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Partner"/> class.
+        /// </summary>
         public Partner()
         {
             PartnerContacts = new HashSet<PartnerContact>();
@@ -14,32 +20,74 @@ namespace TrashMob.Models
             PartnerAdminInvitations = new HashSet<PartnerAdminInvitation>();
         }
 
+        /// <summary>
+        /// Gets or sets the name of the partner organization.
+        /// </summary>
         public string Name { get; set; }
 
+        /// <summary>
+        /// Gets or sets the identifier of the partner status.
+        /// </summary>
         public int PartnerStatusId { get; set; }
 
+        /// <summary>
+        /// Gets or sets the identifier of the partner type.
+        /// </summary>
         public int PartnerTypeId { get; set; }
 
+        /// <summary>
+        /// Gets or sets the website URL of the partner organization.
+        /// </summary>
         public string Website { get; set; }
 
+        /// <summary>
+        /// Gets or sets publicly visible notes about the partner.
+        /// </summary>
         public string PublicNotes { get; set; }
 
+        /// <summary>
+        /// Gets or sets private notes about the partner (visible only to admins).
+        /// </summary>
         public string PrivateNotes { get; set; }
 
+        /// <summary>
+        /// Gets or sets the collection of contacts for the partner.
+        /// </summary>
         public virtual ICollection<PartnerContact> PartnerContacts { get; set; }
 
+        /// <summary>
+        /// Gets or sets the collection of documents associated with the partner.
+        /// </summary>
         public virtual ICollection<PartnerDocument> PartnerDocuments { get; set; }
 
+        /// <summary>
+        /// Gets or sets the collection of locations for the partner.
+        /// </summary>
         public virtual ICollection<PartnerLocation> PartnerLocations { get; set; }
 
+        /// <summary>
+        /// Gets or sets the collection of social media accounts for the partner.
+        /// </summary>
         public virtual ICollection<PartnerSocialMediaAccount> PartnerSocialMediaAccounts { get; set; }
 
+        /// <summary>
+        /// Gets or sets the collection of administrators for the partner.
+        /// </summary>
         public virtual ICollection<PartnerAdmin> PartnerAdmins { get; set; }
 
+        /// <summary>
+        /// Gets or sets the collection of admin invitations for the partner.
+        /// </summary>
         public virtual ICollection<PartnerAdminInvitation> PartnerAdminInvitations { get; set; }
 
+        /// <summary>
+        /// Gets or sets the status of the partner.
+        /// </summary>
         public virtual PartnerStatus PartnerStatus { get; set; }
 
+        /// <summary>
+        /// Gets or sets the type of the partner.
+        /// </summary>
         public virtual PartnerType PartnerType { get; set; }
     }
 }
