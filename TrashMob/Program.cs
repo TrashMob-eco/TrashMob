@@ -26,6 +26,8 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using TrashMob.Security;
 using TrashMob.Shared;
 using TrashMob.Shared.Managers;
@@ -187,6 +189,12 @@ public class Program
 
         // builder.Services.AddScoped(serviceProvider => new BlobServiceClient(blobStorageUrl));
 
+        builder.Services.AddHealthChecks()
+            .AddSqlServer(
+                builder.Configuration["TMDBServerConnectionString"] ?? string.Empty,
+                name: "database",
+                tags: ["db", "sql", "sqlserver"]);
+
         builder.Services.AddSwaggerGen(options =>
         {
             options.SwaggerDoc("v1", new OpenApiInfo { Title = "trashmobapi", Version = "v1" });
@@ -254,6 +262,17 @@ public class Program
         {
             endpoints.MapControllers()
                 .RequireCors(MyAllowSpecificOrigins);
+
+            endpoints.MapHealthChecks("/health", new HealthCheckOptions
+            {
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
+
+            endpoints.MapHealthChecks("/health/live", new HealthCheckOptions
+            {
+                Predicate = _ => false,
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
         });
 #pragma warning restore ASP0014
 
