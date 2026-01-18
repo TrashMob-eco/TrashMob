@@ -41,7 +41,7 @@
             this.logger = logger;
         }
 
-        public async Task RunAllNotificatons()
+        public async Task RunAllNotifications()
         {
             logger.LogInformation("Starting RunAllNotifications");
 

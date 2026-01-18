@@ -4,6 +4,6 @@
 
     public interface IUserNotificationManager
     {
-        public Task RunAllNotificatons();
+        public Task RunAllNotifications();
     }
 }
