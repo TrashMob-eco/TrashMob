@@ -1,11 +1,10 @@
-namespace TrashMobJobs
+namespace TrashMobDailyJobs
 {
     using System;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using TrashMob.Shared;
-    using TrashMob.Shared.Engine;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Managers;
     using TrashMob.Shared.Persistence;
@@ -30,7 +29,6 @@ namespace TrashMobJobs
                 {
                     ServiceBuilder.AddManagers(services);
                     ServiceBuilder.AddRepositories(services);
-                    services.AddScoped<IUserNotificationManager, TrashMob.Shared.Engine.UserNotificationManager>();
                     services.AddDbContext<MobDbContext>();
 
                     Uri blobStorageUrl = new(Environment.GetEnvironmentVariable("StorageAccountUri") ??
@@ -69,10 +67,7 @@ namespace TrashMobJobs
                         services.AddScoped<IKeyVaultManager, KeyVaultManager>();
                     }
 
-                    // Register Background Services
-                    // Todo... these don't need to background services and should run at different schedules
                     services.AddHostedService<StatGeneratorWorker>();
-                    services.AddHostedService<UserNotifierWorker>();
                 });
         }
     }

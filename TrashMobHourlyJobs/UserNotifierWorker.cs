@@ -1,4 +1,4 @@
-namespace TrashMobJobs
+namespace TrashMobHourlyJobs
 {
     using System;
     using System.Threading;

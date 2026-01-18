@@ -1,4 +1,4 @@
-namespace TrashMobJobs
+namespace TrashMobDailyJobs
 {
     public class SiteStats
     {

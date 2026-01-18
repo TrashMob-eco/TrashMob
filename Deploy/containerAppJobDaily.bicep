@@ -7,7 +7,7 @@ param keyVaultName string
 param azureMapsName string
 param storageAccountName string
 param environment string
-param cronExpression string = '0 */6 * * *' // Every 6 hours by default (Azure Container Apps uses 5-field cron: minute hour day month day-of-week)
+param cronExpression string = '0 0,12 * * *' // Twice a day at midnight and noon UTC
 
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' existing = {
   name: containerRegistryName

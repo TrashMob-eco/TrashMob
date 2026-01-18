@@ -1,24 +1,24 @@
-# Workflow for building and deploying TrashMobJobs as a container job to Azure Container Apps
+# Workflow for building and deploying TrashMobDailyJobs as a container job to Azure Container Apps
 
-name: TrashMobDev - Container App Job
+name: TrashMobDev - Daily Container App Job
 
 on:
   push:
     branches:
       - main
     paths:
-      - '.github/workflows/container_caj-tm-dev-westus2.yml'
-      - 'TrashMobJobs/**'
+      - '.github/workflows/container_caj-tm-dev-westus2-daily.yml'
+      - 'TrashMobDailyJobs/**'
       - 'TrashMob.Models/**'
       - 'TrashMob.Shared/**'
-      - 'Deploy/containerAppJob.bicep'
+      - 'Deploy/containerAppJobDaily.bicep'
   workflow_dispatch:
 
 env:
   AZURE_CONTAINER_REGISTRY: acrtmdevwestus2
-  CONTAINER_APP_JOB_NAME: caj-tm-dev-westus2
+  CONTAINER_APP_JOB_NAME: caj-tm-dev-westus2-daily
   RESOURCE_GROUP: rg-trashmob-dev-westus2
-  IMAGE_NAME: trashmobjobs
+  IMAGE_NAME: trashmobdailyjobs
   CONTAINER_APPS_ENVIRONMENT: cae-tm-dev-westus2
   KEY_VAULT_NAME: kv-tm-dev-westus2
   AZURE_MAPS_NAME: map-tm-dev-westus2
@@ -64,7 +64,7 @@ jobs:
           IMAGE_TAG=${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ steps.version_step.outputs.semVer }}
           IMAGE_TAG_LATEST=${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest
 
-          docker build -f TrashMobJobs/Dockerfile -t $IMAGE_TAG -t $IMAGE_TAG_LATEST .
+          docker build -f TrashMobDailyJobs/Dockerfile -t $IMAGE_TAG -t $IMAGE_TAG_LATEST .
           docker push $IMAGE_TAG
           docker push $IMAGE_TAG_LATEST
 
@@ -76,7 +76,7 @@ jobs:
 
           az deployment group create \
             --resource-group ${{ env.RESOURCE_GROUP }} \
-            --template-file Deploy/containerAppJob.bicep \
+            --template-file Deploy/containerAppJobDaily.bicep \
             --parameters \
               containerAppJobName=${{ env.CONTAINER_APP_JOB_NAME }} \
               containerAppsEnvironmentId=$CONTAINER_APPS_ENV_ID \
@@ -87,7 +87,7 @@ jobs:
               storageAccountName=${{ env.STORAGE_ACCOUNT_NAME }} \
               region=${{ env.REGION }} \
               environment=dev \
-              cronExpression='0 */6 * * *'
+              cronExpression='0 0,12 * * *'
 
       - name: Grant Permissions to Container App Job
         run: |

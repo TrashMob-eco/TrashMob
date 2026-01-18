@@ -1,4 +1,4 @@
-namespace TrashMobJobs
+namespace TrashMobDailyJobs
 {
     using System;
     using System.Text;
