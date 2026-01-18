@@ -77,6 +77,30 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
               value: '8080'
             }
           ]
+          probes: [
+            {
+              type: 'liveness'
+              httpGet: {
+                path: '/health/live'
+                port: 8080
+              }
+              initialDelaySeconds: 60
+              periodSeconds: 30
+              timeoutSeconds: 10
+              failureThreshold: 3
+            }
+            {
+              type: 'readiness'
+              httpGet: {
+                path: '/health'
+                port: 8080
+              }
+              initialDelaySeconds: 30
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 3
+            }
+          ]
         }
       ]
       scale: {
