@@ -59,3 +59,47 @@ jobs:
 
     - name: Test
       run: dotnet test .\TrashMob.sln
+
+  buildWebAppContainer:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build TrashMob Web App Container
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: TrashMob/Dockerfile
+        push: false
+        tags: trashmob:pr-${{ github.event.pull_request.number }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  buildContainerJob:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build TrashMobJobs Container
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: TrashMobJobs/Dockerfile
+        push: false
+        tags: trashmobjobs:pr-${{ github.event.pull_request.number }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
