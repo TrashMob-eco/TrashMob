@@ -15,23 +15,17 @@ namespace TrashMob.Controllers
     /// <summary>
     /// Controller for proxying requests to the Strapi CMS.
     /// </summary>
+    /// <remarks>
+    /// Initializes a new instance of the CmsController.
+    /// </remarks>
+    /// <param name="httpClientFactory">HTTP client factory for creating Strapi clients.</param>
+    /// <param name="configuration">Application configuration.</param>
     [EnableCors("_myAllowSpecificOrigins")]
     [Route("api/cms")]
-    public class CmsController : SecureController
+    public class CmsController(IHttpClientFactory httpClientFactory, IConfiguration configuration) : SecureController
     {
-        private readonly IHttpClientFactory httpClientFactory;
-        private readonly string strapiBaseUrl;
-
-        /// <summary>
-        /// Initializes a new instance of the CmsController.
-        /// </summary>
-        /// <param name="httpClientFactory">HTTP client factory for creating Strapi clients.</param>
-        /// <param name="configuration">Application configuration.</param>
-        public CmsController(IHttpClientFactory httpClientFactory, IConfiguration configuration)
-        {
-            this.httpClientFactory = httpClientFactory;
-            strapiBaseUrl = configuration["StrapiBaseUrl"] ?? string.Empty;
-        }
+        private readonly IHttpClientFactory httpClientFactory = httpClientFactory;
+        private readonly string strapiBaseUrl = configuration["StrapiBaseUrl"] ?? string.Empty;
 
         /// <summary>
         /// Gets hero section content from CMS. Public endpoint.
