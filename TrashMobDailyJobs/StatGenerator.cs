@@ -69,7 +69,8 @@ namespace TrashMobDailyJobs
 
             using (var cmd = new SqlCommand(sql, conn))
             {
-                numberOfUsers = (int)await cmd.ExecuteScalarAsync();
+                var result = await cmd.ExecuteScalarAsync();
+                numberOfUsers = result is DBNull or null ? 0 : Convert.ToInt32(result);
                 logger.LogInformation("There are currently '{NumberOfUsers}' Users.", numberOfUsers);
             }
 
@@ -84,7 +85,8 @@ namespace TrashMobDailyJobs
 
             using (var cmd = new SqlCommand(sql, conn))
             {
-                numberOfEvents = (int)await cmd.ExecuteScalarAsync();
+                var result = await cmd.ExecuteScalarAsync();
+                numberOfEvents = result is DBNull or null ? 0 : Convert.ToInt32(result);
                 logger.LogInformation("There are currently '{NumberOfEvents}' Events.", numberOfEvents);
             }
 
@@ -99,7 +101,8 @@ namespace TrashMobDailyJobs
 
             using (var cmd = new SqlCommand(sql, conn))
             {
-                numberOfBags = (int)await cmd.ExecuteScalarAsync();
+                var result = await cmd.ExecuteScalarAsync();
+                numberOfBags = result is DBNull or null ? 0 : Convert.ToInt32(result);
                 logger.LogInformation("There are currently '{NumberOfBags}' Bags picked.", numberOfBags);
             }
 
@@ -114,7 +117,8 @@ namespace TrashMobDailyJobs
 
             using (var cmd = new SqlCommand(sql, conn))
             {
-                numberOfMinutes = (int)await cmd.ExecuteScalarAsync();
+                var result = await cmd.ExecuteScalarAsync();
+                numberOfMinutes = result is DBNull or null ? 0 : Convert.ToInt32(result);
                 logger.LogInformation("There are currently '{NumberOfMinutes}' minutes picked.", numberOfMinutes);
             }
 
@@ -129,7 +133,8 @@ namespace TrashMobDailyJobs
 
             using (var cmd = new SqlCommand(sql, conn))
             {
-                numberOfAttendees = (int)await cmd.ExecuteScalarAsync();
+                var result = await cmd.ExecuteScalarAsync();
+                numberOfAttendees = result is DBNull or null ? 0 : Convert.ToInt32(result);
                 logger.LogInformation("There are currently '{NumberOfAttendees}' actual attendees.", numberOfAttendees);
             }
 
@@ -144,7 +149,8 @@ namespace TrashMobDailyJobs
 
             using (var cmd = new SqlCommand(sql, conn))
             {
-                numberOfEvents = (int)await cmd.ExecuteScalarAsync();
+                var result = await cmd.ExecuteScalarAsync();
+                numberOfEvents = result is DBNull or null ? 0 : Convert.ToInt32(result);
                 logger.LogInformation("There are currently '{NumberOfEvents}' Future Events.", numberOfEvents);
             }
 
@@ -159,7 +165,8 @@ namespace TrashMobDailyJobs
 
             using (var cmd = new SqlCommand(sql, conn))
             {
-                numberOfEventAttendees = (int)await cmd.ExecuteScalarAsync();
+                var result = await cmd.ExecuteScalarAsync();
+                numberOfEventAttendees = result is DBNull or null ? 0 : Convert.ToInt32(result);
                 logger.LogInformation("There are currently '{NumberOfEventAttendees}' EventAttendees.", numberOfEventAttendees);
             }
 
@@ -174,7 +181,8 @@ namespace TrashMobDailyJobs
 
             using (var cmd = new SqlCommand(sql, conn))
             {
-                numberOfEventAttendees = (int)await cmd.ExecuteScalarAsync();
+                var result = await cmd.ExecuteScalarAsync();
+                numberOfEventAttendees = result is DBNull or null ? 0 : Convert.ToInt32(result);
                 logger.LogInformation("There are currently '{NumberOfEventAttendees}' EventAttendees.", numberOfEventAttendees);
             }
 
@@ -189,7 +197,8 @@ namespace TrashMobDailyJobs
 
             using (var cmd = new SqlCommand(sql, conn))
             {
-                numberOfContactRequests = (int)await cmd.ExecuteScalarAsync();
+                var result = await cmd.ExecuteScalarAsync();
+                numberOfContactRequests = result is DBNull or null ? 0 : Convert.ToInt32(result);
                 logger.LogInformation("There are currently '{NumberOfContactRequests}' Contact Requests.", numberOfContactRequests);
             }
 
@@ -204,7 +213,8 @@ namespace TrashMobDailyJobs
 
             using (var cmd = new SqlCommand(sql, conn))
             {
-                numberOfLitterReports = (int)await cmd.ExecuteScalarAsync();
+                var result = await cmd.ExecuteScalarAsync();
+                numberOfLitterReports = result is DBNull or null ? 0 : Convert.ToInt32(result);
                 logger.LogInformation("There are currently '{NumberOfLitterReports}' Litter Reports.", numberOfLitterReports);
             }
 
@@ -219,7 +229,8 @@ namespace TrashMobDailyJobs
 
             using (var cmd = new SqlCommand(sql, conn))
             {
-                numberOfLitterReports = (int)await cmd.ExecuteScalarAsync();
+                var result = await cmd.ExecuteScalarAsync();
+                numberOfLitterReports = result is DBNull or null ? 0 : Convert.ToInt32(result);
                 logger.LogInformation("There are currently '{NumberOfLitterReports}' New Litter Reports.", numberOfLitterReports);
             }
 
@@ -234,7 +245,8 @@ namespace TrashMobDailyJobs
 
             using (var cmd = new SqlCommand(sql, conn))
             {
-                numberOfLitterReports = (int)await cmd.ExecuteScalarAsync();
+                var result = await cmd.ExecuteScalarAsync();
+                numberOfLitterReports = result is DBNull or null ? 0 : Convert.ToInt32(result);
                 logger.LogInformation("There are currently '{NumberOfLitterReports}' Cleaned Litter Reports.", numberOfLitterReports);
             }
 
