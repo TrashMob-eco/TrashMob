@@ -76,6 +76,10 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
               name: 'ASPNETCORE_HTTP_PORTS'
               value: '8080'
             }
+            {
+              name: 'EnableSwagger'
+              value: environment != 'prod' ? 'true' : 'false'
+            }
           ]
           probes: [
             {
