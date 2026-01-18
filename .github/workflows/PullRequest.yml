@@ -60,10 +60,8 @@ jobs:
     - name: Test
       run: dotnet test .\TrashMob.sln
 
-  buildFunctionApp:
-
-    runs-on: windows-latest
-    environment: test
+  buildWebAppContainer:
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout
@@ -71,27 +69,37 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v3.1.11
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build TrashMob Web App Container
+      uses: docker/build-push-action@v5
       with:
-        versionSpec: '5.x'
-  
-    - name: Determine Version
-      id: version_step # step id used as reference for output values
-      uses: gittools/actions/gitversion/execute@v3.1.11
+        context: .
+        file: TrashMob/Dockerfile
+        push: false
+        tags: trashmob:pr-${{ github.event.pull_request.number }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
 
-    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
-      uses: actions/setup-dotnet@v4
+  buildContainerJob:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
       with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
+        fetch-depth: 0
 
-    - name: Setup DotNet ${{ env.DOTNET_VERSION2 }} Environment
-      uses: actions/setup-dotnet@v4
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build TrashMobJobs Container
+      uses: docker/build-push-action@v5
       with:
-        dotnet-version: ${{ env.DOTNET_VERSION2 }}
-
-    - name: Restore
-      run: dotnet restore .\TrashMob.sln
-
-    - name: Publish Function App
-      run: dotnet publish TrashMobJobs\TrashMobJobs.csproj --configuration ${{ env.CONFIGURATION }} --output "${{env.DOTNET_ROOT}}/trashmobjobsfunctionapp" --no-restore
+        context: .
+        file: TrashMobJobs/Dockerfile
+        push: false
+        tags: trashmobjobs:pr-${{ github.event.pull_request.number }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
