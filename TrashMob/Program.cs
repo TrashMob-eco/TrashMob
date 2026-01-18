@@ -230,13 +230,14 @@ public class Program
 
         var app = builder.Build();
 
+        var enableSwagger = builder.Environment.IsDevelopment() ||
+                            builder.Configuration.GetValue<bool>("EnableSwagger");
+
         if (builder.Environment.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
             app.UseForwardedHeaders();
             app.UseMigrationsEndPoint();
-            app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "trashmobapi v1"));
         }
         else
         {
@@ -244,6 +245,12 @@ public class Program
             app.UseForwardedHeaders();
             // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
             app.UseHsts();
+        }
+
+        if (enableSwagger)
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "trashmobapi v1"));
         }
 
         app.UseHttpsRedirection();
