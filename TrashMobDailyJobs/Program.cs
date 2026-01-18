@@ -2,6 +2,7 @@ namespace TrashMobDailyJobs
 {
     using System;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using TrashMob.Shared;
@@ -27,6 +28,13 @@ namespace TrashMobDailyJobs
 
         private static void ConfigureServices(IServiceCollection services)
         {
+            // Build configuration from environment variables
+            var configuration = new ConfigurationBuilder()
+                .AddEnvironmentVariables()
+                .Build();
+
+            services.AddSingleton<IConfiguration>(configuration);
+
             services.AddLogging(builder =>
             {
                 builder.AddConsole();
