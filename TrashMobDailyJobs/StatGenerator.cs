@@ -2,33 +2,26 @@ namespace TrashMobDailyJobs
 {
     using System;
     using System.Text;
-    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Data.SqlClient;
-    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using TrashMob.Models;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers;
     using TrashMob.Shared.Poco;
 
-    public class StatGeneratorWorker : BackgroundService
+    public class StatGenerator
     {
-        private readonly ILogger<StatGeneratorWorker> logger;
+        private readonly ILogger<StatGenerator> logger;
 
-        public StatGeneratorWorker(ILogger<StatGeneratorWorker> logger)
+        public StatGenerator(ILogger<StatGenerator> logger)
         {
             this.logger = logger;
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        public async Task RunAsync()
         {
-            await RunAsync(stoppingToken);
-        }
-
-        private async Task RunAsync(CancellationToken cancellationToken)
-        {
-            logger.LogInformation("Getting Stats trigger function executed at: {Time}", DateTime.UtcNow);
+            logger.LogInformation("StatGenerator job started at: {Time}", DateTime.UtcNow);
             var connectionString = Environment.GetEnvironmentVariable("TMDBServerConnectionString");
             var sendGridApiKey = Environment.GetEnvironmentVariable("SendGridApiKey");
             var instanceName = Environment.GetEnvironmentVariable("InstanceName");
@@ -49,206 +42,207 @@ namespace TrashMobDailyJobs
 
             using (var conn = new SqlConnection(connectionString))
             {
-                await conn.OpenAsync(cancellationToken);
+                await conn.OpenAsync();
 
-                siteStats.UserCount = await CountUsers(conn, cancellationToken);
-                siteStats.EventCount = await CountEvents(conn, cancellationToken);
-                siteStats.AttendeeCount = await CountEventAttendees(conn, cancellationToken);
-                siteStats.FutureEventsCount = await CountFutureEvents(conn, cancellationToken);
-                siteStats.FutureEventAttendeesCount = await CountFutureEventAttendees(conn, cancellationToken);
-                siteStats.ContactRequestsCount = await CountContactRequests(conn, cancellationToken);
-                siteStats.BagsCount = await CountBags(conn, cancellationToken);
-                siteStats.MinutesCount = await CountMinutes(conn, cancellationToken);
-                siteStats.ActualAttendeesCount = await CountActualAttendees(conn, cancellationToken);
-                siteStats.LitterReportsCount = await CountLitterReports(conn, cancellationToken);
-                siteStats.NewLitterReportsCount = await CountNewLitterReports(conn, cancellationToken);
-                siteStats.CleanedLitterReportsCount = await CountCleanedLitterReports(conn, cancellationToken);
+                siteStats.UserCount = await CountUsers(conn);
+                siteStats.EventCount = await CountEvents(conn);
+                siteStats.AttendeeCount = await CountEventAttendees(conn);
+                siteStats.FutureEventsCount = await CountFutureEvents(conn);
+                siteStats.FutureEventAttendeesCount = await CountFutureEventAttendees(conn);
+                siteStats.ContactRequestsCount = await CountContactRequests(conn);
+                siteStats.BagsCount = await CountBags(conn);
+                siteStats.MinutesCount = await CountMinutes(conn);
+                siteStats.ActualAttendeesCount = await CountActualAttendees(conn);
+                siteStats.LitterReportsCount = await CountLitterReports(conn);
+                siteStats.NewLitterReportsCount = await CountNewLitterReports(conn);
+                siteStats.CleanedLitterReportsCount = await CountCleanedLitterReports(conn);
             }
 
             await SendSummaryReport(siteStats, instanceName, sendGridApiKey);
+            logger.LogInformation("StatGenerator job completed at: {Time}", DateTime.UtcNow);
         }
 
-        private async Task<int> CountUsers(SqlConnection conn, CancellationToken cancellationToken)
+        private async Task<int> CountUsers(SqlConnection conn)
         {
             var sql = "SELECT count(*) FROM dbo.Users";
             var numberOfUsers = 0;
 
             using (var cmd = new SqlCommand(sql, conn))
             {
-                numberOfUsers = (int)await cmd.ExecuteScalarAsync(cancellationToken);
+                numberOfUsers = (int)await cmd.ExecuteScalarAsync();
                 logger.LogInformation("There are currently '{NumberOfUsers}' Users.", numberOfUsers);
             }
 
-            await AddSiteMetrics(conn, "TotalSiteUsers", numberOfUsers, cancellationToken);
+            await AddSiteMetrics(conn, "TotalSiteUsers", numberOfUsers);
             return numberOfUsers;
         }
 
-        private async Task<int> CountEvents(SqlConnection conn, CancellationToken cancellationToken)
+        private async Task<int> CountEvents(SqlConnection conn)
         {
             var sql = "SELECT count(*) FROM dbo.Events where eventstatusid != 3";
             var numberOfEvents = 0;
 
             using (var cmd = new SqlCommand(sql, conn))
             {
-                numberOfEvents = (int)await cmd.ExecuteScalarAsync(cancellationToken);
+                numberOfEvents = (int)await cmd.ExecuteScalarAsync();
                 logger.LogInformation("There are currently '{NumberOfEvents}' Events.", numberOfEvents);
             }
 
-            await AddSiteMetrics(conn, "TotalEvents", numberOfEvents, cancellationToken);
+            await AddSiteMetrics(conn, "TotalEvents", numberOfEvents);
             return numberOfEvents;
         }
 
-        private async Task<int> CountBags(SqlConnection conn, CancellationToken cancellationToken)
+        private async Task<int> CountBags(SqlConnection conn)
         {
             var sql = "SELECT sum(NumberOfBags) + sum(NumberOfBuckets)/3 FROM dbo.EventSummaries";
             var numberOfBags = 0;
 
             using (var cmd = new SqlCommand(sql, conn))
             {
-                numberOfBags = (int)await cmd.ExecuteScalarAsync(cancellationToken);
+                numberOfBags = (int)await cmd.ExecuteScalarAsync();
                 logger.LogInformation("There are currently '{NumberOfBags}' Bags picked.", numberOfBags);
             }
 
-            await AddSiteMetrics(conn, "TotalBags", numberOfBags, cancellationToken);
+            await AddSiteMetrics(conn, "TotalBags", numberOfBags);
             return numberOfBags;
         }
 
-        private async Task<int> CountMinutes(SqlConnection conn, CancellationToken cancellationToken)
+        private async Task<int> CountMinutes(SqlConnection conn)
         {
             var sql = "SELECT sum(DurationInMinutes * ActualNumberOfAttendees) FROM dbo.EventSummaries";
             var numberOfMinutes = 0;
 
             using (var cmd = new SqlCommand(sql, conn))
             {
-                numberOfMinutes = (int)await cmd.ExecuteScalarAsync(cancellationToken);
+                numberOfMinutes = (int)await cmd.ExecuteScalarAsync();
                 logger.LogInformation("There are currently '{NumberOfMinutes}' minutes picked.", numberOfMinutes);
             }
 
-            await AddSiteMetrics(conn, "TotalMinutes", numberOfMinutes, cancellationToken);
+            await AddSiteMetrics(conn, "TotalMinutes", numberOfMinutes);
             return numberOfMinutes;
         }
 
-        private async Task<int> CountActualAttendees(SqlConnection conn, CancellationToken cancellationToken)
+        private async Task<int> CountActualAttendees(SqlConnection conn)
         {
             var sql = "SELECT sum(ActualNumberOfAttendees) FROM dbo.EventSummaries";
             var numberOfAttendees = 0;
 
             using (var cmd = new SqlCommand(sql, conn))
             {
-                numberOfAttendees = (int)await cmd.ExecuteScalarAsync(cancellationToken);
+                numberOfAttendees = (int)await cmd.ExecuteScalarAsync();
                 logger.LogInformation("There are currently '{NumberOfAttendees}' actual attendees.", numberOfAttendees);
             }
 
-            await AddSiteMetrics(conn, "ActualAttendees", numberOfAttendees, cancellationToken);
+            await AddSiteMetrics(conn, "ActualAttendees", numberOfAttendees);
             return numberOfAttendees;
         }
 
-        private async Task<int> CountFutureEvents(SqlConnection conn, CancellationToken cancellationToken)
+        private async Task<int> CountFutureEvents(SqlConnection conn)
         {
             var sql = "SELECT count(*) FROM dbo.Events WHERE EventDate > GetDate() and eventstatusid != 3";
             var numberOfEvents = 0;
 
             using (var cmd = new SqlCommand(sql, conn))
             {
-                numberOfEvents = (int)await cmd.ExecuteScalarAsync(cancellationToken);
+                numberOfEvents = (int)await cmd.ExecuteScalarAsync();
                 logger.LogInformation("There are currently '{NumberOfEvents}' Future Events.", numberOfEvents);
             }
 
-            await AddSiteMetrics(conn, "TotalFutureEvents", numberOfEvents, cancellationToken);
+            await AddSiteMetrics(conn, "TotalFutureEvents", numberOfEvents);
             return numberOfEvents;
         }
 
-        private async Task<int> CountEventAttendees(SqlConnection conn, CancellationToken cancellationToken)
+        private async Task<int> CountEventAttendees(SqlConnection conn)
         {
             var sql = "SELECT count(*) FROM dbo.EventAttendees ea inner join dbo.Events e on ea.EventId = e.id WHERE eventstatusid != 3";
             var numberOfEventAttendees = 0;
 
             using (var cmd = new SqlCommand(sql, conn))
             {
-                numberOfEventAttendees = (int)await cmd.ExecuteScalarAsync(cancellationToken);
+                numberOfEventAttendees = (int)await cmd.ExecuteScalarAsync();
                 logger.LogInformation("There are currently '{NumberOfEventAttendees}' EventAttendees.", numberOfEventAttendees);
             }
 
-            await AddSiteMetrics(conn, "TotalEventAttendees", numberOfEventAttendees, cancellationToken);
+            await AddSiteMetrics(conn, "TotalEventAttendees", numberOfEventAttendees);
             return numberOfEventAttendees;
         }
 
-        private async Task<int> CountFutureEventAttendees(SqlConnection conn, CancellationToken cancellationToken)
+        private async Task<int> CountFutureEventAttendees(SqlConnection conn)
         {
             var sql = "Select count(*) from dbo.EventAttendees ea inner join dbo.Events e on ea.EventId = e.id WHERE e.EventDate > GetDate() and eventstatusid != 3";
             var numberOfEventAttendees = 0;
 
             using (var cmd = new SqlCommand(sql, conn))
             {
-                numberOfEventAttendees = (int)await cmd.ExecuteScalarAsync(cancellationToken);
+                numberOfEventAttendees = (int)await cmd.ExecuteScalarAsync();
                 logger.LogInformation("There are currently '{NumberOfEventAttendees}' EventAttendees.", numberOfEventAttendees);
             }
 
-            await AddSiteMetrics(conn, "TotalFutureEventAttendees", numberOfEventAttendees, cancellationToken);
+            await AddSiteMetrics(conn, "TotalFutureEventAttendees", numberOfEventAttendees);
             return numberOfEventAttendees;
         }
 
-        private async Task<int> CountContactRequests(SqlConnection conn, CancellationToken cancellationToken)
+        private async Task<int> CountContactRequests(SqlConnection conn)
         {
             var sql = "SELECT count(*) FROM dbo.ContactRequests";
             var numberOfContactRequests = 0;
 
             using (var cmd = new SqlCommand(sql, conn))
             {
-                numberOfContactRequests = (int)await cmd.ExecuteScalarAsync(cancellationToken);
+                numberOfContactRequests = (int)await cmd.ExecuteScalarAsync();
                 logger.LogInformation("There are currently '{NumberOfContactRequests}' Contact Requests.", numberOfContactRequests);
             }
 
-            await AddSiteMetrics(conn, "TotalContactRequests", numberOfContactRequests, cancellationToken);
+            await AddSiteMetrics(conn, "TotalContactRequests", numberOfContactRequests);
             return numberOfContactRequests;
         }
 
-        private async Task<int> CountLitterReports(SqlConnection conn, CancellationToken cancellationToken)
+        private async Task<int> CountLitterReports(SqlConnection conn)
         {
             var sql = "SELECT count(*) FROM dbo.LitterReports";
             var numberOfLitterReports = 0;
 
             using (var cmd = new SqlCommand(sql, conn))
             {
-                numberOfLitterReports = (int)await cmd.ExecuteScalarAsync(cancellationToken);
+                numberOfLitterReports = (int)await cmd.ExecuteScalarAsync();
                 logger.LogInformation("There are currently '{NumberOfLitterReports}' Litter Reports.", numberOfLitterReports);
             }
 
-            await AddSiteMetrics(conn, "TotalLitterReports", numberOfLitterReports, cancellationToken);
+            await AddSiteMetrics(conn, "TotalLitterReports", numberOfLitterReports);
             return numberOfLitterReports;
         }
 
-        private async Task<int> CountNewLitterReports(SqlConnection conn, CancellationToken cancellationToken)
+        private async Task<int> CountNewLitterReports(SqlConnection conn)
         {
             var sql = "SELECT count(*) FROM dbo.LitterReports where LitterReportStatusId = " + LitterReportStatusEnum.New;
             var numberOfLitterReports = 0;
 
             using (var cmd = new SqlCommand(sql, conn))
             {
-                numberOfLitterReports = (int)await cmd.ExecuteScalarAsync(cancellationToken);
+                numberOfLitterReports = (int)await cmd.ExecuteScalarAsync();
                 logger.LogInformation("There are currently '{NumberOfLitterReports}' New Litter Reports.", numberOfLitterReports);
             }
 
-            await AddSiteMetrics(conn, "TotalNewLitterReports", numberOfLitterReports, cancellationToken);
+            await AddSiteMetrics(conn, "TotalNewLitterReports", numberOfLitterReports);
             return numberOfLitterReports;
         }
 
-        private async Task<int> CountCleanedLitterReports(SqlConnection conn, CancellationToken cancellationToken)
+        private async Task<int> CountCleanedLitterReports(SqlConnection conn)
         {
             var sql = "SELECT count(*) FROM dbo.LitterReports where LitterReportStatusId = " + LitterReportStatusEnum.Cleaned;
             var numberOfLitterReports = 0;
 
             using (var cmd = new SqlCommand(sql, conn))
             {
-                numberOfLitterReports = (int)await cmd.ExecuteScalarAsync(cancellationToken);
+                numberOfLitterReports = (int)await cmd.ExecuteScalarAsync();
                 logger.LogInformation("There are currently '{NumberOfLitterReports}' Cleaned Litter Reports.", numberOfLitterReports);
             }
 
-            await AddSiteMetrics(conn, "TotalCleanedLitterReports", numberOfLitterReports, cancellationToken);
+            await AddSiteMetrics(conn, "TotalCleanedLitterReports", numberOfLitterReports);
             return numberOfLitterReports;
         }
 
-        private async Task AddSiteMetrics(SqlConnection conn, string metricType, long metricValue, CancellationToken cancellationToken)
+        private async Task AddSiteMetrics(SqlConnection conn, string metricType, long metricValue)
         {
             var id = Guid.NewGuid();
             var processedTime = DateTimeOffset.Now;
@@ -259,7 +253,7 @@ namespace TrashMobDailyJobs
             command.Parameters.AddWithValue("@metricType", metricType);
             command.Parameters.AddWithValue("@metricValue", metricValue);
 
-            var result = await command.ExecuteNonQueryAsync(cancellationToken);
+            var result = await command.ExecuteNonQueryAsync();
 
             if (result < 0)
             {
