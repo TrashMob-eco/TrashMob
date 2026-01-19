@@ -11,16 +11,25 @@
     using TrashMob.Shared.Persistence.Interfaces;
     using TrashMob.Shared.Poco.IFTTT;
 
+    /// <summary>
+    /// Manages IFTTT query requests for retrieving event data based on location filters.
+    /// </summary>
     internal class QueriesManager : BaseManager<IftttTrigger>, IQueriesManager
     {
         private readonly IKeyedRepository<Event> eventRepository;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QueriesManager"/> class.
+        /// </summary>
+        /// <param name="repository">The repository for IFTTT trigger data access.</param>
+        /// <param name="eventRepository">The repository for event data access.</param>
         public QueriesManager(IBaseRepository<IftttTrigger> repository, IKeyedRepository<Event> eventRepository) :
             base(repository)
         {
             this.eventRepository = eventRepository;
         }
 
+        /// <inheritdoc />
         public async Task<List<IftttEventResponse>> GetEventsQueryDataAsync(QueriesRequest queryRequest, Guid userId,
             CancellationToken cancellationToken)
         {

@@ -10,14 +10,22 @@
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
 
+    /// <summary>
+    /// Manages partner social media accounts including CRUD operations and retrieving the associated partner.
+    /// </summary>
     public class PartnerSocialMediaAccountManager : KeyedManager<PartnerSocialMediaAccount>,
         IPartnerSocialMediaAccountManager
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PartnerSocialMediaAccountManager"/> class.
+        /// </summary>
+        /// <param name="repository">The repository for partner social media account data access.</param>
         public PartnerSocialMediaAccountManager(IKeyedRepository<PartnerSocialMediaAccount> repository) : base(
             repository)
         {
         }
 
+        /// <inheritdoc />
         public override async Task<IEnumerable<PartnerSocialMediaAccount>> GetByParentIdAsync(Guid parentId,
             CancellationToken cancellationToken)
         {
@@ -25,6 +33,7 @@
                 .AsEnumerable();
         }
 
+        /// <inheritdoc />
         public async Task<Partner> GetPartnerForSocialMediaAccount(Guid partnerSocialMediaAccountId,
             CancellationToken cancellationToken)
         {
