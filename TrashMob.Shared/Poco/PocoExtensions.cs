@@ -3,8 +3,16 @@
     using TrashMob.Models;
     using TrashMob.Models.Poco;
 
+    /// <summary>
+    /// Contains extension methods for converting domain models to display POCOs.
+    /// </summary>
     public static class PocoExtensions
     {
+        /// <summary>
+        /// Converts a <see cref="User"/> entity to a <see cref="DisplayUser"/> POCO.
+        /// </summary>
+        /// <param name="user">The user entity to convert.</param>
+        /// <returns>A <see cref="DisplayUser"/> containing the user's display information.</returns>
         public static DisplayUser ToDisplayUser(this User user)
         {
             return new DisplayUser
@@ -19,6 +27,12 @@
             };
         }
 
+        /// <summary>
+        /// Converts an <see cref="Event"/> entity to a <see cref="DisplayEvent"/> POCO.
+        /// </summary>
+        /// <param name="mobEvent">The event entity to convert.</param>
+        /// <param name="userName">The username of the event creator to include in the display object.</param>
+        /// <returns>A <see cref="DisplayEvent"/> containing the event's display information.</returns>
         public static DisplayEvent ToDisplayEvent(this Event mobEvent, string userName)
         {
             return new DisplayEvent

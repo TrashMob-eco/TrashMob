@@ -20,7 +20,8 @@ To see what is currently deployed to the prod environment, go to:
 https://www.trashmob.eco
 
 To see what is currently deployed to the dev environment, go to:
-https://as-tm-dev-westus2.azurewebsites.net/
+https://as-tm-dev-westus2.azurewebsites.net/ (Web App - Being Deprecated)
+https://ca-tm-dev-westus2.ashypebble-059d2628.westus2.azurecontainerapps.io/ (Container App - Testing)
 
 # FAQ 
 ## What is the current state of this project?
@@ -59,14 +60,17 @@ If you are not doing any database changes (i.e. design work, error handling, etc
 .\setupdev.ps1 -environment dev -region westus2 -subscription 39a254b7-c01a-45ab-bebd-4038ea4adea9
 ```
 
-### To view the Swagger for the TrashMobAPI (Develpment Environment only)
+### To view the Swagger for the TrashMobAPI (Dev Environment only)
+1. Go to https://ca-tm-dev-westus2.ashypebble-059d2628.westus2.azurecontainerapps.io/swagger/index.html
+
+### To view the Swagger for the TrashMobAPI (Local Environment only)
 
 1. Start the TrashMob project in Visual Studio
 1. Go to https://localhost:44332/swagger/index.html
 1. If you want to test the API, you will need to log in to the site first, and then use the token from the site to authenticate in the Swagger UI.
 
 ### To set up your own environment to test in:
-You must use this if you are making database changes to ensure you do not break the backend for everyone else:
+You must use this if you are making major database changes to ensure you do not break the backend for everyone else:
 
 1. Follow the Infrastructure Deployment Steps (here)[.\Deploy\readme.md].
 1. Run the following script on your machine from the TrashMob folder in the project to set up your dev machine to run the project locally. You must be logged into Azure in your PowerShell window in the correct subscription
@@ -96,13 +100,6 @@ Add the following launchsettings.json file (may need to create it if you don't h
     }
   },
   "profiles": {
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
     "TrashMob": {
       "commandName": "Project",
       "launchBrowser": true,

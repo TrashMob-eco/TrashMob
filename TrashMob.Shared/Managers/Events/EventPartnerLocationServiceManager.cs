@@ -13,6 +13,9 @@
     using TrashMob.Shared.Persistence.Interfaces;
     using EmailAddress = TrashMob.Shared.Poco.EmailAddress;
 
+    /// <summary>
+    /// Manages event partner location services including partnership requests and approvals.
+    /// </summary>
     public class EventPartnerLocationServiceManager : BaseManager<EventPartnerLocationService>,
         IEventPartnerLocationServiceManager
     {
@@ -24,6 +27,9 @@
         private readonly IKeyedRepository<Partner> partnerRepository;
         private readonly IKeyedRepository<User> userRepository;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EventPartnerLocationServiceManager"/> class.
+        /// </summary>
         public EventPartnerLocationServiceManager(IBaseRepository<EventPartnerLocationService> repository,
             IKeyedRepository<Event> eventRepository,
             IKeyedRepository<Partner> partnerRepository,
@@ -43,6 +49,7 @@
             this.emailManager = emailManager;
         }
 
+        /// <inheritdoc />
         public override async Task<EventPartnerLocationService> AddAsync(EventPartnerLocationService instance,
             Guid userId, CancellationToken cancellationToken = default)
         {
@@ -116,6 +123,7 @@
             return existingService;
         }
 
+        /// <inheritdoc />
         public override async Task<EventPartnerLocationService> UpdateAsync(EventPartnerLocationService instance,
             Guid userId, CancellationToken cancellationToken = default)
         {
@@ -182,6 +190,7 @@
             return existingService;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<DisplayPartnerLocationServiceEvent>> GetByPartnerLocationAsync(
             Guid partnerLocationId, CancellationToken cancellationToken = default)
         {
@@ -223,6 +232,7 @@
             return displayEventPartners;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<DisplayPartnerLocationServiceEvent>> GetByUserAsync(Guid userId,
             CancellationToken cancellationToken = default)
         {
@@ -272,6 +282,7 @@
             return displayEventPartners;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<DisplayEventPartnerLocationService>> GetByEventAndPartnerLocationAsync(
             Guid eventId, Guid partnerLocationId, CancellationToken cancellationToken = default)
         {
@@ -330,6 +341,7 @@
             return displayEventPartnerLocationServices;
         }
 
+        /// <inheritdoc />
         public async Task<PartnerLocation> GetHaulingPartnerLocationForEvent(Guid eventId,
             CancellationToken cancellationToken = default)
         {
@@ -343,6 +355,7 @@
             return partnerLocation;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<DisplayEventPartnerLocation>> GetByEventAsync(Guid eventId,
             CancellationToken cancellationToken = default)
         {
@@ -418,6 +431,7 @@
             return displayEventPartners;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<EventPartnerLocationService>> GetCurrentPartnersAsync(Guid eventId,
             CancellationToken cancellationToken)
         {
@@ -429,6 +443,7 @@
             return eventPartners;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<PartnerLocation>> GetPotentialPartnerLocationsAsync(Guid eventId,
             CancellationToken cancellationToken)
         {
@@ -447,6 +462,7 @@
             return partnerLocations;
         }
 
+        /// <inheritdoc />
         public async Task<int> DeleteAsync(Guid eventId, Guid partnerLocationId, int serviceTypeId,
             CancellationToken cancellationToken = default)
         {

@@ -3,8 +3,16 @@
     using System;
     using TrashMob.Models;
 
+    /// <summary>
+    /// Extension methods for the PartnerRequest class.
+    /// </summary>
     public static class PartnerRequestExtensions
     {
+        /// <summary>
+        /// Converts a PartnerRequest to a new Partner entity with an associated PartnerContact.
+        /// </summary>
+        /// <param name="originalPartnerRequest">The partner request to convert.</param>
+        /// <returns>A new Partner entity with the request data.</returns>
         public static Partner ToPartner(this PartnerRequest originalPartnerRequest)
         {
             var partnerContact = new PartnerContact();
