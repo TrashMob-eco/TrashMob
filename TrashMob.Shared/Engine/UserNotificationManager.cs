@@ -5,6 +5,9 @@
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
 
+    /// <summary>
+    /// Manages and orchestrates all user notification engines.
+    /// </summary>
     public class UserNotificationManager : IUserNotificationManager
     {
         private readonly IEmailManager emailManager;
@@ -18,6 +21,19 @@
         private readonly IKeyedManager<User> userManager;
         private readonly IKeyedManager<UserNotification> userNotificationManager;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserNotificationManager"/> class.
+        /// </summary>
+        /// <param name="eventManager">Manager for event operations.</param>
+        /// <param name="userManager">Manager for user operations.</param>
+        /// <param name="eventAttendeeManager">Manager for event attendee operations.</param>
+        /// <param name="userNotificationManager">Manager for user notification tracking.</param>
+        /// <param name="nonEventUserNotificationManager">Manager for non-event notifications.</param>
+        /// <param name="emailSender">Service for sending emails.</param>
+        /// <param name="emailManager">Manager for email operations.</param>
+        /// <param name="mapRepository">Repository for map services.</param>
+        /// <param name="eventSummaryManager">Manager for event summaries.</param>
+        /// <param name="logger">Logger instance.</param>
         public UserNotificationManager(IEventManager eventManager,
             IKeyedManager<User> userManager,
             IEventAttendeeManager eventAttendeeManager,
@@ -41,6 +57,7 @@
             this.logger = logger;
         }
 
+        /// <inheritdoc />
         public async Task RunAllNotifications()
         {
             logger.LogInformation("Starting RunAllNotifications");

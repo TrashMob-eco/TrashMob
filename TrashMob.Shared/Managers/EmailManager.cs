@@ -13,11 +13,20 @@
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Poco;
 
+    /// <summary>
+    /// Manages email operations including template retrieval and sending templated emails via SendGrid.
+    /// </summary>
     public class EmailManager : IEmailManager
     {
         private readonly IEmailSender emailSender;
         private readonly ILogger<EmailManager> logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EmailManager"/> class.
+        /// </summary>
+        /// <param name="configuration">The configuration containing email settings.</param>
+        /// <param name="emailSender">The email sender service.</param>
+        /// <param name="logger">The logger instance.</param>
         public EmailManager(IConfiguration configuration, IEmailSender emailSender, ILogger<EmailManager> logger)
         {
             this.emailSender = emailSender;
@@ -25,6 +34,7 @@
             this.emailSender.ApiKey = configuration["sendGridApiKey"];
         }
 
+        /// <inheritdoc />
         public string GetHtmlEmailCopy(string notificationType)
         {
             var assembly = Assembly.GetExecutingAssembly();
@@ -41,6 +51,7 @@
             return result;
         }
 
+        /// <inheritdoc />
         public async Task SendTemplatedEmailAsync(string subject, string templateId, int groupId,
             object dynamicTemplateData, List<EmailAddress> recipients, CancellationToken cancellationToken = default)
         {
@@ -57,6 +68,7 @@
             await emailSender.SendTemplatedEmailAsync(email, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <inheritdoc />
         public Task<IEnumerable<EmailTemplate>> GetEmailTemplatesAsync(CancellationToken cancellationToken)
         {
             var emailTemplates = new List<EmailTemplate>();
@@ -76,6 +88,7 @@
             return Task.FromResult(emailTemplates.AsEnumerable());
         }
 
+        /// <inheritdoc />
         public string GetEmailTemplate(string notificationType)
         {
             var assembly = Assembly.GetExecutingAssembly();
@@ -92,6 +105,7 @@
             return result;
         }
 
+        /// <inheritdoc />
         public string GetHtmlEmailTemplate(string notificationType)
         {
             var assembly = Assembly.GetExecutingAssembly();

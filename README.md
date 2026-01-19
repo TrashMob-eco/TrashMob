@@ -20,7 +20,8 @@ To see what is currently deployed to the prod environment, go to:
 https://www.trashmob.eco
 
 To see what is currently deployed to the dev environment, go to:
-https://as-tm-dev-westus2.azurewebsites.net/
+https://as-tm-dev-westus2.azurewebsites.net/ (Web App - Being Deprecated)
+https://ca-tm-dev-westus2.ashypebble-059d2628.westus2.azurecontainerapps.io/ (Container App - Testing)
 
 # FAQ 
 ## What is the current state of this project?

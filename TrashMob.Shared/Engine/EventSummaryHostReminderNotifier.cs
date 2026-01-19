@@ -8,8 +8,14 @@
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
 
+    /// <summary>
+    /// Notification engine that reminds event hosts to complete their event summary after an event.
+    /// </summary>
     public class EventSummaryHostReminderNotifier : NotificationEngineBase, INotificationEngine
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EventSummaryHostReminderNotifier"/> class.
+        /// </summary>
         public EventSummaryHostReminderNotifier(IEventManager eventManager,
             IKeyedManager<User> userManager,
             IEventAttendeeManager eventAttendeeManager,
@@ -33,6 +39,7 @@
         protected override string EmailSubject =>
             "Your TrashMob.eco event has completed. We'd love to know how it went!";
 
+        /// <inheritdoc />
         public async Task GenerateNotificationsAsync(CancellationToken cancellationToken = default)
         {
             Logger.LogInformation("Generating Notifications for {0}", NotificationType);

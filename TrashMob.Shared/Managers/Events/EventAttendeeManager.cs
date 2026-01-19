@@ -11,11 +11,20 @@
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
 
+    /// <summary>
+    /// Manages event attendee registrations and tracks which events users are attending.
+    /// </summary>
     public class EventAttendeeManager : BaseManager<EventAttendee>, IBaseManager<EventAttendee>, IEventAttendeeManager
     {
         private readonly IEmailManager emailManager;
         private readonly IKeyedRepository<Event> eventRepository;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EventAttendeeManager"/> class.
+        /// </summary>
+        /// <param name="repository">The repository for event attendee data access.</param>
+        /// <param name="eventRepository">The repository for event data access.</param>
+        /// <param name="emailManager">The email manager for sending notifications.</param>
         public EventAttendeeManager(IBaseRepository<EventAttendee> repository, IKeyedRepository<Event> eventRepository,
             IEmailManager emailManager) : base(repository)
         {
@@ -23,6 +32,7 @@
             this.emailManager = emailManager;
         }
 
+        /// <inheritdoc />
         public override async Task<IEnumerable<EventAttendee>> GetByParentIdAsync(Guid parentId,
             CancellationToken cancellationToken)
         {
@@ -32,6 +42,7 @@
                 .AsEnumerable();
         }
 
+        /// <inheritdoc />
         public override async Task<int> Delete(Guid parentId, Guid secondId, CancellationToken cancellationToken)
         {
             var eventAttendee = await Repository.Get(ea => ea.EventId == parentId && ea.UserId == secondId)
@@ -40,6 +51,7 @@
             return await Repository.DeleteAsync(eventAttendee);
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<Event>> GetEventsUserIsAttendingAsync(Guid attendeeId,
             bool futureEventsOnly = false, CancellationToken cancellationToken = default)
         {
@@ -58,6 +70,7 @@
             return new List<Event>();
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<Event>> GetEventsUserIsAttendingAsync(EventFilter filter, Guid attendeeId,
             CancellationToken cancellationToken = default)
         {
@@ -76,6 +89,7 @@
             return new List<Event>();
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<Event>> GetCanceledEventsUserIsAttendingAsync(Guid attendeeId,
             bool futureEventsOnly = false, CancellationToken cancellationToken = default)
         {
