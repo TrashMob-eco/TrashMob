@@ -6,6 +6,7 @@ namespace TrashMob.Shared.Managers.Interfaces
     using System.Threading.Tasks;
     using TrashMob.Models;
     using TrashMob.Models.Poco;
+    using TrashMob.Shared.Poco;
 
     /// <summary>
     /// Defines operations for managing litter reports.
@@ -84,5 +85,15 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
         /// <returns>The number of entities deleted.</returns>
         Task<int> DeleteAsync(Guid id, Guid userId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Adds a new litter report with detailed result information.
+        /// </summary>
+        /// <param name="litterReport">The litter report to add.</param>
+        /// <param name="userId">The unique identifier of the user creating the report.</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>A service result containing the created litter report or error details.</returns>
+        Task<ServiceResult<LitterReport>> AddWithResultAsync(LitterReport litterReport, Guid userId,
+            CancellationToken cancellationToken = default);
     }
 }
