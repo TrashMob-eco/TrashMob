@@ -5,10 +5,11 @@ import { Button } from '@/components/ui/button';
 type HeaderProps = {
   leftButton?: React.ReactNode
 }
+// border-b shadow-md shadow-black/10 bg-white
 
 export const Header = (props: HeaderProps) => {
   return (
-    <div className='border-b shadow-md shadow-black/10 bg-white py-4 fixed w-full'>
+    <div className='py-4 fixed w-full'>
       <div className='container'>
         <div className='flex items-center flex-wrap flex-row'>
           {props.leftButton 

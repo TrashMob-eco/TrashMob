@@ -16,7 +16,12 @@ $storageAccountName = "stortm$environment$region"
 $appInsightsName = "ai-tm-${environment}-${region}"
 $appServiceName = "as-tm-${environment}-${region}"
 $appServicePlanName = "asp-tm-${environment}-${region}"
-$functionAppName = "fa-tm-${environment}-${region}"
+$containerRegistryName = "acrtm${environment}${region}"
+$containerAppsEnvironmentName = "cae-tm-${environment}-${region}"
+$containerAppName = "ca-tm-${environment}-${region}"
+$containerAppJobDailyName = "caj-tm-${environment}-${region}-daily"
+$containerAppJobHourlyName = "caj-tm-${environment}-${region}-hourly"
+$logAnalyticsWorkspaceName = "log-tm-${environment}-${region}"
 
 # Make sure we are logged in to Azure and in to the correct subscription id
 az login
@@ -30,18 +35,28 @@ az deployment group create --template-file ".\azureMaps.bicep" -g $rgName --para
 az deployment group create --template-file ".\storageAccount.bicep" -g $rgName --parameters storageAccountName=$storageAccountName region=$region
 az deployment group create --template-file ".\sqlServer.bicep" -g $rgName --parameters environment=$environment region=$region sqlAdminPassword=$sqlAdminPassword
 az deployment group create --template-file ".\sqlDatabase.bicep" -g $rgName --parameters environment=$environment region=$region
-az deployment group create --template-file ".\keyVault.bicep" -g $rgName --parameters environment=$environment region=$region
+
+# Get existing Key Vault access policies to preserve them during deployment
+Write-Host "Checking for existing Key Vault access policies..." -ForegroundColor Yellow
+$existingPolicies = az keyvault show --name $keyVaultName --resource-group $rgName --query "properties.accessPolicies" 2>$null
+if ($existingPolicies) {
+    Write-Host "Found existing access policies. Preserving them during deployment." -ForegroundColor Green
+    # Save to temporary file to pass as parameter
+    $existingPolicies | Out-File -FilePath ".\temp_policies.json" -Encoding UTF8
+    az deployment group create --template-file ".\keyVault.bicep" -g $rgName --parameters environment=$environment region=$region accessPolicies="@temp_policies.json"
+    Remove-Item ".\temp_policies.json" -ErrorAction SilentlyContinue
+} else {
+    Write-Host "No existing Key Vault found or no access policies. Creating new Key Vault." -ForegroundColor Yellow
+    az deployment group create --template-file ".\keyVault.bicep" -g $rgName --parameters environment=$environment region=$region
+}
+
 az deployment group create --template-file ".\appServicePlan.bicep" -g $rgName --parameters appServicePlanName=$appServicePlanName region=$region
 az deployment group create --template-file ".\appService.bicep" -g $rgName --parameters appServicePlanName=$appServicePlanName appServiceName=$appServiceName region=$region subscriptionId=$subscriptionId rgName=$rgName alwaysOn=$alwaysOn
 az deployment group create --template-file ".\logAnalyticsWorkspace.bicep" -g $rgName --parameters environment=$environment region=$region
 az deployment group create --template-file ".\appInsights.bicep" -g $rgName --parameters appInsightsName=$appInsightsName environment=$environment region=$region subscriptionId=$subscriptionId rgName=$rgName
 
 # Need to get some values back to use later
-$appInsightsKey = az monitor app-insights component show -g $rgName -a $appInsightsName --query 'instrumentationKey' -o tsv
 $storageKey = (az storage account keys list --account-name $storageAccountName -g $rgName --query "[?keyName=='key1']" | ConvertFrom-Json)[0].value
-
-# Create function app
-az deployment group create --template-file ".\functionApp.bicep" -g $rgName --parameters region=$region functionAppName=$functionAppName serverFarmId=$appServicePlanName appInsightsInstrumentationKey=$appInsightsKey storageAccountName=$storageAccountName storageAccountKey=$storageKey
 
 # Add secrets to KeyVault
 $mapKey = az maps account keys list --name $azureMapsName --resource-group $rgName --query primaryKey
@@ -59,15 +74,28 @@ az webapp config appsettings set --name $appServiceName --resource-group $rgName
 $ipAddress = (Invoke-WebRequest -uri "http://ifconfig.me/ip").Content
 az sql server firewall-rule create --name devRule --resource-group $rgName --server sql-tm-$environment-$region --start-ip-address $ipAddress --end-ip-address $ipAddress
 
-# Get the System Managed Identity for the FunctionApp to allow the Azure Function to access KeyVault
-$principal = az functionapp identity show --name $functionAppName --subscription $subscriptionId --resource-group $rgName | ConvertFrom-Json
-$principalId = $principal.principalId
-az keyvault set-policy --name $keyVaultName --object-id $principalId --secret-permissions "get"
-
 # Add the Policy for the App Service Id to the KeyVault
 $principal2 = az webapp identity show --name $appServiceName --resource-group $rgName | ConvertFrom-Json
 $principal2Id = $principal2.principalId
 az keyvault set-policy --name $keyVaultName --object-id $principal2Id --secret-permissions get list
 
-# Set the secret in the App Settings for the function. Need to update this to use KeyVault directly in the future, but couldn't get the function app to work on first few attempts
-az functionapp config appsettings set --name $functionAppName --subscription $subscriptionId --resource-group $rgName --settings "TMDBServerConnectionString=$sqlKey" "SendGridApiKey=$sendGridApiKey" "InstanceName=$appServiceName" "AzureMapsKey=$mapKey"
+# Deploy Container Infrastructure
+Write-Host "Deploying Container Registry..." -ForegroundColor Green
+az deployment group create --template-file ".\containerRegistry.bicep" -g $rgName --parameters containerRegistryName=$containerRegistryName region=$region environment=$environment
+
+Write-Host "Deploying Container Apps Environment..." -ForegroundColor Green
+az deployment group create --template-file ".\containerAppsEnvironment.bicep" -g $rgName --parameters containerAppsEnvironmentName=$containerAppsEnvironmentName region=$region logAnalyticsWorkspaceName=$logAnalyticsWorkspaceName environment=$environment
+
+# Note: Container App and Container App Job deployments will be done via GitHub Actions with actual container images
+# Uncomment the following lines after container images are built and pushed to the registry
+# Write-Host "Deploying Container App for Web Application..." -ForegroundColor Green
+# $webContainerImage = "$containerRegistryName.azurecr.io/trashmob:latest"
+# az deployment group create --template-file ".\containerApp.bicep" -g $rgName --parameters containerAppName=$containerAppName containerAppsEnvironmentId="/subscriptions/$subscriptionId/resourceGroups/$rgName/providers/Microsoft.App/managedEnvironments/$containerAppsEnvironmentName" containerRegistryName=$containerRegistryName containerImage=$webContainerImage keyVaultName=$keyVaultName region=$region environment=$environment
+
+# Write-Host "Deploying Daily Container App Job..." -ForegroundColor Green
+# $dailyJobContainerImage = "$containerRegistryName.azurecr.io/trashmobdailyjobs:latest"
+# az deployment group create --template-file ".\containerAppJobDaily.bicep" -g $rgName --parameters containerAppJobName=$containerAppJobDailyName containerAppsEnvironmentId="/subscriptions/$subscriptionId/resourceGroups/$rgName/providers/Microsoft.App/managedEnvironments/$containerAppsEnvironmentName" containerRegistryName=$containerRegistryName containerImage=$dailyJobContainerImage keyVaultName=$keyVaultName azureMapsName=$azureMapsName storageAccountName=$storageAccountName region=$region environment=$environment
+
+# Write-Host "Deploying Hourly Container App Job..." -ForegroundColor Green
+# $hourlyJobContainerImage = "$containerRegistryName.azurecr.io/trashmobhourlyjobs:latest"
+# az deployment group create --template-file ".\containerAppJobHourly.bicep" -g $rgName --parameters containerAppJobName=$containerAppJobHourlyName containerAppsEnvironmentId="/subscriptions/$subscriptionId/resourceGroups/$rgName/providers/Microsoft.App/managedEnvironments/$containerAppsEnvironmentName" containerRegistryName=$containerRegistryName containerImage=$hourlyJobContainerImage keyVaultName=$keyVaultName azureMapsName=$azureMapsName storageAccountName=$storageAccountName region=$region environment=$environment

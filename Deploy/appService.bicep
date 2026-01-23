@@ -63,15 +63,13 @@ resource sites_tm_name_web 'Microsoft.Web/sites/config@2024-04-01' = {
       'index.php'
       'hostingstart.html'
     ]
-    netFrameworkVersion: 'v5.0'
-    phpVersion: '5.6'
     requestTracingEnabled: false
     remoteDebuggingEnabled: false
     httpLoggingEnabled: false
     logsDirectorySizeLimit: 35
     detailedErrorLoggingEnabled: false
     azureStorageAccounts: {}
-    use32BitWorkerProcess: true
+    use32BitWorkerProcess: false
     webSocketsEnabled: false
     alwaysOn: alwaysOn
     managedPipelineMode: 'Integrated'
@@ -108,10 +106,10 @@ resource sites_tm_name_web 'Microsoft.Web/sites/config@2024-04-01' = {
       }
     ]
     scmIpSecurityRestrictionsUseMain: false
-    http20Enabled: false
+    http20Enabled: true
     minTlsVersion: '1.2'
-    ftpsState: 'AllAllowed'
-    reservedInstanceCount: 0
+    ftpsState: 'Disabled'
+    preWarmedInstanceCount: 0
   }
 }
 

@@ -9,16 +9,28 @@
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
 
+    /// <summary>
+    /// Controller for sending message requests. Admin only.
+    /// </summary>
     [Route("api/messagerequest")]
     public class MessageRequestController : SecureController
     {
         private readonly IMessageRequestManager messageRequestManager;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MessageRequestController"/> class.
+        /// </summary>
+        /// <param name="messageRequestManager">The message request manager.</param>
         public MessageRequestController(IMessageRequestManager messageRequestManager)
         {
             this.messageRequestManager = messageRequestManager;
         }
 
+        /// <summary>
+        /// Sends a message request. Admin only.
+        /// </summary>
+        /// <param name="messageRequest">The message request to send.</param>
+        /// <remarks>Action result.</remarks>
         [HttpPost]
         [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
         [RequiredScope(Constants.TrashMobWriteScope)]

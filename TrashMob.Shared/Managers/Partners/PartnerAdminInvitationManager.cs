@@ -13,6 +13,9 @@
     using TrashMob.Shared.Persistence.Interfaces;
     using TrashMob.Shared.Poco;
 
+    /// <summary>
+    /// Manages partner admin invitations including sending, accepting, declining, and resending invitations.
+    /// </summary>
     public class PartnerAdminInvitationManager : KeyedManager<PartnerAdminInvitation>, IPartnerAdminInvitationManager
     {
         private readonly IEmailManager emailManager;
@@ -20,6 +23,14 @@
         private readonly IKeyedManager<Partner> partnerManager;
         private readonly IUserManager userManager;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PartnerAdminInvitationManager"/> class.
+        /// </summary>
+        /// <param name="partnerAdminInvitationRepository">The repository for partner admin invitation data access.</param>
+        /// <param name="partnerAdminManager">The manager for partner admin operations.</param>
+        /// <param name="userManager">The manager for user operations.</param>
+        /// <param name="partnerManager">The manager for partner operations.</param>
+        /// <param name="emailManager">The email manager for sending notifications.</param>
         public PartnerAdminInvitationManager(IKeyedRepository<PartnerAdminInvitation> partnerAdminInvitationRepository,
             IPartnerAdminManager partnerAdminManager,
             IUserManager userManager,
@@ -33,6 +44,7 @@
             this.emailManager = emailManager;
         }
 
+        /// <inheritdoc />
         public override async Task<IEnumerable<PartnerAdminInvitation>> GetByParentIdAsync(Guid parentId,
             CancellationToken cancellationToken)
         {
@@ -40,6 +52,7 @@
                 .AsEnumerable();
         }
 
+        /// <inheritdoc />
         public async Task<Partner> GetPartnerForInvitation(Guid partnerAdminInvitationId,
             CancellationToken cancellationToken)
         {
@@ -49,6 +62,7 @@
             return partnerInvitation.Partner;
         }
 
+        /// <inheritdoc />
         public override async Task<PartnerAdminInvitation> AddAsync(PartnerAdminInvitation instance, Guid userId,
             CancellationToken cancellationToken = default)
         {
@@ -147,6 +161,7 @@
             return newInvitation;
         }
 
+        /// <inheritdoc />
         public async Task AcceptInvitation(Guid partnerAdminInviationId, Guid userId,
             CancellationToken cancellationToken)
         {
@@ -169,6 +184,7 @@
             await base.UpdateAsync(partnerAdminInvitation, userId, cancellationToken);
         }
 
+        /// <inheritdoc />
         public async Task DeclineInvitation(Guid partnerAdminInviationId, Guid userId,
             CancellationToken cancellationToken)
         {
@@ -184,6 +200,7 @@
             await base.UpdateAsync(partnerAdminInvitation, userId, cancellationToken);
         }
 
+        /// <inheritdoc />
         public async Task<PartnerAdminInvitation> ResendPartnerAdminInvitation(Guid partnerAdminInvitationId,
             Guid UserId, CancellationToken cancellationToken)
         {
@@ -245,6 +262,7 @@
             return updatedInvitation;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<DisplayPartnerAdminInvitation>> GetInvitationsForUser(Guid userId,
             CancellationToken cancellationToken)
         {

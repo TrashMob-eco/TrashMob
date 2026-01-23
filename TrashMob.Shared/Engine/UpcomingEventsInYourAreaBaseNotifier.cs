@@ -9,8 +9,14 @@
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
 
+    /// <summary>
+    /// Base class for notification engines that notify users about upcoming events in their geographic area.
+    /// </summary>
     public abstract class UpcomingEventsInYourAreaBaseNotifier : NotificationEngineBase, INotificationEngine
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UpcomingEventsInYourAreaBaseNotifier"/> class.
+        /// </summary>
         public UpcomingEventsInYourAreaBaseNotifier(IEventManager eventManager,
             IKeyedManager<User> userManager,
             IEventAttendeeManager eventAttendeeManager,
@@ -25,6 +31,7 @@
         {
         }
 
+        /// <inheritdoc />
         public async Task GenerateNotificationsAsync(CancellationToken cancellationToken = default)
         {
             Logger.LogInformation("Generating Notifications for {0}", NotificationType);

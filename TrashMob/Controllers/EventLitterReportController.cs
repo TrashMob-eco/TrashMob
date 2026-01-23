@@ -6,6 +6,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Identity.Web.Resource;
@@ -22,34 +23,55 @@
         private readonly IEventLitterReportManager eventLitterReportManager = eventLitterReportManager;
         private readonly IUserManager userManager = userManager;
 
+        /// <summary>
+        /// Gets a list of all event litter reports for a given event.
+        /// </summary>
+        /// <param name="eventId">The event ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         [HttpGet("{eventId}")]
-        public async Task<IActionResult> GetEventLitterReports(Guid eventId)
+        [ProducesResponseType(typeof(IEnumerable<EventLitterReport>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetEventLitterReports(Guid eventId, CancellationToken cancellationToken)
         {
-            var result = await eventLitterReportManager.GetByParentIdAsync(eventId, CancellationToken.None)
+            var result = await eventLitterReportManager.GetByParentIdAsync(eventId, cancellationToken)
                 .ConfigureAwait(false);
 
-            var fullEventLitterReports = await ToFullEventLitterReports(result, CancellationToken.None);
+            var fullEventLitterReports = await ToFullEventLitterReports(result, cancellationToken);
 
             TelemetryClient.TrackEvent(nameof(GetEventLitterReports));
             return Ok(fullEventLitterReports);
         }
 
+        /// <summary>
+        /// Gets an event litter report by litter report ID.
+        /// </summary>
+        /// <param name="litterReportId">The litter report ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         [HttpGet("GetByLitterReportId/{litterReportId}")]
-        public async Task<IActionResult> GetEventLitterReportByLitterReportId(Guid litterReportId)
+        [ProducesResponseType(typeof(FullEventLitterReport), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetEventLitterReportByLitterReportId(Guid litterReportId, CancellationToken cancellationToken)
         {
-            var result = await eventLitterReportManager.GetAsync(l => l.LitterReportId == litterReportId, CancellationToken.None)
+            var result = await eventLitterReportManager.GetAsync(l => l.LitterReportId == litterReportId, cancellationToken)
                 .ConfigureAwait(false);
 
             var lastEventLitterReport = result.OrderByDescending(e => e.CreatedDate).FirstOrDefault();
 
-            var fullEventLitterReport = await ToFullEventLitterReport(lastEventLitterReport, CancellationToken.None);
+            var fullEventLitterReport = await ToFullEventLitterReport(lastEventLitterReport, cancellationToken);
 
             TelemetryClient.TrackEvent(nameof(GetEventLitterReportByLitterReportId));
             return Ok(fullEventLitterReport);
         }
 
+        /// <summary>
+        /// Updates an existing event litter report.
+        /// </summary>
+        /// <param name="eventLitterReport">The event litter report to update.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>The updated event litter report.</remarks>
         [HttpPut]
         [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(EventLitterReport), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateEventLitterReport(EventLitterReport eventLitterReport,
             CancellationToken cancellationToken)
         {
@@ -82,9 +104,15 @@
             }
         }
 
+        /// <summary>
+        /// Adds a new event litter report.
+        /// </summary>
+        /// <param name="eventLitterReport">The event litter report to add.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         [HttpPost]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         public async Task<IActionResult> AddEventLitterReport(EventLitterReport eventLitterReport,
             CancellationToken cancellationToken)
         {
@@ -93,10 +121,17 @@
             return Ok();
         }
 
+        /// <summary>
+        /// Deletes an event litter report.
+        /// </summary>
+        /// <param name="eventId">The event ID.</param>
+        /// <param name="litterReportId">The litter report ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         [HttpDelete("{eventId}/{litterReportId}")]
         // Todo: Tighten this down
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(void), 204)]
         public async Task<IActionResult> DeleteEventLitterReport(Guid eventId, Guid litterReportId,
             CancellationToken cancellationToken)
         {

@@ -12,7 +12,8 @@ on:
       - 'TrashMob.Models/**'
       - 'TrashMob.Shared/**'
       - 'TrashMob.Shared.Tests/**'
-      - 'TrashMobJobs/**'
+      - 'TrashMobDailyJobs/**'
+      - 'TrashMobHourlyJobs/**'
       - 'TrashMob.sln'
       - '!TrashMobMobileApp/**'
 
@@ -60,10 +61,8 @@ jobs:
     - name: Test
       run: dotnet test .\TrashMob.sln
 
-  buildFunctionApp:
-
-    runs-on: windows-latest
-    environment: test
+  buildWebAppContainer:
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout
@@ -71,27 +70,59 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v3.1.11
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build TrashMob Web App Container
+      uses: docker/build-push-action@v5
       with:
-        versionSpec: '5.x'
-  
-    - name: Determine Version
-      id: version_step # step id used as reference for output values
-      uses: gittools/actions/gitversion/execute@v3.1.11
+        context: .
+        file: TrashMob/Dockerfile
+        push: false
+        tags: trashmob:pr-${{ github.event.pull_request.number }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
 
-    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
-      uses: actions/setup-dotnet@v4
+  buildDailyContainerJob:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
       with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
+        fetch-depth: 0
 
-    - name: Setup DotNet ${{ env.DOTNET_VERSION2 }} Environment
-      uses: actions/setup-dotnet@v4
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build TrashMobDailyJobs Container
+      uses: docker/build-push-action@v5
       with:
-        dotnet-version: ${{ env.DOTNET_VERSION2 }}
+        context: .
+        file: TrashMobDailyJobs/Dockerfile
+        push: false
+        tags: trashmobdailyjobs:pr-${{ github.event.pull_request.number }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
 
-    - name: Restore
-      run: dotnet restore .\TrashMob.sln
+  buildHourlyContainerJob:
+    runs-on: ubuntu-latest
 
-    - name: Publish Function App
-      run: dotnet publish TrashMobJobs\TrashMobJobs.csproj --configuration ${{ env.CONFIGURATION }} --output "${{env.DOTNET_ROOT}}/trashmobjobsfunctionapp" --no-restore
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build TrashMobHourlyJobs Container
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: TrashMobHourlyJobs/Dockerfile
+        push: false
+        tags: trashmobhourlyjobs:pr-${{ github.event.pull_request.number }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max

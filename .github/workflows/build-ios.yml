@@ -50,7 +50,7 @@ on:
 
 jobs:
     build:
-        runs-on: macos-15
+        runs-on: macos-26
         environment: ${{ inputs.environment }}
         name: iOS Build
 
@@ -106,7 +106,7 @@ jobs:
           if: runner.os == 'macOS'
           uses: maxim-lobanov/setup-xcode@v1
           with:
-            xcode-version: '26.0.1'
+            xcode-version: '26.2'
 
         - name: Import Code-Signing Certificates
           uses: Apple-Actions/import-codesign-certs@v3

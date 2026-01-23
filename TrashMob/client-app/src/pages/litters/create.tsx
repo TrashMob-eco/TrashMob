@@ -235,12 +235,12 @@ export const CreateLitterPage = () => {
   return (
     <div className="fixed inset-0">
       {/** Header */}
-      <Header
+      {/* <Header
         leftButton={stepIndex > 0 
           ? <Button variant='ghost' size="icon" onClick={backToPreviousStep}><ChevronLeft /></Button> 
           : null
         }
-      />
+      /> */}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-2'>
 

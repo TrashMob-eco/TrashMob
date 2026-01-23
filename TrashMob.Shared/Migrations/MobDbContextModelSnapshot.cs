@@ -19,7 +19,7 @@ namespace TrashMob.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .UseCollation("SQL_Latin1_General_CP1_CI_AS")
-                .HasAnnotation("ProductVersion", "9.0.3")
+                .HasAnnotation("ProductVersion", "10.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -470,11 +470,26 @@ namespace TrashMob.Migrations
                     b.Property<int>("NumberOfBuckets")
                         .HasColumnType("int");
 
+                    b.Property<int>("PickedWeight")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PickedWeightUnitId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int?>("WeightUnitId")
+                        .HasColumnType("int");
+
                     b.HasKey("EventId");
 
                     b.HasIndex("CreatedByUserId");
 
                     b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("PickedWeightUnitId");
+
+                    b.HasIndex("WeightUnitId");
 
                     b.ToTable("EventSummaries");
                 });
@@ -2189,6 +2204,56 @@ namespace TrashMob.Migrations
                         });
                 });
 
+            modelBuilder.Entity("TrashMob.Models.WeightUnit", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("DisplayOrder")
+                        .HasColumnType("int");
+
+                    b.Property<bool?>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WeightUnits");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 0,
+                            Description = "Weight unit not set",
+                            DisplayOrder = 1,
+                            IsActive = true,
+                            Name = "None"
+                        },
+                        new
+                        {
+                            Id = 1,
+                            Description = "Weight in Imperial Pounds",
+                            DisplayOrder = 2,
+                            IsActive = true,
+                            Name = "lb"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Weight in Kilograms",
+                            DisplayOrder = 3,
+                            IsActive = true,
+                            Name = "kg"
+                        });
+                });
+
             modelBuilder.Entity("TrashMob.Models.ContactRequest", b =>
                 {
                     b.HasOne("TrashMob.Models.User", "CreatedByUser")
@@ -2427,11 +2492,23 @@ namespace TrashMob.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_EventSummaries_User_LastUpdatedBy");
 
+                    b.HasOne("TrashMob.Models.WeightUnit", "PickedWeightUnit")
+                        .WithMany()
+                        .HasForeignKey("PickedWeightUnitId")
+                        .IsRequired()
+                        .HasConstraintName("FK_EventSummary_PickedWeightUnits");
+
+                    b.HasOne("TrashMob.Models.WeightUnit", null)
+                        .WithMany("EventSummaries")
+                        .HasForeignKey("WeightUnitId");
+
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("Event");
 
                     b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("PickedWeightUnit");
                 });
 
             modelBuilder.Entity("TrashMob.Models.IftttTrigger", b =>
@@ -3253,6 +3330,11 @@ namespace TrashMob.Migrations
                     b.Navigation("NonEventUserNotifications");
 
                     b.Navigation("UserNotifications");
+                });
+
+            modelBuilder.Entity("TrashMob.Models.WeightUnit", b =>
+                {
+                    b.Navigation("EventSummaries");
                 });
 #pragma warning restore 612, 618
         }

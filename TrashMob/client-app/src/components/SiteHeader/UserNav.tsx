@@ -9,7 +9,6 @@ import {
 import {
     ChevronDown,
     CircleUserRound,
-    CircleHelp,
     Gauge,
     IdCard,
     LogOut,
@@ -70,7 +69,7 @@ export const UserNav = (props: UserNavProps) => {
     return (
         <div className={cn('flex flex-row item-center basis-full lg:basis-0', className)}>
             {!isUserLoaded && (
-                <Button variant='outline' className='text-current border-primary' onClick={signIn}>
+                <Button variant='outline' className='text-current border-primary cursor-pointer' onClick={signIn}>
                     Sign in
                 </Button>
             )}

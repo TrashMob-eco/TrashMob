@@ -28,7 +28,7 @@ import { GettingStarted } from './pages/gettingstarted/page';
 import { Board } from './pages/board/page';
 
 /** User */
-import MyDashboard from './pages/mydashboard';
+import MyDashboard from './pages/MyDashboard';
 import { LocationPreference } from './pages/locationpreference';
 import { DeleteMyData } from './pages/deletemydata';
 import Waivers from './pages/waivers/page';
