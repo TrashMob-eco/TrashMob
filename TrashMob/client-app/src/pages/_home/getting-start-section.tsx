@@ -171,11 +171,11 @@ export const GettingStartSection = () => {
                             );
                         })}
                     </div>
-                    {content.ctaButtonText && content.ctaButtonLink && (
+                    {content.ctaButtonText && content.ctaButtonLink ? (
                         <Button size='lg' asChild>
                             <Link to={content.ctaButtonLink}>{content.ctaButtonText}</Link>
                         </Button>
-                    )}
+                    ) : null}
                 </div>
             </div>
         </div>

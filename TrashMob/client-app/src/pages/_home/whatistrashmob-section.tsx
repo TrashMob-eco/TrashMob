@@ -50,7 +50,7 @@ export const WhatIsTrashmobSection = () => {
                         </h3>
                     </div>
                     <div className='row-span-4 col-span-12 md:col-start-4 md:col-span-2'>
-                        {content.youtubeVideoUrl && (
+                        {content.youtubeVideoUrl ? (
                             <iframe
                                 className={cn(
                                     'aspect-video w-full mt-0',
@@ -66,7 +66,7 @@ export const WhatIsTrashmobSection = () => {
                                 referrerPolicy='strict-origin-when-cross-origin'
                                 allowFullScreen
                             />
-                        )}
+                        ) : null}
                     </div>
                     <div className='row-span-3 col-start-1 col-span-3'>
                         <p
@@ -91,16 +91,16 @@ export const WhatIsTrashmobSection = () => {
                                 },
                             )}
                         >
-                            {content.primaryButtonText && content.primaryButtonLink && (
+                            {content.primaryButtonText && content.primaryButtonLink ? (
                                 <Button asChild size='lg'>
                                     <Link to={content.primaryButtonLink}>{content.primaryButtonText}</Link>
                                 </Button>
-                            )}
-                            {content.secondaryButtonText && content.secondaryButtonLink && (
+                            ) : null}
+                            {content.secondaryButtonText && content.secondaryButtonLink ? (
                                 <Button asChild size='lg'>
                                     <a href={content.secondaryButtonLink}>{content.secondaryButtonText}</a>
                                 </Button>
-                            )}
+                            ) : null}
                         </div>
                     </div>
                 </div>
