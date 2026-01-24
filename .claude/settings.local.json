@@ -3,7 +3,17 @@
     "allow": [
       "Bash(git push)",
       "Bash(ls:*)",
-      "Bash(dotnet build:*)"
+      "Bash(dotnet build:*)",
+      "Bash(git mv:*)",
+      "Bash(gh issue list:*)",
+      "Bash(gh pr view:*)",
+      "Bash(git rm:*)",
+      "Bash(Get-ChildItem -Path \"d:\\\\repos\\\\TrashMob\" -Filter \"*.md\" -Recurse)",
+      "Bash(Where-Object { $_FullName -notlike \"*node_modules*\" -and $_FullName -notlike \"*bin*\" -and $_FullName -notlike \"*obj*\" })",
+      "Bash(Select-Object FullName)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(gh pr create:*)"
     ]
   }
 }
