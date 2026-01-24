@@ -231,7 +231,9 @@ public async Task<ServiceResult<T>> DoSomethingAsync(...) {
 
 ## Additional Resources
 
-- **Product Plan:** `TrashMob_2026_Product_Engineering_Plan.md`
-- **Domain Model:** `TrashMob.Models/TrashMob.Models.prd`
-- **Test Scenarios:** `TestScenarios.md`
+- **2026 Planning:** `Planning/README.md` - Navigation hub for all planning docs
+- **Individual Projects:** `Planning/Projects/` - 25 detailed project specifications
+- **Product Plan:** `TrashMob_2026_Product_Engineering_Plan.md` - Master roadmap document
+- **Domain Model:** `TrashMob.Models/TrashMob.Models.prd` - Entity relationships and business rules
+- **Test Scenarios:** `TestScenarios.md` - Manual test cases (automation planned)
 - **Container Deployment:** `Deploy/CONTAINER_DEPLOYMENT_GUIDE.md`
