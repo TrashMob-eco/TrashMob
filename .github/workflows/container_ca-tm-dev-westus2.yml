@@ -88,6 +88,16 @@ jobs:
               minReplicas=1 \
               maxReplicas=3
 
+      - name: Ensure Azure AD B2C secrets exist
+        run: |
+          echo "Setting Azure AD B2C configuration for dev environment..."
+          # These secrets override appsettings.json values
+          # The -- in secret names maps to : in .NET configuration (e.g., AzureAdB2C:Instance)
+          az keyvault secret set --vault-name ${{ env.KEY_VAULT_NAME }} --name "AzureAdB2C--Instance" --value "https://trashmobdev.b2clogin.com/"
+          az keyvault secret set --vault-name ${{ env.KEY_VAULT_NAME }} --name "AzureAdB2C--ClientId" --value "7e44c032-7c3d-43a1-8ea7-f0a14a93bce2"
+          az keyvault secret set --vault-name ${{ env.KEY_VAULT_NAME }} --name "AzureAdB2C--Domain" --value "trashmobdev.onmicrosoft.com"
+          az keyvault secret set --vault-name ${{ env.KEY_VAULT_NAME }} --name "AzureAdB2C--SignUpSignInPolicyId" --value "B2C_1A_TM_SIGNUP_SIGNIN"
+
       - name: Grant Key Vault Access
         run: |
           echo "Getting Container App managed identity..."
