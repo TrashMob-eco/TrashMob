@@ -252,7 +252,7 @@ Target **WCAG 2.2 AA** parity across web and mobile; perform full audit and reme
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Awaiting feedback on minors; age verification vendor discussions |
+| **Status** | Awaiting feedback on minors; age verification vendor discussions; **Entra External ID vs B2C decision pending** |
 | **Priority** | High |
 | **Risk** | Very Large |
 | **Size** | Large |
@@ -260,6 +260,28 @@ Target **WCAG 2.2 AA** parity across web and mobile; perform full audit and reme
 #### Business Rationale
 
 Modernize auth, enable minors (13+), improve brand and legal compliance, and future-proof identity.
+
+#### Decision Point: Entra External ID vs Azure B2C
+
+A decision is pending on whether to migrate from Azure B2C to Entra External ID. Factors under consideration:
+
+**Entra External ID Advantages:**
+- Unified identity platform with Azure AD
+- Better enterprise SSO integration for partners
+- Modern UI customization options
+- Future-proof as Microsoft's strategic direction
+
+**Azure B2C Advantages:**
+- Already implemented and working
+- Known cost structure
+- Established user flows
+- No migration risk
+
+**Decision Timeline:** Q1 2026 - decision will be finalized based on:
+- Feature gap analysis for minors support
+- Cost comparison
+- Migration complexity assessment
+- Privo.com integration compatibility with both options
 
 #### Objectives
 
@@ -767,11 +789,11 @@ Record and share anonymized routes; enable filters, editing, and association of 
 
 ---
 
-### Project 16 — Page Content Management (CMS)
+### Project 16 — Page Content Management (CMS via Strapi)
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Planning in progress |
+| **Status** | In Progress (PR #2364) |
 | **Priority** | Medium |
 | **Risk** | Low |
 | **Size** | Medium |
@@ -782,9 +804,45 @@ Allow non-developers to update home/partners with preview, scheduling, and versi
 
 #### Objectives
 
-- CMS tool & workflow
+- CMS tool & workflow using Strapi headless CMS
 - Preview & scheduled publish
 - Versioning/rollback
+
+#### Implementation Status (PR #2364)
+
+Strapi CMS integration is in progress with the following completed:
+
+**Infrastructure:**
+- `Deploy/sqlDatabaseStrapi.bicep` - Strapi database on existing Azure SQL Server (Basic tier)
+- `Deploy/containerAppStrapi.bicep` - Internal-only Strapi container app with health probes
+- `.github/workflows/container_strapi-tm-dev-westus2.yml` - Deployment workflow
+
+**Backend:**
+- `TrashMob/Controllers/CmsController.cs` - Proxy endpoints to Strapi API
+- HttpClient registration for Strapi in Program.cs
+
+**Frontend:**
+- `TrashMob/client-app/src/services/cms.ts` - CMS service with React Query hooks
+- Updated home page sections (hero, what-is-trashmob, getting-started) to fetch CMS content with fallback defaults
+- `TrashMob/client-app/src/pages/siteadmin/content.tsx` - Manage Content admin page
+
+**Strapi Project:**
+- Complete Strapi v5 project in `Strapi/` folder
+- Content types: Hero Section, What Is TrashMob, Getting Started sections
+- Multi-stage Dockerfile for production deployment
+
+**Security:**
+- Strapi container has internal-only ingress (not accessible from internet)
+- All CMS API access proxied through ASP.NET Core
+- Admin endpoints require site admin authorization
+
+#### Future Phases
+
+This foundation enables future CMS-driven features:
+- Community Pages custom content (Project 10)
+- Teams page branding (Project 9)
+- Partner page customization
+- Dynamic news/announcements on home page (Project 2)
 
 ---
 
@@ -931,11 +989,11 @@ Let attendees enter personal stats and give leads tools to reconcile without dou
 
 ---
 
-### Project 23 — Parental Consent for Minors
+### Project 23 — Parental Consent for Minors (via Privo.com)
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Planning in progress (legal & 3rd parties) |
+| **Status** | Planning in progress (legal & Privo.com integration) |
 | **Priority** | High |
 | **Risk** | High |
 | **Size** | Large |
@@ -949,6 +1007,31 @@ Support parent-managed dependents or direct minor registration with age verifica
 - Parent-managed dependents flow
 - Direct minor registration with verification
 - Enhanced protections (no DMs, adult presence)
+
+#### Implementation Approach
+
+**Vendor Selection:** Privo.com has been selected as the age verification and parental consent provider.
+
+**Privo.com Services:**
+- Age verification for users claiming to be 13+
+- Verifiable Parental Consent (VPC) collection and storage
+- COPPA compliance documentation
+- Parent notification and consent workflows
+- Consent artifact retention per legal requirements
+
+#### Integration Points
+
+1. **Sign-Up Flow:** Integrate Privo age gate during registration
+2. **Parental Consent:** Redirect to Privo consent flow for minors
+3. **Consent Verification:** API callback to verify consent status
+4. **Ongoing Compliance:** Periodic consent status checks
+
+#### Open Questions
+
+- Exact Privo.com API integration timeline
+- Cost structure and billing model
+- Fallback flow if Privo service is unavailable
+- Data retention requirements for consent artifacts
 
 ---
 

@@ -11,10 +11,10 @@
 
 This PRD consolidates all user stories and requirements for the TrashMob.eco platform. Each requirement is tagged with its current implementation status:
 
-- ? **Implemented** — Feature is live in production
-- ?? **In Progress** — Currently being developed
-- ?? **Planned** — Scheduled for future development
-- ? **Not Started** — Not yet begun
+- ? **Implemented** ï¿½ Feature is live in production
+- ?? **In Progress** ï¿½ Currently being developed
+- ?? **Planned** ï¿½ Scheduled for future development
+- ? **Not Started** ï¿½ Not yet begun
 
 ---
 
@@ -59,11 +59,11 @@ TrashMob.eco is a community-driven platform that connects volunteers to organize
 ## Product Vision & Goals
 
 ### Primary Goals
-1. **Maximize Volunteer Engagement** — Make it easy for anyone to find and participate in cleanup events
-2. **Enable Event Organization** — Provide tools for leads to create, manage, and track events
-3. **Track Environmental Impact** — Measure and report on bags collected, hours volunteered, and areas cleaned
-4. **Build Community** — Connect volunteers, teams, and partners in a supportive network
-5. **Ensure Safety** — Manage waivers, minor protections, and safety guidelines
+1. **Maximize Volunteer Engagement** ï¿½ Make it easy for anyone to find and participate in cleanup events
+2. **Enable Event Organization** ï¿½ Provide tools for leads to create, manage, and track events
+3. **Track Environmental Impact** ï¿½ Measure and report on bags collected, hours volunteered, and areas cleaned
+4. **Build Community** ï¿½ Connect volunteers, teams, and partners in a supportive network
+5. **Ensure Safety** ï¿½ Manage waivers, minor protections, and safety guidelines
 
 ### Success Criteria
 - Increase volunteer signups by 30% year-over-year
@@ -125,7 +125,7 @@ TrashMob.eco is a community-driven platform that connects volunteers to organize
 - LinkedIn
 - Apple
 
-**Notes:** Currently using Azure B2C; migration to Entra External ID planned for Q2 2026 (Project 1)
+**Notes:** Currently using Azure B2C; migration to Entra External ID under evaluation for Q2 2026 (Project 1). Final decision pending on B2C vs Entra External ID based on feature requirements and cost analysis.
 
 #### ? 1.1.3 User Profile
 **Status:** Implemented  
@@ -1010,6 +1010,38 @@ TrashMob.eco is a community-driven platform that connects volunteers to organize
 
 ## 7. Content & Information
 
+### 7.0 Content Management System (CMS)
+
+**Overall Status:** ?? In Progress (PR #2364)
+
+#### ?? 7.0.1 Strapi CMS Integration
+**Status:** In Progress (PR #2364)
+**Description:** Headless CMS for managing home page content without developer involvement
+
+**CMS-Managed Content Types:**
+- Hero Section (tagline, buttons, app store links, background)
+- What Is TrashMob Section (heading, description, video, buttons)
+- Getting Started Section (heading, requirements, CTA)
+
+**Admin Features:**
+- "Manage Content" tab in Site Admin
+- Link to Strapi admin panel
+- Content editing with preview
+- Scheduled publishing (future)
+
+**Technical Implementation:**
+- Strapi deployed as internal-only Azure Container App
+- CMS API proxied through ASP.NET Core (`/api/cms/*`)
+- React Query hooks for frontend data fetching
+- Fallback to default content if CMS unavailable
+
+**Future CMS Capabilities:**
+- Community Pages custom branding (Project 10)
+- Teams page customization (Project 9)
+- Partner page content
+- Dynamic news/announcements
+- Sponsor/advertising placement
+
 ### 7.1 Static Pages
 
 #### ? 7.1.1 Privacy Policy
@@ -1548,7 +1580,7 @@ TrashMob.eco is a community-driven platform that connects volunteers to organize
 ## Success Metrics
 
 ### North Star Metric
-**Total Bags of Litter Collected** — ultimate measure of environmental impact
+**Total Bags of Litter Collected** ï¿½ ultimate measure of environmental impact
 
 ### Key Performance Indicators (KPIs)
 
@@ -1610,18 +1642,18 @@ TrashMob.eco is a community-driven platform that connects volunteers to organize
 
 ### C. Related Documents
 
-- `/TrashMob_2026_Product_Engineering_Plan.md` — Detailed technical roadmap
-- `/claude.md` — Project context for AI assistants
-- `/TrashMob/claude.md` — Web API development patterns
-- `/TrashMobHourlyJobs/claude.md` — Hourly job patterns
-- `/TrashMobDailyJobs/claude.md` — Daily job patterns
+- `/TrashMob_2026_Product_Engineering_Plan.md` ï¿½ Detailed technical roadmap
+- `/claude.md` ï¿½ Project context for AI assistants
+- `/TrashMob/claude.md` ï¿½ Web API development patterns
+- `/TrashMobHourlyJobs/claude.md` ï¿½ Hourly job patterns
+- `/TrashMobDailyJobs/claude.md` ï¿½ Daily job patterns
 
 ### D. Status Legend
 
-- ? **Implemented** — Feature is complete and in production
-- ?? **In Progress** — Currently being developed
-- ?? **Planned** — Scheduled for future development (see roadmap)
-- ? **Not Started** — Not yet begun, no timeline set
+- ? **Implemented** ï¿½ Feature is complete and in production
+- ?? **In Progress** ï¿½ Currently being developed
+- ?? **Planned** ï¿½ Scheduled for future development (see roadmap)
+- ? **Not Started** ï¿½ Not yet begun, no timeline set
 
 ### E. 2026 Roadmap Summary
 
@@ -1634,7 +1666,7 @@ TrashMob.eco is a community-driven platform that connects volunteers to organize
 - Auth Revamp Implementation (Project 1)
 - Litter Reporting on Web (Project 3)
 - Event Weights Phase 1 (Project 7)
-- CMS (Project 16)
+- CMS via Strapi (Project 16) - PR #2364 in progress
 
 **Q3 2026:**
 - Teams MVP (Project 9)
@@ -1662,12 +1694,67 @@ TrashMob.eco is a community-driven platform that connects volunteers to organize
 | Gamification | Medium | Medium | Medium | ?? Q4 2026 |
 | MCP Server (AI) | Low | Low | Low | ?? Optional |
 
+### G. Active GitHub Issues by Milestone
+
+**2026 Product Plan Phase 1 Milestone:**
+
+| Issue # | Title | Category | Priority |
+|---------|-------|----------|----------|
+| #2310-#2319 | Teams Feature Issues | Teams (Project 9) | High |
+| #2299-#2307 | Community Pages Issues | Community (Project 10) | High |
+| #2263-#2268 | Individual Metrics Issues | Metrics (Project 22) | Medium |
+
+**Mobile App Issues (Q1 2026 Priority):**
+
+| Issue # | Title | Platform | Priority |
+|---------|-------|----------|----------|
+| #2340 | Home screen slow to load | Both | High |
+| #2339 | iOS Home not visible on initial load | iOS | Critical |
+| #2337 | Add search button for litter reports/events | Both | Medium |
+| #2336 | Event search not working properly | Both | High |
+| #2335 | iOS Litter Report doesn't save photos | iOS | Critical |
+| #2332 | iOS Sign Out Issue | iOS | High |
+
+**Website Issues:**
+
+| Issue # | Title | Category | Priority |
+|---------|-------|----------|----------|
+| #2324 | Inactive jobs should not be displayed | Admin | Medium |
+| #2321 | Signup appears to hang on larger devices | Auth | High |
+| #2173 | Submit event pickup locations | Events | Medium |
+| #2172 | Share button on various pages | Social | Low |
+
+**Litter Report Integration Issues:**
+
+| Issue # | Title | Category | Priority |
+|---------|-------|----------|----------|
+| #1481-#1491 | Litter Report Web Parity | Litter Reports (Project 3) | High |
+
+> **Note:** Full issue list available at [GitHub Issues](https://github.com/TrashMob-eco/TrashMob/issues)
+
+### H. Key Integration Notes
+
+**Parental Consent (Project 23):**
+- Vendor: Privo.com
+- Integration: Age verification and COPPA-compliant parental consent
+- Status: Planning in progress
+
+**Authentication (Project 1):**
+- Current: Azure B2C
+- Evaluation: Azure Entra External ID (decision pending Q1 2026)
+- Dependencies: Privo.com integration must work with chosen solution
+
+**CMS (Project 16):**
+- Platform: Strapi v5 headless CMS
+- Status: PR #2364 in progress
+- Enables: Home page, Community Pages, Teams branding
+
 ---
 
-**Document Version:** 1.0  
-**Last Updated:** January 23, 2026  
-**Next Review:** Quarterly (April 2026)  
-**Owner:** Product Team  
+**Document Version:** 1.1
+**Last Updated:** January 23, 2026
+**Next Review:** Quarterly (April 2026)
+**Owner:** Product Team
 **Feedback:** Send to product@trashmob.eco
 
 ---

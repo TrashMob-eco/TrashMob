@@ -5,6 +5,11 @@ namespace TrashMob.Models
     /// <summary>
     /// Represents a location where collected trash can be picked up after an event.
     /// </summary>
+    /// <remarks>
+    /// If an event has a hauling partner, the event lead can document pickup locations with geo-tagged
+    /// images of collected litter. These locations are sent to the hauling partner who dispatches a team
+    /// to pick up the bagged garbage and haul it away for proper disposal.
+    /// </remarks>
     public class PickupLocation : KeyedModel
     {
         /// <summary>

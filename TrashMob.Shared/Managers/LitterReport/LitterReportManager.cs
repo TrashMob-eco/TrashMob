@@ -356,5 +356,99 @@ namespace TrashMob.Shared.Managers.LitterReport
 
             return await GetAsync(updateInstance.Id, cancellationToken);
         }
+
+        /// <inheritdoc />
+        public async Task<ServiceResult<LitterReport>> AddWithResultAsync(LitterReport litterReport, Guid userId,
+            CancellationToken cancellationToken = default)
+        {
+            if (litterReport == null)
+            {
+                return ServiceResult<LitterReport>.Failure("Litter report cannot be null.");
+            }
+
+            if (litterReport.LitterImages == null || litterReport.LitterImages.Count == 0)
+            {
+                return ServiceResult<LitterReport>.Failure("Litter report must include at least one image.");
+            }
+
+            if (string.IsNullOrWhiteSpace(litterReport.Name))
+            {
+                return ServiceResult<LitterReport>.Failure("Litter report name is required.");
+            }
+
+            try
+            {
+                await dbTransaction.BeginTransactionAsync();
+
+                logger.LogInformation("Adding litter report with result");
+
+                foreach (var litterImage in litterReport.LitterImages)
+                {
+                    litterImage.LitterReportId = litterReport.Id;
+                    litterImage.CreatedByUserId = userId;
+                    litterImage.LastUpdatedByUserId = userId;
+                    litterImage.CreatedDate = DateTime.UtcNow;
+                    litterImage.LastUpdatedDate = DateTime.UtcNow;
+                }
+
+                // Add litter report
+                var newLitterReport = await base.AddAsync(litterReport, userId, cancellationToken);
+
+                if (newLitterReport == null)
+                {
+                    await dbTransaction.RollbackTransactionAsync();
+                    return ServiceResult<LitterReport>.Failure("Failed to save litter report to the database.");
+                }
+
+                await dbTransaction.CommitTransactionAsync();
+
+                // Send notification email (non-blocking, don't fail the operation if email fails)
+                try
+                {
+                    var message =
+                        $"A new litter report: {litterReport.Name} in {litterReport.LitterImages.First().City} has been created on TrashMob.eco!";
+                    var subject = "New Litter Report Alert";
+
+                    var recipients = new List<EmailAddress>
+                    {
+                        new() { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress },
+                    };
+
+                    var dynamicTemplateData = new
+                    {
+                        username = Constants.TrashMobEmailName,
+                        litterReportName = litterReport.Name,
+                        eventAddress = litterReport.LitterImages.First().DisplayAddress(),
+                        emailCopy = message,
+                        subject,
+                        googleMapsUrl = litterReport.LitterImages.First().GoogleMapsUrl(),
+                    };
+
+                    await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.LitterReportEmail,
+                            SendGridEmailGroupId.LitterReportRelated, dynamicTemplateData, recipients,
+                            CancellationToken.None)
+                        .ConfigureAwait(false);
+                }
+                catch (Exception emailEx)
+                {
+                    // Log but don't fail the operation - the report was created successfully
+                    logger.LogWarning(emailEx, "Failed to send notification email for litter report {LitterReportId}", newLitterReport.Id);
+                }
+
+                return ServiceResult<LitterReport>.Success(newLitterReport);
+            }
+            catch (DbUpdateException dbEx)
+            {
+                logger.LogError(dbEx, "Database error while adding litter report");
+                await dbTransaction.RollbackTransactionAsync();
+                return ServiceResult<LitterReport>.Failure("A database error occurred while saving the litter report. Please try again.");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Unexpected error while adding litter report");
+                await dbTransaction.RollbackTransactionAsync();
+                return ServiceResult<LitterReport>.Failure($"An unexpected error occurred: {ex.Message}");
+            }
+        }
     }
 }
