@@ -1,6 +1,6 @@
 # TrashMobMobile
 
-TrashMobMobile is a cross-platform mobile application built with .NET MAUI, targeting .NET 9. The app is designed to support community-driven trash cleanup events, allowing users to discover, register, and manage events, track locations, and interact with other participants.
+TrashMobMobile is a cross-platform mobile application built with .NET MAUI, targeting .NET 10. The app is designed to support community-driven trash cleanup events, allowing users to discover, register, and manage events, track locations, and interact with other participants.
 
 ## Features
 
@@ -8,47 +8,76 @@ TrashMobMobile is a cross-platform mobile application built with .NET MAUI, targ
 - **Interactive Maps**: Visualize event locations and addresses using custom map pins.
 - **Event Registration**: Register or unregister for events directly from the app.
 - **Event Management**: Create, edit, and cancel events (for authorized users).
+- **Litter Reports**: Create geotagged litter reports with photos.
 - **Dashboard**: Track completed events and view your participation history.
 - **Contact & Support**: Reach out to organizers or support via the Contact Us page.
 - **Partner Locations**: View and interact with partner location services.
 
-## Special Business Logic
-
-TrashMobMobile implements several business rules to ensure a robust and user-friendly experience:
-
-- **Event Registration & Validation**: Users can only register for events if registration is enabled and they meet eligibility criteria. The app prevents duplicate registrations and enforces event capacity limits.
-- **Event Creation & Editing**: When creating or editing events, the app validates required fields (such as date, time, and location) and ensures logical consistency (e.g., end time must be after start time).
-- **Address Management**: Custom logic in address view models ensures that only valid and geocoded addresses are displayed on maps and used for event locations.
-- **Contact Requests**: The Contact Us feature includes validation for required fields and email format before allowing submission.
-- **Partner Location Services**: Integration with partner services includes checks for service availability and user permissions.
-- **Event Cancellation**: Only authorized users can cancel events, and cancellation triggers notifications to registered attendees.
-
-These business rules are primarily implemented in the ViewModels layer, leveraging the MVVM pattern for maintainability and testability.
-
 ## Project Structure
 
-- `Views/`: Contains XAML views for pages such as event details, dashboard, and contact forms.
-- `ViewModels/`: Implements MVVM pattern, providing data binding and business logic for views.
-- `Models/`: Defines data models used throughout the app (e.g., events, addresses, requests).
-- `Pages/`: Contains navigation pages and modal dialogs.
-- `Controls/`: Custom UI controls, such as map and pin components.
-- `App.xaml.cs`: Application entry point and global configuration.
+```
+TrashMobMobile/
+├── Views/           # XAML views (event details, dashboard, forms)
+├── ViewModels/      # MVVM pattern - data binding and business logic
+├── Models/          # Data models (events, addresses, requests)
+├── Pages/           # Navigation pages and modal dialogs
+├── Controls/        # Custom UI controls (maps, pins)
+├── Services/        # API communication and local services
+├── Platforms/       # Platform-specific code (Android, iOS, Mac)
+└── App.xaml.cs      # Application entry point
+```
 
 ## Getting Started
 
-1. **Requirements**:
-   - [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
-   - Visual Studio 2022 (latest version recommended)
-   - Android/iOS/Mac/Windows device or emulator
+### Requirements
 
-2. **Build & Run**:
-   - Open the solution in Visual Studio.
-   - Restore NuGet packages.
-   - Select your target platform and run the app.
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
+- Visual Studio 2022 (latest version) with .NET MAUI workload
+- Android Studio (for Android emulator)
+- Xcode (for iOS development on Mac)
+
+### Build & Run
+
+1. Open `TrashMobMobileApp.sln` in Visual Studio
+2. Restore NuGet packages
+3. Configure Google Maps API key (see below)
+4. Select your target platform and run
+
+### Google Maps API Key
+
+For Android, update `Platforms/Android/AndroidManifest.xml`:
+```xml
+<meta-data android:name="com.google.android.geo.API_KEY" android:value="YOUR_KEY_HERE" />
+```
+
+Get the dev key from the [Dev KeyVault](https://portal.azure.com/#@jobeedevids.onmicrosoft.com/asset/Microsoft_Azure_KeyVault/Secret/https://kv-tm-dev-westus2.vault.azure.net/secrets/Android-Google-ApiKey-Dev) or create your own at [Google Cloud Console](https://developers.google.com/maps/gmp-get-started).
+
+**Never commit API keys to the repository!**
+
+## Related Documentation
+
+- [CLAUDE.md](./CLAUDE.md) - Mobile-specific development patterns
+- [TrashMobMobile.prd](./TrashMobMobile.prd) - Product requirements document
+- [Project Analysis](./docs/PROJECT_ANALYSIS.md) - Detailed architecture analysis
+- [Root README](../README.md) - Main project documentation
+- [2026 Product Plan](../TrashMob_2026_Product_Engineering_Plan.md) - Roadmap
+
+## Test Builds
+
+- **Android Internal Testing**: Request access at [info@trashmob.eco](mailto:info@trashmob.eco)
+- **iOS TestFlight**: Request access at [info@trashmob.eco](mailto:info@trashmob.eco)
+
+## Production Apps
+
+- [Google Play Store](https://play.google.com/store/apps/details?id=eco.trashmob.trashmobmobileapp)
+- [Apple App Store](https://apps.apple.com/us/app/trashmob/id1599996743)
 
 ## Contributing
 
-Contributions are welcome! Please fork the repository and submit a pull request. For major changes, open an issue first to discuss your ideas.
+Contributions are welcome! Please:
+1. Check [open issues](https://github.com/TrashMob-eco/TrashMob/issues?q=is%3Aissue+is%3Aopen+label%3A%22mobile%22)
+2. Read the [CONTRIBUTING guide](../CONTRIBUTING.md)
+3. For major changes, open an issue first to discuss
 
 ## License
 

@@ -5,6 +5,14 @@ namespace TrashMob.Models
     /// <summary>
     /// Represents a cleanup event organized through TrashMob.
     /// </summary>
+    /// <remarks>
+    /// An event is an organized effort to clean up litter at a specific location at a specific date and time.
+    /// The user who creates the event is the event lead. Events can be public (visible to all users and included
+    /// in notifications) or private (for individual tracking without notifying others). Private events can be
+    /// backdated to record past individual cleanup efforts. Completed events cannot be deleted for legal
+    /// tracking purposes. Attendees must sign the TrashMob.eco Liability Waiver before registering for their
+    /// first event.
+    /// </remarks>
     public class Event : KeyedModel
     {
         /// <summary>

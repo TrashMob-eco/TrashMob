@@ -1,8 +1,8 @@
 # TrashMobMobile Product Requirements Document (PRD)
 
-**Version:** 1.0  
-**Last Updated:** January 2025  
-**Target Platform:** .NET MAUI on .NET 10  
+**Version:** 1.1
+**Last Updated:** January 2026
+**Target Platform:** .NET MAUI on .NET 10
 **Platforms:** iOS 15.0+, Android API 21+, MacCatalyst 15.0+
 
 ---
@@ -413,23 +413,37 @@ Features that enhance value but not critical:
 
 ## 6. Implementation Roadmap
 
-### Phase 1: Feature Completion (Current Release)
-**Target:** Q1 2025
+> **Note:** This roadmap is aligned with the [TrashMob 2026 Product & Engineering Plan](/TrashMob_2026_Product_Engineering_Plan.md).
+
+### Phase 1: Mobile Stabilization & Bug Fixes (Q1 2026)
+**Aligned with:** Project 4 - Improve Mobile App Robustness
 
 **Goals:**
-1. Complete route tracking implementation
+1. Fix critical iOS issues
+   - #2335: iOS Litter Report photo saving
+   - #2339: iOS Home screen visibility on initial load
+   - #2332: iOS Sign Out issue
+
+2. Performance improvements
+   - #2340: Home screen load time optimization
+   - #2336: Event search functionality fix
+
+3. Crash handling and telemetry
+   - Sentry.io integration
+   - User-friendly error messages
+   - Retry logic for network failures
+
+4. Complete route tracking implementation
    - Uncomment tracking UI in TabDetails.xaml
    - Test on all platforms
    - Ensure background tracking works
 
-2. Minor enhancements
-   - Improve litter report map visualization
-   - Add validation edge cases
+**Success Metrics:**
+- Crash-free sessions ≥ 99.5%
+- Home screen load time < 2 seconds
 
-**Estimated Effort:** 2-3 weeks
-
-### Phase 2: User Education & Safety
-**Target:** Q2 2025
+### Phase 2: User Education & Auth Updates (Q2 2026)
+**Aligned with:** Project 1 - Auth Revamp, Project 4 continued
 
 **Goals:**
 1. Add app usage guides/tutorials
@@ -440,10 +454,15 @@ Features that enhance value but not critical:
    - YouTube embed or native player
    - Track video completion
 
-**Estimated Effort:** 3-4 weeks
+3. Auth updates (if Entra External ID decision made)
+   - Update MSAL configuration
+   - New consent flows for minors (via Privo.com)
 
-### Phase 3: Data & Privacy
-**Target:** Q2 2025
+4. Search improvements
+   - #2337: Add search button for litter reports and events
+
+### Phase 3: Data, Privacy & Teams (Q3 2026)
+**Aligned with:** Project 9 - Teams, Project 8 - Waivers V3
 
 **Goals:**
 1. Account deletion
@@ -455,29 +474,42 @@ Features that enhance value but not critical:
    - Status workflow
    - Notifications to reporters
 
-**Estimated Effort:** 2-3 weeks
+3. Teams support (if web Teams launches)
+   - View my teams
+   - Team event registration
+   - Team metrics display
 
-### Phase 4: Advanced Features
-**Target:** Q3 2025
+4. Waivers V3 integration
+   - Community-specific waivers
+   - Minor/guardian workflows
+
+### Phase 4: Advanced Features & Metrics (Q4 2026)
+**Aligned with:** Project 7 - Event Weights, Project 15 - Route Tracing, Project 20 - Gamification
 
 **Goals:**
-1. Event creation from litter report
+1. Event weight tracking
+   - Add weight fields to event summary
+   - Attendee-level weight entry
+
+2. Event creation from litter report
    - Pre-populate form
    - Automatic association
 
-2. Anonymized tracking visualization
+3. Anonymized tracking visualization
    - Privacy-preserving route display
    - Heatmap of cleaned areas
 
-3. Enhanced notifications
+4. Enhanced notifications
    - Event change notifications
    - Tracking reminders
    - Background notifications
 
-**Estimated Effort:** 4-6 weeks
+5. Gamification (if web launches)
+   - Personal leaderboard view
+   - Team rankings
 
-### Phase 5: Event Lead Tools
-**Target:** Q4 2025
+### Phase 5: Event Lead Tools (Q1 2027)
+**Aligned with:** Project 21 - Event Co-Leads, Project 22 - Attendee Metrics
 
 **Goals:**
 1. Attendee route visualization
@@ -488,7 +520,9 @@ Features that enhance value but not critical:
    - Bulk resolution
    - Association management
 
-**Estimated Effort:** 3-4 weeks
+3. Co-lead support
+   - Manage co-leads from mobile
+   - Notifications parity
 
 ---
 
@@ -546,6 +580,19 @@ Features that enhance value but not critical:
 2. Some P2 features not yet implemented
 3. Limited offline support
 4. No push notification infrastructure yet
+
+### Active GitHub Issues (as of January 2026)
+
+| Issue # | Title | Priority | Status |
+|---------|-------|----------|--------|
+| #2340 | Mobile App: Home screen is very slow to load | High | Open |
+| #2339 | Mobile App: iOS - Home screen not visible on initial load | High | Open |
+| #2337 | Mobile App: Add search button for litter reports and events | Medium | Open |
+| #2336 | Mobile App: Search for events appears to not work properly | High | Open |
+| #2335 | Mobile App: iOS Litter Report doesn't save photos | Critical | Open |
+| #2332 | Mobile App: iOS Sign Out Issue | High | Open |
+
+**Note:** These issues are tracked in the [TrashMob-eco/TrashMob GitHub repository](https://github.com/TrashMob-eco/TrashMob/issues)
 
 ---
 
@@ -694,6 +741,6 @@ The app is production-ready for core functionality, with a clear roadmap for enh
 
 ---
 
-**Document Owner:** TrashMob Development Team  
-**Last Review:** January 2025  
-**Next Review:** Q2 2025
+**Document Owner:** TrashMob Development Team
+**Last Review:** January 2026
+**Next Review:** Q2 2026

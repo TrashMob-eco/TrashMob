@@ -5,6 +5,11 @@ namespace TrashMob.Models
     /// <summary>
     /// Represents a summary of an event's outcomes after completion.
     /// </summary>
+    /// <remarks>
+    /// After an event is completed, the lead records a summary including the number of bags/buckets filled,
+    /// actual number of attendees, actual duration, weight of trash collected, and any notes.
+    /// This data is used for tracking impact metrics across the platform.
+    /// </remarks>
     public class EventSummary : BaseModel
     {
         /// <summary>
