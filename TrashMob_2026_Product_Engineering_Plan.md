@@ -989,6 +989,93 @@ Let attendees enter personal stats and give leads tools to reconcile without dou
 
 ---
 
+### Project 24 — Automated UI/E2E Testing
+
+| Attribute | Value |
+|-----------|-------|
+| **Status** | Not started |
+| **Priority** | Medium |
+| **Risk** | Low |
+| **Size** | Medium |
+
+#### Business Rationale
+
+Reduce regression risk, enable confident releases, and replace manual test scenarios with executable, maintainable test suites for both web and mobile platforms.
+
+#### Objectives
+
+- Implement Playwright test framework for web UI with CI integration
+- Implement UI testing for mobile app (Appium or MAUI test framework)
+- Convert existing manual test scenarios (TestScenarios.md) to automated tests
+- Integrate tests into GitHub Actions workflows with test reports
+- Enable parallel test execution for faster feedback
+
+#### Scope
+
+**Web (Playwright):**
+- ✅ User registration and sign-in flows
+- ✅ Event creation, editing, and cancellation
+- ✅ Event registration and waiver signing
+- ✅ Litter report creation and management
+- ✅ Partner request and management flows
+- ✅ Site administration access controls
+- ✅ Contact form submission
+
+**Mobile (Appium/.NET MAUI Testing):**
+- ✅ Authentication flows
+- ✅ Event discovery and details
+- ✅ Event registration
+- ✅ Litter report creation with camera
+- ✅ Dashboard and stats viewing
+- ✅ Map interactions
+
+#### Out-of-Scope
+
+- ❌ Visual regression testing (future phase)
+- ❌ Performance/load testing (separate project)
+- ❌ API-only tests (covered by unit tests)
+
+#### Success Metrics
+
+- Test coverage of critical user flows ≥ 80%
+- CI pipeline runs all E2E tests on PRs
+- Test execution time < 10 minutes
+- Flaky test rate < 5%
+- Manual regression testing time reduced by 50%
+
+#### Dependencies
+
+- CI/CD infrastructure (Project 5)
+- Stable development environment for test execution
+
+#### Implementation Plan
+
+**Phase 1 - Web (Playwright):**
+- Set up Playwright in `TrashMob/client-app/e2e/`
+- Configure test fixtures for authenticated/unauthenticated states
+- Implement core user journey tests
+- Add GitHub Actions workflow for test execution
+- Generate HTML test reports
+
+**Phase 2 - Mobile:**
+- Evaluate Appium vs .NET MAUI Test framework
+- Set up mobile test project in `TrashMobMobile.Tests.UI/`
+- Implement core mobile user journeys
+- Configure emulator/simulator in CI (Android initially)
+
+**Phase 3 - Maintenance:**
+- Delete TestScenarios.md once coverage achieved
+- Document test patterns and conventions
+- Set up test data seeding for reproducible tests
+
+#### Rollout Plan
+
+1. Implement smoke tests for critical paths first
+2. Expand coverage incrementally per feature area
+3. Enable required checks on PRs after stabilization
+
+---
+
 ### Project 23 — Parental Consent for Minors (via Privo.com)
 
 | Attribute | Value |

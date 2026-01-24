@@ -237,21 +237,21 @@ namespace TrashMob.Controllers
         {
             if (litterReport == null)
             {
-                return null;
+                return BadRequest("Litter report cannot be null.");
             }
 
             logger.LogInformation("AddLitterReport - Name: {Name}, Description: {Description}, Status: {Status}",
                 litterReport.Name, litterReport.Description, litterReport.LitterReportStatusId);
 
-            var newLitterReport = await litterReportManager.AddAsync(litterReport, UserId, cancellationToken);
+            var result = await litterReportManager.AddWithResultAsync(litterReport, UserId, cancellationToken);
 
-            if (newLitterReport != null)
+            if (result.IsSuccess)
             {
                 TelemetryClient.TrackEvent(nameof(AddLitterReport));
-                return Ok(newLitterReport);
+                return Ok(result.Data);
             }
 
-            return BadRequest("Failed to create litter report");
+            return BadRequest(result.ErrorMessage);
         }
 
         /// <summary>
