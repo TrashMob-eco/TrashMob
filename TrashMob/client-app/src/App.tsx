@@ -3,12 +3,12 @@ import { BrowserRouter, Outlet, Route, Routes, useLocation } from 'react-router'
 import { Loader2 } from 'lucide-react';
 
 import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
-import { InteractionType } from '@azure/msal-browser';
+import { InteractionType, PublicClientApplication } from '@azure/msal-browser';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from '@/components/ui/toaster';
 
-import { msalClient } from './store/AuthStore';
+import { initializeMsalClient } from './store/AuthStore';
 import { Shop } from './components/Shop';
 
 import 'react-phone-input-2/lib/style.css';
@@ -85,16 +85,6 @@ import { NoMatch } from './pages/nomatch';
 
 const queryClient = new QueryClient();
 
-const useInitializeApp = () => {
-    const [isInitialized, setIsInitialized] = useState(false);
-    useEffect(() => {
-        if (isInitialized) {
-            return;
-        }
-        setIsInitialized(true);
-    }, [isInitialized]);
-};
-
 // Component for Listening to pathname change, then scroll to top
 function ScrollToTop() {
     const { pathname } = useLocation();
@@ -155,8 +145,33 @@ const AuthSideAdminLayout = () => {
 };
 
 export const App: FC = () => {
-    useInitializeApp();
-    const { currentUser, isUserLoaded, handleUserUpdated } = useLogin();
+    const [msalClient, setMsalClient] = useState<PublicClientApplication | null>(null);
+    const [isInitializing, setIsInitializing] = useState(true);
+    const { currentUser, isUserLoaded } = useLogin();
+
+    // Initialize MSAL client after config is loaded from backend
+    useEffect(() => {
+        initializeMsalClient()
+            .then((client) => {
+                setMsalClient(client);
+                setIsInitializing(false);
+            })
+            .catch((error) => {
+                console.error('Failed to initialize MSAL client:', error);
+                setIsInitializing(false);
+            });
+    }, []);
+
+    // Show loading while MSAL is initializing
+    if (isInitializing || !msalClient) {
+        return (
+            <div className='tailwind'>
+                <div className='flex justify-center items-center py-16 min-h-screen'>
+                    <Loader2 className='animate-spin mr-2' /> Loading...
+                </div>
+            </div>
+        );
+    }
 
     return (
         <QueryClientProvider client={queryClient}>
