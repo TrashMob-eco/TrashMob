@@ -1159,6 +1159,91 @@ Migrate web app, API, and background jobs from Azure Application Insights SDK to
 
 ---
 
+### Project 26 — Photo Moderation Admin Page
+
+| Attribute | Value |
+|-----------|-------|
+| **Status** | Not started |
+| **Priority** | Medium |
+| **Risk** | Low |
+| **Size** | Medium |
+
+#### Business Rationale
+
+User-generated content (event photos, litter report images) requires moderation to ensure compliance with Terms of Service and prevent inappropriate content. Site admins need a centralized interface to review flagged photos, approve or remove content, and notify uploaders of violations.
+
+#### Current State
+
+- Photos can be uploaded for events and litter reports
+- No admin interface exists for reviewing or moderating photos
+- No flagging mechanism for users to report inappropriate content
+- No notification workflow when photos are removed
+
+#### Objectives
+
+- Create admin page to view all photos pending moderation
+- Enable admin approval/rejection workflow with reason codes
+- Implement user flagging mechanism for inappropriate content
+- Send email notifications to uploaders when photos are removed
+- Maintain audit log of moderation actions
+
+#### Scope
+
+- ✅ Site admin photo moderation page
+- ✅ Photo approval/rejection workflow
+- ✅ User flagging of inappropriate photos
+- ✅ Email notification on photo removal
+- ✅ Moderation audit log
+
+#### Out-of-Scope
+
+- ❌ Automated content moderation (AI/ML) - future phase
+- ❌ Partner/community-level moderation (admins only for now)
+
+#### Success Metrics
+
+- Average time from flag to resolution < 24 hours
+- 100% of removed photos have notification sent to uploader
+- Zero inappropriate photos remaining after admin review
+
+#### Dependencies
+
+- None (existing photo infrastructure is sufficient)
+
+#### Implementation Plan
+
+**Data Model Changes:**
+- Add `PhotoModerationStatus` enum (Pending, Approved, Rejected)
+- Add `ModerationStatus`, `ModeratedByUserId`, `ModeratedDate`, `ModerationReason` to photo tables
+- Create `PhotoFlag` table (PhotoId, FlaggedByUserId, FlagReason, FlagDate)
+- Create `PhotoModerationLog` table for audit trail
+
+**API Changes:**
+- `GET /api/admin/photos/pending` - List photos pending moderation
+- `GET /api/admin/photos/flagged` - List user-flagged photos
+- `POST /api/admin/photos/{id}/approve` - Approve a photo
+- `POST /api/admin/photos/{id}/reject` - Reject with reason
+- `POST /api/photos/{id}/flag` - User flags a photo
+
+**Web UX Changes:**
+- Site Admin > Photo Moderation page with:
+  - Tabs: Pending Review, Flagged by Users, Recently Moderated
+  - Photo thumbnail grid with quick actions
+  - Modal for viewing full photo and context (event/litter report)
+  - Approve/Reject buttons with reason dropdown
+- Add "Report Photo" option on public photo views
+
+**Email Templates:**
+- Photo removal notification with reason and appeal info
+
+#### Rollout Plan
+
+1. Deploy admin moderation page (admin-only)
+2. Enable user flagging feature
+3. Monitor moderation queue and adjust workflow as needed
+
+---
+
 ### Project 23 — Parental Consent for Minors (via Privo.com)
 
 | Attribute | Value |
