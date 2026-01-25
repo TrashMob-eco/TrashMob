@@ -14,9 +14,9 @@ The idea is to turn what can be an intimidating process for event organizers int
 
 | Environment | URL |
 |-------------|-----|
-| **Production** | https://www.trashmob.eco |
-| **Development** | https://ca-tm-dev-westus2.ashypebble-059d2628.westus2.azurecontainerapps.io |
-| **Dev Swagger** | https://ca-tm-dev-westus2.ashypebble-059d2628.westus2.azurecontainerapps.io/swagger/index.html |
+| **Production** | [www.trashmob.eco](https://www.trashmob.eco) |
+| **Development** | [dev.trashmob.eco](https://ca-tm-dev-westus2.ashypebble-059d2628.westus2.azurecontainerapps.io) |
+| **Dev Swagger** | [dev.trashmob.eco/swagger](https://ca-tm-dev-westus2.ashypebble-059d2628.westus2.azurecontainerapps.io/swagger/index.html) |
 
 ### Mobile Apps
 
