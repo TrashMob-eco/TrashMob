@@ -144,42 +144,15 @@ const AuthSideAdminLayout = () => {
     );
 };
 
-export const App: FC = () => {
-    const [msalClient, setMsalClient] = useState<PublicClientApplication | null>(null);
-    const [isInitializing, setIsInitializing] = useState(true);
+// Inner component that uses MSAL hooks - must be rendered inside MsalProvider
+const AppContent: FC = () => {
     const { currentUser, isUserLoaded } = useLogin();
 
-    // Initialize MSAL client after config is loaded from backend
-    useEffect(() => {
-        initializeMsalClient()
-            .then((client) => {
-                setMsalClient(client);
-                setIsInitializing(false);
-            })
-            .catch((error) => {
-                console.error('Failed to initialize MSAL client:', error);
-                setIsInitializing(false);
-            });
-    }, []);
-
-    // Show loading while MSAL is initializing
-    if (isInitializing || !msalClient) {
-        return (
-            <div className='tailwind'>
-                <div className='flex justify-center items-center py-16 min-h-screen'>
-                    <Loader2 className='animate-spin mr-2' /> Loading...
-                </div>
-            </div>
-        );
-    }
-
     return (
-        <QueryClientProvider client={queryClient}>
-            <MsalProvider instance={msalClient}>
-                <div className='flex flex-col h-100'>
-                    <BrowserRouter>
-                        <ScrollToTop />
-                        <SiteHeader currentUser={currentUser} isUserLoaded={isUserLoaded} />
+        <div className='flex flex-col h-100'>
+            <BrowserRouter>
+                <ScrollToTop />
+                <SiteHeader currentUser={currentUser} isUserLoaded={isUserLoaded} />
                         <div className='container-fluid px-0'>
                             <Routes>
                                 <Route element={<AuthLayout />}>
@@ -289,6 +262,41 @@ export const App: FC = () => {
                         <SiteFooter />
                     </BrowserRouter>
                 </div>
+    );
+};
+
+export const App: FC = () => {
+    const [msalClient, setMsalClient] = useState<PublicClientApplication | null>(null);
+    const [isInitializing, setIsInitializing] = useState(true);
+
+    // Initialize MSAL client after config is loaded from backend
+    useEffect(() => {
+        initializeMsalClient()
+            .then((client) => {
+                setMsalClient(client);
+                setIsInitializing(false);
+            })
+            .catch((error) => {
+                console.error('Failed to initialize MSAL client:', error);
+                setIsInitializing(false);
+            });
+    }, []);
+
+    // Show loading while MSAL is initializing
+    if (isInitializing || !msalClient) {
+        return (
+            <div className='tailwind'>
+                <div className='flex justify-center items-center py-16 min-h-screen'>
+                    <Loader2 className='animate-spin mr-2' /> Loading...
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <QueryClientProvider client={queryClient}>
+            <MsalProvider instance={msalClient}>
+                <AppContent />
             </MsalProvider>
             <div className='tailwind'>
                 <Toaster />
