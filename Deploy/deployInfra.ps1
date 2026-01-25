@@ -67,23 +67,9 @@ az keyvault secret set --vault-name $keyVaultName --name TMDBServerConnectionStr
 az keyvault secret set --vault-name $keyVaultName --name StorageAccountKey --value $storageKey
 az keyvault secret set --vault-name $keyVaultName --name sendGridApiKey --value $sendGridApiKey
 
-# Set Azure AD B2C configuration based on environment
-# These secrets override appsettings.json values for the deployed environment
-# The -- in secret names maps to : in .NET configuration (e.g., AzureAdB2C:Instance)
-Write-Host "Setting Azure AD B2C configuration secrets..." -ForegroundColor Green
-if ($environment -eq "dev") {
-    # Dev environment uses trashmobdev B2C tenant
-    az keyvault secret set --vault-name $keyVaultName --name "AzureAdB2C--Instance" --value "https://trashmobdev.b2clogin.com/"
-    az keyvault secret set --vault-name $keyVaultName --name "AzureAdB2C--ClientId" --value "7e44c032-7c3d-43a1-8ea7-f0a14a93bce2"
-    az keyvault secret set --vault-name $keyVaultName --name "AzureAdB2C--Domain" --value "trashmobdev.onmicrosoft.com"
-    az keyvault secret set --vault-name $keyVaultName --name "AzureAdB2C--SignUpSignInPolicyId" --value "B2C_1A_TM_SIGNUP_SIGNIN"
-} else {
-    # Production environment uses trashmob B2C tenant (values from appsettings.json)
-    az keyvault secret set --vault-name $keyVaultName --name "AzureAdB2C--Instance" --value "https://trashmob.b2clogin.com/"
-    az keyvault secret set --vault-name $keyVaultName --name "AzureAdB2C--ClientId" --value "ca9c62c2-fdcb-4d07-b049-cdf66e874dfc"
-    az keyvault secret set --vault-name $keyVaultName --name "AzureAdB2C--Domain" --value "trashmob.onmicrosoft.com"
-    az keyvault secret set --vault-name $keyVaultName --name "AzureAdB2C--SignUpSignInPolicyId" --value "B2C_1A_TM_SIGNUP_SIGNIN"
-}
+# Note: Azure AD B2C configuration is now set via environment variables in containerApp.bicep
+# The B2C settings are public configuration values (not secrets) and are determined by the 'environment' parameter
+# This includes both backend (JWT validation) and frontend (MSAL) client IDs
 
 # Set the webapp to the correct keyvaulturi
 az webapp config appsettings set --name $appServiceName --resource-group $rgName --settings "VaultUri=https://$keyVaultName.vault.azure.net"

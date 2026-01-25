@@ -1,48 +1,82 @@
 import * as msal from '@azure/msal-browser';
+import { getAppConfig, getCachedConfig, type B2CConfig } from '../services/config';
 
-const b2cPoliciesProd = {
-    names: {
-        signUpSignIn: 'B2C_1A_TM_SIGNUP_SIGNIN',
-        deleteUser: 'B2C_1A_TM_DEREGISTER',
-        profileEdit: 'B2C_1A_TM_PROFILEEDIT',
-    },
-    authorities: {
-        signUpSignIn: {
-            authority: 'https://TrashMob.b2clogin.com/TrashMob.onmicrosoft.com/B2C_1A_TM_SIGNUP_SIGNIN',
-        },
-        deleteUser: {
-            authority: 'https://TrashMob.b2clogin.com/TrashMob.onmicrosoft.com/B2C_1A_TM_DEREGISTER',
-        },
-        profileEdit: {
-            authority: 'https://TrashMob.b2clogin.com/TrashMob.onmicrosoft.com/B2C_1A_TM_PROFILEEDIT',
-        },
-    },
-    authorityDomain: 'TrashMob.b2clogin.com',
-    clientId: '0a1647a4-c758-4964-904f-a9b66958c071',
-};
-
-const b2cPoliciesDev = {
-    names: {
-        signUpSignIn: 'B2C_1A_TM_SIGNUP_SIGNIN',
-        deleteUser: 'B2C_1A_TM_DEREGISTER',
-        profileEdit: 'B2C_1A_TM_PROFILEEDIT',
-    },
-    authorities: {
-        signUpSignIn: {
-            authority: 'https://TrashMobDev.b2clogin.com/TrashMobDev.onmicrosoft.com/B2C_1A_TM_SIGNUP_SIGNIN',
-        },
-        deleteUser: {
-            authority: 'https://TrashMobDev.b2clogin.com/TrashMobDev.onmicrosoft.com/B2C_1A_TM_DEREGISTER',
-        },
-        profileEdit: {
-            authority: 'https://TrashMobDev.b2clogin.com/TrashMobDev.onmicrosoft.com/B2C_1A_TM_PROFILEEDIT',
-        },
-    },
-    authorityDomain: 'TrashMobDev.b2clogin.com',
+// Fallback B2C configuration for when config cannot be loaded
+// Uses dev settings as fallback since they're safer for testing
+const fallbackB2CConfig: B2CConfig = {
     clientId: 'e46d67ba-fe46-40f4-b222-2f982b2bb112',
+    authorityDomain: 'TrashMobDev.b2clogin.com',
+    policies: {
+        signUpSignIn: 'B2C_1A_TM_SIGNUP_SIGNIN',
+        deleteUser: 'B2C_1A_TM_DEREGISTER',
+        profileEdit: 'B2C_1A_TM_PROFILEEDIT',
+    },
+    authorities: {
+        signUpSignIn: 'https://TrashMobDev.b2clogin.com/TrashMobDev.onmicrosoft.com/B2C_1A_TM_SIGNUP_SIGNIN',
+        deleteUser: 'https://TrashMobDev.b2clogin.com/TrashMobDev.onmicrosoft.com/B2C_1A_TM_DEREGISTER',
+        profileEdit: 'https://TrashMobDev.b2clogin.com/TrashMobDev.onmicrosoft.com/B2C_1A_TM_PROFILEEDIT',
+    },
+    scopes: [
+        'https://TrashMobDev.onmicrosoft.com/api/TrashMob.Read',
+        'https://TrashMobDev.onmicrosoft.com/api/TrashMob.Writes',
+        'email',
+    ],
 };
 
-export function GetMsalClient(navigateToLoginRequestUrl: boolean) {
+// Cached MSAL client and config
+let msalClientInstance: msal.PublicClientApplication | null = null;
+let b2cConfig: B2CConfig | null = null;
+let initPromise: Promise<void> | null = null;
+
+// Initialize auth configuration from backend
+async function initializeAuth(): Promise<void> {
+    if (b2cConfig) {
+        return; // Already initialized
+    }
+
+    if (initPromise) {
+        return initPromise; // Initialization in progress
+    }
+
+    initPromise = getAppConfig().then((config) => {
+        b2cConfig = config.azureAdB2C || fallbackB2CConfig;
+        if (!config.azureAdB2C) {
+            console.warn('B2C config not available from server, using fallback');
+        }
+    });
+
+    return initPromise;
+}
+
+// Get the B2C config (synchronous, returns fallback if not yet loaded)
+export function getB2CPolicies(): {
+    names: { signUpSignIn: string; deleteUser: string; profileEdit: string };
+    authorities: { signUpSignIn: { authority: string }; deleteUser: { authority: string }; profileEdit: { authority: string } };
+    authorityDomain: string;
+    clientId: string;
+} {
+    const config = b2cConfig || getCachedConfig()?.azureAdB2C || fallbackB2CConfig;
+
+    return {
+        names: config.policies,
+        authorities: {
+            signUpSignIn: { authority: config.authorities.signUpSignIn },
+            deleteUser: { authority: config.authorities.deleteUser },
+            profileEdit: { authority: config.authorities.profileEdit },
+        },
+        authorityDomain: config.authorityDomain,
+        clientId: config.clientId,
+    };
+}
+
+export function getApiConfig(): { b2cScopes: string[] } {
+    const config = b2cConfig || getCachedConfig()?.azureAdB2C || fallbackB2CConfig;
+    return {
+        b2cScopes: config.scopes,
+    };
+}
+
+export function GetMsalClient(navigateToLoginRequestUrl: boolean): msal.PublicClientApplication {
     const { host } = window.location;
     const { protocol } = window.location;
 
@@ -94,25 +128,24 @@ export function GetMsalClient(navigateToLoginRequestUrl: boolean) {
     return msalC;
 }
 
+// Get or create the MSAL client (uses cached instance after first call)
+export function getMsalClientInstance(): msal.PublicClientApplication {
+    if (!msalClientInstance) {
+        msalClientInstance = GetMsalClient(true);
+    }
+    return msalClientInstance;
+}
+
+// Initialize auth and return the MSAL client
+export async function initializeMsalClient(): Promise<msal.PublicClientApplication> {
+    await initializeAuth();
+    return getMsalClientInstance();
+}
+
+// Legacy export for backward compatibility
+// Note: This creates the client immediately with whatever config is available
+// For proper initialization, use initializeMsalClient() instead
 export const msalClient: msal.PublicClientApplication = GetMsalClient(true);
-
-export function getApiConfig() {
-    const { host } = window.location;
-
-    if (host.startsWith('www.trashmob.eco') || host.startsWith('trashmob.eco')) {
-        return apiConfigProd;
-    }
-    return apiConfigDev;
-}
-
-export function getB2CPolicies() {
-    const { host } = window.location;
-
-    if (host.startsWith('www.trashmob.eco') || host.startsWith('trashmob.eco')) {
-        return b2cPoliciesProd;
-    }
-    return b2cPoliciesDev;
-}
 
 export function validateToken(idTokenClaims: object): boolean {
     if (!idTokenClaims.hasOwnProperty('email')) {
@@ -122,24 +155,10 @@ export function validateToken(idTokenClaims: object): boolean {
     return true;
 }
 
-const apiConfigProd = {
-    b2cScopes: [
-        'https://TrashMob.onmicrosoft.com/api/TrashMob.Read',
-        'https://TrashMob.onmicrosoft.com/api/TrashMob.Writes',
-        'email',
-    ],
-};
-
-const apiConfigDev = {
-    b2cScopes: [
-        'https://TrashMobDev.onmicrosoft.com/api/TrashMob.Read',
-        'https://TrashMobDev.onmicrosoft.com/api/TrashMob.Writes',
-        'email',
-    ],
-};
-
 export const tokenRequest = {
-    scopes: apiConfigProd.b2cScopes,
+    get scopes() {
+        return getApiConfig().b2cScopes;
+    },
 };
 
 export function getDefaultHeaders(method: string): Headers {
@@ -149,3 +168,8 @@ export function getDefaultHeaders(method: string): Headers {
     headers.append('Content-Type', 'application/json');
     return headers;
 }
+
+// Pre-initialize auth config on module load
+initializeAuth().catch((error) => {
+    console.error('Failed to initialize auth config:', error);
+});

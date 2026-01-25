@@ -215,8 +215,18 @@ Both containers use these environment variables:
 
 - `ASPNETCORE_ENVIRONMENT=Production`
 - `VaultUri=https://<keyvault-name>.vault.azure.net`
+- `StorageAccountUri=https://<storage-account-name>.blob.core.windows.net/`
+- `ApplicationInsights__ConnectionString` - Retrieved from the environment-specific Application Insights resource
 - `ASPNETCORE_HTTP_PORTS=8080` (Web App only)
+- `EnableSwagger=true/false` (Web App only, based on environment)
 - `InstanceName=as-tm-<env>-<region>` (Jobs only)
+
+Azure AD B2C configuration (public values, set based on environment parameter in Bicep):
+- `AzureAdB2C__Instance` - B2C login endpoint (e.g., https://trashmobdev.b2clogin.com/)
+- `AzureAdB2C__ClientId` - Backend API client ID for JWT validation
+- `AzureAdB2C__FrontendClientId` - Frontend SPA client ID for MSAL
+- `AzureAdB2C__Domain` - B2C tenant domain (e.g., trashmobdev.onmicrosoft.com)
+- `AzureAdB2C__SignUpSignInPolicyId` - B2C policy ID
 
 Secrets are retrieved from Key Vault using managed identity:
 - `AzureMapsKey`
