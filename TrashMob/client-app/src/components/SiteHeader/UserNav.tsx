@@ -21,7 +21,7 @@ import {
 import { Link } from 'react-router';
 import { cn } from '@/lib/utils';
 import UserData from '../Models/UserData';
-import { getApiConfig, getB2CPolicies, msalClient } from '@/store/AuthStore';
+import { getApiConfig, getB2CPolicies, getMsalClientInstance } from '@/store/AuthStore';
 import React from 'react';
 
 interface UserNavProps {
@@ -37,7 +37,7 @@ export const UserNav = (props: UserNavProps) => {
         e.preventDefault();
         const apiConfig = getApiConfig();
 
-        msalClient.loginRedirect({
+        getMsalClientInstance().loginRedirect({
             scopes: apiConfig.b2cScopes,
         });
     }
@@ -45,16 +45,16 @@ export const UserNav = (props: UserNavProps) => {
     function signOut(e: React.MouseEvent) {
         e.preventDefault();
         const logoutRequest = {
-            account: msalClient.getActiveAccount(),
+            account: getMsalClientInstance().getActiveAccount(),
         };
 
-        msalClient.logout(logoutRequest);
+        getMsalClientInstance().logout(logoutRequest);
     }
 
     function profileEdit(e: React.MouseEvent) {
         e.preventDefault();
 
-        const account = msalClient.getAllAccounts()[0];
+        const account = getMsalClientInstance().getAllAccounts()[0];
         const policy = getB2CPolicies();
         const scopes = getApiConfig();
 
@@ -64,7 +64,7 @@ export const UserNav = (props: UserNavProps) => {
             scopes: scopes.b2cScopes,
         };
 
-        msalClient.acquireTokenRedirect(request);
+        getMsalClientInstance().acquireTokenRedirect(request);
     }
 
     return (
