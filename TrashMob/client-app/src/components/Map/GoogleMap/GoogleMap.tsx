@@ -26,6 +26,7 @@ export const GoogleMap = (props: PropsWithChildren<MapProps>) => {
             style={{ width: '100%', height: '500px' }}
             defaultZoom={defaultZoomProps || MapStore.defaultUserLocationZoom}
             defaultCenter={defaultCenter}
+            id={id}
             {...rest}
         >
             {children}
