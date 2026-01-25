@@ -48,7 +48,7 @@ export const HeroSection = () => {
                                 variant="outline"
                                 className="border-emerald-800 text-emerald-900 hover:bg-emerald-50"
                             >
-                                <Link to="/report">
+                                <Link to="/litters/create">
                                     <MapPin className="mr-2 h-5 w-5" />Report trash
                                 </Link>
                             </Button>
