@@ -10,6 +10,8 @@
 
 Enable sustained growth of TrashMob.eco by strengthening onboarding & safety (minors and waivers), launching community & team features that cities will subscribe to, and raising product quality across mobile, web, and infrastructure.
 
+> **2026 Outlook:** The rise of AI-assisted coding (Claude, GitHub Copilot) is enabling dramatically faster feature development. With these tools, our volunteer team can ship more features in less time than ever before. This is an exciting time for TrashMob—expect accelerated progress across all initiatives!
+
 ---
 
 ## Strategic Objectives
