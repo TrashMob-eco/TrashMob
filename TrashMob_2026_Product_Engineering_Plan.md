@@ -136,7 +136,10 @@ Commit to **WCAG 2.2 AA** on web and mobile with a full audit and remediation pl
 - Front-to-back error handling
 - Business event logging
 - SLOs, alerting, and dashboards
-- **Tooling:** Sentry.io for mobile + backend/APM
+- **Tooling:**
+  - **Mobile App:** Sentry.io for crash reporting and error tracking
+  - **Web App:** Azure Application Insights SDK for telemetry and logging
+  - **Future:** Migrate web app to OpenTelemetry for vendor-neutral observability (see Project 25)
 
 ### 4.4 Cost & Infrastructure
 
@@ -237,8 +240,9 @@ Target **WCAG 2.2 AA** parity across web and mobile; perform full audit and reme
 - End-user crash-free rate (mobile)
 
 #### Tooling
-- **Sentry** + dashboards
-- Alerting for mobile, web, API, and jobs apps
+- **Mobile:** Sentry.io for crash reporting and error tracking
+- **Web/API/Jobs:** Azure Application Insights SDK (future: OpenTelemetry - see Project 25)
+- Dashboards and alerting for all apps
 
 ---
 
@@ -1073,6 +1077,85 @@ Reduce regression risk, enable confident releases, and replace manual test scena
 1. Implement smoke tests for critical paths first
 2. Expand coverage incrementally per feature area
 3. Enable required checks on PRs after stabilization
+
+---
+
+### Project 25 — Migrate Web App Observability to OpenTelemetry
+
+| Attribute | Value |
+|-----------|-------|
+| **Status** | Not started |
+| **Priority** | Low |
+| **Risk** | Low |
+| **Size** | Medium |
+
+#### Business Rationale
+
+Migrate web app, API, and background jobs from Azure Application Insights SDK to OpenTelemetry for vendor-neutral observability. This enables flexibility to use multiple backends, standardizes instrumentation across the industry, and future-proofs the telemetry stack.
+
+#### Current State
+
+- **Mobile App:** Uses Sentry.io for crash reporting and error tracking (no change planned)
+- **Web App/API/Jobs:** Uses Azure Application Insights SDK directly
+
+#### Objectives
+
+- Replace Application Insights SDK with OpenTelemetry .NET SDK
+- Configure OpenTelemetry exporter to continue sending data to Application Insights
+- Add standard OpenTelemetry instrumentation for HTTP, database, and custom spans
+- Enable future flexibility to export to additional backends (e.g., Jaeger, Prometheus, Grafana)
+- Maintain existing dashboards and alerts during migration
+
+#### Scope
+
+- ✅ TrashMob web API
+- ✅ TrashMobDailyJobs container app
+- ✅ TrashMobHourlyJobs container app
+- ✅ React frontend (OpenTelemetry JS SDK)
+
+#### Out-of-Scope
+
+- ❌ Mobile app (continues using Sentry.io)
+- ❌ Changing the backend (Application Insights remains the data store)
+
+#### Success Metrics
+
+- All existing telemetry data continues flowing to Application Insights
+- No increase in P95 latency from instrumentation overhead
+- Ability to add additional exporters without code changes
+- Standard OpenTelemetry semantic conventions used for all spans
+
+#### Dependencies
+
+- .NET 10 upgrade (Project 6)
+- CI/CD infrastructure (Project 5)
+
+#### Implementation Plan
+
+**Phase 1 - Backend (.NET):**
+- Add OpenTelemetry.Extensions.Hosting and Azure Monitor exporter NuGet packages
+- Configure OpenTelemetry in Program.cs with auto-instrumentation
+- Add custom activity sources for business operations
+- Remove direct Application Insights SDK references
+- Validate telemetry in Application Insights portal
+
+**Phase 2 - Frontend (React):**
+- Add @opentelemetry/sdk-trace-web package
+- Configure browser instrumentation for fetch/XHR
+- Export traces to backend collector endpoint
+- Correlate frontend traces with backend spans
+
+**Phase 3 - Validation:**
+- Compare telemetry coverage before/after migration
+- Update dashboards if needed
+- Document new instrumentation patterns
+
+#### Rollout Plan
+
+1. Implement in development environment first
+2. Shadow production traffic to validate data completeness
+3. Switch production after 1 week of validation
+4. Remove legacy SDK after 2 weeks stable
 
 ---
 

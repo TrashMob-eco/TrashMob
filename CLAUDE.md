@@ -134,7 +134,7 @@ docker build -f TrashMobHourlyJobs/Dockerfile -t trashmob-hourly-jobs:latest .
 
 ### Error Handling
 - Use **try-catch** blocks around external service calls
-- Log errors with **structured logging** (Sentry.io integration)
+- Log errors with **structured logging** (Application Insights for web, Sentry.io for mobile)
 - Return **user-friendly error messages** (never expose stack traces to users)
 - Implement **retry logic** for transient failures
 
@@ -223,11 +223,14 @@ public async Task<ServiceResult<T>> DoSomethingAsync(...) {
 
 ## Observability
 
-- **Sentry.io** for error tracking
+- **Mobile App:** Sentry.io for error tracking and crash reporting
+- **Web App:** Azure Application Insights SDK for telemetry, logging, and error tracking
 - **Structured logging** with context
 - **Business event tracking** (signups, event creation, attendance)
 - **Dashboards** for key metrics
 - **Alerting** for critical issues
+
+**Future:** Migrate web app from Application Insights SDK to OpenTelemetry for vendor-neutral observability
 
 ## Additional Resources
 
