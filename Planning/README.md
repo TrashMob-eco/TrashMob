@@ -11,11 +11,9 @@
 ### Core Documents
 
 - **[Executive Summary](./Executive_Summary.md)** - High-level overview, strategic objectives, and 2026 roadmap
-- **[Roadmap & Resourcing](./Roadmap_and_Resourcing.md)** - Quarterly roadmap, team structure, and resource planning
-- **[Operations & Standards](./Operations_and_Standards.md)** - Product operations, metrics, privacy, accessibility
 - **[Risks & Mitigations](./Risks_and_Mitigations.md)** - Cross-project risks and mitigation strategies
 
-### 2026 Projects (25 Total)
+### 2026 Projects (29 Total)
 
 **Note:** Projects are not time-bound. Volunteers pick up work based on priority and availability.
 

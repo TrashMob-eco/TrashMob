@@ -67,8 +67,6 @@ Create a modern, scalable, and developer-friendly API layer (v2) that improves r
 
 ## Out-of-Scope
 
-- ? gRPC for internal services (future consideration)
-- ? API Gateway/BFF pattern (Phase 2 evaluation)
 - ? v1 endpoint removal (maintain both versions until mobile apps updated)
 
 ## Success Metrics
