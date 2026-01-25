@@ -7,7 +7,7 @@ Thank you for your interest in contributing to TrashMob.eco! We're actively look
 1. **Find an Issue**
    - Check [Good First Issues](https://github.com/TrashMob-eco/TrashMob/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) for beginner-friendly tasks
    - Browse [Open Issues](https://github.com/TrashMob-eco/TrashMob/issues) for other opportunities
-   - Review the [2026 Product Plan](./TrashMob_2026_Product_Engineering_Plan.md) for major initiatives
+   - Review the [2026 Product Plan](./Planning/README.md) for major initiatives
 
 2. **Set Up Your Environment**
    - Follow the setup instructions in [CLAUDE.md](./CLAUDE.md)

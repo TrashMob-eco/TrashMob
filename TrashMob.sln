@@ -25,8 +25,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		NuGet.Config = NuGet.Config
 		README.md = README.md
 		TestScenarios.md = TestScenarios.md
-		TrashMobArchitecture.png = TrashMobArchitecture.png
-		TrashMob_2026_Product_Engineering_Plan.md = TrashMob_2026_Product_Engineering_Plan.md
+		ARCHITECTURE.md = ARCHITECTURE.md
+		Planning\README.md = Planning\README.md
 		TrashMob_Logo1.svg = TrashMob_Logo1.svg
 		WebsiteUserStories.md = WebsiteUserStories.md
 	EndProjectSection

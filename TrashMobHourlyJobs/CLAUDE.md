@@ -1,14 +1,14 @@
-# TrashMobHourlyJobs — AI Assistant Context
+# TrashMobHourlyJobs ï¿½ AI Assistant Context
 
 > **Note:** This document provides context specific to the TrashMobHourlyJobs background processing application. For overall project context, see `/claude.md` at the repository root.
 
 ## Application Overview
 
 TrashMobHourlyJobs is a scheduled background job processor that runs hourly to perform automated tasks such as:
-- **User notifications** — Send email notifications about upcoming events
-- **Event reminders** — Alert attendees about events happening soon
-- **Data cleanup** — Remove expired or stale data
-- **Status updates** — Update event statuses based on time
+- **User notifications** ï¿½ Send email notifications about upcoming events
+- **Event reminders** ï¿½ Alert attendees about events happening soon
+- **Data cleanup** ï¿½ Remove expired or stale data
+- **Status updates** ï¿½ Update event statuses based on time
 
 **Architecture:**
 - .NET 10 Console Application
@@ -447,15 +447,15 @@ dotnet run --project TrashMobHourlyJobs
 
 ### Related Projects
 
-- **TrashMobDailyJobs** — Daily scheduled tasks (stats generation, cleanup)
-- **TrashMob.Shared** — Shared business logic and data access
-- **TrashMob** — Main web API and frontend
+- **TrashMobDailyJobs** ï¿½ Daily scheduled tasks (stats generation, cleanup)
+- **TrashMob.Shared** ï¿½ Shared business logic and data access
+- **TrashMob** ï¿½ Main web API and frontend
 
 ---
 
 **Related Documentation:**
-- Root `/claude.md` — Overall project context
-- `/TrashMob/claude.md` — Web API patterns
-- `/TrashMob_2026_Product_Engineering_Plan.md` — 2026 roadmap
+- Root `/claude.md` ï¿½ Overall project context
+- `/TrashMob/claude.md` ï¿½ Web API patterns
+- `/Planning/README.md` ï¿½ 2026 roadmap
 
 **Last Updated:** January 23, 2026

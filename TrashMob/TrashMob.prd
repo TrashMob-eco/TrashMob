@@ -1642,7 +1642,7 @@ TrashMob.eco is a community-driven platform that connects volunteers to organize
 
 ### C. Related Documents
 
-- `/TrashMob_2026_Product_Engineering_Plan.md` � Detailed technical roadmap
+- `/Planning/README.md` � Detailed technical roadmap
 - `/claude.md` � Project context for AI assistants
 - `/TrashMob/claude.md` � Web API development patterns
 - `/TrashMobHourlyJobs/claude.md` � Hourly job patterns

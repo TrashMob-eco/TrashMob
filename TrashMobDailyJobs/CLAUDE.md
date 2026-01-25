@@ -1,13 +1,13 @@
-# TrashMobDailyJobs — AI Assistant Context
+# TrashMobDailyJobs ï¿½ AI Assistant Context
 
 > **Note:** This document provides context specific to the TrashMobDailyJobs background processing application. For overall project context, see `/claude.md` at the repository root.
 
 ## Application Overview
 
 TrashMobDailyJobs is a scheduled background job processor that runs daily to perform:
-- **Statistics generation** — Calculate and record platform-wide metrics
-- **Daily summary reports** — Email comprehensive stats to administrators
-- **Metrics persistence** — Store time-series data in SiteMetrics table for trending
+- **Statistics generation** ï¿½ Calculate and record platform-wide metrics
+- **Daily summary reports** ï¿½ Email comprehensive stats to administrators
+- **Metrics persistence** ï¿½ Store time-series data in SiteMetrics table for trending
 
 **Architecture:**
 - .NET 10 Console Application
@@ -580,16 +580,16 @@ SELECT count(*) FROM dbo.Events WHERE eventstatusid != 3;
 
 ### Related Projects
 
-- **TrashMobHourlyJobs** — Hourly tasks (notifications, reminders)
-- **TrashMob.Shared** — Shared business logic and data access
-- **TrashMob** — Main web API and frontend
+- **TrashMobHourlyJobs** ï¿½ Hourly tasks (notifications, reminders)
+- **TrashMob.Shared** ï¿½ Shared business logic and data access
+- **TrashMob** ï¿½ Main web API and frontend
 
 ---
 
 **Related Documentation:**
-- Root `/claude.md` — Overall project context
-- `/TrashMob/claude.md` — Web API patterns
-- `/TrashMobHourlyJobs/claude.md` — Hourly job patterns
-- `/TrashMob_2026_Product_Engineering_Plan.md` — 2026 roadmap
+- Root `/claude.md` ï¿½ Overall project context
+- `/TrashMob/claude.md` ï¿½ Web API patterns
+- `/TrashMobHourlyJobs/claude.md` ï¿½ Hourly job patterns
+- `/Planning/README.md` ï¿½ 2026 roadmap
 
 **Last Updated:** January 23, 2026

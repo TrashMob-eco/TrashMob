@@ -134,7 +134,7 @@ docker build -f TrashMobHourlyJobs/Dockerfile -t trashmob-hourly-jobs:latest .
 
 ### Error Handling
 - Use **try-catch** blocks around external service calls
-- Log errors with **structured logging** (Sentry.io integration)
+- Log errors with **structured logging** (Application Insights for web, Sentry.io for mobile)
 - Return **user-friendly error messages** (never expose stack traces to users)
 - Implement **retry logic** for transient failures
 
@@ -175,7 +175,7 @@ docker build -f TrashMobHourlyJobs/Dockerfile -t trashmob-hourly-jobs:latest .
 
 ## Key 2026 Initiatives
 
-Refer to `TrashMob_2026_Product_Engineering_Plan.md` for detailed roadmap. Priority areas:
+Refer to `Planning/README.md` for detailed roadmap. Priority areas:
 
 1. **Project 1:** Auth migration (Azure B2C → Entra External ID)
 2. **Project 4:** Mobile stabilization and error handling
@@ -223,17 +223,20 @@ public async Task<ServiceResult<T>> DoSomethingAsync(...) {
 
 ## Observability
 
-- **Sentry.io** for error tracking
+- **Mobile App:** Sentry.io for error tracking and crash reporting
+- **Web App:** Azure Application Insights SDK for telemetry, logging, and error tracking
 - **Structured logging** with context
 - **Business event tracking** (signups, event creation, attendance)
 - **Dashboards** for key metrics
 - **Alerting** for critical issues
 
+**Future:** Migrate web app from Application Insights SDK to OpenTelemetry for vendor-neutral observability
+
 ## Additional Resources
 
 - **2026 Planning:** `Planning/README.md` - Navigation hub for all planning docs
 - **Individual Projects:** `Planning/Projects/` - 25 detailed project specifications
-- **Product Plan:** `TrashMob_2026_Product_Engineering_Plan.md` - Master roadmap document
+- **Product Plan:** `Planning/README.md` - Master roadmap document
 - **Domain Model:** `TrashMob.Models/TrashMob.Models.prd` - Entity relationships and business rules
 - **Test Scenarios:** `TestScenarios.md` - Manual test cases (automation planned)
 - **Container Deployment:** `Deploy/CONTAINER_DEPLOYMENT_GUIDE.md`
