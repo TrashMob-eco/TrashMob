@@ -277,10 +277,9 @@ Enable sustained growth of TrashMob.eco by strengthening onboarding & safety (mi
 ## Open Strategic Questions
 
 1. **Entra External ID vs Azure B2C:** Final decision pending feature gap analysis and cost comparison (Q1)
-2. **GraphQL adoption:** Evaluate after API v2 stabilizes (Q4)
-3. **API Gateway/BFF pattern:** Defer to 2027 unless microservices needed
-4. **Mobile app store launch readiness:** Dependent on Project 4 completion
-5. **Monetization billing automation:** Manual for 2026, automated system in 2027
+2. **API Gateway/BFF pattern:** Defer to 2027 unless microservices needed
+3. **Mobile app store launch readiness:** Dependent on Project 4 completion
+4. **Monetization billing automation:** Manual for 2026, automated system in 2027
 
 ---
 
