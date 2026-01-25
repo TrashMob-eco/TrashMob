@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
@@ -282,6 +283,24 @@ public class Program
             app.UseDeveloperExceptionPage();
             app.UseForwardedHeaders();
             app.UseMigrationsEndPoint();
+            app.UseExceptionHandler(builder =>
+            {
+                builder.Run(async context =>
+                {
+                    context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                    context.Response.ContentType = "application/problem+json";
+
+                    var problem = new ProblemDetails
+                    {
+                        Type = "https://datatracker.ietf.org/doc/html/rfc9110#section-15.6.1",
+                        Title = "Internal server error",
+                        Status = 500,
+                        Detail = "An unexpected error occurred while processing your request."
+                    };
+
+                    await context.Response.WriteAsJsonAsync(problem);
+                });
+            });
         }
         else
         {
@@ -294,7 +313,8 @@ public class Program
         if (enableSwagger)
         {
             app.UseSwagger();
-            app.UseSwaggerUI(c => { 
+            app.UseSwaggerUI(c =>
+            {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "trashmobapi v1");
                 c.SwaggerEndpoint("/swagger/v2/swagger.json", "trashmobapi v2");
             });

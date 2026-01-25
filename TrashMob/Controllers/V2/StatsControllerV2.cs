@@ -19,5 +19,4 @@ public class StatsControllerV2 : ControllerBase
     {
         return Ok();
     }
-
 }
