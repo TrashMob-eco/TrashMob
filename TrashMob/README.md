@@ -46,7 +46,7 @@ TrashMob/
 - [CLAUDE.md](./CLAUDE.md) - Development patterns and coding standards
 - [TrashMob.prd](./TrashMob.prd) - Product requirements document
 - [Root README](../README.md) - Main project documentation
-- [2026 Product Plan](../TrashMob_2026_Product_Engineering_Plan.md) - Roadmap and initiatives
+- [2026 Product Plan](../Planning/README.md) - Roadmap and initiatives
 
 ---
 

@@ -60,7 +60,7 @@ Get the dev key from the [Dev KeyVault](https://portal.azure.com/#@jobeedevids.o
 - [TrashMobMobile.prd](./TrashMobMobile.prd) - Product requirements document
 - [Project Analysis](./docs/PROJECT_ANALYSIS.md) - Detailed architecture analysis
 - [Root README](../README.md) - Main project documentation
-- [2026 Product Plan](../TrashMob_2026_Product_Engineering_Plan.md) - Roadmap
+- [2026 Product Plan](../Planning/README.md) - Roadmap
 
 ## Test Builds
 

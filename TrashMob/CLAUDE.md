@@ -657,7 +657,7 @@ dotnet publish -c Release
 
 **Related Documentation:**
 - Root `/claude.md` — Overall project context
-- `/TrashMob_2026_Product_Engineering_Plan.md` — 2026 roadmap and priorities
+- `/Planning/README.md` — 2026 roadmap and priorities
 - `/README.md` — Project setup and getting started
 
 **Last Updated:** January 23, 2026
@@ -673,7 +673,7 @@ dotnet publish -c Release
 
 ## Key 2026 Initiatives
 
-Refer to `TrashMob_2026_Product_Engineering_Plan.md` for detailed roadmap. Priority areas:
+Refer to `Planning/README.md` for detailed roadmap. Priority areas:
 
 1. **Project 1:** Auth migration (Azure B2C → Entra External ID)
 2. **Project 4:** Mobile stabilization and error handling
@@ -772,7 +772,7 @@ Monitor and optimize:
 
 ## Getting Help
 
-- **Product Plan:** `TrashMob_2026_Product_Engineering_Plan.md`
+- **Product Plan:** `Planning/README.md`
 - **GitHub Issues:** Track bugs and features
 - **Project Wiki:** (if available)
 - **Code Comments:** Check inline documentation

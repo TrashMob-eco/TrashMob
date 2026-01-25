@@ -175,7 +175,7 @@ docker build -f TrashMobHourlyJobs/Dockerfile -t trashmob-hourly-jobs:latest .
 
 ## Key 2026 Initiatives
 
-Refer to `TrashMob_2026_Product_Engineering_Plan.md` for detailed roadmap. Priority areas:
+Refer to `Planning/README.md` for detailed roadmap. Priority areas:
 
 1. **Project 1:** Auth migration (Azure B2C → Entra External ID)
 2. **Project 4:** Mobile stabilization and error handling
@@ -236,7 +236,7 @@ public async Task<ServiceResult<T>> DoSomethingAsync(...) {
 
 - **2026 Planning:** `Planning/README.md` - Navigation hub for all planning docs
 - **Individual Projects:** `Planning/Projects/` - 25 detailed project specifications
-- **Product Plan:** `TrashMob_2026_Product_Engineering_Plan.md` - Master roadmap document
+- **Product Plan:** `Planning/README.md` - Master roadmap document
 - **Domain Model:** `TrashMob.Models/TrashMob.Models.prd` - Entity relationships and business rules
 - **Test Scenarios:** `TestScenarios.md` - Manual test cases (automation planned)
 - **Container Deployment:** `Deploy/CONTAINER_DEPLOYMENT_GUIDE.md`

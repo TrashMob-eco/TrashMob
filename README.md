@@ -70,7 +70,7 @@ Swagger: https://localhost:44332/swagger/index.html
 
 | Document | Description |
 |----------|-------------|
-| [2026 Product Engineering Plan](./TrashMob_2026_Product_Engineering_Plan.md) | Roadmap, projects, and milestones |
+| [2026 Planning Hub](./Planning/README.md) | Roadmap, projects, and milestones |
 | [TrashMob.prd](./TrashMob/TrashMob.prd) | Web API product requirements |
 | [TrashMobMobile.prd](./TrashMobMobile/TrashMobMobile.prd) | Mobile app product requirements |
 
@@ -133,7 +133,7 @@ We're actively looking for contributors! All skill levels welcome:
 Before starting work on a new feature, please check:
 - [Projects](https://github.com/orgs/TrashMob-eco/projects)
 - [Open Issues](https://github.com/TrashMob-eco/TrashMob/issues)
-- [2026 Product Plan](./TrashMob_2026_Product_Engineering_Plan.md)
+- [2026 Product Plan](./Planning/README.md)
 
 ---
 
