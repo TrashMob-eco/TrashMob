@@ -54,7 +54,7 @@
         </script>
         <script type="text/javascript">
             // Fetch Application Insights configuration from backend and initialize
-            (function() {
+            (function () {
                 function initAppInsights(instrumentationKey) {
                     if (!instrumentationKey) {
                         console.warn('Application Insights instrumentation key not available');
@@ -318,11 +318,13 @@
 
                 // Fetch config from backend API
                 fetch('/api/config')
-                    .then(function(response) { return response.json(); })
-                    .then(function(config) {
+                    .then(function (response) {
+                        return response.json();
+                    })
+                    .then(function (config) {
                         initAppInsights(config.applicationInsightsKey);
                     })
-                    .catch(function(error) {
+                    .catch(function (error) {
                         console.warn('Failed to fetch Application Insights config:', error);
                     });
             })();
