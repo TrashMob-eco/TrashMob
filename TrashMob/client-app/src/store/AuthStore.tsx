@@ -51,7 +51,11 @@ async function initializeAuth(): Promise<void> {
 // Get the B2C config (synchronous, returns fallback if not yet loaded)
 export function getB2CPolicies(): {
     names: { signUpSignIn: string; deleteUser: string; profileEdit: string };
-    authorities: { signUpSignIn: { authority: string }; deleteUser: { authority: string }; profileEdit: { authority: string } };
+    authorities: {
+        signUpSignIn: { authority: string };
+        deleteUser: { authority: string };
+        profileEdit: { authority: string };
+    };
     authorityDomain: string;
     clientId: string;
 } {
