@@ -232,6 +232,68 @@ public async Task<ServiceResult<T>> DoSomethingAsync(...) {
 
 **Future:** Migrate web app from Application Insights SDK to OpenTelemetry for vendor-neutral observability
 
+## Infrastructure & Custom Domain
+
+### Azure Resources (Production)
+- **Container App:** `ca-tm-pr-westus2` - Main web application
+- **Container Apps Environment:** `cae-tm-pr-westus2`
+- **Resource Group:** `rg-trashmob-pr-westus2`
+- **Custom Domain:** `www.trashmob.eco`
+
+### Custom Domain & SSL Certificate
+
+The production site uses an Azure-managed SSL certificate bound to the Container App. Managed certificates **auto-renew automatically** - no manual intervention required.
+
+**Verify current certificate binding:**
+```bash
+az containerapp hostname list \
+  --name ca-tm-pr-westus2 \
+  --resource-group rg-trashmob-pr-westus2
+```
+
+**Check certificate status:**
+```bash
+az containerapp env certificate list \
+  --name cae-tm-pr-westus2 \
+  --resource-group rg-trashmob-pr-westus2 \
+  --query "[?name=='trashmob-eco-cert']"
+```
+
+**If certificate needs to be recreated** (rare - only if deleted or corrupted):
+```bash
+# 1. Add TXT record for domain verification (get token from Azure Portal or CLI error message)
+#    Name: asuid.www.trashmob.eco
+#    Value: <verification-token>
+
+# 2. Add hostname to container app
+az containerapp hostname add \
+  --name ca-tm-pr-westus2 \
+  --resource-group rg-trashmob-pr-westus2 \
+  --hostname www.trashmob.eco
+
+# 3. Create managed certificate (takes 2-3 minutes to provision)
+az containerapp env certificate create \
+  --name cae-tm-pr-westus2 \
+  --resource-group rg-trashmob-pr-westus2 \
+  --hostname www.trashmob.eco \
+  --certificate-name trashmob-eco-cert \
+  --validation-method CNAME
+
+# 4. Bind certificate to hostname
+az containerapp hostname bind \
+  --name ca-tm-pr-westus2 \
+  --resource-group rg-trashmob-pr-westus2 \
+  --hostname www.trashmob.eco \
+  --certificate trashmob-eco-cert \
+  --environment cae-tm-pr-westus2
+```
+
+**DNS Requirements:**
+- CNAME: `www` → `ca-tm-pr-westus2.greenground-fd8fc385.westus2.azurecontainerapps.io`
+- TXT: `asuid.www.trashmob.eco` → domain verification token (for initial setup only)
+
+See `Deploy/CUSTOM_DOMAIN_MIGRATION.md` for full migration documentation.
+
 ## Additional Resources
 
 - **2026 Planning:** `Planning/README.md` - Navigation hub for all planning docs
