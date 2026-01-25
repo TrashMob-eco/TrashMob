@@ -13,7 +13,7 @@ The `TrashMob.Shared.Tests` project contains automated tests for the shared busi
 
 ## Technologies
 
-- .NET 9.0
+- .NET 10
 - xUnit (test framework)
 - Moq (mocking library)
 - Coverlet (code coverage)
@@ -34,11 +34,11 @@ The `TrashMob.Shared.Tests` project contains automated tests for the shared busi
     dotnet test --collect:"XPlat Code Coverage"
     ```
 
-## Helpful Links
+## Related Documentation
 
-- [TrashMob.Shared README](../TrashMob.Shared/README.md)
-- [Mobile App User Stories](https://github.com/TrashMob-eco/TrashMob/blob/main/MobileAppUserStories.md)
-- [Website User Stories](https://github.com/TrashMob-eco/TrashMob/blob/main/WebsiteUserStories.md)
+- [TrashMob.Shared README](../TrashMob.Shared/README.md) - Business logic being tested
+- [Root CLAUDE.md](../CLAUDE.md) - Development standards and architecture
+- [CONTRIBUTING.md](../CONTRIBUTING.md) - Contribution guidelines
 
 ---
 

@@ -16,6 +16,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4478AB77-33C6-46FE-8CC9-C1D6BB4556B5}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		claude.md = claude.md
 		CODE_OF_CONDUCT.md = CODE_OF_CONDUCT.md
 		CONTRIBUTING.md = CONTRIBUTING.md
 		GitVersion.yml = GitVersion.yml
@@ -24,8 +25,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		NuGet.Config = NuGet.Config
 		README.md = README.md
 		TestScenarios.md = TestScenarios.md
-		TrashMobArchitecture.png = TrashMobArchitecture.png
-		TrashMob_2026_Product_Engineering_Plan.md = TrashMob_2026_Product_Engineering_Plan.md
+		ARCHITECTURE.md = ARCHITECTURE.md
+		Planning\README.md = Planning\README.md
 		TrashMob_Logo1.svg = TrashMob_Logo1.svg
 		WebsiteUserStories.md = WebsiteUserStories.md
 	EndProjectSection

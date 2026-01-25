@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Services } from '../config/services.config';
-import { getApiConfig, msalClient, validateToken } from '../store/AuthStore';
+import { getApiConfig, getMsalClientInstance, validateToken } from '../store/AuthStore';
 
 const PublicService = axios.create({
     timeout: Services.TIMEOUT,
@@ -16,13 +16,13 @@ ProtectedService.interceptors.request.use(
         const processedConfig = config;
 
         // Get & Set Access Token
-        const accounts = msalClient.getAllAccounts();
+        const accounts = getMsalClientInstance().getAllAccounts();
         if (accounts === null || accounts.length <= 0) throw new axios.Cancel('User not found!');
         const request = {
             scopes: getApiConfig().b2cScopes,
             account: accounts[0],
         };
-        const tokenResponse = await msalClient.acquireTokenSilent(request);
+        const tokenResponse = await getMsalClientInstance().acquireTokenSilent(request);
         if (!validateToken(tokenResponse.idTokenClaims)) throw new axios.Cancel('User not found!');
         processedConfig.headers.Authorization = `Bearer ${tokenResponse.accessToken}`;
 

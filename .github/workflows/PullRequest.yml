@@ -6,8 +6,14 @@ name: TrashMob Pull Request Build
 on:
   pull_request:
     branches: [ "main", "release" ]
-    paths: 
-      - '.github/**'
+    paths:
+      - '.github/workflows/PullRequest.yml'
+      - '.github/workflows/container_ca-tm-dev-westus2.yml'
+      - '.github/workflows/release_ca-tm-pr-westus2.yml'
+      - '.github/workflows/container_caj-tm-dev-westus2-daily.yml'
+      - '.github/workflows/container_caj-tm-dev-westus2-hourly.yml'
+      - '.github/workflows/release_caj-tm-pr-westus2.yml'
+      - 'Deploy/**'
       - 'TrashMob/**'
       - 'TrashMob.Models/**'
       - 'TrashMob.Shared/**'
@@ -15,7 +21,6 @@ on:
       - 'TrashMobDailyJobs/**'
       - 'TrashMobHourlyJobs/**'
       - 'TrashMob.sln'
-      - '!TrashMobMobileApp/**'
 
 env:
   DOTNET_VERSION: '10.0.x'  # set this to the dotnet version to use

@@ -5,7 +5,12 @@ on:
     branches:
       - main
     paths:
-      - '.github/**'
+      - '.github/workflows/main_trashmobmobileapp.yml'
+      - '.github/workflows/release_trashmobmobileapp.yml'
+      - '.github/workflows/build-android.yml'
+      - '.github/workflows/build-ios.yml'
+      - '.github/workflows/publish-android.yml'
+      - '.github/workflows/publish-ios.yml'
       - 'TrashMob.Models/**'
       - 'TrashMobMobile/**'
   workflow_dispatch:

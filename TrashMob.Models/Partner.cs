@@ -5,6 +5,14 @@ namespace TrashMob.Models
     /// <summary>
     /// Represents a partner organization that supports TrashMob events.
     /// </summary>
+    /// <remarks>
+    /// Partners provide services to event leads and attendees to help with event logistics.
+    /// A partner may be an individual, government agency, private business, or other organization.
+    /// Partners can have multiple locations, each offering different services: disposal locations (dumpsters),
+    /// hauling (pickup of bagged garbage after events), supplies (food, drinks, garbage bags), or
+    /// equipment (buckets, reflective vests, litter pickers, gloves). Partners provide social media
+    /// contact info to help amplify events.
+    /// </remarks>
     public class Partner : KeyedModel
     {
         /// <summary>
