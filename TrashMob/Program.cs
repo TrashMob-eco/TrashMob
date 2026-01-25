@@ -28,6 +28,7 @@ using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using TrashMob.Common;
 using TrashMob.Security;
 using TrashMob.Shared;
 using TrashMob.Shared.Managers;
@@ -59,6 +60,7 @@ public class Program
 
         builder.Logging.AddApplicationInsights();
         builder.Services.AddApplicationInsightsTelemetry();
+        builder.Services.AddApplicationInsightsTelemetryProcessor<HealthCheckTelemetryFilter>();
 
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddMicrosoftIdentityWebApi(options =>
