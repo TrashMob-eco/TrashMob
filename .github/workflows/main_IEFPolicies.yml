@@ -5,7 +5,8 @@ on:
     branches:
       - main
     paths:
-      - '.github/**'
+      - '.github/workflows/main_IEFPolicies.yml'
+      - '.github/workflows/release_IEFPolicies.yml'
       - 'IEFPolicies/**'
    workflow_dispatch:
 

@@ -9,6 +9,9 @@ param storageAccountName string
 param environment string
 param cronExpression string = '0 0,12 * * *' // Twice a day at midnight and noon UTC
 
+// Derive the Application Insights name from environment and region
+var appInsightsName = 'ai-tm-${environment}-${region}'
+
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' existing = {
   name: containerRegistryName
 }
@@ -19,6 +22,10 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2024-01-01' existing = {
   name: storageAccountName
+}
+
+resource appInsights 'Microsoft.Insights/components@2020-02-02' existing = {
+  name: appInsightsName
 }
 
 resource containerAppJob 'Microsoft.App/jobs@2024-03-01' = {
@@ -77,6 +84,10 @@ resource containerAppJob 'Microsoft.App/jobs@2024-03-01' = {
             {
               name: 'StorageAccountUri'
               value: 'https://${storageAccount.name}.blob.${az.environment().suffixes.storage}/'
+            }
+            {
+              name: 'ApplicationInsights__ConnectionString'
+              value: appInsights.properties.ConnectionString
             }
           ]
         }
