@@ -169,8 +169,8 @@ Enable sustained growth of TrashMob.eco by strengthening onboarding & safety (mi
 | UX Designers | 2�3 |
 | .NET MAUI Mobile Devs | 2�3 |
 | Web Devs (React/TypeScript) | 2�3 |
-| Build/Deployment Engineers | 1�2 |
-| Security Engineers | 1�2 |
+
+**Note:** Build/deployment and security engineering tasks are handled via AI-assisted development tooling.
 
 ### Volunteer Dynamics
 - Chunk work into **3�6 month deliverables**
