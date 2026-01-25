@@ -76,12 +76,42 @@ docker build -f TrashMobHourlyJobs/Dockerfile -t trashmob-hourly-jobs:latest .
 
 ## Development Setup
 
+### Prerequisites
 1. Install .NET 10 SDK and Azure CLI
 2. Run `az login` to authenticate
 3. Add your IP to Dev Azure SQL firewall rules
 4. Run: `.\setupdev.ps1 -environment dev -region westus2 -subscription <guid>`
-5. Local API: https://localhost:44332
-6. Swagger: https://localhost:44332/swagger/index.html
+
+### Running Locally
+
+**Full-stack developers** (running both frontend and backend):
+```bash
+# Terminal 1: Start backend
+cd TrashMob
+dotnet run --environment Development
+# API available at https://localhost:44332
+
+# Terminal 2: Start frontend
+cd TrashMob/client-app
+npm start
+# Frontend at http://localhost:3000, API calls proxy to localhost:44332
+```
+
+**UX/Frontend developers** (frontend only, using dev server for API):
+```bash
+cd TrashMob/client-app
+
+# Create .env.local to point to dev server
+echo "VITE_API_URL=https://dev.trashmob.eco/api" > .env.local
+
+npm start
+# Frontend at http://localhost:3000, API calls go to dev.trashmob.eco
+```
+
+### Local URLs
+- **Local API:** https://localhost:44332
+- **Swagger:** https://localhost:44332/swagger/index.html
+- **Frontend (Vite):** http://localhost:3000
 
 ## Key Domain Concepts
 
