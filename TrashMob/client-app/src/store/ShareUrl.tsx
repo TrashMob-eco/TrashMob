@@ -10,6 +10,7 @@ export function getTwitterUrl(eventData: EventData): string {
 }
 
 export function getFacebookUrl(eventId: string): string {
-    const eventUrl = `https://www.trashmob.eco/eventdetails/${eventId}`;
+    const { host } = window.location;
+    const eventUrl = `https://${host}/eventdetails/${eventId}`;
     return `https://www.facebook.com/sharer/sharer.php?u=${encodeURI(eventUrl)}&amp;src=sdkpreparse`;
 }
