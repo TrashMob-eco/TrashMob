@@ -19,12 +19,14 @@ export const DeleteMyData: FC<DeleteMyDataProps> = (props) => {
             authority: policy.authorities.deleteUser.authority,
             scopes: scopes.b2cScopes,
         };
-        getMsalClientInstance().acquireTokenPopup(request).then(() => {
-            const logoutRequest = {
-                account: getMsalClientInstance().getActiveAccount(),
-            };
-            getMsalClientInstance().logoutRedirect(logoutRequest);
-        });
+        getMsalClientInstance()
+            .acquireTokenPopup(request)
+            .then(() => {
+                const logoutRequest = {
+                    account: getMsalClientInstance().getActiveAccount(),
+                };
+                getMsalClientInstance().logoutRedirect(logoutRequest);
+            });
     };
 
     return (
