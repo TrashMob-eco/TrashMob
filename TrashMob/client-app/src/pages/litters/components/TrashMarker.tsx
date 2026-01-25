@@ -38,15 +38,13 @@ export const TrashMarker = (props: TrashMarkerProps) => {
           }}
         />
       </AdvancedMarker>
-      {infowindowOpen && (
-        <InfoWindow
+      {infowindowOpen ? <InfoWindow
           anchor={marker}
           maxWidth={250}
           onCloseClick={() => setInfowindowOpen(false)}
         >
-          <img src={props.previewUrl} style={{ width: 250, height: 'auto' }} />
-        </InfoWindow>
-      )}
+          <img src={props.previewUrl} alt="Litter location preview" style={{ width: 250, height: 'auto' }} />
+        </InfoWindow> : null}
     </>
   )
 }

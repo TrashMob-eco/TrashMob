@@ -263,7 +263,7 @@ export const CreateLitterPage = () => {
                       onChange={onPhotoAdded}
                     />
                     {photos.map((p, index) => (
-                      <img key={`photo-${index}`} src={p.previewUrl} />
+                      <img key={`photo-${index}`} src={p.previewUrl} alt={`Litter ${index + 1}`} />
                     ))}
                   </div>
                 </TabsContent>
@@ -312,6 +312,7 @@ export const CreateLitterPage = () => {
                       <img
                         key={`photo-${index}`}
                         src={p.previewUrl}
+                        alt={`Litter ${index + 1}`}
                         className='w-auto h-48 rounded-lg mt-1 mb-4'
                       />
                     ))}

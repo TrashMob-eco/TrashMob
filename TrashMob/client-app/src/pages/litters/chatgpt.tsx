@@ -106,7 +106,7 @@ export default function CreateLitterReportPage() {
       // TODO: replace with your API call
       // await fetch("/api/litters", { method: "POST", body: form });
 
-      await new Promise((r) => setTimeout(r, 600)); // demo delay
+      await new Promise((r) => { setTimeout(r, 600); }); // demo delay
       alert("Thank you for your help! Your report has been submitted.");
       // optionally: navigate away / reset
       setPhotos((prev) => {
