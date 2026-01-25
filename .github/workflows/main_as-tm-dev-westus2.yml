@@ -8,7 +8,7 @@ on:
     branches:
     - main
     paths:
-      - '.github/**'
+      - '.github/workflows/main_as-tm-dev-westus2.yml'
       - 'TrashMob/**'
       - 'TrashMob.Models/**'
       - 'TrashMob.Shared/**'
