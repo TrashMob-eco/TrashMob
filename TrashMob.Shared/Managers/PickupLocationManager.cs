@@ -13,6 +13,16 @@
     using TrashMob.Shared.Persistence.Interfaces;
     using TrashMob.Shared.Poco;
 
+    /// <summary>
+    /// Manages pickup locations for events, including submission to hauling partners and pickup tracking.
+    /// </summary>
+    /// <param name="pickupLocationRepository">The repository for pickup location data access.</param>
+    /// <param name="eventManager">The event manager for event operations.</param>
+    /// <param name="eventPartnerLocationServiceManager">The manager for event partner location services.</param>
+    /// <param name="partnerLocationContactManager">The manager for partner location contacts.</param>
+    /// <param name="partnerAdminManager">The manager for partner administrators.</param>
+    /// <param name="emailManager">The email manager for sending notifications.</param>
+    /// <param name="imageManager">The image manager for pickup location images.</param>
     public class PickupLocationManager(
         IKeyedRepository<PickupLocation> pickupLocationRepository,
         IEventManager eventManager,
@@ -23,6 +33,7 @@
         IImageManager imageManager)
         : KeyedManager<PickupLocation>(pickupLocationRepository), IPickupLocationManager
     {
+        /// <inheritdoc />
         public override async Task<IEnumerable<PickupLocation>> GetByParentIdAsync(Guid parentId,
             CancellationToken cancellationToken)
         {
@@ -31,6 +42,7 @@
                 .AsEnumerable();
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<PickupLocation>> GetByUserAsync(Guid userId, CancellationToken cancellationToken)
         {
             // Get list of Partner Locations for this user that have Hauling set up
@@ -60,6 +72,7 @@
             return pickupLocations;
         }
 
+        /// <inheritdoc />
         public async Task MarkAsPickedUpAsync(Guid pickupLocationId, Guid userId, CancellationToken cancellationToken)
         {
             var pickupLocation = await base.GetAsync(pickupLocationId, cancellationToken);
@@ -69,6 +82,7 @@
             await base.UpdateAsync(pickupLocation, userId, cancellationToken);
         }
 
+        /// <inheritdoc />
         public async Task SubmitPickupLocations(Guid eventId, Guid userId, CancellationToken cancellationToken)
         {
             // Get the Event

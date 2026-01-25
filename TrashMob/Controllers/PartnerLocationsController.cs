@@ -10,6 +10,9 @@
     using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
 
+    /// <summary>
+    /// Controller for managing partner locations, including retrieval, creation, update, and deletion.
+    /// </summary>
     [Authorize]
     [Route("api/partnerlocations")]
     public class PartnerLocationsController : SecureController
@@ -17,6 +20,11 @@
         private readonly IPartnerLocationManager partnerLocationManager;
         private readonly IKeyedManager<Partner> partnerManager;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PartnerLocationsController"/> class.
+        /// </summary>
+        /// <param name="partnerLocationManager">The partner location manager.</param>
+        /// <param name="partnerManager">The partner manager.</param>
         public PartnerLocationsController(IPartnerLocationManager partnerLocationManager,
             IKeyedManager<Partner> partnerManager)
         {
@@ -24,6 +32,12 @@
             this.partnerManager = partnerManager;
         }
 
+        /// <summary>
+        /// Gets all partner locations for a given partner.
+        /// </summary>
+        /// <param name="partnerId">The partner ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>List of partner locations.</remarks>
         [HttpGet("getbypartner/{partnerId}")]
         public async Task<IActionResult> GetPartnerLocations(Guid partnerId, CancellationToken cancellationToken)
         {
@@ -31,6 +45,12 @@
             return Ok(results);
         }
 
+        /// <summary>
+        /// Gets a partner location by its unique identifier.
+        /// </summary>
+        /// <param name="partnerLocationId">The partner location ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>The partner location.</remarks>
         [HttpGet("{partnerLocationId}")]
         public async Task<IActionResult> GetPartnerLocation(Guid partnerLocationId,
             CancellationToken cancellationToken = default)
@@ -47,6 +67,12 @@
             return Ok(partnerLocation);
         }
 
+        /// <summary>
+        /// Adds a new partner location.
+        /// </summary>
+        /// <param name="partnerLocation">The partner location to add.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>The newly created partner location.</remarks>
         [HttpPost]
         public async Task<IActionResult> AddPartnerLocation(PartnerLocation partnerLocation,
             CancellationToken cancellationToken)
@@ -77,6 +103,12 @@
             return CreatedAtAction(nameof(GetPartnerLocation), new { partnerLocationId = partnerLocation.Id }, result);
         }
 
+        /// <summary>
+        /// Updates an existing partner location.
+        /// </summary>
+        /// <param name="partnerLocation">The partner location to update.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>The updated partner location.</remarks>
         [HttpPut]
         public async Task<IActionResult> UpdatePartnerLocation(PartnerLocation partnerLocation,
             CancellationToken cancellationToken)
@@ -98,6 +130,12 @@
             return Ok(partnerLocation);
         }
 
+        /// <summary>
+        /// Deletes a partner location by its unique identifier.
+        /// </summary>
+        /// <param name="partnerLocationId">The partner location ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>The ID of the deleted partner location.</remarks>
         [HttpDelete("{partnerLocationId}")]
         public async Task<IActionResult> DeletePartnerLocation(Guid partnerLocationId,
             CancellationToken cancellationToken)

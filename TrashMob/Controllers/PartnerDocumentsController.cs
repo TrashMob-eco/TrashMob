@@ -9,6 +9,9 @@
     using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
 
+    /// <summary>
+    /// Controller for managing partner documents, including retrieval and creation.
+    /// </summary>
     [Authorize]
     [Route("api/partnerdocuments")]
     public class PartnerDocumentsController : SecureController
@@ -16,6 +19,11 @@
         private readonly IPartnerDocumentManager manager;
         private readonly IKeyedManager<Partner> partnerManager;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PartnerDocumentsController"/> class.
+        /// </summary>
+        /// <param name="partnerManager">The partner manager.</param>
+        /// <param name="manager">The partner document manager.</param>
         public PartnerDocumentsController(IKeyedManager<Partner> partnerManager,
             IPartnerDocumentManager manager)
         {
@@ -23,6 +31,12 @@
             this.partnerManager = partnerManager;
         }
 
+        /// <summary>
+        /// Gets all documents for a given partner.
+        /// </summary>
+        /// <param name="partnerId">The partner ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>List of partner documents.</remarks>
         [HttpGet("getbypartner/{partnerId}")]
         public async Task<IActionResult> GetPartnerDocuments(Guid partnerId, CancellationToken cancellationToken)
         {
@@ -39,6 +53,12 @@
             return Ok(documents);
         }
 
+        /// <summary>
+        /// Gets a partner document by its unique identifier. Requires a valid user.
+        /// </summary>
+        /// <param name="partnerDocumentId">The partner document ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>The partner document.</remarks>
         [HttpGet("{partnerDocumentId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> Get(Guid partnerDocumentId, CancellationToken cancellationToken)
@@ -48,6 +68,12 @@
             return Ok(partnerDocument);
         }
 
+        /// <summary>
+        /// Adds a new partner document.
+        /// </summary>
+        /// <param name="partnerDocument">The partner document to add.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>Action result.</remarks>
         [HttpPost]
         public async Task<IActionResult> Add(PartnerDocument partnerDocument, CancellationToken cancellationToken)
         {
@@ -66,6 +92,12 @@
             return Ok();
         }
 
+        /// <summary>
+        /// Updates an existing partner document.
+        /// </summary>
+        /// <param name="partnerDocument">The partner document to update.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>Action result.</remarks>
         [HttpPut]
         public async Task<IActionResult> Update(PartnerDocument partnerDocument, CancellationToken cancellationToken)
         {
@@ -85,6 +117,12 @@
             return Ok(result);
         }
 
+        /// <summary>
+        /// Deletes a partner document by its unique identifier.
+        /// </summary>
+        /// <param name="partnerDocumentId">The partner document ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>Action result.</remarks>
         [HttpDelete("{partnerDocumentId}")]
         public async Task<IActionResult> Delete(Guid partnerDocumentId, CancellationToken cancellationToken)
         {

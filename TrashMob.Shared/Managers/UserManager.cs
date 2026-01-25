@@ -11,6 +11,9 @@
     using TrashMob.Shared.Persistence.Interfaces;
     using TrashMob.Shared.Poco;
 
+    /// <summary>
+    /// Manages user accounts including creation, updates, deletion, and related cascade operations.
+    /// </summary>
     public class UserManager : KeyedManager<User>, IUserManager
     {
         private readonly IEmailManager emailManager;
@@ -26,6 +29,9 @@
         private readonly Guid TrashMobUserId = Guid.Empty;
         private readonly IKeyedRepository<UserNotification> userNotificationRepository;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserManager"/> class.
+        /// </summary>
         public UserManager(IKeyedRepository<User> repository,
             IBaseRepository<EventAttendee> eventAttendeesRepository,
             IKeyedRepository<UserNotification> userNotificationRepository,
@@ -52,32 +58,38 @@
             this.emailManager = emailManager;
         }
 
+        /// <inheritdoc />
         public async Task<User> GetUserByNameIdentifierAsync(string nameIdentifier,
             CancellationToken cancellationToken = default)
         {
             return await Repo.Get(u => u.NameIdentifier == nameIdentifier).FirstOrDefaultAsync(cancellationToken);
         }
 
+        /// <inheritdoc />
         public async Task<User> GetUserByObjectIdAsync(Guid objectId, CancellationToken cancellationToken = default)
         {
             return await Repo.Get(u => u.ObjectId == objectId).FirstOrDefaultAsync(cancellationToken);
         }
 
+        /// <inheritdoc />
         public async Task<User> GetUserByUserNameAsync(string userName, CancellationToken cancellationToken = default)
         {
             return await Repo.Get(u => u.UserName == userName).FirstOrDefaultAsync(cancellationToken);
         }
 
+        /// <inheritdoc />
         public async Task<User> GetUserByEmailAsync(string email, CancellationToken cancellationToken = default)
         {
             return await Repo.Get(u => u.Email == email).FirstOrDefaultAsync(cancellationToken);
         }
 
+        /// <inheritdoc />
         public async Task<User> GetUserByInternalIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await Repo.Get(u => u.Id == id).FirstOrDefaultAsync(cancellationToken);
         }
 
+        /// <inheritdoc />
         public override async Task<User> UpdateAsync(User user, CancellationToken cancellationToken = default)
         {
             // The IsSiteAdmin flag can only be changed directly in the database, so once set, we need to preserve that, no matter what the user passes in
@@ -87,6 +99,7 @@
             return await base.UpdateAsync(user, cancellationToken);
         }
 
+        /// <inheritdoc />
         public override async Task<int> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
             // Remove the records where the user is attending an event
@@ -259,6 +272,7 @@
             return result;
         }
 
+        /// <inheritdoc />
         public override async Task<User> AddAsync(User user, CancellationToken cancellationToken)
         {
             user.Id = Guid.NewGuid();
@@ -312,11 +326,13 @@
             return addedUser;
         }
 
+        /// <inheritdoc />
         public async Task<bool> UserExistsAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await Repository.Get(e => e.Id == id).AnyAsync(cancellationToken);
         }
 
+        /// <inheritdoc />
         public async Task<User> UserExistsAsync(string nameIdentifier, CancellationToken cancellationToken = default)
         {
             return await Repository.Get(u => u.NameIdentifier == nameIdentifier).FirstOrDefaultAsync(cancellationToken);

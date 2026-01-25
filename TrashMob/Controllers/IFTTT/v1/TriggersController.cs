@@ -10,6 +10,9 @@
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Poco.IFTTT;
 
+    /// <summary>
+    /// Controller for IFTTT triggers, providing endpoints for event creation triggers by location and type.
+    /// </summary>
     [Route("api/ifttt/v1/[controller]")]
     [RequiredScope(Constants.TrashMobIFTTTScope)]
     [ApiController]
@@ -17,11 +20,21 @@
     {
         private readonly ITriggersManager triggersManager;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TriggersController"/> class.
+        /// </summary>
+        /// <param name="triggersManager">The triggers manager.</param>
         public TriggersController(ITriggersManager triggersManager)
         {
             this.triggersManager = triggersManager;
         }
 
+        /// <summary>
+        /// Gets all new events created (IFTTT trigger).
+        /// </summary>
+        /// <param name="triggersRequest">The triggers request payload.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>Action result with event data.</remarks>
         [HttpPost("any_new_event_created")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<ActionResult> Get(TriggersRequest triggersRequest, CancellationToken cancellationToken)
@@ -43,6 +56,12 @@
             return Ok(response);
         }
 
+        /// <summary>
+        /// Gets new events created by country (IFTTT trigger).
+        /// </summary>
+        /// <param name="triggersRequest">The triggers request payload.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>Action result with event data.</remarks>
         [HttpPost("new_event_created_by_country")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<ActionResult> GetByCountry(TriggersRequest triggersRequest,
@@ -65,6 +84,12 @@
             return Ok(response);
         }
 
+        /// <summary>
+        /// Gets new events created by region (IFTTT trigger).
+        /// </summary>
+        /// <param name="triggersRequest">The triggers request payload.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>Action result with event data.</remarks>
         [HttpPost("new_event_created_by_region")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<ActionResult> GetByRegion(TriggersRequest triggersRequest,
@@ -87,6 +112,12 @@
             return Ok(response);
         }
 
+        /// <summary>
+        /// Gets new events created by city (IFTTT trigger).
+        /// </summary>
+        /// <param name="triggersRequest">The triggers request payload.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>Action result with event data.</remarks>
         [HttpPost("new_event_created_by_city")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<ActionResult> GetByCity(TriggersRequest triggersRequest, CancellationToken cancellationToken)
@@ -108,6 +139,12 @@
             return Ok(response);
         }
 
+        /// <summary>
+        /// Gets new events created by postal code (IFTTT trigger).
+        /// </summary>
+        /// <param name="triggersRequest">The triggers request payload.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>Action result with event data.</remarks>
         [HttpPost("new_event_created_by_postal_code")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<ActionResult> GetByPostalCode(TriggersRequest triggersRequest,

@@ -50,7 +50,7 @@ on:
 
 jobs:
     build:
-        runs-on: macos-15
+        runs-on: macos-26
         environment: ${{ inputs.environment }}
         name: iOS Build
 
@@ -106,7 +106,7 @@ jobs:
           if: runner.os == 'macOS'
           uses: maxim-lobanov/setup-xcode@v1
           with:
-            xcode-version: '26.0.1'
+            xcode-version: '26.2'
 
         - name: Import Code-Signing Certificates
           uses: Apple-Actions/import-codesign-certs@v3
@@ -124,10 +124,10 @@ jobs:
             api-private-key: ${{ secrets.apple_key }}
 
         - name: Build MAUI iOS
-          run: dotnet publish TrashMobMobile/TrashMobMobile.csproj -c ${{ inputs.configuration }} -f net9.0-ios -r ios-arm64
+          run: dotnet publish TrashMobMobile/TrashMobMobile.csproj -c ${{ inputs.configuration }} -f net10.0-ios -r ios-arm64
 
         - name: Upload iOS Artifact
           uses: actions/upload-artifact@v4.6.2
           with:
             name: artifacts-ios-${{ inputs.build_number }}
-            path: TrashMobMobile/bin/${{ inputs.configuration }}/net9.0-ios/ios-arm64/publish//*.ipa
+            path: TrashMobMobile/bin/${{ inputs.configuration }}/net10.0-ios/ios-arm64/publish//*.ipa

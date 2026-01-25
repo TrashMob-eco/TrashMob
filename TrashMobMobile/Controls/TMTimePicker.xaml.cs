@@ -17,7 +17,7 @@ public partial class TMTimePicker : ContentView
     {
         if (e.PropertyName == nameof(WrappedTimePicker.Time))
         {
-            Time = WrappedTimePicker.Time;
+            Time = WrappedTimePicker.Time ?? TimeSpan.Zero;
         }
     }
 

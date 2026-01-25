@@ -1,0 +1,149 @@
+# Workflow for building and deploying TrashMob web app container to production Azure Container Apps
+
+name: TrashMobProd - Container App
+
+on:
+  push:
+    branches:
+      - release
+    paths:
+      - '.github/workflows/release_ca-tm-pr-westus2.yml'
+      - 'TrashMob/**'
+      - 'TrashMob.Models/**'
+      - 'TrashMob.Shared/**'
+      - 'Deploy/containerApp.bicep'
+  workflow_dispatch:
+
+env:
+  AZURE_CONTAINER_REGISTRY: acrtmprwestus2
+  CONTAINER_APP_NAME: ca-tm-pr-westus2
+  RESOURCE_GROUP: rg-trashmob-pr-westus2
+  IMAGE_NAME: trashmob
+  CONTAINER_APPS_ENVIRONMENT: cae-tm-pr-westus2
+  KEY_VAULT_NAME: kv-tm-pr-westus2
+  STORAGE_ACCOUNT_NAME: stortmprwestus2
+  REGION: westus2
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v3.1.11
+        with:
+          versionSpec: '5.x'
+
+      - name: Determine Version
+        id: version_step
+        uses: gittools/actions/gitversion/execute@v3.1.11
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Login to Azure Container Registry
+        run: |
+          az acr login --name ${{ env.AZURE_CONTAINER_REGISTRY }}
+
+      - name: Build and push Docker image
+        run: |
+          IMAGE_TAG=${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ steps.version_step.outputs.semVer }}
+          IMAGE_TAG_LATEST=${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest
+
+          docker build -f TrashMob/Dockerfile -t $IMAGE_TAG -t $IMAGE_TAG_LATEST .
+          docker push $IMAGE_TAG
+          docker push $IMAGE_TAG_LATEST
+
+      - name: Deploy to Azure Container Apps
+        run: |
+          SUBSCRIPTION_ID="${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+          CONTAINER_IMAGE="${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ steps.version_step.outputs.semVer }}"
+          CONTAINER_APPS_ENV_ID="/subscriptions/$SUBSCRIPTION_ID/resourceGroups/${{ env.RESOURCE_GROUP }}/providers/Microsoft.App/managedEnvironments/${{ env.CONTAINER_APPS_ENVIRONMENT }}"
+
+          az deployment group create \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --template-file Deploy/containerApp.bicep \
+            --parameters \
+              containerAppName=${{ env.CONTAINER_APP_NAME }} \
+              containerAppsEnvironmentId=$CONTAINER_APPS_ENV_ID \
+              containerRegistryName=${{ env.AZURE_CONTAINER_REGISTRY }} \
+              containerImage=$CONTAINER_IMAGE \
+              keyVaultName=${{ env.KEY_VAULT_NAME }} \
+              storageAccountName=${{ env.STORAGE_ACCOUNT_NAME }} \
+              region=${{ env.REGION }} \
+              environment=pr \
+              minReplicas=2 \
+              maxReplicas=10
+
+      # Note: Azure AD B2C configuration is now set via environment variables in containerApp.bicep
+      # The B2C settings are public configuration values (not secrets) determined by the 'environment' parameter
+
+      - name: Grant Key Vault Access
+        run: |
+          echo "Getting Container App managed identity..."
+          PRINCIPAL_ID=$(az containerapp show \
+            --name ${{ env.CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --query identity.principalId \
+            -o tsv)
+          echo "Principal ID: $PRINCIPAL_ID"
+
+          echo "Checking if Key Vault access policy already exists..."
+          EXISTING_POLICY=$(az keyvault show \
+            --name ${{ env.KEY_VAULT_NAME }} \
+            --query "properties.accessPolicies[?objectId=='$PRINCIPAL_ID'].objectId" \
+            -o tsv)
+
+          if [ -z "$EXISTING_POLICY" ]; then
+            echo "Access policy not found. Granting Key Vault access..."
+            az keyvault set-policy \
+              --name ${{ env.KEY_VAULT_NAME }} \
+              --object-id $PRINCIPAL_ID \
+              --secret-permissions get list
+            echo "Waiting 30 seconds for permissions to propagate..."
+            sleep 30
+          else
+            echo "Access policy already exists for principal $PRINCIPAL_ID"
+          fi
+
+      - name: Restart Container App
+        run: |
+          echo "Restarting container app to pick up Key Vault permissions..."
+          REVISION=$(az containerapp revision list \
+            --name ${{ env.CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --query "[0].name" \
+            -o tsv)
+
+          az containerapp revision restart \
+            --name ${{ env.CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --revision $REVISION
+
+      - name: Get Container App URL
+        id: get-url
+        run: |
+          FQDN=$(az containerapp show \
+            --name ${{ env.CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --query properties.configuration.ingress.fqdn \
+            -o tsv)
+          echo "Production Container App URL: https://$FQDN"
+          echo "fqdn=$FQDN" >> $GITHUB_OUTPUT
+
+      - name: Logout from Azure
+        if: always()
+        run: az logout

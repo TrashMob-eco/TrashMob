@@ -6,10 +6,10 @@ The `TrashMob` project is the main web application for the TrashMob platform, de
 
 ## Key Contents
 
-- **ASP.NET Core Web Application**: Built with .NET 9, serving both API endpoints and web pages.
+- **ASP.NET Core Web Application**: Built with .NET 10, serving both API endpoints and web pages.
 - **Single Page Application (SPA)**: Integrated React client app located in `client-app/`.
-- **Entity Framework Core**: Data access using SQL Server and SQLite providers.
-- **Authentication & Authorization**: Uses Microsoft Identity for secure user management.
+- **Entity Framework Core**: Data access using SQL Server.
+- **Authentication & Authorization**: Uses Azure B2C (evaluating Entra External ID) for secure user management.
 - **Azure Integrations**: Key Vault, Blob Storage, and Application Insights for secrets, file storage, and monitoring.
 - **Geo Data Support**: NetTopologySuite for spatial and geographic operations.
 - **Email Notifications**: SendGrid integration for event and user communications.
@@ -17,21 +17,37 @@ The `TrashMob` project is the main web application for the TrashMob platform, de
 
 ## Project Structure
 
-- `Controllers/` - API and MVC controllers for handling requests.
-- `client-app/` - React SPA source code.
-- `appsettings.json` - Application configuration.
-- `Models/` - Data models and DTOs.
-- `wwwroot/` - Static web assets.
-- `Properties/` - Project properties and launch settings.
-
-## Helpful Links
-
-- [Mobile App User Stories](https://github.com/TrashMob-eco/TrashMob/blob/main/MobileAppUserStories.md)
-- [Website User Stories](https://github.com/TrashMob-eco/TrashMob/blob/main/WebsiteUserStories.md)
+```
+TrashMob/
+├── Controllers/       # API and MVC controllers
+├── client-app/        # React SPA source code (Vite + TypeScript)
+├── Properties/        # Launch settings
+├── appsettings.json   # Application configuration
+└── Program.cs         # Application entry point
+```
 
 ## Getting Started
 
-1. Ensure you have [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) and [Node.js](https://nodejs.org/) installed.
+1. Ensure you have [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) and [Node.js 20+](https://nodejs.org/) installed.
 2. Restore dependencies:
+   ```bash
+   dotnet restore
+   cd client-app && npm install
+   ```
+3. Run the application:
+   ```bash
+   dotnet run --environment Development
+   ```
+4. Access the app at https://localhost:44332
+5. View API docs at https://localhost:44332/swagger/index.html
 
+## Related Documentation
 
+- [CLAUDE.md](./CLAUDE.md) - Development patterns and coding standards
+- [TrashMob.prd](./TrashMob.prd) - Product requirements document
+- [Root README](../README.md) - Main project documentation
+- [2026 Product Plan](../Planning/README.md) - Roadmap and initiatives
+
+---
+
+*For questions or contributions, please refer to the main repository [TrashMob-eco/TrashMob](https://github.com/TrashMob-eco/TrashMob).*

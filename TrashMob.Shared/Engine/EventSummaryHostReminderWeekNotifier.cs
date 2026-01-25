@@ -9,10 +9,16 @@
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
 
+    /// <summary>
+    /// Notification engine that sends a weekly reminder to event hosts who haven't completed their event summary.
+    /// </summary>
     public class EventSummaryHostWeekReminderNotifier : NotificationEngineBase, INotificationEngine
     {
         private readonly IBaseManager<EventSummary> eventSummaryManager;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EventSummaryHostWeekReminderNotifier"/> class.
+        /// </summary>
         public EventSummaryHostWeekReminderNotifier(IEventManager eventManager,
             IKeyedManager<User> userManager,
             IEventAttendeeManager eventAttendeeManager,
@@ -38,6 +44,7 @@
         protected override string EmailSubject =>
             "Thanks for leading a TrashMob.eco event! We'd love to know how it went!";
 
+        /// <inheritdoc />
         public async Task GenerateNotificationsAsync(CancellationToken cancellationToken = default)
         {
             Logger.LogInformation("Generating Notifications for {0}", NotificationType);

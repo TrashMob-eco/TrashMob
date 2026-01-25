@@ -4,8 +4,14 @@
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
 
+    /// <summary>
+    /// Notification engine that reminds event hosts about events they are hosting within the next week (2-7 days).
+    /// </summary>
     public class UpcomingEventHostingThisWeekNotifier : UpcomingEventHostingBaseNotifier, INotificationEngine
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UpcomingEventHostingThisWeekNotifier"/> class.
+        /// </summary>
         public UpcomingEventHostingThisWeekNotifier(IEventManager eventManager,
             IKeyedManager<User> userManager,
             IEventAttendeeManager eventAttendeeManager,
@@ -20,12 +26,16 @@
         {
         }
 
+        /// <inheritdoc />
         protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.UpcomingEventHostingThisWeek;
 
+        /// <inheritdoc />
         protected override int MaxNumberOfHoursInWindow => 7 * 24;
 
+        /// <inheritdoc />
         protected override int MinNumberOfHoursInWindow => 2 * 24;
 
+        /// <inheritdoc />
         protected override string EmailSubject => "You're hosting a TrashMob.eco event this week!";
     }
 }

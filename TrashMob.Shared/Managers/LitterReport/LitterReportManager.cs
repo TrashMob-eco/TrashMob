@@ -16,6 +16,9 @@ namespace TrashMob.Shared.Managers.LitterReport
     using TrashMob.Shared.Persistence.Interfaces;
     using TrashMob.Shared.Poco;
 
+    /// <summary>
+    /// Manages litter reports including CRUD operations, status tracking, filtering, and email notifications.
+    /// </summary>
     public class LitterReportManager : KeyedManager<LitterReport>, ILitterReportManager
     {
         private readonly IDbTransaction dbTransaction;
@@ -23,6 +26,14 @@ namespace TrashMob.Shared.Managers.LitterReport
         private readonly ILitterImageManager litterImageManager;
         private readonly ILogger<LitterReportManager> logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LitterReportManager"/> class.
+        /// </summary>
+        /// <param name="repository">The repository for litter report data access.</param>
+        /// <param name="litterImageManager">The manager for litter image operations.</param>
+        /// <param name="logger">The logger instance.</param>
+        /// <param name="dbTransaction">The database transaction manager.</param>
+        /// <param name="emailManager">The email manager for sending notifications.</param>
         public LitterReportManager(IKeyedRepository<LitterReport> repository,
             ILitterImageManager litterImageManager,
             ILogger<LitterReportManager> logger,
@@ -35,6 +46,7 @@ namespace TrashMob.Shared.Managers.LitterReport
             this.emailManager = emailManager;
         }
 
+        /// <inheritdoc />
         public override async Task<LitterReport> UpdateAsync(LitterReport litterReport, Guid userId,
             CancellationToken cancellationToken = default)
         {
@@ -97,6 +109,7 @@ namespace TrashMob.Shared.Managers.LitterReport
             }
         }
 
+        /// <inheritdoc />
         public override async Task<LitterReport> AddAsync(LitterReport litterReport, Guid userId,
             CancellationToken cancellationToken)
         {
@@ -164,6 +177,7 @@ namespace TrashMob.Shared.Managers.LitterReport
             }
         }
 
+        /// <inheritdoc />
         public async Task<int> DeleteAsync(Guid id, Guid userId, CancellationToken cancellationToken = default)
         {
             try
@@ -196,6 +210,7 @@ namespace TrashMob.Shared.Managers.LitterReport
             return -1;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<LitterReport>> GetNewLitterReportsAsync(
             CancellationToken cancellationToken = default)
         {
@@ -205,6 +220,7 @@ namespace TrashMob.Shared.Managers.LitterReport
                 .ConfigureAwait(false);
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<LitterReport>> GetAssignedLitterReportsAsync(
             CancellationToken cancellationToken = default)
         {
@@ -214,6 +230,7 @@ namespace TrashMob.Shared.Managers.LitterReport
                 .ConfigureAwait(false);
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<LitterReport>> GetCleanedLitterReportsAsync(
             CancellationToken cancellationToken = default)
         {
@@ -223,6 +240,7 @@ namespace TrashMob.Shared.Managers.LitterReport
                 .ConfigureAwait(false);
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<LitterReport>> GetNotCancelledLitterReportsAsync(
             CancellationToken cancellationToken = default)
         {
@@ -232,6 +250,7 @@ namespace TrashMob.Shared.Managers.LitterReport
                 .ConfigureAwait(false);
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<LitterReport>> GetCancelledLitterReportsAsync(
             CancellationToken cancellationToken = default)
         {
@@ -241,6 +260,7 @@ namespace TrashMob.Shared.Managers.LitterReport
                 .ConfigureAwait(false);
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<LitterReport>> GetUserLitterReportsAsync(Guid userId,
             CancellationToken cancellationToken = default)
         {
@@ -250,17 +270,20 @@ namespace TrashMob.Shared.Managers.LitterReport
                 .ConfigureAwait(false);
         }
 
+        /// <inheritdoc />
         public override async Task<IEnumerable<LitterReport>> GetAsync(CancellationToken cancellationToken = default)
         {
             return await Repository.Get().Include(lr => lr.LitterImages).ToListAsync(cancellationToken);
         }
 
+        /// <inheritdoc />
         public override async Task<LitterReport> GetAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await Repository.Get(lr => lr.Id == id).Include(lr => lr.LitterImages)
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<Location>> GeLitterLocationsByTimeRangeAsync(DateTimeOffset? startTime,
             DateTimeOffset? endTime, CancellationToken cancellationToken = default)
         {
@@ -279,6 +302,7 @@ namespace TrashMob.Shared.Managers.LitterReport
             return locations;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<LitterReport>> GetFilteredLitterReportsAsync(LitterReportFilter filter,
             CancellationToken cancellationToken = default)
         {
@@ -297,6 +321,7 @@ namespace TrashMob.Shared.Managers.LitterReport
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
         }
 
+        /// <inheritdoc />
         public async Task<LitterReport> UpdateAsync(FullLitterReport instance, Guid userId,
             CancellationToken cancellationToken)
         {
@@ -330,6 +355,100 @@ namespace TrashMob.Shared.Managers.LitterReport
             }
 
             return await GetAsync(updateInstance.Id, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public async Task<ServiceResult<LitterReport>> AddWithResultAsync(LitterReport litterReport, Guid userId,
+            CancellationToken cancellationToken = default)
+        {
+            if (litterReport == null)
+            {
+                return ServiceResult<LitterReport>.Failure("Litter report cannot be null.");
+            }
+
+            if (litterReport.LitterImages == null || litterReport.LitterImages.Count == 0)
+            {
+                return ServiceResult<LitterReport>.Failure("Litter report must include at least one image.");
+            }
+
+            if (string.IsNullOrWhiteSpace(litterReport.Name))
+            {
+                return ServiceResult<LitterReport>.Failure("Litter report name is required.");
+            }
+
+            try
+            {
+                await dbTransaction.BeginTransactionAsync();
+
+                logger.LogInformation("Adding litter report with result");
+
+                foreach (var litterImage in litterReport.LitterImages)
+                {
+                    litterImage.LitterReportId = litterReport.Id;
+                    litterImage.CreatedByUserId = userId;
+                    litterImage.LastUpdatedByUserId = userId;
+                    litterImage.CreatedDate = DateTime.UtcNow;
+                    litterImage.LastUpdatedDate = DateTime.UtcNow;
+                }
+
+                // Add litter report
+                var newLitterReport = await base.AddAsync(litterReport, userId, cancellationToken);
+
+                if (newLitterReport == null)
+                {
+                    await dbTransaction.RollbackTransactionAsync();
+                    return ServiceResult<LitterReport>.Failure("Failed to save litter report to the database.");
+                }
+
+                await dbTransaction.CommitTransactionAsync();
+
+                // Send notification email (non-blocking, don't fail the operation if email fails)
+                try
+                {
+                    var message =
+                        $"A new litter report: {litterReport.Name} in {litterReport.LitterImages.First().City} has been created on TrashMob.eco!";
+                    var subject = "New Litter Report Alert";
+
+                    var recipients = new List<EmailAddress>
+                    {
+                        new() { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress },
+                    };
+
+                    var dynamicTemplateData = new
+                    {
+                        username = Constants.TrashMobEmailName,
+                        litterReportName = litterReport.Name,
+                        eventAddress = litterReport.LitterImages.First().DisplayAddress(),
+                        emailCopy = message,
+                        subject,
+                        googleMapsUrl = litterReport.LitterImages.First().GoogleMapsUrl(),
+                    };
+
+                    await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.LitterReportEmail,
+                            SendGridEmailGroupId.LitterReportRelated, dynamicTemplateData, recipients,
+                            CancellationToken.None)
+                        .ConfigureAwait(false);
+                }
+                catch (Exception emailEx)
+                {
+                    // Log but don't fail the operation - the report was created successfully
+                    logger.LogWarning(emailEx, "Failed to send notification email for litter report {LitterReportId}", newLitterReport.Id);
+                }
+
+                return ServiceResult<LitterReport>.Success(newLitterReport);
+            }
+            catch (DbUpdateException dbEx)
+            {
+                logger.LogError(dbEx, "Database error while adding litter report");
+                await dbTransaction.RollbackTransactionAsync();
+                return ServiceResult<LitterReport>.Failure("A database error occurred while saving the litter report. Please try again.");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Unexpected error while adding litter report");
+                await dbTransaction.RollbackTransactionAsync();
+                return ServiceResult<LitterReport>.Failure($"An unexpected error occurred: {ex.Message}");
+            }
         }
     }
 }

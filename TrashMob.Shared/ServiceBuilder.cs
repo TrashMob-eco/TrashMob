@@ -30,7 +30,6 @@
             services.AddScoped<ILookupManager<EventType>, LookupManager<EventType>>();
             services.AddScoped<ILookupManager<InvitationStatus>, LookupManager<InvitationStatus>>();
             services.AddScoped<IKeyedManager<JobOpportunity>, KeyedManager<JobOpportunity>>();
-            services.AddScoped<IKeyedManager<MessageRequest>, MessageRequestManager>();
             services.AddScoped<IKeyedManager<Partner>, KeyedManager<Partner>>();
             services.AddScoped<IKeyedManager<PartnerDocument>, PartnerDocumentManager>();
             services.AddScoped<IKeyedManager<PartnerContact>, KeyedManager<PartnerContact>>();
@@ -49,6 +48,7 @@
             services.AddScoped<IKeyedManager<NonEventUserNotification>, KeyedManager<NonEventUserNotification>>();
             services.AddScoped<IKeyedManager<User>, UserManager>();
             services.AddScoped<IKeyedManager<UserNotification>, UserNotificationManager>();
+            services.AddScoped<ILookupManager<WeightUnit>, LookupManager<WeightUnit>>();
             services.AddScoped<IKeyedManager<LitterReport>, LitterReportManager>();
             services.AddScoped<IKeyedManager<LitterImage>, LitterImageManager>();
 
@@ -81,7 +81,6 @@
             services.AddScoped<IImageManager, ImageManager>();
             services.AddScoped<IMapManager, MapManager>();
             services.AddScoped<ISecretRepository, SecretRepository>();
-            services.AddScoped<INotificationManager, NotificationManager>();
             services.AddScoped<IQueriesManager, QueriesManager>();
             services.AddScoped<ITriggersManager, TriggersManager>();
             services.AddScoped<IDbTransaction, DbTransaction>();
@@ -132,6 +131,7 @@
             services.AddScoped<IKeyedRepository<User>, KeyedRepository<User>>();
             services.AddScoped<IKeyedRepository<UserNotification>, KeyedRepository<UserNotification>>();
             services.AddScoped<IKeyedRepository<Waiver>, KeyedRepository<Waiver>>();
+            services.AddScoped<ILookupRepository<WeightUnit>, LookupRepository<WeightUnit>>();
 
             return services;
         }

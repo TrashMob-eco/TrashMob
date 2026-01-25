@@ -1,0 +1,1762 @@
+# TrashMob.eco Product Requirements Document (PRD)
+
+**Version:** 1.0  
+**Date:** January 23, 2026  
+**Owner:** Product Team  
+**Status:** Living Document
+
+---
+
+## Document Overview
+
+This PRD consolidates all user stories and requirements for the TrashMob.eco platform. Each requirement is tagged with its current implementation status:
+
+- ? **Implemented** � Feature is live in production
+- ?? **In Progress** � Currently being developed
+- ?? **Planned** � Scheduled for future development
+- ? **Not Started** � Not yet begun
+
+---
+
+## Table of Contents
+
+- [Executive Summary](#executive-summary)
+- [Product Vision & Goals](#product-vision--goals)
+- [User Personas](#user-personas)
+- [Feature Requirements](#feature-requirements)
+  - [1. User Management & Authentication](#1-user-management--authentication)
+  - [2. Event Management](#2-event-management)
+  - [3. Litter Reporting](#3-litter-reporting)
+  - [4. Partner Management](#4-partner-management)
+  - [5. Teams](#5-teams)
+  - [6. Dashboard & Analytics](#6-dashboard--analytics)
+  - [7. Content & Information](#7-content--information)
+  - [8. Notifications](#8-notifications)
+  - [9. Mobile Applications](#9-mobile-applications)
+  - [10. Integrations](#10-integrations)
+  - [11. Administration](#11-administration)
+- [Technical Requirements](#technical-requirements)
+- [Success Metrics](#success-metrics)
+- [Appendix](#appendix)
+
+---
+
+## Executive Summary
+
+TrashMob.eco is a community-driven platform that connects volunteers to organize and participate in litter cleanup events. The platform enables cities, communities, and individuals to coordinate cleanup efforts, track environmental impact, and build a network of environmentally-conscious volunteers.
+
+**Mission:** Mobilize communities to clean up litter and create lasting environmental impact through organized events and measurable results.
+
+**Target Users:**
+- Individual volunteers
+- Event organizers (Event Leads)
+- Partner organizations (haulers, suppliers, sponsors)
+- Community administrators
+- Site administrators
+
+---
+
+## Product Vision & Goals
+
+### Primary Goals
+1. **Maximize Volunteer Engagement** � Make it easy for anyone to find and participate in cleanup events
+2. **Enable Event Organization** � Provide tools for leads to create, manage, and track events
+3. **Track Environmental Impact** � Measure and report on bags collected, hours volunteered, and areas cleaned
+4. **Build Community** � Connect volunteers, teams, and partners in a supportive network
+5. **Ensure Safety** � Manage waivers, minor protections, and safety guidelines
+
+### Success Criteria
+- Increase volunteer signups by 30% year-over-year
+- 90%+ event completion rate
+- Average event has 10+ attendees
+- 95%+ of events have complete summaries
+- Partner satisfaction score ? 4.5/5
+
+---
+
+## User Personas
+
+### 1. **The Volunteer (Sarah)**
+- **Profile:** 28, environmentally conscious, wants to make a difference
+- **Goals:** Find events near her, track her impact, connect with like-minded people
+- **Pain Points:** Hard to find organized cleanups, doesn't know where to start
+
+### 2. **The Event Lead (Marcus)**
+- **Profile:** 35, active in local community, experienced organizer
+- **Goals:** Create impactful events, manage attendees, partner with haulers
+- **Pain Points:** Coordinating logistics, tracking participation, finding partners
+
+### 3. **The Partner (Green Waste Co.)**
+- **Profile:** Local hauling company wanting to give back
+- **Goals:** Support community events, get recognition, manage service requests
+- **Pain Points:** Coordinating pickups, tracking service locations, visibility
+
+### 4. **The Admin (Jamie)**
+- **Profile:** TrashMob staff member
+- **Goals:** Oversee platform health, support users, generate reports
+- **Pain Points:** Monitoring events, handling issues, data reporting
+
+---
+
+## Feature Requirements
+
+## 1. User Management & Authentication
+
+### 1.1 User Registration & Sign-In
+
+#### ? 1.1.1 Email/Password Registration
+**Status:** Implemented  
+**Description:** Users can create accounts using email and password
+
+**Requirements:**
+- Email validation
+- Password strength requirements
+- Email verification
+- Account activation workflow
+
+#### ? 1.1.2 Third-Party Authentication
+**Status:** Implemented (Azure B2C)  
+**Description:** Users can sign in using social providers
+
+**Supported Providers:**
+- Google
+- Microsoft
+- Facebook
+- LinkedIn
+- Apple
+
+**Notes:** Currently using Azure B2C; migration to Entra External ID under evaluation for Q2 2026 (Project 1). Final decision pending on B2C vs Entra External ID based on feature requirements and cost analysis.
+
+#### ? 1.1.3 User Profile
+**Status:** Implemented  
+**Description:** Users can set and manage profile information
+
+**Profile Fields:**
+- Username (display name)
+- Email
+- Phone
+- Preferred location
+- Profile photo (optional)
+- Preferred measurement units (miles/km)
+
+#### ? 1.1.4 Return to Page After Sign-In
+**Status:** Implemented  
+**Description:** After signing in, users return to the page they were viewing
+
+### 1.2 User Preferences
+
+#### ? 1.2.1 Location Preference
+**Status:** Implemented  
+**Description:** Users can set their preferred location for event discovery
+
+**Features:**
+- Map interface for selecting location
+- Address search functionality
+- Current location detection (with permission)
+- Adjustable radius (e.g., 25 miles)
+- Unit selection (miles/kilometers)
+- Reverse geocoding to display address
+
+**Implementation:** `/locationpreference` page
+
+#### ? 1.2.2 Delete Account
+**Status:** Implemented  
+**Description:** Users can permanently delete their account and data
+
+**Implementation:** `/deletemydata` page
+
+---
+
+## 2. Event Management
+
+### 2.1 Event Discovery
+
+#### ? 2.1.1 Upcoming Events List
+**Status:** Implemented  
+**Description:** Display all upcoming events as cards
+
+**Card Information:**
+- Event name
+- Date and time
+- Location (city/address)
+- Event type
+- Number of attendees
+- Button to view details
+- Button to register
+
+**Filters:**
+- Date range (This weekend, Next week, Next month, All upcoming)
+- Location (City filter)
+- Event status (Upcoming/Completed)
+
+**Implementation:** Home page event section with list view
+
+#### ? 2.1.2 Upcoming Events Map
+**Status:** Implemented  
+**Description:** Display all upcoming events on an interactive map
+
+**Map Features:**
+- Custom event pins
+- Info window on pin click showing event details
+- Link to event details page
+- Registration button
+- Map zoom and pan
+- Location search
+
+**Implementation:** Home page event section with map view
+
+#### ? 2.1.3 Past Events List
+**Status:** Implemented  
+**Description:** Display completed events with summaries
+
+**Filters:**
+- Date range (Last 30 days, Last 90 days, All time)
+- Location
+
+**Card Information:**
+- Event name
+- Date completed
+- Number of attendees (actual)
+- Bags collected
+- Link to event summary
+
+#### ? 2.1.4 Past Events Map
+**Status:** Implemented  
+**Description:** Map view of completed events
+
+### 2.2 Event Details
+
+#### ? 2.2.1 Event Details Page
+**Status:** Implemented  
+**Description:** Comprehensive view of a single event
+
+**Information Displayed:**
+- Event name, description, type
+- Date, time, duration
+- Location (address + map)
+- Event lead information
+- Attendee count
+- Partner services (if applicable)
+- Registration button
+- Share buttons (social media)
+- Waiver requirement notice
+
+**Implementation:** `/eventdetails/$eventId/page.tsx`
+
+#### ? 2.2.2 Social Media Sharing
+**Status:** Implemented  
+**Description:** Users can share events on social platforms
+
+**Supported Platforms:**
+- Facebook
+- Twitter/X
+- LinkedIn
+- Email
+
+### 2.3 Event Registration
+
+#### ? 2.3.1 Event Registration
+**Status:** Implemented  
+**Description:** Signed-in users can register for events
+
+**Flow:**
+1. Click "Register" on event card or details page
+2. Accept waiver (if not already signed)
+3. Confirm registration
+4. Receive confirmation
+5. Event appears in user dashboard
+
+**Business Rules:**
+- Must be signed in
+- Must have valid waiver
+- Cannot register for past events
+- Cannot register if event is full
+
+#### ? 2.3.2 Unregister from Event
+**Status:** Implemented  
+**Description:** Users can cancel their registration
+
+**Implementation:** User dashboard with unregister option
+
+#### ? 2.3.3 Waiver Management
+**Status:** Implemented  
+**Description:** Users must sign waivers before attending events
+
+**Features:**
+- View waiver text
+- Digital signature
+- Waiver validity period
+- Multiple waiver versions
+- Download/print capability
+
+**Implementation:** `/waivers` page, WaiverController
+
+**Notes:** Enhanced waiver system (V3) planned for Q3 2026 to support:
+- Community-specific waivers
+- Minor/guardian workflows
+- Waiver expiration tracking
+
+### 2.4 Event Creation & Management
+
+#### ? 2.4.1 Create Event
+**Status:** Implemented  
+**Description:** Event leads can create new cleanup events
+
+**Required Fields:**
+- Event name
+- Event type (from predefined list)
+- Description
+- Location (street address, city, state, country, postal code, lat/long)
+- Date and start time
+- Expected duration (max 10 hours)
+- Public/Private visibility
+
+**Optional Fields:**
+- Maximum participants
+- Minimum age
+- Partner services
+- Hauling partner (1 max)
+- Associated litter reports
+
+**Validation Rules:**
+- Public events must be in the future
+- Private events can be in the past (for historical tracking)
+- Duration ? 10 hours
+
+**Implementation:** `/events/create`, EventsController
+
+#### ?? 2.4.2 Create Event from Litter Report
+**Status:** Planned (Q3 2026)  
+**Description:** Pre-populate event creation form from a selected litter report
+
+**Auto-filled Fields:**
+- Event name ? Litter report name
+- Location fields ? Litter report location
+- Description ? Litter report details
+
+#### ? 2.4.3 Edit Event
+**Status:** Implemented  
+**Description:** Event leads can modify event details before the event
+
+**Implementation:** `/events/edit`, EventsController PUT endpoint
+
+#### ? 2.4.4 Cancel Event
+**Status:** Implemented  
+**Description:** Event leads can cancel events and notify attendees
+
+**Flow:**
+1. Lead clicks "Cancel Event"
+2. Confirms cancellation
+3. System sends notifications to all attendees
+4. Event status changes to "Cancelled"
+5. Event no longer appears in upcoming lists
+
+**Implementation:** `/events/$eventId/delete`, CancelEvent page
+
+#### ?? 2.4.5 Event Change Notifications
+**Status:** Planned  
+**Description:** When event details change, all attendees are notified via email
+
+**Triggers:**
+- Date/time change
+- Location change
+- Important description updates
+- Cancellation
+
+#### ? 2.4.6 View Attendee List
+**Status:** Implemented  
+**Description:** Event leads can see who's registered for their event
+
+**Information Shown:**
+- Attendee name
+- Registration date
+- Waiver status
+- Contact info (email - privacy-protected)
+
+**Implementation:** Event details page (lead view)
+
+### 2.5 Event Summary & Tracking
+
+#### ? 2.5.1 Event Summary Entry
+**Status:** Implemented  
+**Description:** After event completion, leads enter summary data
+
+**Summary Fields:**
+- Actual number of attendees
+- Number of bags collected
+- Number of buckets (converted to bags: bags = buckets/3)
+- Actual duration (minutes)
+- Notes/description of work done
+
+**Implementation:** `/eventsummary/$eventId`, EventSummariesController
+
+#### ? 2.5.2 Pickup Location Recording
+**Status:** Implemented  
+**Description:** Leads record where bags were left for hauler pickup
+
+**Features:**
+- Add multiple pickup locations
+- Geotagged photos (future: mobile app)
+- Number of bags per location
+- Notes for hauler
+
+**Implementation:** `/eventsummary/$eventId/pickup-locations.create`, PickupLocationsController
+
+#### ? 2.5.3 Notify Hauling Partner
+**Status:** Implemented  
+**Description:** Leads can notify haulers that bags are ready for pickup
+
+**Notification Includes:**
+- Event name and location
+- Number of bags
+- Pickup location(s)
+- Contact information
+- Photos of bag locations
+
+#### ?? 2.5.4 View Attendee Cleanup Routes
+**Status:** Planned (Q4 2026 - Project 15)  
+**Description:** Event leads can see anonymized routes where attendees picked litter
+
+**Features:**
+- Heat map visualization
+- Privacy-protected (no individual tracking)
+- Shows coverage areas
+- Helps identify areas needing more attention
+
+**Implementation:** Map Route Tracing with Decay (Project 15)
+
+#### ?? 2.5.5 Mark Litter Reports as Resolved
+**Status:** Planned (Q3 2026)  
+**Description:** After cleaning an area with a litter report, leads can mark it resolved
+
+#### ?? 2.5.6 Associate Litter Reports with Events
+**Status:** Planned (Q3 2026)  
+**Description:** Link one or more litter reports to an event
+
+**Benefits:**
+- Shows which reports were addressed
+- Tracks impact on reported areas
+- Provides before/after context
+
+---
+
+## 3. Litter Reporting
+
+### 3.1 View Litter Reports
+
+#### ?? 3.1.1 Litter Reports List
+**Status:** In Progress (Q2 2026 - Project 3)  
+**Description:** Display list of all litter reports
+
+**Card Information:**
+- Report name
+- Date created
+- Location (address)
+- Status (New, Assigned, Cleaned, Cancelled)
+- Thumbnail of first image
+- Link to details page
+
+**Filters:**
+- Status
+- Date range
+- Location
+
+**Implementation:** Backend complete (LitterReportController), web UI in progress
+
+#### ?? 3.1.2 Litter Reports Map
+**Status:** In Progress (Q2 2026 - Project 3)  
+**Description:** Map view showing all litter report locations
+
+**Map Features:**
+- Pin for each image location (reports can have multiple images)
+- Pin color-coded by status
+- Info window shows report name, date, status
+- Link to details page
+- Toggles to filter by status
+
+**Implementation:** Backend complete, web UI in progress
+
+#### ?? 3.1.3 Litter Report Details
+**Status:** In Progress (Q2 2026 - Project 3)  
+**Description:** Comprehensive view of a single litter report
+
+**Information Displayed:**
+- Report name and description
+- Date created
+- Creator (if not anonymous)
+- Status
+- All uploaded images
+- Image browser/gallery
+- Location map showing all image locations
+- Associated events (if any)
+- Comments/notes
+
+**Implementation:** Backend complete, web UI in progress
+
+### 3.2 Create & Manage Litter Reports
+
+#### ?? 3.2.1 Create Litter Report
+**Status:** In Progress (Mobile app Q1 2026, Web Q2 2026)  
+**Description:** Signed-in users can report litter locations
+
+**Required Fields:**
+- Report name
+- Description of litter
+- Location (captured via GPS or manual entry)
+- At least one photo (geotagged)
+
+**Optional Fields:**
+- Multiple photos from different angles/locations
+- Estimated severity
+- Estimated bags needed
+- Safety concerns
+
+**Ideal Experience:**
+- Mobile app with camera integration
+- Auto-capture GPS coordinates
+- Geotag photos automatically
+- Quick upload process
+
+**Implementation:** LitterReportController (API ready), mobile and web UI pending
+
+#### ?? 3.2.2 Edit Litter Report
+**Status:** Planned  
+**Description:** Report creators can edit their reports
+
+**Editable Fields:**
+- Name and description
+- Add more photos
+- Update status notes
+
+**Not Editable:**
+- Creation date
+- Location (integrity)
+
+**Implementation:** Dashboard feature
+
+#### ?? 3.2.3 Close/Resolve Litter Report
+**Status:** Planned  
+**Description:** Report creators or admins can mark reports as resolved
+
+**Flow:**
+1. User clicks "Mark as Cleaned"
+2. Optionally link to event that cleaned it
+3. Add before/after photos
+4. Report status changes to "Cleaned"
+5. Report may still be visible but color-coded as resolved
+
+### 3.3 Litter Report Tracking
+
+#### ?? 3.3.1 Anonymized Cleanup Routes
+**Status:** Planned (Q4 2026 - Project 15)  
+**Description:** Display heat map of areas recently cleaned
+
+**Features:**
+- Heat map overlay on main map
+- Toggle on/off
+- Filter by date range
+- Intensity shows bags collected
+- Click for event summary
+- Privacy-protected (no individual paths)
+
+**Use Case:** Helps volunteers see where cleanups happened recently and where attention is needed
+
+**Implementation:** Project 15 - Map Route Tracing with Decay
+
+---
+
+## 4. Partner Management
+
+### 4.1 Partner Discovery
+
+#### ?? 4.1.1 Partners List
+**Status:** Planned  
+**Description:** Public list of partner organizations
+
+**Information Displayed:**
+- Partner name and logo
+- Services provided
+- Service areas (cities/regions)
+- Brief description
+- Link to partner profile
+
+**Implementation:** Backend exists (PartnerController), UI pending
+
+#### ?? 4.1.2 Partner Details/Profile
+**Status:** Planned  
+**Description:** Detailed view of a partner organization
+
+**Information:**
+- Full description
+- Services offered
+- Service locations
+- Contact information
+- Social media links
+- Logo/branding
+- Events supported (past and future)
+- Impact metrics
+
+### 4.2 Partner Onboarding
+
+#### ? 4.2.1 Request to Become a Partner
+**Status:** Implemented  
+**Description:** Organizations can apply to become partners
+
+**Application Fields:**
+- Organization name
+- Contact person
+- Email and phone
+- Organization type
+- Services offered
+- Service areas
+- Description
+
+**Implementation:** `/becomeapartner`, PartnerRequestsController
+
+#### ? 4.2.2 Invite a Partner
+**Status:** Implemented  
+**Description:** Signed-in users can invite organizations to become partners
+
+**Implementation:** `/inviteapartner`
+
+#### ? 4.2.3 Check Partner Request Status
+**Status:** Implemented  
+**Description:** Applicants can view the status of their partner request
+
+**Statuses:**
+- Pending Review
+- Approved
+- Rejected
+- Needs More Information
+
+**Implementation:** Partner request details page
+
+### 4.3 Partner Management (For Approved Partners)
+
+#### ? 4.3.1 Partner Dashboard
+**Status:** Implemented  
+**Description:** Partners have a dedicated dashboard to manage their presence
+
+**Implementation:** `/partnerdashboard/$partnerId`, comprehensive partner management system
+
+#### ? 4.3.2 Manage Service Locations
+**Status:** Implemented  
+**Description:** Partners can add/edit locations where they provide services
+
+**Features:**
+- Add multiple locations
+- Location address and coordinates
+- Service radius per location
+- Active/inactive status
+- Contact info per location
+
+**Implementation:** `/partnerdashboard/$partnerId/locations`
+
+#### ? 4.3.3 Update Contact Information
+**Status:** Implemented  
+**Description:** Partners can manage contact details
+
+**Implementation:** `/partnerdashboard/$partnerId/contacts`
+
+#### ? 4.3.4 Manage Social Media Accounts
+**Status:** Implemented  
+**Description:** Partners can add their social media links
+
+**Supported Platforms:**
+- Facebook
+- Twitter/X
+- LinkedIn
+- Instagram
+- YouTube
+- Website
+
+**Implementation:** `/partnerdashboard/$partnerId/socials`
+
+#### ? 4.3.5 Specify Services Offered
+**Status:** Implemented  
+**Description:** Partners select which services they provide
+
+**Service Types:**
+- Hauling/waste removal
+- Equipment rental
+- Supplies (bags, gloves, etc.)
+- Refreshments
+- Safety equipment
+- Other
+
+**Implementation:** `/partnerdashboard/$partnerId/services`
+
+#### ? 4.3.6 Upload Partner Logo
+**Status:** Implemented  
+**Description:** Partners can upload their logo for display on the site
+
+**Implementation:** `/partnerdashboard/$partnerId/documents`
+
+#### ? 4.3.7 View Invited Events
+**Status:** Implemented  
+**Description:** Partners can see events they've been invited to service
+
+**Implementation:** Partner dashboard with event list
+
+#### ?? 4.3.8 View Invited Events (Map)
+**Status:** Planned  
+**Description:** Map view of events partner has been invited to
+
+#### ?? 4.3.9 View Participated Events (List)
+**Status:** Planned  
+**Description:** Historical list of events partner has serviced
+
+#### ?? 4.3.10 View Participated Events (Map)
+**Status:** Planned  
+**Description:** Map of all events partner has serviced
+
+#### ?? 4.3.11 View Services Provided (List)
+**Status:** Planned  
+**Description:** Detailed list of services provided to events
+
+**Metrics:**
+- Number of events serviced
+- Total bags hauled
+- Service areas covered
+- Impact statistics
+
+#### ?? 4.3.12 View Services Provided (Map)
+**Status:** Planned  
+**Description:** Map visualization of service coverage
+
+### 4.4 Hauling Partner Features
+
+#### ?? 4.4.1 Upcoming Pickup Events
+**Status:** Planned  
+**Description:** Hauling partners see events requiring pickup
+
+**Information:**
+- Event name and date
+- Number of bags to collect
+- Pickup location(s) with map
+- Event lead contact
+- Pickup deadline
+
+#### ?? 4.4.2 Pickup Locations List
+**Status:** Planned  
+**Description:** List view of all locations needing pickup
+
+**Sorting:**
+- By date
+- By proximity
+- By number of bags
+
+#### ?? 4.4.3 Pickup Locations Map
+**Status:** Planned  
+**Description:** Map view for route planning
+
+**Features:**
+- Pins for each pickup location
+- Color-coded by urgency
+- Route optimization suggestions
+- Directions integration
+
+---
+
+## 5. Teams
+
+**Overall Status:** ?? Planned (Q3 2026 - Project 9)
+
+### 5.1 Team Discovery
+
+#### ?? 5.1.1 Browse Teams (List)
+**Description:** Display all public teams
+
+**Information:**
+- Team name and logo
+- Location/service area
+- Number of members
+- Total events attended
+- Impact statistics
+- Join button
+
+#### ?? 5.1.2 Browse Teams (Map)
+**Description:** Map view of teams by location
+
+### 5.2 Team Creation & Management
+
+#### ?? 5.2.1 Create a Team
+**Description:** Users can create their own teams
+
+**Team Fields:**
+- Team name
+- Description/mission
+- Home location
+- Public/private visibility
+- Logo/photo
+- Social media links
+
+**Creator Becomes:**
+- Team leader (initial)
+- Can appoint co-leaders
+
+**Implementation Plan:** Project 9 - TrashMob Teams
+
+#### ?? 5.2.2 Invite Team Members
+**Description:** Team leaders can invite users to join
+
+**Invitation Flow:**
+1. Leader enters email addresses
+2. System sends invitation emails with team link
+3. Recipients can accept or decline
+4. Accepted members added to team roster
+
+#### ?? 5.2.3 Join a Team
+**Description:** Users can join teams
+
+**Methods:**
+- Accept invitation email
+- Request to join public team
+- Auto-join if team is open
+
+#### ?? 5.2.4 Leave a Team
+**Description:** Members can voluntarily leave a team
+
+**Exception:** Team leaders must appoint a replacement before leaving
+
+#### ?? 5.2.5 Manage Team Members
+**Description:** Team leaders can manage the roster
+
+**Capabilities:**
+- View member list
+- Remove members
+- Promote members to co-leader
+- Demote co-leaders to regular members
+- Transfer leadership
+
+**Business Rules:**
+- At least one leader must exist at all times
+- Cannot remove yourself as leader without appointing replacement
+
+#### ?? 5.2.6 Delete Team
+**Description:** Team leaders can dissolve the team
+
+**Process:**
+- Confirmation required
+- All members notified
+- Team data archived (not deleted for reporting)
+- Events remain but team association removed
+
+### 5.3 Team Events & Impact
+
+#### ?? 5.3.1 Team Event Participation
+**Description:** Teams can register for events as a group
+
+**Features:**
+- Register multiple members at once
+- Team name shown on event attendee list
+- Team metrics tracked per event
+
+#### ?? 5.3.2 View Team Events (List)
+**Description:** See all events the team is participating in (upcoming)
+
+#### ?? 5.3.3 View Team Events (Map)
+**Description:** Map of upcoming team events
+
+#### ?? 5.3.4 View Team History (List)
+**Description:** Past events the team has attended
+
+#### ?? 5.3.5 View Team History (Map)
+**Description:** Map of team's cleanup history
+
+#### ?? 5.3.6 View Team-Created Events
+**Description:** Events organized by team members
+
+#### ?? 5.3.7 Team Impact Dashboard
+**Description:** Aggregate statistics for the team
+
+**Metrics:**
+- Total bags collected (by team members)
+- Total hours volunteered
+- Number of events attended
+- Number of events created
+- Members' aggregate stats
+- Leaderboard rankings
+
+### 5.4 Team Features (Future)
+
+#### ?? 5.4.8 Team Communication
+**Description:** Internal messaging or discussion board (Phase 2)
+
+#### ?? 5.4.9 Team Photo Album
+**Description:** Shared photo gallery from team events
+
+#### ?? 5.4.10 Team Leaderboards
+**Description:** Friendly competition with other teams (Project 20 - Gamification)
+
+---
+
+## 6. Dashboard & Analytics
+
+### 6.1 User Dashboard
+
+#### ? 6.1.1 My Dashboard Overview
+**Status:** Implemented  
+**Description:** Personal dashboard for signed-in users
+
+**Sections:**
+- My upcoming events (list and map)
+- Events I've created (as lead)
+- Past events I attended
+- My statistics
+- My teams (when Teams feature launches)
+- My litter reports
+- Partner requests (if applicable)
+
+**Implementation:** `/MyDashboard`
+
+#### ? 6.1.2 My Events (List)
+**Status:** Implemented  
+**Description:** List of events user has registered for
+
+**Features:**
+- Upcoming and past tabs
+- Unregister option for upcoming
+- Event details link
+- Quick actions (directions, add to calendar)
+
+#### ? 6.1.3 My Events (Map)
+**Status:** Implemented  
+**Description:** Map view of user's registered events
+
+#### ? 6.1.4 Events I've Created (List)
+**Status:** Implemented  
+**Description:** Events where user is the lead
+
+**Actions:**
+- Edit event
+- View attendees
+- Enter summary (after completion)
+- Cancel event
+
+#### ? 6.1.5 Events I've Created (Map)
+**Status:** Implemented  
+**Description:** Map of user's created events
+
+#### ? 6.1.6 Events I've Attended (List)
+**Status:** Implemented  
+**Description:** Historical list of completed events user attended
+
+#### ? 6.1.7 Events I've Attended (Map)
+**Status:** Implemented  
+**Description:** Map of user's cleanup history
+
+#### ? 6.1.8 My Statistics
+**Status:** Implemented  
+**Description:** User's personal impact metrics
+
+**Metrics:**
+- Total events attended
+- Total bags collected
+- Total hours volunteered
+- Events created (as lead)
+- Current streak
+- Ranking (if gamification enabled)
+
+#### ?? 6.1.9 Edit My Litter Reports
+**Status:** Planned  
+**Description:** Dashboard section to manage user's litter reports
+
+#### ?? 6.1.10 Close My Litter Reports
+**Status:** Planned  
+**Description:** Mark own litter reports as resolved
+
+### 6.2 Statistics & Reporting
+
+#### ? 6.2.1 Site-Wide Statistics
+**Status:** Implemented  
+**Description:** Public statistics about TrashMob impact
+
+**Displayed Metrics:**
+- Total volunteers
+- Total events
+- Total bags collected
+- Total hours volunteered
+- Cities/regions served
+
+**Implementation:** Home page stats section, StatsController
+
+#### ?? 6.2.2 Staff/Board Dashboard
+**Status:** Planned (2026)  
+**Description:** Internal dashboard for TrashMob staff
+
+**Features:**
+- Real-time usage stats
+- Growth trends
+- Event health metrics
+- Partner engagement
+- User acquisition funnel
+- Retention metrics
+
+#### ?? 6.2.3 City Reports
+**Status:** Planned  
+**Description:** Generate participation reports by city for municipal partners
+
+**Report Contents:**
+- Events held in city
+- Participants from city
+- Bags collected
+- Areas cleaned
+- Before/after data (if available)
+
+**Use Case:** Provide to city officials to demonstrate community impact
+
+---
+
+## 7. Content & Information
+
+### 7.0 Content Management System (CMS)
+
+**Overall Status:** ?? In Progress (PR #2364)
+
+#### ?? 7.0.1 Strapi CMS Integration
+**Status:** In Progress (PR #2364)
+**Description:** Headless CMS for managing home page content without developer involvement
+
+**CMS-Managed Content Types:**
+- Hero Section (tagline, buttons, app store links, background)
+- What Is TrashMob Section (heading, description, video, buttons)
+- Getting Started Section (heading, requirements, CTA)
+
+**Admin Features:**
+- "Manage Content" tab in Site Admin
+- Link to Strapi admin panel
+- Content editing with preview
+- Scheduled publishing (future)
+
+**Technical Implementation:**
+- Strapi deployed as internal-only Azure Container App
+- CMS API proxied through ASP.NET Core (`/api/cms/*`)
+- React Query hooks for frontend data fetching
+- Fallback to default content if CMS unavailable
+
+**Future CMS Capabilities:**
+- Community Pages custom branding (Project 10)
+- Teams page customization (Project 9)
+- Partner page content
+- Dynamic news/announcements
+- Sponsor/advertising placement
+
+### 7.1 Static Pages
+
+#### ? 7.1.1 Privacy Policy
+**Status:** Implemented  
+**Implementation:** `/privacypolicy`
+
+#### ? 7.1.2 Terms of Service
+**Status:** Implemented  
+**Implementation:** `/termsofservice`
+
+#### ? 7.1.3 FAQ
+**Status:** Implemented  
+**Implementation:** `/faq`
+
+#### ? 7.1.4 Contact Us
+**Status:** Implemented  
+**Description:** Contact form for user inquiries
+
+**Implementation:** `/contactus`, ContactRequestController
+
+#### ? 7.1.5 Board Members
+**Status:** Implemented  
+**Description:** List of TrashMob board/leadership
+
+**Implementation:** `/board`
+
+#### ?? 7.1.6 Sponsors
+**Status:** Planned  
+**Description:** Recognition page for organizational sponsors
+
+#### ?? 7.1.7 Volunteer Opportunities
+**Status:** Implemented (Partial)  
+**Description:** Non-event volunteer roles (e.g., admin help, social media)
+
+**Implementation:** `/volunteeropportunities`, job opportunities system in admin
+
+### 7.2 Help & Guides
+
+#### ? 7.2.1 Getting Started Guide
+**Status:** Implemented  
+**Description:** Tutorial for new users
+
+**Implementation:** `/gettingstarted`
+
+#### ? 7.2.2 Help Center
+**Status:** Implemented  
+**Implementation:** `/help`
+
+#### ?? 7.2.3 Website User Guide
+**Status:** Planned  
+**Description:** Comprehensive guide to using the website
+
+#### ?? 7.2.4 Mobile App Guide
+**Status:** Planned (After mobile app launch)  
+**Description:** How to use the mobile apps
+
+### 7.3 Media & Outreach
+
+#### ?? 7.3.1 Introduction Video
+**Status:** Planned  
+**Description:** Video explaining TrashMob.eco
+
+#### ?? 7.3.2 Safety Video
+**Status:** Planned  
+**Description:** Safety guidelines for litter pickup
+
+#### ? 7.3.3 Shop/Merchandise
+**Status:** Implemented (Link)  
+**Description:** Link to TrashMob merchandise store
+
+**Implementation:** Shop component
+
+#### ? 7.3.4 Donate
+**Status:** Implemented (Link)  
+**Description:** Link to donation page
+
+---
+
+## 8. Notifications
+
+**Overall Status:** ?? Planned (Infrastructure exists, automation pending)
+
+### 8.1 User Notifications
+
+#### ?? 8.1.1 Welcome Email
+**Description:** Sent when user creates account
+
+**Content:**
+- Welcome message
+- Getting started links
+- Community guidelines
+
+#### ?? 8.1.2 Event Registration Confirmation
+**Description:** Sent immediately after registering for an event
+
+**Content:**
+- Event details
+- Location and directions link
+- Waiver reminder
+- Add to calendar link
+
+#### ?? 8.1.3 Event Cancellation Notice
+**Description:** Sent if event user registered for is cancelled
+
+**Content:**
+- Cancellation notification
+- Reason (if provided)
+- Suggested alternative events
+
+#### ?? 8.1.4 New Event in Your Area
+**Description:** Weekly digest of new events near user's preferred location
+
+**Conditions:**
+- User opted in to notifications
+- Event created since last notification
+- Event within user's radius
+
+#### ?? 8.1.5 New Litter Report in Your Area
+**Description:** Notification when litter is reported nearby
+
+**Content:**
+- Report summary
+- Location
+- Link to create event to clean it
+
+#### ?? 8.1.6 New Partner in Your Area
+**Description:** Notification when partner joins serving user's area
+
+#### ?? 8.1.7 Event Reminder (7 Days)
+**Description:** Reminder one week before event
+
+**Content:**
+- Event details
+- Preparation tips
+- What to bring
+
+#### ?? 8.1.8 Event Reminder (1 Day)
+**Description:** Reminder one day before event
+
+**Content:**
+- Event details
+- Directions
+- Weather forecast
+- Lead contact
+
+#### ?? 8.1.9 Nearby Event Reminder (7 Days)
+**Description:** Reminder about events in user's area they haven't registered for
+
+**Frequency:** Weekly digest
+
+#### ?? 8.1.10 Nearby Event Reminder (1 Day)
+**Description:** Last-minute reminder about events happening tomorrow nearby
+
+### 8.2 Event Lead Notifications
+
+#### ?? 8.2.1 New Attendee Alert
+**Description:** Sent when someone registers for lead's event
+
+**Content:**
+- Attendee name (if not minor)
+- Total attendee count
+- Link to attendee list
+
+#### ?? 8.2.2 Event Change Confirmation
+**Description:** Confirmation that attendees were notified of changes
+
+### 8.3 Admin Notifications
+
+#### ?? 8.3.1 Weekly Activity Summary
+**Description:** Email digest of weekly platform activity
+
+**Content:**
+- New users
+- New events
+- Events completed
+- Bags collected
+- Partner requests
+- Issues/contacts
+
+#### ?? 8.3.2 New Partner Request
+**Description:** Alert when organization applies to be a partner
+
+#### ?? 8.3.3 New Litter Report
+**Description:** Alert when litter report is submitted
+
+#### ?? 8.3.4 New Event Created
+**Description:** Notification when any event is created (for moderation)
+
+#### ?? 8.3.5 New User Signup
+**Description:** Daily digest of new user signups
+
+#### ?? 8.3.6 Account Deletion
+**Description:** Notification when user deletes their account
+
+**Purpose:** Audit trail and data retention compliance
+
+#### ?? 8.3.7 Contact/Issue Report
+**Description:** Alert when user sends contact request or reports issue
+
+#### ?? 8.3.8 System Error Alert
+**Description:** Critical system errors requiring attention
+
+**Integrated with:** Sentry.io monitoring
+
+### 8.4 Notification Preferences
+
+#### ?? 8.4.1 Email Notification Settings
+**Description:** Users can control which emails they receive
+
+**Categories:**
+- Event reminders
+- New events in my area
+- Litter reports
+- Partners
+- Newsletter
+- Admin communications (cannot disable)
+
+**Implementation:** User settings page
+
+---
+
+## 9. Mobile Applications
+
+**Overall Status:** ?? Planned (Q1-Q2 2026 - Project 4)
+
+### 9.1 Mobile App Features
+
+#### ?? 9.1.1 Native Apps
+**Description:** .NET MAUI apps for iOS and Android
+
+**Core Features:**
+- Browse and search events
+- Register for events
+- View dashboard
+- Create litter reports with camera
+- GPS tracking for events (opt-in)
+- Push notifications
+- Offline mode (limited)
+
+**Implementation:** TrashMobMobile project (to be created)
+
+#### ?? 9.1.2 Litter Report with Camera
+**Description:** Streamlined litter reporting with camera integration
+
+**Flow:**
+1. Open app
+2. Tap "Report Litter"
+3. Take photo (auto-geotagged)
+4. Add name and description
+5. Submit
+
+**Why Mobile-First:** GPS and camera integration much better on native apps
+
+#### ?? 9.1.3 Event Check-In
+**Description:** Event leads can check in attendees via app
+
+**Features:**
+- QR code scanning
+- Manual check-in
+- Real-time attendee count
+- Mark no-shows
+
+#### ?? 9.1.4 GPS Route Tracking (Opt-In)
+**Description:** Track routes during cleanup for heat map
+
+**Privacy:**
+- Opt-in only
+- Anonymized before storing
+- Never shows individual paths publicly
+- Used only for heat map generation
+
+#### ?? 9.1.5 Pickup Location Photos
+**Description:** Photograph bag locations for haulers
+
+**Features:**
+- Geotagged photos
+- Attach to event summary
+- Auto-notify hauler
+
+#### ?? 9.1.6 Push Notifications
+**Description:** Real-time notifications via push
+
+**Use Cases:**
+- Event starting soon (1 hour before)
+- New message from event lead
+- Event cancellation (immediate)
+- New event near you
+
+### 9.2 Mobile App User Stories
+
+#### ?? 9.2.1 Download Apps
+**Description:** Users can download from app stores
+
+**Platforms:**
+- iOS App Store
+- Google Play Store
+
+**Requirements:**
+- iOS 15+ (target)
+- Android 8.0+ (target)
+
+#### ?? 9.2.2 Mobile App Guides
+**Description:** In-app tutorial and help center
+
+---
+
+## 10. Integrations
+
+### 10.1 IFTTT Integration
+
+**Status:** ? Implemented (Partial)  
+**Description:** Integrate with IFTTT for social media automation
+
+**Implementation:** `/Controllers/IFTTT/v1/` endpoints
+
+#### ? 10.1.1 IFTTT Setup
+**Status:** Implemented  
+**Description:** Authentication and channel setup
+
+**Implementation:** SetupController, StatusController
+
+#### ?? 10.1.2 Auto-Post New Events
+**Description:** Automatically post new events to social media
+
+**Trigger:** Event created
+
+**Platforms:** Twitter, Facebook, Instagram (via IFTTT)
+
+#### ?? 10.1.3 Auto-Post Litter Reports
+**Description:** Automatically share new litter reports
+
+**Use Case:** Increase awareness and recruit volunteers
+
+#### ?? 10.1.4 Auto-Post Partners
+**Description:** Welcome new partners on social media
+
+#### ?? 10.1.5 Auto-Post Event Summaries
+**Description:** Share impact after events complete
+
+**Content:**
+- Event name and location
+- Bags collected
+- Volunteers participated
+- Thank you message
+
+#### ?? 10.1.6 Auto-Post Event Reminders
+**Description:** Reminder posts about upcoming events
+
+**Timing:** 7 days before, 1 day before
+
+**Implementation:** IFTTT triggers (TriggersController, QueriesController)
+
+---
+
+## 11. Administration
+
+### 11.1 User Management
+
+#### ? 11.1.1 View All Users
+**Status:** Implemented  
+**Description:** Admin page to browse all users
+
+**Implementation:** `/siteadmin/users`, AdminController
+
+**Features:**
+- Search by name/email
+- Filter by status
+- View user details
+- Deactivate accounts
+
+### 11.2 Event Management
+
+#### ? 11.2.1 View All Events
+**Status:** Implemented  
+**Description:** Admin page to browse all events
+
+**Implementation:** `/siteadmin/events`
+
+**Features:**
+- Search events
+- View event details
+- Moderate/remove if necessary
+- View summaries
+
+### 11.3 Partner Management
+
+#### ? 11.3.1 View All Partners
+**Status:** Implemented  
+**Implementation:** `/siteadmin/partners`
+
+#### ? 11.3.2 Approve/Deny Partner Requests
+**Status:** Implemented  
+**Description:** Review and approve partner applications
+
+**Implementation:** `/siteadmin/partner-requests`, PartnerRequestsController
+
+**Workflow:**
+1. View pending requests
+2. Review application details
+3. Approve, deny, or request more info
+4. Send notification to applicant
+
+### 11.4 Litter Report Management
+
+#### ?? 11.4.1 View All Litter Reports
+**Status:** Planned  
+**Description:** Admin page to view all litter reports
+
+**Features:**
+- Search and filter
+- View report details
+- Moderate content
+- Delete if inappropriate
+
+### 11.5 Content Moderation
+
+#### ?? 11.5.1 View All Uploaded Images
+**Status:** Planned  
+**Description:** Admin gallery of all site images
+
+**Purpose:** Content moderation, TOS enforcement
+
+#### ?? 11.5.2 Delete Image
+**Status:** Planned  
+**Description:** Remove images violating TOS
+
+**Flow:**
+1. Admin identifies inappropriate image
+2. Clicks "Delete"
+3. System removes image from storage
+4. Email sent to uploader explaining removal
+5. Audit log entry created
+
+### 11.6 Reporting & Analytics
+
+#### ? 11.6.1 Generate City Reports
+**Status:** Implemented (AdminController methods)  
+**Description:** Create participation reports for specific cities
+
+**Use Case:** Provide to municipal partners showing community impact
+
+### 11.7 Email Templates
+
+#### ? 11.7.1 Manage Email Templates
+**Status:** Implemented  
+**Description:** Edit email notification templates
+
+**Implementation:** `/siteadmin/email-templates`
+
+#### ? 11.7.2 Send Manual Notifications
+**Status:** Implemented  
+**Description:** Send ad-hoc emails to user segments
+
+**Implementation:** `/siteadmin/send-notification`
+
+### 11.8 Job Opportunities
+
+#### ? 11.8.1 Manage Volunteer Opportunities
+**Status:** Implemented  
+**Description:** Create and edit non-event volunteer roles
+
+**Implementation:** `/siteadmin/job-opportunities`, JobOpportunityController
+
+---
+
+## Technical Requirements
+
+### Technology Stack
+
+**Backend:**
+- .NET 10 (ASP.NET Core Web API)
+- Entity Framework Core
+- Azure SQL Database
+- Azure App Service (transitioning to Docker/ACA)
+
+**Frontend:**
+- React 18 (TypeScript)
+- Vite
+- TanStack Query
+- Tailwind CSS
+- Radix UI
+
+**Mobile:**
+- .NET MAUI (iOS/Android)
+
+**Infrastructure:**
+- Azure B2C ? Entra External ID (migration Q2 2026)
+- SendGrid (email)
+- Google Maps API
+- Sentry.io (monitoring)
+- Azure Blob Storage
+- Azure Key Vault
+- GitHub Actions (CI/CD)
+
+### Performance Requirements
+
+- P95 API latency ? 300ms
+- Crash-free sessions (mobile) ? 99.5%
+- Page load time ? 3 seconds
+- Map interactions smooth at 60fps
+- Support 10,000+ concurrent users
+
+### Security & Compliance
+
+- HTTPS only
+- JWT-based authentication
+- Role-based authorization (User, Event Lead, Partner, Admin)
+- COPPA compliance for minors (13+)
+- Waiver management and legal retention
+- PII protection
+- Rate limiting on APIs
+- Image moderation pipeline
+
+### Accessibility
+
+- WCAG 2.2 AA compliance
+- Screen reader support
+- Keyboard navigation
+- Sufficient color contrast
+- Semantic HTML
+
+### Browser Support
+
+**Web:**
+- Chrome (latest 2 versions)
+- Firefox (latest 2 versions)
+- Safari (latest 2 versions)
+- Edge (latest 2 versions)
+
+**Mobile:**
+- iOS 15+
+- Android 8.0+
+
+---
+
+## Success Metrics
+
+### North Star Metric
+**Total Bags of Litter Collected** � ultimate measure of environmental impact
+
+### Key Performance Indicators (KPIs)
+
+#### Engagement Metrics
+- **Monthly Active Users (MAU):** Target 50,000 by end of 2026
+- **Event Registrations per Month:** Target 10,000
+- **New User Signups:** Target 5,000/month
+- **Retention Rate:** Target 60% (return within 30 days)
+
+#### Impact Metrics
+- **Events Created:** Target 500/month
+- **Events Completed:** Target 90% completion rate
+- **Avg Attendees per Event:** Target 10
+- **Total Bags Collected:** Target 100,000 bags in 2026
+- **Total Hours Volunteered:** Target 200,000 hours in 2026
+
+#### Quality Metrics
+- **Events with Summaries:** Target 95%
+- **Waiver Compliance:** Target 100%
+- **Partner Satisfaction:** Target 4.5/5
+- **User Satisfaction:** Target 4.3/5
+
+#### Technical Metrics
+- **API Uptime:** Target 99.9%
+- **P95 Latency:** Target ? 300ms
+- **Mobile Crash-Free Rate:** Target ? 99.5%
+- **Error Rate:** Target ? 0.5%
+
+---
+
+## Appendix
+
+### A. Glossary
+
+| Term | Definition |
+|------|------------|
+| **Event** | A scheduled cleanup instance with public or private visibility |
+| **Event Lead** | User who created and manages an event |
+| **Volunteer** | Registered user (18+) or minor (13-17 with parental consent) |
+| **Partner** | Organization providing services (hauling, supplies, etc.) |
+| **Litter Report** | User-submitted report of litter locations |
+| **Team** | User-created group with membership and collective impact tracking |
+| **Waiver** | Liability waiver signed by participants before events |
+| **Event Summary** | Post-event metrics (bags, attendees, duration) |
+| **Pickup Location** | GPS-tagged location where bags are left for hauler |
+| **Community** | City/region partnership (future feature) |
+
+### B. Acronyms
+
+- **PRD:** Product Requirements Document
+- **MVP:** Minimum Viable Product
+- **MAUI:** Multi-platform App UI
+- **COPPA:** Children's Online Privacy Protection Act
+- **WCAG:** Web Content Accessibility Guidelines
+- **TOS:** Terms of Service
+- **PII:** Personally Identifiable Information
+- **MAU:** Monthly Active Users
+- **KPI:** Key Performance Indicator
+
+### C. Related Documents
+
+- `/Planning/README.md` � Detailed technical roadmap
+- `/claude.md` � Project context for AI assistants
+- `/TrashMob/claude.md` � Web API development patterns
+- `/TrashMobHourlyJobs/claude.md` � Hourly job patterns
+- `/TrashMobDailyJobs/claude.md` � Daily job patterns
+
+### D. Status Legend
+
+- ? **Implemented** � Feature is complete and in production
+- ?? **In Progress** � Currently being developed
+- ?? **Planned** � Scheduled for future development (see roadmap)
+- ? **Not Started** � Not yet begun, no timeline set
+
+### E. 2026 Roadmap Summary
+
+**Q1 2026:**
+- Mobile App Robustness (Project 4)
+- Deployment Pipelines (Project 5)
+- Auth Revamp Kickoff (Project 1)
+
+**Q2 2026:**
+- Auth Revamp Implementation (Project 1)
+- Litter Reporting on Web (Project 3)
+- Event Weights Phase 1 (Project 7)
+- CMS via Strapi (Project 16) - PR #2364 in progress
+
+**Q3 2026:**
+- Teams MVP (Project 9)
+- Community Pages MVP (Project 10)
+- Waivers V3 (Project 8)
+- Event Weights Phase 2 (Project 7)
+
+**Q4 2026:**
+- Adopt-A-Location (Project 11)
+- Attendee-Level Metrics (Project 22)
+- Gamification/Leaderboards (Project 20)
+- Before/After Photos (Project 18)
+
+### F. Priority Matrix
+
+| Feature | Priority | Impact | Effort | Status |
+|---------|----------|--------|--------|--------|
+| Mobile Apps | Critical | High | High | ?? Q1 2026 |
+| Teams | High | High | High | ?? Q3 2026 |
+| Litter Reports (Web) | High | Medium | Medium | ?? Q2 2026 |
+| Notifications | High | High | Medium | ?? TBD |
+| Event Weights | High | High | Low | ?? Q2 2026 |
+| Community Pages | High | High | High | ?? Q3 2026 |
+| Route Tracking | Medium | Medium | High | ?? Q4 2026 |
+| Gamification | Medium | Medium | Medium | ?? Q4 2026 |
+| MCP Server (AI) | Low | Low | Low | ?? Optional |
+
+### G. Active GitHub Issues by Milestone
+
+**2026 Product Plan Phase 1 Milestone:**
+
+| Issue # | Title | Category | Priority |
+|---------|-------|----------|----------|
+| #2310-#2319 | Teams Feature Issues | Teams (Project 9) | High |
+| #2299-#2307 | Community Pages Issues | Community (Project 10) | High |
+| #2263-#2268 | Individual Metrics Issues | Metrics (Project 22) | Medium |
+
+**Mobile App Issues (Q1 2026 Priority):**
+
+| Issue # | Title | Platform | Priority |
+|---------|-------|----------|----------|
+| #2340 | Home screen slow to load | Both | High |
+| #2339 | iOS Home not visible on initial load | iOS | Critical |
+| #2337 | Add search button for litter reports/events | Both | Medium |
+| #2336 | Event search not working properly | Both | High |
+| #2335 | iOS Litter Report doesn't save photos | iOS | Critical |
+| #2332 | iOS Sign Out Issue | iOS | High |
+
+**Website Issues:**
+
+| Issue # | Title | Category | Priority |
+|---------|-------|----------|----------|
+| #2324 | Inactive jobs should not be displayed | Admin | Medium |
+| #2321 | Signup appears to hang on larger devices | Auth | High |
+| #2173 | Submit event pickup locations | Events | Medium |
+| #2172 | Share button on various pages | Social | Low |
+
+**Litter Report Integration Issues:**
+
+| Issue # | Title | Category | Priority |
+|---------|-------|----------|----------|
+| #1481-#1491 | Litter Report Web Parity | Litter Reports (Project 3) | High |
+
+> **Note:** Full issue list available at [GitHub Issues](https://github.com/TrashMob-eco/TrashMob/issues)
+
+### H. Key Integration Notes
+
+**Parental Consent (Project 23):**
+- Vendor: Privo.com
+- Integration: Age verification and COPPA-compliant parental consent
+- Status: Planning in progress
+
+**Authentication (Project 1):**
+- Current: Azure B2C
+- Evaluation: Azure Entra External ID (decision pending Q1 2026)
+- Dependencies: Privo.com integration must work with chosen solution
+
+**CMS (Project 16):**
+- Platform: Strapi v5 headless CMS
+- Status: PR #2364 in progress
+- Enables: Home page, Community Pages, Teams branding
+
+---
+
+**Document Version:** 1.1
+**Last Updated:** January 23, 2026
+**Next Review:** Quarterly (April 2026)
+**Owner:** Product Team
+**Feedback:** Send to product@trashmob.eco
+
+---
+
+**End of Product Requirements Document**

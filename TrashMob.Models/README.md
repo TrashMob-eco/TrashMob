@@ -12,16 +12,18 @@ The `TrashMob.Models` project contains the core data models for the TrashMob sol
 
 ## Technologies
 
-- **.NET 9.0**: Modern .NET platform
+- **.NET 10**: Modern .NET platform
 - **NetTopologySuite**: Advanced spatial/geographic data operations
 
 ## Usage
 
 Reference this project from other solution components to access shared models and ensure consistency in data structures.
 
-## Helpful Links
+## Related Documentation
 
-- [Mobile App User Stories](https://github.com/TrashMob-eco/TrashMob/blob/main/MobileAppUserStories.md): See user stories and requirements for the TrashMob mobile app.
+- [TrashMob.Models.prd](./TrashMob.Models.prd) - Domain model reference and business rules
+- [Root CLAUDE.md](../CLAUDE.md) - Architecture overview and coding standards
+- [TrashMob.Shared README](../TrashMob.Shared/README.md) - Business logic layer
 
 ---
 

@@ -7,14 +7,20 @@ on:
   pull_request:
     branches: [ "main" ]
     paths:
-      - '.github/**'
+      - '.github/workflows/PullRequest-Mobile.yml'
+      - '.github/workflows/build-android.yml'
+      - '.github/workflows/build-ios.yml'
+      - '.github/workflows/publish-android.yml'
+      - '.github/workflows/publish-ios.yml'
+      - '.github/workflows/main_trashmobmobileapp.yml'
+      - '.github/workflows/release_trashmobmobileapp.yml'
       - 'TrashMob.Models/**'
       - 'TrashMobMobile/**'
       - 'TrashMobMobileApp.sln'
 
 env:
-  DOTNET_VERSION: '9.0.308'   # set this to the dotnet version to use
-  DOTNET_VERSION2: '9.0.308'  # set this to the dotnet version to use
+  DOTNET_VERSION: '10.0.x'   # set this to the dotnet version to use
+  DOTNET_VERSION2: '10.0.x'  # set this to the dotnet version to use
   CONFIGURATION: Release      # Values: Debug, Release
   ENVIRONMENT: test         # Values: test, production
   IOS_BUNDLE_ID: 'eco.trashmobdev.trashmobmobile'   # Values: 'eco.trashmobdev.trashmobmobile', 'eco.trashmob'
