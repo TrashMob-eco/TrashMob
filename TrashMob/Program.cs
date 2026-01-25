@@ -3,12 +3,13 @@ namespace TrashMob;
 using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
-using Azure.Storage.Blobs;
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
@@ -20,14 +21,13 @@ using Microsoft.Identity.Web;
 using Microsoft.OpenApi;
 using NetTopologySuite.IO.Converters;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
-using HealthChecks.UI.Client;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using TrashMob.Common;
 using TrashMob.Security;
 using TrashMob.Shared;
@@ -45,11 +45,6 @@ public class Program
 
         builder.Configuration.AddJsonFile("appsettings.json", true, true)
                              .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true); // optional extra provider     
-
-        if (builder.Environment.IsDevelopment())
-        {
-            builder.Configuration.AddJsonFile("appsettings.Development.json", true, true);
-        }
 
         if (!builder.Environment.IsDevelopment())
         {
@@ -197,9 +192,22 @@ public class Program
                 name: "database",
                 tags: ["db", "sql", "sqlserver"]);
 
+        builder.Services.AddApiVersioning(options =>
+        {
+            options.DefaultApiVersion = new ApiVersion(1, 0);
+            options.AssumeDefaultVersionWhenUnspecified = true;
+            options.ReportApiVersions = true;
+        });
+        builder.Services.AddVersionedApiExplorer(options =>
+        {
+            options.GroupNameFormat = "'v'VVV";
+            options.SubstituteApiVersionInUrl = true;
+            options.AssumeDefaultVersionWhenUnspecified = true;
+        });
         builder.Services.AddSwaggerGen(options =>
         {
-            options.SwaggerDoc("v1", new OpenApiInfo { Title = "trashmobapi", Version = "v1" });
+            options.SwaggerDoc("v1", new OpenApiInfo { Title = "trashmobapi v1", Version = "v1" });
+            options.SwaggerDoc("v2", new OpenApiInfo { Title = "trashmobapi v2", Version = "v2" });
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 In = ParameterLocation.Header,
@@ -213,7 +221,41 @@ public class Program
             {
                 [new OpenApiSecuritySchemeReference("bearer", document)] = []
             });
-            
+
+            options.TagActionsBy(api =>
+            {
+                if (api.ActionDescriptor is Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor descriptor)
+                {
+                    var name = descriptor.ControllerTypeInfo.Name;
+                    if (name.Contains("ControllerV"))
+                    {
+                        return [name[..name.IndexOf("ControllerV")]];
+                    }
+                    return [descriptor.ControllerName];
+                }
+                return ["Other"];
+            });
+
+            options.DocInclusionPredicate((docName, apiDesc) =>
+            {
+                if (apiDesc.ActionDescriptor is not Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor controller)
+                    return false;
+
+                var versions = controller.ControllerTypeInfo
+                    .GetCustomAttributes(true)
+                    .OfType<ApiVersionAttribute>()
+                    .SelectMany(attr => attr.Versions)
+                    .ToList();
+
+                if (!versions.Any())
+                {
+                    return docName == "v1";
+                }
+
+                return versions.Any(v => $"v{v.MajorVersion}" == docName);
+            });
+
+
             // Ensure documentation can be read by Swagger 
             var assemblies = AppDomain.CurrentDomain.GetAssemblies()
                 .Where(a => !a.IsDynamic);
@@ -252,7 +294,10 @@ public class Program
         if (enableSwagger)
         {
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "trashmobapi v1"));
+            app.UseSwaggerUI(c => { 
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "trashmobapi v1");
+                c.SwaggerEndpoint("/swagger/v2/swagger.json", "trashmobapi v2");
+            });
         }
 
         app.UseHttpsRedirection();
@@ -290,7 +335,7 @@ public class Program
             if (builder.Environment.IsDevelopment())
             {
                 spa.Options.SourcePath = "client-app";
-                spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
+                spa.UseProxyToSpaDevelopmentServer("http://localhost:3000/");
                 spa.UseReactDevelopmentServer("start");
             }
         });
