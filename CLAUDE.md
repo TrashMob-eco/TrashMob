@@ -301,6 +301,8 @@ az containerapp hostname bind \
 | Development | CNAME | `dev` | `ca-tm-dev-westus2.ashypebble-059d2628.westus2.azurecontainerapps.io` |
 | Development | TXT | `asuid.dev` | domain verification token (initial setup only) |
 
+**DNS Management:** DNS records for trashmob.eco are managed in [Microsoft 365 Admin Center](https://admin.cloud.microsoft) under Domains.
+
 See `Deploy/CUSTOM_DOMAIN_MIGRATION.md` for full migration documentation.
 
 ## Additional Resources
