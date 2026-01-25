@@ -1,4 +1,4 @@
-# TrashMob.eco — 2026 Executive Summary
+# TrashMob.eco ï¿½ 2026 Executive Summary
 
 **Version:** 1.0  
 **Date:** January 24, 2026  
@@ -9,6 +9,8 @@
 ## Purpose
 
 Enable sustained growth of TrashMob.eco by strengthening onboarding & safety (minors and waivers), launching community & team features that cities will subscribe to, and raising product quality across mobile, web, and infrastructure.
+
+> **2026 Outlook:** The rise of AI-assisted coding (Claude, GitHub Copilot) is enabling dramatically faster feature development. With these tools, our volunteer team can ship more features in less time than ever before. This is an exciting time for TrashMobâ€”expect accelerated progress across all initiatives!
 
 ---
 
@@ -110,7 +112,7 @@ Enable sustained growth of TrashMob.eco by strengthening onboarding & safety (mi
 ## Success Metrics
 
 ### North Star Metric
-**Total Bags of Litter Collected** — ultimate measure of environmental impact
+**Total Bags of Litter Collected** ï¿½ ultimate measure of environmental impact
 
 ### Key Performance Indicators (KPIs)
 
@@ -125,6 +127,7 @@ Enable sustained growth of TrashMob.eco by strengthening onboarding & safety (mi
 - **Events Completed:** Target 90% completion rate
 - **Avg Attendees per Event:** Target 10
 - **Total Bags Collected:** Target 100,000 bags in 2026
+- **Total Weight Collected:** Target 50,000 lbs in 2026
 - **Total Hours Volunteered:** Target 200,000 hours in 2026
 
 #### Quality Metrics
@@ -139,7 +142,7 @@ Enable sustained growth of TrashMob.eco by strengthening onboarding & safety (mi
 - **Mobile Crash-Free Rate:** Target ? 99.5%
 - **Error Rate:** Target ? 0.5%
 - **Lead Time for Change:** ? 30%
-- **Deployment Frequency:** ? 2×
+- **Deployment Frequency:** ? 2ï¿½
 - **Change Failure Rate:** ? 10%
 
 ---
@@ -165,14 +168,14 @@ Enable sustained growth of TrashMob.eco by strengthening onboarding & safety (mi
 |------|-------|
 | Mobile App Product Lead | 1 |
 | Web Site Product Lead | 1 |
-| UX Designers | 2–3 |
-| .NET MAUI Mobile Devs | 2–3 |
-| Web Devs (React/TypeScript) | 2–3 |
-| Build/Deployment Engineers | 1–2 |
-| Security Engineers | 1–2 |
+| UX Designers | 2ï¿½3 |
+| .NET MAUI Mobile Devs | 2ï¿½3 |
+| Web Devs (React/TypeScript) | 2ï¿½3 |
+
+**Note:** Build/deployment and security engineering tasks are handled via AI-assisted development tooling.
 
 ### Volunteer Dynamics
-- Chunk work into **3–6 month deliverables**
+- Chunk work into **3ï¿½6 month deliverables**
 - Ongoing recruiting to backfill attrition
 - Handover documentation for continuity
 - Modular project structure to enable parallel work
@@ -185,10 +188,10 @@ Enable sustained growth of TrashMob.eco by strengthening onboarding & safety (mi
 |------|--------|------------|
 | **Legal/Compliance** (COPPA, waivers) | Very High | Legal sign-off gates before build; Privo.com partnership |
 | **Auth Migration Complexity** | High | Canary rollouts, rollback playbooks, extensive testing |
-| **Volunteer Capacity/Turnover** | High | Modular backlog, handover checklists, maintainer rotation |
+| **Volunteer Capacity/Turnover** | High | Modular backlog, handover checklists, maintainer rotation, AI-assisted development (Claude) |
 | **Mobile Quality Debt** | Medium | Q1 stabilization priority, .NET/MAUI upgrades, instrumentation |
 | **Cost Spikes** (Azure/Maps/Email) | Medium | Cost reviews, caching strategies, quotas, batching |
-| **Two API Versions** | Medium | Shared business logic, automated deprecation, 12-month transition |
+| **Two API Versions** | Low | Shared business logic, forced mobile updates on our schedule, no external API consumers |
 | **Team Learning Curves** | Low | Documentation, examples, pair programming sessions |
 
 ---
@@ -274,10 +277,8 @@ Enable sustained growth of TrashMob.eco by strengthening onboarding & safety (mi
 ## Open Strategic Questions
 
 1. **Entra External ID vs Azure B2C:** Final decision pending feature gap analysis and cost comparison (Q1)
-2. **GraphQL adoption:** Evaluate after API v2 stabilizes (Q4)
-3. **API Gateway/BFF pattern:** Defer to 2027 unless microservices needed
-4. **Mobile app store launch readiness:** Dependent on Project 4 completion
-5. **Monetization billing automation:** Manual for 2026, automated system in 2027
+2. **Mobile app store launch readiness:** Dependent on Project 4 completion
+3. **Monetization billing automation:** Manual for 2026, automated system in 2027
 
 ---
 

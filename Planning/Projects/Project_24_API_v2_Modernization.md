@@ -1,4 +1,4 @@
-# Project 24 — API v2 Modernization
+# Project 24 ï¿½ API v2 Modernization
 
 | Attribute | Value |
 |-----------|-------|
@@ -67,10 +67,7 @@ Create a modern, scalable, and developer-friendly API layer (v2) that improves r
 
 ## Out-of-Scope
 
-- ? GraphQL endpoint (evaluate separately)
-- ? gRPC for internal services (future consideration)
-- ? API Gateway/BFF pattern (Phase 2 evaluation)
-- ? v1 endpoint removal (maintain both versions for 12 months)
+- ? v1 endpoint removal (maintain both versions until mobile apps updated)
 
 ## Success Metrics
 
@@ -476,11 +473,8 @@ jobs:
 3. **Cursor vs offset pagination default?**  
    **Recommendation:** Offset for simplicity, cursor optional for real-time feeds
 
-4. **API Gateway evaluation timeline?**  
+4. **API Gateway evaluation timeline?**
    **Recommendation:** Defer until microservices architecture needed
-
-5. **GraphQL as alternative to field filtering?**  
-   **Recommendation:** Evaluate based on v2 adoption and community feedback
 
 ---
 
