@@ -49,7 +49,8 @@
 - **[Project 21 - Event Co-Leads](./Projects/Project_21_Event_Co_Leads.md)** � Multiple event admins
 - **[Project 22 - Attendee Metrics](./Projects/Project_22_Attendee_Metrics.md)** � Per-attendee event statistics
 - **[Project 25 - Automated Testing](./Projects/Project_25_Automated_Testing.md)** — E2E tests for web and mobile
-- **[Project 28 - Photo Moderation](./Projects/Project_28_Photo_Moderation.md)** � E2E tests for web and mobile
+- **[Project 28 - Photo Moderation](./Projects/Project_28_Photo_Moderation.md)** — Admin photo review and flagging
+- **[Project 29 - Feature Usage Metrics](./Projects/Project_29_Feature_Usage_Metrics.md)** � E2E tests for web and mobile
 
 #### Low Priority (Nice-to-Have)
 
@@ -83,6 +84,7 @@
 - [Project 24 - API v2 Modernization](./Projects/Project_24_API_v2_Modernization.md)
 - [Project 25 - Automated Testing](./Projects/Project_25_Automated_Testing.md)
 - [Project 27 - OpenTelemetry Migration](./Projects/Project_27_OpenTelemetry_Migration.md)
+- [Project 29 - Feature Usage Metrics](./Projects/Project_29_Feature_Usage_Metrics.md)
 
 ### Trust & Safety (Additional)
 - [Project 28 - Photo Moderation](./Projects/Project_28_Photo_Moderation.md)
@@ -98,14 +100,14 @@
 
 | Status | Count | Projects |
 |--------|-------|----------|
-| ? **Files Extracted** | 28 | ALL PROJECTS DOCUMENTED |
+| ? **Files Extracted** | 29 | ALL PROJECTS DOCUMENTED |
 | ? **In Progress** | 1 | Project 16 (CMS - PR #2364) |
 | ?? **Ready for Review** | 7 | Projects 2, 3, 5, 6, 7, 9, 21 |
 | ?? **Planning** | 10 | Projects 1, 8, 10, 11, 15, 18, 21, 23, 24 |
 | ?? **Developers Engaged** | 1 | Project 4 |
-| ? **Not Started** | 11 | Projects 12, 13, 14, 17, 19, 20, 22, 25, 26, 27, 28 |
+| ? **Not Started** | 12 | Projects 12, 13, 14, 17, 19, 20, 22, 25, 26, 27, 28, 29 |
 
-**?? Achievement Unlocked:** All 28 project specifications documented!
+**?? Achievement Unlocked:** All 29 project specifications documented!
 
 ---
 
