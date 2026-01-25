@@ -186,10 +186,10 @@ Enable sustained growth of TrashMob.eco by strengthening onboarding & safety (mi
 |------|--------|------------|
 | **Legal/Compliance** (COPPA, waivers) | Very High | Legal sign-off gates before build; Privo.com partnership |
 | **Auth Migration Complexity** | High | Canary rollouts, rollback playbooks, extensive testing |
-| **Volunteer Capacity/Turnover** | High | Modular backlog, handover checklists, maintainer rotation |
+| **Volunteer Capacity/Turnover** | High | Modular backlog, handover checklists, maintainer rotation, AI-assisted development (Claude) |
 | **Mobile Quality Debt** | Medium | Q1 stabilization priority, .NET/MAUI upgrades, instrumentation |
 | **Cost Spikes** (Azure/Maps/Email) | Medium | Cost reviews, caching strategies, quotas, batching |
-| **Two API Versions** | Medium | Shared business logic, automated deprecation, 12-month transition |
+| **Two API Versions** | Low | Shared business logic, forced mobile updates on our schedule, no external API consumers |
 | **Team Learning Curves** | Low | Documentation, examples, pair programming sessions |
 
 ---
