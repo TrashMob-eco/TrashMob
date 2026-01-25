@@ -11,7 +11,7 @@ export const VolunteerOpportunities: React.FC = () => {
     const { data: opportunities } = useQuery({
         queryKey: GetAllJobOpportunities().key,
         queryFn: GetAllJobOpportunities().service,
-        select: (res) => res.data,
+        select: (res) => res.data.filter((job) => job.isActive),
         enabled: true,
     });
 

@@ -8,7 +8,7 @@ public static class AuthConstants
     public const string ClientId = "31cb1c9a-eaa6-4fd0-b59f-0bd0099845ee";
     private const string TenantName = "TrashmobDev";
     private const string TenantId = $"{TenantName}.onmicrosoft.com";
-    public const string ApiBaseUri = "https://ca-tm-dev-westus2.ashypebble-059d2628.westus2.azurecontainerapps.io/api/";
+    public const string ApiBaseUri = "https://dev.trashmob.eco/api/";
 #else
     public const string ClientId = "193638ed-30a1-4e29-ba95-fc39f0c0f242";
     private const string TenantName = "Trashmob";
