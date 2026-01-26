@@ -41,7 +41,7 @@ jobs:
       uses: gittools/actions/gitversion/execute@v3.1.11
 
     - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
