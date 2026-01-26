@@ -28,6 +28,11 @@ using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Azure.Monitor.OpenTelemetry.Exporter;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using TrashMob.Common;
 using TrashMob.Security;
 using TrashMob.Shared;
@@ -58,9 +63,34 @@ public class Program
             builder.Configuration.AddAzureKeyVault(secretClient, new KeyVaultSecretManager());
         }
 
-        builder.Logging.AddApplicationInsights();
-        builder.Services.AddApplicationInsightsTelemetry();
-        builder.Services.AddApplicationInsightsTelemetryProcessor<HealthCheckTelemetryFilter>();
+        // Configure OpenTelemetry for observability
+        var resourceBuilder = ResourceBuilder.CreateDefault()
+            .AddService("TrashMob.Web", serviceVersion: "1.0.0");
+
+        builder.Services.AddOpenTelemetry()
+            .ConfigureResource(resource => resource.AddService("TrashMob.Web"))
+            .WithTracing(tracing => tracing
+                .AddSource(TrashMobActivitySources.AllSourceNames)
+                .AddAspNetCoreInstrumentation(options =>
+                {
+                    // Filter out health check endpoints from traces
+                    options.Filter = httpContext =>
+                        !httpContext.Request.Path.StartsWithSegments("/health");
+                })
+                .AddHttpClientInstrumentation()
+                .AddEntityFrameworkCoreInstrumentation()
+                .AddAzureMonitorTraceExporter())
+            .WithMetrics(metrics => metrics
+                .AddAspNetCoreInstrumentation()
+                .AddHttpClientInstrumentation()
+                .AddAzureMonitorMetricExporter());
+
+        builder.Logging.AddOpenTelemetry(logging =>
+        {
+            logging.IncludeFormattedMessage = true;
+            logging.IncludeScopes = true;
+            logging.AddAzureMonitorLogExporter();
+        });
 
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddMicrosoftIdentityWebApi(options =>

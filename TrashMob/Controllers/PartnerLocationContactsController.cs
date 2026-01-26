@@ -93,7 +93,7 @@
 
             await partnerLocationContactManager.AddAsync(partnerLocationContact, UserId, cancellationToken)
                 .ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(AddPartnerLocationContact));
+            TrackEvent(nameof(AddPartnerLocationContact));
 
             return Ok();
         }
@@ -122,7 +122,7 @@
 
             var result = await partnerLocationContactManager
                 .UpdateAsync(partnerLocationContact, UserId, cancellationToken).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(UpdatePartnerLocationContact));
+            TrackEvent(nameof(UpdatePartnerLocationContact));
 
             return Ok(result);
         }
@@ -150,7 +150,7 @@
 
             await partnerLocationContactManager.DeleteAsync(partnerLocationContactId, cancellationToken)
                 .ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(DeletePartnerLocationContact));
+            TrackEvent(nameof(DeletePartnerLocationContact));
 
             return Ok(partnerLocationContactId);
         }

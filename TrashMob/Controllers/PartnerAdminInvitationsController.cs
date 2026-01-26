@@ -142,7 +142,7 @@
 
             var result = await partnerAdminInvitationManager.AddAsync(partnerAdminInvitation, UserId, cancellationToken)
                 .ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(AddPartnerAdminInvitation));
+            TrackEvent(nameof(AddPartnerAdminInvitation));
 
             return CreatedAtAction(nameof(GetPartnerAdminInvite),
                 new { partnerAdminInvitation.PartnerId, partnerAdminInvitation.Email }, result);
@@ -173,7 +173,7 @@
             var result = await partnerAdminInvitationManager
                 .ResendPartnerAdminInvitation(partnerAdminInvitationId, UserId, cancellationToken)
                 .ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(ResendPartnerAdminInvitation));
+            TrackEvent(nameof(ResendPartnerAdminInvitation));
 
             return Ok(result);
         }
@@ -191,7 +191,7 @@
         {
             await partnerAdminInvitationManager.AcceptInvitation(partnerAdminInvitationId, UserId, cancellationToken)
                 .ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(AcceptPartnerAdminInvitation));
+            TrackEvent(nameof(AcceptPartnerAdminInvitation));
 
             return Ok();
         }
@@ -209,7 +209,7 @@
         {
             await partnerAdminInvitationManager.DeclineInvitation(partnerAdminInvitationId, UserId, cancellationToken)
                 .ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(AcceptPartnerAdminInvitation));
+            TrackEvent(nameof(AcceptPartnerAdminInvitation));
 
             return Ok();
         }
@@ -239,7 +239,7 @@
 
             var result = await partnerAdminInvitationManager.DeleteAsync(partnerAdminInvitationId, cancellationToken)
                 .ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(AddPartnerAdminInvitation));
+            TrackEvent(nameof(AddPartnerAdminInvitation));
 
             return Ok(result);
         }

@@ -247,7 +247,7 @@ namespace TrashMob.Controllers
 
             if (result.IsSuccess)
             {
-                TelemetryClient.TrackEvent(nameof(AddLitterReport));
+                TrackEvent(nameof(AddLitterReport));
                 return Ok(result.Data);
             }
 
@@ -305,7 +305,7 @@ namespace TrashMob.Controllers
 
             if (updatedLitterReport != null)
             {
-                TelemetryClient.TrackEvent(nameof(UpdateLitterReport));
+                TrackEvent(nameof(UpdateLitterReport));
                 return Ok(updatedLitterReport);
             }
 
@@ -337,7 +337,7 @@ namespace TrashMob.Controllers
 
             if (result != -1)
             {
-                TelemetryClient.TrackEvent(nameof(DeleteLitterReport));
+                TrackEvent(nameof(DeleteLitterReport));
                 return Ok(id);
             }
 

@@ -37,7 +37,7 @@
 
             var fullEventLitterReports = await ToFullEventLitterReports(result, cancellationToken);
 
-            TelemetryClient.TrackEvent(nameof(GetEventLitterReports));
+            TrackEvent(nameof(GetEventLitterReports));
             return Ok(fullEventLitterReports);
         }
 
@@ -57,7 +57,7 @@
 
             var fullEventLitterReport = await ToFullEventLitterReport(lastEventLitterReport, cancellationToken);
 
-            TelemetryClient.TrackEvent(nameof(GetEventLitterReportByLitterReportId));
+            TrackEvent(nameof(GetEventLitterReportByLitterReportId));
             return Ok(fullEventLitterReport);
         }
 
@@ -88,7 +88,7 @@
             {
                 var updatedEventLitterReport = await eventLitterReportManager
                     .UpdateAsync(eventLitterReport, UserId, cancellationToken).ConfigureAwait(false);
-                TelemetryClient.TrackEvent(nameof(UpdateEventLitterReport));
+                TrackEvent(nameof(UpdateEventLitterReport));
 
                 return Ok(updatedEventLitterReport);
             }
@@ -117,7 +117,7 @@
             CancellationToken cancellationToken)
         {
             await eventLitterReportManager.AddAsync(eventLitterReport, UserId, cancellationToken).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(AddEventLitterReport));
+            TrackEvent(nameof(AddEventLitterReport));
             return Ok();
         }
 
@@ -136,7 +136,7 @@
             CancellationToken cancellationToken)
         {
             await eventLitterReportManager.Delete(eventId, litterReportId, cancellationToken).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(DeleteEventLitterReport));
+            TrackEvent(nameof(DeleteEventLitterReport));
 
             return new NoContentResult();
         }

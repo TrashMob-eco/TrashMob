@@ -58,7 +58,7 @@
 
             await manager.AddAsync(instance, cancellationToken).ConfigureAwait(false);
 
-            TelemetryClient.TrackEvent("AddContactRequest");
+            TrackEvent("AddContactRequest");
 
             return Ok();
         }
