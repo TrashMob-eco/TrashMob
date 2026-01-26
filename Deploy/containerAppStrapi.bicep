@@ -3,17 +3,10 @@ param containerAppName string
 param containerAppsEnvironmentId string
 param containerRegistryName string
 param containerImage string
-param keyVaultName string
+param storageAccountName string
 param environment string
 param minReplicas int = 1
-param maxReplicas int = 2
-
-// Strapi database configuration
-param strapiDatabaseHost string
-param strapiDatabaseName string
-param strapiDatabaseUsername string
-@secure()
-param strapiDatabasePassword string
+param maxReplicas int = 1  // SQLite requires single replica
 
 // Strapi secrets
 @secure()
@@ -29,8 +22,44 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' e
   name: containerRegistryName
 }
 
-resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
-  name: keyVaultName
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
+  name: storageAccountName
+}
+
+// Create file share for Strapi SQLite database
+resource fileServices 'Microsoft.Storage/storageAccounts/fileServices@2023-01-01' existing = {
+  parent: storageAccount
+  name: 'default'
+}
+
+resource strapiFileShare 'Microsoft.Storage/storageAccounts/fileServices/shares@2023-01-01' = {
+  parent: fileServices
+  name: 'strapi-data'
+  properties: {
+    shareQuota: 1  // 1 GB quota - sufficient for SQLite CMS data
+  }
+}
+
+// Reference existing Container Apps Environment
+resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' existing = {
+  name: split(containerAppsEnvironmentId, '/')[8]  // Extract name from resource ID
+}
+
+// Add Azure Files storage to the managed environment
+resource environmentStorage 'Microsoft.App/managedEnvironments/storages@2024-03-01' = {
+  parent: containerAppsEnvironment
+  name: 'strapi-data'
+  properties: {
+    azureFile: {
+      accountName: storageAccountName
+      accountKey: storageAccount.listKeys().keys[0].value
+      shareName: 'strapi-data'
+      accessMode: 'ReadWrite'
+    }
+  }
+  dependsOn: [
+    strapiFileShare
+  ]
 }
 
 resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
@@ -59,10 +88,6 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
         {
           name: 'registry-password'
           value: containerRegistry.listCredentials().passwords[0].value
-        }
-        {
-          name: 'database-password'
-          value: strapiDatabasePassword
         }
         {
           name: 'admin-jwt-secret'
@@ -94,31 +119,11 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
           env: [
             {
               name: 'DATABASE_CLIENT'
-              value: 'mssql'
+              value: 'better-sqlite3'  // SQLite - Strapi's default, works with single replica
             }
             {
-              name: 'DATABASE_HOST'
-              value: strapiDatabaseHost
-            }
-            {
-              name: 'DATABASE_PORT'
-              value: '1433'
-            }
-            {
-              name: 'DATABASE_NAME'
-              value: strapiDatabaseName
-            }
-            {
-              name: 'DATABASE_USERNAME'
-              value: strapiDatabaseUsername
-            }
-            {
-              name: 'DATABASE_PASSWORD'
-              secretRef: 'database-password'
-            }
-            {
-              name: 'DATABASE_SSL'
-              value: 'true'
+              name: 'DATABASE_FILENAME'
+              value: '/data/strapi.db'  // Persistent storage path
             }
             {
               name: 'ADMIN_JWT_SECRET'
@@ -149,6 +154,12 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
               value: '1337'
             }
           ]
+          volumeMounts: [
+            {
+              volumeName: 'strapi-storage'
+              mountPath: '/data'
+            }
+          ]
           probes: [
             {
               type: 'liveness'
@@ -175,6 +186,13 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
           ]
         }
       ]
+      volumes: [
+        {
+          name: 'strapi-storage'
+          storageType: 'AzureFile'
+          storageName: 'strapi-data'
+        }
+      ]
       scale: {
         minReplicas: minReplicas
         maxReplicas: maxReplicas
@@ -184,6 +202,9 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
   tags: {
     environment: environment
   }
+  dependsOn: [
+    environmentStorage
+  ]
 }
 
 output containerAppFqdn string = containerApp.properties.configuration.ingress.fqdn
