@@ -72,7 +72,7 @@ export const HeroSection = () => {
                             },
                         )}
                     >
-                        {content.googlePlayUrl && (
+                        {content.googlePlayUrl ? (
                             <a href={content.googlePlayUrl}>
                                 <img
                                     className='android mt-0 -ml-2 h-14'
@@ -80,8 +80,8 @@ export const HeroSection = () => {
                                     src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'
                                 />
                             </a>
-                        )}
-                        {content.appStoreUrl && (
+                        ) : null}
+                        {content.appStoreUrl ? (
                             <a href={content.appStoreUrl}>
                                 <img
                                     src='https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/en-us?releaseDate=1682899200'
@@ -89,7 +89,7 @@ export const HeroSection = () => {
                                     className='m-0 h-10'
                                 />
                             </a>
-                        )}
+                        ) : null}
                     </div>
                 </div>
             </div>

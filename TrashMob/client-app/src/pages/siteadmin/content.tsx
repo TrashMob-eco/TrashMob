@@ -5,7 +5,11 @@ import { Button } from '@/components/ui/button';
 import { GetCmsAdminUrl } from '@/services/cms';
 
 export const SiteAdminContent = () => {
-    const { data: adminUrlData, isLoading, isError } = useQuery({
+    const {
+        data: adminUrlData,
+        isLoading,
+        isError,
+    } = useQuery({
         queryKey: GetCmsAdminUrl().key,
         queryFn: GetCmsAdminUrl().service,
     });
