@@ -1,10 +1,34 @@
 import { Link } from 'react-router';
+import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { useIsInViewport } from '@/hooks/useIsInViewport';
 import { cn } from '@/lib/utils';
+import { GetWhatIsTrashmob, WhatIsTrashmobData } from '@/services/cms';
+import { Services } from '@/config/services.config';
+
+// Default fallback content (current hardcoded values)
+const defaultContent: WhatIsTrashmobData = {
+    heading: 'What is a TrashMob?',
+    description:
+        'A TrashMob is a group of citizens who are willing to take an hour or two out of their lives to get together and clean up their communities. Start your impact today.',
+    youtubeVideoUrl: 'https://www.youtube.com/embed/ylOBeVHRtuM?si=5oYDCAMdywNBmp_A',
+    primaryButtonText: 'Learn more',
+    primaryButtonLink: '/aboutus',
+    secondaryButtonText: 'View Upcoming Events',
+    secondaryButtonLink: '/#events',
+};
 
 export const WhatIsTrashmobSection = () => {
     const { ref: viewportRef, isInViewPort } = useIsInViewport<HTMLDivElement>();
+
+    const { data: cmsContent } = useQuery({
+        queryKey: GetWhatIsTrashmob().key,
+        queryFn: GetWhatIsTrashmob().service,
+        staleTime: Services.CACHE.FOR_ONE_MINUTE * 5,
+    });
+
+    // Merge CMS content with defaults (CMS overrides defaults when available)
+    const content = { ...defaultContent, ...cmsContent };
 
     return (
         <section id='introduction' className='bg-card'>
@@ -22,25 +46,27 @@ export const WhatIsTrashmobSection = () => {
                                 },
                             )}
                         >
-                            What is a TrashMob?
+                            {content.heading}
                         </h3>
                     </div>
                     <div className='row-span-4 col-span-12 md:col-start-4 md:col-span-2'>
-                        <iframe
-                            className={cn(
-                                'aspect-video w-full mt-0',
-                                'transition-all duration-1000 delay-1000 ease-out',
-                                {
-                                    'opacity-100 translate-y-0': isInViewPort,
-                                    'opacity-0 translate-y-20': !isInViewPort,
-                                },
-                            )}
-                            src='https://www.youtube.com/embed/ylOBeVHRtuM?si=5oYDCAMdywNBmp_A'
-                            title='Trashmob introduction video'
-                            allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
-                            referrerPolicy='strict-origin-when-cross-origin'
-                            allowFullScreen
-                        />
+                        {content.youtubeVideoUrl ? (
+                            <iframe
+                                className={cn(
+                                    'aspect-video w-full mt-0',
+                                    'transition-all duration-1000 delay-1000 ease-out',
+                                    {
+                                        'opacity-100 translate-y-0': isInViewPort,
+                                        'opacity-0 translate-y-20': !isInViewPort,
+                                    },
+                                )}
+                                src={content.youtubeVideoUrl}
+                                title='Trashmob introduction video'
+                                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+                                referrerPolicy='strict-origin-when-cross-origin'
+                                allowFullScreen
+                            />
+                        ) : null}
                     </div>
                     <div className='row-span-3 col-start-1 col-span-3'>
                         <p
@@ -53,8 +79,7 @@ export const WhatIsTrashmobSection = () => {
                                 },
                             )}
                         >
-                            A TrashMob is a group of citizens who are willing to take an hour or two out of their lives
-                            to get together and clean up their communities. Start your impact today.
+                            {content.description}
                         </p>
                         <div
                             className={cn(
@@ -66,12 +91,16 @@ export const WhatIsTrashmobSection = () => {
                                 },
                             )}
                         >
-                            <Button asChild size='lg'>
-                                <Link to='/aboutus'>Learn more</Link>
-                            </Button>
-                            <Button asChild size='lg'>
-                                <a href='/#events'>View Upcoming Events</a>
-                            </Button>
+                            {content.primaryButtonText && content.primaryButtonLink ? (
+                                <Button asChild size='lg'>
+                                    <Link to={content.primaryButtonLink}>{content.primaryButtonText}</Link>
+                                </Button>
+                            ) : null}
+                            {content.secondaryButtonText && content.secondaryButtonLink ? (
+                                <Button asChild size='lg'>
+                                    <a href={content.secondaryButtonLink}>{content.secondaryButtonText}</a>
+                                </Button>
+                            ) : null}
                         </div>
                     </div>
                 </div>

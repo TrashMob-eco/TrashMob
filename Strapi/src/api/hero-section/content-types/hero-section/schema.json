@@ -1,0 +1,46 @@
+{
+  "kind": "singleType",
+  "collectionName": "hero_sections",
+  "info": {
+    "singularName": "hero-section",
+    "pluralName": "hero-sections",
+    "displayName": "Hero Section",
+    "description": "Main hero banner section on the home page"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "tagline": {
+      "type": "string",
+      "maxLength": 255
+    },
+    "primaryButtonText": {
+      "type": "string",
+      "default": "Join us today",
+      "required": true,
+      "maxLength": 50
+    },
+    "primaryButtonLink": {
+      "type": "string",
+      "default": "/gettingstarted",
+      "required": true,
+      "maxLength": 255
+    },
+    "googlePlayUrl": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "appStoreUrl": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "backgroundImage": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    }
+  }
+}

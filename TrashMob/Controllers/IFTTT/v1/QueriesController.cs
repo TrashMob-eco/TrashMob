@@ -10,6 +10,9 @@
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Poco.IFTTT;
 
+    /// <summary>
+    /// Controller for IFTTT queries, providing endpoints for listing all events.
+    /// </summary>
     [Route("api/ifttt/v1/[controller]")]
     [RequiredScope(Constants.TrashMobIFTTTScope)]
     [ApiController]
@@ -17,11 +20,21 @@
     {
         private readonly IQueriesManager queriesManager;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QueriesController"/> class.
+        /// </summary>
+        /// <param name="queriesManager">The queries manager.</param>
         public QueriesController(IQueriesManager queriesManager)
         {
             this.queriesManager = queriesManager;
         }
 
+        /// <summary>
+        /// Gets all events for IFTTT queries.
+        /// </summary>
+        /// <param name="queriesRequest">The queries request payload.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>Action result with event data.</remarks>
         [HttpPost("list_all_events")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [Authorize(Policy = AuthorizationPolicyConstants.IftttServiceKey)]

@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_content_requirement_items",
+  "info": {
+    "displayName": "Requirement Item",
+    "icon": "check",
+    "description": "A requirement item with icon and label"
+  },
+  "options": {},
+  "attributes": {
+    "icon": {
+      "type": "string",
+      "required": true,
+      "maxLength": 50,
+      "default": "gloves"
+    },
+    "label": {
+      "type": "string",
+      "required": true,
+      "maxLength": 100
+    }
+  }
+}

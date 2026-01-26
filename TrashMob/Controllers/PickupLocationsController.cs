@@ -12,6 +12,9 @@
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Poco;
 
+    /// <summary>
+    /// Controller for managing pickup locations, including retrieval, update, and deletion.
+    /// </summary>
     [Route("api/pickuplocations")]
     public class PickupLocationsController(
         IPickupLocationManager pickupLocationManager,
@@ -19,24 +22,48 @@
         IImageManager imageManager)
         : KeyedController<PickupLocation>(pickupLocationManager)
     {
+        /// <summary>
+        /// Gets a pickup location by its unique identifier.
+        /// </summary>
+        /// <param name="pickupLocationId">The pickup location ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>The pickup location.</remarks>
         [HttpGet("{pickupLocationId}")]
         public async Task<IActionResult> Get(Guid pickupLocationId, CancellationToken cancellationToken)
         {
             return Ok(await Manager.GetAsync(pickupLocationId, cancellationToken).ConfigureAwait(false));
         }
 
+        /// <summary>
+        /// Gets pickup locations by event ID.
+        /// </summary>
+        /// <param name="eventId">The event ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>List of pickup locations for the event.</remarks>
         [HttpGet("getbyevent/{eventId}")]
         public async Task<IActionResult> GetByEvent(Guid eventId, CancellationToken cancellationToken)
         {
             return Ok(await Manager.GetByParentIdAsync(eventId, cancellationToken).ConfigureAwait(false));
         }
 
+        /// <summary>
+        /// Gets pickup locations by user ID.
+        /// </summary>
+        /// <param name="userId">The user ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>List of pickup locations for the user.</remarks>
         [HttpGet("getbyuser/{userId}")]
         public async Task<IActionResult> GetByUser(Guid userId, CancellationToken cancellationToken)
         {
             return Ok(await pickupLocationManager.GetByUserAsync(userId, cancellationToken).ConfigureAwait(false));
         }
 
+        /// <summary>
+        /// Updates a pickup location.
+        /// </summary>
+        /// <param name="pickupLocation">The pickup location to update.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>The updated pickup location.</remarks>
         [HttpPut]
         public async Task<IActionResult> Update(PickupLocation pickupLocation, CancellationToken cancellationToken)
         {
@@ -76,11 +103,17 @@
             localPickupLocation.HasBeenSubmitted = pickupLocation.HasBeenSubmitted; 
 
             var result = await Manager.UpdateAsync(localPickupLocation, UserId, cancellationToken).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(Update) + typeof(PickupLocation));
+            TrackEvent(nameof(Update) + typeof(PickupLocation));
 
             return Ok(result);
         }
 
+        /// <summary>
+        /// Marks a pickup location as picked up.
+        /// </summary>
+        /// <param name="pickupLocationId">The pickup location ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>Action result.</remarks>
         [HttpPost("markpickedup/{pickupLocationId}")]
         [Authorize(AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> MarkAsPickedUp(Guid pickupLocationId, CancellationToken cancellationToken)
@@ -95,11 +128,17 @@
 
             await pickupLocationManager.MarkAsPickedUpAsync(pickupLocationId, UserId, cancellationToken)
                 .ConfigureAwait(false);
-            TelemetryClient.TrackEvent("MarkAsPickedUp");
+            TrackEvent("MarkAsPickedUp");
 
             return Ok();
         }
 
+        /// <summary>
+        /// Adds a new pickup location.
+        /// </summary>
+        /// <param name="instance">The pickup location to add.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>The added pickup location.</remarks>
         [HttpPost]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public override async Task<IActionResult> Add(PickupLocation instance, CancellationToken cancellationToken)
@@ -116,11 +155,17 @@
 
             var result = await Manager.AddAsync(instance, UserId, cancellationToken).ConfigureAwait(false);
 
-            TelemetryClient.TrackEvent("AddPickupLocation");
+            TrackEvent("AddPickupLocation");
 
             return Ok(result);
         }
 
+        /// <summary>
+        /// Submits pickup locations for an event.
+        /// </summary>
+        /// <param name="eventId">The event ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>Action result.</remarks>
         [HttpPost("submit/{eventId}")]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> SubmitPickupLocations(Guid eventId, CancellationToken cancellationToken)
@@ -137,11 +182,18 @@
 
             await pickupLocationManager.SubmitPickupLocations(eventId, UserId, cancellationToken).ConfigureAwait(false);
 
-            TelemetryClient.TrackEvent("SubmitPickupLocations");
+            TrackEvent("SubmitPickupLocations");
 
             return Ok();
         }
 
+        /// <summary>
+        /// Uploads an image for a pickup location.
+        /// </summary>
+        /// <param name="imageUpload">The image upload information.</param>
+        /// <param name="eventId">The event ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>Action result.</remarks>
         [HttpPost("image/{eventId}")]
         public async Task<IActionResult> UploadImage([FromForm] ImageUpload imageUpload, Guid eventId,
             CancellationToken cancellationToken)
@@ -160,6 +212,12 @@
             return Ok();
         }
 
+        /// <summary>
+        /// Gets the image URL for a pickup location.
+        /// </summary>
+        /// <param name="pickupLocationId">The pickup location ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>The image URL.</remarks>
         [HttpGet("image/{pickupLocationId}")]
         public async Task<IActionResult> GetImage(Guid pickupLocationId, CancellationToken cancellationToken)
         {
@@ -173,6 +231,13 @@
             return Ok(url);
         }
 
+        /// <summary>
+        /// Gets the image URL for a pickup location with a specific size.
+        /// </summary>
+        /// <param name="pickupLocationId">The pickup location ID.</param>
+        /// <param name="imageSize">The image size.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>The image URL.</remarks>
         [HttpGet("image/{pickupLocationId}/{imageSize}")]
         public async Task<IActionResult> GetImage(Guid pickupLocationId, ImageSizeEnum imageSize,
             CancellationToken cancellationToken)
@@ -187,6 +252,12 @@
             return Ok(url);
         }
 
+        /// <summary>
+        /// Deletes a pickup location.
+        /// </summary>
+        /// <param name="id">The pickup location ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>Action result.</remarks>
         [HttpDelete("{id}")]
         public override async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
@@ -213,7 +284,7 @@
 
             var results = await Manager.DeleteAsync(id, cancellationToken).ConfigureAwait(false);
 
-            TelemetryClient.TrackEvent("Delete" + nameof(PickupLocation));
+            TrackEvent("Delete" + nameof(PickupLocation));
 
             return Ok(results);
         }

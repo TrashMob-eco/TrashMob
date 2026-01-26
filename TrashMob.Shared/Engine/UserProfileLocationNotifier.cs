@@ -7,8 +7,14 @@
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
 
+    /// <summary>
+    /// Notification engine that reminds users to set their location in their profile to receive event notifications.
+    /// </summary>
     public class UserProfileLocationNotifier : NotificationEngineBase
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserProfileLocationNotifier"/> class.
+        /// </summary>
         public UserProfileLocationNotifier(IEventManager eventManager,
             IKeyedManager<User> userManager,
             IEventAttendeeManager eventAttendeeManager,
@@ -23,15 +29,24 @@
         {
         }
 
+        /// <inheritdoc />
         protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.UserProfileUpdateLocation;
 
+        /// <inheritdoc />
         protected override int MaxNumberOfHoursInWindow => 24;
 
+        /// <inheritdoc />
         protected override int MinNumberOfHoursInWindow => 2;
 
+        /// <inheritdoc />
         protected override string EmailSubject =>
             "Set your User Location in TrashMob to get Upcoming Event Notifications!";
 
+        /// <summary>
+        /// Generates notifications for users who have not set their profile location.
+        /// </summary>
+        /// <param name="cancellationToken">Token to cancel the operation.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public async Task GenerateNotificationsAsync(CancellationToken cancellationToken = default)
         {
             Logger.LogInformation("Generating Notifications for {0}", NotificationType);

@@ -9,6 +9,9 @@
     using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
 
+    /// <summary>
+    /// Controller for managing partner contacts, including retrieval and creation.
+    /// </summary>
     [Authorize]
     [Route("api/partnercontacts")]
     public class PartnerContactsController : SecureController
@@ -16,6 +19,11 @@
         private readonly IPartnerContactManager partnerContactManager;
         private readonly IKeyedManager<Partner> partnerManager;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PartnerContactsController"/> class.
+        /// </summary>
+        /// <param name="partnerManager">The partner manager.</param>
+        /// <param name="partnerContactManager">The partner contact manager.</param>
         public PartnerContactsController(IKeyedManager<Partner> partnerManager,
             IPartnerContactManager partnerContactManager)
         {
@@ -23,6 +31,12 @@
             this.partnerContactManager = partnerContactManager;
         }
 
+        /// <summary>
+        /// Gets all contacts for a given partner. Requires a valid user.
+        /// </summary>
+        /// <param name="partnerId">The partner ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>List of partner contacts.</remarks>
         [HttpGet("getbypartner/{partnerId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> GetByPartner(Guid partnerId, CancellationToken cancellationToken)
@@ -32,6 +46,12 @@
             return Ok(partnerContacts);
         }
 
+        /// <summary>
+        /// Gets a partner contact by its unique identifier. Requires a valid user.
+        /// </summary>
+        /// <param name="partnerContactId">The partner contact ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>The partner contact.</remarks>
         [HttpGet("{partnerContactId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> Get(Guid partnerContactId, CancellationToken cancellationToken)
@@ -41,6 +61,12 @@
             return Ok(partnerContact);
         }
 
+        /// <summary>
+        /// Adds a new partner contact.
+        /// </summary>
+        /// <param name="partnerContact">The partner contact to add.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>The newly created partner contact.</remarks>
         [HttpPost]
         public async Task<IActionResult> AddPartnerContact(PartnerContact partnerContact,
             CancellationToken cancellationToken = default)
@@ -61,11 +87,17 @@
             }
 
             await partnerContactManager.AddAsync(partnerContact, UserId, cancellationToken);
-            TelemetryClient.TrackEvent(nameof(AddPartnerContact));
+            TrackEvent(nameof(AddPartnerContact));
 
             return Ok();
         }
 
+        /// <summary>
+        /// Updates an existing partner contact.
+        /// </summary>
+        /// <param name="partnerContact">The partner contact to update.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>The updated partner contact.</remarks>
         [HttpPut]
         public async Task<IActionResult> UpdatePartnerContact(PartnerContact partnerContact,
             CancellationToken cancellationToken)
@@ -82,11 +114,17 @@
 
             var result = await partnerContactManager.UpdateAsync(partnerContact, UserId, cancellationToken)
                 .ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(UpdatePartnerContact));
+            TrackEvent(nameof(UpdatePartnerContact));
 
             return Ok(result);
         }
 
+        /// <summary>
+        /// Deletes a partner contact.
+        /// </summary>
+        /// <param name="partnerContactId">The partner contact ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>The ID of the deleted partner contact.</remarks>
         [HttpDelete("{partnerContactId}")]
         public async Task<IActionResult> DeletePartnerContact(Guid partnerContactId,
             CancellationToken cancellationToken)
@@ -101,7 +139,7 @@
             }
 
             await partnerContactManager.DeleteAsync(partnerContactId, cancellationToken).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(DeletePartnerContact));
+            TrackEvent(nameof(DeletePartnerContact));
 
             return Ok(partnerContactId);
         }

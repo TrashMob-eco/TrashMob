@@ -1,31 +1,133 @@
 ﻿namespace TrashMob.Shared.Engine
 {
+    /// <summary>
+    /// Defines the types of notifications that can be sent to users.
+    /// </summary>
     public enum NotificationTypeEnum
     {
+        /// <summary>
+        /// Notification sent to attendees after an event is completed with summary information.
+        /// </summary>
         EventSummaryAttendee = 1,
+
+        /// <summary>
+        /// Reminder notification sent to event hosts about upcoming event summary requirements.
+        /// </summary>
         EventSummaryHostReminder = 2,
+
+        /// <summary>
+        /// Notification about events the user is attending this week.
+        /// </summary>
         UpcomingEventAttendingThisWeek = 3,
+
+        /// <summary>
+        /// Notification about events the user is attending soon (within 24 hours).
+        /// </summary>
         UpcomingEventAttendingSoon = 4,
+
+        /// <summary>
+        /// Notification about events the user is hosting this week.
+        /// </summary>
         UpcomingEventHostingThisWeek = 5,
+
+        /// <summary>
+        /// Notification about events the user is hosting soon (within 24 hours).
+        /// </summary>
         UpcomingEventHostingSoon = 6,
+
+        /// <summary>
+        /// Notification about upcoming events in the user's area this week.
+        /// </summary>
         UpcomingEventsInYourAreaThisWeek = 7,
+
+        /// <summary>
+        /// Notification about upcoming events in the user's area soon.
+        /// </summary>
         UpcomingEventsInYourAreaSoon = 8,
+
+        /// <summary>
+        /// Generic notification type for miscellaneous communications.
+        /// </summary>
         Generic = 9,
+
+        /// <summary>
+        /// Welcome notification sent to new TrashMob users.
+        /// </summary>
         WelcomeToTrashMob = 10,
+
+        /// <summary>
+        /// Notification sent to partners when an event requests their services.
+        /// </summary>
         EventPartnerRequest = 11,
+
+        /// <summary>
+        /// Notification sent to event hosts when a partner responds to a service request.
+        /// </summary>
         EventPartnerResponse = 12,
+
+        /// <summary>
+        /// Notification sent when a partner request is accepted.
+        /// </summary>
         PartnerRequestAccepted = 13,
+
+        /// <summary>
+        /// Notification sent when a partner request is declined.
+        /// </summary>
         PartnerRequestDeclined = 14,
+
+        /// <summary>
+        /// Notification sent to attendees when an event is cancelled.
+        /// </summary>
         EventCancelledNotice = 15,
+
+        /// <summary>
+        /// Notification sent when a contact request is received.
+        /// </summary>
         ContactRequestReceived = 16,
+
+        /// <summary>
+        /// Notification sent to attendees when event details are updated.
+        /// </summary>
         EventUpdatedNotice = 17,
+
+        /// <summary>
+        /// Weekly reminder notification sent to event hosts about their upcoming events.
+        /// </summary>
         EventSummaryHostWeekReminder = 18,
+
+        /// <summary>
+        /// Notification prompting users to update their profile location.
+        /// </summary>
         UserProfileUpdateLocation = 19,
+
+        /// <summary>
+        /// Invitation sent to government entities to become partners.
+        /// </summary>
         InviteGovernmentPartner = 20,
+
+        /// <summary>
+        /// Invitation sent to businesses to become partners.
+        /// </summary>
         InviteBusinessPartner = 21,
+
+        /// <summary>
+        /// Invitation sent to new users to become partner administrators.
+        /// </summary>
         InviteNewUserToBePartnerAdmin = 22,
+
+        /// <summary>
+        /// Invitation sent to existing users to become partner administrators.
+        /// </summary>
         InviteExistingUserToBePartnerAdmin = 23,
+
+        /// <summary>
+        /// Notification sent to partners requesting pickup services for an event.
+        /// </summary>
         EventPartnerPickupRequest = 24,
+
+        /// <summary>
+        /// Notification sent when a partner request is automatically approved.
+        /// </summary>
         EventPartnerRequestAutoApproved = 25,
     }
 }

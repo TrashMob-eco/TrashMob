@@ -6,6 +6,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Identity.Web.Resource;
@@ -24,15 +25,25 @@
         IEventAttendeeManager eventAttendeeManager)
         : SecureController
     {
+        /// <summary>
+        /// Gets a list of all events.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<Event>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEvents(CancellationToken cancellationToken)
         {
             var result = await eventManager.GetAsync(cancellationToken).ConfigureAwait(false);
             return Ok(result);
         }
 
+        /// <summary>
+        /// Gets a list of all active events.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
         [HttpGet]
         [Route("active")]
+        [ProducesResponseType(typeof(List<DisplayEvent>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetActiveEvents(CancellationToken cancellationToken)
         {
             var results = await eventManager.GetActiveEventsAsync(cancellationToken).ConfigureAwait(false);
@@ -48,8 +59,13 @@
             return Ok(displayResults);
         }
 
+        /// <summary>
+        /// Gets a list of all completed events.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
         [HttpGet]
         [Route("completed")]
+        [ProducesResponseType(typeof(List<DisplayEvent>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetCompletedEvents(CancellationToken cancellationToken)
         {
             var results = await eventManager.GetCompletedEventsAsync(cancellationToken).ConfigureAwait(false);
@@ -68,8 +84,13 @@
             return Ok(displayResults);
         }
 
+        /// <summary>
+        /// Retrieves all events that are not canceled.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
         [HttpGet]
         [Route("notcanceled")]
+        [ProducesResponseType(typeof(List<DisplayEvent>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetNotCanceledEvents(CancellationToken cancellationToken)
         {
             var results = await eventManager.GetAsync(cancellationToken).ConfigureAwait(false);
@@ -88,10 +109,16 @@
             return Ok(displayResults);
         }
 
+        /// <summary>
+        /// Gets a list of events that a specific user is attending.
+        /// </summary>
+        /// <param name="userId">The ID of the user.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         [HttpGet]
         [Route("eventsuserisattending/{userId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobReadScope)]
+        [ProducesResponseType(typeof(IEnumerable<Event>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEventsUserIsAttending(Guid userId, CancellationToken cancellationToken)
         {
             var result = await eventAttendeeManager
@@ -99,10 +126,17 @@
             return Ok(result);
         }
 
+        /// <summary>
+        /// Gets a list of events for a specific user.
+        /// </summary>
+        /// <param name="userId">The ID of the user.</param>
+        /// <param name="futureEventsOnly">When true, only return events in the future</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         [HttpGet]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobReadScope)]
         [Route("userevents/{userId}/{futureEventsOnly}")]
+        [ProducesResponseType(typeof(IEnumerable<Event>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetUserEvents(Guid userId, bool futureEventsOnly,
             CancellationToken cancellationToken)
         {
@@ -115,10 +149,17 @@
             return Ok(allResults);
         }
 
+        /// <summary>
+        /// Gets a list of canceled events for a specific user.
+        /// </summary>
+        /// <param name="userId">The ID of the user.</param>
+        /// <param name="futureEventsOnly">When true, only return events in the future</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         [HttpGet]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobReadScope)]
         [Route("canceleduserevents/{userId}/{futureEventsOnly}")]
+        [ProducesResponseType(typeof(IEnumerable<Event>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetCanceledUserEvents(Guid userId, bool futureEventsOnly,
             CancellationToken cancellationToken)
         {
@@ -132,7 +173,13 @@
             return Ok(allResults);
         }
 
+        /// <summary>
+        /// Gets a specific event by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the event.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(Event), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEvent(Guid id, CancellationToken cancellationToken = default)
         {
             var mobEvent = await eventManager.GetAsync(id, cancellationToken).ConfigureAwait(false);
@@ -145,8 +192,14 @@
             return Ok(mobEvent);
         }
 
+        /// <summary>
+        /// Gets a list of filtered events based on the specified event filter.
+        /// </summary>
+        /// <param name="filter">The event filter.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         [HttpPost]
         [Route("filteredevents")]
+        [ProducesResponseType(typeof(IEnumerable<Event>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetFilteredEvents([FromBody] EventFilter filter,
             CancellationToken cancellationToken)
         {
@@ -162,8 +215,15 @@
             return Ok(result);
         }
 
+        /// <summary>
+        /// Gets a paginated list of events for a given user, based on the specified event filter.
+        /// </summary>
+        /// <param name="filter">The event filter.</param>
+        /// <param name="userId">The ID of the user.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         [HttpPost]
         [Route("pageduserevents/{userId}")]
+        [ProducesResponseType(typeof(PaginatedList<Event>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetPagedUserEvents([FromBody] EventFilter filter, Guid userId, CancellationToken cancellationToken)
         {
             var result1 = await eventManager.GetUserEventsAsync(filter, userId, cancellationToken)
@@ -184,8 +244,14 @@
             return Ok(allResults);
         }
 
+        /// <summary>
+        /// Gets a paginated list of events based on the specified event filter.
+        /// </summary>
+        /// <param name="filter">The event filter.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         [HttpPost]
         [Route("pagedfilteredevents")]
+        [ProducesResponseType(typeof(PaginatedList<Event>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetPagedFilteredEvents([FromBody] EventFilter filter,
             CancellationToken cancellationToken)
         {
@@ -201,8 +267,21 @@
             return Ok(result);
         }
 
+        /// <summary>
+        /// Gets a list of event locations within a specific time range.
+        /// </summary>
+        /// <param name="startTime">
+        /// The start time of the range (ISO 8601 format).
+        /// Example: <c>2024-06-10T15:30:00-07:00</c>
+        /// </param>
+        /// <param name="endTime">
+        /// The end time of the range (ISO 8601 format).
+        /// Example: <c>2025-06-10T15:30:00-07:00</c>
+        /// </param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         [HttpGet]
         [Route("locationsbytimerange")]
+        [ProducesResponseType(typeof(IEnumerable<Location>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEventLocationsByTimeRange([FromQuery] DateTimeOffset? startTime,
             [FromQuery] DateTimeOffset? endTime, CancellationToken cancellationToken)
         {
@@ -212,8 +291,17 @@
             return Ok(result);
         }
 
+        /// <summary>
+        /// Updates an existing event. Requires write scope.
+        /// </summary>
+        /// <param name="mobEvent">The event to update.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>Returns the updated event.</remarks>
         [HttpPut]
         [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(Event), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateEvent(Event mobEvent, CancellationToken cancellationToken)
         {
             var authResult =
@@ -227,7 +315,7 @@
             try
             {
                 var updatedEvent = await eventManager.UpdateAsync(mobEvent, UserId, cancellationToken);
-                TelemetryClient.TrackEvent(nameof(UpdateEvent));
+                TrackEvent(nameof(UpdateEvent));
 
                 return Ok(updatedEvent);
             }
@@ -242,19 +330,34 @@
             }
         }
 
+        /// <summary>
+        /// Adds a new event. Requires write scope.
+        /// </summary>
+        /// <param name="mobEvent">The event to add.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>Returns the added event.</remarks>
         [HttpPost]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(Event), StatusCodes.Status200OK)]
         public async Task<IActionResult> AddEvent(Event mobEvent, CancellationToken cancellationToken)
         {
             var newEvent = await eventManager.AddAsync(mobEvent, UserId, cancellationToken).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(AddEvent));
+            TrackEvent(nameof(AddEvent));
 
             return Ok(newEvent);
         }
 
+        /// <summary>
+        /// Deletes an event. Requires write scope.
+        /// </summary>
+        /// <param name="eventCancellationRequest">The event cancellation request.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>Returns the ID of the deleted event.</remarks>
         [HttpDelete]
         [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> DeleteEvent(EventCancellationRequest eventCancellationRequest,
             CancellationToken cancellationToken)
         {
@@ -271,7 +374,7 @@
 
             await eventManager.DeleteAsync(eventCancellationRequest.EventId,
                 eventCancellationRequest.CancellationReason, UserId, cancellationToken).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(DeleteEvent));
+            TrackEvent(nameof(DeleteEvent));
 
             return Ok(eventCancellationRequest.EventId);
         }

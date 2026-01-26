@@ -10,6 +10,9 @@
     using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
 
+    /// <summary>
+    /// Controller for managing partner admin invitations, including retrieval and creation.
+    /// </summary>
     [Authorize]
     [Route("api/partneradmininvitations")]
     public class PartnerAdminInvitationsController : SecureController
@@ -18,6 +21,12 @@
         private readonly IKeyedManager<Partner> partnerManager;
         private readonly IKeyedManager<User> userManager;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PartnerAdminInvitationsController"/> class.
+        /// </summary>
+        /// <param name="userManager">The user manager.</param>
+        /// <param name="partnerAdminInvitationManager">The partner admin invitation manager.</param>
+        /// <param name="partnerManager">The partner manager.</param>
         public PartnerAdminInvitationsController(IKeyedManager<User> userManager,
             IPartnerAdminInvitationManager partnerAdminInvitationManager,
             IKeyedManager<Partner> partnerManager)
@@ -27,6 +36,12 @@
             this.partnerAdminInvitationManager = partnerAdminInvitationManager;
         }
 
+        /// <summary>
+        /// Gets all partner admin invitations for a given partner.
+        /// </summary>
+        /// <param name="partnerId">The partner ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>List of partner admin invitations.</remarks>
         [HttpGet("{partnerId}")]
         public async Task<IActionResult> GetPartnerAdminInvitations(Guid partnerId, CancellationToken cancellationToken)
         {
@@ -42,6 +57,12 @@
             return Ok(await partnerAdminInvitationManager.GetByParentIdAsync(partnerId, cancellationToken));
         }
 
+        /// <summary>
+        /// Gets all partner admin invitations for a given user. Requires a valid user.
+        /// </summary>
+        /// <param name="userId">The user ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>List of partner admin invitations for the user.</remarks>
         [HttpGet("getbyuser/{userId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> GetPartnerInvitationsForUser(Guid userId, CancellationToken cancellationToken)
@@ -50,6 +71,13 @@
             return Ok(results);
         }
 
+        /// <summary>
+        /// Gets a specific partner admin invitation by partner ID and email.
+        /// </summary>
+        /// <param name="partnerId">The partner ID.</param>
+        /// <param name="email">The email of the invited admin.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>The partner admin invitation if found, otherwise NotFound.</remarks>
         [HttpGet("{partnerId}/{email}")]
         public async Task<IActionResult> GetPartnerAdminInvite(Guid partnerId, string email,
             CancellationToken cancellationToken = default)
@@ -75,6 +103,12 @@
             return Ok(partnerInvite);
         }
 
+        /// <summary>
+        /// Adds a new partner admin invitation.
+        /// </summary>
+        /// <param name="partnerAdminInvitation">The partner admin invitation to add.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>Created partner admin invitation.</remarks>
         [HttpPost]
         public async Task<IActionResult> AddPartnerAdminInvitation(PartnerAdminInvitation partnerAdminInvitation,
             CancellationToken cancellationToken)
@@ -108,12 +142,18 @@
 
             var result = await partnerAdminInvitationManager.AddAsync(partnerAdminInvitation, UserId, cancellationToken)
                 .ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(AddPartnerAdminInvitation));
+            TrackEvent(nameof(AddPartnerAdminInvitation));
 
             return CreatedAtAction(nameof(GetPartnerAdminInvite),
                 new { partnerAdminInvitation.PartnerId, partnerAdminInvitation.Email }, result);
         }
 
+        /// <summary>
+        /// Resends an existing partner admin invitation.
+        /// </summary>
+        /// <param name="partnerAdminInvitationId">The partner admin invitation ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>Updated partner admin invitation.</remarks>
         [HttpPost("resend/{partnerAdminInvitationId}")]
         public async Task<IActionResult> ResendPartnerAdminInvitation(Guid partnerAdminInvitationId,
             CancellationToken cancellationToken)
@@ -133,11 +173,17 @@
             var result = await partnerAdminInvitationManager
                 .ResendPartnerAdminInvitation(partnerAdminInvitationId, UserId, cancellationToken)
                 .ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(ResendPartnerAdminInvitation));
+            TrackEvent(nameof(ResendPartnerAdminInvitation));
 
             return Ok(result);
         }
 
+        /// <summary>
+        /// Accepts a partner admin invitation.
+        /// </summary>
+        /// <param name="partnerAdminInvitationId">The partner admin invitation ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>OK if successful.</remarks>
         [HttpPost("accept/{partnerAdminInvitationId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> AcceptPartnerAdminInvitation(Guid partnerAdminInvitationId,
@@ -145,11 +191,17 @@
         {
             await partnerAdminInvitationManager.AcceptInvitation(partnerAdminInvitationId, UserId, cancellationToken)
                 .ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(AcceptPartnerAdminInvitation));
+            TrackEvent(nameof(AcceptPartnerAdminInvitation));
 
             return Ok();
         }
 
+        /// <summary>
+        /// Declines a partner admin invitation.
+        /// </summary>
+        /// <param name="partnerAdminInvitationId">The partner admin invitation ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>OK if successful.</remarks>
         [HttpPost("decline/{partnerAdminInvitationId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> DeclinePartnerAdminInvitation(Guid partnerAdminInvitationId,
@@ -157,11 +209,17 @@
         {
             await partnerAdminInvitationManager.DeclineInvitation(partnerAdminInvitationId, UserId, cancellationToken)
                 .ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(AcceptPartnerAdminInvitation));
+            TrackEvent(nameof(AcceptPartnerAdminInvitation));
 
             return Ok();
         }
 
+        /// <summary>
+        /// Deletes a partner admin invitation.
+        /// </summary>
+        /// <param name="partnerAdminInvitationId">The partner admin invitation ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>OK if successful.</remarks>
         [HttpDelete("{partnerAdminInvitationId}")]
         public async Task<IActionResult> DeletePartnerAdminInvitation(Guid partnerAdminInvitationId,
             CancellationToken cancellationToken)
@@ -181,7 +239,7 @@
 
             var result = await partnerAdminInvitationManager.DeleteAsync(partnerAdminInvitationId, cancellationToken)
                 .ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(AddPartnerAdminInvitation));
+            TrackEvent(nameof(AddPartnerAdminInvitation));
 
             return Ok(result);
         }

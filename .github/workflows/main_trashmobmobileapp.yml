@@ -5,7 +5,12 @@ on:
     branches:
       - main
     paths:
-      - '.github/**'
+      - '.github/workflows/main_trashmobmobileapp.yml'
+      - '.github/workflows/release_trashmobmobileapp.yml'
+      - '.github/workflows/build-android.yml'
+      - '.github/workflows/build-ios.yml'
+      - '.github/workflows/publish-android.yml'
+      - '.github/workflows/publish-ios.yml'
       - 'TrashMob.Models/**'
       - 'TrashMobMobile/**'
   workflow_dispatch:
@@ -26,7 +31,7 @@ jobs:
       releaseNumber: ${{ steps.set_build_number.outputs.releaseNumber }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
