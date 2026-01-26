@@ -89,7 +89,7 @@
             }
 
             await manager.AddAsync(partnerSocialMediaAccount, UserId, cancellationToken).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(AddPartnerSocialMediaAccount));
+            TrackEvent(nameof(AddPartnerSocialMediaAccount));
 
             return Ok();
         }
@@ -116,7 +116,7 @@
 
             var result = await manager.UpdateAsync(partnerSocialMediaAccount, UserId, cancellationToken)
                 .ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(UpdatePartnerSocialMediaAccount));
+            TrackEvent(nameof(UpdatePartnerSocialMediaAccount));
 
             return Ok(result);
         }
@@ -141,7 +141,7 @@
             }
 
             await manager.DeleteAsync(partnerSocialMediaAccountId, cancellationToken).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(DeletePartnerSocialMediaAccount));
+            TrackEvent(nameof(DeletePartnerSocialMediaAccount));
 
             return Ok(partnerSocialMediaAccountId);
         }

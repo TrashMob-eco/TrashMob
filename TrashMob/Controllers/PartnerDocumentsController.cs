@@ -87,7 +87,7 @@
             }
 
             await manager.AddAsync(partnerDocument, UserId, cancellationToken).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(Add) + typeof(PartnerDocument));
+            TrackEvent(nameof(Add) + typeof(PartnerDocument));
 
             return Ok();
         }
@@ -112,7 +112,7 @@
             }
 
             var result = await manager.UpdateAsync(partnerDocument, UserId, cancellationToken).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(Update) + typeof(PartnerDocument));
+            TrackEvent(nameof(Update) + typeof(PartnerDocument));
 
             return Ok(result);
         }
@@ -136,7 +136,7 @@
             }
 
             await manager.DeleteAsync(partnerDocumentId, cancellationToken).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(Delete) + typeof(PartnerDocument));
+            TrackEvent(nameof(Delete) + typeof(PartnerDocument));
 
             return Ok(partnerDocumentId);
         }

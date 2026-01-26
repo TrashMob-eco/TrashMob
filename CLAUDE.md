@@ -76,12 +76,42 @@ docker build -f TrashMobHourlyJobs/Dockerfile -t trashmob-hourly-jobs:latest .
 
 ## Development Setup
 
+### Prerequisites
 1. Install .NET 10 SDK and Azure CLI
 2. Run `az login` to authenticate
 3. Add your IP to Dev Azure SQL firewall rules
 4. Run: `.\setupdev.ps1 -environment dev -region westus2 -subscription <guid>`
-5. Local API: https://localhost:44332
-6. Swagger: https://localhost:44332/swagger/index.html
+
+### Running Locally
+
+**Full-stack developers** (running both frontend and backend):
+```bash
+# Terminal 1: Start backend
+cd TrashMob
+dotnet run --environment Development
+# API available at https://localhost:44332
+
+# Terminal 2: Start frontend
+cd TrashMob/client-app
+npm start
+# Frontend at http://localhost:3000, API calls proxy to localhost:44332
+```
+
+**UX/Frontend developers** (frontend only, using dev server for API):
+```bash
+cd TrashMob/client-app
+
+# Create .env.local to point to dev server
+echo "VITE_API_URL=https://dev.trashmob.eco/api" > .env.local
+
+npm start
+# Frontend at http://localhost:3000, API calls go to dev.trashmob.eco
+```
+
+### Local URLs
+- **Local API:** https://localhost:44332
+- **Swagger:** https://localhost:44332/swagger/index.html
+- **Frontend (Vite):** http://localhost:3000
 
 ## Key Domain Concepts
 
@@ -234,29 +264,33 @@ public async Task<ServiceResult<T>> DoSomethingAsync(...) {
 
 ## Infrastructure & Custom Domain
 
-### Azure Resources (Production)
-- **Container App:** `ca-tm-pr-westus2` - Main web application
-- **Container Apps Environment:** `cae-tm-pr-westus2`
-- **Resource Group:** `rg-trashmob-pr-westus2`
-- **Custom Domain:** `www.trashmob.eco`
+### Azure Resources
+
+| Environment | Container App | Environment | Resource Group | Custom Domain |
+|-------------|---------------|-------------|----------------|---------------|
+| **Production** | `ca-tm-pr-westus2` | `cae-tm-pr-westus2` | `rg-trashmob-pr-westus2` | `www.trashmob.eco` |
+| **Development** | `ca-tm-dev-westus2` | `cae-tm-dev-westus2` | `rg-trashmob-dev-westus2` | `dev.trashmob.eco` |
 
 ### Custom Domain & SSL Certificate
 
-The production site uses an Azure-managed SSL certificate bound to the Container App. Managed certificates **auto-renew automatically** - no manual intervention required.
+Both sites use Azure-managed SSL certificates bound to Container Apps. Managed certificates **auto-renew automatically** - no manual intervention required.
 
 **Verify current certificate binding:**
 ```bash
-az containerapp hostname list \
-  --name ca-tm-pr-westus2 \
-  --resource-group rg-trashmob-pr-westus2
+# Production
+az containerapp hostname list --name ca-tm-pr-westus2 --resource-group rg-trashmob-pr-westus2
+
+# Development
+az containerapp hostname list --name ca-tm-dev-westus2 --resource-group rg-trashmob-dev-westus2
 ```
 
 **Check certificate status:**
 ```bash
-az containerapp env certificate list \
-  --name cae-tm-pr-westus2 \
-  --resource-group rg-trashmob-pr-westus2 \
-  --query "[?name=='trashmob-eco-cert']"
+# Production
+az containerapp env certificate list --name cae-tm-pr-westus2 --resource-group rg-trashmob-pr-westus2 --query "[?name=='trashmob-eco-cert']"
+
+# Development
+az containerapp env certificate list --name cae-tm-dev-westus2 --resource-group rg-trashmob-dev-westus2 --query "[?name=='dev-trashmob-eco-cert']"
 ```
 
 **If certificate needs to be recreated** (rare - only if deleted or corrupted):
@@ -289,8 +323,15 @@ az containerapp hostname bind \
 ```
 
 **DNS Requirements:**
-- CNAME: `www` → `ca-tm-pr-westus2.greenground-fd8fc385.westus2.azurecontainerapps.io`
-- TXT: `asuid.www.trashmob.eco` → domain verification token (for initial setup only)
+
+| Environment | Record Type | Name | Value |
+|-------------|-------------|------|-------|
+| Production | CNAME | `www` | `ca-tm-pr-westus2.greenground-fd8fc385.westus2.azurecontainerapps.io` |
+| Production | TXT | `asuid.www` | domain verification token (initial setup only) |
+| Development | CNAME | `dev` | `ca-tm-dev-westus2.ashypebble-059d2628.westus2.azurecontainerapps.io` |
+| Development | TXT | `asuid.dev` | domain verification token (initial setup only) |
+
+**DNS Management:** DNS records for trashmob.eco are managed in [Microsoft 365 Admin Center](https://admin.cloud.microsoft) under Domains.
 
 See `Deploy/CUSTOM_DOMAIN_MIGRATION.md` for full migration documentation.
 

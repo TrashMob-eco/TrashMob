@@ -1,0 +1,71 @@
+# Pull Request workflow for TrashMob Web App
+
+name: PR - Web App
+
+on:
+  pull_request:
+    branches: [ "main", "release" ]
+    paths:
+      - '.github/workflows/PullRequest-WebApp.yml'
+      - '.github/workflows/container_ca-tm-dev-westus2.yml'
+      - '.github/workflows/release_ca-tm-pr-westus2.yml'
+      - 'Deploy/containerApp.bicep'
+      - 'TrashMob/**'
+      - 'TrashMob.Models/**'
+      - 'TrashMob.Shared/**'
+      - 'TrashMob.Shared.Tests/**'
+      - 'TrashMob.sln'
+
+env:
+  DOTNET_VERSION: '10.0.x'
+  CONFIGURATION: Release
+
+jobs:
+  build-and-test:
+    runs-on: windows-2022
+    environment: test
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v3.1.11
+      with:
+        versionSpec: '5.x'
+
+    - name: Determine Version
+      id: version_step
+      uses: gittools/actions/gitversion/execute@v3.1.11
+
+    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Build and Test
+      run: dotnet test .\TrashMob.sln --configuration ${{ env.CONFIGURATION }}
+
+  build-container:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build TrashMob Web App Container
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: TrashMob/Dockerfile
+        push: false
+        tags: trashmob:pr-${{ github.event.pull_request.number }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max

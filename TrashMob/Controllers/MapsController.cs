@@ -56,7 +56,7 @@
         public async Task<IActionResult> GetAddressForPoint([FromQuery] double latitude, [FromQuery] double longitude)
         {
             var address = await mapRepository.GetAddressAsync(latitude, longitude);
-            TelemetryClient.TrackEvent(nameof(GetAddressForPoint));
+            TrackEvent(nameof(GetAddressForPoint));
             return Ok(address);
         }
     }
