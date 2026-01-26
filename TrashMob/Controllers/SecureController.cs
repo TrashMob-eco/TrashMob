@@ -1,10 +1,10 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
-    using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
 
     [ApiController]
     public abstract class SecureController : BaseController
@@ -15,7 +15,7 @@
         {
         }
 
-        public SecureController(TelemetryClient telemetryClient) : base(telemetryClient)
+        public SecureController(ILogger logger) : base(logger)
         {
         }
 
@@ -24,8 +24,7 @@
             this.authorizationService = authorizationService;
         }
 
-        public SecureController(TelemetryClient telemetryClient, IAuthorizationService authorizationService) : base(
-            telemetryClient)
+        public SecureController(ILogger logger, IAuthorizationService authorizationService) : base(logger)
         {
             this.authorizationService = authorizationService;
         }

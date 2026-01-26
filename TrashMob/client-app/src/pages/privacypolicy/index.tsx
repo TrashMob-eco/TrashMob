@@ -138,17 +138,20 @@ export const PrivacyPolicy: React.FC = () => {
                 <h2 className='font-medium text-3xl'>CCPA Privacy Rights (Do Not Sell My Personal Information)</h2>
 
                 <p className='text-lg'>Under the CCPA, among other rights, California consumers have the right to:</p>
-                <p className='text-lg'>
-                    Request that a business that collects a consumer's personal data disclose the categories and
-                    specific pieces of personal data that a business has collected about consumers.
-                </p>
-                <p className='text-lg'>
-                    Request that a business delete any personal data about the consumer that a business has collected.
-                </p>
-                <p className='text-lg'>
-                    Request that a business that sells a consumer's personal data, not sell the consumer's personal
-                    data.
-                </p>
+                <ul>
+                    <li>
+                        Request that a business that collects a consumer's personal data disclose the categories and
+                        specific pieces of personal data that a business has collected about consumers.
+                    </li>
+                    <li>
+                        Request that a business delete any personal data about the consumer that a business has
+                        collected.
+                    </li>
+                    <li>
+                        Request that a business that sells a consumer's personal data, not sell the consumer's personal
+                        data.
+                    </li>
+                </ul>
                 <p className='text-lg'>
                     If you make a request, we have one month to respond to you. If you would like to exercise any of
                     these rights, please contact us.
@@ -160,31 +163,34 @@ export const PrivacyPolicy: React.FC = () => {
                     We would like to make sure you are fully aware of all of your data protection rights. Every user is
                     entitled to the following:
                 </p>
-                <p className='text-lg'>
-                    The right to access – You have the right to request copies of your personal data. We may charge you
-                    a small fee for this service.
-                </p>
-                <p className='text-lg'>
-                    The right to rectification – You have the right to request that we correct any information you
-                    believe is inaccurate. You also have the right to request that we complete the information you
-                    believe is incomplete.
-                </p>
-                <p className='text-lg'>
-                    The right to erasure – You have the right to request that we erase your personal data, under certain
-                    conditions.
-                </p>
-                <p className='text-lg'>
-                    The right to restrict processing – You have the right to request that we restrict the processing of
-                    your personal data, under certain conditions.
-                </p>
-                <p className='text-lg'>
-                    The right to object to processing – You have the right to object to our processing of your personal
-                    data, under certain conditions.
-                </p>
-                <p className='text-lg'>
-                    The right to data portability – You have the right to request that we transfer the data that we have
-                    collected to another organization, or directly to you, under certain conditions.
-                </p>
+                <ul>
+                    <li>
+                        <strong>The right to access</strong> – You have the right to request copies of your personal
+                        data. We may charge you a small fee for this service.
+                    </li>
+                    <li>
+                        <strong>The right to rectification</strong> – You have the right to request that we correct any
+                        information you believe is inaccurate. You also have the right to request that we complete the
+                        information you believe is incomplete.
+                    </li>
+                    <li>
+                        <strong>The right to erasure</strong> – You have the right to request that we erase your
+                        personal data, under certain conditions.
+                    </li>
+                    <li>
+                        <strong>The right to restrict processing</strong> – You have the right to request that we
+                        restrict the processing of your personal data, under certain conditions.
+                    </li>
+                    <li>
+                        <strong>The right to object to processing</strong> – You have the right to object to our
+                        processing of your personal data, under certain conditions.
+                    </li>
+                    <li>
+                        <strong>The right to data portability</strong> – You have the right to request that we transfer
+                        the data that we have collected to another organization, or directly to you, under certain
+                        conditions.
+                    </li>
+                </ul>
                 <p className='text-lg'>
                     If you make a request, we have one month to respond to you. If you would like to exercise any of
                     these rights, please contact us.
@@ -204,8 +210,7 @@ export const PrivacyPolicy: React.FC = () => {
                     strongly encourage you to contact us immediately and we will do our best efforts to promptly remove
                     such information from our records.
                 </p>
-                <br />
-                <p className='text-lg'>The team at TrashMob.eco.</p>
+                <p className='text-lg mt-8'>The team at TrashMob.eco.</p>
                 <div className='mb-5'>
                     <Logo className='w-96' />
                 </div>

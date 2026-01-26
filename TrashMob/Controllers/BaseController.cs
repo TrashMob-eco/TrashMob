@@ -1,27 +1,32 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
-    using Microsoft.ApplicationInsights;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
 
     [ApiController]
     public abstract class BaseController : ControllerBase
     {
-        private TelemetryClient telemetryClient;
+        private ILogger logger;
 
         public BaseController()
         {
         }
 
-        public BaseController(TelemetryClient telemetryClient)
+        public BaseController(ILogger logger)
         {
-            TelemetryClient = telemetryClient;
+            this.logger = logger;
         }
 
-        protected TelemetryClient TelemetryClient
+        protected ILogger Logger
         {
-            get => telemetryClient ?? (telemetryClient = HttpContext.RequestServices.GetService<TelemetryClient>());
-            private set => telemetryClient = value;
+            get => logger ?? (logger = HttpContext.RequestServices.GetService<ILoggerFactory>()?.CreateLogger(GetType()));
+            private set => logger = value;
+        }
+
+        protected void TrackEvent(string eventName)
+        {
+            Logger?.LogInformation("TrackEvent: {EventName}", eventName);
         }
     }
 }

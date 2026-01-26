@@ -38,7 +38,7 @@
         {
             await messageRequestManager.SendMessageRequestAsync(messageRequest).ConfigureAwait(false);
 
-            TelemetryClient.TrackEvent(nameof(SendMessageRequest));
+            TrackEvent(nameof(SendMessageRequest));
 
             return Ok();
         }

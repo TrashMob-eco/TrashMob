@@ -123,7 +123,7 @@
 
             await partnerLocationServicesManager.UpdateAsync(partnerLocationService, UserId, cancellationToken)
                 .ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(UpdatePartnerLocationService));
+            TrackEvent(nameof(UpdatePartnerLocationService));
 
             return Ok(partnerLocationService);
         }
@@ -151,7 +151,7 @@
 
             await partnerLocationServicesManager.Delete(partnerLocationId, serviceTypeId, cancellationToken)
                 .ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(DeletePartnerLocationService));
+            TrackEvent(nameof(DeletePartnerLocationService));
 
             return Ok(partnerLocationId);
         }

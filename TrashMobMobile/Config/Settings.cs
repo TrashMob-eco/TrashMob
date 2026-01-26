@@ -5,9 +5,9 @@ using TrashMobMobile.Models;
 public static class Settings
 {
 #if USETEST
-    public const string ApiBaseUrl = "https://ca-tm-dev-westus2.ashypebble-059d2628.westus2.azurecontainerapps.io/api/";
+    public const string ApiBaseUrl = "https://dev.trashmob.eco/api/";
 
-    public const string SiteBaseUrl = "https://ca-tm-dev-westus2.ashypebble-059d2628.westus2.azurecontainerapps.io";
+    public const string SiteBaseUrl = "https://dev.trashmob.eco";
 #else
     public const string ApiBaseUrl = "https://www.trashmob.eco/api/";
 
