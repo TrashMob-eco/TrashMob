@@ -40,6 +40,14 @@ resource strapiFileShare 'Microsoft.Storage/storageAccounts/fileServices/shares@
   }
 }
 
+resource strapiUploadsShare 'Microsoft.Storage/storageAccounts/fileServices/shares@2023-01-01' = {
+  parent: fileServices
+  name: 'strapi-uploads'
+  properties: {
+    shareQuota: 5  // 5 GB quota for media uploads
+  }
+}
+
 // Reference existing Container Apps Environment
 resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' existing = {
   name: split(containerAppsEnvironmentId, '/')[8]  // Extract name from resource ID
@@ -59,6 +67,22 @@ resource environmentStorage 'Microsoft.App/managedEnvironments/storages@2024-03-
   }
   dependsOn: [
     strapiFileShare
+  ]
+}
+
+resource environmentUploadsStorage 'Microsoft.App/managedEnvironments/storages@2024-03-01' = {
+  parent: containerAppsEnvironment
+  name: 'strapi-uploads'
+  properties: {
+    azureFile: {
+      accountName: storageAccountName
+      accountKey: storageAccount.listKeys().keys[0].value
+      shareName: 'strapi-uploads'
+      accessMode: 'ReadWrite'
+    }
+  }
+  dependsOn: [
+    strapiUploadsShare
   ]
 }
 
@@ -159,6 +183,10 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
               volumeName: 'strapi-storage'
               mountPath: '/data'
             }
+            {
+              volumeName: 'strapi-uploads'
+              mountPath: '/app/public/uploads'
+            }
           ]
           probes: [
             {
@@ -192,6 +220,11 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
           storageType: 'AzureFile'
           storageName: 'strapi-data'
         }
+        {
+          name: 'strapi-uploads'
+          storageType: 'AzureFile'
+          storageName: 'strapi-uploads'
+        }
       ]
       scale: {
         minReplicas: minReplicas
@@ -204,6 +237,7 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
   }
   dependsOn: [
     environmentStorage
+    environmentUploadsStorage
   ]
 }
 
