@@ -19,7 +19,7 @@ env:
   IMAGE_NAME: trashmob-strapi
   CONTAINER_APPS_ENVIRONMENT: cae-tm-dev-westus2
   KEY_VAULT_NAME: kv-tm-dev-westus2
-  SQL_SERVER_NAME: sql-tm-dev-westus2
+  STORAGE_ACCOUNT_NAME: stortmdevwestus2
   REGION: westus2
 
 jobs:
@@ -68,10 +68,6 @@ jobs:
       - name: Get Strapi secrets from Key Vault
         id: get-secrets
         run: |
-          DB_PASSWORD=$(az keyvault secret show --name strapi-db-password --vault-name ${{ env.KEY_VAULT_NAME }} --query value -o tsv)
-          echo "::add-mask::$DB_PASSWORD"
-          echo "db_password=$DB_PASSWORD" >> $GITHUB_OUTPUT
-
           ADMIN_JWT_SECRET=$(az keyvault secret show --name strapi-admin-jwt-secret --vault-name ${{ env.KEY_VAULT_NAME }} --query value -o tsv)
           echo "::add-mask::$ADMIN_JWT_SECRET"
           echo "admin_jwt_secret=$ADMIN_JWT_SECRET" >> $GITHUB_OUTPUT
@@ -88,15 +84,6 @@ jobs:
           echo "::add-mask::$TRANSFER_TOKEN_SALT"
           echo "transfer_token_salt=$TRANSFER_TOKEN_SALT" >> $GITHUB_OUTPUT
 
-      - name: Deploy Strapi Database
-        run: |
-          az deployment group create \
-            --resource-group ${{ env.RESOURCE_GROUP }} \
-            --template-file Deploy/sqlDatabaseStrapi.bicep \
-            --parameters \
-              environment=dev \
-              region=${{ env.REGION }}
-
       - name: Deploy to Azure Container Apps
         run: |
           SUBSCRIPTION_ID="${{ secrets.AZURE_SUBSCRIPTION_ID }}"
@@ -111,13 +98,9 @@ jobs:
               containerAppsEnvironmentId=$CONTAINER_APPS_ENV_ID \
               containerRegistryName=${{ env.AZURE_CONTAINER_REGISTRY }} \
               containerImage=$CONTAINER_IMAGE \
-              keyVaultName=${{ env.KEY_VAULT_NAME }} \
+              storageAccountName=${{ env.STORAGE_ACCOUNT_NAME }} \
               region=${{ env.REGION }} \
               environment=dev \
-              strapiDatabaseHost=${{ env.SQL_SERVER_NAME }}.database.windows.net \
-              strapiDatabaseName=db-strapi-dev-westus2 \
-              strapiDatabaseUsername=dbadmin \
-              strapiDatabasePassword="${{ steps.get-secrets.outputs.db_password }}" \
               strapiAdminJwtSecret="${{ steps.get-secrets.outputs.admin_jwt_secret }}" \
               strapiApiTokenSalt="${{ steps.get-secrets.outputs.api_token_salt }}" \
               strapiAppKeys="${{ steps.get-secrets.outputs.app_keys }}" \
