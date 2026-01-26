@@ -119,7 +119,7 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
           env: [
             {
               name: 'DATABASE_CLIENT'
-              value: 'better-sqlite3'  // SQLite - Strapi's default, works with single replica
+              value: 'sqlite'  // SQLite - Strapi's default, works with single replica
             }
             {
               name: 'DATABASE_FILENAME'
