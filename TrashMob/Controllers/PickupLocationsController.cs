@@ -103,7 +103,7 @@
             localPickupLocation.HasBeenSubmitted = pickupLocation.HasBeenSubmitted; 
 
             var result = await Manager.UpdateAsync(localPickupLocation, UserId, cancellationToken).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(Update) + typeof(PickupLocation));
+            TrackEvent(nameof(Update) + typeof(PickupLocation));
 
             return Ok(result);
         }
@@ -128,7 +128,7 @@
 
             await pickupLocationManager.MarkAsPickedUpAsync(pickupLocationId, UserId, cancellationToken)
                 .ConfigureAwait(false);
-            TelemetryClient.TrackEvent("MarkAsPickedUp");
+            TrackEvent("MarkAsPickedUp");
 
             return Ok();
         }
@@ -155,7 +155,7 @@
 
             var result = await Manager.AddAsync(instance, UserId, cancellationToken).ConfigureAwait(false);
 
-            TelemetryClient.TrackEvent("AddPickupLocation");
+            TrackEvent("AddPickupLocation");
 
             return Ok(result);
         }
@@ -182,7 +182,7 @@
 
             await pickupLocationManager.SubmitPickupLocations(eventId, UserId, cancellationToken).ConfigureAwait(false);
 
-            TelemetryClient.TrackEvent("SubmitPickupLocations");
+            TrackEvent("SubmitPickupLocations");
 
             return Ok();
         }
@@ -284,7 +284,7 @@
 
             var results = await Manager.DeleteAsync(id, cancellationToken).ConfigureAwait(false);
 
-            TelemetryClient.TrackEvent("Delete" + nameof(PickupLocation));
+            TrackEvent("Delete" + nameof(PickupLocation));
 
             return Ok(results);
         }

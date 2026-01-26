@@ -133,7 +133,7 @@
             try
             {
                 var updatedUser = await userManager.UpdateAsync(user, cancellationToken).ConfigureAwait(false);
-                TelemetryClient.TrackEvent("UpdateUser");
+                TrackEvent("UpdateUser");
                 return Ok(updatedUser);
             }
             catch (DbUpdateConcurrencyException)
@@ -159,7 +159,7 @@
         public async Task<IActionResult> DeleteUser(Guid id, CancellationToken cancellationToken)
         {
             await userManager.DeleteAsync(id, cancellationToken).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(DeleteUser));
+            TrackEvent(nameof(DeleteUser));
 
             return Ok(id);
         }

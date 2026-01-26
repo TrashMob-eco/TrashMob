@@ -40,7 +40,7 @@
         {
             await Manager.AddAsync(instance, UserId, cancellationToken).ConfigureAwait(false);
 
-            TelemetryClient.TrackEvent("Add" + nameof(T));
+            TrackEvent("Add" + nameof(T));
 
             return Ok();
         }
@@ -55,7 +55,7 @@
         {
             var results = await Manager.GetAsync(cancellationToken).ConfigureAwait(false);
 
-            TelemetryClient.TrackEvent("Get" + nameof(T));
+            TrackEvent("Get" + nameof(T));
 
             return Ok(results);
         }
@@ -81,7 +81,7 @@
 
             var results = await Manager.DeleteAsync(id, cancellationToken).ConfigureAwait(false);
 
-            TelemetryClient.TrackEvent("Delete" + nameof(T));
+            TrackEvent("Delete" + nameof(T));
 
             return Ok(results);
         }

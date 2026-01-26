@@ -315,7 +315,7 @@
             try
             {
                 var updatedEvent = await eventManager.UpdateAsync(mobEvent, UserId, cancellationToken);
-                TelemetryClient.TrackEvent(nameof(UpdateEvent));
+                TrackEvent(nameof(UpdateEvent));
 
                 return Ok(updatedEvent);
             }
@@ -343,7 +343,7 @@
         public async Task<IActionResult> AddEvent(Event mobEvent, CancellationToken cancellationToken)
         {
             var newEvent = await eventManager.AddAsync(mobEvent, UserId, cancellationToken).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(AddEvent));
+            TrackEvent(nameof(AddEvent));
 
             return Ok(newEvent);
         }
@@ -374,7 +374,7 @@
 
             await eventManager.DeleteAsync(eventCancellationRequest.EventId,
                 eventCancellationRequest.CancellationReason, UserId, cancellationToken).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(DeleteEvent));
+            TrackEvent(nameof(DeleteEvent));
 
             return Ok(eventCancellationRequest.EventId);
         }

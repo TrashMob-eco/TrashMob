@@ -39,7 +39,7 @@
             var result =
                 (await eventAttendeeManager.GetByParentIdAsync(eventId, cancellationToken).ConfigureAwait(false))
                 .Select(u => u.User.ToDisplayUser());
-            TelemetryClient.TrackEvent(nameof(GetEventAttendees));
+            TrackEvent(nameof(GetEventAttendees));
             return Ok(result);
         }
 
@@ -70,7 +70,7 @@
             {
                 var updatedEventAttendee = await eventAttendeeManager
                     .UpdateAsync(eventAttendee, UserId, cancellationToken).ConfigureAwait(false);
-                TelemetryClient.TrackEvent(nameof(UpdateEventAttendee));
+                TrackEvent(nameof(UpdateEventAttendee));
 
                 return Ok(updatedEventAttendee);
             }
@@ -99,7 +99,7 @@
             CancellationToken cancellationToken)
         {
             await eventAttendeeManager.AddAsync(eventAttendee, UserId, cancellationToken).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(AddEventAttendee));
+            TrackEvent(nameof(AddEventAttendee));
             return Ok();
         }
 
@@ -118,7 +118,7 @@
             CancellationToken cancellationToken)
         {
             await eventAttendeeManager.Delete(eventId, userId, cancellationToken).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(DeleteEventAttendee));
+            TrackEvent(nameof(DeleteEventAttendee));
 
             return new NoContentResult();
         }
