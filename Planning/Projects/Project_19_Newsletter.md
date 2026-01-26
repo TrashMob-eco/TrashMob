@@ -107,68 +107,258 @@ None
 
 ### Data Model Changes
 
-```sql
--- Newsletter categories
-CREATE TABLE NewsletterCategories (
-    Id INT PRIMARY KEY IDENTITY(1,1),
-    Name NVARCHAR(100) NOT NULL,
-    Description NVARCHAR(500) NULL,
-    IsDefault BIT NOT NULL DEFAULT 0, -- Auto-subscribe new users
-    IsActive BIT NOT NULL DEFAULT 1
-);
+**New Entity: NewsletterCategory (lookup table)**
+```csharp
+// New file: TrashMob.Models/NewsletterCategory.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a newsletter category that users can subscribe/unsubscribe to.
+    /// </summary>
+    public class NewsletterCategory : LookupModel
+    {
+        /// <summary>
+        /// Gets or sets the category description.
+        /// </summary>
+        public string Description { get; set; }
 
--- User newsletter preferences
-CREATE TABLE UserNewsletterPreferences (
-    UserId UNIQUEIDENTIFIER NOT NULL,
-    CategoryId INT NOT NULL,
-    IsSubscribed BIT NOT NULL DEFAULT 1,
-    SubscribedDate DATETIMEOFFSET NULL,
-    UnsubscribedDate DATETIMEOFFSET NULL,
-    PRIMARY KEY (UserId, CategoryId),
-    FOREIGN KEY (UserId) REFERENCES Users(Id),
-    FOREIGN KEY (CategoryId) REFERENCES NewsletterCategories(Id)
-);
+        /// <summary>
+        /// Gets or sets whether new users are auto-subscribed.
+        /// </summary>
+        public bool IsDefault { get; set; }
 
--- Newsletters
-CREATE TABLE Newsletters (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    CategoryId INT NOT NULL,
-    Subject NVARCHAR(200) NOT NULL,
-    PreviewText NVARCHAR(500) NULL,
-    HtmlContent NVARCHAR(MAX) NOT NULL,
-    TextContent NVARCHAR(MAX) NOT NULL,
-    -- Targeting
-    TargetType NVARCHAR(50) NOT NULL DEFAULT 'All', -- All, Community, Team
-    TargetId UNIQUEIDENTIFIER NULL, -- Community or Team ID
-    -- Status
-    Status NVARCHAR(50) NOT NULL DEFAULT 'Draft', -- Draft, Scheduled, Sending, Sent
-    ScheduledDate DATETIMEOFFSET NULL,
-    SentDate DATETIMEOFFSET NULL,
-    -- Stats
-    RecipientCount INT NOT NULL DEFAULT 0,
-    SentCount INT NOT NULL DEFAULT 0,
-    OpenCount INT NOT NULL DEFAULT 0,
-    ClickCount INT NOT NULL DEFAULT 0,
-    -- Audit
-    CreatedByUserId UNIQUEIDENTIFIER NOT NULL,
-    CreatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    FOREIGN KEY (CategoryId) REFERENCES NewsletterCategories(Id),
-    FOREIGN KEY (CreatedByUserId) REFERENCES Users(Id)
-);
+        /// <summary>
+        /// Gets or sets whether this category is active.
+        /// </summary>
+        public bool IsActive { get; set; } = true;
 
--- Newsletter templates
-CREATE TABLE NewsletterTemplates (
-    Id INT PRIMARY KEY IDENTITY(1,1),
-    Name NVARCHAR(100) NOT NULL,
-    Description NVARCHAR(500) NULL,
-    HtmlContent NVARCHAR(MAX) NOT NULL,
-    TextContent NVARCHAR(MAX) NOT NULL,
-    IsActive BIT NOT NULL DEFAULT 1
-);
+        // Navigation properties
+        public virtual ICollection<UserNewsletterPreference> UserPreferences { get; set; }
+        public virtual ICollection<Newsletter> Newsletters { get; set; }
+    }
+}
+```
 
-CREATE INDEX IX_UserNewsletterPreferences_UserId ON UserNewsletterPreferences(UserId);
-CREATE INDEX IX_Newsletters_Status ON Newsletters(Status);
-CREATE INDEX IX_Newsletters_ScheduledDate ON Newsletters(ScheduledDate) WHERE Status = 'Scheduled';
+**New Entity: UserNewsletterPreference**
+```csharp
+// New file: TrashMob.Models/UserNewsletterPreference.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a user's subscription preference for a newsletter category.
+    /// </summary>
+    public class UserNewsletterPreference
+    {
+        /// <summary>
+        /// Gets or sets the user identifier.
+        /// </summary>
+        public Guid UserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the category identifier.
+        /// </summary>
+        public int CategoryId { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether the user is subscribed.
+        /// </summary>
+        public bool IsSubscribed { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets when the user subscribed.
+        /// </summary>
+        public DateTimeOffset? SubscribedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the user unsubscribed.
+        /// </summary>
+        public DateTimeOffset? UnsubscribedDate { get; set; }
+
+        // Navigation properties
+        public virtual User User { get; set; }
+        public virtual NewsletterCategory Category { get; set; }
+    }
+}
+```
+
+**New Entity: Newsletter**
+```csharp
+// New file: TrashMob.Models/Newsletter.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a newsletter to be sent to subscribers.
+    /// </summary>
+    public class Newsletter : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the newsletter category.
+        /// </summary>
+        public int CategoryId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the email subject.
+        /// </summary>
+        public string Subject { get; set; }
+
+        /// <summary>
+        /// Gets or sets the preview text (inbox preview).
+        /// </summary>
+        public string PreviewText { get; set; }
+
+        /// <summary>
+        /// Gets or sets the HTML content.
+        /// </summary>
+        public string HtmlContent { get; set; }
+
+        /// <summary>
+        /// Gets or sets the plain text content.
+        /// </summary>
+        public string TextContent { get; set; }
+
+        #region Targeting
+
+        /// <summary>
+        /// Gets or sets the target type (All, Community, Team).
+        /// </summary>
+        public string TargetType { get; set; } = "All";
+
+        /// <summary>
+        /// Gets or sets the target ID (community or team).
+        /// </summary>
+        public Guid? TargetId { get; set; }
+
+        #endregion
+
+        #region Status
+
+        /// <summary>
+        /// Gets or sets the status (Draft, Scheduled, Sending, Sent).
+        /// </summary>
+        public string Status { get; set; } = "Draft";
+
+        /// <summary>
+        /// Gets or sets the scheduled send date.
+        /// </summary>
+        public DateTimeOffset? ScheduledDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the newsletter was sent.
+        /// </summary>
+        public DateTimeOffset? SentDate { get; set; }
+
+        #endregion
+
+        #region Statistics
+
+        /// <summary>
+        /// Gets or sets the total recipient count.
+        /// </summary>
+        public int RecipientCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the count of successfully sent emails.
+        /// </summary>
+        public int SentCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the count of opened emails.
+        /// </summary>
+        public int OpenCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the count of clicked emails.
+        /// </summary>
+        public int ClickCount { get; set; }
+
+        #endregion
+
+        // Navigation properties
+        public virtual NewsletterCategory Category { get; set; }
+    }
+}
+```
+
+**New Entity: NewsletterTemplate (lookup table)**
+```csharp
+// New file: TrashMob.Models/NewsletterTemplate.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a reusable newsletter template.
+    /// </summary>
+    public class NewsletterTemplate : LookupModel
+    {
+        /// <summary>
+        /// Gets or sets the template description.
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// Gets or sets the HTML content template.
+        /// </summary>
+        public string HtmlContent { get; set; }
+
+        /// <summary>
+        /// Gets or sets the plain text content template.
+        /// </summary>
+        public string TextContent { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether this template is active.
+        /// </summary>
+        public bool IsActive { get; set; } = true;
+    }
+}
+```
+
+**DbContext Configuration (in MobDbContext.cs):**
+```csharp
+modelBuilder.Entity<NewsletterCategory>(entity =>
+{
+    entity.Property(e => e.Name).HasMaxLength(100).IsRequired();
+    entity.Property(e => e.Description).HasMaxLength(500);
+});
+
+modelBuilder.Entity<UserNewsletterPreference>(entity =>
+{
+    entity.HasKey(e => new { e.UserId, e.CategoryId });
+
+    entity.HasOne(e => e.User)
+        .WithMany()
+        .HasForeignKey(e => e.UserId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.Category)
+        .WithMany(c => c.UserPreferences)
+        .HasForeignKey(e => e.CategoryId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasIndex(e => e.UserId);
+});
+
+modelBuilder.Entity<Newsletter>(entity =>
+{
+    entity.Property(e => e.Subject).HasMaxLength(200).IsRequired();
+    entity.Property(e => e.PreviewText).HasMaxLength(500);
+    entity.Property(e => e.TargetType).HasMaxLength(50);
+    entity.Property(e => e.Status).HasMaxLength(50);
+
+    entity.HasOne(e => e.Category)
+        .WithMany(c => c.Newsletters)
+        .HasForeignKey(e => e.CategoryId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasIndex(e => e.Status);
+    entity.HasIndex(e => e.ScheduledDate)
+        .HasFilter("[Status] = 'Scheduled'");
+});
+
+modelBuilder.Entity<NewsletterTemplate>(entity =>
+{
+    entity.Property(e => e.Name).HasMaxLength(100).IsRequired();
+    entity.Property(e => e.Description).HasMaxLength(500);
+});
 ```
 
 ### API Changes

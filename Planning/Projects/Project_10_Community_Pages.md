@@ -119,42 +119,155 @@ Branded public pages for partner communities (cities, counties, organizations) w
 
 ### Data Model Changes
 
-```sql
--- Add home page support to Partners (Communities are Partners)
-ALTER TABLE Partners
-ADD HomePageStartDate DATETIMEOFFSET NULL,
-    HomePageEndDate DATETIMEOFFSET NULL,
-    HomePageEnabled BIT NOT NULL DEFAULT 0,
-    BrandingPrimaryColor NVARCHAR(7) NULL,
-    BrandingSecondaryColor NVARCHAR(7) NULL,
-    BannerImageUrl NVARCHAR(500) NULL;
+**Modification: Partner (add home page properties)**
+```csharp
+// Add to existing TrashMob.Models/Partner.cs
+#region Community Home Page Properties
 
--- Community program types (Adopt-A-Highway, Adopt-A-Park, etc.)
-CREATE TABLE CommunityProgramTypes (
-    Id INT PRIMARY KEY IDENTITY(1,1),
-    Name NVARCHAR(100) NOT NULL,
-    Description NVARCHAR(500) NULL,
-    DisplayOrder INT NOT NULL DEFAULT 0,
-    IsActive BIT NOT NULL DEFAULT 1
-);
+/// <summary>
+/// Gets or sets when the community home page subscription starts.
+/// </summary>
+public DateTimeOffset? HomePageStartDate { get; set; }
 
--- Community programs
-CREATE TABLE CommunityPrograms (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    PartnerId UNIQUEIDENTIFIER NOT NULL,
-    ProgramTypeId INT NOT NULL,
-    Name NVARCHAR(200) NOT NULL,
-    Description NVARCHAR(MAX) NULL,
-    IsActive BIT NOT NULL DEFAULT 1,
-    CreatedByUserId UNIQUEIDENTIFIER NOT NULL,
-    CreatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    FOREIGN KEY (PartnerId) REFERENCES Partners(Id),
-    FOREIGN KEY (ProgramTypeId) REFERENCES CommunityProgramTypes(Id),
-    FOREIGN KEY (CreatedByUserId) REFERENCES Users(Id)
-);
+/// <summary>
+/// Gets or sets when the community home page subscription ends.
+/// </summary>
+public DateTimeOffset? HomePageEndDate { get; set; }
 
-CREATE INDEX IX_Partners_HomePageEnabled ON Partners(HomePageEnabled) WHERE HomePageEnabled = 1;
-CREATE INDEX IX_CommunityPrograms_PartnerId ON CommunityPrograms(PartnerId);
+/// <summary>
+/// Gets or sets whether the community home page is enabled.
+/// </summary>
+public bool HomePageEnabled { get; set; }
+
+/// <summary>
+/// Gets or sets the primary branding color (hex, e.g., "#FF5733").
+/// </summary>
+public string BrandingPrimaryColor { get; set; }
+
+/// <summary>
+/// Gets or sets the secondary branding color (hex).
+/// </summary>
+public string BrandingSecondaryColor { get; set; }
+
+/// <summary>
+/// Gets or sets the URL of the community banner image.
+/// </summary>
+public string BannerImageUrl { get; set; }
+
+#endregion
+
+// Navigation property for programs
+public virtual ICollection<CommunityProgram> Programs { get; set; }
+```
+
+**New Entity: CommunityProgramType (lookup table)**
+```csharp
+// New file: TrashMob.Models/CommunityProgramType.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a type of community program (e.g., Adopt-A-Highway, Adopt-A-Park).
+    /// </summary>
+    public class CommunityProgramType : LookupModel
+    {
+        /// <summary>
+        /// Gets or sets the description of this program type.
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// Gets or sets the display order for sorting.
+        /// </summary>
+        public int DisplayOrder { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether this program type is active.
+        /// </summary>
+        public bool IsActive { get; set; } = true;
+
+        // Navigation property
+        public virtual ICollection<CommunityProgram> Programs { get; set; }
+    }
+}
+```
+
+**New Entity: CommunityProgram**
+```csharp
+// New file: TrashMob.Models/CommunityProgram.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a program offered by a community (partner).
+    /// </summary>
+    public class CommunityProgram : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the community (partner) identifier.
+        /// </summary>
+        public Guid PartnerId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the program type identifier.
+        /// </summary>
+        public int ProgramTypeId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the program name.
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the program description.
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether this program is active.
+        /// </summary>
+        public bool IsActive { get; set; } = true;
+
+        // Navigation properties
+        public virtual Partner Partner { get; set; }
+        public virtual CommunityProgramType ProgramType { get; set; }
+        public virtual ICollection<AdoptableArea> AdoptableAreas { get; set; }
+    }
+}
+```
+
+**DbContext Configuration (in MobDbContext.cs):**
+```csharp
+modelBuilder.Entity<Partner>(entity =>
+{
+    // Add to existing Partner configuration
+    entity.Property(e => e.BrandingPrimaryColor).HasMaxLength(7);
+    entity.Property(e => e.BrandingSecondaryColor).HasMaxLength(7);
+    entity.Property(e => e.BannerImageUrl).HasMaxLength(500);
+    entity.HasIndex(e => e.HomePageEnabled)
+        .HasFilter("[HomePageEnabled] = 1");
+});
+
+modelBuilder.Entity<CommunityProgramType>(entity =>
+{
+    entity.Property(e => e.Name).HasMaxLength(100).IsRequired();
+    entity.Property(e => e.Description).HasMaxLength(500);
+});
+
+modelBuilder.Entity<CommunityProgram>(entity =>
+{
+    entity.Property(e => e.Name).HasMaxLength(200).IsRequired();
+
+    entity.HasOne(e => e.Partner)
+        .WithMany(p => p.Programs)
+        .HasForeignKey(e => e.PartnerId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.ProgramType)
+        .WithMany(pt => pt.Programs)
+        .HasForeignKey(e => e.ProgramTypeId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasIndex(e => e.PartnerId);
+});
 ```
 
 ### API Changes

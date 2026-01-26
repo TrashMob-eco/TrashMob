@@ -1,4 +1,4 @@
-# Project 7 — Add Weights to Event Summaries
+# Project 7 ï¿½ Add Weights to Event Summaries
 
 | Attribute | Value |
 |-----------|-------|
@@ -95,32 +95,124 @@ None - independent feature
 
 ### Data Model Changes
 
-```sql
--- Phase 1: Event-level weight
-ALTER TABLE EventSummary
-ADD TotalWeight DECIMAL(10,2) NULL,
-    WeightUnits VARCHAR(10) NULL; -- 'lbs' or 'kgs'
+> **Note:** `EventSummary` already has `PickedWeight` (int) and `PickedWeightUnitId` (int) fields.
+> Phase 1 may only require changing `PickedWeight` from `int` to `decimal` for precision.
 
--- Phase 2: Attendee-level weight
-CREATE TABLE EventSummaryAttendee (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    EventSummaryId UNIQUEIDENTIFIER NOT NULL,
-    UserId UNIQUEIDENTIFIER NOT NULL,
-    NumberOfBags INT NULL,
-    Weight DECIMAL(10,2) NULL,
-    WeightUnits VARCHAR(10) NULL,
-    DurationInMinutes INT NULL,
-    Notes NVARCHAR(MAX) NULL,
-    CreatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    LastUpdatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    FOREIGN KEY (EventSummaryId) REFERENCES EventSummary(Id),
-    FOREIGN KEY (UserId) REFERENCES Users(Id)
-);
+**Phase 1: Update EventSummary (if precision change needed)**
+```csharp
+// In TrashMob.Models/EventSummary.cs - existing field may need type change
+public class EventSummary : BaseModel
+{
+    // ... existing fields ...
 
-CREATE INDEX IX_EventSummaryAttendee_EventSummaryId 
-    ON EventSummaryAttendee(EventSummaryId);
-CREATE INDEX IX_EventSummaryAttendee_UserId 
-    ON EventSummaryAttendee(UserId);
+    /// <summary>
+    /// Gets or sets the total weight of trash picked up during the event.
+    /// </summary>
+    public decimal PickedWeight { get; set; }  // Changed from int to decimal
+
+    /// <summary>
+    /// Gets or sets the identifier of the weight unit used for the picked weight.
+    /// </summary>
+    public int PickedWeightUnitId { get; set; }
+
+    // ... navigation properties ...
+}
+```
+
+**Phase 2: New Entity - EventSummaryAttendee**
+```csharp
+// New file: TrashMob.Models/EventSummaryAttendee.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents an individual attendee's contribution metrics for an event.
+    /// </summary>
+    public class EventSummaryAttendee : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the identifier of the event summary.
+        /// </summary>
+        public Guid EventSummaryId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identifier of the attendee.
+        /// </summary>
+        public Guid UserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of bags collected by this attendee.
+        /// </summary>
+        public int? NumberOfBags { get; set; }
+
+        /// <summary>
+        /// Gets or sets the weight collected by this attendee.
+        /// </summary>
+        public decimal? Weight { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identifier of the weight unit used.
+        /// </summary>
+        public int? WeightUnitId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the duration in minutes this attendee participated.
+        /// </summary>
+        public int? DurationInMinutes { get; set; }
+
+        /// <summary>
+        /// Gets or sets any notes from the attendee about their contribution.
+        /// </summary>
+        public string Notes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the event summary this contribution belongs to.
+        /// </summary>
+        public virtual EventSummary EventSummary { get; set; }
+
+        /// <summary>
+        /// Gets or sets the attendee user.
+        /// </summary>
+        public virtual User User { get; set; }
+
+        /// <summary>
+        /// Gets or sets the weight unit used for the weight measurement.
+        /// </summary>
+        public virtual WeightUnit WeightUnit { get; set; }
+    }
+}
+```
+
+**DbContext Configuration (in MobDbContext.cs):**
+```csharp
+modelBuilder.Entity<EventSummaryAttendee>(entity =>
+{
+    entity.HasOne(e => e.EventSummary)
+        .WithMany(es => es.AttendeeContributions)
+        .HasForeignKey(e => e.EventSummaryId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.User)
+        .WithMany()
+        .HasForeignKey(e => e.UserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasOne(e => e.WeightUnit)
+        .WithMany()
+        .HasForeignKey(e => e.WeightUnitId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasIndex(e => e.EventSummaryId);
+    entity.HasIndex(e => e.UserId);
+});
+```
+
+**Add Navigation Property to EventSummary:**
+```csharp
+// Add to TrashMob.Models/EventSummary.cs
+/// <summary>
+/// Gets or sets the collection of attendee contributions for this event summary.
+/// </summary>
+public virtual ICollection<EventSummaryAttendee> AttendeeContributions { get; set; }
 ```
 
 ### API Changes
@@ -241,7 +333,7 @@ public async Task<ActionResult<EventSummaryAttendeeDto>> CreateAttendeeEntry(
 - Always store conversion factor for accuracy
 
 ### Attendee Entries (Phase 2)
-- Sum of attendee weights should be ? event total × 1.2 (20% tolerance)
+- Sum of attendee weights should be ? event total ï¿½ 1.2 (20% tolerance)
 - Warning (not error) if discrepancy
 - Event lead can override
 

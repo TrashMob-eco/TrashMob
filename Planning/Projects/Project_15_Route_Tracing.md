@@ -111,52 +111,158 @@ Record and share anonymized routes that attendees walk during cleanup events; en
 
 ### Data Model Changes
 
-```sql
--- Event attendee routes
-CREATE TABLE EventAttendeeRoutes (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    EventId UNIQUEIDENTIFIER NOT NULL,
-    UserId UNIQUEIDENTIFIER NOT NULL,
-    -- Route data (compressed GeoJSON or encoded polyline)
-    RouteData NVARCHAR(MAX) NOT NULL,
-    TotalDistanceMeters INT NOT NULL DEFAULT 0,
-    DurationMinutes INT NOT NULL DEFAULT 0,
-    -- Privacy settings
-    PrivacyLevel NVARCHAR(20) NOT NULL DEFAULT 'EventOnly', -- Private, EventOnly, Public
-    IsTrimmed BIT NOT NULL DEFAULT 0,
-    TrimStartMeters INT NOT NULL DEFAULT 0,
-    TrimEndMeters INT NOT NULL DEFAULT 0,
-    -- Metrics
-    BagsCollected INT NULL,
-    WeightCollected DECIMAL(10,2) NULL,
-    Notes NVARCHAR(MAX) NULL,
-    -- Decay
-    CreatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    ExpiresDate DATETIMEOFFSET NULL, -- For decay
-    -- Audit
-    CreatedByUserId UNIQUEIDENTIFIER NOT NULL,
-    LastUpdatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    FOREIGN KEY (EventId) REFERENCES Events(Id),
-    FOREIGN KEY (UserId) REFERENCES Users(Id),
-    FOREIGN KEY (CreatedByUserId) REFERENCES Users(Id)
-);
+> **Note:** `EventAttendeeRoute` already exists in `TrashMob.Models/EventAttendeeRoute.cs` with basic fields.
+> The following shows additional properties needed for the full feature set.
 
--- Route points (for detailed analytics, optional)
-CREATE TABLE RoutePoints (
-    Id BIGINT PRIMARY KEY IDENTITY(1,1),
-    RouteId UNIQUEIDENTIFIER NOT NULL,
-    Latitude DECIMAL(9,6) NOT NULL,
-    Longitude DECIMAL(9,6) NOT NULL,
-    Altitude DECIMAL(8,2) NULL,
-    Timestamp DATETIMEOFFSET NOT NULL,
-    Accuracy DECIMAL(6,2) NULL,
-    FOREIGN KEY (RouteId) REFERENCES EventAttendeeRoutes(Id) ON DELETE CASCADE
-);
+**Modification: EventAttendeeRoute (add new properties)**
+```csharp
+// Add to existing TrashMob.Models/EventAttendeeRoute.cs
+#region Distance & Duration
 
-CREATE INDEX IX_EventAttendeeRoutes_EventId ON EventAttendeeRoutes(EventId);
-CREATE INDEX IX_EventAttendeeRoutes_UserId ON EventAttendeeRoutes(UserId);
-CREATE INDEX IX_EventAttendeeRoutes_PrivacyLevel ON EventAttendeeRoutes(PrivacyLevel);
-CREATE INDEX IX_RoutePoints_RouteId ON RoutePoints(RouteId);
+/// <summary>
+/// Gets or sets the total distance in meters.
+/// </summary>
+public int TotalDistanceMeters { get; set; }
+
+/// <summary>
+/// Gets or sets the duration in minutes.
+/// </summary>
+public int DurationMinutes { get; set; }
+
+#endregion
+
+#region Privacy Settings
+
+/// <summary>
+/// Gets or sets the privacy level (Private, EventOnly, Public).
+/// </summary>
+public string PrivacyLevel { get; set; } = "EventOnly";
+
+/// <summary>
+/// Gets or sets whether the route has been trimmed for privacy.
+/// </summary>
+public bool IsTrimmed { get; set; }
+
+/// <summary>
+/// Gets or sets meters trimmed from the start.
+/// </summary>
+public int TrimStartMeters { get; set; }
+
+/// <summary>
+/// Gets or sets meters trimmed from the end.
+/// </summary>
+public int TrimEndMeters { get; set; }
+
+#endregion
+
+#region Route Metrics
+
+/// <summary>
+/// Gets or sets bags collected along this route.
+/// </summary>
+public int? BagsCollected { get; set; }
+
+/// <summary>
+/// Gets or sets weight collected along this route.
+/// </summary>
+public decimal? WeightCollected { get; set; }
+
+/// <summary>
+/// Gets or sets notes about this route.
+/// </summary>
+public string Notes { get; set; }
+
+#endregion
+
+#region Decay
+
+/// <summary>
+/// Gets or sets when this route expires for public viewing.
+/// </summary>
+public DateTimeOffset? ExpiresDate { get; set; }
+
+#endregion
+
+// Navigation property for route points
+public virtual ICollection<RoutePoint> RoutePoints { get; set; }
+```
+
+**New Entity: RoutePoint (optional detailed tracking)**
+```csharp
+// New file: TrashMob.Models/RoutePoint.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a single GPS point along an attendee's route.
+    /// </summary>
+    public class RoutePoint
+    {
+        /// <summary>
+        /// Gets or sets the unique identifier.
+        /// </summary>
+        public long Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the parent route identifier.
+        /// </summary>
+        public Guid RouteId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the latitude.
+        /// </summary>
+        public double Latitude { get; set; }
+
+        /// <summary>
+        /// Gets or sets the longitude.
+        /// </summary>
+        public double Longitude { get; set; }
+
+        /// <summary>
+        /// Gets or sets the altitude in meters.
+        /// </summary>
+        public double? Altitude { get; set; }
+
+        /// <summary>
+        /// Gets or sets the timestamp of this point.
+        /// </summary>
+        public DateTimeOffset Timestamp { get; set; }
+
+        /// <summary>
+        /// Gets or sets the GPS accuracy in meters.
+        /// </summary>
+        public double? Accuracy { get; set; }
+
+        // Navigation property
+        public virtual EventAttendeeRoute Route { get; set; }
+    }
+}
+```
+
+**DbContext Configuration (in MobDbContext.cs):**
+```csharp
+modelBuilder.Entity<EventAttendeeRoute>(entity =>
+{
+    // Add to existing configuration
+    entity.Property(e => e.PrivacyLevel).HasMaxLength(20);
+    entity.Property(e => e.WeightCollected).HasPrecision(10, 2);
+
+    entity.HasIndex(e => e.EventId);
+    entity.HasIndex(e => e.UserId);
+    entity.HasIndex(e => e.PrivacyLevel);
+});
+
+modelBuilder.Entity<RoutePoint>(entity =>
+{
+    entity.HasKey(e => e.Id);
+    entity.Property(e => e.Id).UseIdentityColumn();
+
+    entity.HasOne(e => e.Route)
+        .WithMany(r => r.RoutePoints)
+        .HasForeignKey(e => e.RouteId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasIndex(e => e.RouteId);
+});
 ```
 
 ### API Changes
