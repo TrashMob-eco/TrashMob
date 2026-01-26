@@ -104,61 +104,249 @@ None - can be built independently
 
 ### Data Model Changes
 
-```sql
--- Event messages
-CREATE TABLE EventMessages (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    EventId UNIQUEIDENTIFIER NOT NULL,
-    SenderUserId UNIQUEIDENTIFIER NOT NULL,
-    Subject NVARCHAR(200) NULL,
-    Body NVARCHAR(MAX) NOT NULL,
-    MessageType NVARCHAR(50) NOT NULL DEFAULT 'Custom', -- Custom, LocationChange, TimeChange, Reminder, Cancellation
-    SentDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    RecipientCount INT NOT NULL DEFAULT 0,
-    FOREIGN KEY (EventId) REFERENCES Events(Id),
-    FOREIGN KEY (SenderUserId) REFERENCES Users(Id)
-);
+**New Entity: EventMessage**
+```csharp
+// New file: TrashMob.Models/EventMessage.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a message sent by an event lead to attendees.
+    /// </summary>
+    public class EventMessage : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the event identifier.
+        /// </summary>
+        public Guid EventId { get; set; }
 
--- Message delivery tracking
-CREATE TABLE EventMessageRecipients (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    EventMessageId UNIQUEIDENTIFIER NOT NULL,
-    RecipientUserId UNIQUEIDENTIFIER NOT NULL,
-    DeliveredDate DATETIMEOFFSET NULL,
-    ReadDate DATETIMEOFFSET NULL,
-    FOREIGN KEY (EventMessageId) REFERENCES EventMessages(Id) ON DELETE CASCADE,
-    FOREIGN KEY (RecipientUserId) REFERENCES Users(Id)
-);
+        /// <summary>
+        /// Gets or sets the sender's user identifier.
+        /// </summary>
+        public Guid SenderUserId { get; set; }
 
--- Canned message templates
-CREATE TABLE MessageTemplates (
-    Id INT PRIMARY KEY IDENTITY(1,1),
-    Name NVARCHAR(100) NOT NULL,
-    Subject NVARCHAR(200) NOT NULL,
-    Body NVARCHAR(MAX) NOT NULL,
-    MessageType NVARCHAR(50) NOT NULL,
-    IsActive BIT NOT NULL DEFAULT 1
-);
+        /// <summary>
+        /// Gets or sets the message subject.
+        /// </summary>
+        public string Subject { get; set; }
 
--- Message reports (abuse)
-CREATE TABLE MessageReports (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    EventMessageId UNIQUEIDENTIFIER NOT NULL,
-    ReporterUserId UNIQUEIDENTIFIER NOT NULL,
-    Reason NVARCHAR(500) NOT NULL,
-    ReportDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    ReviewedByUserId UNIQUEIDENTIFIER NULL,
-    ReviewedDate DATETIMEOFFSET NULL,
-    ReviewOutcome NVARCHAR(50) NULL, -- Dismissed, Warning, MessageRemoved, UserSuspended
-    FOREIGN KEY (EventMessageId) REFERENCES EventMessages(Id),
-    FOREIGN KEY (ReporterUserId) REFERENCES Users(Id),
-    FOREIGN KEY (ReviewedByUserId) REFERENCES Users(Id)
-);
+        /// <summary>
+        /// Gets or sets the message body.
+        /// </summary>
+        public string Body { get; set; }
 
-CREATE INDEX IX_EventMessages_EventId ON EventMessages(EventId);
-CREATE INDEX IX_EventMessages_SenderUserId ON EventMessages(SenderUserId);
-CREATE INDEX IX_EventMessageRecipients_RecipientUserId ON EventMessageRecipients(RecipientUserId);
-CREATE INDEX IX_MessageReports_ReviewedDate ON MessageReports(ReviewedDate) WHERE ReviewedDate IS NULL;
+        /// <summary>
+        /// Gets or sets the message type (Custom, LocationChange, TimeChange, Reminder, Cancellation).
+        /// </summary>
+        public string MessageType { get; set; } = "Custom";
+
+        /// <summary>
+        /// Gets or sets when the message was sent.
+        /// </summary>
+        public DateTimeOffset SentDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of recipients.
+        /// </summary>
+        public int RecipientCount { get; set; }
+
+        // Navigation properties
+        public virtual Event Event { get; set; }
+        public virtual User SenderUser { get; set; }
+        public virtual ICollection<EventMessageRecipient> Recipients { get; set; }
+        public virtual ICollection<MessageReport> Reports { get; set; }
+    }
+}
+```
+
+**New Entity: EventMessageRecipient**
+```csharp
+// New file: TrashMob.Models/EventMessageRecipient.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Tracks message delivery and read status for each recipient.
+    /// </summary>
+    public class EventMessageRecipient : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the message identifier.
+        /// </summary>
+        public Guid EventMessageId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the recipient's user identifier.
+        /// </summary>
+        public Guid RecipientUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the message was delivered.
+        /// </summary>
+        public DateTimeOffset? DeliveredDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the message was read.
+        /// </summary>
+        public DateTimeOffset? ReadDate { get; set; }
+
+        // Navigation properties
+        public virtual EventMessage EventMessage { get; set; }
+        public virtual User RecipientUser { get; set; }
+    }
+}
+```
+
+**New Entity: MessageTemplate (lookup table)**
+```csharp
+// New file: TrashMob.Models/MessageTemplate.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a canned message template for common event communications.
+    /// </summary>
+    public class MessageTemplate : LookupModel
+    {
+        /// <summary>
+        /// Gets or sets the template subject.
+        /// </summary>
+        public string Subject { get; set; }
+
+        /// <summary>
+        /// Gets or sets the template body.
+        /// </summary>
+        public string Body { get; set; }
+
+        /// <summary>
+        /// Gets or sets the message type this template is for.
+        /// </summary>
+        public string MessageType { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether this template is active.
+        /// </summary>
+        public bool IsActive { get; set; } = true;
+    }
+}
+```
+
+**New Entity: MessageReport**
+```csharp
+// New file: TrashMob.Models/MessageReport.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a user report of an abusive or inappropriate message.
+    /// </summary>
+    public class MessageReport : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the reported message identifier.
+        /// </summary>
+        public Guid EventMessageId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the reporting user's identifier.
+        /// </summary>
+        public Guid ReporterUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the reason for the report.
+        /// </summary>
+        public string Reason { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the report was submitted.
+        /// </summary>
+        public DateTimeOffset ReportDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identifier of the admin who reviewed the report.
+        /// </summary>
+        public Guid? ReviewedByUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the report was reviewed.
+        /// </summary>
+        public DateTimeOffset? ReviewedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the outcome (Dismissed, Warning, MessageRemoved, UserSuspended).
+        /// </summary>
+        public string ReviewOutcome { get; set; }
+
+        // Navigation properties
+        public virtual EventMessage EventMessage { get; set; }
+        public virtual User ReporterUser { get; set; }
+        public virtual User ReviewedByUser { get; set; }
+    }
+}
+```
+
+**DbContext Configuration (in MobDbContext.cs):**
+```csharp
+modelBuilder.Entity<EventMessage>(entity =>
+{
+    entity.Property(e => e.Subject).HasMaxLength(200);
+    entity.Property(e => e.MessageType).HasMaxLength(50);
+
+    entity.HasOne(e => e.Event)
+        .WithMany()
+        .HasForeignKey(e => e.EventId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.SenderUser)
+        .WithMany()
+        .HasForeignKey(e => e.SenderUserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasIndex(e => e.EventId);
+    entity.HasIndex(e => e.SenderUserId);
+});
+
+modelBuilder.Entity<EventMessageRecipient>(entity =>
+{
+    entity.HasOne(e => e.EventMessage)
+        .WithMany(m => m.Recipients)
+        .HasForeignKey(e => e.EventMessageId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.RecipientUser)
+        .WithMany()
+        .HasForeignKey(e => e.RecipientUserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasIndex(e => e.RecipientUserId);
+});
+
+modelBuilder.Entity<MessageTemplate>(entity =>
+{
+    entity.Property(e => e.Name).HasMaxLength(100).IsRequired();
+    entity.Property(e => e.Subject).HasMaxLength(200).IsRequired();
+    entity.Property(e => e.MessageType).HasMaxLength(50).IsRequired();
+});
+
+modelBuilder.Entity<MessageReport>(entity =>
+{
+    entity.Property(e => e.Reason).HasMaxLength(500).IsRequired();
+    entity.Property(e => e.ReviewOutcome).HasMaxLength(50);
+
+    entity.HasOne(e => e.EventMessage)
+        .WithMany(m => m.Reports)
+        .HasForeignKey(e => e.EventMessageId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasOne(e => e.ReporterUser)
+        .WithMany()
+        .HasForeignKey(e => e.ReporterUserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasOne(e => e.ReviewedByUser)
+        .WithMany()
+        .HasForeignKey(e => e.ReviewedByUserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasIndex(e => e.ReviewedDate)
+        .HasFilter("[ReviewedDate] IS NULL");
+});
 ```
 
 ### API Changes

@@ -117,76 +117,275 @@ Model adoptable areas (roads, parks, trails) with availability and safety rules;
 
 ### Data Model Changes
 
-```sql
--- Adoptable areas (defined by communities)
-CREATE TABLE AdoptableAreas (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    CommunityProgramId UNIQUEIDENTIFIER NOT NULL,
-    Name NVARCHAR(200) NOT NULL,
-    Description NVARCHAR(MAX) NULL,
-    AreaType NVARCHAR(50) NOT NULL, -- Highway, Park, Trail, Waterway, Street
-    -- Geographic definition (simplified to route/polygon points)
-    GeoJson NVARCHAR(MAX) NULL, -- GeoJSON for polygon/line
-    StartLatitude DECIMAL(9,6) NULL,
-    StartLongitude DECIMAL(9,6) NULL,
-    EndLatitude DECIMAL(9,6) NULL,
-    EndLongitude DECIMAL(9,6) NULL,
-    -- Requirements
-    CleanupFrequencyDays INT NOT NULL DEFAULT 90, -- e.g., every 90 days
-    MinEventsPerYear INT NOT NULL DEFAULT 4,
-    SafetyRequirements NVARCHAR(MAX) NULL,
-    -- Status
-    Status NVARCHAR(20) NOT NULL DEFAULT 'Available', -- Available, Adopted, Unavailable
-    IsActive BIT NOT NULL DEFAULT 1,
-    -- Audit
-    CreatedByUserId UNIQUEIDENTIFIER NOT NULL,
-    CreatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    LastUpdatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    FOREIGN KEY (CommunityProgramId) REFERENCES CommunityPrograms(Id),
-    FOREIGN KEY (CreatedByUserId) REFERENCES Users(Id)
-);
+**New Entity: AdoptableArea**
+```csharp
+// New file: TrashMob.Models/AdoptableArea.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a geographic area available for team adoption (highway, park, trail, etc.).
+    /// </summary>
+    public class AdoptableArea : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the community program this area belongs to.
+        /// </summary>
+        public Guid CommunityProgramId { get; set; }
 
--- Team adoptions
-CREATE TABLE TeamAdoptions (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    TeamId UNIQUEIDENTIFIER NOT NULL,
-    AdoptableAreaId UNIQUEIDENTIFIER NOT NULL,
-    -- Application
-    ApplicationDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    ApplicationStatus NVARCHAR(20) NOT NULL DEFAULT 'Pending', -- Pending, Approved, Rejected
-    ReviewedByUserId UNIQUEIDENTIFIER NULL,
-    ReviewedDate DATETIMEOFFSET NULL,
-    RejectionReason NVARCHAR(500) NULL,
-    -- Adoption period
-    AdoptionStartDate DATE NULL,
-    AdoptionEndDate DATE NULL,
-    -- Compliance
-    LastEventDate DATE NULL,
-    EventCount INT NOT NULL DEFAULT 0,
-    IsCompliant BIT NOT NULL DEFAULT 1,
-    -- Audit
-    CreatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    FOREIGN KEY (TeamId) REFERENCES Teams(Id),
-    FOREIGN KEY (AdoptableAreaId) REFERENCES AdoptableAreas(Id),
-    FOREIGN KEY (ReviewedByUserId) REFERENCES Users(Id)
-);
+        /// <summary>
+        /// Gets or sets the area name.
+        /// </summary>
+        public string Name { get; set; }
 
--- Link events to adoptions
-CREATE TABLE TeamAdoptionEvents (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    TeamAdoptionId UNIQUEIDENTIFIER NOT NULL,
-    EventId UNIQUEIDENTIFIER NOT NULL,
-    CreatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    FOREIGN KEY (TeamAdoptionId) REFERENCES TeamAdoptions(Id),
-    FOREIGN KEY (EventId) REFERENCES Events(Id),
-    UNIQUE (TeamAdoptionId, EventId)
-);
+        /// <summary>
+        /// Gets or sets the area description.
+        /// </summary>
+        public string Description { get; set; }
 
-CREATE INDEX IX_AdoptableAreas_CommunityProgramId ON AdoptableAreas(CommunityProgramId);
-CREATE INDEX IX_AdoptableAreas_Status ON AdoptableAreas(Status);
-CREATE INDEX IX_TeamAdoptions_TeamId ON TeamAdoptions(TeamId);
-CREATE INDEX IX_TeamAdoptions_AdoptableAreaId ON TeamAdoptions(AdoptableAreaId);
-CREATE INDEX IX_TeamAdoptions_ApplicationStatus ON TeamAdoptions(ApplicationStatus);
+        /// <summary>
+        /// Gets or sets the type of area (Highway, Park, Trail, Waterway, Street).
+        /// </summary>
+        public string AreaType { get; set; }
+
+        #region Geographic Definition
+
+        /// <summary>
+        /// Gets or sets the GeoJSON representation of the area boundary/route.
+        /// </summary>
+        public string GeoJson { get; set; }
+
+        /// <summary>
+        /// Gets or sets the start point latitude (for linear areas).
+        /// </summary>
+        public double? StartLatitude { get; set; }
+
+        /// <summary>
+        /// Gets or sets the start point longitude (for linear areas).
+        /// </summary>
+        public double? StartLongitude { get; set; }
+
+        /// <summary>
+        /// Gets or sets the end point latitude (for linear areas).
+        /// </summary>
+        public double? EndLatitude { get; set; }
+
+        /// <summary>
+        /// Gets or sets the end point longitude (for linear areas).
+        /// </summary>
+        public double? EndLongitude { get; set; }
+
+        #endregion
+
+        #region Requirements
+
+        /// <summary>
+        /// Gets or sets how often cleanup is required (in days).
+        /// </summary>
+        public int CleanupFrequencyDays { get; set; } = 90;
+
+        /// <summary>
+        /// Gets or sets the minimum events required per year.
+        /// </summary>
+        public int MinEventsPerYear { get; set; } = 4;
+
+        /// <summary>
+        /// Gets or sets safety requirements and guidelines.
+        /// </summary>
+        public string SafetyRequirements { get; set; }
+
+        #endregion
+
+        /// <summary>
+        /// Gets or sets the adoption status (Available, Adopted, Unavailable).
+        /// </summary>
+        public string Status { get; set; } = "Available";
+
+        /// <summary>
+        /// Gets or sets whether this area is active.
+        /// </summary>
+        public bool IsActive { get; set; } = true;
+
+        // Navigation properties
+        public virtual CommunityProgram CommunityProgram { get; set; }
+        public virtual ICollection<TeamAdoption> Adoptions { get; set; }
+    }
+}
+```
+
+**New Entity: TeamAdoption**
+```csharp
+// New file: TrashMob.Models/TeamAdoption.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a team's adoption of an area, including application and compliance tracking.
+    /// </summary>
+    public class TeamAdoption : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the adopting team identifier.
+        /// </summary>
+        public Guid TeamId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the adopted area identifier.
+        /// </summary>
+        public Guid AdoptableAreaId { get; set; }
+
+        #region Application
+
+        /// <summary>
+        /// Gets or sets the date of the adoption application.
+        /// </summary>
+        public DateTimeOffset ApplicationDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the application status (Pending, Approved, Rejected).
+        /// </summary>
+        public string ApplicationStatus { get; set; } = "Pending";
+
+        /// <summary>
+        /// Gets or sets the identifier of the user who reviewed the application.
+        /// </summary>
+        public Guid? ReviewedByUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the application was reviewed.
+        /// </summary>
+        public DateTimeOffset? ReviewedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the reason for rejection (if applicable).
+        /// </summary>
+        public string RejectionReason { get; set; }
+
+        #endregion
+
+        #region Adoption Period
+
+        /// <summary>
+        /// Gets or sets the adoption start date.
+        /// </summary>
+        public DateOnly? AdoptionStartDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the adoption end date.
+        /// </summary>
+        public DateOnly? AdoptionEndDate { get; set; }
+
+        #endregion
+
+        #region Compliance Tracking
+
+        /// <summary>
+        /// Gets or sets the date of the last cleanup event.
+        /// </summary>
+        public DateOnly? LastEventDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the count of cleanup events for this adoption.
+        /// </summary>
+        public int EventCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether the team is compliant with requirements.
+        /// </summary>
+        public bool IsCompliant { get; set; } = true;
+
+        #endregion
+
+        // Navigation properties
+        public virtual Team Team { get; set; }
+        public virtual AdoptableArea AdoptableArea { get; set; }
+        public virtual User ReviewedByUser { get; set; }
+        public virtual ICollection<TeamAdoptionEvent> AdoptionEvents { get; set; }
+    }
+}
+```
+
+**New Entity: TeamAdoptionEvent**
+```csharp
+// New file: TrashMob.Models/TeamAdoptionEvent.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Links a cleanup event to a team adoption for compliance tracking.
+    /// </summary>
+    public class TeamAdoptionEvent : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the team adoption identifier.
+        /// </summary>
+        public Guid TeamAdoptionId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the event identifier.
+        /// </summary>
+        public Guid EventId { get; set; }
+
+        // Navigation properties
+        public virtual TeamAdoption TeamAdoption { get; set; }
+        public virtual Event Event { get; set; }
+    }
+}
+```
+
+**DbContext Configuration (in MobDbContext.cs):**
+```csharp
+modelBuilder.Entity<AdoptableArea>(entity =>
+{
+    entity.Property(e => e.Name).HasMaxLength(200).IsRequired();
+    entity.Property(e => e.AreaType).HasMaxLength(50).IsRequired();
+    entity.Property(e => e.Status).HasMaxLength(20);
+
+    entity.HasOne(e => e.CommunityProgram)
+        .WithMany(cp => cp.AdoptableAreas)
+        .HasForeignKey(e => e.CommunityProgramId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasIndex(e => e.CommunityProgramId);
+    entity.HasIndex(e => e.Status);
+});
+
+modelBuilder.Entity<TeamAdoption>(entity =>
+{
+    entity.Property(e => e.ApplicationStatus).HasMaxLength(20);
+    entity.Property(e => e.RejectionReason).HasMaxLength(500);
+
+    entity.HasOne(e => e.Team)
+        .WithMany()
+        .HasForeignKey(e => e.TeamId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.AdoptableArea)
+        .WithMany(a => a.Adoptions)
+        .HasForeignKey(e => e.AdoptableAreaId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasOne(e => e.ReviewedByUser)
+        .WithMany()
+        .HasForeignKey(e => e.ReviewedByUserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasIndex(e => e.TeamId);
+    entity.HasIndex(e => e.AdoptableAreaId);
+    entity.HasIndex(e => e.ApplicationStatus);
+});
+
+modelBuilder.Entity<TeamAdoptionEvent>(entity =>
+{
+    entity.HasOne(e => e.TeamAdoption)
+        .WithMany(ta => ta.AdoptionEvents)
+        .HasForeignKey(e => e.TeamAdoptionId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.Event)
+        .WithMany()
+        .HasForeignKey(e => e.EventId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasIndex(e => new { e.TeamAdoptionId, e.EventId }).IsUnique();
+});
 ```
 
 ### API Changes

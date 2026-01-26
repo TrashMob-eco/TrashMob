@@ -1,4 +1,4 @@
-# Project 9 — TrashMob Teams
+# Project 9 ï¿½ TrashMob Teams
 
 | Attribute | Value |
 |-----------|-------|
@@ -129,87 +129,340 @@ None - independent feature
 
 ### Data Model Changes
 
-```sql
--- Teams table
-CREATE TABLE Teams (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    Name NVARCHAR(200) NOT NULL,
-    Description NVARCHAR(MAX) NULL,
-    LogoUrl NVARCHAR(500) NULL,
-    IsPublic BIT NOT NULL DEFAULT 1,
-    RequiresApproval BIT NOT NULL DEFAULT 0, -- For private teams
-    Latitude DECIMAL(9,6) NULL,
-    Longitude DECIMAL(9,6) NULL,
-    City NVARCHAR(100) NULL,
-    Region NVARCHAR(100) NULL,
-    Country NVARCHAR(100) NULL,
-    IsActive BIT NOT NULL DEFAULT 1,
-    CreatedByUserId UNIQUEIDENTIFIER NOT NULL,
-    CreatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    LastUpdatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    FOREIGN KEY (CreatedByUserId) REFERENCES Users(Id)
-);
+**New Entity: Team**
+```csharp
+// New file: TrashMob.Models/Team.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a user-created team for collaborative cleanup efforts.
+    /// </summary>
+    public class Team : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the team name.
+        /// </summary>
+        public string Name { get; set; }
 
--- Team membership
-CREATE TABLE TeamMembers (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    TeamId UNIQUEIDENTIFIER NOT NULL,
-    UserId UNIQUEIDENTIFIER NOT NULL,
-    IsTeamLead BIT NOT NULL DEFAULT 0,
-    JoinedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    FOREIGN KEY (TeamId) REFERENCES Teams(Id) ON DELETE CASCADE,
-    FOREIGN KEY (UserId) REFERENCES Users(Id),
-    UNIQUE (TeamId, UserId)
-);
+        /// <summary>
+        /// Gets or sets the team description.
+        /// </summary>
+        public string Description { get; set; }
 
--- Team join requests (for private teams)
-CREATE TABLE TeamJoinRequests (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    TeamId UNIQUEIDENTIFIER NOT NULL,
-    UserId UNIQUEIDENTIFIER NOT NULL,
-    RequestDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    Status NVARCHAR(20) NOT NULL DEFAULT 'Pending', -- Pending, Approved, Rejected
-    ReviewedByUserId UNIQUEIDENTIFIER NULL,
-    ReviewedDate DATETIMEOFFSET NULL,
-    FOREIGN KEY (TeamId) REFERENCES Teams(Id) ON DELETE CASCADE,
-    FOREIGN KEY (UserId) REFERENCES Users(Id),
-    FOREIGN KEY (ReviewedByUserId) REFERENCES Users(Id)
-);
+        /// <summary>
+        /// Gets or sets the URL of the team logo.
+        /// </summary>
+        public string LogoUrl { get; set; }
 
--- Team events (linking events to teams)
-CREATE TABLE TeamEvents (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    TeamId UNIQUEIDENTIFIER NOT NULL,
-    EventId UNIQUEIDENTIFIER NOT NULL,
-    CreatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    FOREIGN KEY (TeamId) REFERENCES Teams(Id) ON DELETE CASCADE,
-    FOREIGN KEY (EventId) REFERENCES Events(Id),
-    UNIQUE (TeamId, EventId)
-);
+        /// <summary>
+        /// Gets or sets whether the team is publicly visible.
+        /// </summary>
+        public bool IsPublic { get; set; } = true;
 
--- Team photos
-CREATE TABLE TeamPhotos (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    TeamId UNIQUEIDENTIFIER NOT NULL,
-    ImageUrl NVARCHAR(500) NOT NULL,
-    Caption NVARCHAR(500) NULL,
-    UploadedByUserId UNIQUEIDENTIFIER NOT NULL,
-    UploadedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    FOREIGN KEY (TeamId) REFERENCES Teams(Id) ON DELETE CASCADE,
-    FOREIGN KEY (UploadedByUserId) REFERENCES Users(Id)
-);
+        /// <summary>
+        /// Gets or sets whether joining requires approval from a team lead.
+        /// </summary>
+        public bool RequiresApproval { get; set; }
 
--- Add TeamId to EventAttendees for tracking team participation
-ALTER TABLE EventAttendees
-ADD TeamId UNIQUEIDENTIFIER NULL,
-    FOREIGN KEY (TeamId) REFERENCES Teams(Id);
+        /// <summary>
+        /// Gets or sets the latitude of the team's primary location.
+        /// </summary>
+        public double? Latitude { get; set; }
 
-CREATE INDEX IX_Teams_IsPublic_IsActive ON Teams(IsPublic, IsActive);
-CREATE INDEX IX_TeamMembers_TeamId ON TeamMembers(TeamId);
-CREATE INDEX IX_TeamMembers_UserId ON TeamMembers(UserId);
-CREATE INDEX IX_TeamEvents_TeamId ON TeamEvents(TeamId);
-CREATE INDEX IX_TeamEvents_EventId ON TeamEvents(EventId);
-CREATE INDEX IX_EventAttendees_TeamId ON EventAttendees(TeamId);
+        /// <summary>
+        /// Gets or sets the longitude of the team's primary location.
+        /// </summary>
+        public double? Longitude { get; set; }
+
+        /// <summary>
+        /// Gets or sets the city where the team is based.
+        /// </summary>
+        public string City { get; set; }
+
+        /// <summary>
+        /// Gets or sets the region/state where the team is based.
+        /// </summary>
+        public string Region { get; set; }
+
+        /// <summary>
+        /// Gets or sets the country where the team is based.
+        /// </summary>
+        public string Country { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether the team is currently active.
+        /// </summary>
+        public bool IsActive { get; set; } = true;
+
+        // Navigation properties
+        public virtual ICollection<TeamMember> Members { get; set; }
+        public virtual ICollection<TeamJoinRequest> JoinRequests { get; set; }
+        public virtual ICollection<TeamEvent> TeamEvents { get; set; }
+        public virtual ICollection<TeamPhoto> Photos { get; set; }
+    }
+}
+```
+
+**New Entity: TeamMember**
+```csharp
+// New file: TrashMob.Models/TeamMember.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a user's membership in a team.
+    /// </summary>
+    public class TeamMember : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the team identifier.
+        /// </summary>
+        public Guid TeamId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the member's user identifier.
+        /// </summary>
+        public Guid UserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether this member is a team lead with admin privileges.
+        /// </summary>
+        public bool IsTeamLead { get; set; }
+
+        /// <summary>
+        /// Gets or sets the date the user joined the team.
+        /// </summary>
+        public DateTimeOffset JoinedDate { get; set; }
+
+        // Navigation properties
+        public virtual Team Team { get; set; }
+        public virtual User User { get; set; }
+    }
+}
+```
+
+**New Entity: TeamJoinRequest**
+```csharp
+// New file: TrashMob.Models/TeamJoinRequest.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a request to join a private team.
+    /// </summary>
+    public class TeamJoinRequest : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the team identifier.
+        /// </summary>
+        public Guid TeamId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the requesting user's identifier.
+        /// </summary>
+        public Guid UserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the date of the join request.
+        /// </summary>
+        public DateTimeOffset RequestDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the status of the request (Pending, Approved, Rejected).
+        /// </summary>
+        public string Status { get; set; } = "Pending";
+
+        /// <summary>
+        /// Gets or sets the identifier of the user who reviewed the request.
+        /// </summary>
+        public Guid? ReviewedByUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the date the request was reviewed.
+        /// </summary>
+        public DateTimeOffset? ReviewedDate { get; set; }
+
+        // Navigation properties
+        public virtual Team Team { get; set; }
+        public virtual User User { get; set; }
+        public virtual User ReviewedByUser { get; set; }
+    }
+}
+```
+
+**New Entity: TeamEvent**
+```csharp
+// New file: TrashMob.Models/TeamEvent.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Associates an event with a team.
+    /// </summary>
+    public class TeamEvent : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the team identifier.
+        /// </summary>
+        public Guid TeamId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the event identifier.
+        /// </summary>
+        public Guid EventId { get; set; }
+
+        // Navigation properties
+        public virtual Team Team { get; set; }
+        public virtual Event Event { get; set; }
+    }
+}
+```
+
+**New Entity: TeamPhoto**
+```csharp
+// New file: TrashMob.Models/TeamPhoto.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a photo in a team's gallery.
+    /// </summary>
+    public class TeamPhoto : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the team identifier.
+        /// </summary>
+        public Guid TeamId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the URL of the photo.
+        /// </summary>
+        public string ImageUrl { get; set; }
+
+        /// <summary>
+        /// Gets or sets the photo caption.
+        /// </summary>
+        public string Caption { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identifier of the user who uploaded the photo.
+        /// </summary>
+        public Guid UploadedByUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the date the photo was uploaded.
+        /// </summary>
+        public DateTimeOffset UploadedDate { get; set; }
+
+        // Navigation properties
+        public virtual Team Team { get; set; }
+        public virtual User UploadedByUser { get; set; }
+    }
+}
+```
+
+**Modification: EventAttendee**
+```csharp
+// Add to existing TrashMob.Models/EventAttendee.cs
+/// <summary>
+/// Gets or sets the optional team identifier if attending as part of a team.
+/// </summary>
+public Guid? TeamId { get; set; }
+
+/// <summary>
+/// Gets or sets the team the attendee is representing, if any.
+/// </summary>
+public virtual Team Team { get; set; }
+```
+
+**DbContext Configuration (in MobDbContext.cs):**
+```csharp
+modelBuilder.Entity<Team>(entity =>
+{
+    entity.Property(e => e.Name).HasMaxLength(200).IsRequired();
+    entity.Property(e => e.LogoUrl).HasMaxLength(500);
+    entity.Property(e => e.City).HasMaxLength(100);
+    entity.Property(e => e.Region).HasMaxLength(100);
+    entity.Property(e => e.Country).HasMaxLength(100);
+    entity.HasIndex(e => new { e.IsPublic, e.IsActive });
+});
+
+modelBuilder.Entity<TeamMember>(entity =>
+{
+    entity.HasOne(e => e.Team)
+        .WithMany(t => t.Members)
+        .HasForeignKey(e => e.TeamId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.User)
+        .WithMany()
+        .HasForeignKey(e => e.UserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasIndex(e => e.TeamId);
+    entity.HasIndex(e => e.UserId);
+    entity.HasIndex(e => new { e.TeamId, e.UserId }).IsUnique();
+});
+
+modelBuilder.Entity<TeamJoinRequest>(entity =>
+{
+    entity.Property(e => e.Status).HasMaxLength(20);
+
+    entity.HasOne(e => e.Team)
+        .WithMany(t => t.JoinRequests)
+        .HasForeignKey(e => e.TeamId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.User)
+        .WithMany()
+        .HasForeignKey(e => e.UserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasOne(e => e.ReviewedByUser)
+        .WithMany()
+        .HasForeignKey(e => e.ReviewedByUserId)
+        .OnDelete(DeleteBehavior.NoAction);
+});
+
+modelBuilder.Entity<TeamEvent>(entity =>
+{
+    entity.HasOne(e => e.Team)
+        .WithMany(t => t.TeamEvents)
+        .HasForeignKey(e => e.TeamId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.Event)
+        .WithMany()
+        .HasForeignKey(e => e.EventId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasIndex(e => e.TeamId);
+    entity.HasIndex(e => e.EventId);
+    entity.HasIndex(e => new { e.TeamId, e.EventId }).IsUnique();
+});
+
+modelBuilder.Entity<TeamPhoto>(entity =>
+{
+    entity.Property(e => e.ImageUrl).HasMaxLength(500).IsRequired();
+    entity.Property(e => e.Caption).HasMaxLength(500);
+
+    entity.HasOne(e => e.Team)
+        .WithMany(t => t.Photos)
+        .HasForeignKey(e => e.TeamId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.UploadedByUser)
+        .WithMany()
+        .HasForeignKey(e => e.UploadedByUserId)
+        .OnDelete(DeleteBehavior.NoAction);
+});
+
+modelBuilder.Entity<EventAttendee>(entity =>
+{
+    // Add to existing configuration
+    entity.HasOne(e => e.Team)
+        .WithMany()
+        .HasForeignKey(e => e.TeamId)
+        .OnDelete(DeleteBehavior.SetNull);
+
+    entity.HasIndex(e => e.TeamId);
+});
 ```
 
 ### API Changes

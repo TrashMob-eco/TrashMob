@@ -107,36 +107,108 @@ None - independent feature
 
 ### Data Model Changes
 
-```sql
--- Modify EventAttendees table
-ALTER TABLE EventAttendees
-ADD IsEventLead BIT NOT NULL DEFAULT 0;
+**Modification: EventAttendee (add IsEventLead)**
+```csharp
+// Add to existing TrashMob.Models/EventAttendee.cs
+/// <summary>
+/// Gets or sets whether this attendee is an event lead with management permissions.
+/// </summary>
+public bool IsEventLead { get; set; }
+```
 
--- Migration: Set existing event creators as leads
-UPDATE ea
-SET IsEventLead = 1
-FROM EventAttendees ea
-INNER JOIN Events e ON ea.EventId = e.Id
-WHERE ea.UserId = e.CreatedByUserId;
+**New Entity: EventLeadInvitation**
+```csharp
+// New file: TrashMob.Models/EventLeadInvitation.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents an invitation for a user to become a co-lead of an event.
+    /// </summary>
+    public class EventLeadInvitation : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the event identifier.
+        /// </summary>
+        public Guid EventId { get; set; }
 
--- Co-lead invitations
-CREATE TABLE EventLeadInvitations (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    EventId UNIQUEIDENTIFIER NOT NULL,
-    InvitedUserId UNIQUEIDENTIFIER NOT NULL,
-    InvitedByUserId UNIQUEIDENTIFIER NOT NULL,
-    Status NVARCHAR(20) NOT NULL DEFAULT 'Pending', -- Pending, Accepted, Declined
-    InvitedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    RespondedDate DATETIMEOFFSET NULL,
-    FOREIGN KEY (EventId) REFERENCES Events(Id),
-    FOREIGN KEY (InvitedUserId) REFERENCES Users(Id),
-    FOREIGN KEY (InvitedByUserId) REFERENCES Users(Id),
-    UNIQUE (EventId, InvitedUserId)
-);
+        /// <summary>
+        /// Gets or sets the invited user's identifier.
+        /// </summary>
+        public Guid InvitedUserId { get; set; }
 
-CREATE INDEX IX_EventAttendees_IsEventLead ON EventAttendees(IsEventLead) WHERE IsEventLead = 1;
-CREATE INDEX IX_EventLeadInvitations_InvitedUserId ON EventLeadInvitations(InvitedUserId);
-CREATE INDEX IX_EventLeadInvitations_Status ON EventLeadInvitations(Status) WHERE Status = 'Pending';
+        /// <summary>
+        /// Gets or sets the inviting user's identifier.
+        /// </summary>
+        public Guid InvitedByUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the invitation status (Pending, Accepted, Declined).
+        /// </summary>
+        public string Status { get; set; } = "Pending";
+
+        /// <summary>
+        /// Gets or sets when the invitation was sent.
+        /// </summary>
+        public DateTimeOffset InvitedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the user responded to the invitation.
+        /// </summary>
+        public DateTimeOffset? RespondedDate { get; set; }
+
+        // Navigation properties
+        public virtual Event Event { get; set; }
+        public virtual User InvitedUser { get; set; }
+        public virtual User InvitedByUser { get; set; }
+    }
+}
+```
+
+**DbContext Configuration (in MobDbContext.cs):**
+```csharp
+modelBuilder.Entity<EventAttendee>(entity =>
+{
+    // Add to existing configuration
+    entity.HasIndex(e => e.IsEventLead)
+        .HasFilter("[IsEventLead] = 1");
+});
+
+modelBuilder.Entity<EventLeadInvitation>(entity =>
+{
+    entity.Property(e => e.Status).HasMaxLength(20);
+
+    entity.HasOne(e => e.Event)
+        .WithMany()
+        .HasForeignKey(e => e.EventId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.InvitedUser)
+        .WithMany()
+        .HasForeignKey(e => e.InvitedUserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasOne(e => e.InvitedByUser)
+        .WithMany()
+        .HasForeignKey(e => e.InvitedByUserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasIndex(e => e.InvitedUserId);
+    entity.HasIndex(e => e.Status)
+        .HasFilter("[Status] = 'Pending'");
+    entity.HasIndex(e => new { e.EventId, e.InvitedUserId }).IsUnique();
+});
+```
+
+**Data Migration:**
+```csharp
+// EF Core migration to set existing creators as leads
+migrationBuilder.Sql(@"
+    UPDATE ea
+    SET IsEventLead = 1
+    FROM EventAttendees ea
+    INNER JOIN Events e ON ea.EventId = e.Id
+    WHERE ea.UserId = e.CreatedByUserId;
+");
 ```
 
 ### API Changes

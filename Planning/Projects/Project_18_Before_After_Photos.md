@@ -111,49 +111,189 @@ None - independent feature
 
 ### Data Model Changes
 
-```sql
--- Event photos
-CREATE TABLE EventPhotos (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    EventId UNIQUEIDENTIFIER NOT NULL,
-    UploadedByUserId UNIQUEIDENTIFIER NOT NULL,
-    -- Image storage
-    ImageUrl NVARCHAR(500) NOT NULL,
-    ThumbnailUrl NVARCHAR(500) NULL,
-    -- Metadata
-    PhotoType NVARCHAR(20) NOT NULL DEFAULT 'During', -- Before, During, After
-    Caption NVARCHAR(500) NULL,
-    TakenAt DATETIMEOFFSET NULL,
-    -- Status
-    Status NVARCHAR(20) NOT NULL DEFAULT 'Active', -- Active, Flagged, Removed
-    -- Audit
-    CreatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    FOREIGN KEY (EventId) REFERENCES Events(Id),
-    FOREIGN KEY (UploadedByUserId) REFERENCES Users(Id)
-);
+**New Entity: EventPhoto**
+```csharp
+// New file: TrashMob.Models/EventPhoto.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a photo uploaded for an event (before, during, or after).
+    /// </summary>
+    public class EventPhoto : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the event identifier.
+        /// </summary>
+        public Guid EventId { get; set; }
 
--- Photo reports
-CREATE TABLE PhotoReports (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    PhotoId UNIQUEIDENTIFIER NOT NULL,
-    ReporterUserId UNIQUEIDENTIFIER NOT NULL,
-    Reason NVARCHAR(50) NOT NULL, -- Inappropriate, Copyright, Privacy, Other
-    Description NVARCHAR(500) NULL,
-    ReportDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    -- Review
-    ReviewedByUserId UNIQUEIDENTIFIER NULL,
-    ReviewedDate DATETIMEOFFSET NULL,
-    ReviewOutcome NVARCHAR(50) NULL, -- Dismissed, Removed, Warning
-    ReviewNotes NVARCHAR(500) NULL,
-    FOREIGN KEY (PhotoId) REFERENCES EventPhotos(Id),
-    FOREIGN KEY (ReporterUserId) REFERENCES Users(Id),
-    FOREIGN KEY (ReviewedByUserId) REFERENCES Users(Id)
-);
+        /// <summary>
+        /// Gets or sets the uploader's user identifier.
+        /// </summary>
+        public Guid UploadedByUserId { get; set; }
 
-CREATE INDEX IX_EventPhotos_EventId ON EventPhotos(EventId);
-CREATE INDEX IX_EventPhotos_Status ON EventPhotos(Status);
-CREATE INDEX IX_EventPhotos_PhotoType ON EventPhotos(PhotoType);
-CREATE INDEX IX_PhotoReports_ReviewedDate ON PhotoReports(ReviewedDate) WHERE ReviewedDate IS NULL;
+        #region Image Storage
+
+        /// <summary>
+        /// Gets or sets the URL of the full-size image.
+        /// </summary>
+        public string ImageUrl { get; set; }
+
+        /// <summary>
+        /// Gets or sets the URL of the thumbnail image.
+        /// </summary>
+        public string ThumbnailUrl { get; set; }
+
+        #endregion
+
+        #region Metadata
+
+        /// <summary>
+        /// Gets or sets the photo type (Before, During, After).
+        /// </summary>
+        public string PhotoType { get; set; } = "During";
+
+        /// <summary>
+        /// Gets or sets the photo caption.
+        /// </summary>
+        public string Caption { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the photo was taken.
+        /// </summary>
+        public DateTimeOffset? TakenAt { get; set; }
+
+        #endregion
+
+        /// <summary>
+        /// Gets or sets the status (Active, Flagged, Removed).
+        /// </summary>
+        public string Status { get; set; } = "Active";
+
+        // Navigation properties
+        public virtual Event Event { get; set; }
+        public virtual User UploadedByUser { get; set; }
+        public virtual ICollection<PhotoReport> Reports { get; set; }
+    }
+}
+```
+
+**New Entity: PhotoReport**
+```csharp
+// New file: TrashMob.Models/PhotoReport.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a user report of an inappropriate photo.
+    /// </summary>
+    public class PhotoReport : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the reported photo identifier.
+        /// </summary>
+        public Guid PhotoId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the reporting user's identifier.
+        /// </summary>
+        public Guid ReporterUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the reason (Inappropriate, Copyright, Privacy, Other).
+        /// </summary>
+        public string Reason { get; set; }
+
+        /// <summary>
+        /// Gets or sets additional description of the issue.
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the report was submitted.
+        /// </summary>
+        public DateTimeOffset ReportDate { get; set; }
+
+        #region Review
+
+        /// <summary>
+        /// Gets or sets the reviewing admin's user identifier.
+        /// </summary>
+        public Guid? ReviewedByUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the report was reviewed.
+        /// </summary>
+        public DateTimeOffset? ReviewedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the outcome (Dismissed, Removed, Warning).
+        /// </summary>
+        public string ReviewOutcome { get; set; }
+
+        /// <summary>
+        /// Gets or sets notes from the reviewer.
+        /// </summary>
+        public string ReviewNotes { get; set; }
+
+        #endregion
+
+        // Navigation properties
+        public virtual EventPhoto Photo { get; set; }
+        public virtual User ReporterUser { get; set; }
+        public virtual User ReviewedByUser { get; set; }
+    }
+}
+```
+
+**DbContext Configuration (in MobDbContext.cs):**
+```csharp
+modelBuilder.Entity<EventPhoto>(entity =>
+{
+    entity.Property(e => e.ImageUrl).HasMaxLength(500).IsRequired();
+    entity.Property(e => e.ThumbnailUrl).HasMaxLength(500);
+    entity.Property(e => e.PhotoType).HasMaxLength(20);
+    entity.Property(e => e.Caption).HasMaxLength(500);
+    entity.Property(e => e.Status).HasMaxLength(20);
+
+    entity.HasOne(e => e.Event)
+        .WithMany()
+        .HasForeignKey(e => e.EventId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.UploadedByUser)
+        .WithMany()
+        .HasForeignKey(e => e.UploadedByUserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasIndex(e => e.EventId);
+    entity.HasIndex(e => e.Status);
+    entity.HasIndex(e => e.PhotoType);
+});
+
+modelBuilder.Entity<PhotoReport>(entity =>
+{
+    entity.Property(e => e.Reason).HasMaxLength(50).IsRequired();
+    entity.Property(e => e.Description).HasMaxLength(500);
+    entity.Property(e => e.ReviewOutcome).HasMaxLength(50);
+    entity.Property(e => e.ReviewNotes).HasMaxLength(500);
+
+    entity.HasOne(e => e.Photo)
+        .WithMany(p => p.Reports)
+        .HasForeignKey(e => e.PhotoId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.ReporterUser)
+        .WithMany()
+        .HasForeignKey(e => e.ReporterUserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasOne(e => e.ReviewedByUser)
+        .WithMany()
+        .HasForeignKey(e => e.ReviewedByUserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasIndex(e => e.ReviewedDate)
+        .HasFilter("[ReviewedDate] IS NULL");
+});
 ```
 
 ### API Changes

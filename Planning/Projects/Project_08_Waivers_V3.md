@@ -1,4 +1,4 @@
-# Project 8 — Liability Waivers V3
+# Project 8 ï¿½ Liability Waivers V3
 
 | Attribute | Value |
 |-----------|-------|
@@ -123,53 +123,222 @@ Support flexible waiver model allowing both TrashMob default waivers and communi
 
 ### Data Model Changes
 
-```sql
--- Waiver template/document
-CREATE TABLE Waivers (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    Name NVARCHAR(200) NOT NULL,
-    Version NVARCHAR(50) NOT NULL, -- e.g., "2.0"
-    WaiverText NVARCHAR(MAX) NOT NULL,
-    EffectiveDate DATETIMEOFFSET NOT NULL,
-    ExpiryDate DATETIMEOFFSET NULL,
-    ValidityPeriodDays INT NULL, -- How long acceptance is valid
-    IsActive BIT NOT NULL DEFAULT 1,
-    AppliesTo NVARCHAR(50) NOT NULL, -- 'All', 'Community', 'Event'
-    CreatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    LastUpdatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET()
-);
+> **Note:** Existing `Waiver` entity in `TrashMob.Models/Waiver.cs` handles basic waiver info.
+> These new entities extend the waiver system for V3 features.
 
--- Community-specific waivers
-CREATE TABLE CommunityWaivers (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    CommunityId UNIQUEIDENTIFIER NOT NULL,
-    WaiverId UNIQUEIDENTIFIER NOT NULL,
-    IsRequired BIT NOT NULL DEFAULT 1,
-    FOREIGN KEY (CommunityId) REFERENCES Partners(Id),
-    FOREIGN KEY (WaiverId) REFERENCES Waivers(Id)
-);
+**New Entity: WaiverVersion (replaces or extends Waiver)**
+```csharp
+// New file: TrashMob.Models/WaiverVersion.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a versioned waiver document with effective dates.
+    /// </summary>
+    public class WaiverVersion : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the waiver name.
+        /// </summary>
+        public string Name { get; set; }
 
--- User waiver acceptances
-CREATE TABLE UserWaivers (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    UserId UNIQUEIDENTIFIER NOT NULL,
-    WaiverId UNIQUEIDENTIFIER NOT NULL,
-    AcceptedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    ExpiryDate DATETIMEOFFSET NULL,
-    IPAddress NVARCHAR(50) NULL,
-    UserAgent NVARCHAR(500) NULL,
-    IsMinor BIT NOT NULL DEFAULT 0,
-    GuardianUserId UNIQUEIDENTIFIER NULL, -- If minor
-    GuardianName NVARCHAR(200) NULL,
-    GuardianRelationship NVARCHAR(100) NULL,
-    FOREIGN KEY (UserId) REFERENCES Users(Id),
-    FOREIGN KEY (WaiverId) REFERENCES Waivers(Id),
-    FOREIGN KEY (GuardianUserId) REFERENCES Users(Id)
-);
+        /// <summary>
+        /// Gets or sets the version string (e.g., "2.0").
+        /// </summary>
+        public string Version { get; set; }
 
-CREATE INDEX IX_UserWaivers_UserId ON UserWaivers(UserId);
-CREATE INDEX IX_UserWaivers_WaiverId ON UserWaivers(WaiverId);
-CREATE INDEX IX_UserWaivers_ExpiryDate ON UserWaivers(ExpiryDate);
+        /// <summary>
+        /// Gets or sets the full waiver text content.
+        /// </summary>
+        public string WaiverText { get; set; }
+
+        /// <summary>
+        /// Gets or sets when this waiver version becomes effective.
+        /// </summary>
+        public DateTimeOffset EffectiveDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets when this waiver version expires (null = no expiry).
+        /// </summary>
+        public DateTimeOffset? ExpiryDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets how long user acceptance is valid (null = indefinite).
+        /// </summary>
+        public int? ValidityPeriodDays { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether this waiver version is currently active.
+        /// </summary>
+        public bool IsActive { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets scope of the waiver (All, Community, Event).
+        /// </summary>
+        public string AppliesTo { get; set; }
+
+        // Navigation properties
+        public virtual ICollection<CommunityWaiver> CommunityWaivers { get; set; }
+        public virtual ICollection<UserWaiver> UserWaivers { get; set; }
+    }
+}
+```
+
+**New Entity: CommunityWaiver**
+```csharp
+// New file: TrashMob.Models/CommunityWaiver.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Associates a waiver with a community (partner).
+    /// </summary>
+    public class CommunityWaiver : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the community (partner) identifier.
+        /// </summary>
+        public Guid CommunityId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the waiver identifier.
+        /// </summary>
+        public Guid WaiverId { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether this waiver is required for the community.
+        /// </summary>
+        public bool IsRequired { get; set; } = true;
+
+        // Navigation properties
+        public virtual Partner Community { get; set; }
+        public virtual WaiverVersion Waiver { get; set; }
+    }
+}
+```
+
+**New Entity: UserWaiver**
+```csharp
+// New file: TrashMob.Models/UserWaiver.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Records a user's acceptance of a waiver with audit trail.
+    /// </summary>
+    public class UserWaiver : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the user who accepted the waiver.
+        /// </summary>
+        public Guid UserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the waiver that was accepted.
+        /// </summary>
+        public Guid WaiverId { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the waiver was accepted.
+        /// </summary>
+        public DateTimeOffset AcceptedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets when this acceptance expires.
+        /// </summary>
+        public DateTimeOffset? ExpiryDate { get; set; }
+
+        #region Audit Trail
+
+        /// <summary>
+        /// Gets or sets the IP address at time of acceptance.
+        /// </summary>
+        public string IPAddress { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user agent at time of acceptance.
+        /// </summary>
+        public string UserAgent { get; set; }
+
+        #endregion
+
+        #region Minor Support
+
+        /// <summary>
+        /// Gets or sets whether the user was a minor at time of acceptance.
+        /// </summary>
+        public bool IsMinor { get; set; }
+
+        /// <summary>
+        /// Gets or sets the guardian's user ID (if minor).
+        /// </summary>
+        public Guid? GuardianUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the guardian's name (if minor and guardian not a user).
+        /// </summary>
+        public string GuardianName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the guardian's relationship to the minor.
+        /// </summary>
+        public string GuardianRelationship { get; set; }
+
+        #endregion
+
+        // Navigation properties
+        public virtual User User { get; set; }
+        public virtual WaiverVersion Waiver { get; set; }
+        public virtual User GuardianUser { get; set; }
+    }
+}
+```
+
+**DbContext Configuration (in MobDbContext.cs):**
+```csharp
+modelBuilder.Entity<WaiverVersion>(entity =>
+{
+    entity.Property(e => e.Name).HasMaxLength(200).IsRequired();
+    entity.Property(e => e.Version).HasMaxLength(50).IsRequired();
+    entity.Property(e => e.AppliesTo).HasMaxLength(50).IsRequired();
+});
+
+modelBuilder.Entity<CommunityWaiver>(entity =>
+{
+    entity.HasOne(e => e.Community)
+        .WithMany()
+        .HasForeignKey(e => e.CommunityId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.Waiver)
+        .WithMany(w => w.CommunityWaivers)
+        .HasForeignKey(e => e.WaiverId)
+        .OnDelete(DeleteBehavior.Cascade);
+});
+
+modelBuilder.Entity<UserWaiver>(entity =>
+{
+    entity.Property(e => e.IPAddress).HasMaxLength(50);
+    entity.Property(e => e.UserAgent).HasMaxLength(500);
+    entity.Property(e => e.GuardianName).HasMaxLength(200);
+    entity.Property(e => e.GuardianRelationship).HasMaxLength(100);
+
+    entity.HasOne(e => e.User)
+        .WithMany()
+        .HasForeignKey(e => e.UserId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.Waiver)
+        .WithMany(w => w.UserWaivers)
+        .HasForeignKey(e => e.WaiverId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasOne(e => e.GuardianUser)
+        .WithMany()
+        .HasForeignKey(e => e.GuardianUserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasIndex(e => e.UserId);
+    entity.HasIndex(e => e.WaiverId);
+    entity.HasIndex(e => e.ExpiryDate);
+});
 ```
 
 ### API Changes
