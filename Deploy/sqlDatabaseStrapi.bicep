@@ -1,0 +1,26 @@
+param environment string
+param region string
+
+var servers_db_name = 'sql-tm-${environment}-${region}'
+var db_Name = 'db-strapi-${environment}-${region}'
+
+resource strapiDatabase 'Microsoft.Sql/servers/databases@2023-05-01-preview' = {
+  name: '${servers_db_name}/${db_Name}'
+  location: region
+  sku: {
+    name: 'Basic'
+    tier: 'Basic'
+    capacity: 5
+  }
+  properties: {
+    collation: 'SQL_Latin1_General_CP1_CI_AS'
+    maxSizeBytes: 2147483648
+    catalogCollation: 'SQL_Latin1_General_CP1_CI_AS'
+    zoneRedundant: false
+    readScale: 'Disabled'
+    requestedBackupStorageRedundancy: 'Geo'
+    maintenanceConfigurationId: subscriptionResourceId('Microsoft.Maintenance/publicMaintenanceConfigurations', 'SQL_Default')
+  }
+}
+
+output databaseName string = db_Name

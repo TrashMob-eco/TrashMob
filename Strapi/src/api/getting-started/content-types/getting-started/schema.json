@@ -1,0 +1,42 @@
+{
+  "kind": "singleType",
+  "collectionName": "getting_started_sections",
+  "info": {
+    "singularName": "getting-started",
+    "pluralName": "getting-starteds",
+    "displayName": "Getting Started Section",
+    "description": "Getting started section with requirements list"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "heading": {
+      "type": "string",
+      "required": true,
+      "default": "Getting Started",
+      "maxLength": 100
+    },
+    "subheading": {
+      "type": "string",
+      "default": "All you really need to start or join a trash mob are:",
+      "maxLength": 255
+    },
+    "requirements": {
+      "type": "component",
+      "repeatable": true,
+      "component": "content.requirement-item"
+    },
+    "ctaButtonText": {
+      "type": "string",
+      "default": "Learn more",
+      "maxLength": 50
+    },
+    "ctaButtonLink": {
+      "type": "string",
+      "default": "/gettingstarted",
+      "maxLength": 255
+    }
+  }
+}

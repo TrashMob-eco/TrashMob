@@ -16,6 +16,7 @@ export const SiteAdminLayout = () => {
         // { name: 'View Executive Summary', value: `${pathPrefix}/executive-summary` },
         { name: 'Send Notifications', value: `${pathPrefix}/send-notifications` },
         { name: 'View Email Templates', value: `${pathPrefix}/email-templates` },
+        { name: 'Manage Content', value: `${pathPrefix}/content` },
     ];
 
     const handleValueChange = useCallback(
