@@ -64,32 +64,52 @@ public class Program
         }
 
         // Configure OpenTelemetry for observability
-        var resourceBuilder = ResourceBuilder.CreateDefault()
-            .AddService("TrashMob.Web", serviceVersion: "1.0.0");
+        var appInsightsConnectionString = builder.Configuration["ApplicationInsights:ConnectionString"];
 
         builder.Services.AddOpenTelemetry()
             .ConfigureResource(resource => resource.AddService("TrashMob.Web"))
-            .WithTracing(tracing => tracing
-                .AddSource(TrashMobActivitySources.AllSourceNames)
-                .AddAspNetCoreInstrumentation(options =>
+            .WithTracing(tracing =>
+            {
+                tracing
+                    .AddSource(TrashMobActivitySources.AllSourceNames)
+                    .AddAspNetCoreInstrumentation(options =>
+                    {
+                        // Filter out health check endpoints from traces
+                        options.Filter = httpContext =>
+                            !httpContext.Request.Path.StartsWithSegments("/health");
+                    })
+                    .AddHttpClientInstrumentation()
+                    .AddEntityFrameworkCoreInstrumentation();
+
+                if (!string.IsNullOrEmpty(appInsightsConnectionString))
                 {
-                    // Filter out health check endpoints from traces
-                    options.Filter = httpContext =>
-                        !httpContext.Request.Path.StartsWithSegments("/health");
-                })
-                .AddHttpClientInstrumentation()
-                .AddEntityFrameworkCoreInstrumentation()
-                .AddAzureMonitorTraceExporter())
-            .WithMetrics(metrics => metrics
-                .AddAspNetCoreInstrumentation()
-                .AddHttpClientInstrumentation()
-                .AddAzureMonitorMetricExporter());
+                    tracing.AddAzureMonitorTraceExporter(options =>
+                        options.ConnectionString = appInsightsConnectionString);
+                }
+            })
+            .WithMetrics(metrics =>
+            {
+                metrics
+                    .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation();
+
+                if (!string.IsNullOrEmpty(appInsightsConnectionString))
+                {
+                    metrics.AddAzureMonitorMetricExporter(options =>
+                        options.ConnectionString = appInsightsConnectionString);
+                }
+            });
 
         builder.Logging.AddOpenTelemetry(logging =>
         {
             logging.IncludeFormattedMessage = true;
             logging.IncludeScopes = true;
-            logging.AddAzureMonitorLogExporter();
+
+            if (!string.IsNullOrEmpty(appInsightsConnectionString))
+            {
+                logging.AddAzureMonitorLogExporter(options =>
+                    options.ConnectionString = appInsightsConnectionString);
+            }
         });
 
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
