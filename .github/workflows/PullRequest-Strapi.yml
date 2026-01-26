@@ -1,0 +1,36 @@
+# Pull Request workflow for TrashMob Strapi CMS Container
+
+name: PR - Strapi CMS
+
+on:
+  pull_request:
+    branches: [ "main", "release" ]
+    paths:
+      - '.github/workflows/PullRequest-Strapi.yml'
+      - '.github/workflows/container_strapi-tm-dev-westus2.yml'
+      - 'Deploy/containerAppStrapi.bicep'
+      - 'Deploy/sqlDatabaseStrapi.bicep'
+      - 'Strapi/**'
+
+jobs:
+  build-container:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build Strapi Container
+      uses: docker/build-push-action@v5
+      with:
+        context: ./Strapi
+        file: Strapi/Dockerfile
+        push: false
+        tags: trashmobstrapi:pr-${{ github.event.pull_request.number }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
