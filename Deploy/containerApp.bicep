@@ -8,7 +8,7 @@ param storageAccountName string
 param environment string
 param minReplicas int = 1
 param maxReplicas int = 3
-param strapiContainerAppName string = ''
+param strapiBaseUrl string = ''
 
 // Custom domain configuration (optional)
 // The managed certificate must be created separately before deployment
@@ -142,7 +142,7 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
             // Strapi CMS integration
             {
               name: 'StrapiBaseUrl'
-              value: strapiContainerAppName != '' ? 'http://${strapiContainerAppName}' : ''
+              value: strapiBaseUrl
             }
           ]
           probes: [

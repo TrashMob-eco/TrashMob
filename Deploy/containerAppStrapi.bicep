@@ -43,7 +43,7 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
     managedEnvironmentId: containerAppsEnvironmentId
     configuration: {
       ingress: {
-        external: false  // Internal only - accessed via TrashMob API proxy
+        external: true  // External access needed for admin panel (Strapi has built-in authentication)
         targetPort: 1337
         transport: 'auto'
         allowInsecure: false
