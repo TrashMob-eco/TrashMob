@@ -5,6 +5,12 @@ namespace TrashMob.Models
     /// <summary>
     /// Represents a user in the TrashMob system.
     /// </summary>
+    /// <remarks>
+    /// Users register via identity providers (Microsoft, Google, Apple, LinkedIn, or Email).
+    /// A unique username is required during registration as email addresses are never displayed publicly.
+    /// Users set a preferred location and travel distance limit to receive notifications about nearby events.
+    /// Users must agree to the TrashMob waiver before attending their first event.
+    /// </remarks>
     public class User : KeyedModel
     {
         /// <summary>

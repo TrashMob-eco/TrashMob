@@ -15,6 +15,13 @@ export default defineConfig(() => {
         plugins: [react()],
         server: {
             port: 3000,
+            proxy: {
+                '/api': {
+                    target: 'https://localhost:44332',
+                    changeOrigin: true,
+                    secure: false, // Allow self-signed certs for local dev
+                },
+            },
         },
         test: {
             environment: 'jsdom',

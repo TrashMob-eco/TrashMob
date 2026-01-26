@@ -6,29 +6,43 @@ The `TrashMob.Shared` project provides shared services, managers, and utilities 
 
 ## Key Contents
 
-- **Managers**: Classes for handling images, notifications, and other business operations.
+- **Managers**: Business logic layer for events, users, partners, litter reports, etc.
+- **Repositories**: Data access layer using Entity Framework Core.
 - **Email Templates**: Embedded HTML templates for system-generated emails (located in `Engine/EmailCopy/`).
 - **Integrations**: Azure Key Vault, Blob Storage, Azure Maps, and Notification Hubs.
-- **Data Access**: Entity Framework Core support for SQL Server and SQLite, including spatial data via NetTopologySuite.
 - **Utilities**: Helpers for configuration, image processing (ImageSharp), and email delivery (SendGrid).
-- **References**: Depends on `TrashMob.Models` for shared data models.
+
+## Project Structure
+
+```
+TrashMob.Shared/
+├── Managers/          # Business logic layer
+│   └── Interfaces/    # Manager interfaces
+├── Persistence/       # EF Core DbContext and repositories
+├── Engine/            # Background job logic and email templates
+├── Poco/              # Plain old C# objects (DTOs, ServiceResult)
+└── Migrations/        # EF Core database migrations
+```
 
 ## Technologies
 
-- .NET 9.0
-- Entity Framework Core
+- .NET 10
+- Entity Framework Core 10
 - Azure SDKs (Key Vault, Storage, Maps, Notification Hubs)
 - SendGrid (email delivery)
 - SixLabors.ImageSharp (image processing)
 
-## Usage
+## Key Patterns
 
-Reference this project from other solution components to access shared business logic, integrations, and utilities. Most cross-cutting concerns and reusable features are implemented here.
+- **Manager Pattern**: `BaseManager<T>` → `KeyedManager<T>` hierarchy
+- **Repository Pattern**: `BaseRepository<T>` → `KeyedRepository<T>` hierarchy
+- **ServiceResult Pattern**: For operations returning detailed success/error info
 
-## Helpful Links
+## Related Documentation
 
-- [Mobile App User Stories](https://github.com/TrashMob-eco/TrashMob/blob/main/MobileAppUserStories.md)
-- [Website User Stories](https://github.com/TrashMob-eco/TrashMob/blob/main/WebsiteUserStories.md)
+- [Root CLAUDE.md](../CLAUDE.md) - Architecture overview and coding standards
+- [Domain Model](../TrashMob.Models/TrashMob.Models.prd) - Core domain concepts and business rules
+- [TrashMob.Models README](../TrashMob.Models/README.md) - Entity definitions
 
 ---
 

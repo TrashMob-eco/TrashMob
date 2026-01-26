@@ -10,13 +10,21 @@
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
 
+    /// <summary>
+    /// Manages partner location contacts including CRUD operations and retrieving the parent partner.
+    /// </summary>
     public class PartnerLocationContactManager : KeyedManager<PartnerLocationContact>, IPartnerLocationContactManager
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PartnerLocationContactManager"/> class.
+        /// </summary>
+        /// <param name="partnerLocationContactRepository">The repository for partner location contact data access.</param>
         public PartnerLocationContactManager(IKeyedRepository<PartnerLocationContact> partnerLocationContactRepository)
             : base(partnerLocationContactRepository)
         {
         }
 
+        /// <inheritdoc />
         public async Task<Partner> GetPartnerForLocationContact(Guid partnerLocationContactId,
             CancellationToken cancellationToken)
         {
@@ -27,6 +35,7 @@
             return partnerLocationContact.PartnerLocation.Partner;
         }
 
+        /// <inheritdoc />
         public override async Task<IEnumerable<PartnerLocationContact>> GetByParentIdAsync(Guid parentId,
             CancellationToken cancellationToken)
         {

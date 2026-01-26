@@ -124,7 +124,7 @@
 
             var updatedEvent = await eventSummaryManager.UpdateAsync(eventSummary, UserId, cancellationToken)
                 .ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(UpdateEventSummary));
+            TrackEvent(nameof(UpdateEventSummary));
 
             return Ok(updatedEvent);
         }
@@ -151,7 +151,7 @@
             var result = await eventSummaryManager.AddAsync(eventSummary, UserId, cancellationToken)
                 .ConfigureAwait(false);
 
-            TelemetryClient.TrackEvent(nameof(AddEventSummary));
+            TrackEvent(nameof(AddEventSummary));
 
             return CreatedAtAction(nameof(GetEventSummary), new { eventId = eventSummary.EventId }, result);
         }
@@ -177,7 +177,7 @@
             }
 
             await eventSummaryManager.DeleteAsync(eventId, cancellationToken).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(DeleteEventSummary));
+            TrackEvent(nameof(DeleteEventSummary));
 
             return Ok(eventId);
         }

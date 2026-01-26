@@ -5,6 +5,11 @@ namespace TrashMob.Models
     /// <summary>
     /// Represents a physical location of a partner organization.
     /// </summary>
+    /// <remarks>
+    /// A partner may have multiple locations from which it provides services. For example, a grocery
+    /// store chain may have multiple locations willing to let volunteers use their dumpsters after
+    /// cleaning nearby areas. Each location can offer different services and has its own contacts.
+    /// </remarks>
     public class PartnerLocation : KeyedModel
     {
         /// <summary>

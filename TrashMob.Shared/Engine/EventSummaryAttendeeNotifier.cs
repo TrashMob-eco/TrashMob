@@ -8,8 +8,14 @@
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
 
+    /// <summary>
+    /// Notification engine that sends thank-you emails to event attendees after an event completes.
+    /// </summary>
     public class EventSummaryAttendeeNotifier : NotificationEngineBase, INotificationEngine
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EventSummaryAttendeeNotifier"/> class.
+        /// </summary>
         public EventSummaryAttendeeNotifier(IEventManager eventManager,
             IKeyedManager<User> userManager,
             IEventAttendeeManager eventAttendeeManager,
@@ -32,6 +38,7 @@
 
         protected override string EmailSubject => "Thank you for attending a TrashMob.eco event!";
 
+        /// <inheritdoc />
         public async Task GenerateNotificationsAsync(CancellationToken cancellationToken = default)
         {
             Logger.LogInformation("Generating Notifications for {0}", NotificationType);

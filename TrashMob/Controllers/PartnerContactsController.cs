@@ -87,7 +87,7 @@
             }
 
             await partnerContactManager.AddAsync(partnerContact, UserId, cancellationToken);
-            TelemetryClient.TrackEvent(nameof(AddPartnerContact));
+            TrackEvent(nameof(AddPartnerContact));
 
             return Ok();
         }
@@ -114,7 +114,7 @@
 
             var result = await partnerContactManager.UpdateAsync(partnerContact, UserId, cancellationToken)
                 .ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(UpdatePartnerContact));
+            TrackEvent(nameof(UpdatePartnerContact));
 
             return Ok(result);
         }
@@ -139,7 +139,7 @@
             }
 
             await partnerContactManager.DeleteAsync(partnerContactId, cancellationToken).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(DeletePartnerContact));
+            TrackEvent(nameof(DeletePartnerContact));
 
             return Ok(partnerContactId);
         }

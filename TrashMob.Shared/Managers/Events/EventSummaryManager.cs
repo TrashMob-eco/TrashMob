@@ -13,6 +13,9 @@
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
 
+    /// <summary>
+    /// Manages event summaries including statistics, post-event reports, and impact metrics.
+    /// </summary>
     public class EventSummaryManager : BaseManager<EventSummary>, IEventSummaryManager
     {
         private readonly IEventAttendeeManager eventAttendeeManager;
@@ -22,6 +25,9 @@
         private readonly IKeyedRepository<Event> eventRepository;
         private const int CancelledEventStatusId = 3;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EventSummaryManager"/> class.
+        /// </summary>
         public EventSummaryManager(IBaseRepository<EventSummary> repository,
             IKeyedRepository<Event> eventRepository,
             IEventManager eventManager,
@@ -37,6 +43,7 @@
             this.eventLitterReportManager = eventLitterReportManager;
         }
 
+        /// <inheritdoc />
         public async Task<Stats> GetStatsAsync(CancellationToken cancellationToken)
         {
             var stats = new Stats();
@@ -60,6 +67,7 @@
             return stats;
         }
 
+        /// <inheritdoc />
         public async Task<Stats> GetStatsByUser(Guid userId, CancellationToken cancellationToken)
         {
             var stats = new Stats();
@@ -98,6 +106,7 @@
             return stats;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<DisplayEventSummary>> GetFilteredAsync(LocationFilter locationFilter,
             CancellationToken cancellationToken = default)
         {
@@ -147,6 +156,7 @@
             return displaySummaries;
         }
 
+        /// <inheritdoc />
         public override async Task<int> DeleteAsync(Guid parentId, CancellationToken cancellationToken)
         {
             var eventSummary =

@@ -12,6 +12,9 @@
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
 
+    /// <summary>
+    /// Provides map-related services including distance calculations, timezone lookups, and address resolution using Azure Maps.
+    /// </summary>
     public class MapManager : IMapManager
     {
         private const string AzureMapKeyName = "AzureMapsKey";
@@ -22,22 +25,30 @@
         private readonly IConfiguration configuration;
         private readonly ILogger<MapManager> logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MapManager"/> class.
+        /// </summary>
+        /// <param name="configuration">The configuration containing map API keys.</param>
+        /// <param name="logger">The logger instance.</param>
         public MapManager(IConfiguration configuration, ILogger<MapManager> logger)
         {
             this.configuration = configuration;
             this.logger = logger;
         }
 
+        /// <inheritdoc />
         public string GetMapKey()
         {
             return configuration[AzureMapKeyName];
         }
 
+        /// <inheritdoc />
         public string GetGoogleMapKey()
         {
             return configuration[GoogleMapKeyName];
         }
 
+        /// <inheritdoc />
         public async Task<double> GetDistanceBetweenTwoPointsAsync(Tuple<double, double> pointA,
             Tuple<double, double> pointB, bool IsMetric = true)
         {
@@ -88,6 +99,7 @@
             }
         }
 
+        /// <inheritdoc />
         public async Task<string> GetTimeForPointAsync(Tuple<double, double> pointA, DateTimeOffset dateTimeOffset)
         {
             var azureMaps = new AzureMapsToolkit.AzureMapsServices(GetMapKey());
@@ -119,6 +131,7 @@
             return response?.Result?.TimeZones[0]?.ReferenceTime?.WallTime;
         }
 
+        /// <inheritdoc />
         public async Task<Address> GetAddressAsync(double latitude, double longitude)
         {
             var azureMaps = new AzureMapsToolkit.AzureMapsServices(GetMapKey());

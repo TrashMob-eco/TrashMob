@@ -194,7 +194,7 @@ namespace TrashMob.Controllers
 
             var result = await partnerAdminManager.AddAsync(partnerUser, UserId, cancellationToken)
                 .ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(AddPartnerUser));
+            TrackEvent(nameof(AddPartnerUser));
 
             return CreatedAtAction(nameof(GetPartnerUser), new { partnerId, userId }, result);
         }

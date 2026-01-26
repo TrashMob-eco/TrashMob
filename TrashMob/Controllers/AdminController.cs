@@ -42,7 +42,7 @@
         {
             var result = await partnerRequestManager.UpdateAsync(partnerRequest, UserId, cancellationToken)
                 .ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(UpdatePartnerRequest));
+            TrackEvent(nameof(UpdatePartnerRequest));
 
             return Ok(result);
         }
@@ -57,7 +57,7 @@
         public async Task<IActionResult> GetEmails(CancellationToken cancellationToken)
         {
             var result = await emailManager.GetEmailTemplatesAsync(cancellationToken).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(GetEmails));
+            TrackEvent(nameof(GetEmails));
 
             return Ok(result);
         }

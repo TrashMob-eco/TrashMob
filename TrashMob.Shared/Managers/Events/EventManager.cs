@@ -15,6 +15,15 @@
     using TrashMob.Shared.Persistence.Interfaces;
     using TrashMob.Shared.Poco;
 
+    /// <summary>
+    /// Manages event lifecycle including creation, updates, cancellation, and attendee notifications.
+    /// </summary>
+    /// <param name="repository">The repository for event data access.</param>
+    /// <param name="eventAttendeeManager">The manager for event attendees.</param>
+    /// <param name="eventAttendeeRepository">The repository for event attendee data access.</param>
+    /// <param name="eventLitterReportManager">The manager for event litter reports.</param>
+    /// <param name="mapManager">The map manager for timezone operations.</param>
+    /// <param name="emailManager">The email manager for sending notifications.</param>
     public class EventManager(
         IKeyedRepository<Event> repository,
         IEventAttendeeManager eventAttendeeManager,
@@ -27,6 +36,7 @@
         private const int StandardEventWindowInMinutes = 120;
         private readonly IEventLitterReportManager eventLitterReportManager = eventLitterReportManager;
 
+        /// <inheritdoc />
         public async Task<IEnumerable<Event>> GetActiveEventsAsync(CancellationToken cancellationToken = default)
         {
             return await Repo.Get(e =>
@@ -36,6 +46,7 @@
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<Event>> GetCompletedEventsAsync(CancellationToken cancellationToken = default)
         {
             return await Repo.Get(e => e.EventDate < DateTimeOffset.UtcNow
@@ -43,6 +54,7 @@
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<Event>> GetUserEventsAsync(Guid userId, bool futureEventsOnly,
             CancellationToken cancellationToken = default)
         {
@@ -52,6 +64,7 @@
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<Event>> GetUserEventsAsync(EventFilter filter, Guid userId,
             CancellationToken cancellationToken = default)
         {
@@ -62,6 +75,7 @@
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<Event>> GetCanceledUserEventsAsync(Guid userId, bool futureEventsOnly,
             CancellationToken cancellationToken = default)
         {
@@ -71,6 +85,7 @@
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<Event>> GetFilteredEventsAsync(EventFilter filter,
             CancellationToken cancellationToken = default)
         {
@@ -84,6 +99,7 @@
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<Location>> GeEventLocationsByTimeRangeAsync(DateTimeOffset? startTime,
             DateTimeOffset? endTime, CancellationToken cancellationToken = default)
         {
@@ -98,7 +114,7 @@
             return locations;
         }
 
-        // Delete the record of a particular Mob Event    
+        /// <inheritdoc />
         public async Task<int> DeleteAsync(Guid id, string cancellationReason, Guid userId,
             CancellationToken cancellationToken)
         {
@@ -153,6 +169,7 @@
             return 1;
         }
 
+        /// <inheritdoc />
         public override async Task<Event> AddAsync(Event instance, Guid userId,
             CancellationToken cancellationToken = default)
         {
@@ -197,6 +214,7 @@
             return newEvent;
         }
 
+        /// <inheritdoc />
         public override async Task<Event> UpdateAsync(Event instance, Guid userId,
             CancellationToken cancellationToken = default)
         {
