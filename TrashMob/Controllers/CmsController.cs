@@ -8,6 +8,7 @@ namespace TrashMob.Controllers
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Security;
     using TrashMob.Shared;
@@ -20,9 +21,13 @@ namespace TrashMob.Controllers
     /// </remarks>
     /// <param name="httpClientFactory">HTTP client factory for creating Strapi clients.</param>
     /// <param name="configuration">Application configuration.</param>
+    /// <param name="logger">Logger for telemetry.</param>
     [EnableCors("_myAllowSpecificOrigins")]
     [Route("api/cms")]
-    public class CmsController(IHttpClientFactory httpClientFactory, IConfiguration configuration) : SecureController
+    public class CmsController(
+        IHttpClientFactory httpClientFactory,
+        IConfiguration configuration,
+        ILogger<CmsController> logger) : BaseController(logger)
     {
         private readonly IHttpClientFactory httpClientFactory = httpClientFactory;
         private readonly string strapiBaseUrl = configuration["StrapiBaseUrl"] ?? string.Empty;
@@ -52,6 +57,7 @@ namespace TrashMob.Controllers
             }
 
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
+            TrackEvent(nameof(GetHeroSection));
             return Content(content, "application/json");
         }
 
@@ -80,6 +86,7 @@ namespace TrashMob.Controllers
             }
 
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
+            TrackEvent(nameof(GetWhatIsTrashmob));
             return Content(content, "application/json");
         }
 
@@ -108,6 +115,7 @@ namespace TrashMob.Controllers
             }
 
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
+            TrackEvent(nameof(GetGettingStarted));
             return Content(content, "application/json");
         }
 
@@ -127,6 +135,7 @@ namespace TrashMob.Controllers
                 return StatusCode(StatusCodes.Status503ServiceUnavailable, "CMS not configured");
             }
 
+            TrackEvent(nameof(GetAdminUrl));
             return Ok(new { adminUrl = $"{strapiBaseUrl}/admin" });
         }
     }
