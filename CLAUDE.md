@@ -335,6 +335,34 @@ az containerapp hostname bind \
 
 See `Deploy/CUSTOM_DOMAIN_MIGRATION.md` for full migration documentation.
 
+### Strapi CMS Infrastructure
+
+The Strapi CMS runs as a separate Container App (`strapi-tm-dev-westus2`) with internal-only ingress. It requires the following Key Vault secrets to be created before deployment:
+
+| Secret Name | Purpose |
+|-------------|---------|
+| `strapi-db-password` | Password for Strapi's Azure SQL database |
+| `strapi-admin-jwt-secret` | JWT secret for admin panel authentication |
+| `strapi-api-token-salt` | Salt for API token generation |
+| `strapi-app-keys` | Application keys (comma-separated) |
+| `strapi-transfer-token-salt` | Salt for transfer tokens |
+
+**Create secrets for a new environment:**
+```bash
+# Replace kv-tm-dev-westus2 with appropriate Key Vault name
+az keyvault secret set --vault-name kv-tm-dev-westus2 --name strapi-db-password --value "$(openssl rand -base64 32)"
+az keyvault secret set --vault-name kv-tm-dev-westus2 --name strapi-admin-jwt-secret --value "$(openssl rand -base64 32)"
+az keyvault secret set --vault-name kv-tm-dev-westus2 --name strapi-api-token-salt --value "$(openssl rand -base64 32)"
+az keyvault secret set --vault-name kv-tm-dev-westus2 --name strapi-app-keys --value "$(openssl rand -base64 32),$(openssl rand -base64 32)"
+az keyvault secret set --vault-name kv-tm-dev-westus2 --name strapi-transfer-token-salt --value "$(openssl rand -base64 32)"
+```
+
+**Key files:**
+- Bicep template: `Deploy/containerAppStrapi.bicep`
+- Database template: `Deploy/sqlDatabaseStrapi.bicep`
+- Workflow: `.github/workflows/container_strapi-tm-dev-westus2.yml`
+- Source: `Strapi/`
+
 ## Additional Resources
 
 - **2026 Planning:** `Planning/README.md` - Navigation hub for all planning docs
