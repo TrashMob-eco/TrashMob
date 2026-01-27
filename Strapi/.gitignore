@@ -8,7 +8,9 @@ build/
 # Strapi generated files
 .tmp/
 .cache/
+.strapi/
 .strapi-updater.json
+types/
 
 # Environment files
 .env
