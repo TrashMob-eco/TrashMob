@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 
 export const AboutUs: React.FC = () => {
     return (
-        <div className='tailwind'>
+        <div>
             <div className='mt-1 bg-card px-8'>
                 <div className='max-w-6xl mx-auto grid grid-cols-12'>
                     <div className='col-span-12 lg:col-span-5 pb-20 space-y-4'>

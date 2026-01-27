@@ -88,7 +88,7 @@ export const EventDetails: FC<EventDetailsProps> = () => {
     });
 
     return (
-        <div className='tailwind'>
+        <div>
             <HeroSection Title='View Events' Description='Learn, join, and inspire.' />
             {!isDataLoaded ? (
                 <p>
