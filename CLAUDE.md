@@ -335,6 +335,51 @@ az containerapp hostname bind \
 
 See `Deploy/CUSTOM_DOMAIN_MIGRATION.md` for full migration documentation.
 
+### Deployment Rollback Procedures
+
+Azure Container Apps keeps multiple revisions available. Use these procedures to roll back a deployment.
+
+**View available revisions:**
+```bash
+# Production
+az containerapp revision list --name ca-tm-pr-westus2 --resource-group rg-trashmob-pr-westus2 --output table
+
+# Development
+az containerapp revision list --name ca-tm-dev-westus2 --resource-group rg-trashmob-dev-westus2 --output table
+```
+
+**Roll back to a previous revision:**
+```bash
+# Production - activate a previous revision (replace <revision-name> with actual name from list)
+az containerapp revision activate --name ca-tm-pr-westus2 --resource-group rg-trashmob-pr-westus2 --revision <revision-name>
+
+# Then route 100% traffic to that revision
+az containerapp ingress traffic set --name ca-tm-pr-westus2 --resource-group rg-trashmob-pr-westus2 --revision-weight <revision-name>=100
+```
+
+**Roll back using a previous container image:**
+```bash
+# List images in Azure Container Registry
+az acr repository show-tags --name crtmprwestus2 --repository trashmob --orderby time_desc --output table
+
+# Deploy a specific image tag (e.g., a previous git SHA)
+az containerapp update --name ca-tm-pr-westus2 --resource-group rg-trashmob-pr-westus2 --image crtmprwestus2.azurecr.io/trashmob:<previous-tag>
+```
+
+**Rollback strategy:**
+- Keep 3 previous container images in ACR (automatic via GitHub Actions tagging)
+- Each deployment creates a new revision; old revisions remain available
+- Target rollback time: ≤ 5 minutes
+- Always verify rollback success by checking application health
+
+**Emergency rollback checklist:**
+1. Identify the issue (check Application Insights, user reports)
+2. List available revisions or images
+3. Execute rollback command
+4. Verify application is healthy (check `/health` endpoint or Swagger)
+5. Notify team of rollback
+6. Investigate root cause before redeploying
+
 ### Strapi CMS Infrastructure
 
 The Strapi CMS runs as a separate Container App (`strapi-tm-dev-westus2`) with internal-only ingress. It requires the following Key Vault secrets to be created before deployment:

@@ -1,4 +1,4 @@
-# Project 5 � Deployment Pipelines & Infrastructure
+# Project 5 � Deployment Pipelines & Infrastructure
 
 | Attribute | Value |
 |-----------|-------|
@@ -22,7 +22,6 @@ Restore and modernize CI/CD pipelines to enable reliable, frequent deployments. 
 - **Restore GitHub Actions** workflows for web, API, and function apps
 - **Automate mobile app store** deployments (TestFlight, Google Play Beta)
 - **Containerize applications** (web API, hourly jobs, daily jobs)
-- **Implement init containers** for database migrations
 - **Set up dashboards and alerts** for deployment health
 
 ### Secondary Goals
@@ -35,23 +34,23 @@ Restore and modernize CI/CD pipelines to enable reliable, frequent deployments. 
 ## Scope
 
 ### Phase 1 - Fix Existing Pipelines
-- ? Fix GitHub Actions workflows for web/API deployment
-- ? Fix Azure Function App deployments (hourly/daily jobs)
-- ? Resolve secret management issues
-- ? Update Node.js and .NET versions in workflows
+- ✅ Fix GitHub Actions workflows for web/API deployment
+- ✅ Fix Azure Function App deployments (hourly/daily jobs)
+- ✅ Resolve secret management issues
+- ✅ Update Node.js and .NET versions in workflows
 
 ### Phase 2 - Containerization
-- ? Create Dockerfiles for web API project
-- ? Create Dockerfiles for function apps
-- ? Set up Azure Container Registry
-- ? Deploy to Azure Container Apps (ACA) instead of App Service
-- ? Configure init containers for DB migrations
+- ✅ Create Dockerfiles for web API project
+- ✅ Create Dockerfiles for function apps
+- ✅ Set up Azure Container Registry
+- ✅ Deploy to Azure Container Apps (ACA) instead of App Service
 
-### Phase 3 - Mobile Automation
-- ? Automate iOS build and TestFlight upload
-- ? Automate Android build and Google Play Beta upload
-- ? Implement versioning strategy (semantic versioning)
-- ? Code signing certificate management
+### Phase 3 - Mobile Automation Review
+- ☐ Review existing iOS build and TestFlight upload workflow
+- ☐ Review existing Android build and Google Play Beta upload workflow
+- ☐ Verify versioning strategy is working correctly
+- ☐ Verify code signing certificate management
+- ☐ Document current workflows and identify any improvements
 
 ### Phase 4 - Monitoring
 - ? Deployment health dashboards (Grafana or Azure Monitor)
@@ -111,7 +110,7 @@ None (this is a foundational project)
 |------|------------|--------|------------|
 | **Containerization breaks existing functionality** | Medium | High | Thorough testing in staging; maintain App Service as fallback |
 | **Mobile code signing issues** | High | High | Early setup of certificates; backup manual process |
-| **Database migration failures** | Low | Critical | Init container with retry logic; manual rollback procedure |
+| **Database migration failures** | Low | Critical | Pre-deployment validation; manual rollback procedure |
 | **Cost savings don't materialize** | Medium | Low | Monitor closely; adjust resources; consider reserved instances |
 | **GitHub Actions outage** | Low | High | Have manual deployment procedure documented |
 
@@ -131,7 +130,6 @@ GitHub ? GitHub Actions ? Azure App Service (web/API)
 ```
 GitHub ? GitHub Actions ? Docker Build ? Azure Container Registry
                                     ? Azure Container Apps (web/API/jobs)
-                                    ? Init Container (DB migrations)
 ```
 
 **Bicep Files (Infrastructure as Code):**
@@ -155,18 +153,6 @@ resource webApi 'Microsoft.App/containerApps@2023-05-01' = {
       ]
     }
     template: {
-      initContainers: [
-        {
-          name: 'db-migrator'
-          image: '${acrName}.azurecr.io/trashmob-migrator:${imageTag}'
-          env: [
-            {
-              name: 'ConnectionStrings__TrashMobDatabase'
-              secretRef: 'connection-string'
-            }
-          ]
-        }
-      ]
       containers: [
         {
           name: 'web-api'
@@ -213,20 +199,6 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "TrashMob.dll"]
-```
-
-**DB Migrator Init Container:**
-
-```dockerfile
-# Deploy/Dockerfile.migrator
-FROM mcr.microsoft.com/dotnet/sdk:10.0
-WORKDIR /app
-COPY ["TrashMob.Shared/TrashMob.Shared.csproj", "./"]
-RUN dotnet restore
-COPY TrashMob.Shared/ ./
-RUN dotnet tool install --global dotnet-ef
-ENV PATH="${PATH}:/root/.dotnet/tools"
-CMD ["dotnet", "ef", "database", "update", "--project", "TrashMob.Shared.csproj"]
 ```
 
 ### GitHub Actions Workflows
@@ -335,14 +307,13 @@ jobs:
 - Create Dockerfiles
 - Set up ACR
 - Deploy to ACA (staging)
-- Test init containers
 - Performance testing
 
 ### Phase 3: Mobile Automation
-- Set up code signing
-- Create iOS workflow
-- Create Android workflow
-- Test TestFlight/Beta uploads
+- Review existing iOS/Android build workflows
+- Verify TestFlight upload process
+- Verify Google Play Beta upload process
+- Document current workflow and any improvements needed
 
 ### Phase 4: Monitoring
 - Set up dashboards
@@ -362,25 +333,21 @@ jobs:
 
 ## Open Questions
 
-1. **Should we migrate to Azure Container Apps or Azure Kubernetes Service (AKS)?**  
-   **Recommendation:** ACA for simplicity; AKS if need advanced orchestration  
-   **Owner:** DevOps Engineer  
-   **Due:** Before containerization phase
+1. **Should we migrate to Azure Container Apps or Azure Kubernetes Service (AKS)?**
+   **Decision:** Azure Container Apps (ACA) for simplicity. AKS would only be needed for advanced orchestration which is not required.
+   **Status:** Decided
 
-2. **What's our rollback strategy?**  
-   **Recommendation:** Keep 3 previous container images; script to redeploy previous version  
-   **Owner:** DevOps Engineer  
-   **Due:** Before monitoring phase
+2. **What's our rollback strategy?**
+   **Decision:** Keep 3 previous container images in ACR; redeploy previous revision using Azure CLI. Documentation added to root CLAUDE.md.
+   **Status:** Decided
 
-3. **Do we need staging and production environments?**  
-   **Recommendation:** Yes; deploy to staging first, then production after validation  
-   **Owner:** Product Lead  
-   **Due:** Early in project
+3. **Do we need staging and production environments?**
+   **Decision:** Yes. We have dev environment (dev.trashmob.eco) for staging and production (www.trashmob.eco). Deploy to dev first, then production after validation.
+   **Status:** Decided
 
-4. **What's the versioning strategy for mobile apps?**  
-   **Recommendation:** Semantic versioning; auto-increment build number  
-   **Owner:** Mobile Lead  
-   **Due:** Before mobile automation phase
+4. **What's the versioning strategy for mobile apps?**
+   **Decision:** Semantic versioning with auto-increment build number.
+   **Status:** Decided
 
 ---
 
@@ -392,7 +359,7 @@ jobs:
 
 ---
 
-**Last Updated:** January 24, 2026  
-**Owner:** DevOps/Build Engineer  
-**Status:** Ready for Dev Review  
-**Next Review:** When development begins
+**Last Updated:** January 26, 2026
+**Owner:** DevOps/Build Engineer
+**Status:** In Progress
+**Next Review:** Regular standups during development
