@@ -5,13 +5,11 @@
     "icon": "check",
     "description": "A requirement item with icon and label"
   },
-  "options": {},
   "attributes": {
     "icon": {
       "type": "string",
       "required": true,
-      "maxLength": 50,
-      "default": "gloves"
+      "maxLength": 50
     },
     "label": {
       "type": "string",
