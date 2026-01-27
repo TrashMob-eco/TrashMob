@@ -438,6 +438,7 @@ After Front Door is deployed, update the `_dnsauth` TXT records with actual vali
 - Autodiscover CNAME → Outlook
 
 **Bicep template:** `Deploy/dnsZone.bicep`
+
 ### Deployment Rollback Procedures
 
 Azure Container Apps keeps multiple revisions available. Use these procedures to roll back a deployment.
