@@ -35,6 +35,35 @@ docker build -f TrashMobDailyJobs/Dockerfile -t trashmob-daily-jobs:latest .
 docker build -f TrashMobHourlyJobs/Dockerfile -t trashmob-hourly-jobs:latest .
 ```
 
+### Strapi CMS (Local Development)
+```bash
+cd Strapi
+npm install
+
+# Create .env file with required secrets
+cat > .env << 'EOF'
+ADMIN_JWT_SECRET=local-dev-jwt-secret-32chars-min
+API_TOKEN_SALT=local-dev-api-token-salt-here
+APP_KEYS=key1-for-local-dev,key2-for-local-dev
+TRANSFER_TOKEN_SALT=local-dev-transfer-salt-here
+DATABASE_CLIENT=sqlite
+DATABASE_FILENAME=.tmp/data.db
+EOF
+
+# Create required directories
+mkdir -p public/uploads .tmp
+
+# Development mode (auto-reloads on changes)
+npm run develop
+# Strapi admin: http://localhost:1337/admin
+
+# Production mode
+npm run build
+npm run start
+```
+
+**Note:** Local Strapi uses SQLite for simplicity. Production uses Azure Files for persistent storage. Data created locally will not sync to deployed environments.
+
 ## Architecture Overview
 
 **Solution Structure:**
