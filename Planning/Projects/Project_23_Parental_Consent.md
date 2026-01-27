@@ -317,6 +317,52 @@ namespace TrashMob.Models
 }
 ```
 
+**New Entity: UserConsent (ToS/Privacy versioning)**
+```csharp
+// New file: TrashMob.Models/UserConsent.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Records user consent for Terms of Service, Privacy Policy, and other agreements.
+    /// </summary>
+    public class UserConsent : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the user's identifier.
+        /// </summary>
+        public Guid UserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of consent (ToS, Privacy, Parental).
+        /// </summary>
+        public string ConsentType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the version of the document accepted.
+        /// </summary>
+        public string Version { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the consent was accepted.
+        /// </summary>
+        public DateTimeOffset AcceptedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the IP address at time of consent.
+        /// </summary>
+        public string IPAddress { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user agent at time of consent.
+        /// </summary>
+        public string UserAgent { get; set; }
+
+        // Navigation property
+        public virtual User User { get; set; }
+    }
+}
+```
+
 **DbContext Configuration (in MobDbContext.cs):**
 ```csharp
 modelBuilder.Entity<User>(entity =>
@@ -372,6 +418,21 @@ modelBuilder.Entity<MinorEventParticipation>(entity =>
         .WithMany()
         .HasForeignKey(e => e.SupervisingAdultUserId)
         .OnDelete(DeleteBehavior.NoAction);
+});
+
+modelBuilder.Entity<UserConsent>(entity =>
+{
+    entity.Property(e => e.ConsentType).HasMaxLength(50).IsRequired();
+    entity.Property(e => e.Version).HasMaxLength(50).IsRequired();
+    entity.Property(e => e.IPAddress).HasMaxLength(45);
+    entity.Property(e => e.UserAgent).HasMaxLength(500);
+
+    entity.HasOne(e => e.User)
+        .WithMany()
+        .HasForeignKey(e => e.UserId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasIndex(e => new { e.UserId, e.ConsentType });
 });
 ```
 
