@@ -37,6 +37,7 @@ Mobile app quality directly impacts user retention and app store visibility. A c
 - Improve app startup performance
 - Reduce app size where possible
 - Consistent design language across all screens
+- Improve app store presence (screenshots, descriptions, metadata)
 
 ---
 
@@ -78,6 +79,14 @@ Mobile app quality directly impacts user retention and app store visibility. A c
 - ☐ Create troubleshooting guide for common errors
 - ☐ Write runbook for investigating Sentry errors
 - ☐ Update developer onboarding documentation
+
+### Phase 6 - App Store Presence
+- ☐ Create new screenshots showcasing improved UX
+- ☐ Update app store descriptions and feature highlights
+- ☐ Refresh app icon and promotional graphics (if needed)
+- ☐ Improve App Store (iOS) and Play Store (Android) metadata
+- ☐ Add/update app preview video (optional)
+- ☐ Respond to and address existing user reviews
 
 ---
 
