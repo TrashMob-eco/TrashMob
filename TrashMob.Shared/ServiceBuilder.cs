@@ -102,7 +102,6 @@
                 .AddScoped<ILookupRepository<EventPartnerLocationServiceStatus>,
                     LookupRepository<EventPartnerLocationServiceStatus>>();
             services.AddScoped<ILookupRepository<EventStatus>, LookupRepository<EventStatus>>();
-            services.AddScoped<IBaseRepository<EventSummary>, BaseRepository<EventSummary>>();
             services.AddScoped<ILookupRepository<EventType>, LookupRepository<EventType>>();
             services.AddScoped<IBaseRepository<IftttTrigger>, BaseRepository<IftttTrigger>>();
             services.AddScoped<ILookupRepository<InvitationStatus>, LookupRepository<InvitationStatus>>();
@@ -132,6 +131,7 @@
             services.AddScoped<IKeyedRepository<UserNotification>, KeyedRepository<UserNotification>>();
             services.AddScoped<IKeyedRepository<Waiver>, KeyedRepository<Waiver>>();
             services.AddScoped<ILookupRepository<WeightUnit>, LookupRepository<WeightUnit>>();
+            services.AddScoped<IBaseRepository<EventSummary>, EventSummaryRepository>();
 
             return services;
         }

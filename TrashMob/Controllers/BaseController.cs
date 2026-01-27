@@ -1,27 +1,27 @@
-﻿namespace TrashMob.Controllers
+﻿namespace TrashMob.Controllers;
+
+using Microsoft.ApplicationInsights;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
+
+[ApiController]
+[ApiVersion("1.0")]
+public abstract class BaseController : ControllerBase
 {
-    using Microsoft.ApplicationInsights;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.DependencyInjection;
+    private TelemetryClient telemetryClient;
 
-    [ApiController]
-    public abstract class BaseController : ControllerBase
+    public BaseController()
     {
-        private TelemetryClient telemetryClient;
+    }
 
-        public BaseController()
-        {
-        }
+    public BaseController(TelemetryClient telemetryClient)
+    {
+        TelemetryClient = telemetryClient;
+    }
 
-        public BaseController(TelemetryClient telemetryClient)
-        {
-            TelemetryClient = telemetryClient;
-        }
-
-        protected TelemetryClient TelemetryClient
-        {
-            get => telemetryClient ?? (telemetryClient = HttpContext.RequestServices.GetService<TelemetryClient>());
-            private set => telemetryClient = value;
-        }
+    protected TelemetryClient TelemetryClient
+    {
+        get => telemetryClient ?? (telemetryClient = HttpContext.RequestServices.GetService<TelemetryClient>());
+        private set => telemetryClient = value;
     }
 }

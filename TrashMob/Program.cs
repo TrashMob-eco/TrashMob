@@ -35,6 +35,7 @@ using TrashMob.Shared;
 using TrashMob.Shared.Managers;
 using TrashMob.Shared.Managers.Interfaces;
 using TrashMob.Shared.Persistence;
+using TrashMob.Swagger;
 
 public class Program
 {
@@ -145,7 +146,9 @@ public class Program
                 x.JsonSerializerOptions.Converters.Add(new GeoJsonConverterFactory());
             });
 
-        builder.Services.AddDbContext<MobDbContext>(c => c.UseLazyLoadingProxies());
+        builder.Services.AddDbContext<MobDbContext>(c => {
+            c.UseLazyLoadingProxies(); 
+        });
 
         // Security 
         builder.Services.AddScoped<IAuthorizationHandler, UserOwnsEntityAuthHandler>();
@@ -193,86 +196,7 @@ public class Program
                 name: "database",
                 tags: ["db", "sql", "sqlserver"]);
 
-        builder.Services.AddApiVersioning(options =>
-        {
-            options.DefaultApiVersion = new ApiVersion(1, 0);
-            options.AssumeDefaultVersionWhenUnspecified = true;
-            options.ReportApiVersions = true;
-        });
-        builder.Services.AddVersionedApiExplorer(options =>
-        {
-            options.GroupNameFormat = "'v'VVV";
-            options.SubstituteApiVersionInUrl = true;
-            options.AssumeDefaultVersionWhenUnspecified = true;
-        });
-        builder.Services.AddSwaggerGen(options =>
-        {
-            options.SwaggerDoc("v1", new OpenApiInfo { Title = "trashmobapi v1", Version = "v1" });
-            options.SwaggerDoc("v2", new OpenApiInfo { Title = "trashmobapi v2", Version = "v2" });
-            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-            {
-                In = ParameterLocation.Header,
-                Description = "Please enter a valid token",
-                Name = "Authorization",
-                Type = SecuritySchemeType.Http,
-                BearerFormat = "JWT",
-                Scheme = "Bearer"
-            });
-            options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
-            {
-                [new OpenApiSecuritySchemeReference("bearer", document)] = []
-            });
-
-            options.TagActionsBy(api =>
-            {
-                if (api.ActionDescriptor is Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor descriptor)
-                {
-                    var name = descriptor.ControllerTypeInfo.Name;
-                    if (name.Contains("ControllerV"))
-                    {
-                        return [name[..name.IndexOf("ControllerV")]];
-                    }
-                    return [descriptor.ControllerName];
-                }
-                return ["Other"];
-            });
-
-            options.DocInclusionPredicate((docName, apiDesc) =>
-            {
-                if (apiDesc.ActionDescriptor is not Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor controller)
-                    return false;
-
-                var versions = controller.ControllerTypeInfo
-                    .GetCustomAttributes(true)
-                    .OfType<ApiVersionAttribute>()
-                    .SelectMany(attr => attr.Versions)
-                    .ToList();
-
-                if (!versions.Any())
-                {
-                    return docName == "v1";
-                }
-
-                return versions.Any(v => $"v{v.MajorVersion}" == docName);
-            });
-
-
-            // Ensure documentation can be read by Swagger 
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies()
-                .Where(a => !a.IsDynamic);
-
-            foreach (var assembly in assemblies)
-            {
-                var xmlFile = $"{assembly.GetName().Name}.xml";
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-
-                if (File.Exists(xmlPath))
-                {
-                    options.IncludeXmlComments(xmlPath);
-                }
-            }
-        });
-
+        builder.Services.AddTrashMobSwagger();
         var app = builder.Build();
 
         var enableSwagger = builder.Environment.IsDevelopment() ||
@@ -287,6 +211,7 @@ public class Program
             {
                 builder.Run(async context =>
                 {
+                    //I think at some point we need to decide if we show this or the /Error, or when we show each
                     context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                     context.Response.ContentType = "application/problem+json";
 

@@ -18,6 +18,13 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
         /// <returns>The aggregate statistics.</returns>
         Task<Stats> GetStatsAsync(CancellationToken cancellationToken);
+        
+        /// <summary>
+        /// Gets aggregate statistics for all events.
+        /// </summary>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>The aggregate statistics.</returns>
+        Task<Stats> GetStatsV2Async(CancellationToken cancellationToken);
 
         /// <summary>
         /// Gets aggregate statistics for events associated with a specific user.
