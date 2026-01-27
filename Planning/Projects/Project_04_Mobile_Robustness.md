@@ -1,4 +1,4 @@
-# Project 4 � Mobile App Robustness
+# Project 4 — Mobile App Robustness & UX Improvements
 
 | Attribute | Value |
 |-----------|-------|
@@ -12,34 +12,39 @@
 
 ## Business Rationale
 
-Stabilize the .NET MAUI mobile application to ensure reliable user experience, increase app store ratings, and enable future feature development. Current issues include inconsistent error handling, app crashes, outdated toolchain, and lack of telemetry for debugging production issues.
+Stabilize and significantly improve the .NET MAUI mobile application to ensure reliable user experience, increase app store ratings, and enable future feature development. Current issues include inconsistent error handling, app crashes, outdated toolchain, lack of telemetry for debugging production issues, and a UX that needs substantial improvement in look and flow.
 
-Mobile app quality directly impacts user retention and app store visibility. A crash-free rate below 99% results in poor store rankings and negative reviews.
+Mobile app quality directly impacts user retention and app store visibility. A crash-free rate below 99% results in poor store rankings and negative reviews. Additionally, a polished, intuitive UX is essential for volunteer engagement and adoption.
 
 ---
 
 ## Objectives
 
 ### Primary Goals
-- **Achieve** ?99.5% crash-free sessions across iOS and Android
+- **Achieve** ≥99.5% crash-free sessions across iOS and Android
 - **Upgrade** to latest .NET 10 and MAUI versions
 - **Implement** comprehensive error handling with user-friendly messages
 - **Integrate** Sentry.io for crash reporting and APM
 - **Define** supported OS ranges (iOS 15+, Android 8.0+)
-- **Increase** unit test coverage to ? 60%
+- **Increase** unit test coverage to ≥ 60%
+- **Redesign** app navigation and flow for improved usability
+- **Refresh** visual design for modern, polished appearance
+- **Improve** key user journeys (event discovery, registration, litter reporting)
 
 ### Secondary Goals
 - Establish automated UI test framework
 - Create debugging runbooks for common issues
 - Improve app startup performance
 - Reduce app size where possible
+- Consistent design language across all screens
+- Improve app store presence (screenshots, descriptions, metadata)
 
 ---
 
 ## Scope
 
 ### Phase 1 - Stabilization
-- ? Upgrade to .NET 10 and latest MAUI stable version
+- ✅ Upgrade to .NET 10 and latest MAUI stable version
 - ? Fix all known crash bugs (priority: critical ? high ? medium)
 - ? Implement global error handling with retry logic
 - ? Add network failure handling (offline mode where appropriate)
@@ -53,46 +58,67 @@ Mobile app quality directly impacts user retention and app store visibility. A c
 - ? Build Grafana dashboards for mobile metrics
 
 ### Phase 3 - Testing
-- ? Add unit tests for ViewModels and critical business logic
-- ? Create manual test matrix for devices and OS versions
-- ? Perform regression testing on physical devices
-- ? Load test API integrations
-- ? Accessibility audit (TalkBack, VoiceOver)
+- ☐ Add unit tests for ViewModels and critical business logic
+- ☐ Create manual test matrix for devices and OS versions
+- ☐ Perform regression testing on physical devices
+- ☐ Load test API integrations
+- ☐ Accessibility audit (TalkBack, VoiceOver)
 
-### Phase 4 - Documentation
-- ? Document supported device matrix
-- ? Create troubleshooting guide for common errors
-- ? Write runbook for investigating Sentry errors
-- ? Update developer onboarding documentation
+### Phase 4 - UX Improvements
+- ☐ UX audit of current app (identify pain points and friction)
+- ☐ Redesign navigation structure (bottom tabs, drawer, flow)
+- ☐ Refresh visual design (colors, typography, spacing, icons)
+- ☐ Improve event discovery and browsing experience
+- ☐ Streamline event registration flow
+- ☐ Polish litter reporting flow (camera, location, submission)
+- ☐ Enhance dashboard/home screen with clear calls to action
+- ☐ Consistent loading states and feedback throughout app
+
+### Phase 5 - Documentation
+- ☐ Document supported device matrix
+- ☐ Create troubleshooting guide for common errors
+- ☐ Write runbook for investigating Sentry errors
+- ☐ Update developer onboarding documentation
+
+### Phase 6 - App Store Presence
+- ☐ Create new screenshots showcasing improved UX
+- ☐ Update app store descriptions and feature highlights
+- ☐ Refresh app icon and promotional graphics (if needed)
+- ☐ Improve App Store (iOS) and Play Store (Android) metadata
+- ☐ Add/update app preview video (optional)
+- ☐ Respond to and address existing user reviews
 
 ---
 
 ## Out-of-Scope
 
-- ? New feature development (focus on stability only)
-- ? UI/UX redesign (cosmetic changes deferred)
-- ? Complete offline mode (partial offline handling only)
-- ? Apple Watch or Android Wear apps
-- ? Tablet-optimized layouts
-- ? Performance optimization beyond critical issues
+- ❌ Major new feature development (focus on stability and UX polish)
+- ❌ Complete offline mode (partial offline handling only)
+- ❌ Apple Watch or Android Wear apps
+- ❌ Tablet-optimized layouts
+- ❌ Performance optimization beyond critical issues
 
 ---
 
 ## Success Metrics
 
 ### Quantitative
-- **Crash-free rate:** ? 99.5% (currently ~97%)
-- **App startup time:** ? 2 seconds (p95)
+- **Crash-free rate:** ≥ 99.5% (currently ~97%)
+- **App startup time:** ≤ 2 seconds (p95)
 - **API call failures handled gracefully:** 100%
-- **Unit test coverage:** ? 60% (currently ~20%)
-- **App store rating:** ? 4.0 stars (iOS and Android)
+- **Unit test coverage:** ≥ 60% (currently ~20%)
+- **App store rating:** ≥ 4.0 stars (iOS and Android)
 - **Sentry error rate:** < 1% of sessions
+- **Task completion rate:** Improved for key flows (event registration, litter reporting)
 
 ### Qualitative
 - Zero critical or high-severity bugs in production after release
 - Positive developer feedback on debugging capabilities
 - Successful release to both app stores
 - User reviews mention improved stability
+- User reviews mention improved look and feel
+- Navigation feels intuitive and consistent
+- Visual design feels modern and polished
 
 ---
 

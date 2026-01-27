@@ -1,4 +1,4 @@
-# Project 1 � Auth Revamp (Azure B2C ? Entra External ID)
+# Project 1 � Auth Revamp (Azure B2C ? Entra External ID)
 
 | Attribute | Value |
 |-----------|-------|
@@ -6,21 +6,21 @@
 | **Priority** | High |
 | **Risk** | Very High |
 | **Size** | Large |
-| **Dependencies** | Projects 10 (Community Pages), 23 (Minors) |
+| **Dependencies** | None |
 
 ---
 
 ## Business Rationale
 
-Modernize authentication system to enable minors (13+) participation, improve brand consistency, ensure legal compliance, and future-proof identity management. Current Azure B2C implementation lacks flexibility for parental consent workflows and partner SSO requirements.
+Modernize authentication system to improve brand consistency, simplify maintenance, and future-proof identity management. Evaluate whether Entra External ID provides benefits over current Azure B2C implementation for partner SSO requirements and long-term platform strategy.
 
 ---
 
 ## Objectives
 
 ### Primary Goals
-- **Migrate** from Azure B2C to Entra External ID with minimal user disruption
-- **Enable** parental consent flow for minors (13-17)
+- **Evaluate** Entra External ID vs staying on Azure B2C
+- **Migrate** to Entra External ID if evaluation supports it, with minimal user disruption
 - **Refresh** sign-in UI with new branding and improved UX
 - **Streamline** ToS/Privacy consent with versioning and re-consent support
 - **Implement** optional partner SSO for community administrators
@@ -52,12 +52,12 @@ Modernize authentication system to enable minors (13+) participation, improve br
 - Team familiarity
 
 ### Decision Criteria
-1. Feature gap analysis for minors support
-2. Total cost comparison (development + runtime)
-3. Migration complexity and rollback plan
-4. Privo.com integration compatibility
-5. Partner SSO requirements
-6. Community feedback from pilot users
+1. **Social login support:** Research whether Entra External ID supports required social providers (Google, Microsoft, Facebook, Apple)
+2. **Feature parity:** Ensure all current B2C capabilities are available in Entra External ID
+3. **Migration complexity:** Assess effort to migrate existing users and configurations
+4. **Total cost comparison:** Development + runtime costs
+5. **Partner SSO requirements:** Enterprise federation capabilities
+6. **Developer experience:** SDK support, documentation quality, debugging tools
 
 **Decision Timeline:** Before implementation begins
 
@@ -66,29 +66,26 @@ Modernize authentication system to enable minors (13+) participation, improve br
 ## Scope
 
 ### Phase 1 - Planning
-- ? Entra External ID vs B2C decision
-- ? Architecture design and migration plan
-- ? Privo.com integration design
-- ? Legal review of consent workflows
-- ? UI/UX mockups for new flows
-- ? Rollback strategy
+- ☐ Research Entra External ID feature support (social logins, custom UI, etc.)
+- ☐ Entra External ID vs B2C decision
+- ☐ Architecture design and migration plan
+- ☐ UI/UX mockups for new flows
+- ☐ Rollback strategy
 
 ### Phase 2 - Implementation
-- ? Set up Entra External ID tenant (if chosen)
-- ? Implement minors consent flow with Privo.com
-- ? Rebrand sign-in pages
-- ? ToS/Privacy versioning system
-- ? Home location capture during signup
-- ? Profile photo upload feature
-- ? Partner SSO configuration
-- ? Migration scripts for existing users
+- ☐ Set up Entra External ID tenant (if chosen)
+- ☐ Rebrand sign-in pages
+- ☐ ToS/Privacy versioning system
+- ☐ Home location capture during signup
+- ☐ Profile photo upload feature
+- ☐ Partner SSO configuration
+- ☐ Migration scripts for existing users
 
 ### Phase 3 - Migration
-- ? Shadow deployment and testing
-- ? Canary rollout (5% users)
-- ? Monitor and iterate
-- ? Full rollout with hot rollback capability
-- ? Update mobile apps (if needed)
+- ☐ Shadow deployment and testing
+- ☐ Full rollout with hot rollback capability
+- ☐ Monitor and iterate
+- ☐ Update mobile apps (if needed)
 
 ---
 
@@ -105,14 +102,12 @@ Modernize authentication system to enable minors (13+) participation, improve br
 
 ### Quantitative
 - **Signup completion rate:** Increase by 15%
-- **Minors successfully onboarded:** 500+ in 2026
 - **Auth-related support tickets:** Decrease by 40%
 - **Migration success rate:** 99%+ of users migrated without issues
 - **Rollback events:** 0 (successful migration without needing rollback)
 
 ### Qualitative
 - Mobile app store updates published and approved
-- Legal sign-off on consent workflows
 - Zero security incidents related to auth changes
 - Positive user feedback on new sign-in experience
 
@@ -121,13 +116,11 @@ Modernize authentication system to enable minors (13+) participation, improve br
 ## Dependencies
 
 ### Blockers
-- **Legal review:** COPPA compliance and consent artifacts retention
-- **Privo.com contract:** Age verification vendor agreement
-- **Security audit:** Entra External ID configuration review
+- **Feature research:** Confirm Entra External ID supports all required features
+- **Security audit:** Entra External ID configuration review (if migrating)
 
 ### Enablers for Other Projects
-- **Project 10 (Community Pages):** Requires partner SSO
-- **Project 23 (Minors):** Requires parental consent infrastructure
+- **Project 10 (Community Pages):** Partner SSO is nice-to-have
 - **Project 8 (Waivers V3):** Benefits from improved auth flows
 
 ---
@@ -138,10 +131,10 @@ Modernize authentication system to enable minors (13+) participation, improve br
 |------|------------|--------|------------|
 | **Scarce Entra expertise** | Medium | High | Contract SME; create detailed migration plan; extensive documentation |
 | **User confusion during migration** | High | Medium | Clear communication; in-app notifications; help center updates |
-| **Privo.com integration issues** | Low | High | Early integration testing; fallback to manual verification |
 | **Mobile app store approval delays** | Medium | Medium | Submit updates early; have rollback plan |
 | **Data loss during migration** | Low | Critical | Comprehensive backups; dry-run migrations; validation scripts |
 | **Performance degradation** | Low | Medium | Load testing; caching strategies; CDN for auth pages |
+| **Entra missing required features** | Medium | High | Thorough research in Phase 1; stay on B2C if gaps found |
 
 ---
 
@@ -149,34 +142,13 @@ Modernize authentication system to enable minors (13+) participation, improve br
 
 ### Data Model Changes
 - **User table additions:**
-  - `ConsentVersion` (int)
-  - `ConsentDate` (DateTimeOffset)
-  - `ConsentIPAddress` (string)
-  - `IsMinor` (bool)
-  - `ParentEmail` (string, nullable)
-  - `ParentConsentDate` (DateTimeOffset, nullable)
   - `ProfilePhotoUrl` (string, nullable)
-  - `PreferredLocationLat` (double, nullable)
-  - `PreferredLocationLng` (double, nullable)
-
-- **New table: UserConsents**
-  - `UserId` (Guid, FK)
-  - `ConsentType` (enum: ToS, Privacy, Parental)
-  - `Version` (string)
-  - `AcceptedDate` (DateTimeOffset)
-  - `IPAddress` (string)
-  - `UserAgent` (string)
 
 ### API Changes
 - **Auth endpoints updates:**
-  - `/api/auth/register` - Add consent parameters
-  - `/api/auth/consent/accept` - Record consent acceptance
   - `/api/auth/profile-photo` - Upload/delete profile photo
-  - `/api/auth/location` - Set preferred location
 
 - **Claims modifications:**
-  - Add `IsMinor` claim
-  - Add `ConsentVersion` claim
   - Add `ProfilePhotoUrl` claim
 
 ### Web UX Changes
@@ -188,10 +160,9 @@ Modernize authentication system to enable minors (13+) participation, improve br
 - **New onboarding flow:**
   1. Email/password or social login
   2. Accept ToS/Privacy (with version tracking)
-  3. Age verification (if under 18, trigger Privo flow)
-  4. Set preferred location (map picker)
-  5. Optional profile photo upload
-  6. Welcome message and tour
+  3. Set preferred location (map picker)
+  4. Optional profile photo upload
+  5. Welcome message and tour
 
 - **Return-to-page after auth:**
   - Store intended destination before redirecting to login
@@ -230,24 +201,16 @@ Modernize authentication system to enable minors (13+) participation, improve br
 - Validate configuration
 - Monitor metrics
 
-### Phase 5: Canary Rollout
-- Route 5% of new signups to new system
-- Monitor error rates and user feedback
-- A/B test signup completion rates
-
-### Phase 6: Gradual Rollout
-- Increase to 25%, 50%, 75% based on metrics
-- Migrate existing users in batches
+### Phase 5: Full Deployment
+- Switch all traffic to new system
+- Migrate existing users
 - 24/7 monitoring during migration
 
-### Phase 7: Full Deployment
-- 100% traffic to new system
-- Decommission old auth flow (keep available for rollback)
-- Update documentation
-
-### Phase 8: Stabilization
+### Phase 6: Stabilization
 - Address bugs and feedback
 - Optimize performance
+- Decommission old auth flow (keep available for rollback)
+- Update documentation
 - Document lessons learned
 
 **Note:** Phases are sequential. Each phase gate requires sign-off before proceeding.
@@ -256,38 +219,29 @@ Modernize authentication system to enable minors (13+) participation, improve br
 
 ## Open Questions
 
-1. **Entra External ID vs B2C final decision?**  
-   **Owner:** Security Engineer + Product Lead  
+1. **Does Entra External ID support all required social login providers?**
+   **Owner:** Engineering team
+   **Due:** Phase 1 research
+
+2. **Entra External ID vs B2C final decision?**
+   **Owner:** Security Engineer + Product Lead
    **Due:** Before implementation starts
 
-2. **What exact documents/data prove parental consent?**  
-   **Owner:** Legal team  
+3. **Can we grandfather existing users or require re-consent for ToS?**
+   **Owner:** Product team with legal review
    **Due:** Before implementation starts
 
-3. **How long must we retain consent artifacts?**  
-   **Owner:** Legal team  
-   **Due:** Before implementation starts
-
-4. **Can we grandfather existing users or require re-consent?**  
-   **Owner:** Product team with legal review  
-   **Due:** Before implementation starts
-
-5. **What's the fallback if Privo.com is unavailable?**  
-   **Owner:** Engineering team  
-   **Due:** During implementation
-
-6. **Do we need multi-factor auth for admins?**  
-   **Owner:** Security team  
+4. **Do we need multi-factor auth for admins?**
+   **Owner:** Security team
    **Due:** Can be Phase 2 if needed
 
 ---
 
 ## Related Documents
 
-- **[Project 23 - Parental Consent](./Project_23_Parental_Consent.md)** - Minors registration details
-- **[Project 10 - Community Pages](./Project_10_Community_Pages.md)** - Partner SSO requirements
+- **[Project 10 - Community Pages](./Project_10_Community_Pages.md)** - Partner SSO (nice-to-have)
+- **[Project 23 - Parental Consent](./Project_23_Parental_Consent.md)** - Separate project for minors/consent
 - **[Auth Migration Technical Design](../TechnicalDesigns/Auth_Migration.md)** - (To be created)
-- **[Privo.com Integration Guide](../TechnicalDesigns/Privo_Integration.md)** - (To be created)
 
 ---
 
