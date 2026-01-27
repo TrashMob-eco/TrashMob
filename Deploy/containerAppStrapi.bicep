@@ -26,18 +26,10 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing 
   name: storageAccountName
 }
 
-// Create file share for Strapi SQLite database
+// Create file share for Strapi uploads (SQLite uses local ephemeral storage due to SMB locking issues)
 resource fileServices 'Microsoft.Storage/storageAccounts/fileServices@2023-01-01' existing = {
   parent: storageAccount
   name: 'default'
-}
-
-resource strapiFileShare 'Microsoft.Storage/storageAccounts/fileServices/shares@2023-01-01' = {
-  parent: fileServices
-  name: 'strapi-data'
-  properties: {
-    shareQuota: 1  // 1 GB quota - sufficient for SQLite CMS data
-  }
 }
 
 resource strapiUploadsShare 'Microsoft.Storage/storageAccounts/fileServices/shares@2023-01-01' = {
@@ -53,23 +45,7 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2024-03-01'
   name: split(containerAppsEnvironmentId, '/')[8]  // Extract name from resource ID
 }
 
-// Add Azure Files storage to the managed environment
-resource environmentStorage 'Microsoft.App/managedEnvironments/storages@2024-03-01' = {
-  parent: containerAppsEnvironment
-  name: 'strapi-data'
-  properties: {
-    azureFile: {
-      accountName: storageAccountName
-      accountKey: storageAccount.listKeys().keys[0].value
-      shareName: 'strapi-data'
-      accessMode: 'ReadWrite'
-    }
-  }
-  dependsOn: [
-    strapiFileShare
-  ]
-}
-
+// Add Azure Files storage to the managed environment for uploads
 resource environmentUploadsStorage 'Microsoft.App/managedEnvironments/storages@2024-03-01' = {
   parent: containerAppsEnvironment
   name: 'strapi-uploads'
@@ -143,11 +119,7 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
           env: [
             {
               name: 'DATABASE_CLIENT'
-              value: 'sqlite'  // SQLite - Strapi's default, works with single replica
-            }
-            {
-              name: 'DATABASE_FILENAME'
-              value: '/data/strapi.db'  // Persistent storage path
+              value: 'sqlite'  // SQLite uses local ephemeral storage (Azure Files SMB has locking issues)
             }
             {
               name: 'ADMIN_JWT_SECRET'
@@ -179,10 +151,6 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
             }
           ]
           volumeMounts: [
-            {
-              volumeName: 'strapi-storage'
-              mountPath: '/data'
-            }
             {
               volumeName: 'strapi-uploads'
               mountPath: '/app/public/uploads'
@@ -216,11 +184,6 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
       ]
       volumes: [
         {
-          name: 'strapi-storage'
-          storageType: 'AzureFile'
-          storageName: 'strapi-data'
-        }
-        {
           name: 'strapi-uploads'
           storageType: 'AzureFile'
           storageName: 'strapi-uploads'
@@ -236,7 +199,6 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
     environment: environment
   }
   dependsOn: [
-    environmentStorage
     environmentUploadsStorage
   ]
 }

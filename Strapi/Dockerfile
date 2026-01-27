@@ -34,13 +34,14 @@ COPY --from=build /app/src ./src
 COPY --from=build /app/public ./public
 COPY --from=build /app/tsconfig.json ./tsconfig.json
 
-# Create uploads directory and data directory for SQLite
-RUN mkdir -p /app/public/uploads /data
+# Create uploads directory and local SQLite directory
+# SQLite uses local ephemeral storage (Azure Files SMB has locking issues)
+RUN mkdir -p /app/public/uploads /app/.tmp
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S strapi && \
     adduser -S strapi -u 1001 -G strapi && \
-    chown -R strapi:strapi /app /data
+    chown -R strapi:strapi /app
 
 USER strapi
 

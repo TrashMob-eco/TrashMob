@@ -4,7 +4,10 @@ export default ({ env }) => {
   const connections = {
     sqlite: {
       connection: {
-        filename: env('DATABASE_FILENAME', '.tmp/data.db'),
+        // Use local ephemeral storage for SQLite (Azure Files SMB has locking issues)
+        // Database is small and rebuilt on container restart
+        // Content types are defined in code, only data needs re-entry
+        filename: env('DATABASE_FILENAME', '/app/.tmp/data.db'),
       },
       useNullAsDefault: true,
       pool: {
