@@ -1,22 +1,3 @@
-export default {
-  routes: [
-    {
-      method: 'GET',
-      path: '/hero-section',
-      handler: 'hero-section.find',
-      config: {
-        auth: false,
-      },
-    },
-    {
-      method: 'PUT',
-      path: '/hero-section',
-      handler: 'hero-section.update',
-    },
-    {
-      method: 'DELETE',
-      path: '/hero-section',
-      handler: 'hero-section.delete',
-    },
-  ],
-};
+import { factories } from '@strapi/strapi';
+
+export default factories.createCoreRouter('api::hero-section.hero-section');
