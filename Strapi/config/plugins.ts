@@ -1,3 +1,7 @@
 export default ({ env }) => ({
-  // Enable/disable plugins as needed
+  'users-permissions': {
+    config: {
+      jwtSecret: env('JWT_SECRET') || env('ADMIN_JWT_SECRET'),
+    },
+  },
 });
