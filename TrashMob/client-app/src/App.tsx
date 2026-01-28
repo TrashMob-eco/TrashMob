@@ -126,10 +126,8 @@ const AuthSideAdminLayout = () => {
     const { currentUser, isUserLoaded } = useLogin();
     if (!isUserLoaded)
         return (
-            <div className='tailwind'>
-                <div className='flex justify-center items-center py-16'>
-                    <Loader2 className='animate-spin mr-2' /> Loading
-                </div>
+            <div className='flex justify-center items-center py-16'>
+                <Loader2 className='animate-spin mr-2' /> Loading
             </div>
         );
     if (isUserLoaded && !currentUser.isSiteAdmin) return <em>Access Denied</em>;
@@ -276,10 +274,8 @@ export const App: FC = () => {
     // Show loading while MSAL is initializing
     if (isInitializing || !msalClient) {
         return (
-            <div className='tailwind'>
-                <div className='flex justify-center items-center py-16 min-h-screen'>
-                    <Loader2 className='animate-spin mr-2' /> Loading...
-                </div>
+            <div className='flex justify-center items-center py-16 min-h-screen'>
+                <Loader2 className='animate-spin mr-2' /> Loading...
             </div>
         );
     }
@@ -289,9 +285,7 @@ export const App: FC = () => {
             <MsalProvider instance={msalClient}>
                 <AppContent />
             </MsalProvider>
-            <div className='tailwind'>
-                <Toaster />
-            </div>
+            <Toaster />
             <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
     );

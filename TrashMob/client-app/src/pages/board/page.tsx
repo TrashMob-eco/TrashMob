@@ -53,7 +53,7 @@ const boards = [
 
 export const Board: React.FC = () => {
     return (
-        <div className='tailwind'>
+        <div>
             <HeroSection Title='Board of Directors' Description='Meet our team!' />
             <div className='container my-5 pb-5'>
                 {boards.map((board) => (

@@ -155,7 +155,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
     };
 
     return (
-        <div className='tailwind'>
+        <div>
             <HeroSection Title='Dashboard' Description="See how much you've done!" />
             <div className='container mt-12! pb-12!'>
                 {eventToShare ? (

@@ -10,7 +10,7 @@ export class TermsOfServiceVersion {
 
 export const TermsOfService: FC = () => {
     return (
-        <div className='tailwind'>
+        <div>
             <HeroSection Title='Terms of Service' Description='Transparency matters to us.' />
             <div className='py-5 mx-auto container'>
                 <h5 className='font-semibold mt-5'>1. Terms</h5>

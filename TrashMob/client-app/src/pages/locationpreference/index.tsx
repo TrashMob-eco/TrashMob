@@ -229,7 +229,7 @@ export const LocationPreference = () => {
     if (!user) return null;
 
     return (
-        <div className='tailwind'>
+        <div>
             <HeroSection Title='Set your location' Description='Get notified for events near you!' />
             <div className='container mx-auto py-5'>
                 <Card>

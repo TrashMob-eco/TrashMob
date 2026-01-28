@@ -1,4 +1,4 @@
-# Project 2 � Home Page Improvements
+# Project 2 � Home Page Improvements
 
 | Attribute | Value |
 |-----------|-------|
@@ -45,12 +45,16 @@ Increase engagement and value communication by surfacing dynamic content, highli
 - ? Map legend with toggle controls
 - ? Litter report pins integration
 - ? Filter controls (event type, date range, etc.)
+- ? Map view: independent toggles for events and litter reports (show one, both, or neither)
+- ? List view: mutually exclusive selection (events OR litter reports)
+- ? Litter report date filter: historical only (last day, week, month, year, all)
 
 ### Phase 3 - Sponsorship Integration
-- ? Sponsor banner zones (top, sidebar, bottom)
-- ? Rotation logic for multiple sponsors
-- ? Click tracking and analytics
-- ? Admin UI for sponsor management
+- ☐ Sponsor banner zones (top, sidebar, bottom)
+- ☐ Rotation logic for multiple sponsors
+- ☐ Click tracking and analytics
+- ☐ Admin UI for sponsor management
+- ☐ **Feature flag entire sponsorship feature** (disabled until sponsors acquired)
 
 ### Phase 4 - Quick Actions
 - ? "Report Litter" quick action button
@@ -92,8 +96,8 @@ Increase engagement and value communication by surfacing dynamic content, highli
 
 ### Blockers
 - **Project 16 (CMS):** Required for dynamic content management
+- **Project 31 (Feature Flags):** Required for sponsorship feature toggle
 - **Design approval:** Mockups and sponsor placement guidelines
-- **Sponsor contracts:** At least 2-3 sponsors lined up
 
 ### Enables
 - **Project 10 (Community Pages):** Links from home page
@@ -159,7 +163,9 @@ public async Task<ActionResult<FeaturedContentDto>> GetFeaturedContent()
 3. **Events Map** (Enhanced)
    - Improved pins and legends
    - Filter controls
-   - Toggle for litter reports
+   - **Map view:** Toggle to show events, litter reports, or both (independent toggles)
+   - **List view:** Must select either events OR litter reports (mutually exclusive)
+   - **Litter report date filter:** Historical only (last day, week, month, year, all)
 
 4. **Featured Content** (New)
    - Rotating carousel
@@ -168,6 +174,8 @@ public async Task<ActionResult<FeaturedContentDto>> GetFeaturedContent()
 
 5. **Impact Statistics** (Dynamic)
    - Total bags, volunteers, events
+   - Total weight picked up
+   - Total litter reports submitted
    - Real-time or daily refresh
 
 6. **Sponsor Banner** (New)
@@ -271,10 +279,16 @@ No mobile app changes required (web-only improvements).
    **Owner:** Security + Privacy team  
    **Due:** Before sponsorship phase
 
-4. **Should featured content be curated or algorithmic?**  
-   **Recommendation:** Manual curation for now (2-3 features per week), algorithmic in future  
-   **Owner:** Product team  
+4. **Should featured content be curated or algorithmic?**
+   **Recommendation:** Manual curation for now (2-3 features per week), algorithmic in future
+   **Owner:** Product team
    **Due:** Early in project
+
+5. **Should we use a carousel for featured content?**
+   **Context:** Carousels have fallen out of favor in UX design due to low engagement (users rarely interact beyond first slide), accessibility challenges, and mobile usability issues. Alternatives include static featured cards, tabbed content, or a vertical feed.
+   **Recommendation:** Research current best practices; consider static grid or single featured item with "see more" link
+   **Owner:** UX Designer
+   **Due:** Design phase
 
 ---
 

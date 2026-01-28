@@ -76,7 +76,7 @@ export const CancelEvent: React.FC = () => {
     const cancellationReason = form.watch('cancellationReason');
 
     return (
-        <div className='tailwind'>
+        <div>
             {event ? (
                 <ShareToSocialsDialog
                     eventToShare={event}

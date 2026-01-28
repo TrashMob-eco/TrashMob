@@ -20,6 +20,17 @@ User-generated content (event photos, litter report images) requires moderation 
 - No flagging mechanism for users to report inappropriate content
 - No notification workflow when photos are removed
 
+**Moderation Workflow:**
+1. Any authenticated user can report an inappropriate image
+2. Flagged images are immediately tagged (InReview=true) and hidden from display
+3. Email notification sent to TrashMob staff about flagged photo
+4. Staff reviews the flagged photo and can:
+   - **Untag (false positive):** Set InReview=false, photo becomes visible again
+   - **Delete:** Remove photo permanently, notify uploader
+   - **Report to authorities:** For illegal content, retain evidence and report
+
+**Note:** The full moderation admin UI may not be ready when photo features launch. The data model fields (InReview, ReviewRequestedByUserId) should be added immediately so flagging can work; admin UI can follow later.
+
 ---
 
 ## Objectives
@@ -129,6 +140,21 @@ public enum PhotoModerationStatus
 public PhotoModerationStatus ModerationStatus { get; set; } = PhotoModerationStatus.Pending;
 
 /// <summary>
+/// Gets or sets whether the photo is under review (flagged by user, hidden from display).
+/// </summary>
+public bool InReview { get; set; }
+
+/// <summary>
+/// Gets or sets the user who requested the review (flagged the photo).
+/// </summary>
+public Guid? ReviewRequestedByUserId { get; set; }
+
+/// <summary>
+/// Gets or sets when the review was requested.
+/// </summary>
+public DateTimeOffset? ReviewRequestedDate { get; set; }
+
+/// <summary>
 /// Gets or sets the moderating admin's user identifier.
 /// </summary>
 public Guid? ModeratedByUserId { get; set; }
@@ -145,7 +171,8 @@ public string ModerationReason { get; set; }
 
 #endregion
 
-// Navigation property
+// Navigation properties
+public virtual User ReviewRequestedByUser { get; set; }
 public virtual User ModeratedByUser { get; set; }
 ```
 
@@ -396,9 +423,8 @@ public async Task<ActionResult> FlagPhoto(
 ## Open Questions
 
 1. **Should photos be hidden immediately when flagged?**
-   **Recommendation:** No, keep visible until admin decision to avoid abuse of flag system
-   **Owner:** Product
-   **Due:** Before Phase 3 starts
+   **Decision:** Yes, flagged photos are immediately hidden (InReview=true) and never displayed until admin reviews. This protects users from inappropriate content even if it means some false positives.
+   **Status:** Decided
 
 2. **How long to retain rejected photos?**
    **Recommendation:** 30 days for potential appeals, then permanently delete
@@ -409,6 +435,7 @@ public async Task<ActionResult> FlagPhoto(
 
 ## Related Documents
 
+- **[Project 3 - Litter Reporting Web](./Project_03_Litter_Reporting_Web.md)** - Litter report images need moderation
 - **[Project 18 - Before/After Photos](./Project_18_Before_After_Photos.md)** - Additional photo features
 - **[TrashMob.Models PRD](../../TrashMob.Models/TrashMob.Models.prd)** - Domain model documentation
 - **[Site Admin Layout](../../TrashMob/client-app/src/pages/siteadmin/_layout.tsx)** - Admin UI patterns
