@@ -377,7 +377,7 @@ az deployment group create \
     zoneName=trashmob.eco \
     environment=pr \
     frontDoorEndpointHostname=fde-tm-pr.azurefd.net \
-    frontDoorProfileId=/subscriptions/<sub-id>/resourceGroups/rg-trashmob-pr-westus2/providers/Microsoft.Cdn/profiles/fd-tm-pr \
+    frontDoorEndpointId=/subscriptions/<sub-id>/resourceGroups/rg-trashmob-pr-westus2/providers/Microsoft.Cdn/profiles/fd-tm-pr/afdEndpoints/fde-tm-pr \
     useFrontDoor=true
 ```
 

@@ -10,8 +10,8 @@ param frontDoorEndpointHostname string = ''
 @description('Container App FQDN for direct access (fallback if no Front Door)')
 param containerAppFqdn string = ''
 
-@description('Front Door profile resource ID for alias record')
-param frontDoorProfileId string = ''
+@description('Front Door endpoint resource ID for alias record (e.g., /subscriptions/.../providers/Microsoft.Cdn/profiles/fd-tm-pr/afdEndpoints/fde-tm-pr)')
+param frontDoorEndpointId string = ''
 
 @description('Enable Front Door integration (uses alias records for apex)')
 param useFrontDoor bool = true
@@ -42,13 +42,13 @@ resource wwwRecord 'Microsoft.Network/dnsZones/CNAME@2023-07-01-preview' = {
 
 // Apex A record with alias to Front Door (only if using Front Door)
 // This is the key record that enables apex domain support
-resource apexAliasRecord 'Microsoft.Network/dnsZones/A@2023-07-01-preview' = if (useFrontDoor && frontDoorProfileId != '') {
+resource apexAliasRecord 'Microsoft.Network/dnsZones/A@2023-07-01-preview' = if (useFrontDoor && frontDoorEndpointId != '') {
   parent: dnsZone
   name: '@'
   properties: {
     TTL: 3600
     targetResource: {
-      id: frontDoorProfileId
+      id: frontDoorEndpointId
     }
   }
 }
