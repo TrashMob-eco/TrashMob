@@ -364,6 +364,39 @@ az containerapp hostname bind \
 
 See `Deploy/CUSTOM_DOMAIN_MIGRATION.md` for full migration documentation.
 
+### Apex Domain (trashmob.eco) with Azure Front Door
+
+Azure Container Apps doesn't support apex/root domains with managed certificates directly. To handle both `trashmob.eco` and `www.trashmob.eco`, use Azure Front Door:
+
+**Deploy Front Door:**
+```bash
+# Deploy Front Door for production
+az deployment group create \
+  --resource-group rg-trashmob-pr-westus2 \
+  --template-file Deploy/frontDoor.bicep \
+  --parameters \
+    environment=pr \
+    containerAppFqdn=ca-tm-pr-westus2.greenground-fd8fc385.westus2.azurecontainerapps.io \
+    primaryDomain=www.trashmob.eco \
+    apexDomain=trashmob.eco
+```
+
+**DNS Configuration for Front Door:**
+
+| Record Type | Name | Value |
+|-------------|------|-------|
+| CNAME | `www` | `fde-tm-pr.azurefd.net` (Front Door endpoint) |
+| ALIAS/ANAME | `@` (apex) | `fde-tm-pr.azurefd.net` (requires Azure DNS or Cloudflare) |
+| TXT | `_dnsauth.www` | validation token from Azure Portal |
+| TXT | `_dnsauth` | validation token from Azure Portal |
+
+**Note:** Microsoft 365 DNS doesn't support ALIAS records for apex domains. Options:
+1. Migrate DNS to Azure DNS (supports alias records to Front Door)
+2. Use Cloudflare DNS (free, supports CNAME flattening for apex)
+3. Keep current setup with only `www.trashmob.eco` working
+
+**Bicep template:** `Deploy/frontDoor.bicep`
+
 ### Strapi CMS Infrastructure
 
 The Strapi CMS runs as a separate Container App (`strapi-tm-dev-westus2`) with internal-only ingress. It requires the following Key Vault secrets to be created before deployment:
