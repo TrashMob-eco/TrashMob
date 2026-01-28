@@ -100,7 +100,7 @@ export const Faq: React.FC = () => {
     const faqGroup = faqs.find((group) => group.category === selectedGroupKey);
 
     return (
-        <div className='tailwind'>
+        <div>
             <HeroSection Title='FAQ' Description='We’ve got you covered.' />
             <div className='container mx-auto my-5 pt-5 space-y-4'>
                 <div className='flex flex-col sm:flex-row gap-4'>

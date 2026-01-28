@@ -133,53 +133,51 @@ export function AzureSearchLocationInput(props: AzureSearchLocationInputProps) {
     };
 
     return (
-        <div className='tailwind'>
-            <Command
-                ref={commandRef}
-                shouldFilter={false}
-                className={cn('rounded-lg! border md:min-w-[200px] relative', { 'shadow-md': open }, className)}
-            >
-                {renderInput ? (
-                    renderInput(customInputProps)
-                ) : (
-                    <CommandInput
-                        placeholder={placeholder ?? 'Location...'}
-                        value={query}
-                        onValueChange={(value) => setQuery(value)}
-                        onFocus={handleFocus}
-                        className={cn('mb-0!', inputClassName)}
-                    />
+        <Command
+            ref={commandRef}
+            shouldFilter={false}
+            className={cn('rounded-lg! border md:min-w-[200px] relative', { 'shadow-md': open }, className)}
+        >
+            {renderInput ? (
+                renderInput(customInputProps)
+            ) : (
+                <CommandInput
+                    placeholder={placeholder ?? 'Location...'}
+                    value={query}
+                    onValueChange={(value) => setQuery(value)}
+                    onFocus={handleFocus}
+                    className={cn('mb-0!', inputClassName)}
+                />
+            )}
+            <CommandList
+                className={cn(
+                    'hidden [&.cmdk-list-sizer]:w-full',
+                    { flex: showSuggestion && query.length > 1 },
+                    listClassName,
                 )}
-                <CommandList
-                    className={cn(
-                        'hidden [&.cmdk-list-sizer]:w-full',
-                        { flex: showSuggestion && query.length > 1 },
-                        listClassName,
-                    )}
-                >
-                    {isLoading || isFetching ? (
-                        <div className='p-2 text-sm text-gray-500'>Loading...</div>
-                    ) : suggestionGroups.length ? (
-                        suggestionGroups.map((group) => (
-                            <CommandGroup heading={group.groupName} key={group.groupName} className='border-b'>
-                                {group.items.map((item) => (
-                                    <CommandItem
-                                        key={item.id}
-                                        value={item.id}
-                                        className='font-light py-3! cursor-pointer'
-                                        onSelect={handleSelectSuggestion}
-                                    >
-                                        {item.displayAddress}
-                                    </CommandItem>
-                                ))}
-                            </CommandGroup>
-                        ))
-                    ) : query.length > 1 ? (
-                        <div className='p-2 text-sm text-gray-500'>No results found.</div>
-                    ) : null}
-                </CommandList>
-            </Command>
-        </div>
+            >
+                {isLoading || isFetching ? (
+                    <div className='p-2 text-sm text-gray-500'>Loading...</div>
+                ) : suggestionGroups.length ? (
+                    suggestionGroups.map((group) => (
+                        <CommandGroup heading={group.groupName} key={group.groupName} className='border-b'>
+                            {group.items.map((item) => (
+                                <CommandItem
+                                    key={item.id}
+                                    value={item.id}
+                                    className='font-light py-3! cursor-pointer'
+                                    onSelect={handleSelectSuggestion}
+                                >
+                                    {item.displayAddress}
+                                </CommandItem>
+                            ))}
+                        </CommandGroup>
+                    ))
+                ) : query.length > 1 ? (
+                    <div className='p-2 text-sm text-gray-500'>No results found.</div>
+                ) : null}
+            </CommandList>
+        </Command>
     );
 }
 

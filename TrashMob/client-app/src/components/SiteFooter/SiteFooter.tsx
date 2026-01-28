@@ -19,7 +19,7 @@ export const SiteFooter = () => {
     ];
 
     return (
-        <footer className='tailwind'>
+        <footer>
             <div className='bg-[#212529] relative py-10! overflow-hidden'>
                 <Logo
                     className='w-[900px] absolute z-0 left-[20%] md:left-[40%] inset-y-1/2 -translate-y-100 opacity-10'

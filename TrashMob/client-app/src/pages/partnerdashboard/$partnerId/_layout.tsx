@@ -27,7 +27,7 @@ export const PartnerLayout = () => {
     );
 
     return (
-        <div className='tailwind'>
+        <div>
             <div className='container mx-auto my-4'>
                 <Tabs value={location.pathname} onValueChange={handleValueChange}>
                     <TabsList className='w-full h-14'>

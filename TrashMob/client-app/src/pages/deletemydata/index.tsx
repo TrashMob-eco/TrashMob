@@ -30,7 +30,7 @@ export const DeleteMyData: FC<DeleteMyDataProps> = (props) => {
     };
 
     return (
-        <div className='tailwind'>
+        <div>
             <HeroSection
                 Title='Delete your account?'
                 Description='TrashMob members are making the world a better place!'

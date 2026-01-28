@@ -209,7 +209,7 @@ export const Help: React.FC = () => {
     const tabContent = tabContents.find((tab) => tab.category === selectedTab);
 
     return (
-        <div className='tailwind'>
+        <div>
             <HeroSection Title='Site Help' Description='Answering your questions!' />
             <div className='container mx-auto my-5 pt-5 space-y-4'>
                 <div className='flex flex-col sm:flex-row gap-4'>
