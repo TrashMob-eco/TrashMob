@@ -396,7 +396,48 @@ az deployment group create \
 3. Keep current setup with only `www.trashmob.eco` working
 
 **Bicep template:** `Deploy/frontDoor.bicep`
-=======
+
+### Azure DNS Migration (for Apex Domain Support)
+
+To support the apex domain (`trashmob.eco`) with Azure Front Door, migrate DNS from Microsoft 365 to Azure DNS:
+
+**Step 1: Deploy Azure DNS Zone**
+```bash
+az deployment group create \
+  --resource-group rg-trashmob-pr-westus2 \
+  --template-file Deploy/dnsZone.bicep \
+  --parameters \
+    zoneName=trashmob.eco \
+    environment=pr \
+    frontDoorEndpointHostname=fde-tm-pr.azurefd.net \
+    frontDoorEndpointId=/subscriptions/<sub-id>/resourceGroups/rg-trashmob-pr-westus2/providers/Microsoft.Cdn/profiles/fd-tm-pr/afdEndpoints/fde-tm-pr \
+    useFrontDoor=true
+```
+
+**Step 2: Note Azure Nameservers**
+The deployment outputs Azure's nameservers (e.g., `ns1-01.azure-dns.com`). You'll need all 4.
+
+**Step 3: Update Domain Registrar**
+Go to your domain registrar (where trashmob.eco was purchased) and update nameservers to Azure's:
+- `ns1-01.azure-dns.com`
+- `ns2-01.azure-dns.net`
+- `ns3-01.azure-dns.org`
+- `ns4-01.azure-dns.info`
+
+**Step 4: Wait for Propagation**
+DNS propagation can take 24-48 hours. Use `dig` or `nslookup` to verify.
+
+**Step 5: Update Validation Tokens**
+After Front Door is deployed, update the `_dnsauth` TXT records with actual validation tokens from Azure Portal.
+
+**Included Records:**
+- WWW CNAME → Front Door
+- Apex ALIAS → Front Door (Azure DNS alias record)
+- Dev CNAME → Dev Container App
+- MX, SPF, DKIM → Microsoft 365 email
+- Autodiscover CNAME → Outlook
+
+**Bicep template:** `Deploy/dnsZone.bicep`
 ### Deployment Rollback Procedures
 
 Azure Container Apps keeps multiple revisions available. Use these procedures to roll back a deployment.
