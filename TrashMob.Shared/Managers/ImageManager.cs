@@ -32,7 +32,7 @@
             var imageUrl = string.Empty;
 
             // Should only be one image.
-            await foreach (var blob in blobContainer.GetBlobsAsync(prefix: fileNameFilter, cancellationToken: cancellationToken))
+            await foreach (var blob in blobContainer.GetBlobsAsync(BlobTraits.None, BlobStates.None, fileNameFilter, cancellationToken))
             {
                 imageUrl = $"{blobContainer.Uri}/{blob.Name}";
                 break;
@@ -147,7 +147,7 @@
             var imageName = string.Empty;
 
             // For now, only show the first image, since there should only be one for Pickups.
-            await foreach (var blob in blobContainer.GetBlobsAsync(prefix: fileNameFilter))
+            await foreach (var blob in blobContainer.GetBlobsAsync(BlobTraits.None, BlobStates.None, fileNameFilter, CancellationToken.None))
             {
                 imageName = blob.Name;
                 break;
