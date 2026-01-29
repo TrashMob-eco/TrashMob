@@ -249,8 +249,25 @@ public async Task<ActionResult<EventSummaryAttendeeDto>> CreateAttendeeEntry(
 
 ### Web UX Changes
 
+**User Preference Integration:**
+All weight displays and entry forms must respect the signed-in user's `PrefersMetric` setting:
+
+```tsx
+// Hook to get user's preferred weight unit
+const usePreferredWeightUnit = () => {
+  const { data: user } = useGetCurrentUser();
+  return user?.prefersMetric ? 'kg' : 'lbs';
+};
+
+// Usage in components
+const preferredUnit = usePreferredWeightUnit();
+const displayWeight = convertToUnit(rawWeight, rawUnit, preferredUnit);
+```
+
 **Event Summary Form (Phase 1):**
 ```tsx
+const preferredUnit = usePreferredWeightUnit();
+
 <FormGroup>
   <Label>Total Weight Collected</Label>
   <InputGroup>
@@ -261,9 +278,13 @@ public async Task<ActionResult<EventSummaryAttendeeDto>> CreateAttendeeEntry(
       onChange={(e) => setTotalWeight(e.target.value)}
       placeholder="Enter weight"
     />
-    <Select value={weightUnits} onChange={(e) => setWeightUnits(e.target.value)}>
+    <Select
+      value={weightUnits}
+      onChange={(e) => setWeightUnits(e.target.value)}
+      defaultValue={preferredUnit}  // Default to user's preference
+    >
       <option value="lbs">pounds (lbs)</option>
-      <option value="kgs">kilograms (kgs)</option>
+      <option value="kg">kilograms (kg)</option>
     </Select>
   </InputGroup>
   <FormText>Optional: Enter the total weight of litter collected</FormText>
@@ -292,9 +313,37 @@ public async Task<ActionResult<EventSummaryAttendeeDto>> CreateAttendeeEntry(
 
 ### Mobile App Changes
 
-- Add weight fields to event summary form
-- Display weight in event details
-- Phase 2: Attendee entry form on mobile
+**User Preference Integration:**
+The mobile app must also respect the user's `PrefersMetric` setting from their profile.
+
+**Phase 1 Requirements:**
+- **Event Summary Form:** Add weight entry fields with unit selector defaulting to user's preference
+- **Event Summary Display:** Show weight in user's preferred unit
+- **Event Details View:** Display weight converted to user's preferred unit
+- **Statistics/Dashboard:** Show total weights in user's preferred unit
+- **My Dashboard:** Display user's personal weight contributions in preferred unit
+
+**Implementation Notes:**
+```csharp
+// In MAUI ViewModels - get user's preference
+var prefersMetric = _userService.CurrentUser?.PrefersMetric ?? false;
+var displayUnit = prefersMetric ? "kg" : "lbs";
+
+// Convert for display
+var displayWeight = prefersMetric
+    ? weight * 0.453592m  // lbs to kg
+    : weight;             // already in lbs
+```
+
+**Screens to Update:**
+1. `EventSummaryPage` - Add weight entry with unit picker
+2. `EventDetailsPage` - Display weight in user's preferred unit
+3. `MyDashboardPage` - Show personal stats with preferred unit
+4. `StatisticsPage` (if exists) - Display aggregate weights in preferred unit
+
+**Phase 2 Requirements:**
+- Attendee entry form on mobile with weight input
+- Unit selector defaulting to user's preference
 
 ---
 
@@ -328,9 +377,46 @@ public async Task<ActionResult<EventSummaryAttendeeDto>> CreateAttendeeEntry(
 - Optional field (not required)
 
 ### Unit Preference
-- Default to user's preference (from profile)
-- Fall back to imperial (lbs) in US, metric elsewhere
-- Always store conversion factor for accuracy
+
+**User Preference Storage:**
+The `User` table already has a `PrefersMetric` boolean field that stores the user's weight unit preference.
+
+```csharp
+// In TrashMob.Models/User.cs (existing)
+public bool PrefersMetric { get; set; }  // true = metric (kg), false = imperial (lbs)
+```
+
+**Display and Entry Behavior:**
+- **Signed-in users:** Use `PrefersMetric` from the user's profile for all weight displays and form defaults
+- **Anonymous users:** Default to imperial (lbs)
+- **Null/unset preference:** Default to imperial (lbs)
+- Forms should pre-select the user's preferred unit
+- Displays should convert and show weights in the user's preferred unit
+
+**Implementation Requirements:**
+1. **Frontend:** Fetch user preference on load; use for all weight-related components
+2. **API responses:** Include both raw value + unit, let frontend handle conversion
+3. **Statistics displays:** Convert to user's preferred unit (home page stats, dashboards, event details)
+4. **Event summary forms:** Default unit selector to user's preference
+5. **Attendee entry forms (Phase 2):** Default unit selector to user's preference
+
+**Conversion Constants:**
+```typescript
+const LBS_TO_KG = 0.453592;
+const KG_TO_LBS = 2.20462;
+```
+
+**Example Frontend Logic:**
+```typescript
+const getUserWeightUnit = (user: User | null): 'lbs' | 'kg' => {
+  return user?.prefersMetric ? 'kg' : 'lbs';
+};
+
+const convertWeight = (weight: number, fromUnit: string, toUnit: string): number => {
+  if (fromUnit === toUnit) return weight;
+  return fromUnit === 'lbs' ? weight * LBS_TO_KG : weight * KG_TO_LBS;
+};
+```
 
 ### Attendee Entries (Phase 2)
 - Sum of attendee weights should be ? event total � 1.2 (20% tolerance)
@@ -371,7 +457,13 @@ public async Task<ActionResult<EventSummaryAttendeeDto>> CreateAttendeeEntry(
 
 ---
 
-**Last Updated:** January 24, 2026  
-**Owner:** Product Lead + Engineering Team  
-**Status:** Ready for Review  
+**Last Updated:** January 28, 2026
+**Owner:** Product Lead + Engineering Team
+**Status:** Ready for Review
 **Next Review:** When volunteer picks up work
+
+---
+
+## Changelog
+
+- **2026-01-28:** Added detailed requirements for user weight unit preference (`User.PrefersMetric`) integration across all displays and entry forms

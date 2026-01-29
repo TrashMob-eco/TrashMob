@@ -3,6 +3,10 @@ class StatsData {
 
     totalEvents: number = 0;
 
+    totalWeightInPounds: number = 0;
+
+    totalWeightInKilograms: number = 0;
+
     totalHours: number = 0;
 
     totalParticipants: number = 0;
