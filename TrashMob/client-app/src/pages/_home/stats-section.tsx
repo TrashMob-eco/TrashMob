@@ -9,6 +9,7 @@ import Trashbag from '@/components/assets/home/Trashbag.svg';
 import Person from '@/components/assets/home/Person.svg';
 import Clock from '@/components/assets/home/Clock.svg';
 import LitterReport from '@/components/assets/home/LitterReport.svg';
+import Weight from '@/components/assets/home/Weight.svg';
 import { useIsInViewport } from '@/hooks/useIsInViewport';
 import { useLogin } from '@/hooks/useLogin';
 
@@ -88,7 +89,7 @@ export const StatsSection = () => {
             id: 5,
             title: weightLabel,
             value: weightValue,
-            icon: Trashbag,
+            icon: Weight,
             alt: 'Total weight',
         },
     ];
