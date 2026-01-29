@@ -33,7 +33,7 @@
         {
             var result = (await eventAttendeeRouteManager.GetByParentIdAsync(eventId, cancellationToken).ConfigureAwait(false)).Where(e => e.CreatedByUserId == userId);
 
-            TelemetryClient.TrackEvent(nameof(GetEventAttendeeRoutes));
+            TrackEvent(nameof(GetEventAttendeeRoutes));
             return Ok(result);
         }
 
@@ -50,7 +50,7 @@
 
             var displayEventAttendeeRoutes = result.Select(x => x.ToDisplayEventAttendeeRoute()).ToList();
 
-            TelemetryClient.TrackEvent(nameof(GetEventAttendeeRoutes));
+            TrackEvent(nameof(GetEventAttendeeRoutes));
             return Ok(displayEventAttendeeRoutes);
         }
 
@@ -65,7 +65,7 @@
         {
             var result = await eventAttendeeRouteManager.GetByCreatedUserIdAsync(userId, cancellationToken).ConfigureAwait(false);
 
-            TelemetryClient.TrackEvent(nameof(GetEventAttendeeRoutes));
+            TrackEvent(nameof(GetEventAttendeeRoutes));
             return Ok(result);
         }
 
@@ -87,7 +87,7 @@
                 return NotFound();
             }
 
-            TelemetryClient.TrackEvent(nameof(GetEventAttendeeRoutes));
+            TrackEvent(nameof(GetEventAttendeeRoutes));
             return Ok(result);
         }
 
@@ -116,7 +116,7 @@
 
             var updatedEventAttendeeRoute = await eventAttendeeRouteManager
                 .UpdateAsync(eventAttendeeRoute, UserId, cancellationToken).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(UpdateEventAttendeeRoute));
+            TrackEvent(nameof(UpdateEventAttendeeRoute));
 
             return Ok(updatedEventAttendeeRoute);
         }
@@ -137,7 +137,7 @@
 
             await eventAttendeeRouteManager.AddAsync(eventAttendeeRoute, UserId, cancellationToken)
                 .ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(AddEventAttendeeRoute));
+            TrackEvent(nameof(AddEventAttendeeRoute));
             return Ok();
         }
 
@@ -155,7 +155,7 @@
             CancellationToken cancellationToken)
         {
             await eventAttendeeRouteManager.DeleteAsync(routeId, cancellationToken).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(DeleteEventAttendeeRoute));
+            TrackEvent(nameof(DeleteEventAttendeeRoute));
 
             return new NoContentResult();
         }

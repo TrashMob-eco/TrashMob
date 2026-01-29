@@ -2,8 +2,17 @@
 {
     using TrashMob.Models.Poco;
 
+    /// <summary>
+    /// Provides extension methods for converting between LitterReport and FullLitterReport types.
+    /// </summary>
     public static class LitterReportExtensions
     {
+        /// <summary>
+        /// Converts a LitterReport to a FullLitterReport including the creator's user name.
+        /// </summary>
+        /// <param name="litterReport">The litter report to convert.</param>
+        /// <param name="userName">The name of the user who created the report.</param>
+        /// <returns>A FullLitterReport with all properties including user name and full litter images.</returns>
         public static FullLitterReport ToFullLitterReport(this LitterReport litterReport, string userName)
         {
             return new FullLitterReport
@@ -23,6 +32,11 @@
             };
         }
 
+        /// <summary>
+        /// Converts a LitterReport to a FullLitterReport without user name information.
+        /// </summary>
+        /// <param name="litterReport">The litter report to convert.</param>
+        /// <returns>A FullLitterReport with all properties and full litter images.</returns>
         public static FullLitterReport ToFullLitterReport(this LitterReport litterReport)
         {
             return new FullLitterReport
@@ -41,6 +55,11 @@
             };
         }
 
+        /// <summary>
+        /// Converts a FullLitterReport back to a LitterReport entity.
+        /// </summary>
+        /// <param name="fullLitterReport">The full litter report to convert.</param>
+        /// <returns>A LitterReport entity with associated litter images.</returns>
         public static LitterReport ToLitterReport(this FullLitterReport fullLitterReport)
         {
             return new LitterReport
@@ -57,6 +76,11 @@
             };
         }
 
+        /// <summary>
+        /// Converts a LitterImage to a FullLitterImage with the image URL exposed.
+        /// </summary>
+        /// <param name="litterImage">The litter image to convert.</param>
+        /// <returns>A FullLitterImage with the Azure blob URL mapped to ImageURL.</returns>
         public static FullLitterImage ToFullLitterImage(this LitterImage litterImage)
         {
             return new FullLitterImage
@@ -78,6 +102,11 @@
             };
         }
 
+        /// <summary>
+        /// Converts a FullLitterImage back to a LitterImage entity.
+        /// </summary>
+        /// <param name="fullLitterImage">The full litter image to convert.</param>
+        /// <returns>A LitterImage entity with the ImageURL mapped to AzureBlobURL.</returns>
         public static LitterImage ToLitterImage(this FullLitterImage fullLitterImage)
         {
             return new LitterImage

@@ -11,10 +11,15 @@
     using TrashMob.Shared.Poco;
     using EmailAddress = SendGrid.Helpers.Mail.EmailAddress;
 
+    /// <summary>
+    /// Sends emails using the SendGrid API for both plain text and templated emails.
+    /// </summary>
     public class EmailSender : IEmailSender
     {
+        /// <inheritdoc />
         public string ApiKey { get; set; }
 
+        /// <inheritdoc />
         public async Task SendEmailAsync(Email email, CancellationToken cancellationToken = default)
         {
             // To not send emails from dev environments, don't store an apikey password in the local secrets
@@ -45,6 +50,7 @@
             }
         }
 
+        /// <inheritdoc />
         public async Task SendTemplatedEmailAsync(Email email, CancellationToken cancellationToken = default)
         {
             // To not send emails from dev environments, don't store an apikey password in the local secrets

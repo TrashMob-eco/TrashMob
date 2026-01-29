@@ -53,7 +53,7 @@
             }
 
             var result = await Manager.UpdateAsync(jobOpportunity, UserId, cancellationToken).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(Update) + typeof(JobOpportunity));
+            TrackEvent(nameof(Update) + typeof(JobOpportunity));
 
             return Ok(result);
         }
@@ -76,7 +76,7 @@
             }
 
             var result = await Manager.AddAsync(jobOpportunity, UserId, cancellationToken).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(Add) + typeof(JobOpportunity));
+            TrackEvent(nameof(Add) + typeof(JobOpportunity));
 
             return Ok(result);
         }
@@ -99,7 +99,7 @@
             }
 
             var result = await Manager.DeleteAsync(jobOpportunityId, cancellationToken).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(Add) + typeof(JobOpportunity));
+            TrackEvent(nameof(Add) + typeof(JobOpportunity));
 
             return Ok(result);
         }

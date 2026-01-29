@@ -215,7 +215,7 @@ export const EditEventSummary = () => {
     const isOwner = event.createdByUserId === currentUser.id;
     const isSubmitting = createEventSummary.isLoading || updateEventSummary.isLoading;
     return (
-        <div className='tailwind'>
+        <div>
             <div className='max-w-2xl mx-auto py-8 space-y-8'>
                 <Card>
                     <CardHeader>

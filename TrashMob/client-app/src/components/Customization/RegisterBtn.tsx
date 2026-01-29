@@ -1,7 +1,7 @@
 import { FC, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router';
-import { getApiConfig, msalClient } from '../../store/AuthStore';
+import { getApiConfig, getMsalClientInstance } from '../../store/AuthStore';
 import EventAttendeeData from '../Models/EventAttendeeData';
 import UserData from '../Models/UserData';
 import { CurrentTrashMobWaiverVersion } from '../../pages/waivers/page';
@@ -68,11 +68,11 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
             navigate('/waivers');
         }
 
-        const accounts = msalClient.getAllAccounts();
+        const accounts = getMsalClientInstance().getAllAccounts();
 
         if (accounts === null || accounts.length === 0) {
             const apiConfig = getApiConfig();
-            msalClient
+            getMsalClientInstance()
                 .loginRedirect({
                     scopes: apiConfig.b2cScopes,
                 })

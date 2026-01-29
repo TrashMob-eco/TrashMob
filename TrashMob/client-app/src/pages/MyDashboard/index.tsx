@@ -40,10 +40,10 @@ import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
 import { useGetUserEvents } from '@/hooks/useGetUserEvents';
 import { useLogin } from '@/hooks/useLogin';
 
-import { MyPartnersTable } from '@/pages/mydashboard/MyPartnersTable';
-import { MyPickupRequestsTable } from '@/pages/mydashboard/MyPickupRequestsTable';
-import { MyPartnersRequestTable } from '@/pages/mydashboard/MyPartnersRequestTable';
-import { PartnerAdminInvitationsTable } from '@/pages/mydashboard/PartnerAdminInvitationsTable';
+import { MyPartnersTable } from '@/pages/MyDashboard/MyPartnersTable';
+import { MyPickupRequestsTable } from '@/pages/MyDashboard/MyPickupRequestsTable';
+import { MyPartnersRequestTable } from '@/pages/MyDashboard/MyPartnersRequestTable';
+import { PartnerAdminInvitationsTable } from '@/pages/MyDashboard/PartnerAdminInvitationsTable';
 
 const isUpcomingEvent = (event: EventData) => new Date(event.eventDate) >= new Date();
 const isPastEvent = (event: EventData) => new Date(event.eventDate) < new Date();
@@ -155,7 +155,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
     };
 
     return (
-        <div className='tailwind'>
+        <div>
             <HeroSection Title='Dashboard' Description="See how much you've done!" />
             <div className='container mt-12! pb-12!'>
                 {eventToShare ? (

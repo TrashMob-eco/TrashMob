@@ -1,0 +1,170 @@
+# TrashMob.Models - Domain Model Reference
+
+## Overview
+
+TrashMob.Models defines the core domain entities for the TrashMob platform. This document describes the business concepts, relationships, and rules that govern the data model.
+
+## Core Domain Entities
+
+### Event
+
+An **Event** is an organized effort to clean up litter at a specific location at a specific date and time.
+
+**Key Concepts:**
+- The user who creates an event is the **Event Lead**
+- Events can be **public** (visible to all, included in notifications) or **private** (individual tracking only)
+- Private events can be backdated to record past individual cleanup efforts
+- **Completed events cannot be deleted** for legal tracking purposes
+- Attendees must sign the TrashMob.eco Liability Waiver before their first event
+
+**Attributes:**
+| Field | Purpose |
+|-------|---------|
+| Name | Event identifier chosen by the lead |
+| Description | Notes for attendees (directions, what to wear/bring, supplies provided) |
+| EventType | Classification (Park Cleanup, Highway Cleanup, etc.) to indicate suitability |
+| MaxNumberOfParticipants | Optional limit for safety or supply reasons (0 = unlimited) |
+
+**Status Transitions:**
+- **Active**: Upcoming event, open for registration
+- **Full**: Maximum attendees reached
+- **Complete**: Event date has passed
+- **Canceled**: Event removed from public view (hidden, not deleted)
+
+### Litter Report
+
+A **Litter Report** identifies areas where cleanup is needed.
+
+**Key Concepts:**
+- Filed by users to report litter hotspots
+- Contains 1-5 geo-tagged photos
+- Report location is determined by the first image's coordinates
+- Can be assigned to events so attendees can target nearby areas
+
+**Status Transitions:**
+- **New** → **Assigned** (linked to an event) → **Cleaned** (completed)
+- Can be **Cancelled** (deleted by user) from any state
+
+### User
+
+A **User** is a registered member of the TrashMob platform.
+
+**Key Concepts:**
+- Registration via identity providers (Microsoft, Google, Apple, LinkedIn, Email)
+- Username is required and publicly visible (email is never displayed)
+- Preferred location + travel distance limit determines event notifications
+- Must agree to TrashMob waiver before attending first event
+
+**Roles:**
+- **Regular User**: Can create events, register as attendee, file litter reports
+- **Site Admin**: Full platform administration access
+- **Partner Admin**: Manages partner organization(s)
+
+### Partner
+
+A **Partner** provides services to support cleanup events.
+
+**Key Concepts:**
+- Can be individual, government agency, business, or organization
+- May have multiple locations, each offering different services
+- Social media info used to amplify event visibility
+
+**Service Types:**
+| Service | Description |
+|---------|-------------|
+| Disposal | Provides dumpster access for collected trash |
+| Hauling | Picks up bagged garbage after events for proper disposal |
+| Supplies | Provides food, drinks, garbage bags |
+| Equipment | Provides buckets, reflective vests, litter pickers, gloves |
+
+### Event Summary
+
+Recorded by the event lead after completion to track impact.
+
+**Metrics Captured:**
+- Number of bags/buckets filled
+- Actual attendee count
+- Actual duration
+- Weight of trash collected
+- Notes about the event
+
+### Pickup Location
+
+Documents where collected trash is staged for hauling partners.
+
+**Key Concepts:**
+- Created when event has a hauling partner
+- Includes geo-tagged images of bagged garbage
+- Sent to hauling partner for dispatch
+
+## Entity Relationships
+
+```
+User ─────────────────┬──────────────────────────────┐
+  │                   │                              │
+  │ creates           │ attends                      │ administers
+  ▼                   ▼                              ▼
+Event ◄──────────── EventAttendee              PartnerAdmin
+  │                                                  │
+  │ has                                              │ manages
+  ▼                                                  ▼
+EventSummary                                     Partner
+PickupLocation                                       │
+EventLitterReport ────────► LitterReport             │ has locations
+                                │                    ▼
+                                │              PartnerLocation
+                                │                    │
+                                └──► LitterImage     │ offers services
+                                                     ▼
+                                            PartnerLocationService
+```
+
+## Business Rules
+
+### Event Rules
+1. Only the event lead can edit or cancel an event
+2. Events cannot be deleted once completed (legal requirement)
+3. Canceled events are hidden but retained in database
+4. Private events bypass notification system
+5. Attendees must have signed waiver before registering
+
+### Litter Report Rules
+1. Minimum 1 image required, maximum 5
+2. All images must be geo-tagged
+3. Report location derived from first image
+4. Can only be assigned to one event at a time
+
+### Partner Rules
+1. Partner must be approved before locations become visible
+2. Each location can offer different service combinations
+3. Partner admins manage their own organization only
+
+## Lookup Tables
+
+| Entity | Purpose |
+|--------|---------|
+| EventType | Classifies events (Park Cleanup, Highway Cleanup, Beach Cleanup, etc.) |
+| EventStatus | Active, Full, Complete, Canceled |
+| LitterReportStatus | New, Assigned, Cleaned, Cancelled |
+| PartnerType | Government, Business, Non-Profit, Individual |
+| PartnerStatus | Pending, Active, Inactive |
+| ServiceType | Disposal, Hauling, Supplies, Equipment |
+| SocialMediaAccountType | Facebook, Twitter, Instagram, etc. |
+
+## Data Patterns
+
+### Base Classes
+- **BaseModel**: Audit fields (CreatedByUserId, CreatedDate, LastUpdatedByUserId, LastUpdatedDate)
+- **KeyedModel**: BaseModel + Guid Id primary key
+- **LookupModel**: Id (int), Name, Description, DisplayOrder, IsActive
+
+### Geographic Data
+- All location entities include Latitude/Longitude for map display
+- NetTopologySuite used for spatial operations
+- Azure Maps integration for geocoding and routing
+
+## Related Documentation
+
+- [CLAUDE.md](../CLAUDE.md) - Architecture and coding standards
+- [TrashMob.Shared README](../TrashMob.Shared/README.md) - Business logic layer
+- [TrashMob.prd](../TrashMob/TrashMob.prd) - Web API requirements

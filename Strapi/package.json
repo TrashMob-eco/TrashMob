@@ -1,0 +1,31 @@
+{
+  "name": "trashmob-strapi",
+  "private": true,
+  "version": "0.1.0",
+  "description": "TrashMob CMS powered by Strapi",
+  "scripts": {
+    "develop": "strapi develop",
+    "start": "strapi start",
+    "build": "strapi build",
+    "strapi": "strapi"
+  },
+  "dependencies": {
+    "@strapi/strapi": "^5.6.0",
+    "@strapi/plugin-users-permissions": "^5.6.0",
+    "better-sqlite3": "^11.7.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-router-dom": "^6.0.0",
+    "styled-components": "^6.0.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.27.0"
+  },
+  "engines": {
+    "node": ">=18.0.0 <=22.x.x",
+    "npm": ">=6.0.0"
+  },
+  "strapi": {
+    "uuid": "trashmob-cms"
+  }
+}

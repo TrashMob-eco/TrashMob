@@ -9,7 +9,7 @@ interface ManageEventDashboardLayoutProps {
 
 export const ManageEventDashboardLayout = (props: PropsWithChildren<ManageEventDashboardLayoutProps>) => {
     return (
-        <div className='tailwind'>
+        <div>
             <HeroSection Title='Manage Event' Description='We can’t wait to see the results.' />
             <section className=''>
                 <div className='container'>

@@ -12,6 +12,9 @@
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
 
+    /// <summary>
+    /// Manages associations between events and litter reports, tracking which reports are being cleaned by which events.
+    /// </summary>
     public class EventLitterReportManager : BaseManager<EventLitterReport>, IBaseManager<EventLitterReport>, IEventLitterReportManager
     {
         private readonly IEmailManager emailManager;
@@ -19,6 +22,14 @@
         private readonly IKeyedRepository<Event> eventRepository;
         private readonly IKeyedRepository<LitterReport> litterReportRepository;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EventLitterReportManager"/> class.
+        /// </summary>
+        /// <param name="repository">The repository for event litter report data access.</param>
+        /// <param name="eventRepository">The repository for event data access.</param>
+        /// <param name="litterReportRepository">The repository for litter report data access.</param>
+        /// <param name="emailManager">The email manager for sending notifications.</param>
+        /// <param name="logger">The logger instance.</param>
         public EventLitterReportManager(IBaseRepository<EventLitterReport> repository, IKeyedRepository<Event> eventRepository, IKeyedRepository<LitterReport> litterReportRepository,
             IEmailManager emailManager, ILogger<EventLitterReportManager> logger) : base(repository)
         {
@@ -28,6 +39,7 @@
             this.logger = logger;
         }
 
+        /// <inheritdoc />
         public override async Task<IEnumerable<EventLitterReport>> GetByParentIdAsync(Guid parentId,
             CancellationToken cancellationToken)
         {
@@ -38,6 +50,7 @@
                 .AsEnumerable();
         }
 
+        /// <inheritdoc />
         public override async Task<IEnumerable<EventLitterReport>> GetAsync(Expression<Func<EventLitterReport, bool>> expression, CancellationToken cancellationToken = default)
         {
             return await Repository.Get(expression)
@@ -47,6 +60,7 @@
                 .ToListAsync(cancellationToken);                
         }
 
+        /// <inheritdoc />
         public override async Task<EventLitterReport> AddAsync(EventLitterReport eventLitterReport, Guid userId, CancellationToken cancellationToken)
         {
             logger.LogInformation($"Adding EventLitterReport for EventId {eventLitterReport.EventId} and LitterReportId {eventLitterReport.LitterReportId}");
@@ -65,6 +79,7 @@
             return await Repository.AddAsync(eventLitterReport);
         }
 
+        /// <inheritdoc />
         public override async Task<int> Delete(Guid parentId, Guid secondId, CancellationToken cancellationToken)
         {
             logger.LogInformation($"Deleting EventLitterReport for EventId {parentId} and LitterReportId {secondId}");
@@ -79,6 +94,7 @@
             return await Repository.DeleteAsync(eventLitterReport);
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<Event>> GetEventsLitterReportIsAssociatedToAsync(Guid litterReportId, CancellationToken cancellationToken = default)
         {
             var eventLitterReports = await Repository.Get(ea => ea.LitterReportId == litterReportId).ToListAsync(cancellationToken);

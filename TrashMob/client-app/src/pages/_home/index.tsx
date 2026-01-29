@@ -6,12 +6,12 @@ import { WhatIsTrashmobSection } from './whatistrashmob-section';
 
 export const Home = () => {
     return (
-        <div className='tailwind'>
+        <>
             <HeroSection />
             <WhatIsTrashmobSection />
             <StatsSection />
             <EventSection />
             <GettingStartSection />
-        </div>
+        </>
     );
 };

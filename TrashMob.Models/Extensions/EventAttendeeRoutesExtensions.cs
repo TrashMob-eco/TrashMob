@@ -3,8 +3,16 @@
     using NetTopologySuite.Geometries;
     using TrashMob.Models.Poco;
 
+    /// <summary>
+    /// Provides extension methods for converting EventAttendeeRoute to DisplayEventAttendeeRoute.
+    /// </summary>
     public static class EventAttendeeRoutesExtensions
     {
+        /// <summary>
+        /// Converts an EventAttendeeRoute to a DisplayEventAttendeeRoute with sortable location data.
+        /// </summary>
+        /// <param name="eventAttendeeRoute">The event attendee route to convert.</param>
+        /// <returns>A DisplayEventAttendeeRoute with locations extracted from the geometric path.</returns>
         public static DisplayEventAttendeeRoute ToDisplayEventAttendeeRoute(this EventAttendeeRoute eventAttendeeRoute)
         {
             return new DisplayEventAttendeeRoute

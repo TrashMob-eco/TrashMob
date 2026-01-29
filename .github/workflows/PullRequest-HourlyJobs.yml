@@ -1,0 +1,37 @@
+# Pull Request workflow for TrashMob Hourly Jobs Container
+
+name: PR - Hourly Jobs
+
+on:
+  pull_request:
+    branches: [ "main", "release" ]
+    paths:
+      - '.github/workflows/PullRequest-HourlyJobs.yml'
+      - '.github/workflows/container_caj-tm-dev-westus2-hourly.yml'
+      - 'Deploy/containerAppJobHourly.bicep'
+      - 'TrashMobHourlyJobs/**'
+      - 'TrashMob.Models/**'
+      - 'TrashMob.Shared/**'
+
+jobs:
+  build-container:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build TrashMobHourlyJobs Container
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: TrashMobHourlyJobs/Dockerfile
+        push: false
+        tags: trashmobhourlyjobs:pr-${{ github.event.pull_request.number }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max

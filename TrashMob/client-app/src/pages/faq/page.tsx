@@ -89,7 +89,7 @@ const faqs = [
             },
             {
                 question: 'Does TrashMob have a mobile app?',
-                answer: 'Not yet, but we are hard at work making one! Stay tuned!',
+                answer: 'Yes! The TrashMob app is available for both iOS and Android devices. Download it from the <a href="https://apps.apple.com/app/trashmob/id1599983258" target="_blank" rel="noopener noreferrer">App Store</a> or <a href="https://play.google.com/store/apps/details?id=eco.trashmob.trashmobmobileapp" target="_blank" rel="noopener noreferrer">Google Play</a> to find events, report litter, and track your impact on the go!',
             },
         ],
     },
@@ -100,7 +100,7 @@ export const Faq: React.FC = () => {
     const faqGroup = faqs.find((group) => group.category === selectedGroupKey);
 
     return (
-        <div className='tailwind'>
+        <div>
             <HeroSection Title='FAQ' Description='We’ve got you covered.' />
             <div className='container mx-auto my-5 pt-5 space-y-4'>
                 <div className='flex flex-col sm:flex-row gap-4'>

@@ -24,6 +24,7 @@ namespace TrashMob.Controllers
 
         /// <summary>Validates whether a new user can be created in Active Directory.</summary>
         /// <param name="request">The new user details to validate.</param>
+        /// <param name="cancellationToken"></param>
         [HttpPost("validateuser")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ActiveDirectoryValidationFailedResponse), StatusCodes.Status409Conflict)]
@@ -50,6 +51,7 @@ namespace TrashMob.Controllers
 
         /// <summary>Creates a new user in Active Directory.</summary>
         /// <param name="request">The new user details used to create the account.</param>
+        /// <param name="cancellationToken"></param>
         [HttpPost("signupuser")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ActiveDirectoryValidationFailedResponse), StatusCodes.Status409Conflict)]
@@ -76,6 +78,7 @@ namespace TrashMob.Controllers
 
         /// <summary>Validates updates to an existing user's profile in Active Directory.</summary>
         /// <param name="request">The updated user profile details to validate.</param>
+        /// <param name="cancellationToken"></param>
         [HttpPost("validateuserprofile")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ActiveDirectoryValidationFailedResponse), StatusCodes.Status404NotFound)]
@@ -104,6 +107,7 @@ namespace TrashMob.Controllers
 
         /// <summary>Updates an existing user's profile in Active Directory.</summary>
         /// <param name="request">The updated user profile details.</param>
+        /// <param name="cancellationToken"></param>
         [HttpPost("updateuserprofile")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ActiveDirectoryValidationFailedResponse), StatusCodes.Status404NotFound)]
@@ -132,6 +136,7 @@ namespace TrashMob.Controllers
 
         /// <summary>Deletes a user from Active Directory.</summary>
         /// <param name="request">The request containing the object ID of the user to delete.</param>
+        /// <param name="cancellationToken"></param>
         [HttpPost("deleteuser")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ActiveDirectoryValidationFailedResponse), StatusCodes.Status200OK)]

@@ -6,10 +6,20 @@
     using TrashMob.Models;
     using TrashMob.Shared.Engine;
 
+    /// <summary>
+    /// Provides the Entity Framework database context for the TrashMob application.
+    /// </summary>
     public class MobDbContext : DbContext
     {
+        /// <summary>
+        /// The configuration provider.
+        /// </summary>
         private readonly IConfiguration configuration;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MobDbContext"/> class.
+        /// </summary>
+        /// <param name="configuration">The configuration provider containing database connection settings.</param>
         public MobDbContext(IConfiguration configuration)
         {
             this.configuration = configuration;

@@ -30,7 +30,6 @@
             services.AddScoped<ILookupManager<EventType>, LookupManager<EventType>>();
             services.AddScoped<ILookupManager<InvitationStatus>, LookupManager<InvitationStatus>>();
             services.AddScoped<IKeyedManager<JobOpportunity>, KeyedManager<JobOpportunity>>();
-            services.AddScoped<IKeyedManager<MessageRequest>, MessageRequestManager>();
             services.AddScoped<IKeyedManager<Partner>, KeyedManager<Partner>>();
             services.AddScoped<IKeyedManager<PartnerDocument>, PartnerDocumentManager>();
             services.AddScoped<IKeyedManager<PartnerContact>, KeyedManager<PartnerContact>>();
@@ -82,7 +81,6 @@
             services.AddScoped<IImageManager, ImageManager>();
             services.AddScoped<IMapManager, MapManager>();
             services.AddScoped<ISecretRepository, SecretRepository>();
-            services.AddScoped<INotificationManager, NotificationManager>();
             services.AddScoped<IQueriesManager, QueriesManager>();
             services.AddScoped<ITriggersManager, TriggersManager>();
             services.AddScoped<IDbTransaction, DbTransaction>();

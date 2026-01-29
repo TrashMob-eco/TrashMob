@@ -19,7 +19,7 @@ export const SiteFooter = () => {
     ];
 
     return (
-        <footer className='tailwind'>
+        <footer>
             <div className='bg-[#212529] relative py-10! overflow-hidden'>
                 <Logo
                     className='w-[900px] absolute z-0 left-[20%] md:left-[40%] inset-y-1/2 -translate-y-100 opacity-10'
@@ -48,7 +48,7 @@ export const SiteFooter = () => {
                             <div className='basis-3/4'>
                                 <div className='text-[13px] font-[Montserrat] font-serif font-medium pt-[14px]'>
                                     <p className='mb-1 text-sm text-center md:text-start!'>
-                                        Copyright &copy; 2025 TRASHMOB.ECO - All rights reserved.
+                                        Copyright &copy; {new Date().getFullYear()} TRASHMOB.ECO - All rights reserved.
                                     </p>
                                     <p className='my-2 text-xs text-center md:text-start!'>
                                         TrashMob is a non-profit, 501(c)(3) organization based in Washington State, USA.

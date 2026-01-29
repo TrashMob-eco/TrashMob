@@ -26,6 +26,14 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Azure.Monitor.OpenTelemetry.Exporter;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using TrashMob.Common;
 using TrashMob.Security;
 using TrashMob.Shared;
 using TrashMob.Shared.Managers;
@@ -55,8 +63,54 @@ public class Program
             builder.Configuration.AddAzureKeyVault(secretClient, new KeyVaultSecretManager());
         }
 
-        builder.Logging.AddApplicationInsights();
-        builder.Services.AddApplicationInsightsTelemetry();
+        // Configure OpenTelemetry for observability
+        var appInsightsConnectionString = builder.Configuration["ApplicationInsights:ConnectionString"];
+
+        builder.Services.AddOpenTelemetry()
+            .ConfigureResource(resource => resource.AddService("TrashMob.Web"))
+            .WithTracing(tracing =>
+            {
+                tracing
+                    .AddSource(TrashMobActivitySources.AllSourceNames)
+                    .AddAspNetCoreInstrumentation(options =>
+                    {
+                        // Filter out health check endpoints from traces
+                        options.Filter = httpContext =>
+                            !httpContext.Request.Path.StartsWithSegments("/health");
+                    })
+                    .AddHttpClientInstrumentation()
+                    .AddEntityFrameworkCoreInstrumentation();
+
+                if (!string.IsNullOrEmpty(appInsightsConnectionString))
+                {
+                    tracing.AddAzureMonitorTraceExporter(options =>
+                        options.ConnectionString = appInsightsConnectionString);
+                }
+            })
+            .WithMetrics(metrics =>
+            {
+                metrics
+                    .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation();
+
+                if (!string.IsNullOrEmpty(appInsightsConnectionString))
+                {
+                    metrics.AddAzureMonitorMetricExporter(options =>
+                        options.ConnectionString = appInsightsConnectionString);
+                }
+            });
+
+        builder.Logging.AddOpenTelemetry(logging =>
+        {
+            logging.IncludeFormattedMessage = true;
+            logging.IncludeScopes = true;
+
+            if (!string.IsNullOrEmpty(appInsightsConnectionString))
+            {
+                logging.AddAzureMonitorLogExporter(options =>
+                    options.ConnectionString = appInsightsConnectionString);
+            }
+        });
 
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddMicrosoftIdentityWebApi(options =>
@@ -187,6 +241,23 @@ public class Program
 
         // builder.Services.AddScoped(serviceProvider => new BlobServiceClient(blobStorageUrl));
 
+        // Add HttpClient for Strapi CMS
+        builder.Services.AddHttpClient("Strapi", client =>
+        {
+            var strapiUrl = builder.Configuration["StrapiBaseUrl"];
+            if (!string.IsNullOrEmpty(strapiUrl))
+            {
+                client.BaseAddress = new Uri(strapiUrl);
+            }
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+        });
+
+        builder.Services.AddHealthChecks()
+            .AddSqlServer(
+                builder.Configuration["TMDBServerConnectionString"] ?? string.Empty,
+                name: "database",
+                tags: ["db", "sql", "sqlserver"]);
+
         builder.Services.AddSwaggerGen(options =>
         {
             options.SwaggerDoc("v1", new OpenApiInfo { Title = "trashmobapi", Version = "v1" });
@@ -222,13 +293,14 @@ public class Program
 
         var app = builder.Build();
 
+        var enableSwagger = builder.Environment.IsDevelopment() ||
+                            builder.Configuration.GetValue<bool>("EnableSwagger");
+
         if (builder.Environment.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
             app.UseForwardedHeaders();
             app.UseMigrationsEndPoint();
-            app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "trashmobapi v1"));
         }
         else
         {
@@ -236,6 +308,12 @@ public class Program
             app.UseForwardedHeaders();
             // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
             app.UseHsts();
+        }
+
+        if (enableSwagger)
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "trashmobapi v1"));
         }
 
         app.UseHttpsRedirection();
@@ -254,6 +332,17 @@ public class Program
         {
             endpoints.MapControllers()
                 .RequireCors(MyAllowSpecificOrigins);
+
+            endpoints.MapHealthChecks("/health", new HealthCheckOptions
+            {
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
+
+            endpoints.MapHealthChecks("/health/live", new HealthCheckOptions
+            {
+                Predicate = _ => false,
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
         });
 #pragma warning restore ASP0014
 

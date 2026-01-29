@@ -7,7 +7,13 @@ on:
   pull_request:
     branches: [ "main" ]
     paths:
-      - '.github/**'
+      - '.github/workflows/PullRequest-Mobile.yml'
+      - '.github/workflows/build-android.yml'
+      - '.github/workflows/build-ios.yml'
+      - '.github/workflows/publish-android.yml'
+      - '.github/workflows/publish-ios.yml'
+      - '.github/workflows/main_trashmobmobileapp.yml'
+      - '.github/workflows/release_trashmobmobileapp.yml'
       - 'TrashMob.Models/**'
       - 'TrashMobMobile/**'
       - 'TrashMobMobileApp.sln'
@@ -29,7 +35,7 @@ jobs:
       releaseNumber: ${{ steps.set_build_number.outputs.releaseNumber }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 

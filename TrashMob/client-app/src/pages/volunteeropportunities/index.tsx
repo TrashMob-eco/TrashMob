@@ -11,12 +11,12 @@ export const VolunteerOpportunities: React.FC = () => {
     const { data: opportunities } = useQuery({
         queryKey: GetAllJobOpportunities().key,
         queryFn: GetAllJobOpportunities().service,
-        select: (res) => res.data,
+        select: (res) => res.data.filter((job) => job.isActive),
         enabled: true,
     });
 
     return (
-        <div className='tailwind'>
+        <div>
             <HeroSection Title='Recruiting' Description='We’d love to have you join us.' />
             <div className='container mx-auto'>
                 <div className='grid grid-cols-12 gap-4'>

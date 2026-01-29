@@ -13,9 +13,15 @@
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Poco;
 
+    /// <summary>
+    /// Manages image upload, retrieval, and deletion operations using Azure Blob Storage.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="blobServiceClient">The Azure Blob Storage service client.</param>
     internal class ImageManager(ILogger<ImageManager> logger, BlobServiceClient blobServiceClient)
         : IImageManager
     {
+        /// <inheritdoc />
         public async Task<string> GetImageUrlAsync(Guid parentId, ImageTypeEnum imageType, ImageSizeEnum imageSize, CancellationToken cancellationToken)
         {
             var blobContainer = blobServiceClient.GetBlobContainerClient(imageType.ToString().ToLower());
@@ -35,6 +41,7 @@
             return imageUrl;
         }
 
+        /// <inheritdoc />
         public async Task UploadImage(ImageUpload imageUpload)
         {
             if (imageUpload?.FormFile == null)
@@ -106,6 +113,7 @@
             }
         }
 
+        /// <inheritdoc />
         public async Task<bool> DeleteImage(Guid parentId, ImageTypeEnum imageType)
         {
             var imageName = await GetImageNameAsync(parentId, imageType);

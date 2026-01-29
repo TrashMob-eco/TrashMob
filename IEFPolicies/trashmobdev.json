@@ -1,6 +1,6 @@
 {
   "Prefix": "TM_",
-  "RESTApi": "https://as-tm-dev-westus2.azurewebsites.net/api/authentication",
+  "RESTApi": "https://dev.trashmob.eco/api/authentication",
   "UIAssets": "tmstoradb2cdev",
   "MicrosoftAppId": "0a8f0ef2-23bd-4b43-92bc-8c97e1b66cb0",  
   "FacebookClientId": "1324278418367849",

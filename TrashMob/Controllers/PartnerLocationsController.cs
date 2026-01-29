@@ -98,7 +98,7 @@
 
             var result = await partnerLocationManager.AddAsync(partnerLocation, UserId, cancellationToken)
                 .ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(AddPartnerLocation));
+            TrackEvent(nameof(AddPartnerLocation));
 
             return CreatedAtAction(nameof(GetPartnerLocation), new { partnerLocationId = partnerLocation.Id }, result);
         }
@@ -125,7 +125,7 @@
             }
 
             await partnerLocationManager.UpdateAsync(partnerLocation, UserId, cancellationToken).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(UpdatePartnerLocation));
+            TrackEvent(nameof(UpdatePartnerLocation));
 
             return Ok(partnerLocation);
         }
@@ -150,7 +150,7 @@
             }
 
             await partnerLocationManager.DeleteAsync(partnerLocationId, cancellationToken).ConfigureAwait(false);
-            TelemetryClient.TrackEvent(nameof(DeletePartnerLocation));
+            TrackEvent(nameof(DeletePartnerLocation));
 
             return Ok(partnerLocationId);
         }
