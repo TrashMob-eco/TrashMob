@@ -7,6 +7,17 @@ on:
   pull_request:
     branches: [ "main", "release" ]
     types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Pull Request number to analyze (leave empty to analyze current branch against main)'
+        required: false
+        type: number
+      base_ref:
+        description: 'Base branch to compare against (default: main)'
+        required: false
+        type: string
+        default: 'main'
 
 permissions:
   contents: read
@@ -17,21 +28,46 @@ jobs:
     name: Analyze Dependency Changes
     runs-on: ubuntu-latest
 
-    # Only run for Renovate or Dependabot PRs
+    # Only run for Renovate or Dependabot PRs, or when manually triggered
     if: |
+      github.event_name == 'workflow_dispatch' ||
       github.event.pull_request.user.login == 'renovate[bot]' ||
       github.event.pull_request.user.login == 'dependabot[bot]'
 
     steps:
+    - name: Get PR details (if triggered manually with PR number)
+      if: github.event_name == 'workflow_dispatch' && github.event.inputs.pr_number != ''
+      id: get_pr
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const { data: pr } = await github.rest.pulls.get({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: ${{ github.event.inputs.pr_number }}
+          });
+          core.setOutput('head_sha', pr.head.sha);
+          core.setOutput('base_ref', pr.base.ref);
+          core.setOutput('pr_number', pr.number);
+          return pr;
+
     - name: Checkout PR branch
       uses: actions/checkout@v6
       with:
-        ref: ${{ github.event.pull_request.head.sha }}
+        ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || (github.event.inputs.pr_number != '' && steps.get_pr.outputs.head_sha || github.ref) }}
         fetch-depth: 0
 
     - name: Checkout base branch for comparison
       run: |
-        git fetch origin ${{ github.event.pull_request.base.ref }}
+        git fetch origin ${{ github.event_name == 'pull_request' && github.event.pull_request.base.ref || (github.event.inputs.pr_number != '' && steps.get_pr.outputs.base_ref || github.event.inputs.base_ref) }}
+
+    - name: Set base reference environment variable
+      id: set_base_ref
+      run: |
+        BASE_REF="${{ github.event_name == 'pull_request' && github.event.pull_request.base.ref || (github.event.inputs.pr_number != '' && steps.get_pr.outputs.base_ref || github.event.inputs.base_ref) }}"
+        echo "base_ref=$BASE_REF" >> $GITHUB_OUTPUT
+        echo "Base reference: $BASE_REF"
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -57,7 +93,7 @@ jobs:
           echo "### Changes in $dir" >> /tmp/npm_analysis.md
 
           # Get the package.json from base branch
-          git show origin/${{ github.event.pull_request.base.ref }}:"$package_json" > /tmp/base_package.json 2>/dev/null || echo "{}" > /tmp/base_package.json
+          git show origin/${{ steps.set_base_ref.outputs.base_ref }}:"$package_json" > /tmp/base_package.json 2>/dev/null || echo "{}" > /tmp/base_package.json
 
           # Compare dependencies and fetch package info
           # Pass package_json path as command line argument to avoid interpolation issues
@@ -206,7 +242,7 @@ jobs:
           echo "### Changes in $csproj" >> /tmp/nuget_analysis.md
 
           # Get the csproj from base branch
-          git show origin/${{ github.event.pull_request.base.ref }}:"$csproj" > /tmp/base.csproj 2>/dev/null || echo "<Project></Project>" > /tmp/base.csproj
+          git show origin/${{ steps.set_base_ref.outputs.base_ref }}:"$csproj" > /tmp/base.csproj 2>/dev/null || echo "<Project></Project>" > /tmp/base.csproj
 
           # Extract PackageReference versions
           base_packages=$(grep -oP '<PackageReference Include="\K[^"]+' /tmp/base.csproj 2>/dev/null || echo "")
@@ -321,6 +357,7 @@ jobs:
         echo "*Analysis performed by [dependency-analysis.yml](https://github.com/${{ github.repository }}/blob/main/.github/workflows/dependency-analysis.yml)*" >> /tmp/analysis.md
 
     - name: Update PR description
+      if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.event.inputs.pr_number != '')
       uses: actions/github-script@v7
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -328,11 +365,20 @@ jobs:
           const fs = require('fs');
           const analysis = fs.readFileSync('/tmp/analysis.md', 'utf8');
 
+          // Determine PR number
+          const prNumber = context.payload.pull_request?.number || ${{ github.event.inputs.pr_number || 'null' }};
+          
+          if (!prNumber) {
+            console.log('No PR number available, skipping PR description update');
+            console.log('Analysis summary:\n' + analysis);
+            return;
+          }
+
           // Get current PR description
           const { data: pr } = await github.rest.pulls.get({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            pull_number: context.payload.pull_request.number
+            pull_number: prNumber
           });
 
           let currentBody = pr.body || '';
@@ -361,8 +407,14 @@ jobs:
           await github.rest.pulls.update({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            pull_number: context.payload.pull_request.number,
+            pull_number: prNumber,
             body: newBody
           });
 
           console.log('PR description updated with dependency analysis');
+
+    - name: Output analysis summary
+      if: github.event_name == 'workflow_dispatch' && (github.event.inputs.pr_number == '' || github.event.inputs.pr_number == null)
+      run: |
+        echo "=== Dependency Analysis Summary ==="
+        cat /tmp/analysis.md
