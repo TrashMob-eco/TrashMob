@@ -13,6 +13,31 @@ Automatically analyzes dependency updates from Renovate and Dependabot, providin
 - **Trigger**: Pull requests to `main` or `release` branches
 - **Condition**: Only runs for PRs created by `renovate[bot]` or `dependabot[bot]`
 - **Events**: `opened`, `synchronize`, `reopened`
+- **Manual Trigger**: Can also be triggered manually via GitHub Actions UI
+
+### Manual Trigger Options
+
+The workflow can be manually triggered from the GitHub Actions UI with the following optional inputs:
+
+- **pr_number**: Pull Request number to analyze (optional)
+  - If provided, analyzes that specific PR
+  - If omitted, analyzes the current branch against the base branch
+  
+- **base_ref**: Base branch to compare against (default: `main`)
+  - The branch to compare dependency changes against
+  - Only used when `pr_number` is not provided
+
+**How to manually trigger:**
+1. Go to the **Actions** tab in GitHub
+2. Select **Dependency Update Analysis** workflow
+3. Click **Run workflow**
+4. Optionally provide a PR number or specify a base branch
+5. Click **Run workflow** to execute
+
+**Use cases for manual trigger:**
+- Re-run analysis on an existing PR without making changes
+- Analyze dependency changes on a feature branch before creating a PR
+- Debug or test the dependency analysis logic
 
 ### What It Does
 
