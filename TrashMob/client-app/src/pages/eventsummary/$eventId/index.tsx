@@ -164,6 +164,9 @@ export const EditEventSummary = () => {
         defaultValues: {},
     });
 
+    // Determine default weight unit based on user preference (Pound=1, Kilogram=2)
+    const defaultWeightUnitId = currentUser.prefersMetric ? 2 : 1;
+
     useEffect(() => {
         if (event) {
             form.reset({
@@ -172,12 +175,12 @@ export const EditEventSummary = () => {
                 numberOfBags: eventSummary?.numberOfBags ?? 0,
                 numberOfBuckets: eventSummary?.numberOfBuckets ?? 0,
                 pickedWeight: eventSummary?.pickedWeight ?? 0,
-                weightUnits: weightUnits,
+                pickedWeightUnitId: eventSummary?.pickedWeightUnitId ?? defaultWeightUnitId,
                 notes: eventSummary?.notes ?? '',
                 createdByUserId: eventSummary?.createdByUserId ?? Guid.EMPTY,
             });
         }
-    }, [eventSummary, event]);
+    }, [eventSummary, event, defaultWeightUnitId]);
 
     function onSubmit(formValues: z.infer<typeof upsertEventSummarySchema>) {
         const body = new EventSummaryData();
@@ -187,6 +190,7 @@ export const EditEventSummary = () => {
         body.numberOfBuckets = formValues.numberOfBuckets;
         body.durationInMinutes = formValues.durationInMinutes;
         body.pickedWeight = formValues.pickedWeight;
+        body.pickedWeightUnitId = formValues.pickedWeightUnitId;
         body.notes = formValues.notes ?? '';
         body.createdByUserId = currentUser.id;
         body.createdDate = new Date();
@@ -348,9 +352,13 @@ export const EditEventSummary = () => {
                                             <FormItem className='col-span-12 sm:col-span-6'>
                                                 <FormLabel tooltip={ToolTips.EventSummaryPickedWeightUnit}>Weight Unit</FormLabel>
                                                 <FormControl>
-                                                    <Select value='0' onValueChange={field.onChange} disabled={!isOwner}>
+                                                    <Select
+                                                        value={`${field.value}`}
+                                                        onValueChange={(val) => field.onChange(Number(val))}
+                                                        disabled={!isOwner}
+                                                    >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder='Weigth Unit' />
+                                                            <SelectValue placeholder='Weight Unit' />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {(weightUnits || []).map((type) => (

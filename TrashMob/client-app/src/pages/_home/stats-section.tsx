@@ -10,6 +10,7 @@ import Person from '@/components/assets/home/Person.svg';
 import Clock from '@/components/assets/home/Clock.svg';
 import LitterReport from '@/components/assets/home/LitterReport.svg';
 import { useIsInViewport } from '@/hooks/useIsInViewport';
+import { useLogin } from '@/hooks/useLogin';
 
 const useGetHomeStats = () =>
     useQuery<StatsData>({
@@ -30,8 +31,14 @@ const useGetHomeStats = () =>
 export const StatsSection = () => {
     const { data: stats } = useGetHomeStats();
     const { totalBags, totalEvents, totalWeightInPounds, totalWeightInKilograms, totalHours, totalParticipants, totalLitterReportsSubmitted } = stats;
+    const { currentUser } = useLogin();
 
     const { ref: viewportRef, isInViewPort } = useIsInViewport<HTMLDivElement>();
+
+    // Use user's weight preference (default to imperial/lbs for anonymous users)
+    const prefersMetric = currentUser?.prefersMetric ?? false;
+    const weightValue = prefersMetric ? totalWeightInKilograms : totalWeightInPounds;
+    const weightLabel = prefersMetric ? 'Total Weight (kg)' : 'Total Weight (lbs)';
 
     const statItems = [
         {
@@ -71,17 +78,10 @@ export const StatsSection = () => {
         },
         {
             id: 5,
-            title: 'Total Kgs',
-            value: totalWeightInKilograms,
+            title: weightLabel,
+            value: weightValue,
             icon: Trashbag,
-            alt: 'Total kgs',
-        },
-        {
-            id: 6,
-            title: 'Total Pounds',
-            value: totalWeightInPounds,
-            icon: Trashbag,
-            alt: 'Total pounds',
+            alt: 'Total weight',
         },
     ];
 
