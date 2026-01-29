@@ -30,7 +30,15 @@ const useGetHomeStats = () =>
 
 export const StatsSection = () => {
     const { data: stats } = useGetHomeStats();
-    const { totalBags, totalEvents, totalWeightInPounds, totalWeightInKilograms, totalHours, totalParticipants, totalLitterReportsSubmitted } = stats;
+    const {
+        totalBags,
+        totalEvents,
+        totalWeightInPounds,
+        totalWeightInKilograms,
+        totalHours,
+        totalParticipants,
+        totalLitterReportsSubmitted,
+    } = stats;
     const { currentUser } = useLogin();
 
     const { ref: viewportRef, isInViewPort } = useIsInViewport<HTMLDivElement>();

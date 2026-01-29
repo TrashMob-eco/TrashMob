@@ -350,7 +350,9 @@ export const EditEventSummary = () => {
                                         name='pickedWeightUnitId'
                                         render={({ field }) => (
                                             <FormItem className='col-span-12 sm:col-span-6'>
-                                                <FormLabel tooltip={ToolTips.EventSummaryPickedWeightUnit}>Weight Unit</FormLabel>
+                                                <FormLabel tooltip={ToolTips.EventSummaryPickedWeightUnit}>
+                                                    Weight Unit
+                                                </FormLabel>
                                                 <FormControl>
                                                     <Select
                                                         value={`${field.value}`}

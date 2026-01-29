@@ -1,5 +1,5 @@
 import { ApiService } from '.';
-import WeightUnit from '../components/Models/WeightUnit'
+import WeightUnit from '../components/Models/WeightUnit';
 
 export type WeightUnit_Response = WeightUnit[];
 export const GetWeightUnits = () => ({

@@ -170,4 +170,3 @@ export const JobOpportunityTitle = 'Enter Job title';
 export const JobOpportunityTagLine = 'Enter Job tag line';
 export const JobOpportunityFullDescription = 'Enter Job description';
 export const JobOpportunityIsActive = 'Whether or not this job will be active';
-
