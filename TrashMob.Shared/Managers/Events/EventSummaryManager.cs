@@ -51,6 +51,7 @@
             stats.TotalEvents = await events.CountAsync(e => e.EventStatusId != CancelledEventStatusId, cancellationToken);
 
             var eventSummaries = await Repository.Get().ToListAsync(cancellationToken);
+
             stats.TotalBags = eventSummaries.Sum(es => es.NumberOfBags) +
                               eventSummaries.Sum(es => es.NumberOfBuckets) / 3;
             stats.TotalHours = eventSummaries.Sum(es => es.DurationInMinutes * es.ActualNumberOfAttendees / 60);

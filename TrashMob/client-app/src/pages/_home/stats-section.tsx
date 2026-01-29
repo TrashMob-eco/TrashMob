@@ -9,7 +9,9 @@ import Trashbag from '@/components/assets/home/Trashbag.svg';
 import Person from '@/components/assets/home/Person.svg';
 import Clock from '@/components/assets/home/Clock.svg';
 import LitterReport from '@/components/assets/home/LitterReport.svg';
+import Weight from '@/components/assets/home/Weight.svg';
 import { useIsInViewport } from '@/hooks/useIsInViewport';
+import { useLogin } from '@/hooks/useLogin';
 
 const useGetHomeStats = () =>
     useQuery<StatsData>({
@@ -18,6 +20,8 @@ const useGetHomeStats = () =>
         initialData: () => ({
             totalBags: 0,
             totalEvents: 0,
+            totalWeightInKilograms: 0,
+            totalWeightInPounds: 0,
             totalHours: 0,
             totalParticipants: 0,
         }),
@@ -27,9 +31,23 @@ const useGetHomeStats = () =>
 
 export const StatsSection = () => {
     const { data: stats } = useGetHomeStats();
-    const { totalBags, totalEvents, totalHours, totalParticipants, totalLitterReportsSubmitted } = stats;
+    const {
+        totalBags,
+        totalEvents,
+        totalWeightInPounds,
+        totalWeightInKilograms,
+        totalHours,
+        totalParticipants,
+        totalLitterReportsSubmitted,
+    } = stats;
+    const { currentUser } = useLogin();
 
     const { ref: viewportRef, isInViewPort } = useIsInViewport<HTMLDivElement>();
+
+    // Use user's weight preference (default to imperial/lbs for anonymous users)
+    const prefersMetric = currentUser?.prefersMetric ?? false;
+    const weightValue = prefersMetric ? totalWeightInKilograms : totalWeightInPounds;
+    const weightLabel = prefersMetric ? 'Total Weight (kg)' : 'Total Weight (lbs)';
 
     const statItems = [
         {
@@ -67,15 +85,22 @@ export const StatsSection = () => {
             icon: LitterReport,
             alt: 'Litter report',
         },
+        {
+            id: 5,
+            title: weightLabel,
+            value: weightValue,
+            icon: Weight,
+            alt: 'Total weight',
+        },
     ];
 
     return (
         <div className='container py-10' ref={viewportRef}>
-            <div className='flex flex-wrap gap-4 flex-row justify-center lg:justify-between'>
+            <div className='flex flex-wrap gap-2 flex-row justify-center lg:justify-between'>
                 {statItems.map((item, i) => (
                     <div
                         key={item.id}
-                        className='bg-card min-w-[160px] px-6! py-4! shadow-xs flex flex-col items-center rounded-[11px] gap-2'
+                        className='bg-card min-w-[160px] px-6! py-4! shadow-xs flex flex-col items-center rounded-[11px] gap-1'
                     >
                         <img src={item.icon} alt={item.alt} className='text-primary w-9 h-9' />
                         <h4 className='text-[32px] font-semibold text-primary mt-2!'>

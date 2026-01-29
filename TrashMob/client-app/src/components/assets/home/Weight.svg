@@ -1,0 +1,19 @@
+<svg width="78" height="89" viewBox="0 0 78 89" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dumbbell weight icon rotated 45 degrees -->
+  <g transform="rotate(45, 39, 44.5)">
+    <!-- Left end cap -->
+    <rect x="2" y="40" width="4" height="9" fill="#005C4C"/>
+    <!-- Left outer weight (smaller) -->
+    <rect x="6" y="35" width="8" height="19" fill="#005C4C"/>
+    <!-- Left inner weight (larger) -->
+    <rect x="14" y="30" width="10" height="29" fill="#005C4C"/>
+    <!-- Center bar -->
+    <rect x="24" y="42" width="30" height="5" fill="#005C4C"/>
+    <!-- Right inner weight (larger) -->
+    <rect x="54" y="30" width="10" height="29" fill="#005C4C"/>
+    <!-- Right outer weight (smaller) -->
+    <rect x="64" y="35" width="8" height="19" fill="#005C4C"/>
+    <!-- Right end cap -->
+    <rect x="72" y="40" width="4" height="9" fill="#005C4C"/>
+  </g>
+</svg>

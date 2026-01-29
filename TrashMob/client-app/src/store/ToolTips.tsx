@@ -99,6 +99,8 @@ export const EventSummaryNumberOfBags =
 export const EventSummaryNumberOfBuckets =
     'If you were dumping buckets of trash into dumpsters, how many buckets did you gather?';
 export const EventSummaryDurationInMinutes = 'How long did the event last in minutes';
+export const EventSummaryPickedWeight = 'Total picked weight';
+export const EventSummaryPickedWeightUnit = 'Picked weight unit';
 export const EventSummaryNotes =
     'Record any notes about what went well or what could have gone better, or reminders for the next time at this location.';
 export const EventCancellationReason =
