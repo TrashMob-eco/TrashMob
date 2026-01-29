@@ -50,22 +50,28 @@ jobs:
         echo "" >> /tmp/npm_analysis.md
 
         # Find all package.json files
-        for package_json in $(find . -name "package.json" -not -path "*/node_modules/*" -not -path "*/package-lock.json"); do
-          dir=$(dirname $package_json)
+        # Find all package.json files (using null-terminated output for safe handling)
+        find . -name "package.json" -not -path "*/node_modules/*" -not -path "*/package-lock.json" -print0 | \
+        while IFS= read -r -d '' package_json; do
+          dir=$(dirname "$package_json")
           echo "### Changes in $dir" >> /tmp/npm_analysis.md
 
           # Get the package.json from base branch
-          git show origin/${{ github.event.pull_request.base.ref }}:$package_json > /tmp/base_package.json 2>/dev/null || echo "{}" > /tmp/base_package.json
+          git show origin/${{ github.event.pull_request.base.ref }}:"$package_json" > /tmp/base_package.json 2>/dev/null || echo "{}" > /tmp/base_package.json
 
           # Compare dependencies and fetch package info
+          # Pass package_json path as command line argument to avoid interpolation issues
           node -e "
             const fs = require('fs');
             const https = require('https');
+            const packageJsonPath = process.argv[1];
             
             function fetchPackageInfo(packageName, version) {
               return new Promise((resolve) => {
                 const cleanVersion = version.replace(/^[\^~>=<]+/, '');
-                https.get(\`https://registry.npmjs.org/\${packageName}/\${cleanVersion}\`, (res) => {
+                const req = https.get(\`https://registry.npmjs.org/\${packageName}/\${cleanVersion}\`, {
+                  timeout: 10000  // 10 second timeout
+                }, (res) => {
                   let data = '';
                   res.on('data', chunk => data += chunk);
                   res.on('end', () => {
@@ -80,14 +86,19 @@ jobs:
                       resolve(null);
                     }
                   });
-                }).on('error', () => resolve(null));
+                });
+                req.on('error', () => resolve(null));
+                req.on('timeout', () => {
+                  req.destroy();
+                  resolve(null);
+                });
               });
             }
             
             async function analyzeChanges() {
               try {
                 const basePackage = JSON.parse(fs.readFileSync('/tmp/base_package.json', 'utf8'));
-                const currentPackage = JSON.parse(fs.readFileSync('$package_json', 'utf8'));
+                const currentPackage = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 
                 const baseDeps = { ...basePackage.dependencies, ...basePackage.devDependencies };
                 const currentDeps = { ...currentPackage.dependencies, ...currentPackage.devDependencies };
@@ -171,7 +182,7 @@ jobs:
             }
             
             analyzeChanges();
-          " >> /tmp/npm_analysis.md
+          " "$package_json" >> /tmp/npm_analysis.md
 
           echo "" >> /tmp/npm_analysis.md
         done
@@ -189,12 +200,13 @@ jobs:
         echo "## NuGet Package Changes" > /tmp/nuget_analysis.md
         echo "" >> /tmp/nuget_analysis.md
 
-        # Find all .csproj files
-        for csproj in $(find . -name "*.csproj" -not -path "*/obj/*" -not -path "*/bin/*"); do
+        # Find all .csproj files (using null-terminated output for safe handling)
+        find . -name "*.csproj" -not -path "*/obj/*" -not -path "*/bin/*" -print0 | \
+        while IFS= read -r -d '' csproj; do
           echo "### Changes in $csproj" >> /tmp/nuget_analysis.md
 
           # Get the csproj from base branch
-          git show origin/${{ github.event.pull_request.base.ref }}:$csproj > /tmp/base.csproj 2>/dev/null || echo "<Project></Project>" > /tmp/base.csproj
+          git show origin/${{ github.event.pull_request.base.ref }}:"$csproj" > /tmp/base.csproj 2>/dev/null || echo "<Project></Project>" > /tmp/base.csproj
 
           # Extract PackageReference versions
           base_packages=$(grep -oP '<PackageReference Include="\K[^"]+' /tmp/base.csproj 2>/dev/null || echo "")
@@ -228,8 +240,8 @@ jobs:
                 package_url="https://www.nuget.org/packages/$pkg/$current_ver"
                 echo "  - 📦 NuGet: $package_url" >> /tmp/nuget_analysis.md
                 
-                # Try to get project URL from NuGet API
-                project_url=$(curl -s "https://api.nuget.org/v3/registration5-semver1/$pkg/index.json" 2>/dev/null | \
+                # Try to get project URL from NuGet API (with timeout)
+                project_url=$(curl -s --max-time 10 "https://api.nuget.org/v3/registration5-semver1/$pkg/index.json" 2>/dev/null | \
                   grep -oP '"projectUrl":\s*"\K[^"]+' | head -1 || echo "")
                 
                 if [ -n "$project_url" ]; then
