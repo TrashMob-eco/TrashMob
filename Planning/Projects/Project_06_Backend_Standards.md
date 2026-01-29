@@ -55,8 +55,8 @@ Unify coding patterns across the backend codebase, upgrade to .NET 10, secure al
 ### Phase 4 - Documentation
 - ✓ Add XML comments to all public APIs
 - ✓ Configure Swagger to include XML docs
-- ? Document common patterns in wiki
-- ? Create coding standards guide
+- ✓ Document common patterns in wiki
+- ✓ Create coding standards guide
 
 ---
 
@@ -228,20 +228,17 @@ Create `CODING_STANDARDS.md`:
 
 ## Open Questions
 
-1. **Should we enforce code analysis rules as errors or warnings?**  
-   **Recommendation:** Warnings for now, errors after cleanup  
-   **Owner:** Engineering Lead  
-   **Due:** Before Phase 1
+1. ~~**Should we enforce code analysis rules as errors or warnings?**~~
+   **Decision:** Enforce as errors - `<TreatWarningsAsErrors>true</TreatWarningsAsErrors>` added to all projects
+   **Status:** Resolved
 
-2. **What Roslyn analyzers should we enable?**  
-   **Recommendation:** Microsoft.CodeAnalysis.NetAnalyzers, StyleCop.Analyzers  
-   **Owner:** Engineering Lead  
-   **Due:** Before Phase 1
+2. ~~**What Roslyn analyzers should we enable?**~~
+   **Decision:** .NET Analyzers (built-in) + StyleCop.Analyzers added via Directory.Build.props
+   **Status:** Resolved
 
-3. **Should we use EditorConfig for formatting?**  
-   **Recommendation:** Yes, standardize across team  
-   **Owner:** Engineering Lead  
-   **Due:** Before Phase 1
+3. ~~**Should we use EditorConfig for formatting?**~~
+   **Decision:** Yes - comprehensive .editorconfig added with C#, TypeScript, formatting, and naming conventions
+   **Status:** Resolved
 
 ---
 
@@ -252,7 +249,7 @@ Create `CODING_STANDARDS.md`:
 
 ---
 
-**Last Updated:** January 25, 2026
+**Last Updated:** January 26, 2026
 **Owner:** Engineering Lead
-**Status:** In Progress (Phase 1 complete, Phase 4 partially complete)
+**Status:** In Progress (Phase 1 & 4 complete)
 **Next Review:** When Phase 2 or 3 starts
