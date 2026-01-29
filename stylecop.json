@@ -12,7 +12,7 @@
       "documentPrivateFields": false
     },
     "orderingRules": {
-      "usingDirectivesPlacement": "outsideNamespace",
+      "usingDirectivesPlacement": "insideNamespace",
       "systemUsingDirectivesFirst": true
     },
     "namingRules": {
