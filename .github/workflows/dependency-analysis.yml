@@ -57,57 +57,120 @@ jobs:
           # Get the package.json from base branch
           git show origin/${{ github.event.pull_request.base.ref }}:$package_json > /tmp/base_package.json 2>/dev/null || echo "{}" > /tmp/base_package.json
 
-          # Compare dependencies
+          # Compare dependencies and fetch package info
           node -e "
             const fs = require('fs');
-            const basePackage = JSON.parse(fs.readFileSync('/tmp/base_package.json', 'utf8'));
-            const currentPackage = JSON.parse(fs.readFileSync('$package_json', 'utf8'));
+            const https = require('https');
+            
+            function fetchPackageInfo(packageName, version) {
+              return new Promise((resolve) => {
+                const cleanVersion = version.replace(/^[\^~>=<]+/, '');
+                https.get(\`https://registry.npmjs.org/\${packageName}/\${cleanVersion}\`, (res) => {
+                  let data = '';
+                  res.on('data', chunk => data += chunk);
+                  res.on('end', () => {
+                    try {
+                      const pkg = JSON.parse(data);
+                      resolve({
+                        homepage: pkg.homepage,
+                        repository: pkg.repository?.url,
+                        description: pkg.description
+                      });
+                    } catch (e) {
+                      resolve(null);
+                    }
+                  });
+                }).on('error', () => resolve(null));
+              });
+            }
+            
+            async function analyzeChanges() {
+              try {
+                const basePackage = JSON.parse(fs.readFileSync('/tmp/base_package.json', 'utf8'));
+                const currentPackage = JSON.parse(fs.readFileSync('$package_json', 'utf8'));
 
-            const baseDeps = { ...basePackage.dependencies, ...basePackage.devDependencies };
-            const currentDeps = { ...currentPackage.dependencies, ...currentPackage.devDependencies };
+                const baseDeps = { ...basePackage.dependencies, ...basePackage.devDependencies };
+                const currentDeps = { ...currentPackage.dependencies, ...currentPackage.devDependencies };
 
-            let hasChanges = false;
-            let hasMajorChanges = false;
+                let hasChanges = false;
+                let hasMajorChanges = false;
 
-            // Check for version changes
-            Object.keys(currentDeps).forEach(pkg => {
-              if (!baseDeps[pkg]) {
-                console.log('- **NEW**: \`' + pkg + '\` @ \`' + currentDeps[pkg] + '\`');
-                hasChanges = true;
-              } else if (baseDeps[pkg] !== currentDeps[pkg]) {
-                const oldVer = baseDeps[pkg].replace(/[\^~>=<]/, '');
-                const newVer = currentDeps[pkg].replace(/[\^~>=<]/, '');
+                // Check for version changes
+                for (const pkg of Object.keys(currentDeps)) {
+                  if (!baseDeps[pkg]) {
+                    console.log('- **NEW**: \`' + pkg + '\` @ \`' + currentDeps[pkg] + '\`');
+                    const info = await fetchPackageInfo(pkg, currentDeps[pkg]);
+                    if (info?.repository) {
+                      const repoUrl = info.repository.replace(/^git\+/, '').replace(/\.git$/, '');
+                      console.log('  - 📦 Repository: ' + repoUrl);
+                    }
+                    if (info?.homepage) {
+                      console.log('  - 🏠 Homepage: ' + info.homepage);
+                    }
+                    hasChanges = true;
+                  } else if (baseDeps[pkg] !== currentDeps[pkg]) {
+                    // Remove all leading version prefix characters
+                    const oldVer = baseDeps[pkg].replace(/^[\^~>=<]+/, '');
+                    const newVer = currentDeps[pkg].replace(/^[\^~>=<]+/, '');
 
-                // Simple semver check for breaking changes
-                const oldMajor = oldVer.split('.')[0];
-                const newMajor = newVer.split('.')[0];
+                    // Simple semver check for breaking changes
+                    const oldMajor = parseInt(oldVer.split('.')[0], 10);
+                    const newMajor = parseInt(newVer.split('.')[0], 10);
+                    const oldMinor = parseInt(oldVer.split('.')[1], 10) || 0;
+                    const newMinor = parseInt(newVer.split('.')[1], 10) || 0;
 
-                if (oldMajor !== newMajor && newMajor !== '0') {
-                  console.log('- ⚠️ **MAJOR UPDATE**: \`' + pkg + '\` from \`' + baseDeps[pkg] + '\` to \`' + currentDeps[pkg] + '\` (potential breaking changes)');
-                  hasMajorChanges = true;
-                } else {
-                  console.log('- ✅ **UPDATED**: \`' + pkg + '\` from \`' + baseDeps[pkg] + '\` to \`' + currentDeps[pkg] + '\`');
+                    // Check for breaking changes:
+                    // - Major version change for 1.x.x and above
+                    // - Minor version change for 0.x.x (as per semver conventions)
+                    if ((oldMajor !== newMajor && newMajor !== 0) || (oldMajor === 0 && newMajor === 0 && oldMinor !== newMinor)) {
+                      console.log('- ⚠️ **MAJOR UPDATE**: \`' + pkg + '\` from \`' + baseDeps[pkg] + '\` to \`' + currentDeps[pkg] + '\` (potential breaking changes)');
+                      hasMajorChanges = true;
+                    } else {
+                      console.log('- ✅ **UPDATED**: \`' + pkg + '\` from \`' + baseDeps[pkg] + '\` to \`' + currentDeps[pkg] + '\`');
+                    }
+                    
+                    // Fetch package info for updated packages
+                    const info = await fetchPackageInfo(pkg, currentDeps[pkg]);
+                    if (info?.repository) {
+                      const repoUrl = info.repository.replace(/^git\+/, '').replace(/\.git$/, '');
+                      console.log('  - 📦 Repository: ' + repoUrl);
+                      // Extract GitHub repo for potential changelog link
+                      const githubMatch = repoUrl.match(/github\.com\/([^\/]+\/[^\/]+)/);
+                      if (githubMatch) {
+                        console.log('  - 📋 Changelog: ' + repoUrl + '/releases');
+                        console.log('  - 📊 Compare: ' + repoUrl + '/compare/v' + oldVer + '...v' + newVer);
+                      }
+                    }
+                    if (info?.homepage && info.homepage !== info?.repository?.replace(/^git\+/, '').replace(/\.git$/, '')) {
+                      console.log('  - 🏠 Homepage: ' + info.homepage);
+                    }
+                    hasChanges = true;
+                  }
                 }
-                hasChanges = true;
+
+                // Check for removed packages
+                Object.keys(baseDeps).forEach(pkg => {
+                  if (!currentDeps[pkg]) {
+                    console.log('- **REMOVED**: \`' + pkg + '\`');
+                    hasChanges = true;
+                  }
+                });
+
+                if (!hasChanges) {
+                  console.log('No dependency changes detected.');
+                }
+
+                // Set output for breaking changes
+                if (hasMajorChanges) {
+                  fs.writeFileSync('/tmp/has_major_npm.txt', 'true');
+                }
+              } catch (error) {
+                console.log('Error parsing package.json: ' + error.message);
+                console.log('Please check that the package.json file is valid JSON.');
               }
-            });
-
-            // Check for removed packages
-            Object.keys(baseDeps).forEach(pkg => {
-              if (!currentDeps[pkg]) {
-                console.log('- **REMOVED**: \`' + pkg + '\`');
-                hasChanges = true;
-              }
-            });
-
-            if (!hasChanges) {
-              console.log('No dependency changes detected.');
             }
-
-            // Set output for breaking changes
-            if (hasMajorChanges) {
-              fs.writeFileSync('/tmp/has_major_npm.txt', 'true');
-            }
+            
+            analyzeChanges();
           " >> /tmp/npm_analysis.md
 
           echo "" >> /tmp/npm_analysis.md
@@ -135,27 +198,51 @@ jobs:
 
           # Extract PackageReference versions
           base_packages=$(grep -oP '<PackageReference Include="\K[^"]+' /tmp/base.csproj 2>/dev/null || echo "")
-          current_packages=$(grep -oP '<PackageReference Include="\K[^"]+' $csproj 2>/dev/null || echo "")
+          current_packages=$(grep -oP '<PackageReference Include="\K[^"]+' "$csproj" 2>/dev/null || echo "")
 
           # For each package in current
           while IFS= read -r pkg; do
             if [ -n "$pkg" ]; then
               # Get versions
               base_ver=$(grep "PackageReference Include=\"$pkg\"" /tmp/base.csproj | grep -oP 'Version="\K[^"]+' 2>/dev/null || echo "")
-              current_ver=$(grep "PackageReference Include=\"$pkg\"" $csproj | grep -oP 'Version="\K[^"]+' 2>/dev/null || echo "")
+              current_ver=$(grep "PackageReference Include=\"$pkg\"" "$csproj" | grep -oP 'Version="\K[^"]+' 2>/dev/null || echo "")
 
               if [ -z "$base_ver" ] && [ -n "$current_ver" ]; then
                 echo "- **NEW**: \`$pkg\` @ \`$current_ver\`" >> /tmp/nuget_analysis.md
+                # Fetch NuGet package info
+                package_url="https://www.nuget.org/packages/$pkg/$current_ver"
+                echo "  - 📦 NuGet: $package_url" >> /tmp/nuget_analysis.md
               elif [ "$base_ver" != "$current_ver" ] && [ -n "$current_ver" ]; then
                 # Check for major version changes
-                base_major=$(echo $base_ver | cut -d. -f1)
-                current_major=$(echo $current_ver | cut -d. -f1)
+                base_major=$(echo "$base_ver" | cut -d. -f1)
+                current_major=$(echo "$current_ver" | cut -d. -f1)
 
                 if [ "$base_major" != "$current_major" ]; then
                   echo "- ⚠️ **MAJOR UPDATE**: \`$pkg\` from \`$base_ver\` to \`$current_ver\` (potential breaking changes)" >> /tmp/nuget_analysis.md
                   echo "true" > /tmp/has_major_nuget.txt
                 else
                   echo "- ✅ **UPDATED**: \`$pkg\` from \`$base_ver\` to \`$current_ver\`" >> /tmp/nuget_analysis.md
+                fi
+                
+                # Add NuGet package links
+                package_url="https://www.nuget.org/packages/$pkg/$current_ver"
+                echo "  - 📦 NuGet: $package_url" >> /tmp/nuget_analysis.md
+                
+                # Try to get project URL from NuGet API
+                project_url=$(curl -s "https://api.nuget.org/v3/registration5-semver1/$pkg/index.json" 2>/dev/null | \
+                  grep -oP '"projectUrl":\s*"\K[^"]+' | head -1 || echo "")
+                
+                if [ -n "$project_url" ]; then
+                  echo "  - 🏠 Project: $project_url" >> /tmp/nuget_analysis.md
+                  
+                  # If it's a GitHub repo, add changelog and compare links
+                  if echo "$project_url" | grep -q "github.com"; then
+                    repo_path=$(echo "$project_url" | grep -oP 'github\.com/\K[^/]+/[^/]+' | sed 's/\.git$//')
+                    if [ -n "$repo_path" ]; then
+                      echo "  - 📋 Releases: https://github.com/$repo_path/releases" >> /tmp/nuget_analysis.md
+                      echo "  - 📊 Compare: https://github.com/$repo_path/compare/v$base_ver...v$current_ver" >> /tmp/nuget_analysis.md
+                    fi
+                  fi
                 fi
               fi
             fi

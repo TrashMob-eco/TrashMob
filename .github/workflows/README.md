@@ -25,14 +25,22 @@ Automatically analyzes dependency updates from Renovate and Dependabot, providin
    - Uses semantic versioning to detect breaking changes
    - **Major version changes** (e.g., 1.x.x → 2.x.x): Potential breaking changes
    - **Minor/patch changes** (e.g., 1.0.0 → 1.1.0): Likely backward compatible
+   - **0.x.x versions**: Treats minor version changes as potentially breaking
 
-3. **Provides Safety Assessment**
+3. **Fetches Package Documentation**
+   - Retrieves package repository URLs from npm registry
+   - Retrieves project URLs from NuGet API
+   - Provides direct links to changelog and release notes
+   - Generates comparison links for GitHub-hosted packages
+
+4. **Provides Safety Assessment**
    - **⚠️ REVIEW REQUIRED**: Major version changes detected
    - **✅ LIKELY SAFE**: Only minor or patch updates
 
-4. **Updates PR Description**
+5. **Updates PR Description**
    - Adds comprehensive analysis to the top of the PR description
    - Lists all dependency changes with old and new versions
+   - Includes links to package documentation, changelogs, and release notes
    - Provides specific recommendations for reviewing the changes
 
 ### Example Output
