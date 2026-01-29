@@ -552,6 +552,33 @@ dotnet_diagnostic.SA1614.severity = suggestion
 # CA1827: Do not use Count() when Any() can be used
 dotnet_diagnostic.CA1827.severity = suggestion
 
+# SA1209: Using alias directives should be placed after all using namespace directives
+dotnet_diagnostic.SA1209.severity = suggestion
+
+# SA1027: Tabs and spaces should be used correctly
+dotnet_diagnostic.SA1027.severity = suggestion
+
+# SA1517: Code should not contain blank lines at start of file
+dotnet_diagnostic.SA1517.severity = suggestion
+
+# SA1307: Field should begin with upper-case letter (conflicts with ObservableProperty)
+dotnet_diagnostic.SA1307.severity = suggestion
+
+# SA1137: Elements should have the same indentation
+dotnet_diagnostic.SA1137.severity = suggestion
+
+# CA1507: Use nameof in place of string literal
+dotnet_diagnostic.CA1507.severity = suggestion
+
+# CA1708: Names should differ by more than case
+dotnet_diagnostic.CA1708.severity = suggestion
+
+# CA1001: Type owns disposable field(s) but is not disposable
+dotnet_diagnostic.CA1001.severity = suggestion
+
+# MVVMTK0034: Field annotated with ObservableProperty should not be directly referenced
+dotnet_diagnostic.MVVMTK0034.severity = suggestion
+
 # TypeScript/JavaScript files
 [*.{ts,tsx,js,jsx}]
 indent_size = 2
