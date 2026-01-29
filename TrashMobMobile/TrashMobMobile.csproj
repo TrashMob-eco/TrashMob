@@ -19,6 +19,8 @@
 		<SingleProject>true</SingleProject>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+		<!-- TreatWarningsAsErrors disabled: mobile has pre-existing nullable reference issues -->
+		<!-- TODO: Enable after fixing CS8618/CS8602 warnings in mobile codebase -->
     <DefineConstants>USETEST</DefineConstants>
 
 		<!-- Display name -->
