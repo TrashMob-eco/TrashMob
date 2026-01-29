@@ -313,9 +313,37 @@ const preferredUnit = usePreferredWeightUnit();
 
 ### Mobile App Changes
 
-- Add weight fields to event summary form
-- Display weight in event details
-- Phase 2: Attendee entry form on mobile
+**User Preference Integration:**
+The mobile app must also respect the user's `PrefersMetric` setting from their profile.
+
+**Phase 1 Requirements:**
+- **Event Summary Form:** Add weight entry fields with unit selector defaulting to user's preference
+- **Event Summary Display:** Show weight in user's preferred unit
+- **Event Details View:** Display weight converted to user's preferred unit
+- **Statistics/Dashboard:** Show total weights in user's preferred unit
+- **My Dashboard:** Display user's personal weight contributions in preferred unit
+
+**Implementation Notes:**
+```csharp
+// In MAUI ViewModels - get user's preference
+var prefersMetric = _userService.CurrentUser?.PrefersMetric ?? false;
+var displayUnit = prefersMetric ? "kg" : "lbs";
+
+// Convert for display
+var displayWeight = prefersMetric
+    ? weight * 0.453592m  // lbs to kg
+    : weight;             // already in lbs
+```
+
+**Screens to Update:**
+1. `EventSummaryPage` - Add weight entry with unit picker
+2. `EventDetailsPage` - Display weight in user's preferred unit
+3. `MyDashboardPage` - Show personal stats with preferred unit
+4. `StatisticsPage` (if exists) - Display aggregate weights in preferred unit
+
+**Phase 2 Requirements:**
+- Attendee entry form on mobile with weight input
+- Unit selector defaulting to user's preference
 
 ---
 
