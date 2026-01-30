@@ -662,30 +662,25 @@ public async Task<ActionResult<TeamMetricsDto>> GetTeamMetrics(Guid teamId)
 
 ## Open Questions
 
-1. **Maximum team size limit?**  
-   **Recommendation:** No hard limit; soft warning at 50 members  
-   **Owner:** Product Lead  
-   **Due:** Before Phase 1
+1. ~~**Maximum team size limit?**~~
+   **Decision:** No hard limit; soft warning at 50 members
+   **Status:** ✅ Resolved
 
-2. **Can users be on multiple teams?**  
-   **Recommendation:** Yes, no limit  
-   **Owner:** Product Lead  
-   **Due:** Before Phase 1
+2. ~~**Can users be on multiple teams?**~~
+   **Decision:** Yes, no limit
+   **Status:** ✅ Resolved
 
-3. **How to handle inactive teams?**  
-   **Recommendation:** Auto-archive after 6 months no activity; can be reactivated  
-   **Owner:** Product Lead  
-   **Due:** Before Phase 4
+3. ~~**How to handle inactive teams?**~~
+   **Decision:** Auto-archive after 6 months no activity; can be reactivated
+   **Status:** ✅ Resolved
 
-4. **Team name moderation?**  
-   **Recommendation:** Review queue for new teams; report function; admin override  
-   **Owner:** Product + Admin  
-   **Due:** Before Phase 1
+4. ~~**Team name moderation?**~~
+   **Decision:** Review queue for new teams; report function; admin override
+   **Status:** ✅ Resolved
 
-5. **Can teams own multiple adopt-a-locations?**
-   **Recommendation:** Yes (covered in Project 11)
-   **Owner:** Product Lead
-   **Due:** When Project 11 starts
+5. ~~**Can teams own multiple adopt-a-locations?**~~
+   **Decision:** Yes (covered in Project 11)
+   **Status:** ✅ Resolved
 
 6. ~~**What are the join rules for public vs private teams?**~~
    **Decision:** Public teams require request + lead approval. Private teams are invite-only.

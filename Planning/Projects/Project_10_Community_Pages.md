@@ -6,7 +6,7 @@
 | **Priority** | High |
 | **Risk** | Very High |
 | **Size** | Very Large |
-| **Dependencies** | Project 1 (Auth), Project 8 (Waivers), Project 9 (Teams), Project 16 (CMS) |
+| **Dependencies** | Project 1 (Auth), Project 8 (Waivers), Project 9 (Teams) |
 
 ---
 
@@ -21,15 +21,15 @@ Branded public pages for partner communities (cities, counties, organizations) w
 ### Primary Goals
 - **Community discovery map** showing all partnered communities
 - **Branded public home pages** for each community
-- **Admin management** with SSO for community staff
+- **Custom community branding** (colors, logos)
+- **Community-specific waivers**
+- **Admin management** for community staff
 - **Metrics & notifications** for community stakeholders
 - **Opt-in to adopt-a programs** integration
 
 ### Secondary Goals
-- Custom community branding (colors, logos)
-- Community-specific waivers
+- SSO for community admin login
 - Community newsletters
-- Sponsorship display areas
 
 ---
 
@@ -40,21 +40,38 @@ Branded public pages for partner communities (cities, counties, organizations) w
 - ✅ List view with search/filter
 - ✅ Basic community detail pages
 - ✅ Link from partner pages
+- ☐ Friendly URLs for each community (`/communities/{city-state}` e.g., `/communities/seattle-wa`)
 
 ### Phase 2 - Community Home Pages
 - ✅ Branded header with logo
-- ✅ About section (CMS-editable)
+- ✅ About section (admin-editable, stored in database)
 - ✅ Contact information
 - ✅ Events in this community
 - ✅ Teams in this community
 - ✅ Impact metrics display
 
+### Community Page Customizable Fields (V1)
+
+| Field | Type | Notes |
+|-------|------|-------|
+| Logo | Image upload | Standard size (200x200) |
+| Hero/Banner image | Image upload | Standard dimensions |
+| Primary color | Color picker | Hex value |
+| Secondary color | Color picker | Hex value |
+| About text | Textarea | Plain text or markdown |
+| Tagline | Text | Short descriptor |
+| Contact email | Email | Required |
+| Contact phone | Text | Optional |
+| Website URL | URL | Optional |
+| Social links | URLs | Facebook, Instagram, Twitter, LinkedIn |
+| Physical address | Text | For display |
+
 ### Phase 3 - Community Admin
-- ✅ SSO integration for community staff
 - ✅ Admin dashboard for community
 - ✅ Manage community content
 - ✅ View community metrics and reports
 - ✅ Download reports (CSV, PDF)
+- ☐ SSO integration for community staff (secondary goal)
 
 ### Phase 4 - Programs Integration
 - ✅ Opt-in to Adopt-A-Location program
@@ -71,6 +88,7 @@ Branded public pages for partner communities (cities, counties, organizations) w
 - ❌ Multi-language community pages
 - ❌ Community forums/discussion boards
 - ❌ Custom domain support (future)
+- ❌ Community sponsorship display areas
 
 ---
 
@@ -93,10 +111,11 @@ Branded public pages for partner communities (cities, counties, organizations) w
 ## Dependencies
 
 ### Blockers
-- **Project 1 (Auth Revamp):** SSO for community admins
 - **Project 8 (Waivers V3):** Community-specific waivers
 - **Project 9 (Teams):** Teams associated with communities
-- **Project 16 (CMS):** Editable community content
+
+### Related (Non-Blocking)
+- **Project 1 (Auth Revamp):** SSO for community admins (secondary goal)
 
 ### Enables
 - **Project 11 (Adopt-A-Location):** Communities define adoptable areas
@@ -320,7 +339,7 @@ public async Task<ActionResult<IEnumerable<CommunityProgramDto>>> GetCommunityPr
 
 2. `/communities/{slug}` - Community Public Page
    - Branded header
-   - About section (from CMS)
+   - About section (admin-editable)
    - Impact metrics widget
    - Upcoming events in community
    - Active teams in community
@@ -360,8 +379,8 @@ public async Task<ActionResult<IEnumerable<CommunityProgramDto>>> GetCommunityPr
 - Link partners to community pages
 
 ### Phase 2: Branded Content
-- CMS integration for content
-- Branding customization
+- Admin-editable content fields (about, tagline, contact info)
+- Branding customization (logo, colors, banner image)
 - Metrics widgets
 - Events and teams integration
 
@@ -382,12 +401,15 @@ public async Task<ActionResult<IEnumerable<CommunityProgramDto>>> GetCommunityPr
 
 ## Open Questions
 
-1. **URL structure for communities?**
-   **Recommendation:** `/communities/{slug}` with auto-generated slugs
-   **Owner:** Product Lead
-   **Due:** Before Phase 1
+1. ~~**URL structure for communities?**~~
+   **Decision:** `/communities/{slug}` with friendly slugs (e.g., `/communities/seattle`)
+   **Status:** ✅ Resolved
 
-2. **How to handle overlapping community boundaries?**
+2. ~~**How to handle non-unique city names and spaces in slugs?**~~
+   **Decision:** Always include state abbreviation: `/communities/seattle-wa`, `/communities/portland-or`, `/communities/new-york-ny`. Use hyphens for spaces.
+   **Status:** ✅ Resolved
+
+3. **How to handle overlapping community boundaries?**
    **Recommendation:** Allow overlap; events show in all applicable communities
    **Owner:** Product Lead
    **Due:** Before Phase 1
@@ -410,11 +432,10 @@ public async Task<ActionResult<IEnumerable<CommunityProgramDto>>> GetCommunityPr
 - **[Project 8 - Waivers V3](./Project_08_Waivers_V3.md)** - Community-specific waivers
 - **[Project 9 - Teams](./Project_09_Teams.md)** - Teams in communities
 - **[Project 11 - Adopt-A-Location](./Project_11_Adopt_A_Location.md)** - Community programs
-- **[Project 16 - Content Management](./Project_16_Content_Management.md)** - Editable content
 
 ---
 
-**Last Updated:** January 24, 2026
+**Last Updated:** January 29, 2026
 **Owner:** Product Lead + Web Team
 **Status:** Planning in Progress
 **Next Review:** When dependencies complete
