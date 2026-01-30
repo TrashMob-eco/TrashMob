@@ -6,7 +6,7 @@
 | **Priority** | High |
 | **Risk** | Very High |
 | **Size** | Very Large |
-| **Dependencies** | Project 1 (Auth - minors support) |
+| **Dependencies** | Project 23 (Parental Consent) |
 
 ---
 
@@ -191,8 +191,10 @@ Users must be able to download their signed waivers as PDF documents containing:
 
 ### Blockers
 - **Legal review:** Must approve approach before development
-- **Project 1 (Auth):** Minors support with age verification
 - **Project 23 (Parental Consent):** Privo.com integration for minors
+
+### Related (Non-Blocking)
+- **Project 1 (Auth):** Minors support with age verification
 
 ### Enables
 - **Project 10 (Community Pages):** Community-specific waivers
