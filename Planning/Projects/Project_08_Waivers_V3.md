@@ -148,7 +148,7 @@ Users must be able to download their signed waivers as PDF documents containing:
 
 ### Phase 5 - Minors Support
 - ☐ Guardian consent workflow
-- ☐ Minors can't create events
+- ☐ Minor actions based on parental consent scope (e.g., event creation, team leadership)
 - ☐ Minors require adult presence at events
 - ☐ Age verification integration (with Project 23)
 
@@ -578,10 +578,10 @@ public async Task<ActionResult<WaiverStatusDto>> CheckEventWaiverStatus(
 - Event lead dashboard
 
 ### Phase 4: Minors Support (Depends on Project 1 & 23)
-- Guardian consent workflow
+- Guardian consent workflow with configurable action permissions
 - Age verification integration
-- Minor-specific restrictions
-- Adult presence validation
+- Enforce parental consent scope (what actions minor is allowed to perform)
+- Adult presence validation at events
 
 ### Phase 5: Admin & Reporting
 - Compliance dashboard
