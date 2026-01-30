@@ -125,7 +125,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
 
     // Use user's weight preference (prefersMetric: true = kg, false = lbs)
     const prefersMetric = currentUser?.prefersMetric ?? false;
-    const totalWeight = prefersMetric ? (stats?.totalWeightInKilograms || 0) : (stats?.totalWeightInPounds || 0);
+    const totalWeight = prefersMetric ? stats?.totalWeightInKilograms || 0 : stats?.totalWeightInPounds || 0;
     const weightLabel = prefersMetric ? 'Weight (kg)' : 'Weight (lbs)';
 
     const setSharingEvent = useCallback((newEventToShare: EventData, updateShowModal: boolean) => {
