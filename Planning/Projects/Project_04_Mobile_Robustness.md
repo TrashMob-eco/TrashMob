@@ -381,10 +381,30 @@ public static MauiApp CreateMauiApp()
    **Owner:** Product Lead  
    **Due:** Before beta phase
 
-4. **Should we implement automatic crash reporting opt-out?**  
-   **Recommendation:** Opt-in by default with privacy policy disclosure  
-   **Owner:** Legal + Product  
+4. **Should we implement automatic crash reporting opt-out?**
+   **Recommendation:** Opt-in by default with privacy policy disclosure
+   **Owner:** Legal + Product
    **Due:** Before Sentry phase
+
+5. **Should we implement biometric authentication for returning users?**
+   **Recommendation:** Yes, as optional convenience feature (Face ID / Touch ID on iOS, fingerprint on Android)
+   **Owner:** Mobile Team
+   **Due:** Before Phase 2
+
+6. **What is our push notification strategy (types, frequency, opt-in)?**
+   **Recommendation:** Opt-in prompt at first launch; categories: event reminders, team activity, achievements; respect quiet hours (9 PM - 8 AM local); allow per-category opt-out
+   **Owner:** Product Lead
+   **Due:** Before Phase 5
+
+7. **How do we force critical app updates?**
+   **Recommendation:** Minimum version check on app launch via API endpoint; block app usage until updated for critical security patches; soft reminder for feature updates
+   **Owner:** Mobile Team + DevOps
+   **Due:** Before production release
+
+8. **What data should be cached for offline viewing?**
+   **Recommendation:** User profile, registered events (next 30 days), team memberships; read-only mode when offline; queue actions for sync when online
+   **Owner:** Mobile Team
+   **Due:** Before Phase 1
 
 ---
 

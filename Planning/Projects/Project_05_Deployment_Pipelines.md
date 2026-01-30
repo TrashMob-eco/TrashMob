@@ -469,6 +469,26 @@ jobs:
    **Decision:** Semantic versioning with auto-increment build number.
    **Status:** Decided
 
+5. **What is the secrets rotation policy and schedule?**
+   **Recommendation:** 90-day rotation for API keys; annual rotation for certificates; automated alerts 30 days before expiry; document rotation procedures in runbook
+   **Owner:** Security + DevOps
+   **Due:** Before Phase 1 completion
+
+6. **How do we handle database migration rollback?**
+   **Recommendation:** All EF Core migrations must have a working `Down` method; test rollback in staging before production; take database snapshot before production deploys; document manual rollback procedures
+   **Owner:** Engineering Team
+   **Due:** Before Phase 2
+
+7. **What health checks determine staged rollout progression (10% → 50% → 100%)?**
+   **Recommendation:** Error rate < 1%, P95 latency < 500ms, no crash rate spike, for 15 minutes at each stage before progressing
+   **Owner:** DevOps
+   **Due:** Before Phase 4
+
+8. **How often do we test disaster recovery procedures?**
+   **Recommendation:** Quarterly DR drill with documented runbook; annual full failover test; post-drill retrospective and updates
+   **Owner:** DevOps + Engineering
+   **Due:** After initial setup
+
 ---
 
 ## Related Documents

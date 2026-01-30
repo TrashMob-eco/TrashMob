@@ -673,6 +673,26 @@ public async Task<ActionResult<WaiverStatusDto>> CheckEventWaiverStatus(
    **Decision:** Native click-to-accept implementation (checkbox + typed legal name + audit trail). No third-party services (DocuSign/Adobe Sign). Legally valid under ESIGN Act and UETA.
    **Status:** ✅ Resolved
 
+10. **How do community admins compare waiver versions to see what changed?**
+    **Recommendation:** Provide diff view showing added/removed/changed text between versions; highlight changes clearly
+    **Owner:** Engineering Team
+    **Due:** Before Phase 1
+
+11. **What if a user registers for events in multiple communities on the same day?**
+    **Recommendation:** User signs all required waivers once; each waiver is valid for all events that day requiring that specific waiver
+    **Owner:** Legal + Product
+    **Due:** Before Phase 4
+
+12. **How do we handle team events that span community boundaries?**
+    **Recommendation:** Event location (city/state) determines the community; single community waiver applies based on event's registered location
+    **Owner:** Product Lead
+    **Due:** Before Phase 4
+
+13. **What accessibility accommodations must waivers support?**
+    **Recommendation:** Screen reader accessible (proper semantic HTML); plain text version available for download; large print / high contrast options; keyboard-navigable
+    **Owner:** Accessibility Team
+    **Due:** Before Phase 2
+
 ---
 
 ## Related Documents

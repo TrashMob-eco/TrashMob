@@ -767,6 +767,31 @@ public async Task<ActionResult> ReactivateTeam(Guid teamId)
    **Decision:** No. Only public teams appear on leaderboards.
    **Status:** ✅ Resolved
 
+9. **What happens to historical data when a team is deleted?**
+   **Recommendation:** Preserve event history with "Team Deleted" placeholder; aggregate stats remain in system totals; soft delete preserves data for potential restoration
+   **Owner:** Engineering Team
+   **Due:** Before Phase 6
+
+10. **Can all team leads leave, leaving a team without leadership?**
+    **Recommendation:** No; last lead cannot leave without designating a new lead or requesting team deactivation from admin
+    **Owner:** Product Lead
+    **Due:** Before Phase 2
+
+11. **Are team names globally unique?**
+    **Recommendation:** Yes; case-insensitive uniqueness to prevent confusion and impersonation
+    **Owner:** Product Lead
+    **Due:** Before Phase 1
+
+12. **Can minors be team leads?**
+    **Recommendation:** No; team leads must be 18+ due to organizational responsibility and liability concerns
+    **Owner:** Legal + Product
+    **Due:** Before Phase 2
+
+13. **How are team photos moderated?**
+    **Recommendation:** Same moderation queue as litter report images; flagged photos hidden until reviewed; integration with Project 28 (Photo Moderation)
+    **Owner:** Engineering Team
+    **Due:** Before Phase 5
+
 ---
 
 ## Related Documents

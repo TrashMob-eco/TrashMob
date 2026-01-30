@@ -396,6 +396,26 @@ No changes required (already implemented).
    **Data Model:** Add `InReview` (boolean) and `ReviewRequestedByUserId` (Guid?) to LitterImage entity. Full moderation admin page may come later, but these fields enable immediate flagging support.
    **Status:** Decided
 
+5. **Can users control notification radius for the weekly digest?**
+   **Recommendation:** Yes, allow 5/10/25/50 mile radius selection in user preferences (default: 10 miles)
+   **Owner:** Product Lead
+   **Due:** Before Phase 4 (Email Integration)
+
+6. **Should we support truly anonymous (no login) litter reports?**
+   **Recommendation:** No - require login to prevent spam and abuse; hide reporter identity from public display for privacy
+   **Owner:** Product Lead
+   **Due:** Before Phase 2
+
+7. **What map clustering algorithm and zoom thresholds should we use?**
+   **Recommendation:** Use supercluster.js or similar; cluster at zoom levels 0-13, de-cluster at 14+; color cluster by majority status
+   **Owner:** Engineering Team
+   **Due:** Before Phase 1 (Map Integration)
+
+8. **Can report status transition backward (e.g., Cleaned to New if litter returns)?**
+   **Recommendation:** No backward transitions; if litter returns to a "Cleaned" location, user should create a new report
+   **Owner:** Product Lead
+   **Due:** Before Phase 3
+
 ---
 
 ## Related Documents
