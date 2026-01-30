@@ -85,6 +85,15 @@ Enable users to form and join teams for recurring cleanup efforts. Teams provide
 - ☐ Photo album/gallery
 - ☐ "My Teams" dashboard section
 
+### Phase 6 - TrashMob Admin Tools
+- ☐ Admin team list with search/filter (all teams including private)
+- ☐ Admin team detail view with full member list
+- ☐ Change team leads (add/remove lead status)
+- ☐ Deactivate team (soft delete)
+- ☐ Delete team (hard delete with confirmation)
+- ☐ Reactivate archived/deactivated teams
+- ☐ Team moderation (edit name/description for policy violations)
+
 ---
 
 ## Out-of-Scope
@@ -557,6 +566,45 @@ public async Task<ActionResult<TeamMetricsDto>> GetTeamMetrics(Guid teamId)
 {
     // Return aggregated team statistics
 }
+
+// TrashMob Admin endpoints (Site Admin role required)
+[Authorize(Policy = "SiteAdmin")]
+[HttpGet("api/admin/teams")]
+public async Task<ActionResult<PagedResult<TeamAdminDto>>> GetAllTeamsAdmin([FromQuery] TeamAdminFilterRequest filters)
+{
+    // Get all teams (public and private) with admin details
+    // Supports filtering by status, activity, member count, etc.
+}
+
+[Authorize(Policy = "SiteAdmin")]
+[HttpGet("api/admin/teams/{teamId}")]
+public async Task<ActionResult<TeamAdminDetailDto>> GetTeamAdmin(Guid teamId)
+{
+    // Get full team details including all members, activity history
+}
+
+[Authorize(Policy = "SiteAdmin")]
+[HttpPut("api/admin/teams/{teamId}/leads")]
+public async Task<ActionResult> UpdateTeamLeads(Guid teamId, [FromBody] UpdateTeamLeadsRequest request)
+{
+    // Add or remove team leads (admin override)
+    // request contains: { addLeadUserIds: [], removeLeadUserIds: [] }
+}
+
+[Authorize(Policy = "SiteAdmin")]
+[HttpDelete("api/admin/teams/{teamId}")]
+public async Task<ActionResult> DeleteTeam(Guid teamId, [FromQuery] bool hardDelete = false)
+{
+    // Soft delete by default (sets IsActive = false)
+    // Hard delete removes team and all related data (use with caution)
+}
+
+[Authorize(Policy = "SiteAdmin")]
+[HttpPost("api/admin/teams/{teamId}/reactivate")]
+public async Task<ActionResult> ReactivateTeam(Guid teamId)
+{
+    // Reactivate a soft-deleted or auto-archived team
+}
 ```
 
 ### Web UX Changes
@@ -601,6 +649,24 @@ public async Task<ActionResult<TeamMetricsDto>> GetTeamMetrics(Guid teamId)
    - Teams I'm a member of
    - Teams I lead
    - Quick actions (create event, view team)
+
+**TrashMob Admin Tools:**
+
+7. `/admin/teams` - Team Administration (Site Admin only)
+   - List all teams (public and private) with search/filter
+   - Filter by: status (active/inactive/archived), member count, activity level, creation date
+   - Sortable columns: name, members, events, last activity, created date
+   - Quick actions: view details, change leads, deactivate, delete
+
+8. `/admin/teams/{id}` - Team Admin Detail View
+   - Full team information
+   - Complete member list with roles
+   - Activity history / audit log
+   - Actions:
+     - **Change Team Leads:** Add/remove lead status from any member, or assign a non-member as lead (auto-adds them)
+     - **Remove Team:** Soft delete (can be reactivated) or hard delete (permanent)
+     - **Reactivate Team:** Restore a deactivated or auto-archived team
+     - **Edit Team Details:** Override team name, description, visibility (for moderation)
 
 **Components:**
 ```tsx
@@ -655,6 +721,13 @@ public async Task<ActionResult<TeamMetricsDto>> GetTeamMetrics(Guid teamId)
 - "My Teams" section
 - Quick actions
 - Notifications for team activity
+
+### Phase 6: TrashMob Admin Tools
+- Admin team management page
+- Change team leads
+- Deactivate/delete teams
+- Reactivate archived teams
+- Team moderation capabilities
 
 **Note:** Phases can be worked on by different volunteers with coordination on shared components.
 
