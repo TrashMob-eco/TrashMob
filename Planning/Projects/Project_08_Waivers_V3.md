@@ -138,6 +138,7 @@ Users must be able to download their signed waivers as PDF documents containing:
 - ☐ Image/PDF upload with metadata (signer name, date, event)
 - ☐ Validation workflow for uploaded documents
 - ☐ Link uploaded waiver to user account
+- ☐ Event page admin panel for waiver management (upload, view status, bulk actions)
 
 ### Phase 4 - Event Integration
 - ☐ Event registration waiver checks
@@ -546,8 +547,16 @@ public async Task<ActionResult<WaiverStatusDto>> CheckEventWaiverStatus(
 
 **Event Lead View:**
 - Attendee list with waiver status indicator
-- ? Valid, ?? Expiring soon, ? Missing/Expired
+- ✓ Valid, ⚠ Expiring soon, ✗ Missing/Expired
 - Export button for waiver report
+
+**Event Page Admin Panel (for Event Lead/Community Mgr/Team Lead/Staff):**
+- "Manage Waivers" section visible to authorized users on event detail page
+- Upload signed paper waiver images/PDFs for attendees
+- Bulk upload option for multiple waivers
+- View all attendee waiver statuses at a glance
+- Quick actions: Upload waiver, Send reminder, Mark exception
+- Audit log of all waiver uploads for this event
 
 ### Mobile App Changes
 
