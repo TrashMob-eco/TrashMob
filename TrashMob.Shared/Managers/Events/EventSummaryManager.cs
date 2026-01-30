@@ -73,12 +73,12 @@ public class EventSummaryManager : BaseManager<EventSummary>, IEventSummaryManag
     /// <inheritdoc />
     public async Task<Stats> GetStatsV2Async(CancellationToken cancellationToken)
     {
-        //we should introduce enum here
         var eventStatistics = await Repository.GetEventStatisticsAsync(cancellationToken);
         var litterReports = await litterReportManager.GetAsync(cancellationToken);
 
         return new Stats()
         {
+            //we should introduce enum here
             TotalEvents = await eventRepository.Get().CountAsync(e => e.EventStatusId != CancelledEventStatusId, cancellationToken),
             TotalBags = eventStatistics.TotalBags,
             TotalHours = eventStatistics.TotalHours,

@@ -60,8 +60,8 @@
     "test": "vitest",
     "lint": "eslint . --fix",
     "format": "prettier . --write",
-    "generate:ts": "nswag openapi2csclient /input:https://localhost:44332/swagger/v1/swagger.json  /output:TrashMobApiClient.ts ",
-    "generate:cs": "nswag openapi2csclient /input:https://localhost:44332/swagger/v1/swagger.json  /output:TrashMobApiClient.cs /namespace:TrashMob.Client"
+    "generate:ts": "nswag openapi2csclient /input:https://localhost:44332/swagger/v2/swagger.json  /output:TrashMobApiClient.ts ",
+    "generate:cs": "nswag openapi2csclient /input:https://localhost:44332/swagger/v2/swagger.json  /output:TrashMobApiClient.cs /namespace:TrashMob.Client"
   },
   "browserslist": {
     "production": [
