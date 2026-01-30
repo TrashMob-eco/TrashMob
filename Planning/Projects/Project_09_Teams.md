@@ -29,28 +29,34 @@ Enable users to form and join teams for recurring cleanup efforts. Teams provide
 
 ### Secondary Goals
 - Team messaging/announcements
-- Team-specific waivers
-- Team sponsorships
-- Team merchandise/branding
 
 ---
 
 ## Scope
 
+### Team Visibility Rules
+
+| Team Type | Visible on Map | Searchable | Join Method | Leaderboard Eligible |
+|-----------|---------------|------------|-------------|---------------------|
+| **Public** | ✅ Yes | ✅ Yes | Request + Lead Approval | ✅ Yes |
+| **Private** | ❌ No | ❌ No | Invite Only | ❌ No |
+
+---
+
 ### Phase 1 - Team Creation & Management
-- ? Create team with name, description, location
-- ? Public vs private teams
-- ? Team leads can edit team details
-- ? Upload team logo/photo
-- ? Set team visibility and join rules
+- ☐ Create team with name, description, location
+- ☐ Public vs private teams
+- ☐ Team leads can edit team details
+- ☐ Upload team logo/photo
+- ☐ Set team visibility and join rules
 
 ### Phase 2 - Membership
-- ? Users can join public teams directly
-- ? Private teams require approval
-- ? Team leads can invite users
-- ? Members can leave teams
-- ? Leads can remove members
-- ? Multiple leads per team
+- ☐ Public teams: users request to join, requires lead approval
+- ☐ Private teams: invite-only (not visible on map or in search)
+- ☐ Team leads can invite users to any team type
+- ☐ Members can leave teams
+- ☐ Leads can remove members
+- ☐ Multiple leads per team
 
 ### Phase 3 - Team Events
 - ? Teams can create events
@@ -59,29 +65,37 @@ Enable users to form and join teams for recurring cleanup efforts. Teams provide
 - ? Team event history and calendar
 
 ### Phase 4 - Team Metrics
-- ? Total events by team
-- ? Total bags collected
-- ? Total weight collected (if tracked)
-- ? Total hours volunteered
-- ? Member count and growth
-- ? Public leaderboards (if Project 20 complete)
+- ☐ Total events by team
+- ☐ Total bags collected
+- ☐ Total weight collected (if tracked)
+- ☐ Total hours volunteered
+- ☐ Member count and growth
+- ☐ Team dashboard with sparklines for:
+  - Team size over time
+  - Bags collected over time
+  - Hours volunteered over time
+  - Weight collected over time
+  - Events participated over time
+- ☐ Public leaderboards (if Project 20 complete)
 
 ### Phase 5 - Discovery & Social
-- ? Teams map showing team locations
-- ? Search and filter teams
-- ? Team detail pages
-- ? Photo album/gallery
-- ? "My Teams" dashboard section
+- ☐ Teams map showing public team locations (private teams hidden)
+- ☐ Search and filter public teams only
+- ☐ Team detail pages (public teams visible to all; private teams visible to members only)
+- ☐ Photo album/gallery
+- ☐ "My Teams" dashboard section
 
 ---
 
 ## Out-of-Scope
 
-- ? Team chat/messaging (covered in Project 12)
-- ? Team competitions (covered in Project 20)
-- ? Team fundraising
-- ? Cross-team collaborations (future)
-- ? Team-specific merchandise store
+- ❌ Team chat/messaging (covered in Project 12)
+- ❌ Team competitions (covered in Project 20)
+- ❌ Team fundraising
+- ❌ Cross-team collaborations (future)
+- ❌ Team-specific merchandise store
+- ❌ Team sponsorships
+- ❌ Team-specific waivers (use standard TrashMob + community waivers)
 
 ---
 
@@ -188,6 +202,11 @@ namespace TrashMob.Models
         /// Gets or sets the country where the team is based.
         /// </summary>
         public string Country { get; set; }
+
+        /// <summary>
+        /// Gets or sets the postal code where the team is based.
+        /// </summary>
+        public string PostalCode { get; set; }
 
         /// <summary>
         /// Gets or sets whether the team is currently active.
@@ -380,6 +399,7 @@ modelBuilder.Entity<Team>(entity =>
     entity.Property(e => e.City).HasMaxLength(100);
     entity.Property(e => e.Region).HasMaxLength(100);
     entity.Property(e => e.Country).HasMaxLength(100);
+    entity.Property(e => e.PostalCode).HasMaxLength(20);
     entity.HasIndex(e => new { e.IsPublic, e.IsActive });
 });
 
@@ -559,8 +579,14 @@ public async Task<ActionResult<TeamMetricsDto>> GetTeamMetrics(Guid teamId)
    - Member list with leads highlighted
    - Upcoming events
    - Past events and metrics
-   - Photo gallery
-   - Join button (if public) or Request to Join (if private)
+   - **Sparkline charts** showing trends over time:
+     - Team size
+     - Bags collected
+     - Hours volunteered
+     - Weight collected
+     - Events participated
+   - Photo carousel (multiple team photos rotate automatically)
+   - Request to Join button (public teams) or invite-only message (private teams)
 
 4. `/teams/{id}/edit` - Edit Team (Leads Only)
    - Update team details
@@ -581,8 +607,13 @@ public async Task<ActionResult<TeamMetricsDto>> GetTeamMetrics(Guid teamId)
 <TeamCard team={team} />
 <TeamMembersList members={members} leads={leads} />
 <TeamMetricsWidget metrics={metrics} />
+<TeamSparklineChart data={timeSeriesData} metric="bags" />
+<TeamSparklineChart data={timeSeriesData} metric="hours" />
+<TeamSparklineChart data={timeSeriesData} metric="weight" />
+<TeamSparklineChart data={timeSeriesData} metric="members" />
+<TeamSparklineChart data={timeSeriesData} metric="events" />
 <TeamEventsList events={events} />
-<TeamPhotoGallery photos={photos} />
+<TeamPhotoCarousel photos={photos} autoRotate={true} />
 ```
 
 ### Mobile App Changes
@@ -631,30 +662,37 @@ public async Task<ActionResult<TeamMetricsDto>> GetTeamMetrics(Guid teamId)
 
 ## Open Questions
 
-1. **Maximum team size limit?**  
-   **Recommendation:** No hard limit; soft warning at 50 members  
-   **Owner:** Product Lead  
-   **Due:** Before Phase 1
+1. ~~**Maximum team size limit?**~~
+   **Decision:** No hard limit; soft warning at 50 members
+   **Status:** ✅ Resolved
 
-2. **Can users be on multiple teams?**  
-   **Recommendation:** Yes, no limit  
-   **Owner:** Product Lead  
-   **Due:** Before Phase 1
+2. ~~**Can users be on multiple teams?**~~
+   **Decision:** Yes, no limit
+   **Status:** ✅ Resolved
 
-3. **How to handle inactive teams?**  
-   **Recommendation:** Auto-archive after 6 months no activity; can be reactivated  
-   **Owner:** Product Lead  
-   **Due:** Before Phase 4
+3. ~~**How to handle inactive teams?**~~
+   **Decision:** Auto-archive after 6 months no activity; can be reactivated
+   **Status:** ✅ Resolved
 
-4. **Team name moderation?**  
-   **Recommendation:** Review queue for new teams; report function; admin override  
-   **Owner:** Product + Admin  
-   **Due:** Before Phase 1
+4. ~~**Team name moderation?**~~
+   **Decision:** Review queue for new teams; report function; admin override
+   **Status:** ✅ Resolved
 
-5. **Can teams own multiple adopt-a-locations?**  
-   **Recommendation:** Yes (covered in Project 11)  
-   **Owner:** Product Lead  
-   **Due:** When Project 11 starts
+5. ~~**Can teams own multiple adopt-a-locations?**~~
+   **Decision:** Yes (covered in Project 11)
+   **Status:** ✅ Resolved
+
+6. ~~**What are the join rules for public vs private teams?**~~
+   **Decision:** Public teams require request + lead approval. Private teams are invite-only.
+   **Status:** ✅ Resolved
+
+7. ~~**Are private teams visible on map and search?**~~
+   **Decision:** No. Private teams are hidden from map and search. Only members can see them.
+   **Status:** ✅ Resolved
+
+8. ~~**Are private teams eligible for leaderboards?**~~
+   **Decision:** No. Only public teams appear on leaderboards.
+   **Status:** ✅ Resolved
 
 ---
 
@@ -666,7 +704,7 @@ public async Task<ActionResult<TeamMetricsDto>> GetTeamMetrics(Guid teamId)
 
 ---
 
-**Last Updated:** January 24, 2026  
-**Owner:** Product Lead + Web Team  
-**Status:** Ready for Review  
+**Last Updated:** January 29, 2026
+**Owner:** Product Lead + Web Team
+**Status:** Ready for Review
 **Next Review:** When volunteer picks up work
