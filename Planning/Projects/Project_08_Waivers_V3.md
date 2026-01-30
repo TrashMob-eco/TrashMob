@@ -98,7 +98,8 @@ Users must be able to download their signed waivers as PDF documents containing:
 
 ### Waiver Validity Rules
 
-- Waivers are valid for a period specified when created (e.g., 1 year)
+- Waivers are valid for a **calendar year** (expires December 31)
+- Users must re-sign at their first event registration in a new calendar year
 - Waivers can be uploaded and scheduled for future activation date
 - A new waiver version invalidates previous signatures (re-consent required)
 - Users without a current valid waiver for an event **must** sign before attending
@@ -639,38 +640,34 @@ public async Task<ActionResult<WaiverStatusDto>> CheckEventWaiverStatus(
    **Decision:** Yes, both required. TrashMob waiver covers platform liability; community waiver covers local/partner requirements. Users may need to sign 2 waivers for community events.
    **Status:** ✅ Resolved
 
-2. **What's the validity period for waivers?**
-   **Recommendation:** 1 year default; configurable per waiver
-   **Owner:** Legal team + Product
-   **Due:** Before Phase 1
+2. ~~**What's the validity period for waivers?**~~
+   **Decision:** Waivers are valid for a calendar year. Users must re-sign at their first event in a new calendar year.
+   **Status:** ✅ Resolved
 
 3. **How do we handle minors who turn 18 during waiver validity?**
    **Recommendation:** Require re-consent on birthday; automated check
    **Owner:** Legal team
    **Due:** Before Phase 5
 
-4. **Can guardians sign for multiple minors at once?**
-   **Recommendation:** Yes, with clear UI showing each minor
-   **Owner:** Product team
-   **Due:** Before Phase 5
+4. ~~**Can guardians sign for multiple minors at once?**~~
+   **Decision:** Yes, with clear UI showing each minor
+   **Status:** ✅ Resolved
 
 5. ~~**What happens if community changes its waiver mid-year?**~~
    **Decision:** New waiver version invalidates all previous signatures. All users must re-sign the new waiver before attending events requiring it. No grandfathering.
    **Status:** ✅ Resolved
 
-6. **What immutable storage solution for signed waivers?**
-   **Recommendation:** Azure Blob Storage with immutability policies (legal hold or time-based retention)
-   **Owner:** Engineering
-   **Due:** Before Phase 1
+6. ~~**What immutable storage solution for signed waivers?**~~
+   **Decision:** Azure Blob Storage with immutability policies (legal hold or time-based retention)
+   **Status:** ✅ Resolved
 
 7. **Who can upload manually-signed paper waivers?**
    **Decision:** TrashMob staff, Community Manager, Team Leader, Event Lead
    **Status:** ✅ Resolved
 
-8. **What PDF generation library for server-side waiver PDFs?**
-   **Recommendation:** QuestPDF (modern, .NET native, free for open source) or iTextSharp
-   **Owner:** Engineering
-   **Due:** Before Phase 2
+8. ~~**What PDF generation library for server-side waiver PDFs?**~~
+   **Decision:** QuestPDF (modern, .NET native, free for open source)
+   **Status:** ✅ Resolved
 
 9. ~~**E-signature implementation approach?**~~
    **Decision:** Native click-to-accept implementation (checkbox + typed legal name + audit trail). No third-party services (DocuSign/Adobe Sign). Legally valid under ESIGN Act and UETA.
