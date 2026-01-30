@@ -549,6 +549,14 @@ public async Task<ActionResult<WaiverStatusDto>> CheckEventWaiverStatus(
 - `/admin/waivers/create` - Create new waiver
 - `/communities/{id}/waivers` - Manage community waivers
 
+**My Dashboard - Waivers Section:**
+- New "My Waivers" card/section on user dashboard (`/mydashboard`)
+- Shows list of signed waivers with status (valid, expiring soon, expired)
+- Quick view of waiver expiry dates
+- Link to view/download each signed waiver PDF
+- Alert banner for waivers expiring within 30 days
+- "View All Waivers" link to `/waivers` page
+
 **Event Lead View:**
 - Attendee list with waiver status indicator
 - ✓ Valid, ⚠ Expiring soon, ✗ Missing/Expired
