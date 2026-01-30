@@ -1,5 +1,5 @@
 import { FC, FormEvent } from 'react';
-import { getApiConfig, getB2CPolicies, msalClient } from '@/store/AuthStore';
+import { getApiConfig, getB2CPolicies, getMsalClientInstance } from '@/store/AuthStore';
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,7 +10,7 @@ export const DeleteMyData: FC<DeleteMyDataProps> = (props) => {
     const handleDelete = (event: FormEvent<HTMLElement>) => {
         event.preventDefault();
 
-        const account = msalClient.getAllAccounts()[0];
+        const account = getMsalClientInstance().getAllAccounts()[0];
         const policy = getB2CPolicies();
         const scopes = getApiConfig();
 
@@ -19,16 +19,18 @@ export const DeleteMyData: FC<DeleteMyDataProps> = (props) => {
             authority: policy.authorities.deleteUser.authority,
             scopes: scopes.b2cScopes,
         };
-        msalClient.acquireTokenPopup(request).then(() => {
-            const logoutRequest = {
-                account: msalClient.getActiveAccount(),
-            };
-            msalClient.logoutRedirect(logoutRequest);
-        });
+        getMsalClientInstance()
+            .acquireTokenPopup(request)
+            .then(() => {
+                const logoutRequest = {
+                    account: getMsalClientInstance().getActiveAccount(),
+                };
+                getMsalClientInstance().logoutRedirect(logoutRequest);
+            });
     };
 
     return (
-        <div className='tailwind'>
+        <div>
             <HeroSection
                 Title='Delete your account?'
                 Description='TrashMob members are making the world a better place!'

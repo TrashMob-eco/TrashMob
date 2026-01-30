@@ -64,7 +64,7 @@ const Waivers: React.FC<WaiversProps> = () => {
     if (!isUserLoaded) return null;
 
     return (
-        <div className='tailwind'>
+        <div>
             <HeroSection Title='Waiver' Description='Safety first!' />
             <div className='container prose space-y-4 py-12'>
                 <h2 className='font-medium text-3xl'>TrashMob.eco Waiver</h2>

@@ -78,7 +78,7 @@ export const ContactUs = () => {
     );
 
     return (
-        <div className='tailwind'>
+        <div>
             <div className='w-full max-w-xl mx-auto py-16'>
                 <Card>
                     <CardHeader>

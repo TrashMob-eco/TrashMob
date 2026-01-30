@@ -19,6 +19,10 @@ class DisplayEventSummary {
 
     actualNumberOfAttendees: number = 0;
 
+    pickedWeight: number = 0;
+
+    pickedWeightUnitId: number = 0;
+
     numberOfBags: number = 0;
 
     durationInMinutes: number = 0;

@@ -66,7 +66,7 @@ export const PartnerRequestDetails: React.FC = () => {
     }
 
     return (
-        <div className='tailwind'>
+        <div>
             <div className='container grid grid-cols-12 space-x-4 my-8'>
                 <div className='col-span-4'>
                     <Card className='h-full'>

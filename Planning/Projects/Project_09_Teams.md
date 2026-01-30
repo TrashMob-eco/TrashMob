@@ -1,4 +1,4 @@
-# Project 9 � TrashMob Teams
+# Project 9 � TrashMob Teams
 
 | Attribute | Value |
 |-----------|-------|
@@ -29,28 +29,34 @@ Enable users to form and join teams for recurring cleanup efforts. Teams provide
 
 ### Secondary Goals
 - Team messaging/announcements
-- Team-specific waivers
-- Team sponsorships
-- Team merchandise/branding
 
 ---
 
 ## Scope
 
+### Team Visibility Rules
+
+| Team Type | Visible on Map | Searchable | Join Method | Leaderboard Eligible |
+|-----------|---------------|------------|-------------|---------------------|
+| **Public** | ✅ Yes | ✅ Yes | Request + Lead Approval | ✅ Yes |
+| **Private** | ❌ No | ❌ No | Invite Only | ❌ No |
+
+---
+
 ### Phase 1 - Team Creation & Management
-- ? Create team with name, description, location
-- ? Public vs private teams
-- ? Team leads can edit team details
-- ? Upload team logo/photo
-- ? Set team visibility and join rules
+- ☐ Create team with name, description, location
+- ☐ Public vs private teams
+- ☐ Team leads can edit team details
+- ☐ Upload team logo/photo
+- ☐ Set team visibility and join rules
 
 ### Phase 2 - Membership
-- ? Users can join public teams directly
-- ? Private teams require approval
-- ? Team leads can invite users
-- ? Members can leave teams
-- ? Leads can remove members
-- ? Multiple leads per team
+- ☐ Public teams: users request to join, requires lead approval
+- ☐ Private teams: invite-only (not visible on map or in search)
+- ☐ Team leads can invite users to any team type
+- ☐ Members can leave teams
+- ☐ Leads can remove members
+- ☐ Multiple leads per team
 
 ### Phase 3 - Team Events
 - ? Teams can create events
@@ -59,29 +65,37 @@ Enable users to form and join teams for recurring cleanup efforts. Teams provide
 - ? Team event history and calendar
 
 ### Phase 4 - Team Metrics
-- ? Total events by team
-- ? Total bags collected
-- ? Total weight collected (if tracked)
-- ? Total hours volunteered
-- ? Member count and growth
-- ? Public leaderboards (if Project 20 complete)
+- ☐ Total events by team
+- ☐ Total bags collected
+- ☐ Total weight collected (if tracked)
+- ☐ Total hours volunteered
+- ☐ Member count and growth
+- ☐ Team dashboard with sparklines for:
+  - Team size over time
+  - Bags collected over time
+  - Hours volunteered over time
+  - Weight collected over time
+  - Events participated over time
+- ☐ Public leaderboards (if Project 20 complete)
 
 ### Phase 5 - Discovery & Social
-- ? Teams map showing team locations
-- ? Search and filter teams
-- ? Team detail pages
-- ? Photo album/gallery
-- ? "My Teams" dashboard section
+- ☐ Teams map showing public team locations (private teams hidden)
+- ☐ Search and filter public teams only
+- ☐ Team detail pages (public teams visible to all; private teams visible to members only)
+- ☐ Photo album/gallery
+- ☐ "My Teams" dashboard section
 
 ---
 
 ## Out-of-Scope
 
-- ? Team chat/messaging (covered in Project 12)
-- ? Team competitions (covered in Project 20)
-- ? Team fundraising
-- ? Cross-team collaborations (future)
-- ? Team-specific merchandise store
+- ❌ Team chat/messaging (covered in Project 12)
+- ❌ Team competitions (covered in Project 20)
+- ❌ Team fundraising
+- ❌ Cross-team collaborations (future)
+- ❌ Team-specific merchandise store
+- ❌ Team sponsorships
+- ❌ Team-specific waivers (use standard TrashMob + community waivers)
 
 ---
 
@@ -129,87 +143,346 @@ None - independent feature
 
 ### Data Model Changes
 
-```sql
--- Teams table
-CREATE TABLE Teams (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    Name NVARCHAR(200) NOT NULL,
-    Description NVARCHAR(MAX) NULL,
-    LogoUrl NVARCHAR(500) NULL,
-    IsPublic BIT NOT NULL DEFAULT 1,
-    RequiresApproval BIT NOT NULL DEFAULT 0, -- For private teams
-    Latitude DECIMAL(9,6) NULL,
-    Longitude DECIMAL(9,6) NULL,
-    City NVARCHAR(100) NULL,
-    Region NVARCHAR(100) NULL,
-    Country NVARCHAR(100) NULL,
-    IsActive BIT NOT NULL DEFAULT 1,
-    CreatedByUserId UNIQUEIDENTIFIER NOT NULL,
-    CreatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    LastUpdatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    FOREIGN KEY (CreatedByUserId) REFERENCES Users(Id)
-);
+**New Entity: Team**
+```csharp
+// New file: TrashMob.Models/Team.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a user-created team for collaborative cleanup efforts.
+    /// </summary>
+    public class Team : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the team name.
+        /// </summary>
+        public string Name { get; set; }
 
--- Team membership
-CREATE TABLE TeamMembers (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    TeamId UNIQUEIDENTIFIER NOT NULL,
-    UserId UNIQUEIDENTIFIER NOT NULL,
-    IsTeamLead BIT NOT NULL DEFAULT 0,
-    JoinedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    FOREIGN KEY (TeamId) REFERENCES Teams(Id) ON DELETE CASCADE,
-    FOREIGN KEY (UserId) REFERENCES Users(Id),
-    UNIQUE (TeamId, UserId)
-);
+        /// <summary>
+        /// Gets or sets the team description.
+        /// </summary>
+        public string Description { get; set; }
 
--- Team join requests (for private teams)
-CREATE TABLE TeamJoinRequests (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    TeamId UNIQUEIDENTIFIER NOT NULL,
-    UserId UNIQUEIDENTIFIER NOT NULL,
-    RequestDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    Status NVARCHAR(20) NOT NULL DEFAULT 'Pending', -- Pending, Approved, Rejected
-    ReviewedByUserId UNIQUEIDENTIFIER NULL,
-    ReviewedDate DATETIMEOFFSET NULL,
-    FOREIGN KEY (TeamId) REFERENCES Teams(Id) ON DELETE CASCADE,
-    FOREIGN KEY (UserId) REFERENCES Users(Id),
-    FOREIGN KEY (ReviewedByUserId) REFERENCES Users(Id)
-);
+        /// <summary>
+        /// Gets or sets the URL of the team logo.
+        /// </summary>
+        public string LogoUrl { get; set; }
 
--- Team events (linking events to teams)
-CREATE TABLE TeamEvents (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    TeamId UNIQUEIDENTIFIER NOT NULL,
-    EventId UNIQUEIDENTIFIER NOT NULL,
-    CreatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    FOREIGN KEY (TeamId) REFERENCES Teams(Id) ON DELETE CASCADE,
-    FOREIGN KEY (EventId) REFERENCES Events(Id),
-    UNIQUE (TeamId, EventId)
-);
+        /// <summary>
+        /// Gets or sets whether the team is publicly visible.
+        /// </summary>
+        public bool IsPublic { get; set; } = true;
 
--- Team photos
-CREATE TABLE TeamPhotos (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    TeamId UNIQUEIDENTIFIER NOT NULL,
-    ImageUrl NVARCHAR(500) NOT NULL,
-    Caption NVARCHAR(500) NULL,
-    UploadedByUserId UNIQUEIDENTIFIER NOT NULL,
-    UploadedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    FOREIGN KEY (TeamId) REFERENCES Teams(Id) ON DELETE CASCADE,
-    FOREIGN KEY (UploadedByUserId) REFERENCES Users(Id)
-);
+        /// <summary>
+        /// Gets or sets whether joining requires approval from a team lead.
+        /// </summary>
+        public bool RequiresApproval { get; set; }
 
--- Add TeamId to EventAttendees for tracking team participation
-ALTER TABLE EventAttendees
-ADD TeamId UNIQUEIDENTIFIER NULL,
-    FOREIGN KEY (TeamId) REFERENCES Teams(Id);
+        /// <summary>
+        /// Gets or sets the latitude of the team's primary location.
+        /// </summary>
+        public double? Latitude { get; set; }
 
-CREATE INDEX IX_Teams_IsPublic_IsActive ON Teams(IsPublic, IsActive);
-CREATE INDEX IX_TeamMembers_TeamId ON TeamMembers(TeamId);
-CREATE INDEX IX_TeamMembers_UserId ON TeamMembers(UserId);
-CREATE INDEX IX_TeamEvents_TeamId ON TeamEvents(TeamId);
-CREATE INDEX IX_TeamEvents_EventId ON TeamEvents(EventId);
-CREATE INDEX IX_EventAttendees_TeamId ON EventAttendees(TeamId);
+        /// <summary>
+        /// Gets or sets the longitude of the team's primary location.
+        /// </summary>
+        public double? Longitude { get; set; }
+
+        /// <summary>
+        /// Gets or sets the city where the team is based.
+        /// </summary>
+        public string City { get; set; }
+
+        /// <summary>
+        /// Gets or sets the region/state where the team is based.
+        /// </summary>
+        public string Region { get; set; }
+
+        /// <summary>
+        /// Gets or sets the country where the team is based.
+        /// </summary>
+        public string Country { get; set; }
+
+        /// <summary>
+        /// Gets or sets the postal code where the team is based.
+        /// </summary>
+        public string PostalCode { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether the team is currently active.
+        /// </summary>
+        public bool IsActive { get; set; } = true;
+
+        // Navigation properties
+        public virtual ICollection<TeamMember> Members { get; set; }
+        public virtual ICollection<TeamJoinRequest> JoinRequests { get; set; }
+        public virtual ICollection<TeamEvent> TeamEvents { get; set; }
+        public virtual ICollection<TeamPhoto> Photos { get; set; }
+    }
+}
+```
+
+**New Entity: TeamMember**
+```csharp
+// New file: TrashMob.Models/TeamMember.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a user's membership in a team.
+    /// </summary>
+    public class TeamMember : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the team identifier.
+        /// </summary>
+        public Guid TeamId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the member's user identifier.
+        /// </summary>
+        public Guid UserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether this member is a team lead with admin privileges.
+        /// </summary>
+        public bool IsTeamLead { get; set; }
+
+        /// <summary>
+        /// Gets or sets the date the user joined the team.
+        /// </summary>
+        public DateTimeOffset JoinedDate { get; set; }
+
+        // Navigation properties
+        public virtual Team Team { get; set; }
+        public virtual User User { get; set; }
+    }
+}
+```
+
+**New Entity: TeamJoinRequest**
+```csharp
+// New file: TrashMob.Models/TeamJoinRequest.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a request to join a private team.
+    /// </summary>
+    public class TeamJoinRequest : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the team identifier.
+        /// </summary>
+        public Guid TeamId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the requesting user's identifier.
+        /// </summary>
+        public Guid UserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the date of the join request.
+        /// </summary>
+        public DateTimeOffset RequestDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the status of the request (Pending, Approved, Rejected).
+        /// </summary>
+        public string Status { get; set; } = "Pending";
+
+        /// <summary>
+        /// Gets or sets the identifier of the user who reviewed the request.
+        /// </summary>
+        public Guid? ReviewedByUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the date the request was reviewed.
+        /// </summary>
+        public DateTimeOffset? ReviewedDate { get; set; }
+
+        // Navigation properties
+        public virtual Team Team { get; set; }
+        public virtual User User { get; set; }
+        public virtual User ReviewedByUser { get; set; }
+    }
+}
+```
+
+**New Entity: TeamEvent**
+```csharp
+// New file: TrashMob.Models/TeamEvent.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Associates an event with a team.
+    /// </summary>
+    public class TeamEvent : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the team identifier.
+        /// </summary>
+        public Guid TeamId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the event identifier.
+        /// </summary>
+        public Guid EventId { get; set; }
+
+        // Navigation properties
+        public virtual Team Team { get; set; }
+        public virtual Event Event { get; set; }
+    }
+}
+```
+
+**New Entity: TeamPhoto**
+```csharp
+// New file: TrashMob.Models/TeamPhoto.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a photo in a team's gallery.
+    /// </summary>
+    public class TeamPhoto : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the team identifier.
+        /// </summary>
+        public Guid TeamId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the URL of the photo.
+        /// </summary>
+        public string ImageUrl { get; set; }
+
+        /// <summary>
+        /// Gets or sets the photo caption.
+        /// </summary>
+        public string Caption { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identifier of the user who uploaded the photo.
+        /// </summary>
+        public Guid UploadedByUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the date the photo was uploaded.
+        /// </summary>
+        public DateTimeOffset UploadedDate { get; set; }
+
+        // Navigation properties
+        public virtual Team Team { get; set; }
+        public virtual User UploadedByUser { get; set; }
+    }
+}
+```
+
+**Modification: EventAttendee**
+```csharp
+// Add to existing TrashMob.Models/EventAttendee.cs
+/// <summary>
+/// Gets or sets the optional team identifier if attending as part of a team.
+/// </summary>
+public Guid? TeamId { get; set; }
+
+/// <summary>
+/// Gets or sets the team the attendee is representing, if any.
+/// </summary>
+public virtual Team Team { get; set; }
+```
+
+**DbContext Configuration (in MobDbContext.cs):**
+```csharp
+modelBuilder.Entity<Team>(entity =>
+{
+    entity.Property(e => e.Name).HasMaxLength(200).IsRequired();
+    entity.Property(e => e.LogoUrl).HasMaxLength(500);
+    entity.Property(e => e.City).HasMaxLength(100);
+    entity.Property(e => e.Region).HasMaxLength(100);
+    entity.Property(e => e.Country).HasMaxLength(100);
+    entity.Property(e => e.PostalCode).HasMaxLength(20);
+    entity.HasIndex(e => new { e.IsPublic, e.IsActive });
+});
+
+modelBuilder.Entity<TeamMember>(entity =>
+{
+    entity.HasOne(e => e.Team)
+        .WithMany(t => t.Members)
+        .HasForeignKey(e => e.TeamId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.User)
+        .WithMany()
+        .HasForeignKey(e => e.UserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasIndex(e => e.TeamId);
+    entity.HasIndex(e => e.UserId);
+    entity.HasIndex(e => new { e.TeamId, e.UserId }).IsUnique();
+});
+
+modelBuilder.Entity<TeamJoinRequest>(entity =>
+{
+    entity.Property(e => e.Status).HasMaxLength(20);
+
+    entity.HasOne(e => e.Team)
+        .WithMany(t => t.JoinRequests)
+        .HasForeignKey(e => e.TeamId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.User)
+        .WithMany()
+        .HasForeignKey(e => e.UserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasOne(e => e.ReviewedByUser)
+        .WithMany()
+        .HasForeignKey(e => e.ReviewedByUserId)
+        .OnDelete(DeleteBehavior.NoAction);
+});
+
+modelBuilder.Entity<TeamEvent>(entity =>
+{
+    entity.HasOne(e => e.Team)
+        .WithMany(t => t.TeamEvents)
+        .HasForeignKey(e => e.TeamId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.Event)
+        .WithMany()
+        .HasForeignKey(e => e.EventId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasIndex(e => e.TeamId);
+    entity.HasIndex(e => e.EventId);
+    entity.HasIndex(e => new { e.TeamId, e.EventId }).IsUnique();
+});
+
+modelBuilder.Entity<TeamPhoto>(entity =>
+{
+    entity.Property(e => e.ImageUrl).HasMaxLength(500).IsRequired();
+    entity.Property(e => e.Caption).HasMaxLength(500);
+
+    entity.HasOne(e => e.Team)
+        .WithMany(t => t.Photos)
+        .HasForeignKey(e => e.TeamId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.UploadedByUser)
+        .WithMany()
+        .HasForeignKey(e => e.UploadedByUserId)
+        .OnDelete(DeleteBehavior.NoAction);
+});
+
+modelBuilder.Entity<EventAttendee>(entity =>
+{
+    // Add to existing configuration
+    entity.HasOne(e => e.Team)
+        .WithMany()
+        .HasForeignKey(e => e.TeamId)
+        .OnDelete(DeleteBehavior.SetNull);
+
+    entity.HasIndex(e => e.TeamId);
+});
 ```
 
 ### API Changes
@@ -306,8 +579,14 @@ public async Task<ActionResult<TeamMetricsDto>> GetTeamMetrics(Guid teamId)
    - Member list with leads highlighted
    - Upcoming events
    - Past events and metrics
-   - Photo gallery
-   - Join button (if public) or Request to Join (if private)
+   - **Sparkline charts** showing trends over time:
+     - Team size
+     - Bags collected
+     - Hours volunteered
+     - Weight collected
+     - Events participated
+   - Photo carousel (multiple team photos rotate automatically)
+   - Request to Join button (public teams) or invite-only message (private teams)
 
 4. `/teams/{id}/edit` - Edit Team (Leads Only)
    - Update team details
@@ -328,8 +607,13 @@ public async Task<ActionResult<TeamMetricsDto>> GetTeamMetrics(Guid teamId)
 <TeamCard team={team} />
 <TeamMembersList members={members} leads={leads} />
 <TeamMetricsWidget metrics={metrics} />
+<TeamSparklineChart data={timeSeriesData} metric="bags" />
+<TeamSparklineChart data={timeSeriesData} metric="hours" />
+<TeamSparklineChart data={timeSeriesData} metric="weight" />
+<TeamSparklineChart data={timeSeriesData} metric="members" />
+<TeamSparklineChart data={timeSeriesData} metric="events" />
 <TeamEventsList events={events} />
-<TeamPhotoGallery photos={photos} />
+<TeamPhotoCarousel photos={photos} autoRotate={true} />
 ```
 
 ### Mobile App Changes
@@ -378,30 +662,37 @@ public async Task<ActionResult<TeamMetricsDto>> GetTeamMetrics(Guid teamId)
 
 ## Open Questions
 
-1. **Maximum team size limit?**  
-   **Recommendation:** No hard limit; soft warning at 50 members  
-   **Owner:** Product Lead  
-   **Due:** Before Phase 1
+1. ~~**Maximum team size limit?**~~
+   **Decision:** No hard limit; soft warning at 50 members
+   **Status:** ✅ Resolved
 
-2. **Can users be on multiple teams?**  
-   **Recommendation:** Yes, no limit  
-   **Owner:** Product Lead  
-   **Due:** Before Phase 1
+2. ~~**Can users be on multiple teams?**~~
+   **Decision:** Yes, no limit
+   **Status:** ✅ Resolved
 
-3. **How to handle inactive teams?**  
-   **Recommendation:** Auto-archive after 6 months no activity; can be reactivated  
-   **Owner:** Product Lead  
-   **Due:** Before Phase 4
+3. ~~**How to handle inactive teams?**~~
+   **Decision:** Auto-archive after 6 months no activity; can be reactivated
+   **Status:** ✅ Resolved
 
-4. **Team name moderation?**  
-   **Recommendation:** Review queue for new teams; report function; admin override  
-   **Owner:** Product + Admin  
-   **Due:** Before Phase 1
+4. ~~**Team name moderation?**~~
+   **Decision:** Review queue for new teams; report function; admin override
+   **Status:** ✅ Resolved
 
-5. **Can teams own multiple adopt-a-locations?**  
-   **Recommendation:** Yes (covered in Project 11)  
-   **Owner:** Product Lead  
-   **Due:** When Project 11 starts
+5. ~~**Can teams own multiple adopt-a-locations?**~~
+   **Decision:** Yes (covered in Project 11)
+   **Status:** ✅ Resolved
+
+6. ~~**What are the join rules for public vs private teams?**~~
+   **Decision:** Public teams require request + lead approval. Private teams are invite-only.
+   **Status:** ✅ Resolved
+
+7. ~~**Are private teams visible on map and search?**~~
+   **Decision:** No. Private teams are hidden from map and search. Only members can see them.
+   **Status:** ✅ Resolved
+
+8. ~~**Are private teams eligible for leaderboards?**~~
+   **Decision:** No. Only public teams appear on leaderboards.
+   **Status:** ✅ Resolved
 
 ---
 
@@ -413,7 +704,7 @@ public async Task<ActionResult<TeamMetricsDto>> GetTeamMetrics(Guid teamId)
 
 ---
 
-**Last Updated:** January 24, 2026  
-**Owner:** Product Lead + Web Team  
-**Status:** Ready for Review  
+**Last Updated:** January 29, 2026
+**Owner:** Product Lead + Web Team
+**Status:** Ready for Review
 **Next Review:** When volunteer picks up work

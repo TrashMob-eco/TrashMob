@@ -1,7 +1,13 @@
 namespace TrashMob;
 
+using System;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Azure.Identity;
+using Azure.Monitor.OpenTelemetry.Exporter;
 using Azure.Security.KeyVault.Secrets;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -19,16 +25,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Web;
-using Microsoft.OpenApi;
 using NetTopologySuite.IO.Converters;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using TrashMob.Common;
 using TrashMob.Security;
 using TrashMob.Shared;
@@ -55,9 +55,54 @@ public class Program
             builder.Configuration.AddAzureKeyVault(secretClient, new KeyVaultSecretManager());
         }
 
-        builder.Logging.AddApplicationInsights();
-        builder.Services.AddApplicationInsightsTelemetry();
-        builder.Services.AddApplicationInsightsTelemetryProcessor<HealthCheckTelemetryFilter>();
+        // Configure OpenTelemetry for observability
+        var appInsightsConnectionString = builder.Configuration["ApplicationInsights:ConnectionString"];
+
+        builder.Services.AddOpenTelemetry()
+            .ConfigureResource(resource => resource.AddService("TrashMob.Web"))
+            .WithTracing(tracing =>
+            {
+                tracing
+                    .AddSource(TrashMobActivitySources.AllSourceNames)
+                    .AddAspNetCoreInstrumentation(options =>
+                    {
+                        // Filter out health check endpoints from traces
+                        options.Filter = httpContext =>
+                            !httpContext.Request.Path.StartsWithSegments("/health");
+                    })
+                    .AddHttpClientInstrumentation()
+                    .AddEntityFrameworkCoreInstrumentation();
+
+                if (!string.IsNullOrEmpty(appInsightsConnectionString))
+                {
+                    tracing.AddAzureMonitorTraceExporter(options =>
+                        options.ConnectionString = appInsightsConnectionString);
+                }
+            })
+            .WithMetrics(metrics =>
+            {
+                metrics
+                    .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation();
+
+                if (!string.IsNullOrEmpty(appInsightsConnectionString))
+                {
+                    metrics.AddAzureMonitorMetricExporter(options =>
+                        options.ConnectionString = appInsightsConnectionString);
+                }
+            });
+
+        builder.Logging.AddOpenTelemetry(logging =>
+        {
+            logging.IncludeFormattedMessage = true;
+            logging.IncludeScopes = true;
+
+            if (!string.IsNullOrEmpty(appInsightsConnectionString))
+            {
+                logging.AddAzureMonitorLogExporter(options =>
+                    options.ConnectionString = appInsightsConnectionString);
+            }
+        });
 
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddMicrosoftIdentityWebApi(options =>
@@ -189,6 +234,17 @@ public class Program
         }
 
         // builder.Services.AddScoped(serviceProvider => new BlobServiceClient(blobStorageUrl));
+
+        // Add HttpClient for Strapi CMS
+        builder.Services.AddHttpClient("Strapi", client =>
+        {
+            var strapiUrl = builder.Configuration["StrapiBaseUrl"];
+            if (!string.IsNullOrEmpty(strapiUrl))
+            {
+                client.BaseAddress = new Uri(strapiUrl);
+            }
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+        });
 
         builder.Services.AddHealthChecks()
             .AddSqlServer(

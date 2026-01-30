@@ -113,57 +113,256 @@ Drive engagement with leaderboards across roles and time ranges while preventing
 
 ### Data Model Changes
 
-```sql
--- Leaderboard cache (pre-computed for performance)
-CREATE TABLE LeaderboardCache (
-    Id BIGINT PRIMARY KEY IDENTITY(1,1),
-    LeaderboardType NVARCHAR(50) NOT NULL, -- User, Team, Community
-    MetricType NVARCHAR(50) NOT NULL, -- Events, Bags, Weight, Hours
-    TimeRange NVARCHAR(20) NOT NULL, -- Today, Week, Month, Year, AllTime
-    LocationScope NVARCHAR(50) NULL, -- Global, Region:XX, City:XX
-    EntityId UNIQUEIDENTIFIER NOT NULL, -- UserId, TeamId, or CommunityId
-    EntityName NVARCHAR(200) NOT NULL,
-    Score DECIMAL(18,2) NOT NULL,
-    Rank INT NOT NULL,
-    ComputedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET()
-);
+**New Entity: LeaderboardCache**
+```csharp
+// New file: TrashMob.Models/LeaderboardCache.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Pre-computed leaderboard entry for performance.
+    /// </summary>
+    public class LeaderboardCache
+    {
+        /// <summary>
+        /// Gets or sets the unique identifier.
+        /// </summary>
+        public long Id { get; set; }
 
--- User achievements
-CREATE TABLE UserAchievements (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    UserId UNIQUEIDENTIFIER NOT NULL,
-    AchievementTypeId INT NOT NULL,
-    EarnedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    FOREIGN KEY (UserId) REFERENCES Users(Id),
-    UNIQUE (UserId, AchievementTypeId)
-);
+        /// <summary>
+        /// Gets or sets the leaderboard type (User, Team, Community).
+        /// </summary>
+        public string LeaderboardType { get; set; }
 
--- Achievement types
-CREATE TABLE AchievementTypes (
-    Id INT PRIMARY KEY IDENTITY(1,1),
-    Name NVARCHAR(100) NOT NULL,
-    Description NVARCHAR(500) NOT NULL,
-    IconUrl NVARCHAR(500) NULL,
-    Category NVARCHAR(50) NOT NULL, -- Events, Impact, Streaks, Special
-    Criteria NVARCHAR(MAX) NOT NULL, -- JSON rules
-    Points INT NOT NULL DEFAULT 0,
-    IsActive BIT NOT NULL DEFAULT 1
-);
+        /// <summary>
+        /// Gets or sets the metric type (Events, Bags, Weight, Hours).
+        /// </summary>
+        public string MetricType { get; set; }
 
--- Fraud detection log
-CREATE TABLE LeaderboardAuditLog (
-    Id BIGINT PRIMARY KEY IDENTITY(1,1),
-    UserId UNIQUEIDENTIFIER NOT NULL,
-    EventId UNIQUEIDENTIFIER NULL,
-    ActionType NVARCHAR(50) NOT NULL,
-    Details NVARCHAR(MAX) NULL,
-    FlaggedForReview BIT NOT NULL DEFAULT 0,
-    CreatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET()
-);
+        /// <summary>
+        /// Gets or sets the time range (Today, Week, Month, Year, AllTime).
+        /// </summary>
+        public string TimeRange { get; set; }
 
-CREATE INDEX IX_LeaderboardCache_Type_Metric_Time ON LeaderboardCache(LeaderboardType, MetricType, TimeRange);
-CREATE INDEX IX_LeaderboardCache_EntityId ON LeaderboardCache(EntityId);
-CREATE INDEX IX_UserAchievements_UserId ON UserAchievements(UserId);
+        /// <summary>
+        /// Gets or sets the location scope (Global, Region:XX, City:XX).
+        /// </summary>
+        public string LocationScope { get; set; }
+
+        /// <summary>
+        /// Gets or sets the entity ID (user, team, or community).
+        /// </summary>
+        public Guid EntityId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the entity display name.
+        /// </summary>
+        public string EntityName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the score for this entry.
+        /// </summary>
+        public decimal Score { get; set; }
+
+        /// <summary>
+        /// Gets or sets the rank position.
+        /// </summary>
+        public int Rank { get; set; }
+
+        /// <summary>
+        /// Gets or sets when this entry was computed.
+        /// </summary>
+        public DateTimeOffset ComputedDate { get; set; }
+    }
+}
+```
+
+**New Entity: UserAchievement**
+```csharp
+// New file: TrashMob.Models/UserAchievement.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents an achievement earned by a user.
+    /// </summary>
+    public class UserAchievement : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the user identifier.
+        /// </summary>
+        public Guid UserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the achievement type identifier.
+        /// </summary>
+        public int AchievementTypeId { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the achievement was earned.
+        /// </summary>
+        public DateTimeOffset EarnedDate { get; set; }
+
+        // Navigation properties
+        public virtual User User { get; set; }
+        public virtual AchievementType AchievementType { get; set; }
+    }
+}
+```
+
+**New Entity: AchievementType (lookup table)**
+```csharp
+// New file: TrashMob.Models/AchievementType.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Defines an achievement type that users can earn.
+    /// </summary>
+    public class AchievementType : LookupModel
+    {
+        /// <summary>
+        /// Gets or sets the achievement description.
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// Gets or sets the URL of the achievement icon/badge.
+        /// </summary>
+        public string IconUrl { get; set; }
+
+        /// <summary>
+        /// Gets or sets the category (Events, Impact, Streaks, Special).
+        /// </summary>
+        public string Category { get; set; }
+
+        /// <summary>
+        /// Gets or sets the JSON criteria rules for earning this achievement.
+        /// </summary>
+        public string Criteria { get; set; }
+
+        /// <summary>
+        /// Gets or sets the points value of this achievement.
+        /// </summary>
+        public int Points { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether this achievement is active.
+        /// </summary>
+        public bool IsActive { get; set; } = true;
+
+        // Navigation property
+        public virtual ICollection<UserAchievement> UserAchievements { get; set; }
+    }
+}
+```
+
+**New Entity: LeaderboardAuditLog**
+```csharp
+// New file: TrashMob.Models/LeaderboardAuditLog.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Audit log for leaderboard activity and fraud detection.
+    /// </summary>
+    public class LeaderboardAuditLog
+    {
+        /// <summary>
+        /// Gets or sets the unique identifier.
+        /// </summary>
+        public long Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user identifier.
+        /// </summary>
+        public Guid UserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the related event identifier (if applicable).
+        /// </summary>
+        public Guid? EventId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the action type being logged.
+        /// </summary>
+        public string ActionType { get; set; }
+
+        /// <summary>
+        /// Gets or sets additional details as JSON.
+        /// </summary>
+        public string Details { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether this entry is flagged for review.
+        /// </summary>
+        public bool FlaggedForReview { get; set; }
+
+        /// <summary>
+        /// Gets or sets when this log entry was created.
+        /// </summary>
+        public DateTimeOffset CreatedDate { get; set; }
+
+        // Navigation properties
+        public virtual User User { get; set; }
+        public virtual Event Event { get; set; }
+    }
+}
+```
+
+**DbContext Configuration (in MobDbContext.cs):**
+```csharp
+modelBuilder.Entity<LeaderboardCache>(entity =>
+{
+    entity.HasKey(e => e.Id);
+    entity.Property(e => e.Id).UseIdentityColumn();
+    entity.Property(e => e.LeaderboardType).HasMaxLength(50).IsRequired();
+    entity.Property(e => e.MetricType).HasMaxLength(50).IsRequired();
+    entity.Property(e => e.TimeRange).HasMaxLength(20).IsRequired();
+    entity.Property(e => e.LocationScope).HasMaxLength(50);
+    entity.Property(e => e.EntityName).HasMaxLength(200).IsRequired();
+    entity.Property(e => e.Score).HasPrecision(18, 2);
+
+    entity.HasIndex(e => new { e.LeaderboardType, e.MetricType, e.TimeRange });
+    entity.HasIndex(e => e.EntityId);
+});
+
+modelBuilder.Entity<UserAchievement>(entity =>
+{
+    entity.HasOne(e => e.User)
+        .WithMany()
+        .HasForeignKey(e => e.UserId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.AchievementType)
+        .WithMany(a => a.UserAchievements)
+        .HasForeignKey(e => e.AchievementTypeId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasIndex(e => e.UserId);
+    entity.HasIndex(e => new { e.UserId, e.AchievementTypeId }).IsUnique();
+});
+
+modelBuilder.Entity<AchievementType>(entity =>
+{
+    entity.Property(e => e.Name).HasMaxLength(100).IsRequired();
+    entity.Property(e => e.Description).HasMaxLength(500).IsRequired();
+    entity.Property(e => e.IconUrl).HasMaxLength(500);
+    entity.Property(e => e.Category).HasMaxLength(50).IsRequired();
+});
+
+modelBuilder.Entity<LeaderboardAuditLog>(entity =>
+{
+    entity.HasKey(e => e.Id);
+    entity.Property(e => e.Id).UseIdentityColumn();
+    entity.Property(e => e.ActionType).HasMaxLength(50).IsRequired();
+
+    entity.HasOne(e => e.User)
+        .WithMany()
+        .HasForeignKey(e => e.UserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasOne(e => e.Event)
+        .WithMany()
+        .HasForeignKey(e => e.EventId)
+        .OnDelete(DeleteBehavior.NoAction);
+});
 ```
 
 ### API Changes

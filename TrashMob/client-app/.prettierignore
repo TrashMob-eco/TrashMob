@@ -3,3 +3,4 @@ public
 coverage
 build
 dist
+**/*.html

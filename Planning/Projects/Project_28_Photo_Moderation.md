@@ -20,6 +20,17 @@ User-generated content (event photos, litter report images) requires moderation 
 - No flagging mechanism for users to report inappropriate content
 - No notification workflow when photos are removed
 
+**Moderation Workflow:**
+1. Any authenticated user can report an inappropriate image
+2. Flagged images are immediately tagged (InReview=true) and hidden from display
+3. Email notification sent to TrashMob staff about flagged photo
+4. Staff reviews the flagged photo and can:
+   - **Untag (false positive):** Set InReview=false, photo becomes visible again
+   - **Delete:** Remove photo permanently, notify uploader
+   - **Report to authorities:** For illegal content, retain evidence and report
+
+**Note:** The full moderation admin UI may not be ready when photo features launch. The data model fields (InReview, ReviewRequestedByUserId) should be added immediately so flagging can work; admin UI can follow later.
+
 ---
 
 ## Objectives
@@ -118,47 +129,186 @@ public enum PhotoModerationStatus
 }
 ```
 
-**Add to EventMedia and LitterImage tables:**
-```sql
-ALTER TABLE EventMedia ADD
-    ModerationStatus INT NOT NULL DEFAULT 0,
-    ModeratedByUserId UNIQUEIDENTIFIER NULL,
-    ModeratedDate DATETIMEOFFSET NULL,
-    ModerationReason NVARCHAR(500) NULL;
+**Add moderation properties to existing photo entities:**
+```csharp
+// Add to existing EventMedia and LitterImage entities (or create a shared interface)
+#region Moderation Properties
 
-ALTER TABLE LitterImages ADD
-    ModerationStatus INT NOT NULL DEFAULT 0,
-    ModeratedByUserId UNIQUEIDENTIFIER NULL,
-    ModeratedDate DATETIMEOFFSET NULL,
-    ModerationReason NVARCHAR(500) NULL;
+/// <summary>
+/// Gets or sets the moderation status (Pending, Approved, Rejected).
+/// </summary>
+public PhotoModerationStatus ModerationStatus { get; set; } = PhotoModerationStatus.Pending;
+
+/// <summary>
+/// Gets or sets whether the photo is under review (flagged by user, hidden from display).
+/// </summary>
+public bool InReview { get; set; }
+
+/// <summary>
+/// Gets or sets the user who requested the review (flagged the photo).
+/// </summary>
+public Guid? ReviewRequestedByUserId { get; set; }
+
+/// <summary>
+/// Gets or sets when the review was requested.
+/// </summary>
+public DateTimeOffset? ReviewRequestedDate { get; set; }
+
+/// <summary>
+/// Gets or sets the moderating admin's user identifier.
+/// </summary>
+public Guid? ModeratedByUserId { get; set; }
+
+/// <summary>
+/// Gets or sets when the photo was moderated.
+/// </summary>
+public DateTimeOffset? ModeratedDate { get; set; }
+
+/// <summary>
+/// Gets or sets the reason for moderation decision.
+/// </summary>
+public string ModerationReason { get; set; }
+
+#endregion
+
+// Navigation properties
+public virtual User ReviewRequestedByUser { get; set; }
+public virtual User ModeratedByUser { get; set; }
 ```
 
-**PhotoFlag table:**
-```sql
-CREATE TABLE PhotoFlags (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    PhotoId UNIQUEIDENTIFIER NOT NULL,
-    PhotoType NVARCHAR(50) NOT NULL, -- 'EventMedia' or 'LitterImage'
-    FlaggedByUserId UNIQUEIDENTIFIER NOT NULL,
-    FlagReason NVARCHAR(500) NOT NULL,
-    FlaggedDate DATETIMEOFFSET NOT NULL DEFAULT GETUTCDATE(),
-    ResolvedDate DATETIMEOFFSET NULL,
-    ResolvedByUserId UNIQUEIDENTIFIER NULL,
-    Resolution NVARCHAR(50) NULL -- 'Approved', 'Rejected', 'Dismissed'
-);
+**New Entity: PhotoFlag**
+```csharp
+// New file: TrashMob.Models/PhotoFlag.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a user flag/report of an inappropriate photo.
+    /// </summary>
+    public class PhotoFlag : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the photo identifier.
+        /// </summary>
+        public Guid PhotoId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the photo type (EventMedia or LitterImage).
+        /// </summary>
+        public string PhotoType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the flagging user's identifier.
+        /// </summary>
+        public Guid FlaggedByUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the reason for flagging.
+        /// </summary>
+        public string FlagReason { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the photo was flagged.
+        /// </summary>
+        public DateTimeOffset FlaggedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the flag was resolved.
+        /// </summary>
+        public DateTimeOffset? ResolvedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the resolving admin's user identifier.
+        /// </summary>
+        public Guid? ResolvedByUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the resolution (Approved, Rejected, Dismissed).
+        /// </summary>
+        public string Resolution { get; set; }
+
+        // Navigation properties
+        public virtual User FlaggedByUser { get; set; }
+        public virtual User ResolvedByUser { get; set; }
+    }
+}
 ```
 
-**PhotoModerationLog audit table:**
-```sql
-CREATE TABLE PhotoModerationLogs (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    PhotoId UNIQUEIDENTIFIER NOT NULL,
-    PhotoType NVARCHAR(50) NOT NULL,
-    Action NVARCHAR(50) NOT NULL, -- 'Approved', 'Rejected', 'FlagDismissed'
-    Reason NVARCHAR(500) NULL,
-    PerformedByUserId UNIQUEIDENTIFIER NOT NULL,
-    PerformedDate DATETIMEOFFSET NOT NULL DEFAULT GETUTCDATE()
-);
+**New Entity: PhotoModerationLog**
+```csharp
+// New file: TrashMob.Models/PhotoModerationLog.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Audit log entry for photo moderation actions.
+    /// </summary>
+    public class PhotoModerationLog : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the photo identifier.
+        /// </summary>
+        public Guid PhotoId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the photo type (EventMedia or LitterImage).
+        /// </summary>
+        public string PhotoType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the action taken (Approved, Rejected, FlagDismissed).
+        /// </summary>
+        public string Action { get; set; }
+
+        /// <summary>
+        /// Gets or sets the reason for the action.
+        /// </summary>
+        public string Reason { get; set; }
+
+        /// <summary>
+        /// Gets or sets the admin who performed the action.
+        /// </summary>
+        public Guid PerformedByUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the action was performed.
+        /// </summary>
+        public DateTimeOffset PerformedDate { get; set; }
+
+        // Navigation property
+        public virtual User PerformedByUser { get; set; }
+    }
+}
+```
+
+**DbContext Configuration (in MobDbContext.cs):**
+```csharp
+modelBuilder.Entity<PhotoFlag>(entity =>
+{
+    entity.Property(e => e.PhotoType).HasMaxLength(50).IsRequired();
+    entity.Property(e => e.FlagReason).HasMaxLength(500).IsRequired();
+    entity.Property(e => e.Resolution).HasMaxLength(50);
+
+    entity.HasOne(e => e.FlaggedByUser)
+        .WithMany()
+        .HasForeignKey(e => e.FlaggedByUserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasOne(e => e.ResolvedByUser)
+        .WithMany()
+        .HasForeignKey(e => e.ResolvedByUserId)
+        .OnDelete(DeleteBehavior.NoAction);
+});
+
+modelBuilder.Entity<PhotoModerationLog>(entity =>
+{
+    entity.Property(e => e.PhotoType).HasMaxLength(50).IsRequired();
+    entity.Property(e => e.Action).HasMaxLength(50).IsRequired();
+    entity.Property(e => e.Reason).HasMaxLength(500);
+
+    entity.HasOne(e => e.PerformedByUser)
+        .WithMany()
+        .HasForeignKey(e => e.PerformedByUserId)
+        .OnDelete(DeleteBehavior.NoAction);
+});
 ```
 
 ### API Changes
@@ -273,9 +423,8 @@ public async Task<ActionResult> FlagPhoto(
 ## Open Questions
 
 1. **Should photos be hidden immediately when flagged?**
-   **Recommendation:** No, keep visible until admin decision to avoid abuse of flag system
-   **Owner:** Product
-   **Due:** Before Phase 3 starts
+   **Decision:** Yes, flagged photos are immediately hidden (InReview=true) and never displayed until admin reviews. This protects users from inappropriate content even if it means some false positives.
+   **Status:** Decided
 
 2. **How long to retain rejected photos?**
    **Recommendation:** 30 days for potential appeals, then permanently delete
@@ -286,6 +435,7 @@ public async Task<ActionResult> FlagPhoto(
 
 ## Related Documents
 
+- **[Project 3 - Litter Reporting Web](./Project_03_Litter_Reporting_Web.md)** - Litter report images need moderation
 - **[Project 18 - Before/After Photos](./Project_18_Before_After_Photos.md)** - Additional photo features
 - **[TrashMob.Models PRD](../../TrashMob.Models/TrashMob.Models.prd)** - Domain model documentation
 - **[Site Admin Layout](../../TrashMob/client-app/src/pages/siteadmin/_layout.tsx)** - Admin UI patterns

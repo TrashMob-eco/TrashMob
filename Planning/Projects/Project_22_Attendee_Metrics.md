@@ -112,52 +112,199 @@ Let attendees enter personal stats and give leads tools to reconcile without dou
 
 ### Data Model Changes
 
-```sql
--- Attendee event metrics
-CREATE TABLE EventAttendeeMetrics (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    EventId UNIQUEIDENTIFIER NOT NULL,
-    UserId UNIQUEIDENTIFIER NOT NULL,
-    -- Metrics
-    BagsCollected INT NULL,
-    WeightCollected DECIMAL(10,2) NULL,
-    WeightUnitId INT NULL,
-    DurationMinutes INT NULL,
-    Notes NVARCHAR(500) NULL,
-    -- Verification
-    Status NVARCHAR(20) NOT NULL DEFAULT 'Pending', -- Pending, Approved, Adjusted, Rejected
-    AdjustedBags INT NULL,
-    AdjustedWeight DECIMAL(10,2) NULL,
-    AdjustedDuration INT NULL,
-    AdjustmentNotes NVARCHAR(500) NULL,
-    ReviewedByUserId UNIQUEIDENTIFIER NULL,
-    ReviewedDate DATETIMEOFFSET NULL,
-    -- Audit
-    CreatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    LastUpdatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    FOREIGN KEY (EventId) REFERENCES Events(Id),
-    FOREIGN KEY (UserId) REFERENCES Users(Id),
-    FOREIGN KEY (WeightUnitId) REFERENCES WeightUnits(Id),
-    FOREIGN KEY (ReviewedByUserId) REFERENCES Users(Id),
-    UNIQUE (EventId, UserId)
-);
+> **Note:** This project builds on Project 7's `EventSummaryAttendee` for Phase 2 (attendee-level weight).
+> Consider whether `EventAttendeeMetrics` should replace or extend `EventSummaryAttendee`.
 
--- Bag drop locations (for pickup coordination)
-CREATE TABLE AttendeeDropLocations (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    EventAttendeeMetricsId UNIQUEIDENTIFIER NOT NULL,
-    Latitude DECIMAL(9,6) NOT NULL,
-    Longitude DECIMAL(9,6) NOT NULL,
-    BagCount INT NOT NULL DEFAULT 1,
-    Notes NVARCHAR(200) NULL,
-    ImageUrl NVARCHAR(500) NULL,
-    CreatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    FOREIGN KEY (EventAttendeeMetricsId) REFERENCES EventAttendeeMetrics(Id) ON DELETE CASCADE
-);
+**New Entity: EventAttendeeMetrics**
+```csharp
+// New file: TrashMob.Models/EventAttendeeMetrics.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents an attendee's self-reported metrics for an event, subject to lead verification.
+    /// </summary>
+    public class EventAttendeeMetrics : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the event identifier.
+        /// </summary>
+        public Guid EventId { get; set; }
 
-CREATE INDEX IX_EventAttendeeMetrics_EventId ON EventAttendeeMetrics(EventId);
-CREATE INDEX IX_EventAttendeeMetrics_UserId ON EventAttendeeMetrics(UserId);
-CREATE INDEX IX_EventAttendeeMetrics_Status ON EventAttendeeMetrics(Status);
+        /// <summary>
+        /// Gets or sets the attendee's user identifier.
+        /// </summary>
+        public Guid UserId { get; set; }
+
+        #region Reported Metrics
+
+        /// <summary>
+        /// Gets or sets the number of bags collected by this attendee.
+        /// </summary>
+        public int? BagsCollected { get; set; }
+
+        /// <summary>
+        /// Gets or sets the weight collected by this attendee.
+        /// </summary>
+        public decimal? WeightCollected { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identifier of the weight unit used.
+        /// </summary>
+        public int? WeightUnitId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the duration in minutes this attendee participated.
+        /// </summary>
+        public int? DurationMinutes { get; set; }
+
+        /// <summary>
+        /// Gets or sets any notes from the attendee about their contribution.
+        /// </summary>
+        public string Notes { get; set; }
+
+        #endregion
+
+        #region Verification
+
+        /// <summary>
+        /// Gets or sets the verification status (Pending, Approved, Adjusted, Rejected).
+        /// </summary>
+        public string Status { get; set; } = "Pending";
+
+        /// <summary>
+        /// Gets or sets the adjusted bag count (if lead modified the original).
+        /// </summary>
+        public int? AdjustedBags { get; set; }
+
+        /// <summary>
+        /// Gets or sets the adjusted weight (if lead modified the original).
+        /// </summary>
+        public decimal? AdjustedWeight { get; set; }
+
+        /// <summary>
+        /// Gets or sets the adjusted duration (if lead modified the original).
+        /// </summary>
+        public int? AdjustedDuration { get; set; }
+
+        /// <summary>
+        /// Gets or sets notes explaining any adjustments made by the lead.
+        /// </summary>
+        public string AdjustmentNotes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identifier of the lead who reviewed this entry.
+        /// </summary>
+        public Guid? ReviewedByUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the date this entry was reviewed.
+        /// </summary>
+        public DateTimeOffset? ReviewedDate { get; set; }
+
+        #endregion
+
+        // Navigation properties
+        public virtual Event Event { get; set; }
+        public virtual User User { get; set; }
+        public virtual WeightUnit WeightUnit { get; set; }
+        public virtual User ReviewedByUser { get; set; }
+        public virtual ICollection<AttendeeDropLocation> DropLocations { get; set; }
+    }
+}
+```
+
+**New Entity: AttendeeDropLocation**
+```csharp
+// New file: TrashMob.Models/AttendeeDropLocation.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Represents a location where an attendee dropped bags for pickup coordination.
+    /// </summary>
+    public class AttendeeDropLocation : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the parent metrics entry identifier.
+        /// </summary>
+        public Guid EventAttendeeMetricsId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the latitude of the drop location.
+        /// </summary>
+        public double Latitude { get; set; }
+
+        /// <summary>
+        /// Gets or sets the longitude of the drop location.
+        /// </summary>
+        public double Longitude { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of bags at this drop location.
+        /// </summary>
+        public int BagCount { get; set; } = 1;
+
+        /// <summary>
+        /// Gets or sets notes about this drop location (e.g., landmarks, access info).
+        /// </summary>
+        public string Notes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the URL of a photo of the drop location.
+        /// </summary>
+        public string ImageUrl { get; set; }
+
+        // Navigation property
+        public virtual EventAttendeeMetrics EventAttendeeMetrics { get; set; }
+    }
+}
+```
+
+**DbContext Configuration (in MobDbContext.cs):**
+```csharp
+modelBuilder.Entity<EventAttendeeMetrics>(entity =>
+{
+    entity.Property(e => e.Notes).HasMaxLength(500);
+    entity.Property(e => e.Status).HasMaxLength(20);
+    entity.Property(e => e.AdjustmentNotes).HasMaxLength(500);
+    entity.Property(e => e.WeightCollected).HasPrecision(10, 2);
+    entity.Property(e => e.AdjustedWeight).HasPrecision(10, 2);
+
+    entity.HasOne(e => e.Event)
+        .WithMany()
+        .HasForeignKey(e => e.EventId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.User)
+        .WithMany()
+        .HasForeignKey(e => e.UserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasOne(e => e.WeightUnit)
+        .WithMany()
+        .HasForeignKey(e => e.WeightUnitId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasOne(e => e.ReviewedByUser)
+        .WithMany()
+        .HasForeignKey(e => e.ReviewedByUserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasIndex(e => e.EventId);
+    entity.HasIndex(e => e.UserId);
+    entity.HasIndex(e => e.Status);
+    entity.HasIndex(e => new { e.EventId, e.UserId }).IsUnique();
+});
+
+modelBuilder.Entity<AttendeeDropLocation>(entity =>
+{
+    entity.Property(e => e.Notes).HasMaxLength(200);
+    entity.Property(e => e.ImageUrl).HasMaxLength(500);
+
+    entity.HasOne(e => e.EventAttendeeMetrics)
+        .WithMany(m => m.DropLocations)
+        .HasForeignKey(e => e.EventAttendeeMetricsId)
+        .OnDelete(DeleteBehavior.Cascade);
+});
 ```
 
 ### API Changes

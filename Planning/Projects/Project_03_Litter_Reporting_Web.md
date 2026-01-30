@@ -1,4 +1,4 @@
-# Project 3 � Complete Litter Reporting (Web Parity)
+# Project 3 � Complete Litter Reporting (Web Parity)
 
 | Attribute | Value |
 |-----------|-------|
@@ -55,10 +55,23 @@ Achieve feature parity between mobile and web for litter reporting. Currently, u
 - ? Admin moderation tools
 
 ### Phase 4 - Integration
-- ? Weekly digest emails for new reports
-- ? Dashboard widget showing reports in user's area
-- ? Event creation from litter report (pre-populate)
-- ? Notifications when report is resolved
+- ☐ Weekly digest emails for new reports
+- ☐ Dashboard widget showing reports in user's area
+- ☐ Event creation from litter report (pre-populate)
+- ☐ Notifications when report is resolved
+
+### Phase 5 - MyDashboard Integration
+- ☐ "My Litter Reports" section on MyDashboard page
+- ☐ List of user's submitted reports with status
+- ☐ Edit/delete actions for user's own reports
+- ☐ Litter report count in user's impact metrics (alongside events attended, bags collected, etc.)
+
+### Phase 6 - Event Summary Integration
+- ☐ Show associated litter reports on Event Summary page
+- ☐ Mark associated litter reports as "Cleaned" when submitting summary
+- ☐ Add existing litter report to event (cleaned during event but not originally associated)
+- ☐ Remove litter report association (not cleaned during this event)
+- ☐ Update report status automatically when event summary submitted
 
 ---
 
@@ -116,14 +129,29 @@ Achieve feature parity between mobile and web for litter reporting. Currently, u
 
 ### Data Model Changes
 
-**No database changes required.** Existing schema supports all features:
+**Data Model Pattern: Report as Container, Images as Map Points**
+
+The `LitterReport` is a container (description, status, creator) with NO primary location. Each `LitterImage` has its own geotag and appears as an individual pin on the map. This allows users to document multiple spots across an area without re-entering description info.
 
 ```sql
--- Existing tables (for reference)
+-- Existing tables (clarified responsibilities)
 LitterReports (Id, Name, Description, Status, CreatedBy, CreatedDate, ...)
-LitterImages (Id, LitterReportId, ImageUrl, Latitude, Longitude, ...)
+    -- NO Latitude/Longitude on report itself
+    -- Centroid can be computed from child images for list views
+
+LitterImages (Id, LitterReportId, ImageUrl, Latitude, Longitude, InReview, ReviewRequestedByUserId, ...)
+    -- Each image IS a map point
+    -- Latitude/Longitude required for map display
+    -- InReview: boolean, true when flagged by user (hidden from display)
+    -- ReviewRequestedByUserId: Guid?, user who flagged the image
+
 EventLitterReports (EventId, LitterReportId) -- Association table
 ```
+
+**Map Display Logic:**
+- Show each `LitterImage` as a pin (colored by parent report status)
+- Cluster pins by parent `LitterReportId` when zoomed out
+- Clicking any pin opens the parent report detail view
 
 ### API Changes
 
@@ -218,6 +246,43 @@ EventLitterReports (EventId, LitterReportId) -- Association table
 />
 ```
 
+**MyDashboard Integration:**
+
+Add to existing MyDashboard page:
+```tsx
+// My Litter Reports section
+<DashboardSection title="My Litter Reports">
+  <LitterReportsList
+    reports={userReports}
+    showEditActions={true}
+    onEdit={handleEditReport}
+    onDelete={handleDeleteReport}
+  />
+</DashboardSection>
+
+// Add to impact metrics
+<ImpactMetric label="Litter Reports Filed" value={user.litterReportCount} />
+```
+
+**Event Summary Integration:**
+
+Add to Event Summary page:
+```tsx
+// Associated litter reports section
+<EventSummarySection title="Litter Reports Cleaned">
+  <AssociatedLitterReports
+    eventId={eventId}
+    reports={associatedReports}
+    onMarkCleaned={handleMarkCleaned}
+    onRemoveAssociation={handleRemoveAssociation}
+  />
+  <AddLitterReportButton
+    onAdd={handleAddExistingReport}
+    label="Add report cleaned during this event"
+  />
+</EventSummarySection>
+```
+
 ### Mobile App Changes
 
 No changes required (already implemented).
@@ -252,11 +317,23 @@ No changes required (already implemented).
 - Notification triggers (new report, status change)
 - Unsubscribe preferences
 
-### Phase 6: Testing & Launch
+### Phase 6: MyDashboard Integration
+- Add "My Litter Reports" section to MyDashboard
+- Display user's reports with status and edit actions
+- Add litter report count to user's impact metrics
+
+### Phase 7: Event Summary Integration
+- Display associated litter reports on Event Summary page
+- Add controls to mark reports as cleaned
+- Add ability to associate additional reports cleaned during event
+- Add ability to remove report associations
+- Auto-update report status on summary submission
+
+### Phase 8: Testing & Launch
 - User acceptance testing
 - Accessibility audit (WCAG 2.2 AA)
 - Performance testing
-- Staged rollout (25% ? 50% ? 100%)
+- Staged rollout
 
 ---
 
@@ -297,31 +374,34 @@ No changes required (already implemented).
 
 ## Open Questions
 
-1. **Should litter reports be public or private by default?**  
-   **Recommendation:** Public by default (address shown, creator name hidden for privacy)  
-   **Owner:** Product Lead  
-   **Due:** Before Phase 1
+1. **Data model clarification: Report as container, images as map points**
+   **Decision:** LitterReport is a container (description, status, creator) with NO primary location. LitterImage entities each have their own geotag and appear as individual pins on the map. Map clusters images by parent report. This matches original intent: users submit one report with multiple geotagged photos across an area without re-entering description.
+   **Status:** Decided
+   **Owner:** Engineering Lead
 
-2. **How long should we retain "Cleaned" reports before archiving?**  
-   **Recommendation:** Keep indefinitely for historical data, but exclude from default map view after 90 days  
-   **Owner:** Product Lead  
-   **Due:** Before Phase 2
+2. **Should litter reports be public or private by default?**
+   **Decision:** Litter reports are always public (creator name hidden for privacy)
+   **Status:** Decided
 
-3. **Should users be able to vote or comment on report severity?**  
-   **Recommendation:** No for MVP; future feature if requested  
-   **Owner:** Product Lead  
-   **Due:** N/A
+2. **How long should we retain "Cleaned" reports before archiving?**
+   **Decision:** Keep indefinitely for historical data, but exclude from default map view after 90 days
+   **Status:** Decided
 
-4. **What's the moderation workflow for inappropriate images?**  
-   **Recommendation:** Admin review queue, flagging, deletion with email notice  
-   **Owner:** Product Lead + Admin  
-   **Due:** Before Phase 5
+3. **Should users be able to vote or comment on report severity?**
+   **Decision:** No voting or commenting on report severity
+   **Status:** Decided
+
+4. **What's the moderation workflow for inappropriate images?**
+   **Decision:** Any user can report an inappropriate image. Flagged images are immediately tagged (InReview=true) and hidden from display. Email sent to TrashMob staff who can untag (false positive), delete, or report to authorities as needed. See Project 28 for full implementation details.
+   **Data Model:** Add `InReview` (boolean) and `ReviewRequestedByUserId` (Guid?) to LitterImage entity. Full moderation admin page may come later, but these fields enable immediate flagging support.
+   **Status:** Decided
 
 ---
 
 ## Related Documents
 
 - **[Project 2 - Home Page](./Project_02_Home_Page.md)** - Litter report quick action
+- **[Project 28 - Photo Moderation](./Project_28_Photo_Moderation.md)** - Image moderation workflow
 - **[PRD Section: Litter Reporting](../../TrashMob/TrashMob.prd#3-litter-reporting)** - User stories
 - **Backend API:** `LitterReportController.cs`, `LitterImageManager.cs`
 - **Mobile Reference:** TrashMobMobile litter reporting screens

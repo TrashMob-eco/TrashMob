@@ -48,7 +48,7 @@
         {
             var displayEventPartners =
                 await eventPartnerLocationServiceManager.GetByEventAsync(eventId, cancellationToken);
-            TelemetryClient.TrackEvent(nameof(GetEventPartnerLocationServicesByEvent));
+            TrackEvent(nameof(GetEventPartnerLocationServicesByEvent));
             return Ok(displayEventPartners);
         }
 
@@ -63,7 +63,7 @@
         {
             var partnerLocation =
                 await eventPartnerLocationServiceManager.GetHaulingPartnerLocationForEvent(eventId, cancellationToken);
-            TelemetryClient.TrackEvent(nameof(GetHaulingPartnerLocation));
+            TrackEvent(nameof(GetHaulingPartnerLocation));
             return Ok(partnerLocation);
         }
 
@@ -81,7 +81,7 @@
             var displayEventPartners =
                 await eventPartnerLocationServiceManager.GetByEventAndPartnerLocationAsync(eventId, partnerLocationId,
                     cancellationToken);
-            TelemetryClient.TrackEvent(nameof(GetEventPartnerLocationServices));
+            TrackEvent(nameof(GetEventPartnerLocationServices));
             return Ok(displayEventPartners);
         }
 
@@ -117,7 +117,7 @@
             var updatedEventPartnerLocationService = await eventPartnerLocationServiceManager
                 .UpdateAsync(eventPartnerLocationService, UserId, cancellationToken).ConfigureAwait(false);
 
-            TelemetryClient.TrackEvent(nameof(UpdateEventPartnerLocationService));
+            TrackEvent(nameof(UpdateEventPartnerLocationService));
 
             return Ok(updatedEventPartnerLocationService);
         }
@@ -170,7 +170,7 @@
             var updatedEventPartnerLocationService = await eventPartnerLocationServiceManager
                 .UpdateAsync(eventPartnerLocationService, UserId, cancellationToken).ConfigureAwait(false);
 
-            TelemetryClient.TrackEvent(nameof(ApproveEventPartnerLocationService));
+            TrackEvent(nameof(ApproveEventPartnerLocationService));
 
             return Ok(updatedEventPartnerLocationService);
         }
@@ -223,7 +223,7 @@
             var updatedEventPartnerLocationService = await eventPartnerLocationServiceManager
                 .UpdateAsync(eventPartnerLocationService, UserId, cancellationToken).ConfigureAwait(false);
 
-            TelemetryClient.TrackEvent(nameof(ApproveEventPartnerLocationService));
+            TrackEvent(nameof(ApproveEventPartnerLocationService));
 
             return Ok(updatedEventPartnerLocationService);
         }
@@ -260,7 +260,7 @@
             var result = await eventPartnerLocationServiceManager
                 .AddAsync(eventPartnerLocationService, UserId, cancellationToken).ConfigureAwait(false);
 
-            TelemetryClient.TrackEvent(nameof(AddEventPartnerLocationService));
+            TrackEvent(nameof(AddEventPartnerLocationService));
 
             return Ok(result);
         }
@@ -299,7 +299,7 @@
             var result = await eventPartnerLocationServiceManager
                 .DeleteAsync(eventId, partnerLocationId, serviceTypeId, cancellationToken).ConfigureAwait(false);
 
-            TelemetryClient.TrackEvent(nameof(DeleteEventPartnerLocationService));
+            TrackEvent(nameof(DeleteEventPartnerLocationService));
 
             return Ok(result);
         }

@@ -152,56 +152,288 @@ public interface IPrivoService
 
 ### Data Model Changes
 
-```sql
--- Minor status tracking
-ALTER TABLE Users
-ADD DateOfBirth DATE NULL,
-    IsMinor BIT NOT NULL DEFAULT 0,
-    ParentUserId UNIQUEIDENTIFIER NULL,
-    ConsentStatus NVARCHAR(50) NULL, -- Pending, Verified, Expired, Revoked
-    ConsentVerifiedDate DATETIMEOFFSET NULL,
-    PrivoUserId NVARCHAR(100) NULL,
-    FOREIGN KEY (ParentUserId) REFERENCES Users(Id);
+**Modification: User (add minor-related properties)**
+```csharp
+// Add to existing TrashMob.Models/User.cs
+#region Minor Support (Privo.com Integration)
 
--- Parental consent records
-CREATE TABLE ParentalConsents (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    MinorUserId UNIQUEIDENTIFIER NOT NULL,
-    ParentEmail NVARCHAR(256) NOT NULL,
-    ParentUserId UNIQUEIDENTIFIER NULL, -- If parent has account
-    -- Privo integration
-    PrivoConsentRequestId NVARCHAR(100) NOT NULL,
-    PrivoConsentMethod NVARCHAR(50) NULL, -- CreditCard, ID, VideoCall
-    -- Status
-    Status NVARCHAR(50) NOT NULL DEFAULT 'Pending', -- Pending, Verified, Denied, Expired, Revoked
-    RequestedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    VerifiedDate DATETIMEOFFSET NULL,
-    ExpiresDate DATETIMEOFFSET NULL,
-    RevokedDate DATETIMEOFFSET NULL,
-    RevokedReason NVARCHAR(500) NULL,
-    -- Audit
-    CreatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    FOREIGN KEY (MinorUserId) REFERENCES Users(Id),
-    FOREIGN KEY (ParentUserId) REFERENCES Users(Id)
-);
+/// <summary>
+/// Gets or sets the user's date of birth for age verification.
+/// </summary>
+public DateOnly? DateOfBirth { get; set; }
 
--- Minor event attendance tracking
-CREATE TABLE MinorEventParticipation (
-    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    EventId UNIQUEIDENTIFIER NOT NULL,
-    MinorUserId UNIQUEIDENTIFIER NOT NULL,
-    SupervisingAdultUserId UNIQUEIDENTIFIER NULL, -- Adult present at event
-    ParentApproved BIT NOT NULL DEFAULT 0,
-    ParentApprovedDate DATETIMEOFFSET NULL,
-    CreatedDate DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-    FOREIGN KEY (EventId) REFERENCES Events(Id),
-    FOREIGN KEY (MinorUserId) REFERENCES Users(Id),
-    FOREIGN KEY (SupervisingAdultUserId) REFERENCES Users(Id)
-);
+/// <summary>
+/// Gets or sets whether this user is a minor (13-17).
+/// </summary>
+public bool IsMinor { get; set; }
 
-CREATE INDEX IX_Users_IsMinor ON Users(IsMinor) WHERE IsMinor = 1;
-CREATE INDEX IX_ParentalConsents_MinorUserId ON ParentalConsents(MinorUserId);
-CREATE INDEX IX_ParentalConsents_Status ON ParentalConsents(Status);
+/// <summary>
+/// Gets or sets the parent's user ID (if minor has parent account).
+/// </summary>
+public Guid? ParentUserId { get; set; }
+
+/// <summary>
+/// Gets or sets the consent status (Pending, Verified, Expired, Revoked).
+/// </summary>
+public string ConsentStatus { get; set; }
+
+/// <summary>
+/// Gets or sets when parental consent was verified.
+/// </summary>
+public DateTimeOffset? ConsentVerifiedDate { get; set; }
+
+/// <summary>
+/// Gets or sets the Privo.com user identifier.
+/// </summary>
+public string PrivoUserId { get; set; }
+
+#endregion
+
+// Navigation property
+public virtual User ParentUser { get; set; }
+public virtual ICollection<User> Dependents { get; set; }
+```
+
+**New Entity: ParentalConsent**
+```csharp
+// New file: TrashMob.Models/ParentalConsent.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Records parental consent for a minor user via Privo.com.
+    /// </summary>
+    public class ParentalConsent : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the minor user's identifier.
+        /// </summary>
+        public Guid MinorUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the parent's email address.
+        /// </summary>
+        public string ParentEmail { get; set; }
+
+        /// <summary>
+        /// Gets or sets the parent's user ID (if they have an account).
+        /// </summary>
+        public Guid? ParentUserId { get; set; }
+
+        #region Privo Integration
+
+        /// <summary>
+        /// Gets or sets the Privo consent request identifier.
+        /// </summary>
+        public string PrivoConsentRequestId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the consent method used (CreditCard, ID, VideoCall).
+        /// </summary>
+        public string PrivoConsentMethod { get; set; }
+
+        #endregion
+
+        #region Status
+
+        /// <summary>
+        /// Gets or sets the consent status (Pending, Verified, Denied, Expired, Revoked).
+        /// </summary>
+        public string Status { get; set; } = "Pending";
+
+        /// <summary>
+        /// Gets or sets when consent was requested.
+        /// </summary>
+        public DateTimeOffset RequestedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets when consent was verified.
+        /// </summary>
+        public DateTimeOffset? VerifiedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets when consent expires.
+        /// </summary>
+        public DateTimeOffset? ExpiresDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets when consent was revoked.
+        /// </summary>
+        public DateTimeOffset? RevokedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the reason for revocation.
+        /// </summary>
+        public string RevokedReason { get; set; }
+
+        #endregion
+
+        // Navigation properties
+        public virtual User MinorUser { get; set; }
+        public virtual User ParentUser { get; set; }
+    }
+}
+```
+
+**New Entity: MinorEventParticipation**
+```csharp
+// New file: TrashMob.Models/MinorEventParticipation.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Tracks a minor's participation in an event with parental approval and supervision.
+    /// </summary>
+    public class MinorEventParticipation : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the event identifier.
+        /// </summary>
+        public Guid EventId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the minor user's identifier.
+        /// </summary>
+        public Guid MinorUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the supervising adult's user identifier.
+        /// </summary>
+        public Guid? SupervisingAdultUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether the parent approved participation.
+        /// </summary>
+        public bool ParentApproved { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the parent approved participation.
+        /// </summary>
+        public DateTimeOffset? ParentApprovedDate { get; set; }
+
+        // Navigation properties
+        public virtual Event Event { get; set; }
+        public virtual User MinorUser { get; set; }
+        public virtual User SupervisingAdultUser { get; set; }
+    }
+}
+```
+
+**New Entity: UserConsent (ToS/Privacy versioning)**
+```csharp
+// New file: TrashMob.Models/UserConsent.cs
+namespace TrashMob.Models
+{
+    /// <summary>
+    /// Records user consent for Terms of Service, Privacy Policy, and other agreements.
+    /// </summary>
+    public class UserConsent : KeyedModel
+    {
+        /// <summary>
+        /// Gets or sets the user's identifier.
+        /// </summary>
+        public Guid UserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of consent (ToS, Privacy, Parental).
+        /// </summary>
+        public string ConsentType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the version of the document accepted.
+        /// </summary>
+        public string Version { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the consent was accepted.
+        /// </summary>
+        public DateTimeOffset AcceptedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the IP address at time of consent.
+        /// </summary>
+        public string IPAddress { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user agent at time of consent.
+        /// </summary>
+        public string UserAgent { get; set; }
+
+        // Navigation property
+        public virtual User User { get; set; }
+    }
+}
+```
+
+**DbContext Configuration (in MobDbContext.cs):**
+```csharp
+modelBuilder.Entity<User>(entity =>
+{
+    // Add to existing User configuration
+    entity.Property(e => e.ConsentStatus).HasMaxLength(50);
+    entity.Property(e => e.PrivoUserId).HasMaxLength(100);
+
+    entity.HasOne(e => e.ParentUser)
+        .WithMany(p => p.Dependents)
+        .HasForeignKey(e => e.ParentUserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasIndex(e => e.IsMinor)
+        .HasFilter("[IsMinor] = 1");
+});
+
+modelBuilder.Entity<ParentalConsent>(entity =>
+{
+    entity.Property(e => e.ParentEmail).HasMaxLength(256).IsRequired();
+    entity.Property(e => e.PrivoConsentRequestId).HasMaxLength(100).IsRequired();
+    entity.Property(e => e.PrivoConsentMethod).HasMaxLength(50);
+    entity.Property(e => e.Status).HasMaxLength(50);
+    entity.Property(e => e.RevokedReason).HasMaxLength(500);
+
+    entity.HasOne(e => e.MinorUser)
+        .WithMany()
+        .HasForeignKey(e => e.MinorUserId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.ParentUser)
+        .WithMany()
+        .HasForeignKey(e => e.ParentUserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasIndex(e => e.MinorUserId);
+    entity.HasIndex(e => e.Status);
+});
+
+modelBuilder.Entity<MinorEventParticipation>(entity =>
+{
+    entity.HasOne(e => e.Event)
+        .WithMany()
+        .HasForeignKey(e => e.EventId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(e => e.MinorUser)
+        .WithMany()
+        .HasForeignKey(e => e.MinorUserId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasOne(e => e.SupervisingAdultUser)
+        .WithMany()
+        .HasForeignKey(e => e.SupervisingAdultUserId)
+        .OnDelete(DeleteBehavior.NoAction);
+});
+
+modelBuilder.Entity<UserConsent>(entity =>
+{
+    entity.Property(e => e.ConsentType).HasMaxLength(50).IsRequired();
+    entity.Property(e => e.Version).HasMaxLength(50).IsRequired();
+    entity.Property(e => e.IPAddress).HasMaxLength(45);
+    entity.Property(e => e.UserAgent).HasMaxLength(500);
+
+    entity.HasOne(e => e.User)
+        .WithMany()
+        .HasForeignKey(e => e.UserId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasIndex(e => new { e.UserId, e.ConsentType });
+});
 ```
 
 ### API Changes

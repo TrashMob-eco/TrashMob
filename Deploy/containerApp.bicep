@@ -8,6 +8,15 @@ param storageAccountName string
 param environment string
 param minReplicas int = 1
 param maxReplicas int = 3
+param strapiBaseUrl string = ''
+
+// Custom domain configuration (optional)
+// The managed certificate must be created separately before deployment
+param customDomainName string = ''
+param managedCertificateName string = ''
+
+// Build the managed certificate resource ID if provided
+var managedCertificateId = managedCertificateName != '' ? '${containerAppsEnvironmentId}/managedCertificates/${managedCertificateName}' : ''
 
 // Derive the Application Insights name from environment and region
 var appInsightsName = 'ai-tm-${environment}-${region}'
@@ -52,6 +61,13 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
         targetPort: 8080
         transport: 'auto'
         allowInsecure: false
+        customDomains: customDomainName != '' && managedCertificateId != '' ? [
+          {
+            name: customDomainName
+            certificateId: managedCertificateId
+            bindingType: 'SniEnabled'
+          }
+        ] : []
       }
       registries: [
         {
@@ -122,6 +138,11 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
             {
               name: 'AzureAdB2C__FrontendClientId'
               value: b2cFrontendClientId
+            }
+            // Strapi CMS integration
+            {
+              name: 'StrapiBaseUrl'
+              value: strapiBaseUrl
             }
           ]
           probes: [

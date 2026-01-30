@@ -16,6 +16,7 @@ export const SiteAdminLayout = () => {
         // { name: 'View Executive Summary', value: `${pathPrefix}/executive-summary` },
         { name: 'Send Notifications', value: `${pathPrefix}/send-notifications` },
         { name: 'View Email Templates', value: `${pathPrefix}/email-templates` },
+        { name: 'Manage Content', value: `${pathPrefix}/content` },
     ];
 
     const handleValueChange = useCallback(
@@ -26,7 +27,7 @@ export const SiteAdminLayout = () => {
     );
 
     return (
-        <div className='tailwind'>
+        <div>
             <div className='container mx-auto my-4'>
                 <h1 className='scroll-m-20 pb-4 text-3xl font-light tracking-tight first:mt-0'>Site Administration</h1>
                 <Tabs value={location.pathname} onValueChange={handleValueChange}>

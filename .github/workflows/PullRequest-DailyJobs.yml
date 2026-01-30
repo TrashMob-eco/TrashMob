@@ -1,0 +1,38 @@
+# Pull Request workflow for TrashMob Daily Jobs Container
+
+name: PR - Daily Jobs
+
+on:
+  pull_request:
+    branches: [ "main", "release" ]
+    paths:
+      - '.github/workflows/PullRequest-DailyJobs.yml'
+      - '.github/workflows/container_caj-tm-dev-westus2-daily.yml'
+      - '.github/workflows/release_caj-tm-pr-westus2.yml'
+      - 'Deploy/containerAppJobDaily.bicep'
+      - 'TrashMobDailyJobs/**'
+      - 'TrashMob.Models/**'
+      - 'TrashMob.Shared/**'
+
+jobs:
+  build-container:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build TrashMobDailyJobs Container
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: TrashMobDailyJobs/Dockerfile
+        push: false
+        tags: trashmobdailyjobs:pr-${{ github.event.pull_request.number }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max

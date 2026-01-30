@@ -19,43 +19,52 @@
 
 #### Critical Priority (Infrastructure & Blockers)
 
-- **[Project 1 - Auth Revamp](./Projects/Project_01_Auth_Revamp.md)** � Azure B2C ? Entra External ID migration
-- **[Project 4 - Mobile Robustness](./Projects/Project_04_Mobile_Robustness.md)** � Stabilize MAUI apps, error handling  
-- **[Project 5 - Deployment Pipelines](./Projects/Project_05_Deployment_Pipelines.md)** � CI/CD modernization, Docker
+| Project | Description | Status |
+|---------|-------------|--------|
+| [Project 1 - Auth Revamp](./Projects/Project_01_Auth_Revamp.md) | Azure B2C → Entra External ID migration | Planning |
+| [Project 4 - Mobile Robustness](./Projects/Project_04_Mobile_Robustness.md) | Stabilize MAUI apps, error handling | Developers Engaged |
+| [Project 5 - Deployment Pipelines](./Projects/Project_05_Deployment_Pipelines.md) | CI/CD modernization, Docker | Ready for Dev Review |
 
 #### High Priority (Core Features)
 
-- **[Project 2 - Home Page Improvements](./Projects/Project_02_Home_Page.md)** � Dynamic content, ads, sponsors
-- **[Project 3 - Litter Reporting Web](./Projects/Project_03_Litter_Reporting_Web.md)** � Complete web parity for litter reports
-- **[Project 7 - Event Weights](./Projects/Project_07_Event_Weights.md)** � Track weight metrics
-- **[Project 8 - Waivers V3](./Projects/Project_08_Waivers_V3.md)** � Community waivers, minors coverage
-- **[Project 9 - Teams](./Projects/Project_09_Teams.md)** � User-created teams MVP
-- **[Project 10 - Community Pages](./Projects/Project_10_Community_Pages.md)** � Branded partner community pages
-- **[Project 13 - Bulk Email Invites](./Projects/Project_13_Bulk_Email_Invites.md)** � Scale email invitations
-- **[Project 23 - Parental Consent](./Projects/Project_23_Parental_Consent.md)** � Privo.com integration for minors
-- **[Project 24 - API v2 Modernization](./Projects/Project_24_API_v2_Modernization.md)** � Pagination, error handling, auto-generated clients
+| Project | Description | Status |
+|---------|-------------|--------|
+| [Project 2 - Home Page Improvements](./Projects/Project_02_Home_Page.md) | Dynamic content, ads, sponsors | Ready for Design Review |
+| [Project 3 - Litter Reporting Web](./Projects/Project_03_Litter_Reporting_Web.md) | Complete web parity for litter reports | Ready for Team Review |
+| [Project 7 - Event Weights](./Projects/Project_07_Event_Weights.md) | Track weight metrics | Ready for Review |
+| [Project 8 - Waivers V3](./Projects/Project_08_Waivers_V3.md) | Community waivers, minors coverage | Requirements & Legal Review |
+| [Project 9 - Teams](./Projects/Project_09_Teams.md) | User-created teams MVP | Ready for Review |
+| [Project 10 - Community Pages](./Projects/Project_10_Community_Pages.md) | Branded partner community pages | Planning in Progress |
+| [Project 13 - Bulk Email Invites](./Projects/Project_13_Bulk_Email_Invites.md) | Scale email invitations | Not Started |
+| [Project 23 - Parental Consent](./Projects/Project_23_Parental_Consent.md) | Privo.com integration for minors | Planning in Progress |
+| [Project 24 - API v2 Modernization](./Projects/Project_24_API_v2_Modernization.md) | Pagination, error handling, auto-generated clients | Not Started |
 
 #### Medium Priority (Enhancements)
 
-- **[Project 6 - Backend Standards](./Projects/Project_06_Backend_Standards.md)** � Code standards, .NET 10 upgrades
-- **[Project 11 - Adopt-A-Location](./Projects/Project_11_Adopt_A_Location.md)** � Location adoption program
-- **[Project 14 - Social Media Integration](./Projects/Project_14_Social_Media.md)** � Modernize social sharing
-- **[Project 15 - Route Tracing](./Projects/Project_15_Route_Tracing.md)** � Map route tracing with privacy
-- **[Project 16 - Content Management](./Projects/Project_16_Content_Management.md)** � Strapi CMS integration
-- **[Project 19 - Newsletter Support](./Projects/Project_19_Newsletter.md)** � Monthly communication
-- **[Project 20 - Gamification](./Projects/Project_20_Gamification.md)** � Leaderboards and engagement
-- **[Project 21 - Event Co-Leads](./Projects/Project_21_Event_Co_Leads.md)** � Multiple event admins
-- **[Project 22 - Attendee Metrics](./Projects/Project_22_Attendee_Metrics.md)** � Per-attendee event statistics
-- **[Project 25 - Automated Testing](./Projects/Project_25_Automated_Testing.md)** — E2E tests for web and mobile
-- **[Project 28 - Photo Moderation](./Projects/Project_28_Photo_Moderation.md)** — Admin photo review and flagging
-- **[Project 29 - Feature Usage Metrics](./Projects/Project_29_Feature_Usage_Metrics.md)** � E2E tests for web and mobile
+| Project | Description | Status |
+|---------|-------------|--------|
+| [Project 6 - Backend Standards](./Projects/Project_06_Backend_Standards.md) | Code standards, .NET 10 upgrades | In Progress |
+| [Project 11 - Adopt-A-Location](./Projects/Project_11_Adopt_A_Location.md) | Location adoption program | Planning in Progress |
+| [Project 14 - Social Media Integration](./Projects/Project_14_Social_Media.md) | Modernize social sharing | Not Started |
+| [Project 15 - Route Tracing](./Projects/Project_15_Route_Tracing.md) | Map route tracing with privacy | Planning in Progress |
+| [Project 16 - Content Management](./Projects/Project_16_Content_Management.md) | Strapi CMS integration | In Progress |
+| [Project 19 - Newsletter Support](./Projects/Project_19_Newsletter.md) | Monthly communication | Not Started |
+| [Project 20 - Gamification](./Projects/Project_20_Gamification.md) | Leaderboards and engagement | Not Started |
+| [Project 21 - Event Co-Leads](./Projects/Project_21_Event_Co_Leads.md) | Multiple event admins | Planning in Progress |
+| [Project 22 - Attendee Metrics](./Projects/Project_22_Attendee_Metrics.md) | Per-attendee event statistics | Not Started |
+| [Project 25 - Automated Testing](./Projects/Project_25_Automated_Testing.md) | E2E tests for web and mobile | Not Started |
+| [Project 26 - KeyVault RBAC Migration](./Projects/Project_26_KeyVault_RBAC_Migration.md) | Migrate from access policies to RBAC | Planning |
+| [Project 28 - Photo Moderation](./Projects/Project_28_Photo_Moderation.md) | Admin photo review and flagging | Not Started |
+| [Project 29 - Feature Usage Metrics](./Projects/Project_29_Feature_Usage_Metrics.md) | Track feature usage analytics | Not Started |
 
 #### Low Priority (Nice-to-Have)
 
-- **[Project 12 - In-App Messaging](./Projects/Project_12_In_App_Messaging.md)** � Event lead communications
-- **[Project 17 - MCP Server](./Projects/Project_17_MCP_Server.md)** � AI access via MCP protocol
-- **[Project 18 - Before/After Photos](./Projects/Project_18_Before_After_Photos.md)** — Event impact photos
-- **[Project 27 - OpenTelemetry Migration](./Projects/Project_27_OpenTelemetry_Migration.md)** � Event impact photos
+| Project | Description | Status |
+|---------|-------------|--------|
+| [Project 12 - In-App Messaging](./Projects/Project_12_In_App_Messaging.md) | Event lead communications | Not Started |
+| [Project 17 - MCP Server](./Projects/Project_17_MCP_Server.md) | AI access via MCP protocol | Not Started |
+| [Project 18 - Before/After Photos](./Projects/Project_18_Before_After_Photos.md) | Event impact photos | Planning in Progress |
+| [Project 27 - OpenTelemetry Migration](./Projects/Project_27_OpenTelemetry_Migration.md) | Vendor-neutral observability | In Progress |
 
 ---
 
@@ -94,18 +103,17 @@
 
 ---
 
-## ?? Project Status Overview
+## Project Status Overview
 
 | Status | Count | Projects |
 |--------|-------|----------|
-| ? **Files Extracted** | 29 | ALL PROJECTS DOCUMENTED |
-| ? **In Progress** | 1 | Project 16 (CMS - PR #2364) |
-| ?? **Ready for Review** | 7 | Projects 2, 3, 5, 6, 7, 9, 21 |
-| ?? **Planning** | 10 | Projects 1, 8, 10, 11, 15, 18, 21, 23, 24 |
-| ?? **Developers Engaged** | 1 | Project 4 |
-| ? **Not Started** | 12 | Projects 12, 13, 14, 17, 19, 20, 22, 25, 26, 27, 28, 29 |
+| **In Progress** | 3 | Projects 6, 16, 27 |
+| **Developers Engaged** | 1 | Project 4 |
+| **Ready for Review** | 5 | Projects 2, 3, 5, 7, 9 |
+| **Planning** | 9 | Projects 1, 8, 10, 11, 15, 18, 21, 23, 26 |
+| **Not Started** | 11 | Projects 12, 13, 14, 17, 19, 20, 22, 24, 25, 28, 29 |
 
-**?? Achievement Unlocked:** All 29 project specifications documented!
+**Total:** 29 project specifications documented
 
 ---
 

@@ -146,11 +146,6 @@ export async function initializeMsalClient(): Promise<msal.PublicClientApplicati
     return getMsalClientInstance();
 }
 
-// Legacy export for backward compatibility
-// Note: This creates the client immediately with whatever config is available
-// For proper initialization, use initializeMsalClient() instead
-export const msalClient: msal.PublicClientApplication = GetMsalClient(true);
-
 export function validateToken(idTokenClaims: object): boolean {
     if (!idTokenClaims.hasOwnProperty('email')) {
         return false;

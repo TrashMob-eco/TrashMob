@@ -23,6 +23,8 @@ env:
   KEY_VAULT_NAME: kv-tm-pr-westus2
   STORAGE_ACCOUNT_NAME: stortmprwestus2
   REGION: westus2
+  CUSTOM_DOMAIN_NAME: www.trashmob.eco
+  MANAGED_CERTIFICATE_NAME: trashmob-eco-cert
 
 jobs:
   build-and-deploy:
@@ -34,7 +36,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -86,7 +88,9 @@ jobs:
               region=${{ env.REGION }} \
               environment=pr \
               minReplicas=2 \
-              maxReplicas=10
+              maxReplicas=10 \
+              customDomainName=${{ env.CUSTOM_DOMAIN_NAME }} \
+              managedCertificateName=${{ env.MANAGED_CERTIFICATE_NAME }}
 
       # Note: Azure AD B2C configuration is now set via environment variables in containerApp.bicep
       # The B2C settings are public configuration values (not secrets) determined by the 'environment' parameter
