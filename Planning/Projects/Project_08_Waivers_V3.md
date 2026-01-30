@@ -110,6 +110,8 @@ Users must be able to download their signed waivers as PDF documents containing:
 | Event in community **with** custom waiver | TrashMob waiver + Community waiver (both required) |
 | Event in community **without** custom waiver | TrashMob waiver only |
 
+**Community Waiver Matching:** An event is considered "in a community" when the event's **city and state match** the community's city and state. The system checks this location match to determine which community waiver (if any) applies.
+
 **Note:** Users may need to sign multiple waivers (e.g., both TrashMob and community waivers). Team events use the same waiver requirements as regular events (no team-specific waivers).
 
 ---
@@ -524,7 +526,7 @@ public async Task<ActionResult<WaiverStatusDto>> CheckEventWaiverStatus(
 1. User clicks "Register for Event" on event page
 2. System determines required waivers:
    - TrashMob waiver (always required)
-   - Community waiver (if event is in a community with custom waiver)
+   - Community waiver (if event city/state matches a community with custom waiver)
 3. System checks if user has valid signatures for all required waivers
 4. If any waivers missing or expired:
    - Display waiver(s) with checkboxes in multi-step form
