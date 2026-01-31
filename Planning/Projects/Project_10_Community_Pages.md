@@ -30,6 +30,7 @@ Branded public pages for partner communities (cities, counties, organizations) w
 ### Secondary Goals
 - SSO for community admin login
 - Community newsletters
+- **Community leaderboards** (individual and team rankings within the community)
 
 ---
 
@@ -46,9 +47,11 @@ Branded public pages for partner communities (cities, counties, organizations) w
 - ✅ Branded header with logo
 - ✅ About section (admin-editable, stored in database)
 - ✅ Contact information
+- ✅ Community map centered on location (events, litter reports, teams)
 - ✅ Events in this community
 - ✅ Teams in this community
 - ✅ Impact metrics display
+- ☐ Community leaderboards (individual and team) - future enhancement
 
 ### Community Page Customizable Fields (V1)
 
@@ -340,6 +343,10 @@ public async Task<ActionResult<IEnumerable<CommunityProgramDto>>> GetCommunityPr
 2. `/communities/{slug}` - Community Public Page
    - Branded header
    - About section (admin-editable)
+   - **Community map** centered on community location showing:
+     - Events in this community
+     - Litter reports in this community
+     - Teams in this community
    - Impact metrics widget
    - Upcoming events in community
    - Active teams in community
