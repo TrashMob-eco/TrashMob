@@ -59,13 +59,16 @@ const CreateLitterReportPageInner = () => {
         mutationFn: UploadLitterImage().service,
     });
 
-    const handleImagesChange = useCallback((newImages: ImageWithLocation[] | ((prev: ImageWithLocation[]) => ImageWithLocation[])) => {
-        if (typeof newImages === 'function') {
-            setImages(newImages);
-        } else {
-            setImages(newImages);
-        }
-    }, []);
+    const handleImagesChange = useCallback(
+        (newImages: ImageWithLocation[] | ((prev: ImageWithLocation[]) => ImageWithLocation[])) => {
+            if (typeof newImages === 'function') {
+                setImages(newImages);
+            } else {
+                setImages(newImages);
+            }
+        },
+        [],
+    );
 
     const handleEditLocation = useCallback((imageId: string) => {
         setEditingImageId(imageId);
@@ -173,7 +176,10 @@ const CreateLitterReportPageInner = () => {
 
     return (
         <div>
-            <HeroSection Title='Report Litter' Description='Help clean up your community by reporting litter locations' />
+            <HeroSection
+                Title='Report Litter'
+                Description='Help clean up your community by reporting litter locations'
+            />
             <div className='container py-8'>
                 <div className='mb-4'>
                     <Button variant='outline' asChild>
@@ -225,8 +231,8 @@ const CreateLitterReportPageInner = () => {
                                 <div>
                                     <FormLabel required>Photos</FormLabel>
                                     <p className='text-sm text-muted-foreground mb-3'>
-                                        Add photos of the litter. Location will be automatically detected from photo metadata when
-                                        available.
+                                        Add photos of the litter. Location will be automatically detected from photo
+                                        metadata when available.
                                     </p>
                                     <ImageUploader
                                         images={images}
