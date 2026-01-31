@@ -105,18 +105,21 @@ export const LitterReportDetailPage = () => {
                                         </p>
                                     </div>
 
-                                    {firstImage ? <div>
+                                    {firstImage ? (
+                                        <div>
                                             <h3 className='font-semibold mb-2 flex items-center gap-2'>
                                                 <MapPin className='h-4 w-4' /> Location
                                             </h3>
                                             <p className='text-muted-foreground'>{getFullAddress(firstImage)}</p>
-                                        </div> : null}
+                                        </div>
+                                    ) : null}
                                 </div>
                             </CardContent>
                         </Card>
 
                         {/* Photos */}
-                        {litterReport.litterImages && litterReport.litterImages.length > 0 ? <Card>
+                        {litterReport.litterImages && litterReport.litterImages.length > 0 ? (
+                            <Card>
                                 <CardHeader>
                                     <CardTitle className='flex items-center gap-2'>
                                         <ImageIcon className='h-5 w-5' /> Photos ({litterReport.litterImages.length})
@@ -125,7 +128,10 @@ export const LitterReportDetailPage = () => {
                                 <CardContent>
                                     <div className='grid grid-cols-2 md:grid-cols-3 gap-4'>
                                         {litterReport.litterImages.map((image) => (
-                                            <div key={image.id} className='aspect-square relative rounded-lg overflow-hidden bg-muted'>
+                                            <div
+                                                key={image.id}
+                                                className='aspect-square relative rounded-lg overflow-hidden bg-muted'
+                                            >
                                                 {image.imageURL ? (
                                                     <img
                                                         src={image.imageURL}
@@ -141,7 +147,8 @@ export const LitterReportDetailPage = () => {
                                         ))}
                                     </div>
                                 </CardContent>
-                            </Card> : null}
+                            </Card>
+                        ) : null}
                     </div>
 
                     {/* Sidebar */}
@@ -159,26 +166,31 @@ export const LitterReportDetailPage = () => {
                                     </div>
                                 </div>
 
-                                {litterReport.createdByUserName ? <div className='flex items-center gap-2'>
+                                {litterReport.createdByUserName ? (
+                                    <div className='flex items-center gap-2'>
                                         <User className='h-4 w-4 text-muted-foreground' />
                                         <div>
                                             <p className='text-sm text-muted-foreground'>Reported by</p>
                                             <p className='font-medium'>{litterReport.createdByUserName}</p>
                                         </div>
-                                    </div> : null}
+                                    </div>
+                                ) : null}
 
-                                {litterReport.lastUpdatedDate ? <div className='flex items-center gap-2'>
+                                {litterReport.lastUpdatedDate ? (
+                                    <div className='flex items-center gap-2'>
                                         <Calendar className='h-4 w-4 text-muted-foreground' />
                                         <div>
                                             <p className='text-sm text-muted-foreground'>Last updated</p>
                                             <p className='font-medium'>{formatDate(litterReport.lastUpdatedDate)}</p>
                                         </div>
-                                    </div> : null}
+                                    </div>
+                                ) : null}
                             </CardContent>
                         </Card>
 
                         {/* Location details for each image */}
-                        {litterReport.litterImages && litterReport.litterImages.length > 1 ? <Card>
+                        {litterReport.litterImages && litterReport.litterImages.length > 1 ? (
+                            <Card>
                                 <CardHeader>
                                     <CardTitle>Photo Locations</CardTitle>
                                 </CardHeader>
@@ -190,7 +202,8 @@ export const LitterReportDetailPage = () => {
                                         </div>
                                     ))}
                                 </CardContent>
-                            </Card> : null}
+                            </Card>
+                        ) : null}
                     </div>
                 </div>
             </div>

@@ -96,15 +96,13 @@ const columns: ColumnDef<LitterReportData>[] = [
 ];
 
 export const LitterReportsPage = () => {
-    const { data: litterReports, isLoading } = useQuery<
-        AxiosResponse<LitterReportData[]>,
-        unknown,
-        LitterReportData[]
-    >({
-        queryKey: GetNotCancelledLitterReports().key,
-        queryFn: GetNotCancelledLitterReports().service,
-        select: (res) => res.data,
-    });
+    const { data: litterReports, isLoading } = useQuery<AxiosResponse<LitterReportData[]>, unknown, LitterReportData[]>(
+        {
+            queryKey: GetNotCancelledLitterReports().key,
+            queryFn: GetNotCancelledLitterReports().service,
+            select: (res) => res.data,
+        },
+    );
 
     return (
         <div>
