@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import {
     LitterReportStatusEnum,
     LitterReportStatusLabels,
@@ -115,7 +114,7 @@ export const AddLitterReportDialog = ({
                     />
                 </div>
 
-                <ScrollArea className='h-[300px] pr-4'>
+                <div className='h-[300px] overflow-y-auto pr-4'>
                     {isLoading ? (
                         <div className='flex items-center justify-center py-8'>
                             <Loader2 className='h-6 w-6 animate-spin text-muted-foreground' />
@@ -168,7 +167,7 @@ export const AddLitterReportDialog = ({
                             })}
                         </div>
                     )}
-                </ScrollArea>
+                </div>
             </DialogContent>
         </Dialog>
     );
