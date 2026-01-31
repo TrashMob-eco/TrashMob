@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
-import { MapPin, Calendar, User, ArrowLeft, Image as ImageIcon, Pencil, Trash2, Loader2 } from 'lucide-react';
+import { MapPin, Calendar, User, ArrowLeft, Image as ImageIcon, Pencil, Trash2, Loader2, Plus } from 'lucide-react';
 
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -251,6 +251,24 @@ export const LitterReportDetailPage = () => {
                                 ) : null}
                             </CardContent>
                         </Card>
+
+                        {/* Actions - only show for non-cleaned/cancelled reports */}
+                        {isUserLoaded &&
+                        statusId !== LitterReportStatusEnum.Cleaned &&
+                        statusId !== LitterReportStatusEnum.Cancelled ? (
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Actions</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <Button asChild className='w-full'>
+                                        <Link to='/events/create' state={{ fromLitterReport: litterReport }}>
+                                            <Plus className='h-4 w-4 mr-2' /> Create Event to Clean This
+                                        </Link>
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        ) : null}
 
                         {/* Location details for each image */}
                         {litterReport.litterImages && litterReport.litterImages.length > 1 ? (

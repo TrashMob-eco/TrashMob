@@ -129,5 +129,15 @@
         /// Notification sent when a partner request is automatically approved.
         /// </summary>
         EventPartnerRequestAutoApproved = 25,
+
+        /// <summary>
+        /// Notification sent to the creator when their litter report is marked as cleaned.
+        /// </summary>
+        LitterReportCleaned = 26,
+
+        /// <summary>
+        /// Weekly digest notification about new litter reports in the user's area.
+        /// </summary>
+        WeeklyLitterReportDigest = 27,
     }
 }
