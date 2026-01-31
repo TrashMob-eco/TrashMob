@@ -100,6 +100,44 @@ None - can be built independently
 
 ---
 
+## Minor User Protections
+
+TrashMob allows users aged 13+ with special protections for minors (13-17). This feature must comply with privacy requirements for minors.
+
+### Message Receipt
+- Minors **can receive** messages from event leads for events they are registered for
+- **No unsolicited messages** - only from leads of events the minor has explicitly joined
+- No direct messaging between users (prevents grooming/inappropriate contact)
+
+### Parental Visibility
+- If minor has a **linked parent/guardian account**, parent can view all messages sent to the minor
+- Parent can **disable messaging** for their minor's account
+- Parent receives notification when minor reports a message
+
+### Enhanced Moderation
+- Reports involving minor recipients are **prioritized** in moderation queue
+- Faster escalation timeline for abuse reports from/about minors
+- Audit log includes recipient age category for compliance review
+
+### Notification Controls
+- Minors (or their parents) can **opt out** of push notifications
+- Default notification settings for minors: **event logistics only** (no promotional)
+- Parents can manage notification preferences for linked minor accounts
+
+### Data Handling
+- Same 1-year retention policy applies
+- Parents can request **data deletion** for minor's messages
+- Messages to minors included in any COPPA/privacy data export requests
+
+### App Store Compliance
+- **Apple:** Enhanced moderation required for user-generated content involving minors
+- **Google:** Compliance with Families Policy for messaging features
+- **Both:** Clear privacy policy disclosure about minor data handling
+
+**Note:** Legal review required before launch to ensure compliance with COPPA, state privacy laws, and international regulations (GDPR for EU users under 16).
+
+---
+
 ## Implementation Plan
 
 ### Data Model Changes
@@ -286,6 +324,7 @@ namespace TrashMob.Models
 modelBuilder.Entity<EventMessage>(entity =>
 {
     entity.Property(e => e.Subject).HasMaxLength(200);
+    entity.Property(e => e.Body).HasMaxLength(1000);
     entity.Property(e => e.MessageType).HasMaxLength(50);
 
     entity.HasOne(e => e.Event)
@@ -403,16 +442,33 @@ public async Task<ActionResult> ReviewReport(Guid reportId, [FromBody] ReviewReq
 
 ### Web UX Changes
 
-**Event Lead View:**
+**Event Lead View (Phase 1-2) - Web & Mobile:**
 - "Message Attendees" button on event page
 - Message composer with template dropdown
+- Character count showing remaining characters (Subject: 200, Body: 1,000)
 - Message history with delivery stats
 - Rate limit indicator
 
-**Attendee View:**
+**Team Lead View (Phase 3) - Web & Mobile:**
+- "Message Team" button on team page
+- Message composer with template dropdown
+- Character count showing remaining characters
+- Message history with delivery stats
+
+**Community Lead View (Phase 4/Future) - Web & Mobile:**
+- "Message Community" button on community admin page
+- Message composer with template dropdown
+- Character count showing remaining characters
+- Message history with delivery stats
+
+**Attendee View (Web):**
+- Message inbox accessible from **profile icon** in navigation
+- **Unread indicator** (badge/dot) on profile icon when unread messages exist
 - Inbox/notification center showing event messages
+- Message history viewable on website
 - Mark as read
 - Report message option
+- Notification preferences in user settings
 
 **Admin View:**
 - Moderation queue for reported messages
@@ -421,10 +477,52 @@ public async Task<ActionResult> ReviewReport(Guid reportId, [FromBody] ReviewReq
 
 ### Mobile App Changes
 
-- Push notification for new messages
-- Message inbox
+**All Users:**
+- Push notification for new messages (works when app is closed)
+- Message inbox accessible from **profile/menu** with **unread indicator**
+- Message inbox with full history
 - View message details
 - Report function
+- Notification preferences in app settings
+
+**Event/Team/Community Leads:**
+- "Message Attendees/Members" button on event/team detail page
+- Message composer with template dropdown
+- Character count showing remaining characters
+- Message history with delivery stats
+- Same rate limits as web
+
+### Push Notification Behavior
+
+- **Delivery:** Push notifications appear on device lock screen/notification tray even when app is closed
+- **Opt-in:** Users must grant push notification permission on first message-enabled action
+- **Content preview:** Show subject line in notification; tap to open full message
+- **Badge count:** Show unread message count on app icon
+
+### User Notification Preferences
+
+Users can configure notification settings (in both web and mobile):
+
+| Setting | Options | Default |
+|---------|---------|---------|
+| **Event messages** | All, Important only, None | All |
+| **Mute specific events** | Per-event toggle | Unmuted |
+| **Push notifications** | Enabled/Disabled | Enabled (if permitted) |
+| **Email digest** | Daily, Weekly, None | None |
+
+**Important only** includes: cancellations, time/location changes, safety alerts
+
+### App Store Compliance Requirements
+
+| Requirement | Apple App Store | Google Play Store | Our Approach |
+|-------------|-----------------|-------------------|--------------|
+| **Push notification consent** | Required | Required | Opt-in prompt before first notification |
+| **Unsubscribe mechanism** | Required | Required | Per-event mute + global disable |
+| **No spam/unsolicited** | Required | Required | Rate limits; only for registered events |
+| **Privacy policy disclosure** | Required | Required | Update privacy policy before launch |
+| **Data retention disclosure** | Required | Recommended | 1 year retention documented |
+| **Minor protections** | Enhanced moderation | Families Policy | See Minor User Protections section |
+| **Content moderation** | Required for UGC | Required for UGC | Report function + admin queue |
 
 ---
 
@@ -453,25 +551,29 @@ public async Task<ActionResult> ReviewReport(Guid reportId, [FromBody] ReviewReq
 
 ## Open Questions
 
-1. **Rate limit: how many messages per event per day?**
-   **Recommendation:** 3 custom messages per day; system messages unlimited
-   **Owner:** Product Lead
-   **Due:** Before Phase 1
+1. ~~**Rate limit: how many messages per event per day?**~~
+   **Decision:** 5 custom messages per event per day; system messages (cancellation, time/location changes) unlimited
+   **Status:** ✅ Resolved
 
-2. **Scope for communities/teams broadcast?**
-   **Recommendation:** Phase 3 only; focus on events first
-   **Owner:** Product Lead
-   **Due:** After Phase 2
+2. ~~**Scope for communities/teams broadcast?**~~
+   **Decision:** Priority order: (1) Events first (Phase 1-2), (2) Team announcements (Phase 3), (3) Community broadcasts (Phase 4/future)
+   **Status:** ✅ Resolved
 
-3. **Abuse prevention policy and enforcement?**
-   **Recommendation:** Clear ToS; 3-strike policy; legal review
-   **Owner:** Legal + Product
-   **Due:** Before Phase 1
+3. ~~**Abuse prevention policy and enforcement?**~~
+   **Decision:** Clear ToS update required; 3-strike policy (warning → temp suspension → permanent ban); legal review before launch
+   **Status:** ✅ Resolved
 
-4. **Message retention period?**
-   **Recommendation:** 1 year; archive older messages
-   **Owner:** Legal + Engineering
-   **Due:** Before Phase 1
+4. ~~**Message retention period?**~~
+   **Decision:** 1 year; archive older messages
+   **Status:** ✅ Resolved
+
+5. ~~**Message length limits?**~~
+   **Decision:** Subject: 200 characters; Body: 1,000 characters
+   **Status:** ✅ Resolved
+
+6. ~~**Minor user privacy protections?**~~
+   **Decision:** See dedicated "Minor User Protections" section; includes parental visibility, enhanced moderation, notification controls, and app store compliance requirements
+   **Status:** ✅ Resolved
 
 ---
 
@@ -483,7 +585,7 @@ public async Task<ActionResult> ReviewReport(Guid reportId, [FromBody] ReviewReq
 
 ---
 
-**Last Updated:** January 24, 2026
+**Last Updated:** January 31, 2026
 **Owner:** Product Lead
 **Status:** Not Started
 **Next Review:** When prioritized
