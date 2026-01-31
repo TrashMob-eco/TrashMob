@@ -663,6 +663,7 @@ User clicks "Sign Up"
 
 ## Related Documents
 
+- **[Privo Integration Package](./Project_23_Privo_Integration_Package.md)** - Document to send to Privo
 - **[Project 1 - Auth Revamp](./Project_01_Auth_Revamp.md)** - Authentication integration
 - **[Project 8 - Waivers V3](./Project_08_Waivers_V3.md)** - Minor waiver handling
 - **[Privo.com](https://privo.com)** - Vendor documentation
