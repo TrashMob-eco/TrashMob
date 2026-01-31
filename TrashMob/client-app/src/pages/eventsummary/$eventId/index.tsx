@@ -520,9 +520,7 @@ export const EditEventSummary = () => {
                 <Card>
                     <CardHeader>
                         <CardTitle>Litter Reports Cleaned</CardTitle>
-                        <CardDescription>
-                            Associate litter reports that were cleaned during this event.
-                        </CardDescription>
+                        <CardDescription>Associate litter reports that were cleaned during this event.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <AssociatedLitterReports eventId={eventId} isOwner={isOwner} />

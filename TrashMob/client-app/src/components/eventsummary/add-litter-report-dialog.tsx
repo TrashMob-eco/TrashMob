@@ -102,9 +102,7 @@ export const AddLitterReportDialog = ({
             <DialogContent className='max-w-lg'>
                 <DialogHeader>
                     <DialogTitle>Add Litter Report</DialogTitle>
-                    <DialogDescription>
-                        Select a litter report that was cleaned during this event.
-                    </DialogDescription>
+                    <DialogDescription>Select a litter report that was cleaned during this event.</DialogDescription>
                 </DialogHeader>
 
                 <div className='relative'>
@@ -124,9 +122,7 @@ export const AddLitterReportDialog = ({
                         </div>
                     ) : availableReports.length === 0 ? (
                         <div className='text-center text-muted-foreground py-8'>
-                            {searchTerm
-                                ? 'No matching litter reports found.'
-                                : 'No available litter reports to add.'}
+                            {searchTerm ? 'No matching litter reports found.' : 'No available litter reports to add.'}
                         </div>
                     ) : (
                         <div className='space-y-2'>
@@ -158,11 +154,7 @@ export const AddLitterReportDialog = ({
                                                         </span>
                                                     </div>
                                                 </div>
-                                                <Button
-                                                    size='sm'
-                                                    onClick={() => handleAdd(report)}
-                                                    disabled={isAdding}
-                                                >
+                                                <Button size='sm' onClick={() => handleAdd(report)} disabled={isAdding}>
                                                     {isAdding ? (
                                                         <Loader2 className='h-4 w-4 animate-spin' />
                                                     ) : (
