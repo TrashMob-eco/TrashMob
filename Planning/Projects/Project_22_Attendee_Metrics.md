@@ -405,6 +405,12 @@ public async Task<ActionResult<IEnumerable<DropLocationDto>>> GetDropLocations(G
 - Drop location reporting with map pin
 - Photo upload
 
+**Attendee Notifications:**
+- **Email reminder:** Sent 24 hours after event ends ("Report your impact from [Event Name]!")
+- **In-app banner:** Dashboard shows "You have unreported metrics" for recent events
+- **Follow-up email:** Sent at day 5 if not yet submitted ("2 days left to report...")
+- Link directly to metrics submission form
+
 **Event Lead Reconciliation:**
 - **Reporting status:** "3 of 10 attendees reported metrics" prominently displayed
 - List of attendee submissions
