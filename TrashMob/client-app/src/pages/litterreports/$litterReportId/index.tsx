@@ -285,11 +285,7 @@ export const LitterReportDetailPage = () => {
                             <Button variant='outline' onClick={() => setShowDeleteDialog(false)}>
                                 Cancel
                             </Button>
-                            <Button
-                                variant='destructive'
-                                onClick={handleDelete}
-                                disabled={deleteMutation.isPending}
-                            >
+                            <Button variant='destructive' onClick={handleDelete} disabled={deleteMutation.isPending}>
                                 {deleteMutation.isPending ? <Loader2 className='h-4 w-4 mr-1 animate-spin' /> : null}
                                 Delete
                             </Button>

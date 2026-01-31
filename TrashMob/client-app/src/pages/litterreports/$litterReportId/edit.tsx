@@ -16,10 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import LitterReportData from '@/components/Models/LitterReportData';
-import {
-    LitterReportStatusEnum,
-    LitterReportStatusLabels,
-} from '@/components/Models/LitterReportStatus';
+import { LitterReportStatusEnum, LitterReportStatusLabels } from '@/components/Models/LitterReportStatus';
 import { GetLitterReport, UpdateLitterReport, GetUserLitterReports } from '@/services/litter-report';
 import { useLogin } from '@/hooks/useLogin';
 import { useToast } from '@/hooks/use-toast';
