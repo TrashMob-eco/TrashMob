@@ -61,9 +61,9 @@
             stats.TotalWeightInKilograms = eventSummaries.Where(e => e.PickedWeightUnitId == (int)WeightUnitEnum.Kilogram).Sum(e => e.PickedWeight) +
                                          eventSummaries.Where(e => e.PickedWeightUnitId == (int)WeightUnitEnum.Pound).Sum(e => (int)(e.PickedWeight * 0.453592));
 
-            var litterReports = await litterReportManager.GetAsync(cancellationToken);
-            stats.TotalLitterReportsClosed = litterReports.Count(lr => lr.LitterReportStatusId == (int)LitterReportStatusEnum.Cleaned);
-            stats.TotalLitterReportsSubmitted = litterReports.Count();
+            var (totalLitterReports, cleanedLitterReports) = await litterReportManager.GetLitterReportCountsAsync(cancellationToken);
+            stats.TotalLitterReportsClosed = cleanedLitterReports;
+            stats.TotalLitterReportsSubmitted = totalLitterReports;
 
             return stats;
         }
@@ -90,7 +90,6 @@
                                        eventSummaries.Where(e => e.PickedWeightUnitId == (int)WeightUnitEnum.Kilogram).Sum(e => (int)(e.PickedWeight * 2.20462));
             stats.TotalWeightInKilograms = eventSummaries.Where(e => e.PickedWeightUnitId == (int)WeightUnitEnum.Kilogram).Sum(e => e.PickedWeight) +
                                          eventSummaries.Where(e => e.PickedWeightUnitId == (int)WeightUnitEnum.Pound).Sum(e => (int)(e.PickedWeight * 0.453592));
-            var litterReports = await litterReportManager.GetAsync(cancellationToken);
             var eventLitterReports = await eventLitterReportManager.GetAsync(cancellationToken);
 
             if (eventLitterReports == null)
@@ -102,7 +101,7 @@
                 stats.TotalLitterReportsClosed = eventLitterReports.Count(elr => eventIds.Contains(elr.EventId) && elr.LitterReport != null && elr.LitterReport.LitterReportStatusId == (int)LitterReportStatusEnum.Cleaned);
             }
 
-            stats.TotalLitterReportsSubmitted = litterReports.Count(lr => lr.CreatedByUserId == userId);
+            stats.TotalLitterReportsSubmitted = await litterReportManager.GetUserLitterReportCountAsync(userId, cancellationToken);
 
             return stats;
         }

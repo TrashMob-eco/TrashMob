@@ -450,5 +450,20 @@ namespace TrashMob.Shared.Managers.LitterReport
                 return ServiceResult<LitterReport>.Failure($"An unexpected error occurred: {ex.Message}");
             }
         }
+
+        /// <inheritdoc />
+        public async Task<(int TotalCount, int CleanedCount)> GetLitterReportCountsAsync(CancellationToken cancellationToken = default)
+        {
+            var totalCount = await Repo.Get().CountAsync(cancellationToken);
+            var cleanedCount = await Repo.Get(lr => lr.LitterReportStatusId == (int)LitterReportStatusEnum.Cleaned)
+                .CountAsync(cancellationToken);
+            return (totalCount, cleanedCount);
+        }
+
+        /// <inheritdoc />
+        public async Task<int> GetUserLitterReportCountAsync(Guid userId, CancellationToken cancellationToken = default)
+        {
+            return await Repo.Get(lr => lr.CreatedByUserId == userId).CountAsync(cancellationToken);
+        }
     }
 }
