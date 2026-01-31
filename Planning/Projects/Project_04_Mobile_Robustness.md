@@ -366,45 +366,40 @@ public static MauiApp CreateMauiApp()
 
 ## Open Questions
 
-1. **What's the minimum iOS version to support?**  
-   **Recommendation:** iOS 15+ (covers 95%+ of active devices)  
-   **Owner:** Product Lead  
+1. **What's the minimum iOS version to support?**
+   **Recommendation:** iOS 15+ (covers 95%+ of active devices)
+   **Owner:** Product Lead
    **Due:** Early in project
 
-2. **Should we drop support for Android 7 and below?**  
-   **Recommendation:** Yes, Android 8.0+ (97%+ of active devices)  
-   **Owner:** Product Lead  
+2. **Should we drop support for Android 7 and below?**
+   **Recommendation:** Yes, Android 8.0+ (97%+ of active devices)
+   **Owner:** Product Lead
    **Due:** Early in project
 
-3. **How many beta testers do we need?**  
-   **Recommendation:** 50-100 covering diverse devices and OS versions  
-   **Owner:** Product Lead  
+3. **How many beta testers do we need?**
+   **Recommendation:** 50-100 covering diverse devices and OS versions
+   **Owner:** Product Lead
    **Due:** Before beta phase
 
-4. **Should we implement automatic crash reporting opt-out?**
-   **Recommendation:** Opt-in by default with privacy policy disclosure
-   **Owner:** Legal + Product
-   **Due:** Before Sentry phase
+4. ~~**Should we implement automatic crash reporting opt-out?**~~
+   **Decision:** Opt-in by default with privacy policy disclosure
+   **Status:** ✅ Resolved
 
-5. **Should we implement biometric authentication for returning users?**
-   **Recommendation:** Yes, as optional convenience feature (Face ID / Touch ID on iOS, fingerprint on Android)
-   **Owner:** Mobile Team
-   **Due:** Before Phase 2
+5. ~~**Should we implement biometric authentication for returning users?**~~
+   **Decision:** Low priority, future feature
+   **Status:** ✅ Resolved
 
-6. **What is our push notification strategy (types, frequency, opt-in)?**
-   **Recommendation:** Opt-in prompt at first launch; categories: event reminders, team activity, achievements; respect quiet hours (9 PM - 8 AM local); allow per-category opt-out
-   **Owner:** Product Lead
-   **Due:** Before Phase 5
+6. ~~**What is our push notification strategy (types, frequency, opt-in)?**~~
+   **Decision:** See Project 12 for push notification strategy
+   **Status:** ✅ Resolved
 
-7. **How do we force critical app updates?**
-   **Recommendation:** Minimum version check on app launch via API endpoint; block app usage until updated for critical security patches; soft reminder for feature updates
-   **Owner:** Mobile Team + DevOps
-   **Due:** Before production release
+7. ~~**How do we force critical app updates?**~~
+   **Decision:** Minimum version check on app launch via API endpoint; block app usage until updated for critical security patches; soft reminder for feature updates
+   **Status:** ✅ Resolved
 
-8. **What data should be cached for offline viewing?**
-   **Recommendation:** User profile, registered events (next 30 days), team memberships; read-only mode when offline; queue actions for sync when online
-   **Owner:** Mobile Team
-   **Due:** Before Phase 1
+8. ~~**What data should be cached for offline viewing?**~~
+   **Decision:** Future update, low priority
+   **Status:** ✅ Resolved
 
 ---
 
