@@ -544,8 +544,6 @@ public async Task<ActionResult<WaiverStatusDto>> CheckEventWaiverStatus(
 5. System stores document immutably and links to user account
 
 **Waiver Management Pages:**
-- `/waivers` - List of waivers user has signed (viewable by signer)
-- `/waivers/{id}` - View/print specific signed waiver
 - `/admin/waivers` - Admin dashboard for all waivers
 - `/admin/waivers/create` - Create new waiver
 - `/communities/{id}/waivers` - Manage community waivers
@@ -556,7 +554,8 @@ public async Task<ActionResult<WaiverStatusDto>> CheckEventWaiverStatus(
 - Quick view of waiver expiry dates
 - Link to view/download each signed waiver PDF
 - Alert banner for waivers expiring within 30 days
-- "View All Waivers" link to `/waivers` page
+
+**Note:** No separate `/waivers` page needed - users view their waivers directly on their dashboard.
 
 **Event Lead View:**
 - Attendee list with waiver status indicator
@@ -565,11 +564,12 @@ public async Task<ActionResult<WaiverStatusDto>> CheckEventWaiverStatus(
 
 **Event Page Admin Panel (for Event Lead/Community Mgr/Team Lead/Staff):**
 - "Manage Waivers" section visible to authorized users on event detail page
-- Upload signed paper waiver images/PDFs for attendees
-- Bulk upload option for multiple waivers
+- Upload signed paper waiver images/PDFs for attendees (one at a time)
 - View all attendee waiver statuses at a glance
 - Quick actions: Upload waiver, Send reminder, Mark exception
 - Audit log of all waiver uploads for this event
+
+**Note:** Bulk upload of paper waivers is out of scope for V3.
 
 ### Mobile App Changes
 
@@ -644,10 +644,9 @@ public async Task<ActionResult<WaiverStatusDto>> CheckEventWaiverStatus(
    **Decision:** Waivers are valid for a calendar year. Users must re-sign at their first event in a new calendar year.
    **Status:** ✅ Resolved
 
-3. **How do we handle minors who turn 18 during waiver validity?**
-   **Recommendation:** Require re-consent on birthday; automated check
-   **Owner:** Legal team
-   **Due:** Before Phase 5
+3. ~~**How do we handle minors who turn 18 during waiver validity?**~~
+   **Decision:** Require re-consent on birthday; automated check triggers new waiver signing
+   **Status:** ✅ Resolved
 
 4. ~~**Can guardians sign for multiple minors at once?**~~
    **Decision:** Yes, with clear UI showing each minor
@@ -673,25 +672,21 @@ public async Task<ActionResult<WaiverStatusDto>> CheckEventWaiverStatus(
    **Decision:** Native click-to-accept implementation (checkbox + typed legal name + audit trail). No third-party services (DocuSign/Adobe Sign). Legally valid under ESIGN Act and UETA.
    **Status:** ✅ Resolved
 
-10. **How do community admins compare waiver versions to see what changed?**
-    **Recommendation:** Provide diff view showing added/removed/changed text between versions; highlight changes clearly
-    **Owner:** Engineering Team
-    **Due:** Before Phase 1
+10. ~~**How do community admins compare waiver versions to see what changed?**~~
+    **Decision:** Provide diff view showing added/removed/changed text between versions; highlight changes clearly. Low priority feature.
+    **Status:** ✅ Resolved
 
-11. **What if a user registers for events in multiple communities on the same day?**
-    **Recommendation:** User signs all required waivers once; each waiver is valid for all events that day requiring that specific waiver
-    **Owner:** Legal + Product
-    **Due:** Before Phase 4
+11. ~~**What if a user registers for events in multiple communities on the same day?**~~
+    **Decision:** Waivers are per community, not per event. User must sign each community's waiver once (valid for calendar year). Same waiver covers all events in that community.
+    **Status:** ✅ Resolved
 
-12. **How do we handle team events that span community boundaries?**
-    **Recommendation:** Event location (city/state) determines the community; single community waiver applies based on event's registered location
-    **Owner:** Product Lead
-    **Due:** Before Phase 4
+12. ~~**How do we handle team events that span community boundaries?**~~
+    **Decision:** Event location (city/state) determines the community; single community waiver applies based on event's registered location
+    **Status:** ✅ Resolved
 
-13. **What accessibility accommodations must waivers support?**
-    **Recommendation:** Screen reader accessible (proper semantic HTML); plain text version available for download; large print / high contrast options; keyboard-navigable
-    **Owner:** Accessibility Team
-    **Due:** Before Phase 2
+13. ~~**What accessibility accommodations must waivers support?**~~
+    **Decision:** Screen reader accessible (proper semantic HTML); plain text version available for download; large print / high contrast options; keyboard-navigable. Low priority.
+    **Status:** ✅ Resolved
 
 ---
 
