@@ -43,10 +43,7 @@ export const ImageUploader = ({
     const [isDragging, setIsDragging] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const extractGpsAndReverseGeocode = async (
-        file: File,
-        imageId: string,
-    ): Promise<Partial<ImageWithLocation>> => {
+    const extractGpsAndReverseGeocode = async (file: File, imageId: string): Promise<Partial<ImageWithLocation>> => {
         try {
             // Try to extract GPS from EXIF
             const gps = await exifr.gps(file);
@@ -199,7 +196,9 @@ export const ImageUploader = ({
                 <div
                     className={cn(
                         'border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors',
-                        isDragging ? 'border-primary bg-primary/5' : 'border-muted-foreground/25 hover:border-primary/50',
+                        isDragging
+                            ? 'border-primary bg-primary/5'
+                            : 'border-muted-foreground/25 hover:border-primary/50',
                     )}
                     onDrop={handleDrop}
                     onDragOver={handleDragOver}

@@ -153,7 +153,11 @@ export const ImageLocationEditor = ({ open, onOpenChange, image, onSave }: Image
                             gestureHandling='greedy'
                         >
                             {latitude && longitude ? (
-                                <AdvancedMarker position={{ lat: latitude, lng: longitude }} draggable onDragEnd={handleMarkerDragEnd} />
+                                <AdvancedMarker
+                                    position={{ lat: latitude, lng: longitude }}
+                                    draggable
+                                    onDragEnd={handleMarkerDragEnd}
+                                />
                             ) : null}
                         </GoogleMap>
                         {azureSubscriptionKey ? (
@@ -167,7 +171,9 @@ export const ImageLocationEditor = ({ open, onOpenChange, image, onSave }: Image
                         ) : null}
                     </div>
 
-                    <p className='text-sm text-muted-foreground'>Click on the map or search to set the location where this photo was taken.</p>
+                    <p className='text-sm text-muted-foreground'>
+                        Click on the map or search to set the location where this photo was taken.
+                    </p>
 
                     {/* Address fields (read-only) */}
                     {isReverseGeocoding ? (
