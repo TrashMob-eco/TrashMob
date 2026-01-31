@@ -14,6 +14,8 @@ export interface HeroSectionData {
     tagline?: string;
     primaryButtonText: string;
     primaryButtonLink: string;
+    secondaryButtonText?: string;
+    secondaryButtonLink?: string;
     googlePlayUrl?: string;
     appStoreUrl?: string;
     backgroundImage?: {
