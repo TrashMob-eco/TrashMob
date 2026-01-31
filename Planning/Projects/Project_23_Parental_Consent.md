@@ -161,6 +161,8 @@ public interface IPrivoService
 | **Branding assets** (logos, colors, etc.) | ❌ Pending | Marketing |
 
 **Features requiring parental consent:**
+
+*Core features:*
 - Newsletter subscriptions
 - In-app notifications
 - Event sign-up
@@ -170,6 +172,21 @@ public interface IPrivoService
 - Photo uploads
 - Profile photo
 - Join a team
+
+*Location & tracking (sensitive):*
+- Route tracing during events (Project 15)
+- Litter report submission (includes location)
+
+*Public visibility:*
+- Appear on public leaderboards (Project 20)
+- Individual attendee metrics visible (Project 22)
+- Social media sharing with name/info (Project 14)
+
+*Communication:*
+- Contact information shared with event leads
+
+*Legal:*
+- Waiver signing (parent signs on behalf of minor - Project 8)
 
 **Integration data flows:**
 - Send user location to Privo after sign-up
