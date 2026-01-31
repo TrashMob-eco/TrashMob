@@ -163,5 +163,46 @@
                 await Repository.Get(es => es.EventId == parentId).FirstOrDefaultAsync(cancellationToken);
             return await Repository.DeleteAsync(eventSummary);
         }
+
+        /// <inheritdoc />
+        public override async Task<EventSummary> AddAsync(EventSummary eventSummary, Guid userId, CancellationToken cancellationToken = default)
+        {
+            // Add the event summary first
+            var result = await base.AddAsync(eventSummary, userId, cancellationToken).ConfigureAwait(false);
+
+            // Mark all associated litter reports as Cleaned
+            await MarkAssociatedLitterReportsAsCleanedAsync(eventSummary.EventId, userId, cancellationToken).ConfigureAwait(false);
+
+            return result;
+        }
+
+        /// <inheritdoc />
+        public override async Task<EventSummary> UpdateAsync(EventSummary eventSummary, Guid userId, CancellationToken cancellationToken = default)
+        {
+            // Update the event summary
+            var result = await base.UpdateAsync(eventSummary, userId, cancellationToken).ConfigureAwait(false);
+
+            // Mark all associated litter reports as Cleaned (in case new associations were added)
+            await MarkAssociatedLitterReportsAsCleanedAsync(eventSummary.EventId, userId, cancellationToken).ConfigureAwait(false);
+
+            return result;
+        }
+
+        private async Task MarkAssociatedLitterReportsAsCleanedAsync(Guid eventId, Guid userId, CancellationToken cancellationToken)
+        {
+            // Get all litter reports associated with this event
+            var eventLitterReports = await eventLitterReportManager.GetByParentIdAsync(eventId, cancellationToken).ConfigureAwait(false);
+
+            foreach (var eventLitterReport in eventLitterReports)
+            {
+                if (eventLitterReport.LitterReport != null &&
+                    eventLitterReport.LitterReport.LitterReportStatusId != (int)LitterReportStatusEnum.Cleaned)
+                {
+                    // Update the litter report status to Cleaned
+                    eventLitterReport.LitterReport.LitterReportStatusId = (int)LitterReportStatusEnum.Cleaned;
+                    await litterReportManager.UpdateAsync(eventLitterReport.LitterReport, userId, cancellationToken).ConfigureAwait(false);
+                }
+            }
+        }
     }
 }
