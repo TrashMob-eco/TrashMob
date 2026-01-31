@@ -235,6 +235,23 @@ Modernize authentication system to improve brand consistency, simplify maintenan
    **Owner:** Security team
    **Due:** Can be Phase 2 if needed
 
+5. ~~**How do we handle existing user sessions during migration cutover?**~~
+   **Decision:** Not a concern - traffic volume is low enough that session disruption during migration is acceptable
+   **Status:** ✅ Resolved
+
+6. **What is the strategy for users with duplicate accounts across identity providers?**
+   **Recommendation:** Detect during migration; prompt users to link accounts or choose primary; preserve data from both
+   **Owner:** Product Lead + Engineering
+   **Due:** Before implementation
+
+7. ~~**How will auth changes impact API authentication for potential third-party integrations?**~~
+   **Decision:** Not a concern - there are no third-party consumer apps using the API
+   **Status:** ✅ Resolved
+
+8. ~~**Should we implement device/session management (view active sessions, logout all devices)?**~~
+   **Decision:** Not needed - user base is not large enough to warrant this feature
+   **Status:** ✅ Resolved
+
 ---
 
 ## Related Documents

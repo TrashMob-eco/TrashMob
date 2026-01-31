@@ -30,6 +30,7 @@ Branded public pages for partner communities (cities, counties, organizations) w
 ### Secondary Goals
 - SSO for community admin login
 - Community newsletters
+- **Community leaderboards** (individual and team rankings within the community)
 
 ---
 
@@ -46,9 +47,27 @@ Branded public pages for partner communities (cities, counties, organizations) w
 - ✅ Branded header with logo
 - ✅ About section (admin-editable, stored in database)
 - ✅ Contact information
+- ✅ Community map centered on location (events, litter reports, teams)
 - ✅ Events in this community
 - ✅ Teams in this community
 - ✅ Impact metrics display
+- ☐ Community leaderboards (individual and team) - future enhancement
+
+### Community Page Customizable Fields (V1)
+
+| Field | Type | Notes |
+|-------|------|-------|
+| Logo | Image upload | Standard size (200x200) |
+| Hero/Banner image | Image upload | Standard dimensions |
+| Primary color | Color picker | Hex value |
+| Secondary color | Color picker | Hex value |
+| About text | Textarea | Plain text or markdown |
+| Tagline | Text | Short descriptor |
+| Contact email | Email | Required |
+| Contact phone | Text | Optional |
+| Website URL | URL | Optional |
+| Social links | URLs | Facebook, Instagram, Twitter, LinkedIn |
+| Physical address | Text | For display |
 
 ### Community Page Customizable Fields (V1)
 
@@ -340,6 +359,10 @@ public async Task<ActionResult<IEnumerable<CommunityProgramDto>>> GetCommunityPr
 2. `/communities/{slug}` - Community Public Page
    - Branded header
    - About section (admin-editable)
+   - **Community map** centered on community location showing:
+     - Events in this community
+     - Litter reports in this community
+     - Teams in this community
    - Impact metrics widget
    - Upcoming events in community
    - Active teams in community
@@ -423,6 +446,22 @@ public async Task<ActionResult<IEnumerable<CommunityProgramDto>>> GetCommunityPr
    **Recommendation:** Manual billing for 2026; define tiers in contracts
    **Owner:** Business Team
    **Due:** Before pilot launch
+
+5. ~~**How are community boundaries defined geographically?**~~
+   **Decision:** Simple city/state matching for v1; polygon boundaries for v2 if needed for complex cases (multi-city regions, unincorporated areas)
+   **Status:** ✅ Resolved
+
+6. ~~**What happens to community content when subscription lapses?**~~
+   **Decision:** 30-day grace period with warning; then page shows "Inactive Community" with historical metrics preserved but no active features; full data deletion after 1 year of inactivity
+   **Status:** ✅ Resolved
+
+7. ~~**Can communities have multiple admin roles with different permissions?**~~
+   **Decision:** No. Single role: Community Admin (full access). Multiple people can have the admin role for a community.
+   **Status:** ✅ Resolved
+
+8. ~~**What content guidelines apply to community uploads (logos, banners)?**~~
+   **Decision:** Same moderation rules as team photos; logos must be appropriate and non-offensive; review queue for all community branding changes; integration with Project 28
+   **Status:** ✅ Resolved
 
 ---
 

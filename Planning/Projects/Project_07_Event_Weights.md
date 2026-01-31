@@ -442,10 +442,21 @@ const convertWeight = (weight: number, fromUnit: string, toUnit: string): number
    **Owner:** Product Lead  
    **Due:** Before Phase 2
 
-4. **Should we backfill historical events with estimated weights?**  
-   **Recommendation:** No; too much uncertainty; focus on new events  
-   **Owner:** Product Lead  
-   **Due:** N/A (out of scope)
+4. ~~**Should we backfill historical events with estimated weights?**~~
+   **Decision:** No - too much uncertainty; focus on new events only
+   **Status:** ✅ Resolved
+
+5. ~~**How do we handle aggregations across events with different units?**~~
+   **Decision:** Store both original value and unit; aggregate by summing values in each unit separately; display in user's preferred unit
+   **Status:** ✅ Resolved
+
+6. ~~**What precision should decimal weights support?**~~
+   **Decision:** One decimal place (0.1 lbs or 0.1 kg); use `decimal(10,1)` in database
+   **Status:** ✅ Resolved
+
+7. ~~**Should we provide weight estimation guidance for users without scales?**~~
+   **Decision:** Yes, add help text: "A full 33-gallon bag typically weighs 15-25 lbs depending on contents"; consider estimation calculator in Phase 2
+   **Status:** ✅ Resolved
 
 ---
 

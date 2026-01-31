@@ -6,7 +6,7 @@
 | **Priority** | High |
 | **Risk** | Very High |
 | **Size** | Very Large |
-| **Dependencies** | Project 1 (Auth - minors support) |
+| **Dependencies** | Project 23 (Parental Consent) |
 
 ---
 
@@ -98,7 +98,8 @@ Users must be able to download their signed waivers as PDF documents containing:
 
 ### Waiver Validity Rules
 
-- Waivers are valid for a period specified when created (e.g., 1 year)
+- Waivers are valid for a **calendar year** (expires December 31)
+- Users must re-sign at their first event registration in a new calendar year
 - Waivers can be uploaded and scheduled for future activation date
 - A new waiver version invalidates previous signatures (re-consent required)
 - Users without a current valid waiver for an event **must** sign before attending
@@ -109,6 +110,8 @@ Users must be able to download their signed waivers as PDF documents containing:
 |---------------|------------------|
 | Event in community **with** custom waiver | TrashMob waiver + Community waiver (both required) |
 | Event in community **without** custom waiver | TrashMob waiver only |
+
+**Community Waiver Matching:** An event is considered "in a community" when the event's **city and state match** the community's city and state. The system checks this location match to determine which community waiver (if any) applies.
 
 **Note:** Users may need to sign multiple waivers (e.g., both TrashMob and community waivers). Team events use the same waiver requirements as regular events (no team-specific waivers).
 
@@ -138,6 +141,7 @@ Users must be able to download their signed waivers as PDF documents containing:
 - ☐ Image/PDF upload with metadata (signer name, date, event)
 - ☐ Validation workflow for uploaded documents
 - ☐ Link uploaded waiver to user account
+- ☐ Event page admin panel for waiver management (upload, view status, bulk actions)
 
 ### Phase 4 - Event Integration
 - ☐ Event registration waiver checks
@@ -148,7 +152,7 @@ Users must be able to download their signed waivers as PDF documents containing:
 
 ### Phase 5 - Minors Support
 - ☐ Guardian consent workflow
-- ☐ Minors can't create events
+- ☐ Minor actions based on parental consent scope (e.g., event creation, team leadership)
 - ☐ Minors require adult presence at events
 - ☐ Age verification integration (with Project 23)
 
@@ -190,8 +194,10 @@ Users must be able to download their signed waivers as PDF documents containing:
 
 ### Blockers
 - **Legal review:** Must approve approach before development
-- **Project 1 (Auth):** Minors support with age verification
 - **Project 23 (Parental Consent):** Privo.com integration for minors
+
+### Related (Non-Blocking)
+- **Project 1 (Auth):** Minors support with age verification
 
 ### Enables
 - **Project 10 (Community Pages):** Community-specific waivers
@@ -521,7 +527,7 @@ public async Task<ActionResult<WaiverStatusDto>> CheckEventWaiverStatus(
 1. User clicks "Register for Event" on event page
 2. System determines required waivers:
    - TrashMob waiver (always required)
-   - Community waiver (if event is in a community with custom waiver)
+   - Community waiver (if event city/state matches a community with custom waiver)
 3. System checks if user has valid signatures for all required waivers
 4. If any waivers missing or expired:
    - Display waiver(s) with checkboxes in multi-step form
@@ -538,16 +544,32 @@ public async Task<ActionResult<WaiverStatusDto>> CheckEventWaiverStatus(
 5. System stores document immutably and links to user account
 
 **Waiver Management Pages:**
-- `/waivers` - List of waivers user has signed (viewable by signer)
-- `/waivers/{id}` - View/print specific signed waiver
 - `/admin/waivers` - Admin dashboard for all waivers
 - `/admin/waivers/create` - Create new waiver
 - `/communities/{id}/waivers` - Manage community waivers
 
+**My Dashboard - Waivers Section:**
+- New "My Waivers" card/section on user dashboard (`/mydashboard`)
+- Shows list of signed waivers with status (valid, expiring soon, expired)
+- Quick view of waiver expiry dates
+- Link to view/download each signed waiver PDF
+- Alert banner for waivers expiring within 30 days
+
+**Note:** No separate `/waivers` page needed - users view their waivers directly on their dashboard.
+
 **Event Lead View:**
 - Attendee list with waiver status indicator
-- ? Valid, ?? Expiring soon, ? Missing/Expired
+- ✓ Valid, ⚠ Expiring soon, ✗ Missing/Expired
 - Export button for waiver report
+
+**Event Page Admin Panel (for Event Lead/Community Mgr/Team Lead/Staff):**
+- "Manage Waivers" section visible to authorized users on event detail page
+- Upload signed paper waiver images/PDFs for attendees (one at a time)
+- View all attendee waiver statuses at a glance
+- Quick actions: Upload waiver, Send reminder, Mark exception
+- Audit log of all waiver uploads for this event
+
+**Note:** Bulk upload of paper waivers is out of scope for V3.
 
 ### Mobile App Changes
 
@@ -578,10 +600,10 @@ public async Task<ActionResult<WaiverStatusDto>> CheckEventWaiverStatus(
 - Event lead dashboard
 
 ### Phase 4: Minors Support (Depends on Project 1 & 23)
-- Guardian consent workflow
+- Guardian consent workflow with configurable action permissions
 - Age verification integration
-- Minor-specific restrictions
-- Adult presence validation
+- Enforce parental consent scope (what actions minor is allowed to perform)
+- Adult presence validation at events
 
 ### Phase 5: Admin & Reporting
 - Compliance dashboard
@@ -618,42 +640,53 @@ public async Task<ActionResult<WaiverStatusDto>> CheckEventWaiverStatus(
    **Decision:** Yes, both required. TrashMob waiver covers platform liability; community waiver covers local/partner requirements. Users may need to sign 2 waivers for community events.
    **Status:** ✅ Resolved
 
-2. **What's the validity period for waivers?**
-   **Recommendation:** 1 year default; configurable per waiver
-   **Owner:** Legal team + Product
-   **Due:** Before Phase 1
+2. ~~**What's the validity period for waivers?**~~
+   **Decision:** Waivers are valid for a calendar year. Users must re-sign at their first event in a new calendar year.
+   **Status:** ✅ Resolved
 
-3. **How do we handle minors who turn 18 during waiver validity?**
-   **Recommendation:** Require re-consent on birthday; automated check
-   **Owner:** Legal team
-   **Due:** Before Phase 5
+3. ~~**How do we handle minors who turn 18 during waiver validity?**~~
+   **Decision:** Require re-consent on birthday; automated check triggers new waiver signing
+   **Status:** ✅ Resolved
 
-4. **Can guardians sign for multiple minors at once?**
-   **Recommendation:** Yes, with clear UI showing each minor
-   **Owner:** Product team
-   **Due:** Before Phase 5
+4. ~~**Can guardians sign for multiple minors at once?**~~
+   **Decision:** Yes, with clear UI showing each minor
+   **Status:** ✅ Resolved
 
 5. ~~**What happens if community changes its waiver mid-year?**~~
    **Decision:** New waiver version invalidates all previous signatures. All users must re-sign the new waiver before attending events requiring it. No grandfathering.
    **Status:** ✅ Resolved
 
-6. **What immutable storage solution for signed waivers?**
-   **Recommendation:** Azure Blob Storage with immutability policies (legal hold or time-based retention)
-   **Owner:** Engineering
-   **Due:** Before Phase 1
+6. ~~**What immutable storage solution for signed waivers?**~~
+   **Decision:** Azure Blob Storage with immutability policies (legal hold or time-based retention)
+   **Status:** ✅ Resolved
 
 7. **Who can upload manually-signed paper waivers?**
    **Decision:** TrashMob staff, Community Manager, Team Leader, Event Lead
    **Status:** ✅ Resolved
 
-8. **What PDF generation library for server-side waiver PDFs?**
-   **Recommendation:** QuestPDF (modern, .NET native, free for open source) or iTextSharp
-   **Owner:** Engineering
-   **Due:** Before Phase 2
+8. ~~**What PDF generation library for server-side waiver PDFs?**~~
+   **Decision:** QuestPDF (modern, .NET native, free for open source)
+   **Status:** ✅ Resolved
 
 9. ~~**E-signature implementation approach?**~~
    **Decision:** Native click-to-accept implementation (checkbox + typed legal name + audit trail). No third-party services (DocuSign/Adobe Sign). Legally valid under ESIGN Act and UETA.
    **Status:** ✅ Resolved
+
+10. ~~**How do community admins compare waiver versions to see what changed?**~~
+    **Decision:** Provide diff view showing added/removed/changed text between versions; highlight changes clearly. Low priority feature.
+    **Status:** ✅ Resolved
+
+11. ~~**What if a user registers for events in multiple communities on the same day?**~~
+    **Decision:** Waivers are per community, not per event. User must sign each community's waiver once (valid for calendar year). Same waiver covers all events in that community.
+    **Status:** ✅ Resolved
+
+12. ~~**How do we handle team events that span community boundaries?**~~
+    **Decision:** Event location (city/state) determines the community; single community waiver applies based on event's registered location
+    **Status:** ✅ Resolved
+
+13. ~~**What accessibility accommodations must waivers support?**~~
+    **Decision:** Screen reader accessible (proper semantic HTML); plain text version available for download; large print / high contrast options; keyboard-navigable. Low priority.
+    **Status:** ✅ Resolved
 
 ---
 

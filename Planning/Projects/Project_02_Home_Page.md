@@ -290,6 +290,21 @@ No mobile app changes required (web-only improvements).
    **Owner:** UX Designer
    **Due:** Design phase
 
+6. **What personalization should logged-in users see on the home page?**
+   **Recommendation:** Show nearby events based on home location, teams user might be interested in (by location), and progress toward personal impact goals
+   **Owner:** UX Designer + Product Lead
+   **Due:** Design phase
+
+7. **What are the specific performance budget targets?**
+   **Recommendation:** LCP < 2.5s, CLS < 0.1, FID < 100ms (Core Web Vitals thresholds)
+   **Owner:** Engineering Team
+   **Due:** Before implementation
+
+8. **How do we handle CMS downtime gracefully?**
+   **Recommendation:** Cache last-known-good content with configurable TTL; show static fallback content if cache empty; add monitoring alerts for CMS availability
+   **Owner:** Engineering Team
+   **Due:** Before Phase 1
+
 ---
 
 ## Related Documents

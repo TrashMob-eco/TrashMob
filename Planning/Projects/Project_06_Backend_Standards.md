@@ -240,6 +240,18 @@ Create `CODING_STANDARDS.md`:
    **Decision:** Yes - comprehensive .editorconfig added with C#, TypeScript, formatting, and naming conventions
    **Status:** Resolved
 
+4. ~~**What are the rate limiting thresholds per endpoint category?**~~
+   **Decision:** Public endpoints: 100 req/min; Authenticated: 300 req/min; Admin: 600 req/min; adjust based on production telemetry
+   **Status:** ✅ Resolved
+
+5. ~~**What is our API deprecation policy?**~~
+   **Decision:** No external consumers - deprecate endpoints only after web and mobile apps are converted off them
+   **Status:** ✅ Resolved
+
+6. ~~**What logging level and content standards should we follow?**~~
+   **Decision:** Info for API request/response summaries; Debug for detailed processing flow; Error with full exception context and correlation ID; never log PII or credentials
+   **Status:** ✅ Resolved
+
 ---
 
 ## Related Documents

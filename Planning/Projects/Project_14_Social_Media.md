@@ -52,6 +52,8 @@ Modernize social integrations across key touchpoints with thoughtful UX. Easy sh
 - ✅ LinkedIn sharing
 - ✅ TikTok integration (if applicable)
 - ✅ WhatsApp/Messenger sharing
+- ✅ Reddit sharing
+- ✅ Discord integration (TrashMob Discord server)
 
 ---
 
@@ -149,7 +151,7 @@ public async Task<ActionResult> TrackShare([FromBody] ShareTrackRequest request)
   url={eventUrl}
   title={eventTitle}
   description={eventDescription}
-  platforms={['facebook', 'twitter', 'linkedin', 'instagram', 'whatsapp', 'copy']}
+  platforms={['facebook', 'twitter', 'linkedin', 'instagram', 'whatsapp', 'reddit', 'discord', 'copy']}
   onShare={(platform) => trackShare(platform)}
 />
 ```
@@ -217,6 +219,17 @@ public async Task<ActionResult> TrackShare([FromBody] ShareTrackRequest request)
 - Limited share API
 - QR code focus
 
+### Reddit
+- Share to subreddits (r/DeTrashed, local community subreddits)
+- Cross-post to relevant environmental/volunteer communities
+- Submit link with pre-filled title
+
+### Discord
+- TrashMob Discord server for community engagement
+- Share event links to Discord channels
+- Webhook integration for event notifications
+- Invite link on website/mobile app
+
 ---
 
 ## Open Questions
@@ -246,7 +259,7 @@ public async Task<ActionResult> TrackShare([FromBody] ShareTrackRequest request)
 
 ---
 
-**Last Updated:** January 24, 2026
+**Last Updated:** January 29, 2026
 **Owner:** Web Team
 **Status:** Not Started
 **Next Review:** When prioritized

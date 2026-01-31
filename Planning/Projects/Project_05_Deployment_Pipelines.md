@@ -38,6 +38,7 @@ Restore and modernize CI/CD pipelines to enable reliable, frequent deployments. 
 - ✅ Fix Azure Function App deployments (hourly/daily jobs)
 - ✅ Resolve secret management issues
 - ✅ Update Node.js and .NET versions in workflows
+- ☐ Automate Renovate/Dependabot PR handling (see Dependency Automation section below)
 
 ### Phase 2 - Containerization
 - ✅ Create Dockerfiles for web API project
@@ -293,6 +294,124 @@ jobs:
             --password "$APPLE_PASSWORD"
 ```
 
+### Dependency Automation Workflow
+
+**Goal:** Automatically handle Renovate and Dependabot PRs with zero manual intervention for non-breaking updates.
+
+**Workflow Steps:**
+
+1. **Renovate/Dependabot creates PR** with dependency update
+2. **CI runs full build and test suite** on the PR
+3. **If build/tests pass:**
+   - Auto-approve and merge (for patch/minor updates)
+   - For major updates: create summary comment, await manual review
+4. **If build/tests fail:**
+   - Use Claude agent to analyze the failure
+   - Agent attempts to fix breaking changes automatically
+   - Agent commits fixes to the PR branch
+   - Re-run CI to verify fixes
+   - If fixed: auto-merge; if not: flag for manual review
+
+**GitHub Actions Workflow:**
+
+```yaml
+name: Dependency Update Automation
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  check-dependency-pr:
+    if: github.actor == 'renovate[bot]' || github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build and Test
+        id: build
+        continue-on-error: true
+        run: |
+          dotnet build --configuration Release
+          dotnet test --configuration Release --no-build
+
+      - name: Auto-fix Breaking Changes
+        if: steps.build.outcome == 'failure'
+        uses: anthropics/claude-code-action@v1
+        with:
+          prompt: |
+            The dependency update PR has build/test failures.
+            Analyze the errors and fix any breaking changes.
+            Common fixes include:
+            - Updating API calls for new library versions
+            - Fixing type signature changes
+            - Updating deprecated method calls
+            - Adjusting configuration for new package versions
+            Do not change functionality, only fix compatibility issues.
+          allowed_tools: "Edit,Read,Bash"
+
+      - name: Commit Fixes
+        if: steps.build.outcome == 'failure'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --staged --quiet || git commit -m "fix: Auto-fix breaking changes from dependency update"
+          git push
+
+      - name: Re-run Build After Fixes
+        if: steps.build.outcome == 'failure'
+        run: |
+          dotnet build --configuration Release
+          dotnet test --configuration Release --no-build
+
+      - name: Auto-merge on Success
+        if: success()
+        uses: pascalgn/automerge-action@v0.16.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_METHOD: squash
+          MERGE_COMMIT_MESSAGE: "chore: Update dependencies"
+```
+
+**Configuration (renovate.json):**
+
+```json
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "automerge": true,
+  "automergeType": "pr",
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["patch", "minor"],
+      "automerge": true
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "automerge": false,
+      "labels": ["major-update", "needs-review"]
+    }
+  ],
+  "schedule": ["before 6am on Monday"]
+}
+```
+
+**Safety Checks:**
+- All tests must pass before auto-merge
+- Major version updates always require human review
+- Security updates prioritized and processed immediately
+- Failed auto-fix attempts are flagged for manual intervention
+- Maintain audit log of all automated merges
+
 ---
 
 ## Implementation Phases
@@ -302,6 +421,7 @@ jobs:
 - Fix failing builds
 - Update dependencies
 - Test deployments to staging
+- Implement Renovate/Dependabot automation with auto-fix
 
 ### Phase 2: Containerization
 - Create Dockerfiles
@@ -349,6 +469,22 @@ jobs:
    **Decision:** Semantic versioning with auto-increment build number.
    **Status:** Decided
 
+5. ~~**What is the secrets rotation policy and schedule?**~~
+   **Decision:** 90-day rotation for API keys; annual rotation for certificates; automated alerts 30 days before expiry; automate via GitHub Actions where possible
+   **Status:** ✅ Resolved
+
+6. ~~**How do we handle database migration rollback?**~~
+   **Decision:** All EF Core migrations must have a working `Down` method; test rollback in staging before production; take database snapshot before production deploys; document manual rollback procedures
+   **Status:** ✅ Resolved
+
+7. ~~**What health checks determine staged rollout progression (10% → 50% → 100%)?**~~
+   **Decision:** No staged rollout - single instance architecture currently. Revisit if scaling requirements change.
+   **Status:** ✅ Resolved
+
+8. ~~**How often do we test disaster recovery procedures?**~~
+   **Decision:** Out of scope for now. Revisit after all features shipped.
+   **Status:** ✅ Resolved
+
 ---
 
 ## Related Documents
@@ -359,7 +495,7 @@ jobs:
 
 ---
 
-**Last Updated:** January 26, 2026
+**Last Updated:** January 29, 2026
 **Owner:** DevOps/Build Engineer
 **Status:** In Progress
 **Next Review:** Regular standups during development
