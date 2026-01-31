@@ -52,11 +52,13 @@ Support parent-managed dependents or direct minor registration with age verifica
 - ✅ Limited profile visibility
 - ✅ Parent view of minor activity
 
-### Phase 4 - Family Features
-- ❓ Parent can manage multiple minors
-- ❓ Family registration flow
-- ❓ Parent approval for event registration
-- ❓ Parent notification of event participation
+### Phase 4 - Family Features (Deferred)
+- ❌ Parent can manage multiple minors (future)
+- ❌ Family registration flow (future)
+- ❌ Parent approval for event registration (future)
+- ❌ Parent notification of event participation (future)
+
+> **Note:** Phase 4 deferred to a future project. Focus on Phases 1-3 for initial minor support.
 
 ---
 
@@ -546,9 +548,9 @@ User clicks "Sign Up"
    - No location sharing
 
 3. **Event Participation:**
-   - Adult must be present at event
+   - At least one adult must be present at any event with minors (no specific ratio)
    - Parent notification of registration
-   - Optional parent approval required
+   - Parent approval for events: deferred to Phase 4 (future)
 
 4. **Data Retention:**
    - Consent artifacts per legal requirements
@@ -577,40 +579,34 @@ User clicks "Sign Up"
 - Adult presence tracking
 - Parent notification system
 
-### Phase 4: Family Features
-- Parent dashboard
-- Multiple minor management
-- Event approval workflow
-- Activity reporting
+### Phase 4: Family Features (Deferred)
+- Parent dashboard (future project)
+- Multiple minor management (future project)
+- Event approval workflow (future project)
+- Activity reporting (future project)
 
-**Note:** Legal sign-off required before Phase 1 deployment.
+**Note:** Legal sign-off required before Phase 1 deployment. Phase 4 deferred to focus on core minor safety features first.
 
 ---
 
-## Open Questions
+## Resolved Questions
 
 1. **Consent re-verification frequency?**
-   **Recommendation:** Annual re-verification; Privo handles timing
-   **Owner:** Legal + Product
-   **Due:** Before Phase 2
+   **Decision:** Annual re-verification; Privo handles timing automatically
 
 2. **Minimum adult-to-minor ratio at events?**
-   **Recommendation:** 1 adult per 5 minors; event lead discretion
-   **Owner:** Legal + Product
-   **Due:** Before Phase 3
+   **Decision:** No specific ratio enforcement; require at least 1 adult present at any event with minors
 
 3. **What if parent revokes consent?**
-   **Recommendation:** Immediate account suspension; data retention per legal
-   **Owner:** Legal
-   **Due:** Before Phase 2
+   **Decision:** Immediate account suspension; data retained per legal requirements (COPPA compliance)
 
 4. **School/organization bulk consent?**
-   **Recommendation:** Out of scope for v1; evaluate demand
-   **Owner:** Product Lead
-   **Due:** Future
+   **Decision:** Out of scope for v1; evaluate demand in future
 
-5. **Privo.com cost structure and timeline?**
-   **Recommendation:** Complete contract negotiation
+## Open Questions
+
+1. **Privo.com cost structure and timeline?**
+   **Status:** Pending contract negotiation
    **Owner:** Business Team
    **Due:** Before Phase 1
 
@@ -624,7 +620,7 @@ User clicks "Sign Up"
 
 ---
 
-**Last Updated:** January 24, 2026
+**Last Updated:** January 31, 2026
 **Owner:** Product Lead + Legal + Engineering
 **Status:** Planning in Progress
 **Next Review:** After Privo contract finalization
