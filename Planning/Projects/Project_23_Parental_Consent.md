@@ -608,6 +608,79 @@ User clicks "Sign Up"
 
 ---
 
+## Parent Account Requirements
+
+### Core Principle
+**Privo approval is sufficient for minor registration.** Parents do NOT need a TrashMob account to approve their child's participation. However, parents who create accounts unlock additional features.
+
+### Registration Scenarios
+
+| Scenario | Flow | Minor Status |
+|----------|------|--------------|
+| **Parent has no TrashMob account** | Minor registers → Parent approves via Privo email → Minor active | ✅ Fully functional |
+| **Parent creates account later** | Minor already active → Parent registers → Links to minor via email match | ✅ Enhanced features unlocked |
+| **Parent registers first** | Parent creates account → Adds minor as dependent → Minor registers with parent's email | ✅ Streamlined flow |
+| **Minor registers before parent approves** | Minor in "Pending" status → Limited access until Privo approval | ⏳ Waiting for approval |
+
+### Capability Matrix: Parent Account Requirements
+
+| Capability | No Parent Account | With Parent Account |
+|------------|-------------------|---------------------|
+| **Minor Registration** | ✅ Privo email approval sufficient | ✅ Can initiate from parent dashboard |
+| **Consent Approval** | ✅ Via Privo interface | ✅ Via Privo interface |
+| **Consent Revocation** | ✅ Via Privo interface | ✅ Via Privo OR TrashMob app |
+| **Event Registration Notifications** | ✅ Email only | ✅ Email + in-app notifications |
+| **View Minor's Activity** | ❌ Not available | ✅ Parent dashboard |
+| **View Minor's Event History** | ❌ Not available | ✅ Parent dashboard |
+| **View Minor's Metrics/Stats** | ❌ Not available | ✅ Parent dashboard |
+| **Approve Event Participation** | ❌ Not available (Phase 4) | ✅ In-app approval (Phase 4) |
+| **Manage Multiple Minors** | ❌ Not available | ✅ Single dashboard for all dependents |
+| **Update Minor's Profile** | ❌ Not available | ✅ Can edit on behalf of minor |
+| **Delete Minor's Account** | ✅ Via Privo (revoke consent) | ✅ Via Privo OR TrashMob app |
+| **Receive Minor's Achievements** | ❌ Not available | ✅ Notified of badges earned |
+| **Sign Waiver for Minor** | ✅ Via email link | ✅ Via TrashMob app |
+
+### Account Linking
+
+When a parent creates a TrashMob account after their minor is already registered:
+
+1. **Email Match:** System detects parent email matches a minor's `ParentEmail` field
+2. **Verification:** Parent confirms they are the parent of the listed minor(s)
+3. **Linking:** `User.ParentUserId` set on minor's account
+4. **Dashboard:** Parent dashboard shows linked minor(s)
+
+```csharp
+// Account linking logic
+public async Task LinkParentToMinors(Guid parentUserId, string parentEmail)
+{
+    var unlinkedMinors = await _context.Users
+        .Where(u => u.IsMinor &&
+                    u.ParentUserId == null &&
+                    u.ParentalConsents.Any(pc => pc.ParentEmail == parentEmail &&
+                                                  pc.Status == "Verified"))
+        .ToListAsync();
+
+    foreach (var minor in unlinkedMinors)
+    {
+        minor.ParentUserId = parentUserId;
+    }
+}
+```
+
+### Notifications to Non-Account Parents
+
+Parents without TrashMob accounts still receive critical notifications via email:
+
+| Notification | Delivery Method |
+|--------------|-----------------|
+| Minor registered for event | Email |
+| Event reminder (day before) | Email |
+| Event completed | Email |
+| Consent expiring (annual) | Email via Privo |
+| Waiver required | Email with sign link |
+
+---
+
 ## Implementation Phases
 
 ### Phase 1: Age Gate

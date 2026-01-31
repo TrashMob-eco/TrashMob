@@ -199,6 +199,20 @@ Once parental consent is verified, minors have access with the following protect
 - Right to deletion upon parent request
 - Consent artifacts retained per COPPA legal requirements
 
+### Parent Account Requirements
+
+**Important:** Parents do NOT need a TrashMob account to approve their minor's registration. Privo email approval is sufficient.
+
+| Scenario | Parent Account Required? | Notes |
+|----------|-------------------------|-------|
+| Minor registration approval | ❌ No | Privo email link sufficient |
+| Consent revocation | ❌ No | Can revoke via Privo |
+| View minor's activity | ✅ Yes | Requires parent dashboard |
+| Approve event participation | ✅ Yes | Future feature (Phase 4) |
+| Receive event notifications | ❌ No | Email sent regardless |
+
+If parent later creates a TrashMob account, it can be linked to their minor's account via email match, unlocking additional features like activity monitoring.
+
 ---
 
 ## 5. Integration Data Flows
