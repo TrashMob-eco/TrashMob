@@ -37,6 +37,7 @@ import { useLogin } from '@/hooks/useLogin';
 import { CreateEventSummary, GetEventSummaryById, UpdateEventSummary } from '@/services/events';
 import { GetWeightUnits } from '../../../services/weight-units';
 import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { AssociatedLitterReports } from '@/components/eventsummary/associated-litter-reports';
 
 const upsertEventSummarySchema = z.object({
     actualNumberOfAttendees: z.number(),
@@ -515,6 +516,15 @@ export const EditEventSummary = () => {
                             </div>
                         </DialogContent>
                     </Dialog>
+                </Card>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Litter Reports Cleaned</CardTitle>
+                        <CardDescription>Associate litter reports that were cleaned during this event.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <AssociatedLitterReports eventId={eventId} isOwner={isOwner} />
+                    </CardContent>
                 </Card>
                 <Card>
                     <CardHeader>
