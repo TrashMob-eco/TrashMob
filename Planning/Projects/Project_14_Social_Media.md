@@ -50,6 +50,7 @@ Modernize social integrations across key touchpoints with thoughtful UX. Easy sh
 ### Phase 3 - Platform Expansion
 - ✅ Instagram sharing (story, post)
 - ✅ LinkedIn sharing
+- ✅ Bluesky sharing
 - ✅ TikTok integration (if applicable)
 - ✅ WhatsApp/Messenger sharing
 - ✅ Reddit sharing
@@ -64,6 +65,7 @@ Modernize social integrations across key touchpoints with thoughtful UX. Easy sh
 - ❌ Social listening/monitoring
 - ❌ Influencer management
 - ❌ Paid social advertising integration
+- ❌ Social login expansion (current auth options sufficient)
 
 ---
 
@@ -151,7 +153,7 @@ public async Task<ActionResult> TrackShare([FromBody] ShareTrackRequest request)
   url={eventUrl}
   title={eventTitle}
   description={eventDescription}
-  platforms={['facebook', 'twitter', 'linkedin', 'instagram', 'whatsapp', 'reddit', 'discord', 'copy']}
+  platforms={['facebook', 'twitter', 'bluesky', 'linkedin', 'instagram', 'whatsapp', 'reddit', 'discord', 'copy']}
   onShare={(platform) => trackShare(platform)}
 />
 ```
@@ -203,6 +205,11 @@ public async Task<ActionResult> TrackShare([FromBody] ShareTrackRequest request)
 - Tweet intent URL
 - Twitter cards meta tags
 
+### Bluesky
+- Post intent URL (similar to Twitter)
+- Growing platform with environmental community
+- AT Protocol-based sharing
+
 ### Instagram
 - Stories via mobile app only
 - Link in bio tracking
@@ -234,20 +241,17 @@ public async Task<ActionResult> TrackShare([FromBody] ShareTrackRequest request)
 
 ## Open Questions
 
-1. **Priority platforms?**
-   **Recommendation:** Facebook, Twitter, LinkedIn, WhatsApp, Copy Link (core)
-   **Owner:** Marketing + Product
-   **Due:** Before Phase 1
+1. ~~**Priority platforms?**~~
+   **Decision:** All platforms equal priority: Facebook, Twitter/X, Bluesky, LinkedIn, WhatsApp, Instagram, Reddit, Discord, TikTok, Copy Link
+   **Status:** ✅ Resolved
 
-2. **Instagram story templates?**
-   **Recommendation:** Design branded story templates; implement if resources allow
-   **Owner:** Design Team
-   **Due:** Before Phase 3
+2. ~~**Instagram story templates?**~~
+   **Decision:** Design branded story templates; implement if resources allow (nice-to-have, not blocking)
+   **Status:** ✅ Resolved
 
-3. **Social login expansion?**
-   **Recommendation:** Separate from this project; tied to auth revamp
-   **Owner:** Product Lead
-   **Due:** N/A
+3. ~~**Social login expansion?**~~
+   **Decision:** Out of scope; current auth options are sufficient
+   **Status:** ✅ Resolved
 
 ---
 
@@ -259,7 +263,7 @@ public async Task<ActionResult> TrackShare([FromBody] ShareTrackRequest request)
 
 ---
 
-**Last Updated:** January 29, 2026
+**Last Updated:** January 31, 2026
 **Owner:** Web Team
 **Status:** Not Started
 **Next Review:** When prioritized
