@@ -88,6 +88,7 @@ import { SiteAdminJobOpportunityEdit } from './pages/siteadmin/job-opportunities
 import { SiteAdminEmailTemplates } from './pages/siteadmin/email-templates';
 import { SiteAdminSendNotification } from './pages/siteadmin/send-notification';
 import { SiteAdminContent } from './pages/siteadmin/content';
+import { SiteAdminLitterReports } from './pages/siteadmin/litter-reports/page';
 import { NoMatch } from './pages/nomatch';
 
 const queryClient = new QueryClient();
@@ -224,6 +225,7 @@ const AppContent: FC = () => {
                                 <Route path='users' element={<SiteAdminUsers />} />
                                 <Route path='events' element={<SiteAdminEvents />} />
                                 <Route path='partners' element={<SiteAdminPartners />} />
+                                <Route path='litter-reports' element={<SiteAdminLitterReports />} />
                                 <Route path='partner-requests' element={<SiteAdminPartnerRequests />} />
                                 <Route path='job-opportunities' element={<SiteAdminJobOpportunities />}>
                                     <Route path=':jobId/edit' element={<SiteAdminJobOpportunityEdit />} />
