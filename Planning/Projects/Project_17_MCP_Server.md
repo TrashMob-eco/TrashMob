@@ -35,7 +35,7 @@ Provide safe, privacy-aware AI access to events/metrics via Model Context Protoc
 ## Scope
 
 ### Phase 1 - Core MCP Server
-- ✅ MCP server implementation (.NET or Node.js)
+- ✅ MCP server implementation (.NET)
 - ✅ Event search tool (location, date, type)
 - ✅ Stats/metrics tool (sitewide, community)
 - ✅ Authentication via API tokens
@@ -47,10 +47,10 @@ Provide safe, privacy-aware AI access to events/metrics via Model Context Protoc
 - ✅ Partner/location search
 
 ### Phase 3 - AI Features
-- ❓ Event recommendations
-- ❓ Impact summaries
-- ❓ Volunteer activity analysis
-- ❓ Community health metrics
+- ✅ Event recommendations based on user location/history
+- ✅ Impact summaries (event, community, sitewide)
+- ✅ Volunteer activity analysis (anonymized trends)
+- ✅ Community health metrics
 
 ---
 
@@ -284,37 +284,120 @@ public class DataSanitizer
 
 ## Open Questions
 
-1. **Hosting model?**
-   **Recommendation:** Separate container app; or integrate into main API
-   **Owner:** Engineering
-   **Due:** Before Phase 1
+1. ~~**Hosting model?**~~
+   **Decision:** Separate container app for easier scaling and isolation from main API
+   **Status:** ✅ Resolved
 
-2. **Authentication mechanism?**
-   **Recommendation:** API tokens for server-to-server; OAuth for user context
-   **Owner:** Engineering
-   **Due:** Before Phase 1
+2. ~~**Authentication mechanism?**~~
+   **Decision:** API tokens only for server-to-server calls; fits MCP model better than OAuth
+   **Status:** ✅ Resolved
 
-3. **Which AI platforms to target?**
-   **Recommendation:** Claude (Anthropic), ChatGPT (OpenAI), Copilot (Microsoft)
-   **Owner:** Product Lead
-   **Due:** Before launch
+3. ~~**Which AI platforms to target?**~~
+   **Decision:** All major platforms - Claude (Anthropic), ChatGPT (OpenAI), Copilot (Microsoft), and any MCP-compatible client
+   **Status:** ✅ Resolved
 
-4. **Rate limits?**
-   **Recommendation:** 100 calls/minute per token; higher for partners
-   **Owner:** Engineering
-   **Due:** Before Phase 1
+4. ~~**Rate limits?**~~
+   **Decision:** 50 calls/minute per token (conservative); higher limits available for partners
+   **Status:** ✅ Resolved
+
+5. ~~**Implementation technology?**~~
+   **Decision:** .NET (consistent with main TrashMob backend; enables code/manager reuse)
+   **Status:** ✅ Resolved
+
+---
+
+## AI Platform Integration
+
+### How MCP Works
+
+MCP (Model Context Protocol) is an open protocol that allows AI assistants to connect to external data sources and tools. The integration model is:
+
+1. **TrashMob hosts the MCP server** - We build and deploy a server exposing tools (search_events, get_stats, etc.)
+2. **Users configure their AI client** - Users add our server URL to their AI assistant settings
+3. **AI discovers available tools** - The MCP protocol lets AI clients query what tools are available
+4. **AI calls tools as needed** - When users ask questions like "Find cleanup events near me", the AI calls our tools
+
+### Platform-Specific Integration
+
+#### Claude (Anthropic)
+- **Setup:** Users add MCP server in Claude Desktop settings or claude.ai
+- **Config location:** `~/.config/claude/mcp_servers.json` (desktop) or web settings
+- **Documentation:** [MCP Quickstart](https://modelcontextprotocol.io/quickstart)
+- **Our action:** Publish server URL and configuration instructions
+
+```json
+// Example user configuration for Claude Desktop
+{
+  "mcpServers": {
+    "trashmob": {
+      "url": "https://mcp.trashmob.eco",
+      "apiKey": "user-api-token"
+    }
+  }
+}
+```
+
+#### ChatGPT (OpenAI)
+- **Setup:** OpenAI uses "GPTs" with custom actions (similar concept, different protocol)
+- **Our action:** Create a TrashMob GPT with OpenAPI spec pointing to our API
+- **Alternative:** If OpenAI adds MCP support, same server works
+- **Documentation:** [OpenAI Actions](https://platform.openai.com/docs/actions)
+
+#### Copilot (Microsoft)
+- **Setup:** Copilot plugins/extensions
+- **Our action:** Create Copilot plugin manifest
+- **Documentation:** [Copilot Extensibility](https://learn.microsoft.com/copilot-extensibility)
+
+### What TrashMob Needs to Build
+
+| Component | Description | Required |
+|-----------|-------------|----------|
+| **MCP Server** | .NET server implementing MCP protocol | Yes |
+| **Public endpoint** | `https://mcp.trashmob.eco` or similar | Yes |
+| **API token management** | Generate/revoke tokens for users | Yes |
+| **User documentation** | How to connect from each AI platform | Yes |
+| **OpenAPI spec** | For ChatGPT/non-MCP platforms | Nice-to-have |
+
+### User Experience Flow
+
+1. **User requests API token** from TrashMob account settings
+2. **User configures AI client** with server URL + token
+3. **User asks AI** natural language questions about events
+4. **AI calls MCP tools** and returns formatted response
+5. **User clicks links** to event pages on trashmob.eco
+
+### Implementation Resources
+
+| Resource | URL | Purpose |
+|----------|-----|---------|
+| **MCP Specification** | https://modelcontextprotocol.io/specification | Protocol details |
+| **MCP .NET SDK** | https://github.com/modelcontextprotocol/csharp-sdk | .NET implementation |
+| **MCP Quickstart** | https://modelcontextprotocol.io/quickstart | Getting started guide |
+| **Example Servers** | https://github.com/modelcontextprotocol/servers | Reference implementations |
+
+### Deployment Checklist
+
+- [ ] Build MCP server with core tools (Phase 1)
+- [ ] Deploy to separate container app (`mcp.trashmob.eco`)
+- [ ] Implement API token generation in user settings
+- [ ] Write user documentation for Claude setup
+- [ ] Create OpenAPI spec for ChatGPT integration
+- [ ] Test with Claude Desktop and claude.ai
+- [ ] Announce availability to users
 
 ---
 
 ## Related Documents
 
 - **[MCP Specification](https://modelcontextprotocol.io)** - Protocol documentation
+- **[MCP .NET SDK](https://github.com/modelcontextprotocol/csharp-sdk)** - C# implementation library
+- **[MCP Servers Repository](https://github.com/modelcontextprotocol/servers)** - Example server implementations
 - **[Project 6 - Backend Standards](./Project_06_Backend_Standards.md)** - API patterns
 - **TrashMob API** - Existing endpoints to wrap
 
 ---
 
-**Last Updated:** January 24, 2026
+**Last Updated:** January 31, 2026
 **Owner:** Engineering Team
 **Status:** Not Started
 **Next Review:** When AI integration becomes priority
