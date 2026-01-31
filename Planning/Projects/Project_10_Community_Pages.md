@@ -431,25 +431,21 @@ public async Task<ActionResult<IEnumerable<CommunityProgramDto>>> GetCommunityPr
    **Owner:** Business Team
    **Due:** Before pilot launch
 
-5. **How are community boundaries defined geographically?**
-   **Recommendation:** Simple city/state matching for v1; polygon boundaries for v2 if needed for complex cases (multi-city regions, unincorporated areas)
-   **Owner:** Product Lead
-   **Due:** Before Phase 1
+5. ~~**How are community boundaries defined geographically?**~~
+   **Decision:** Simple city/state matching for v1; polygon boundaries for v2 if needed for complex cases (multi-city regions, unincorporated areas)
+   **Status:** ✅ Resolved
 
-6. **What happens to community content when subscription lapses?**
-   **Recommendation:** 30-day grace period with warning; then page shows "Inactive Community" with historical metrics preserved but no active features; full data deletion after 1 year of inactivity
-   **Owner:** Business + Product
-   **Due:** Before pilot
+6. ~~**What happens to community content when subscription lapses?**~~
+   **Decision:** 30-day grace period with warning; then page shows "Inactive Community" with historical metrics preserved but no active features; full data deletion after 1 year of inactivity
+   **Status:** ✅ Resolved
 
-7. **Can communities have multiple admin roles with different permissions?**
-   **Recommendation:** Two roles for v1: Community Admin (full access including settings, waivers, content) and Community Viewer (reports and metrics only); expand roles in v2 if needed
-   **Owner:** Product Lead
-   **Due:** Before Phase 3
+7. ~~**Can communities have multiple admin roles with different permissions?**~~
+   **Decision:** No. Single role: Community Admin (full access). Multiple people can have the admin role for a community.
+   **Status:** ✅ Resolved
 
-8. **What content guidelines apply to community uploads (logos, banners)?**
-   **Recommendation:** Same moderation rules as team photos; logos must be appropriate and non-offensive; review queue for all community branding changes; integration with Project 28
-   **Owner:** Product Lead
-   **Due:** Before Phase 2
+8. ~~**What content guidelines apply to community uploads (logos, banners)?**~~
+   **Decision:** Same moderation rules as team photos; logos must be appropriate and non-offensive; review queue for all community branding changes; integration with Project 28
+   **Status:** ✅ Resolved
 
 ---
 
