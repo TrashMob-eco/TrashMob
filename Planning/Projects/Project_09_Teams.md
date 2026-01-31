@@ -689,6 +689,10 @@ public async Task<ActionResult> ReactivateTeam(Guid teamId)
 - View team details
 - Create team events
 - "My Teams" in dashboard
+- Create and manage teams (same features as web)
+- Team membership management
+
+**Note:** TrashMob admin tools (Phase 6) are web-only. No admin functionality in the mobile app.
 
 ---
 
@@ -767,30 +771,25 @@ public async Task<ActionResult> ReactivateTeam(Guid teamId)
    **Decision:** No. Only public teams appear on leaderboards.
    **Status:** ✅ Resolved
 
-9. **What happens to historical data when a team is deleted?**
-   **Recommendation:** Preserve event history with "Team Deleted" placeholder; aggregate stats remain in system totals; soft delete preserves data for potential restoration
-   **Owner:** Engineering Team
-   **Due:** Before Phase 6
+9. ~~**What happens to historical data when a team is deleted?**~~
+    **Decision:** Teams are soft-deleted only. Event history preserved with team reference; aggregate stats remain in system totals; team can be reactivated by admin.
+    **Status:** ✅ Resolved
 
-10. **Can all team leads leave, leaving a team without leadership?**
-    **Recommendation:** No; last lead cannot leave without designating a new lead or requesting team deactivation from admin
-    **Owner:** Product Lead
-    **Due:** Before Phase 2
+10. ~~**Can all team leads leave, leaving a team without leadership?**~~
+    **Decision:** No; last lead cannot leave without designating a new lead or requesting team deactivation from admin
+    **Status:** ✅ Resolved
 
-11. **Are team names globally unique?**
-    **Recommendation:** Yes; case-insensitive uniqueness to prevent confusion and impersonation
-    **Owner:** Product Lead
-    **Due:** Before Phase 1
+11. ~~**Are team names globally unique?**~~
+    **Decision:** Yes; case-insensitive uniqueness to prevent confusion and impersonation
+    **Status:** ✅ Resolved
 
-12. **Can minors be team leads?**
-    **Recommendation:** No; team leads must be 18+ due to organizational responsibility and liability concerns
-    **Owner:** Legal + Product
-    **Due:** Before Phase 2
+12. ~~**Can minors be team leads?**~~
+    **Decision:** No; team leads must be 18+ due to organizational responsibility and liability concerns
+    **Status:** ✅ Resolved
 
-13. **How are team photos moderated?**
-    **Recommendation:** Same moderation queue as litter report images; flagged photos hidden until reviewed; integration with Project 28 (Photo Moderation)
-    **Owner:** Engineering Team
-    **Due:** Before Phase 5
+13. ~~**How are team photos moderated?**~~
+    **Decision:** Same moderation queue as litter report images; flagged photos hidden until reviewed; integration with Project 28 (Photo Moderation)
+    **Status:** ✅ Resolved
 
 ---
 
