@@ -27,11 +27,13 @@ import moment from 'moment';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { CreateEvent, GetUserEvents } from '@/services/events';
 import EventData from '@/components/Models/EventData';
+import LitterReportData from '@/components/Models/LitterReportData';
+import { AddEventLitterReport, GetEventLitterReports } from '@/services/event-litter-reports';
 import { AzureMapSearchAddressReverse, AzureMapSearchAddressReverse_Params } from '@/services/maps';
 import { useGetAzureKey } from '@/hooks/useGetAzureKey';
 import { useLogin } from '@/hooks/useLogin';
 import { useToast } from '@/hooks/use-toast';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { Badge } from '@/components/ui/badge';
 import { Loader2 } from 'lucide-react';
 
@@ -78,6 +80,10 @@ export const CreateEventPage = () => {
     const { toast } = useToast();
     const queryClient = useQueryClient();
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // Check if we're creating an event from a litter report
+    const { fromLitterReport } = (location.state || {}) as { fromLitterReport?: LitterReportData };
 
     const { data: eventTypes } = useGetEventTypes();
     const steps = [
@@ -85,12 +91,33 @@ export const CreateEventPage = () => {
         { key: 'edit-detail', label: 'Edit Detail' },
         { key: 'review', label: 'Review' },
     ];
-    const [step, setStep] = useState<string>('pick-location');
+    const [step, setStep] = useState<string>(fromLitterReport ? 'edit-detail' : 'pick-location');
+
+    const addEventLitterReport = useMutation({
+        mutationKey: AddEventLitterReport().key,
+        mutationFn: AddEventLitterReport().service,
+    });
 
     const createEvent = useMutation({
         mutationKey: CreateEvent().key,
         mutationFn: CreateEvent().service,
-        onSuccess: (data, variable) => {
+        onSuccess: async (response, variable) => {
+            // If this event was created from a litter report, associate them
+            if (fromLitterReport && response.data?.id) {
+                try {
+                    await addEventLitterReport.mutateAsync({
+                        eventId: response.data.id,
+                        litterReportId: fromLitterReport.id,
+                    });
+                    await queryClient.invalidateQueries({
+                        queryKey: GetEventLitterReports({ eventId: response.data.id }).key,
+                    });
+                } catch {
+                    // Don't fail event creation if association fails
+                    console.error('Failed to associate litter report with event');
+                }
+            }
+
             toast({
                 duration: 10000,
                 variant: 'primary',
@@ -125,6 +152,27 @@ export const CreateEventPage = () => {
     });
 
     const [previewValues, setPreviewValues] = useState<z.infer<typeof createEventSchema> | null>(null);
+
+    // Pre-populate form when creating from a litter report
+    useEffect(() => {
+        if (fromLitterReport) {
+            const firstImage = fromLitterReport.litterImages?.[0];
+            if (firstImage) {
+                form.setValue('latitude', firstImage.latitude || 0);
+                form.setValue('longitude', firstImage.longitude || 0);
+                form.setValue('streetAddress', firstImage.streetAddress || '');
+                form.setValue('city', firstImage.city || '');
+                form.setValue('region', firstImage.region || '');
+                form.setValue('country', firstImage.country || '');
+                form.setValue('postalCode', firstImage.postalCode || '');
+                form.setValue('locationConfirmed', true);
+            }
+            form.setValue('name', `Clean up: ${fromLitterReport.name || 'Reported Litter'}`);
+            if (fromLitterReport.description) {
+                form.setValue('description', fromLitterReport.description);
+            }
+        }
+    }, [fromLitterReport, form]);
 
     const saveDetail = async () => {
         // Validate location & detail

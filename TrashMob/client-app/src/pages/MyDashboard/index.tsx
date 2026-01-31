@@ -49,6 +49,7 @@ import { MyPickupRequestsTable } from '@/pages/MyDashboard/MyPickupRequestsTable
 import { MyPartnersRequestTable } from '@/pages/MyDashboard/MyPartnersRequestTable';
 import { PartnerAdminInvitationsTable } from '@/pages/MyDashboard/PartnerAdminInvitationsTable';
 import { MyLitterReportsTable } from '@/pages/MyDashboard/MyLitterReportsTable';
+import { NearbyLitterReportsWidget } from '@/pages/MyDashboard/NearbyLitterReportsWidget';
 
 const isUpcomingEvent = (event: EventData) => new Date(event.eventDate) >= new Date();
 const isPastEvent = (event: EventData) => new Date(event.eventDate) < new Date();
@@ -310,6 +311,23 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                         </div>
                     </CardContent>
                 </Card>
+
+                {currentUser.latitude && currentUser.longitude ? (
+                    <Card className='mb-4'>
+                        <CardHeader>
+                            <CardTitle className='text-primary'>Nearby Litter Reports</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <NearbyLitterReportsWidget
+                                userLocation={{
+                                    lat: currentUser.latitude,
+                                    lng: currentUser.longitude,
+                                }}
+                                radiusMiles={currentUser.travelLimitForLocalEvents || 10}
+                            />
+                        </CardContent>
+                    </Card>
+                ) : null}
 
                 <div className='flex flex-col mt-10 mb-3'>
                     <h4 className='font-semibold text-3xl mr-2 mt-0 pb-2 border-b-[3px] border-primary'>
