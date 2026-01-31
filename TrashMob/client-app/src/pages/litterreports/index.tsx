@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 import { Link } from 'react-router';
 import { ColumnDef } from '@tanstack/react-table';
-import { MapPin, Calendar, Eye } from 'lucide-react';
+import { MapPin, Calendar, Eye, Plus } from 'lucide-react';
 
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { Card, CardContent } from '@/components/ui/card';
@@ -108,6 +108,13 @@ export const LitterReportsPage = () => {
         <div>
             <HeroSection Title='Litter Reports' Description='Help us identify areas that need cleaning.' />
             <div className='container py-8'>
+                <div className='flex justify-end mb-4'>
+                    <Button asChild>
+                        <Link to='/litterreports/create'>
+                            <Plus className='h-4 w-4 mr-2' /> Report Litter
+                        </Link>
+                    </Button>
+                </div>
                 <Card>
                     <CardContent className='pt-6'>
                         {isLoading ? (
