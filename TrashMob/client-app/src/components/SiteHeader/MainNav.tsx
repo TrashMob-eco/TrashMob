@@ -10,6 +10,7 @@ export const MainNav = ({
         { name: 'Getting Started', to: '/gettingstarted' },
         ...(isUserLoaded ? [{ name: 'My Dashboard', to: '/mydashboard' }] : []),
         { name: 'Events', to: '/#events', component: 'a' },
+        { name: 'Litter Reports', to: '/litterreports' },
         { name: 'Donate', to: 'https://donate.stripe.com/14k9DN2EnfAog9O3cc' },
         { name: 'Shop', to: '/shop' },
         { name: 'Help', to: '/help' },

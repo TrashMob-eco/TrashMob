@@ -122,21 +122,23 @@ export const EventsMap = (props: EventsMapProps) => {
                 })}
 
                 {/* Litter Report Markers */}
-                {showLitterReports ? litterReportsWithLocation.map((report) => (
-                        <AdvancedMarker
-                            key={`litter-${report.id}`}
-                            ref={(el) => {
-                                litterReportMarkersRef.current[report.id] = el!;
-                            }}
-                            className={cn({
-                                'animate-[bounce_1s_both_3s]': isInViewPort,
-                            })}
-                            position={{ lat: report.latitude, lng: report.longitude }}
-                            onMouseEnter={() => handleLitterReportMarkerHover(report.id)}
-                        >
-                            <LitterReportPin color={getLitterReportColor(report.litterReportStatusId)} size={32} />
-                        </AdvancedMarker>
-                    )) : null}
+                {showLitterReports
+                    ? litterReportsWithLocation.map((report) => (
+                          <AdvancedMarker
+                              key={`litter-${report.id}`}
+                              ref={(el) => {
+                                  litterReportMarkersRef.current[report.id] = el!;
+                              }}
+                              className={cn({
+                                  'animate-[bounce_1s_both_3s]': isInViewPort,
+                              })}
+                              position={{ lat: report.latitude, lng: report.longitude }}
+                              onMouseEnter={() => handleLitterReportMarkerHover(report.id)}
+                          >
+                              <LitterReportPin color={getLitterReportColor(report.litterReportStatusId)} size={32} />
+                          </AdvancedMarker>
+                      ))
+                    : null}
 
                 {/* Event Info Window */}
                 {showingEvent ? (
