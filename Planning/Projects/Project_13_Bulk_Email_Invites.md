@@ -45,9 +45,14 @@ Enable admins, communities, and users to invite potential volunteers at scale wi
 - ✅ Custom invite templates per community
 - ✅ Tracking attribution to community
 
-### Phase 3 - User Invites
+### Phase 3 - Team Invites
+- ✅ Team leads can invite potential members
+- ✅ Custom invite templates per team
+- ✅ **Auto-add to team** when invited user accepts and signs up
+- ✅ Tracking attribution to team
+
+### Phase 4 - User Invites
 - ✅ Users can invite friends (limited batch)
-- ✅ Referral tracking
 - ✅ Invite success notifications
 
 ---
@@ -120,7 +125,7 @@ namespace TrashMob.Models
         public Guid SenderUserId { get; set; }
 
         /// <summary>
-        /// Gets or sets the batch type (Admin, Community, User).
+        /// Gets or sets the batch type (Admin, Community, Team, User).
         /// </summary>
         public string BatchType { get; set; }
 
@@ -128,6 +133,11 @@ namespace TrashMob.Models
         /// Gets or sets the community identifier (if community invite).
         /// </summary>
         public Guid? CommunityId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the team identifier (if team invite).
+        /// </summary>
+        public Guid? TeamId { get; set; }
 
         /// <summary>
         /// Gets or sets the template identifier used.
@@ -181,6 +191,7 @@ namespace TrashMob.Models
         // Navigation properties
         public virtual User SenderUser { get; set; }
         public virtual Partner Community { get; set; }
+        public virtual Team Team { get; set; }
         public virtual EmailInviteTemplate Template { get; set; }
         public virtual ICollection<EmailInvite> Invites { get; set; }
     }
@@ -252,6 +263,11 @@ namespace TrashMob.Models
         /// Gets or sets when the invited person signed up.
         /// </summary>
         public DateTimeOffset? SignedUpDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether the user was auto-added to the team.
+        /// </summary>
+        public bool AddedToTeam { get; set; }
 
         #endregion
 
@@ -326,6 +342,11 @@ namespace TrashMob.Models
         public int CommunitySent { get; set; }
 
         /// <summary>
+        /// Gets or sets team emails sent today.
+        /// </summary>
+        public int TeamSent { get; set; }
+
+        /// <summary>
         /// Gets or sets user emails sent today.
         /// </summary>
         public int UserSent { get; set; }
@@ -353,6 +374,11 @@ modelBuilder.Entity<EmailInviteBatch>(entity =>
     entity.HasOne(e => e.Community)
         .WithMany()
         .HasForeignKey(e => e.CommunityId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+    entity.HasOne(e => e.Team)
+        .WithMany()
+        .HasForeignKey(e => e.TeamId)
         .OnDelete(DeleteBehavior.NoAction);
 
     entity.HasOne(e => e.Template)
@@ -421,6 +447,16 @@ public async Task<ActionResult<InviteBatchDto>> CreateCommunityInviteBatch(
     // Similar to admin but scoped to community
 }
 
+// Team batch invites
+[Authorize(Policy = "TeamLead")]
+[HttpPost("api/teams/{teamId}/invites/batch")]
+public async Task<ActionResult<InviteBatchDto>> CreateTeamInviteBatch(
+    Guid teamId, [FromBody] CreateBatchRequest request)
+{
+    // Team lead can invite potential members
+    // Invites are tagged with TeamId for auto-add on signup
+}
+
 // User invites (limited)
 [Authorize]
 [HttpPost("api/invites")]
@@ -454,6 +490,27 @@ public async Task<ActionResult> ProcessSendGridWebhook([FromBody] SendGridEvent[
 }
 ```
 
+### Team Invite Auto-Add Flow
+
+When a team lead sends invites, the following flow ensures invited users are automatically added to the team:
+
+1. **Invite Sent:** Email contains a unique invite link with encrypted token (e.g., `/signup?invite={token}`)
+2. **Token Contains:** InviteId, TeamId, Email (encrypted/signed to prevent tampering)
+3. **User Clicks Link:** Directed to signup page with invite context
+4. **User Signs Up:**
+   - System validates token and email match
+   - Creates user account
+   - Automatically adds user to team as member
+   - Updates EmailInvite record (SignedUpUserId, SignedUpDate, AddedToTeam = true)
+5. **Notifications:**
+   - New user receives welcome + team welcome message
+   - Team lead receives notification of successful signup
+
+**Edge Cases:**
+- **Existing user clicks invite:** Prompt to login; if email matches, add to team
+- **Different email used:** Invite not auto-fulfilled; user can manually join team
+- **Token expired:** Show friendly message; allow manual signup
+
 ### Web UX Changes
 
 **Admin Dashboard:**
@@ -468,6 +525,13 @@ public async Task<ActionResult> ProcessSendGridWebhook([FromBody] SendGridEvent[
 - Community-specific templates
 - Attribution tracking
 
+**Team Lead:**
+- "Invite Members" section on team management page
+- Email paste area (up to 50 emails per batch)
+- Team-specific invite templates
+- Invite history with signup/join tracking
+- Clear indication that invitees will be auto-added to team on signup
+
 **User Dashboard:**
 - "Invite Friends" section
 - Simple email input (max 10)
@@ -475,9 +539,15 @@ public async Task<ActionResult> ProcessSendGridWebhook([FromBody] SendGridEvent[
 
 ### Mobile App Changes
 
+**All Users:**
 - Share/invite friends feature
-- Simple email input
+- Simple email input (max 10)
 - Referral link generation
+
+**Team Leads:**
+- "Invite Members" on team page
+- Email input or contact picker
+- Invite history with status tracking
 
 ---
 
@@ -495,10 +565,14 @@ public async Task<ActionResult> ProcessSendGridWebhook([FromBody] SendGridEvent[
 - Analytics dashboard
 - Cost monitoring
 
-### Phase 3: Community & User
+### Phase 3: Team Invites
+- Team lead invite UI
+- Auto-add to team on signup
+- Team attribution tracking
+
+### Phase 4: Community & User
 - Community admin invites
 - User invite feature
-- Referral tracking
 
 **Note:** Phase 1 is high priority; enables rapid volunteer acquisition.
 
@@ -506,25 +580,21 @@ public async Task<ActionResult> ProcessSendGridWebhook([FromBody] SendGridEvent[
 
 ## Open Questions
 
-1. **Daily send limits?**
-   **Recommendation:** 1000/day admin, 500/day per community, 50/month per user
-   **Owner:** Product + Finance
-   **Due:** Before Phase 1
+1. ~~**Daily send limits?**~~
+   **Decision:** 1000/day admin, 500/day per community, 100/day per team, 50/month per user
+   **Status:** ✅ Resolved
 
-2. **SendGrid plan tier?**
-   **Recommendation:** Pro plan with webhooks; monitor costs
-   **Owner:** Engineering + Finance
-   **Due:** Before Phase 1
+2. ~~**SendGrid plan tier?**~~
+   **Decision:** Pro plan with webhooks; monitor costs
+   **Status:** ✅ Resolved
 
-3. **Email template approval process?**
-   **Recommendation:** Admin templates pre-approved; community templates reviewed
-   **Owner:** Product Lead
-   **Due:** Before Phase 2
+3. ~~**Email template approval process?**~~
+   **Decision:** Self-service for all templates with post-hoc moderation if reported; reduces friction while maintaining abuse prevention through reporting mechanism
+   **Status:** ✅ Resolved
 
-4. **Referral incentives?**
-   **Recommendation:** Track only for v1; incentives TBD
-   **Owner:** Product Lead
-   **Due:** After Phase 3
+4. ~~**Referral incentives?**~~
+   **Decision:** Skip referral tracking for v1; add in future version if needed
+   **Status:** ✅ Resolved
 
 ---
 
@@ -535,7 +605,7 @@ public async Task<ActionResult> ProcessSendGridWebhook([FromBody] SendGridEvent[
 
 ---
 
-**Last Updated:** January 24, 2026
+**Last Updated:** January 31, 2026
 **Owner:** Engineering Team
 **Status:** Not Started
 **Next Review:** When prioritized
