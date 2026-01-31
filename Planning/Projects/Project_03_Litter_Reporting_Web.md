@@ -43,24 +43,24 @@ Achieve feature parity between mobile and web for litter reporting. Currently, u
 - ✅ "Litter Reports" link in main navigation - PR #2437
 
 ### Phase 2 - Creation
-- ? Create litter report form
-- ? Photo upload (single or multiple)
-- ? Location picker (map + search)
-- ? Description and severity fields
-- ? Submit and success confirmation
+- ✅ Create litter report form - PR #2442
+- ✅ Photo upload (single or multiple) - PR #2442
+- ✅ Location picker (map + search) - PR #2442
+- ✅ Description and severity fields - PR #2442
+- ✅ Submit and success confirmation - PR #2442
 
 ### Phase 3 - Management
 - ✅ Edit existing reports (creator or admin) - PR #2439
 - ✅ Delete existing reports (creator or admin) - PR #2439
 - ✅ Change status (New → Assigned → Cleaned → Cancelled) - PR #2439
-- ☐ Associate with events
+- ✅ Associate with events - PR #2445
 - ☐ Admin moderation tools
 
 ### Phase 4 - Integration
-- ☐ Weekly digest emails for new reports
-- ☐ Dashboard widget showing reports in user's area
-- ☐ Event creation from litter report (pre-populate)
-- ☐ Notifications when report is resolved
+- ✅ Weekly digest emails for new reports - PR #2451
+- ✅ Dashboard widget showing reports in user's area - PR #2451
+- ✅ Event creation from litter report (pre-populate) - PR #2451
+- ✅ Notifications when report is resolved - PR #2451
 
 ### Phase 5 - MyDashboard Integration
 - ✅ "My Litter Reports" section on MyDashboard page
@@ -69,11 +69,11 @@ Achieve feature parity between mobile and web for litter reporting. Currently, u
 - ✅ Litter report count in user's impact metrics - PR #2438
 
 ### Phase 6 - Event Summary Integration
-- ☐ Show associated litter reports on Event Summary page
-- ☐ Mark associated litter reports as "Cleaned" when submitting summary
-- ☐ Add existing litter report to event (cleaned during event but not originally associated)
-- ☐ Remove litter report association (not cleaned during this event)
-- ☐ Update report status automatically when event summary submitted
+- ✅ Show associated litter reports on Event Summary page - PR #2445
+- ✅ Mark associated litter reports as "Cleaned" when submitting summary - PR #2445
+- ✅ Add existing litter report to event (cleaned during event but not originally associated) - PR #2445
+- ✅ Remove litter report association (not cleaned during this event) - PR #2445
+- ✅ Update report status automatically when event summary submitted - PR #2452
 
 ---
 
@@ -439,13 +439,17 @@ No changes required (already implemented).
 | PR | Description | Status |
 |----|-------------|--------|
 | [#2437](https://github.com/TrashMob-eco/TrashMob/pull/2437) | Add litter report pins to home page map with toggle and legend | Merged |
-| [#2438](https://github.com/TrashMob-eco/TrashMob/pull/2438) | Add Litter Reports stat card to user dashboard | Pending |
-| [#2439](https://github.com/TrashMob-eco/TrashMob/pull/2439) | Add edit and delete functionality for litter reports | Pending |
+| [#2438](https://github.com/TrashMob-eco/TrashMob/pull/2438) | Add Litter Reports stat card to user dashboard | Merged |
+| [#2439](https://github.com/TrashMob-eco/TrashMob/pull/2439) | Add edit and delete functionality for litter reports | Merged |
+| [#2442](https://github.com/TrashMob-eco/TrashMob/pull/2442) | Add create litter report form with photo upload (Phase 2) | Merged |
+| [#2445](https://github.com/TrashMob-eco/TrashMob/pull/2445) | Add litter report association to Event Summary page (Phase 6) | Merged |
+| [#2451](https://github.com/TrashMob-eco/TrashMob/pull/2451) | Add Phase 4 integration features (Phase 4) | Merged |
+| [#2452](https://github.com/TrashMob-eco/TrashMob/pull/2452) | Auto-update litter report status on event summary submission | Pending |
 
 ### Summary
 - **Phase 1 (Viewing):** ✅ Complete - List page, detail page, map integration with toggle/legend, navigation link
-- **Phase 2 (Creation):** ☐ Not started - Create form, photo upload, location picker
-- **Phase 3 (Management):** 🔄 Partial - Edit/delete complete, event association and admin tools pending
-- **Phase 4 (Integration):** ☐ Not started - Email notifications
+- **Phase 2 (Creation):** ✅ Complete - Create form, photo upload, location picker (PR #2442)
+- **Phase 3 (Management):** 🔄 Partial - Edit/delete/status/event association complete, admin tools pending
+- **Phase 4 (Integration):** ✅ Complete - Email notifications, dashboard widget, event creation from report (PR #2451)
 - **Phase 5 (MyDashboard):** ✅ Complete - My reports section, edit/delete actions, stats metric
-- **Phase 6 (Event Summary):** ☐ Not started
+- **Phase 6 (Event Summary):** ✅ Complete - Show/add/remove litter reports, auto-update status (PRs #2445, #2452)
