@@ -148,6 +148,38 @@ public interface IPrivoService
 }
 ```
 
+### Privo Onboarding Requirements
+
+**Before Privo can begin integration work, TrashMob must provide:**
+
+| Requirement | Status | Owner |
+|-------------|--------|-------|
+| **Swim lane diagram** | ❌ Pending | Engineering |
+| **Feature set for parental consent** | ❌ Pending | Product |
+| **Business information** (name, address, website, privacy policy) | ❌ Pending | Business |
+| **Swimlane flow documentation** | ❌ Pending | Engineering |
+| **Branding assets** (logos, colors, etc.) | ❌ Pending | Marketing |
+
+**Features requiring parental consent:**
+- Newsletter subscriptions
+- In-app notifications
+- Event sign-up
+- Instant messaging (blocked for minors per Phase 3)
+- Geolocation sharing
+- Create an event
+- Photo uploads
+- Profile photo
+- Join a team
+
+**Integration data flows:**
+- Send user location to Privo after sign-up
+- Send parental waiver to parent on signup
+
+**Figma access required for Privo team:**
+- devops@privo.com
+- figmadevmode@privo.com
+- ttayloe@privo.com
+
 ---
 
 ## Implementation Plan
