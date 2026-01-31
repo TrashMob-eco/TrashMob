@@ -21,6 +21,7 @@ import twofigure from '@/components/assets/card/twofigure.svg';
 import calendarclock from '@/components/assets/card/calendarclock.svg';
 import bucketplus from '@/components/assets/card/bucketplus.svg';
 import Weight from '@/components/assets/home/Weight.svg';
+import LitterReportIcon from '@/components/assets/home/LitterReport.svg';
 import { ShareToSocialsDialog } from '@/components/EventManagement/ShareToSocialsDialog';
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { EventsMap } from '@/components/events/event-map';
@@ -132,6 +133,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
     const totalBags = stats?.totalBags || 0;
     const totalHours = stats?.totalHours || 0;
     const totalEvents = stats?.totalEvents || 0;
+    const totalLitterReports = stats?.totalLitterReportsSubmitted || 0;
 
     // Use user's weight preference (prefersMetric: true = kg, false = lbs)
     const prefersMetric = currentUser?.prefersMetric ?? false;
@@ -189,6 +191,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                         { name: 'Hours', value: totalHours, img: calendarclock },
                         { name: 'Bags', value: totalBags, img: bucketplus },
                         { name: weightLabel, value: totalWeight, img: Weight },
+                        { name: 'Litter Reports', value: totalLitterReports, img: LitterReportIcon },
                     ].map((stat) => (
                         <div
                             className='basis-full md:basis-[200px] md:max-w-[255px] md:grow bg-card px-7! relative rounded-lg'
