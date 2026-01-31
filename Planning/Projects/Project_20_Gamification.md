@@ -53,10 +53,10 @@ Drive engagement with leaderboards across roles and time ranges while preventing
 - ✅ Inter-community challenges
 
 ### Phase 4 - Achievements
-- ❓ Badge system
-- ❓ Milestones (first event, 10 events, etc.)
-- ❓ Streaks (consecutive weeks)
-- ❓ Special achievements
+- ✅ Badge system
+- ✅ Milestones (first event, 10 events, etc.)
+- ✅ Streaks (consecutive weeks)
+- ✅ Special achievements
 
 ---
 
@@ -112,6 +112,24 @@ Drive engagement with leaderboards across roles and time ranges while preventing
 ## Implementation Plan
 
 ### Data Model Changes
+
+**Modification: User (add gamification preferences)**
+```csharp
+// Add to existing TrashMob.Models/User.cs
+#region Gamification Preferences
+
+/// <summary>
+/// Gets or sets whether the user appears on public leaderboards.
+/// </summary>
+public bool ShowOnLeaderboards { get; set; } = true;
+
+/// <summary>
+/// Gets or sets whether the user receives achievement notifications.
+/// </summary>
+public bool AchievementNotificationsEnabled { get; set; } = true;
+
+#endregion
+```
 
 **New Entity: LeaderboardCache**
 ```csharp
@@ -308,6 +326,13 @@ namespace TrashMob.Models
 
 **DbContext Configuration (in MobDbContext.cs):**
 ```csharp
+modelBuilder.Entity<User>(entity =>
+{
+    // Add to existing User configuration
+    entity.Property(e => e.ShowOnLeaderboards).HasDefaultValue(true);
+    entity.Property(e => e.AchievementNotificationsEnabled).HasDefaultValue(true);
+});
+
 modelBuilder.Entity<LeaderboardCache>(entity =>
 {
     entity.HasKey(e => e.Id);
@@ -487,7 +512,7 @@ public async Task<ActionResult<IEnumerable<UserAchievementDto>>> GetUserAchievem
 
 ### Phase 1: Infrastructure
 - Database schema
-- Leaderboard computation job
+- Leaderboard computation job (daily Azure Container App job)
 - Caching strategy
 - Basic API
 
@@ -512,27 +537,53 @@ public async Task<ActionResult<IEnumerable<UserAchievementDto>>> GetUserAchievem
 
 ---
 
-## Open Questions
+## Initial Achievement Types
+
+**Milestone Achievements (Events Category):**
+| Name | Description | Criteria |
+|------|-------------|----------|
+| First Steps | Attended your first cleanup event | events_attended >= 1 |
+| Regular Volunteer | Attended 10 cleanup events | events_attended >= 10 |
+| Dedicated Volunteer | Attended 25 cleanup events | events_attended >= 25 |
+| Super Volunteer | Attended 50 cleanup events | events_attended >= 50 |
+| Cleanup Champion | Attended 100 cleanup events | events_attended >= 100 |
+
+**Milestone Achievements (Impact Category):**
+| Name | Description | Criteria |
+|------|-------------|----------|
+| Trash Collector | Collected 10 bags of trash | bags_collected >= 10 |
+| Trash Warrior | Collected 50 bags of trash | bags_collected >= 50 |
+| Trash Hero | Collected 100 bags of trash | bags_collected >= 100 |
+
+**Streak Achievements:**
+| Name | Description | Criteria |
+|------|-------------|----------|
+| Week Warrior | Attended events 2 weeks in a row | consecutive_weeks >= 2 |
+| Month of Service | Attended events 4 weeks in a row | consecutive_weeks >= 4 |
+| Quarterly Champion | Attended events 12 weeks in a row | consecutive_weeks >= 12 |
+
+**Special Achievements:**
+| Name | Description | Criteria |
+|------|-------------|----------|
+| Event Leader | Led your first cleanup event | events_led >= 1 |
+| Team Player | Joined a cleanup team | team_member = true |
+| Community Builder | Participated in a community event | community_event_attended = true |
+
+---
+
+## Resolved Questions
 
 1. **Leaderboard refresh frequency?**
-   **Recommendation:** Hourly for active time ranges; daily for historical
-   **Owner:** Engineering
-   **Due:** Before Phase 1
+   **Decision:** Daily refresh for all time ranges (simpler compute, sufficient for engagement)
 
 2. **Minimum events to appear on leaderboard?**
-   **Recommendation:** 3 events to prevent gaming with single high-impact event
-   **Owner:** Product Lead
-   **Due:** Before Phase 2
+   **Decision:** 3 events minimum (prevents gaming with single high-impact event)
 
 3. **Achievement notification preferences?**
-   **Recommendation:** Opt-in for notifications; always visible in profile
-   **Owner:** Product Lead
-   **Due:** Before Phase 4
+   **Decision:** Default on with opt-out (users receive notifications by default; can disable in preferences)
 
 4. **Opt-out of leaderboards?**
-   **Recommendation:** Yes, privacy option to hide from public leaderboards
-   **Owner:** Product Lead
-   **Due:** Before Phase 2
+   **Decision:** Yes, privacy option to hide from public leaderboards (users can still earn achievements privately)
 
 ---
 
@@ -544,7 +595,7 @@ public async Task<ActionResult<IEnumerable<UserAchievementDto>>> GetUserAchievem
 
 ---
 
-**Last Updated:** January 24, 2026
+**Last Updated:** January 31, 2026
 **Owner:** Product Lead + Engineering
 **Status:** Not Started
 **Next Review:** When dependencies complete
