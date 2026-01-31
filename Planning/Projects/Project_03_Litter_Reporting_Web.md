@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Ready for Team Review |
+| **Status** | In Progress |
 | **Priority** | Moderate |
 | **Risk** | Low |
 | **Size** | Medium |
@@ -35,11 +35,12 @@ Achieve feature parity between mobile and web for litter reporting. Currently, u
 ## Scope
 
 ### Phase 1 - Viewing
-- ? Litter reports list page with filters
-- ? Litter report detail page
-- ? Map integration (pins for report locations)
-- ? Toggle to show/hide reports on main map
-- ? Legend explaining pin colors/statuses
+- ✅ Litter reports list page with filters
+- ✅ Litter report detail page
+- ✅ Map integration (pins for report locations) - PR #2437
+- ✅ Toggle to show/hide reports on main map - PR #2437
+- ✅ Legend explaining pin colors/statuses - PR #2437
+- ✅ "Litter Reports" link in main navigation - PR #2437
 
 ### Phase 2 - Creation
 - ? Create litter report form
@@ -49,10 +50,11 @@ Achieve feature parity between mobile and web for litter reporting. Currently, u
 - ? Submit and success confirmation
 
 ### Phase 3 - Management
-- ? Edit existing reports (creator only)
-- ? Change status (New ? Assigned ? Cleaned ? Cancelled)
-- ? Associate with events
-- ? Admin moderation tools
+- ✅ Edit existing reports (creator or admin) - PR #2439
+- ✅ Delete existing reports (creator or admin) - PR #2439
+- ✅ Change status (New → Assigned → Cleaned → Cancelled) - PR #2439
+- ☐ Associate with events
+- ☐ Admin moderation tools
 
 ### Phase 4 - Integration
 - ☐ Weekly digest emails for new reports
@@ -61,10 +63,10 @@ Achieve feature parity between mobile and web for litter reporting. Currently, u
 - ☐ Notifications when report is resolved
 
 ### Phase 5 - MyDashboard Integration
-- ☐ "My Litter Reports" section on MyDashboard page
-- ☐ List of user's submitted reports with status
-- ☐ Edit/delete actions for user's own reports
-- ☐ Litter report count in user's impact metrics (alongside events attended, bags collected, etc.)
+- ✅ "My Litter Reports" section on MyDashboard page
+- ✅ List of user's submitted reports with status
+- ✅ Edit/delete actions for user's own reports - PR #2439
+- ✅ Litter report count in user's impact metrics - PR #2438
 
 ### Phase 6 - Event Summary Integration
 - ☐ Show associated litter reports on Event Summary page
@@ -424,7 +426,26 @@ No changes required (already implemented).
 
 ---
 
-**Last Updated:** January 24, 2026  
-**Owner:** Web Product Lead + UX Designer  
-**Status:** Ready for Team Review  
-**Next Review:** When development begins
+**Last Updated:** January 31, 2026
+**Owner:** Web Product Lead + UX Designer
+**Status:** In Progress
+**Next Review:** After Phase 2 (Creation) complete
+
+---
+
+## Implementation Progress
+
+### Completed PRs
+| PR | Description | Status |
+|----|-------------|--------|
+| [#2437](https://github.com/TrashMob-eco/TrashMob/pull/2437) | Add litter report pins to home page map with toggle and legend | Merged |
+| [#2438](https://github.com/TrashMob-eco/TrashMob/pull/2438) | Add Litter Reports stat card to user dashboard | Pending |
+| [#2439](https://github.com/TrashMob-eco/TrashMob/pull/2439) | Add edit and delete functionality for litter reports | Pending |
+
+### Summary
+- **Phase 1 (Viewing):** ✅ Complete - List page, detail page, map integration with toggle/legend, navigation link
+- **Phase 2 (Creation):** ☐ Not started - Create form, photo upload, location picker
+- **Phase 3 (Management):** 🔄 Partial - Edit/delete complete, event association and admin tools pending
+- **Phase 4 (Integration):** ☐ Not started - Email notifications
+- **Phase 5 (MyDashboard):** ✅ Complete - My reports section, edit/delete actions, stats metric
+- **Phase 6 (Event Summary):** ☐ Not started

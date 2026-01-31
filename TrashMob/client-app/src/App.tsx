@@ -47,6 +47,7 @@ import { PickupLocationEdit } from './pages/eventsummary/$eventId/pickup-locatio
 /** Litter Reports */
 import { LitterReportsPage } from './pages/litterreports';
 import { LitterReportDetailPage } from './pages/litterreports/$litterReportId';
+import { LitterReportEditPage } from './pages/litterreports/$litterReportId/edit';
 
 /** Partners */
 import { Partnerships } from './pages/partnerships/page';
@@ -214,6 +215,7 @@ const AppContent: FC = () => {
                             <Route path='/inviteapartner' element={<InviteAPartnerPage />} />
                             <Route path='/locationpreference' element={<LocationPreference />} />
                             <Route path='/waivers' element={<Waivers />} />
+                            <Route path='/litterreports/:litterReportId/edit' element={<LitterReportEditPage />} />
                         </Route>
                         <Route element={<AuthSideAdminLayout />}>
                             <Route path='/siteadmin' element={<SiteAdminLayout />}>

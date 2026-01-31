@@ -63,3 +63,26 @@ export const GetLitterReportImage = (params: GetLitterReportImage_Params) => ({
             method: 'get',
         }),
 });
+
+export type UpdateLitterReport_Params = { litterReport: LitterReportData };
+export type UpdateLitterReport_Response = LitterReportData;
+export const UpdateLitterReport = (params: UpdateLitterReport_Params) => ({
+    key: ['/litterreport', 'update', params.litterReport.id],
+    service: async () =>
+        ApiService('protected').fetchData<UpdateLitterReport_Response>({
+            url: '/litterreport',
+            method: 'put',
+            data: params.litterReport,
+        }),
+});
+
+export type DeleteLitterReport_Params = { litterReportId: string };
+export type DeleteLitterReport_Response = void;
+export const DeleteLitterReport = (params: DeleteLitterReport_Params) => ({
+    key: ['/litterreport', 'delete', params.litterReportId],
+    service: async () =>
+        ApiService('protected').fetchData<DeleteLitterReport_Response>({
+            url: `/litterreport/${params.litterReportId}`,
+            method: 'delete',
+        }),
+});
