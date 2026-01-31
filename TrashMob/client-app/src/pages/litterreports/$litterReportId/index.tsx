@@ -1,19 +1,30 @@
-import { useParams, Link } from 'react-router';
-import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
+import { useParams, Link, useNavigate } from 'react-router';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
-import { MapPin, Calendar, User, ArrowLeft, Image as ImageIcon } from 'lucide-react';
+import { MapPin, Calendar, User, ArrowLeft, Image as ImageIcon, Pencil, Trash2, Loader2 } from 'lucide-react';
 
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import LitterReportData from '@/components/Models/LitterReportData';
 import {
     LitterReportStatusEnum,
     LitterReportStatusLabels,
     LitterReportStatusColors,
 } from '@/components/Models/LitterReportStatus';
-import { GetLitterReport } from '@/services/litter-report';
+import { GetLitterReport, DeleteLitterReport, GetUserLitterReports } from '@/services/litter-report';
+import { useLogin } from '@/hooks/useLogin';
+import { useToast } from '@/hooks/use-toast';
 
 const formatDate = (date: Date | null) => {
     if (!date) return '-';
@@ -34,6 +45,11 @@ const getFullAddress = (image: LitterReportData['litterImages'][0]) => {
 
 export const LitterReportDetailPage = () => {
     const { litterReportId } = useParams<{ litterReportId: string }>() as { litterReportId: string };
+    const navigate = useNavigate();
+    const queryClient = useQueryClient();
+    const { currentUser, isUserLoaded } = useLogin();
+    const { toast } = useToast();
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
     const { data: litterReport, isLoading } = useQuery<AxiosResponse<LitterReportData>, unknown, LitterReportData>({
         queryKey: GetLitterReport({ litterReportId }).key,
@@ -41,6 +57,36 @@ export const LitterReportDetailPage = () => {
         select: (res) => res.data,
         enabled: !!litterReportId,
     });
+
+    const deleteMutation = useMutation({
+        mutationKey: DeleteLitterReport({ litterReportId }).key,
+        mutationFn: DeleteLitterReport({ litterReportId }).service,
+        onSuccess: async () => {
+            toast({
+                title: 'Litter report deleted',
+                description: 'The litter report has been successfully deleted.',
+            });
+            await queryClient.invalidateQueries({
+                queryKey: GetUserLitterReports({ userId: currentUser.id }).key,
+            });
+            navigate('/litterreports');
+        },
+        onError: () => {
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: 'Failed to delete the litter report. Please try again.',
+            });
+        },
+    });
+
+    const canEditOrDelete =
+        isUserLoaded && litterReport && (litterReport.createdByUserId === currentUser.id || currentUser.isSiteAdmin);
+
+    const handleDelete = () => {
+        deleteMutation.mutate();
+        setShowDeleteDialog(false);
+    };
 
     if (isLoading) {
         return (
@@ -91,9 +137,27 @@ export const LitterReportDetailPage = () => {
                             <CardHeader>
                                 <div className='flex items-center justify-between'>
                                     <CardTitle className='text-2xl'>{litterReport.name || 'Untitled Report'}</CardTitle>
-                                    <Badge variant='outline' className={`${statusColor} text-white border-0`}>
-                                        {statusLabel}
-                                    </Badge>
+                                    <div className='flex items-center gap-2'>
+                                        <Badge variant='outline' className={`${statusColor} text-white border-0`}>
+                                            {statusLabel}
+                                        </Badge>
+                                        {canEditOrDelete ? (
+                                            <>
+                                                <Button variant='outline' size='sm' asChild>
+                                                    <Link to={`/litterreports/${litterReportId}/edit`}>
+                                                        <Pencil className='h-4 w-4 mr-1' /> Edit
+                                                    </Link>
+                                                </Button>
+                                                <Button
+                                                    variant='destructive'
+                                                    size='sm'
+                                                    onClick={() => setShowDeleteDialog(true)}
+                                                >
+                                                    <Trash2 className='h-4 w-4 mr-1' /> Delete
+                                                </Button>
+                                            </>
+                                        ) : null}
+                                    </div>
                                 </div>
                             </CardHeader>
                             <CardContent>
@@ -206,6 +270,32 @@ export const LitterReportDetailPage = () => {
                         ) : null}
                     </div>
                 </div>
+
+                {/* Delete Confirmation Dialog */}
+                <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Delete Litter Report</DialogTitle>
+                            <DialogDescription>
+                                Are you sure you want to delete "{litterReport.name || 'this litter report'}"? This
+                                action cannot be undone.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter>
+                            <Button variant='outline' onClick={() => setShowDeleteDialog(false)}>
+                                Cancel
+                            </Button>
+                            <Button
+                                variant='destructive'
+                                onClick={handleDelete}
+                                disabled={deleteMutation.isPending}
+                            >
+                                {deleteMutation.isPending ? <Loader2 className='h-4 w-4 mr-1 animate-spin' /> : null}
+                                Delete
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </div>
         </div>
     );
