@@ -40,7 +40,7 @@ Model adoptable areas (roads, parks, trails) with availability and safety rules;
 - ✅ Set availability (open, adopted, unavailable)
 - ✅ Define cleanup frequency requirements
 - ✅ Safety rules and guidelines per area
-- ✅ Area categories (highway, park, trail, waterway)
+- ✅ Area categories (highway, park, trail, waterway, spot)
 
 ### Phase 2 - Team Applications
 - ✅ Teams can browse available areas
@@ -60,6 +60,7 @@ Model adoptable areas (roads, parks, trails) with availability and safety rules;
 - ✅ Delinquency reports for community admins
 - ✅ Team compliance dashboards
 - ✅ Area activity reports
+- ✅ Litter report correlation (count of litter reports within adopted area boundaries)
 - ✅ Export for physical signage updates
 
 ---
@@ -143,7 +144,7 @@ namespace TrashMob.Models
         public string Description { get; set; }
 
         /// <summary>
-        /// Gets or sets the type of area (Highway, Park, Trail, Waterway, Street).
+        /// Gets or sets the type of area (Highway, Park, Trail, Waterway, Street, Spot).
         /// </summary>
         public string AreaType { get; set; }
 
@@ -511,25 +512,25 @@ public async Task<ActionResult<IEnumerable<DelinquentAdoptionDto>>> GetDelinquen
 
 ## Open Questions
 
-1. **Standard adoption period length?**
-   **Recommendation:** 1 year with auto-renewal option
-   **Owner:** Product Lead
-   **Due:** Before Phase 2
+1. ~~**Standard adoption period length?**~~
+   **Decision:** Community-configurable; community admin selects from pick list (1, 2, 3, 4, or 5 years) when creating the program
+   **Status:** ✅ Resolved
 
-2. **Grace period for delinquency?**
-   **Recommendation:** 30 days past due before escalation
-   **Owner:** Product Lead
-   **Due:** Before Phase 3
+2. ~~**Grace period for delinquency?**~~
+   **Decision:** 30 days past due before escalation to community admin
+   **Status:** ✅ Resolved
 
-3. **Can areas be co-adopted by multiple teams?**
-   **Recommendation:** Yes, as configuration option per area
-   **Owner:** Product Lead
-   **Due:** Before Phase 2
+3. ~~**Can areas be co-adopted by multiple teams?**~~
+   **Decision:** Yes, as configuration option per area (community admin sets when creating the area)
+   **Status:** ✅ Resolved
 
-4. **Integration with physical signage?**
-   **Recommendation:** Export capability only; physical process manual
-   **Owner:** Business Team
-   **Due:** Before pilot
+4. ~~**Integration with physical signage?**~~
+   **Decision:** Future feature after community feedback; not in initial release. When implemented, may need to track: sign content, order date, posting date, removal date, inspection due date
+   **Status:** ✅ Resolved (deferred)
+
+5. ~~**How are events linked to adoptions?**~~
+   **Decision:** Manual at event creation time; if the event lead's team has adopted areas, show a dropdown to optionally select which adopted area this event is for. Selection is optional (events can exist without adoption linkage).
+   **Status:** ✅ Resolved
 
 ---
 
@@ -541,7 +542,7 @@ public async Task<ActionResult<IEnumerable<DelinquentAdoptionDto>>> GetDelinquen
 
 ---
 
-**Last Updated:** January 24, 2026
+**Last Updated:** January 31, 2026
 **Owner:** Product Lead + Web Team
 **Status:** Planning in Progress
 **Next Review:** When Project 9 & 10 near completion
