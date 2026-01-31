@@ -22,11 +22,13 @@ interface NearbyLitterReportsWidgetProps {
 }
 
 export const NearbyLitterReportsWidget = ({ userLocation, radiusMiles }: NearbyLitterReportsWidgetProps) => {
-    const { data: litterReports, isLoading } = useQuery<AxiosResponse<LitterReportData[]>, unknown, LitterReportData[]>({
-        queryKey: GetNewLitterReports().key,
-        queryFn: GetNewLitterReports().service,
-        select: (res) => res.data,
-    });
+    const { data: litterReports, isLoading } = useQuery<AxiosResponse<LitterReportData[]>, unknown, LitterReportData[]>(
+        {
+            queryKey: GetNewLitterReports().key,
+            queryFn: GetNewLitterReports().service,
+            select: (res) => res.data,
+        },
+    );
 
     // Filter reports by distance and sort by closest first
     const nearbyReports = useMemo(() => {
