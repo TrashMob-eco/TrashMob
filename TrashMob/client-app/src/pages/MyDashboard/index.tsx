@@ -15,6 +15,7 @@ import StatsData from '@/components/Models/StatsData';
 import DisplayPartnershipData from '@/components/Models/DisplayPartnershipData';
 import DisplayPartnerAdminInvitationData from '@/components/Models/DisplayPartnerAdminInvitationData';
 import DisplayPartnerLocationEventData from '@/components/Models/DisplayPartnerLocationEventServiceData';
+import LitterReportData from '@/components/Models/LitterReportData';
 
 import twofigure from '@/components/assets/card/twofigure.svg';
 import calendarclock from '@/components/assets/card/calendarclock.svg';
@@ -36,6 +37,7 @@ import { GetPartnerRequestByUserId } from '@/services/partners';
 import { GetPartnerAdminsForUser } from '@/services/admin';
 import { GetPartnerAdminInvitationsByUser } from '@/services/invitations';
 import { GetEventPickupLocationsByUser, GetPartnerLocationEventServicesByUserId } from '@/services/locations';
+import { GetUserLitterReports } from '@/services/litter-report';
 
 import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
 import { useGetUserEvents } from '@/hooks/useGetUserEvents';
@@ -45,6 +47,7 @@ import { MyPartnersTable } from '@/pages/MyDashboard/MyPartnersTable';
 import { MyPickupRequestsTable } from '@/pages/MyDashboard/MyPickupRequestsTable';
 import { MyPartnersRequestTable } from '@/pages/MyDashboard/MyPartnersRequestTable';
 import { PartnerAdminInvitationsTable } from '@/pages/MyDashboard/PartnerAdminInvitationsTable';
+import { MyLitterReportsTable } from '@/pages/MyDashboard/MyLitterReportsTable';
 
 const isUpcomingEvent = (event: EventData) => new Date(event.eventDate) >= new Date();
 const isPastEvent = (event: EventData) => new Date(event.eventDate) < new Date();
@@ -109,6 +112,13 @@ const MyDashboard: FC<MyDashboardProps> = () => {
     >({
         queryKey: GetPartnerLocationEventServicesByUserId({ userId }).key,
         queryFn: GetPartnerLocationEventServicesByUserId({ userId }).service,
+        select: (res) => res.data,
+    });
+
+    // User's Litter Reports
+    const { data: myLitterReports } = useQuery<AxiosResponse<LitterReportData[]>, unknown, LitterReportData[]>({
+        queryKey: GetUserLitterReports({ userId }).key,
+        queryFn: GetUserLitterReports({ userId }).service,
         select: (res) => res.data,
     });
 
@@ -279,6 +289,25 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                         )}
                     </CardContent>
                 </Card>
+
+                <Card className='mb-4'>
+                    <CardHeader>
+                        <div className='flex flex-row'>
+                            <CardTitle className='grow text-primary'>
+                                My Litter Reports ({(myLitterReports || []).length})
+                            </CardTitle>
+                            <Button variant='outline' size='sm' asChild>
+                                <Link to='/litterreports'>View All Reports</Link>
+                            </Button>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <div className='overflow-auto'>
+                            <MyLitterReportsTable items={myLitterReports || []} />
+                        </div>
+                    </CardContent>
+                </Card>
+
                 <div className='flex flex-col mt-10 mb-3'>
                     <h4 className='font-semibold text-3xl mr-2 mt-0 pb-2 border-b-[3px] border-primary'>
                         My Partnerships ({(myPartnerRequests || []).length + (myPartners || []).length})

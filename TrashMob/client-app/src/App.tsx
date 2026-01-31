@@ -44,6 +44,10 @@ import { EditEventSummary } from './pages/eventsummary/$eventId';
 import { PickupLocationCreate } from './pages/eventsummary/$eventId/pickup-locations.create';
 import { PickupLocationEdit } from './pages/eventsummary/$eventId/pickup-locations.$locationId.edit';
 
+/** Litter Reports */
+import { LitterReportsPage } from './pages/litterreports';
+import { LitterReportDetailPage } from './pages/litterreports/$litterReportId';
+
 /** Partners */
 import { Partnerships } from './pages/partnerships/page';
 import { BecomeAPartnerPage } from './pages/_partnerRequest/becomeapartner';
@@ -232,6 +236,8 @@ const AppContent: FC = () => {
                                 element={<PartnerRequestDetails />}
                             />
                             <Route path='/eventdetails/:eventId?' element={<EventDetails />} />
+                            <Route path='/litterreports' element={<LitterReportsPage />} />
+                            <Route path='/litterreports/:litterReportId' element={<LitterReportDetailPage />} />
                             <Route path='/partnerships' element={<Partnerships />} />
                             <Route path='/shop' element={<Shop />} />
                             <Route path='/help' element={<Help />} />
