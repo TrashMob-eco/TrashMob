@@ -491,6 +491,51 @@ public async Task<ActionResult<IEnumerable<DropLocationDto>>> GetDropLocations(G
 
 ---
 
+## Data Migration
+
+Existing events with EventSummary data need migration to populate EventAttendeeMetrics:
+
+```csharp
+// Migration logic for existing events
+foreach (var eventSummary in existingEventSummaries)
+{
+    var attendees = await GetEventAttendees(eventSummary.EventId);
+
+    if (attendees.Count == 1)
+    {
+        // Single attendee: attribute all metrics to them
+        CreateAttendeeMetrics(attendees[0], eventSummary.TotalBags, eventSummary.TotalWeight);
+    }
+    else if (attendees.Count > 1)
+    {
+        // Multiple attendees: split equally
+        var bagsPerAttendee = eventSummary.TotalBags / attendees.Count;
+        var weightPerAttendee = eventSummary.TotalWeight / attendees.Count;
+
+        foreach (var attendee in attendees)
+        {
+            CreateAttendeeMetrics(attendee, bagsPerAttendee, weightPerAttendee);
+        }
+
+        // Handle remainder as unattributed
+        var remainderBags = eventSummary.TotalBags % attendees.Count;
+        if (remainderBags > 0)
+            eventSummary.UnattributedBags = remainderBags;
+    }
+
+    // Mark migrated entries as "Approved" (already verified by lead)
+    SetStatus("Approved");
+}
+```
+
+**Migration Notes:**
+- All migrated entries marked as "Approved" status (lead already submitted the totals)
+- Fractional weights rounded; remainder stored as unattributed
+- Events with 0 attendees: metrics remain event-level only (unattributed)
+- Migration runs once during deployment; new events use new workflow
+
+---
+
 ## Resolved Questions
 
 1. **Time window for attendee submissions?**
