@@ -115,6 +115,10 @@ Let attendees enter personal stats and give leads tools to reconcile without dou
 > **Note:** This project builds on Project 7's `EventSummaryAttendee` for Phase 2 (attendee-level weight).
 > Consider whether `EventAttendeeMetrics` should replace or extend `EventSummaryAttendee`.
 
+> **Unattributed Totals:** When partial reporting occurs, unattributed totals (for non-reporting attendees)
+> are stored in `EventSummary.UnattributedBags`, `EventSummary.UnattributedWeight`, etc. The event's final
+> totals = sum of approved attendee metrics + unattributed amounts.
+
 **New Entity: EventAttendeeMetrics**
 ```csharp
 // New file: TrashMob.Models/EventAttendeeMetrics.cs
@@ -402,10 +406,13 @@ public async Task<ActionResult<IEnumerable<DropLocationDto>>> GetDropLocations(G
 - Photo upload
 
 **Event Lead Reconciliation:**
+- **Reporting status:** "3 of 10 attendees reported metrics" prominently displayed
 - List of attendee submissions
 - Comparison view (claimed vs. adjusted)
 - Quick approve/adjust actions
-- Auto-calculate totals button
+- **Unattributed totals:** Input fields for bags/weight not reported by specific attendees
+- Auto-calculate totals button (sums approved + unattributed)
+- Warning when reporting rate < 50%
 - Notes for adjustments
 
 **Event Summary Display:**
@@ -458,14 +465,20 @@ public async Task<ActionResult<IEnumerable<DropLocationDto>>> GetDropLocations(G
 
 1. **Default Behavior:**
    - If no attendee metrics: Lead enters event-level totals only
-   - If attendee metrics: Auto-sum approved entries
+   - If attendee metrics: Auto-sum approved entries + unattributed totals
 
-2. **Double Counting Prevention:**
+2. **Partial Reporting:**
+   - UI clearly displays "X of Y attendees reported metrics"
+   - Lead can enter **unattributed totals** for non-reporting attendees
+   - Event totals = Sum of approved attendee entries + unattributed amounts
+   - Warning displayed when calculating totals with < 50% reporting rate
+
+3. **Double Counting Prevention:**
    - Lead can mark entries as "shared" (e.g., two people carried same bag)
    - Adjusted values used for totals
    - Original values preserved for audit
 
-3. **Late Submissions:**
+4. **Late Submissions:**
    - Attendees can submit up to 7 days after event
    - Leads notified of new submissions
    - Late submissions don't auto-recalculate totals
