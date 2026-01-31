@@ -49,9 +49,9 @@ Communicate monthly updates with categories/opt-outs, batching/scheduling, and t
 - ✅ SendGrid integration with tracking
 
 ### Phase 3 - Team/Community
-- ❓ Team newsletters (team leads)
-- ❓ Community newsletters (community admins)
-- ❓ Newsletter preview/approval
+- ✅ Team newsletters (team leads can send directly)
+- ✅ Community newsletters (community admins can send directly)
+- ✅ Newsletter preview before sending
 
 ---
 
@@ -83,7 +83,10 @@ Communicate monthly updates with categories/opt-outs, batching/scheduling, and t
 ## Dependencies
 
 ### Blockers
-None
+None (core newsletter functionality)
+
+### Soft Dependencies
+- **Project 23 (Parental Consent):** For first name personalization - User model needs `FirstName`/`LastName` fields (can use username fallback until then)
 
 ### Enables
 - Volunteer retention
@@ -522,25 +525,32 @@ public async Task<ActionResult> ProcessNewsletterWebhook([FromBody] SendGridEven
 
 ## Open Questions
 
-1. **Newsletter frequency?**
-   **Recommendation:** Monthly sitewide; weekly digest optional
-   **Owner:** Marketing + Product
-   **Due:** Before Phase 1
+1. ~~**Newsletter frequency?**~~
+   **Decision:** Monthly sitewide newsletter only
+   **Status:** ✅ Resolved
 
-2. **Who can send team/community newsletters?**
-   **Recommendation:** Team leads, community admins with approval
-   **Owner:** Product Lead
-   **Due:** Before Phase 3
+2. ~~**Who can send team/community newsletters?**~~
+   **Decision:** Team leads and community admins can send directly without approval
+   **Status:** ✅ Resolved
 
-3. **Newsletter content guidelines?**
-   **Recommendation:** Create editorial guidelines; review process for first sends
-   **Owner:** Marketing
-   **Due:** Before Phase 2
+3. ~~**Newsletter content guidelines?**~~
+   **Decision:** Create editorial guidelines document; no formal review process
+   **Status:** ✅ Resolved
 
-4. **Personalization scope?**
-   **Recommendation:** Basic tokens (name, city) for v1; advanced later
-   **Owner:** Engineering
-   **Due:** Before Phase 2
+4. ~~**Personalization scope?**~~
+   **Decision:** Basic tokens (city, username) for v1; first name requires User model changes (see note below)
+   **Status:** ✅ Resolved
+
+5. ~~**Name personalization dependency?**~~
+   **Decision:** Currently User model only has `UserName` (display) and `City` - no first/last name fields. To use "Hi {FirstName}" personalization:
+   - Add optional `FirstName` and `LastName` fields to User model
+   - Update registration flow (web + mobile) with optional name fields
+   - Can pre-populate from identity provider claims
+   - Update privacy policy to disclose name collection
+   - For minors: Already covered by Privo.com consent (Project 23)
+   - Personalization fallback: `FirstName ?? UserName ?? "there"`
+   - **Recommendation:** Implement name fields as part of Project 23 (Parental Consent) since minors already require name display ("first name + last initial")
+   **Status:** ✅ Resolved
 
 ---
 
@@ -552,7 +562,7 @@ public async Task<ActionResult> ProcessNewsletterWebhook([FromBody] SendGridEven
 
 ---
 
-**Last Updated:** January 24, 2026
+**Last Updated:** January 31, 2026
 **Owner:** Marketing + Engineering
 **Status:** Not Started
 **Next Review:** When prioritized

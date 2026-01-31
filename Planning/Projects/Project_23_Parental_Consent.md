@@ -96,6 +96,7 @@ Support parent-managed dependents or direct minor registration with age verifica
 - Youth volunteer participation
 - Family engagement
 - School/community partnerships
+- **Project 19 (Newsletter):** First name personalization (FirstName field added to User model)
 
 ---
 
@@ -152,9 +153,23 @@ public interface IPrivoService
 
 ### Data Model Changes
 
-**Modification: User (add minor-related properties)**
+**Modification: User (add minor-related properties and optional name)**
 ```csharp
 // Add to existing TrashMob.Models/User.cs
+#region Profile (Optional Name)
+
+/// <summary>
+/// Gets or sets the user's first name (optional, for personalization).
+/// </summary>
+public string FirstName { get; set; }
+
+/// <summary>
+/// Gets or sets the user's last name (optional, required for minors per Privo).
+/// </summary>
+public string LastName { get; set; }
+
+#endregion
+
 #region Minor Support (Privo.com Integration)
 
 /// <summary>
@@ -368,6 +383,8 @@ namespace TrashMob.Models
 modelBuilder.Entity<User>(entity =>
 {
     // Add to existing User configuration
+    entity.Property(e => e.FirstName).HasMaxLength(100);
+    entity.Property(e => e.LastName).HasMaxLength(100);
     entity.Property(e => e.ConsentStatus).HasMaxLength(50);
     entity.Property(e => e.PrivoUserId).HasMaxLength(100);
 
@@ -624,7 +641,7 @@ User clicks "Sign Up"
 
 ---
 
-**Last Updated:** January 24, 2026
+**Last Updated:** January 31, 2026
 **Owner:** Product Lead + Legal + Engineering
 **Status:** Planning in Progress
 **Next Review:** After Privo contract finalization
