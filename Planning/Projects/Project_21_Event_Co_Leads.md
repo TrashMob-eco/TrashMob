@@ -112,6 +112,7 @@ None - independent feature
 // Add to existing TrashMob.Models/EventAttendee.cs
 /// <summary>
 /// Gets or sets whether this attendee is an event lead with management permissions.
+/// Maximum 5 co-leads per event enforced at API level.
 /// </summary>
 public bool IsEventLead { get; set; }
 ```
@@ -237,6 +238,7 @@ public async Task<ActionResult> InviteCoLead(
     Guid eventId, [FromBody] InviteCoLeadRequest request)
 {
     // Validate caller is event lead
+    // Check co-lead count < 5 (hard limit)
     // Create invitation
     // Send notification
 }
@@ -351,27 +353,60 @@ if (!await IsEventLeadAsync(eventId, currentUserId))
 
 ---
 
-## Open Questions
+## Account Deletion Handling
+
+When the primary event creator deletes their account:
+
+1. **For each event they created:**
+   - Query co-leads ordered by `CreatedDate` (earliest first)
+   - Promote the longest-tenured co-lead to primary creator
+   - Update `Event.CreatedByUserId` to the new primary creator
+   - Notify the new primary creator via email
+
+2. **If no co-leads exist:**
+   - Event remains with original creator reference (soft-deleted user)
+   - Event continues to function but cannot be edited
+   - Admin can assign a new lead if needed
+
+```csharp
+// User deletion hook
+public async Task HandleUserDeletionAsync(Guid userId)
+{
+    var createdEvents = await _context.Events
+        .Where(e => e.CreatedByUserId == userId)
+        .ToListAsync();
+
+    foreach (var evt in createdEvents)
+    {
+        var newLead = await _context.EventAttendees
+            .Where(ea => ea.EventId == evt.Id && ea.IsEventLead && ea.UserId != userId)
+            .OrderBy(ea => ea.CreatedDate)
+            .FirstOrDefaultAsync();
+
+        if (newLead != null)
+        {
+            evt.CreatedByUserId = newLead.UserId;
+            // Notify new primary creator
+        }
+    }
+}
+```
+
+---
+
+## Resolved Questions
 
 1. **Maximum number of co-leads per event?**
-   **Recommendation:** No hard limit; soft warning at 5
-   **Owner:** Product Lead
-   **Due:** Before Phase 3
+   **Decision:** Hard limit of 5 co-leads per event (enforced by API)
 
 2. **Can co-leads remove other co-leads?**
-   **Recommendation:** No, only primary creator can remove leads
-   **Owner:** Product Lead
-   **Due:** Before Phase 2
+   **Decision:** No, only the primary event creator can remove co-leads
 
 3. **What happens if primary creator deletes account?**
-   **Recommendation:** Promote longest-tenured co-lead automatically
-   **Owner:** Product Lead
-   **Due:** Before Phase 4
+   **Decision:** Automatically promote the longest-tenured co-lead to primary creator
 
 4. **Should co-leads be able to transfer primary role?**
-   **Recommendation:** Only primary creator can transfer; implement later
-   **Owner:** Product Lead
-   **Due:** Future phase
+   **Decision:** Only primary creator can transfer role; defer implementation to future phase
 
 ---
 
@@ -382,7 +417,7 @@ if (!await IsEventLeadAsync(eventId, currentUserId))
 
 ---
 
-**Last Updated:** January 24, 2026
+**Last Updated:** January 31, 2026
 **Owner:** Engineering Team
 **Status:** Planning in Progress
 **Next Review:** When prioritized
