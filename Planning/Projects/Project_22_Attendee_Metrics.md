@@ -54,10 +54,10 @@ Let attendees enter personal stats and give leads tools to reconcile without dou
 - ✅ Event leaderboards
 
 ### Phase 4 - Integration
-- ❓ Route association (Project 15)
-- ❓ Photo association (Project 18)
-- ❓ Gamification integration (Project 20)
-- ❓ Team roll-ups (Project 9)
+- ✅ Route association (Project 15)
+- ✅ Photo association (Project 18)
+- ✅ Gamification integration (Project 20)
+- ✅ Team roll-ups (Project 9)
 
 ---
 
@@ -200,6 +200,16 @@ namespace TrashMob.Models
         /// Gets or sets the date this entry was reviewed.
         /// </summary>
         public DateTimeOffset? ReviewedDate { get; set; }
+
+        #endregion
+
+        #region Privacy
+
+        /// <summary>
+        /// Gets or sets whether this attendee's metrics are publicly visible.
+        /// Default is true; attendee can opt-out to hide their contributions.
+        /// </summary>
+        public bool IsPublic { get; set; } = true;
 
         #endregion
 
@@ -462,27 +472,19 @@ public async Task<ActionResult<IEnumerable<DropLocationDto>>> GetDropLocations(G
 
 ---
 
-## Open Questions
+## Resolved Questions
 
 1. **Time window for attendee submissions?**
-   **Recommendation:** 7 days post-event; leads can extend
-   **Owner:** Product Lead
-   **Due:** Before Phase 1
+   **Decision:** 7 days post-event by default; event leads can extend the deadline if needed
 
 2. **Default metric values?**
-   **Recommendation:** No defaults; require entry if participating
-   **Owner:** Product Lead
-   **Due:** Before Phase 1
+   **Decision:** No defaults; require entry if participating in metrics tracking
 
 3. **Visibility of individual metrics?**
-   **Recommendation:** Public by default; privacy option to hide
-   **Owner:** Product Lead
-   **Due:** Before Phase 3
+   **Decision:** Public by default; privacy option available for attendees to hide their contributions
 
 4. **Integration with volunteer hour systems?**
-   **Recommendation:** Export feature; no direct integration for v1
-   **Owner:** Product Lead
-   **Due:** Future
+   **Decision:** Export feature only; no direct third-party integration for v1
 
 ---
 
@@ -494,7 +496,7 @@ public async Task<ActionResult<IEnumerable<DropLocationDto>>> GetDropLocations(G
 
 ---
 
-**Last Updated:** January 24, 2026
+**Last Updated:** January 31, 2026
 **Owner:** Product Lead + Engineering
 **Status:** Not Started
 **Next Review:** When Project 7 complete
