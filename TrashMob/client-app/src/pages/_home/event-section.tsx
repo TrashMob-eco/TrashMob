@@ -266,7 +266,8 @@ export const EventSection = (props: EventSectionProps) => {
                     {view === 'map' ? (
                         <>
                             {/* Legend for litter report pin colors */}
-                            {showLitterReports ? <div className='flex flex-wrap items-center gap-4 mb-3 text-sm'>
+                            {showLitterReports ? (
+                                <div className='flex flex-wrap items-center gap-4 mb-3 text-sm'>
                                     <span className='font-medium'>Litter Reports:</span>
                                     <div className='flex items-center gap-1.5'>
                                         <div
@@ -289,7 +290,8 @@ export const EventSection = (props: EventSectionProps) => {
                                         />
                                         <span>Cleaned</span>
                                     </div>
-                                </div> : null}
+                                </div>
+                            ) : null}
                             <EventsMap
                                 events={eventsWithAttendance || []}
                                 isUserLoaded={isUserLoaded}
