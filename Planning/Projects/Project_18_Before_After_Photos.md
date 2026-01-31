@@ -53,9 +53,9 @@ Empower leads to document impact visually with before and after photos. Visual p
 - ✅ Appeal process
 
 ### Phase 4 - Albums
-- ❓ Team photo albums
-- ❓ Community photo galleries
-- ❓ Featured photos on home page
+- ✅ Team photo albums
+- ✅ Community photo galleries
+- ✅ Featured photos on home page
 
 ---
 
@@ -443,25 +443,21 @@ trashmob-photos/
 
 ## Open Questions
 
-1. **Photo size limits?**
-   **Recommendation:** 10MB per photo; 20 photos per event
-   **Owner:** Engineering
-   **Due:** Before Phase 1
+1. ~~**Photo size limits?**~~
+   **Decision:** 10MB per photo; 20 photos per event - balances quality and storage costs
+   **Status:** ✅ Resolved
 
-2. **Automatic face detection/blur?**
-   **Recommendation:** Not for v1; consider Azure Cognitive Services later
-   **Owner:** Product Lead
-   **Due:** Future
+2. ~~**Automatic face detection/blur?**~~
+   **Decision:** Not for v1; consider Azure Cognitive Services in future version if needed
+   **Status:** ✅ Resolved
 
-3. **Photo retention policy?**
-   **Recommendation:** Keep indefinitely unless removed
-   **Owner:** Legal + Product
-   **Due:** Before Phase 1
+3. ~~**Photo retention policy?**~~
+   **Decision:** Keep indefinitely unless manually removed by user or admin
+   **Status:** ✅ Resolved
 
-4. **Copyright assignment?**
-   **Recommendation:** License to TrashMob in ToS; uploader retains ownership
-   **Owner:** Legal
-   **Due:** Before Phase 1
+4. ~~**Copyright assignment?**~~
+   **Decision:** License to TrashMob in ToS; uploader retains ownership but grants TrashMob rights to use photos for marketing and platform display
+   **Status:** ✅ Resolved
 
 ---
 
@@ -473,7 +469,7 @@ trashmob-photos/
 
 ---
 
-**Last Updated:** January 24, 2026
+**Last Updated:** January 31, 2026
 **Owner:** Web Team
 **Status:** Planning in Progress
 **Next Review:** When prioritized
