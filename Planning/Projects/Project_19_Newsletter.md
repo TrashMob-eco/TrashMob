@@ -49,9 +49,14 @@ Communicate monthly updates with categories/opt-outs, batching/scheduling, and t
 - ✅ SendGrid integration with tracking
 
 ### Phase 3 - Team/Community
-- ✅ Team newsletters (team leads can send directly)
+- ✅ Team newsletters (team leads can send directly to team members)
 - ✅ Community newsletters (community admins can send directly)
 - ✅ Newsletter preview before sending
+
+**Newsletter Audience Rules:**
+- **Sitewide:** All subscribed users
+- **Team:** Members of the team
+- **Community:** Users whose profile location (city + region/state) matches the community's location
 
 ---
 
