@@ -55,10 +55,13 @@ export const HeroSection = () => {
                         />
                     </div>
                     <div
-                        className={cn('flex flex-col sm:flex-row gap-3 transition-all duration-1000 ease-out delay-1000', {
-                            'opacity-100 translate-y-0': isInViewPort,
-                            'opacity-0 translate-y-10': !isInViewPort,
-                        })}
+                        className={cn(
+                            'flex flex-col sm:flex-row gap-3 transition-all duration-1000 ease-out delay-1000',
+                            {
+                                'opacity-100 translate-y-0': isInViewPort,
+                                'opacity-0 translate-y-10': !isInViewPort,
+                            },
+                        )}
                     >
                         <Button size='lg' asChild>
                             <Link to={content.primaryButtonLink}>{content.primaryButtonText}</Link>
