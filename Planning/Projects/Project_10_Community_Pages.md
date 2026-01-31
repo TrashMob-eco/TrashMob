@@ -69,6 +69,22 @@ Branded public pages for partner communities (cities, counties, organizations) w
 | Social links | URLs | Facebook, Instagram, Twitter, LinkedIn |
 | Physical address | Text | For display |
 
+### Community Page Customizable Fields (V1)
+
+| Field | Type | Notes |
+|-------|------|-------|
+| Logo | Image upload | Standard size (200x200) |
+| Hero/Banner image | Image upload | Standard dimensions |
+| Primary color | Color picker | Hex value |
+| Secondary color | Color picker | Hex value |
+| About text | Textarea | Plain text or markdown |
+| Tagline | Text | Short descriptor |
+| Contact email | Email | Required |
+| Contact phone | Text | Optional |
+| Website URL | URL | Optional |
+| Social links | URLs | Facebook, Instagram, Twitter, LinkedIn |
+| Physical address | Text | For display |
+
 ### Phase 3 - Community Admin
 - ✅ Admin dashboard for community
 - ✅ Manage community content
