@@ -15,6 +15,23 @@ export default ({ env }) => {
         max: 1, // SQLite only supports single connection for writes
       },
     },
+    mssql: {
+      connection: {
+        host: env('DATABASE_HOST'),
+        port: env.int('DATABASE_PORT', 1433),
+        database: env('DATABASE_NAME'),
+        user: env('DATABASE_USERNAME'),
+        password: env('DATABASE_PASSWORD'),
+        options: {
+          encrypt: true, // Required for Azure SQL
+          trustServerCertificate: false,
+        },
+      },
+      pool: {
+        min: env.int('DATABASE_POOL_MIN', 2),
+        max: env.int('DATABASE_POOL_MAX', 10),
+      },
+    },
   };
 
   return {

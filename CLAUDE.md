@@ -62,7 +62,7 @@ npm run build
 npm run start
 ```
 
-**Note:** Local Strapi uses SQLite for simplicity. Production uses Azure Files for persistent storage. Data created locally will not sync to deployed environments.
+**Note:** Local Strapi uses SQLite for simplicity. Deployed environments (dev/prod) use Azure SQL for persistent storage. Data created locally will not sync to deployed environments.
 
 ## Architecture Overview
 
@@ -555,7 +555,7 @@ See `Deploy/keyVault.bicep` and Project 26 documentation for technical details o
 
 ### Strapi CMS Infrastructure
 
-The Strapi CMS runs as a separate Container App (`strapi-tm-dev-westus2`) with internal-only ingress. It requires the following Key Vault secrets to be created before deployment.
+The Strapi CMS runs as a separate Container App (`ca-strapi-tm-dev-westus2`) with external ingress for admin access. It uses Azure SQL (`db-strapi-dev-westus2`) for persistent storage. The workflow automatically deploys the database and creates the SQL user.
 
 **Note:** You need the `Key Vault Secrets Officer` RBAC role to create secrets (see Key Vault Access section above).
 

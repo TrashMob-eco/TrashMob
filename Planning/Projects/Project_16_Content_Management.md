@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (PR #2364) |
+| **Status** | Complete |
 | **Priority** | Medium |
 | **Risk** | Low |
 | **Size** | Medium |
@@ -280,14 +280,14 @@ Strapi/
 - React components for new home page sections
 - Preview API endpoint for draft content
 
-### Phase 5: Database Migration (SQLite → Azure SQL)
-- Update `containerAppStrapi.bicep` to reference Azure SQL database
-- Configure connection string via Key Vault secret
-- Export content from SQLite and import to Azure SQL
-- Validate Strapi admin and API functionality
-- Remove SQLite configuration
+### Phase 5: Database Migration (SQLite → Azure SQL) ✅
+- ✅ Update `containerAppStrapi.bicep` to use Azure SQL connection string
+- ✅ Add `tedious` package to Strapi for MSSQL support
+- ✅ Update `database.ts` to support both SQLite (local) and MSSQL (deployed)
+- ✅ Update GitHub workflow to deploy database and create SQL user
+- ✅ Validate Strapi admin and API functionality
 
-**Current State:** Dev deployment uses SQLite with ephemeral storage (`DATABASE_CLIENT: 'sqlite'` in `containerAppStrapi.bicep` line 122). The `sqlDatabaseStrapi.bicep` template exists but is not wired up. Azure Files SMB has locking issues with SQLite, so database content is lost on container restart.
+**Implementation:** Deployed environments now use Azure SQL (`db-strapi-{env}-{region}`) with the `strapi-{env}` SQL user. Local development still uses SQLite for simplicity. The workflow automatically deploys the database via `sqlDatabaseStrapi.bicep` and creates the SQL user with db_owner permissions.
 
 ---
 
@@ -372,13 +372,14 @@ The following GitHub issues are tracked as part of this project:
 
 ---
 
-**Last Updated:** January 31, 2026
+**Last Updated:** February 1, 2026
 **Owner:** Engineering Team
-**Status:** In Progress (PR #2364)
-**Next Review:** After PR merge
+**Status:** Complete
+**Next Review:** N/A
 
 ---
 
 ## Changelog
 
+- **2026-02-01:** Phase 5 complete - Migrated Strapi from SQLite to Azure SQL; added tedious package; updated workflow
 - **2026-01-31:** Added Phase 5 (SQLite → Azure SQL migration); noted dev uses SQLite with ephemeral storage
