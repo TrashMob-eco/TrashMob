@@ -236,3 +236,37 @@ export const GetUserEvents = (params: GetUserEvents_Params) => ({
             method: 'get',
         }),
 });
+
+// Event Leads
+export type GetEventLeads_Params = { eventId: string };
+export type GetEventLeads_Response = UserData[];
+export const GetEventLeads = (params: GetEventLeads_Params) => ({
+    key: ['/eventattendees', params.eventId, 'leads'],
+    service: async () =>
+        ApiService('protected').fetchData<GetEventLeads_Response>({
+            url: `/eventattendees/${params.eventId}/leads`,
+            method: 'get',
+        }),
+});
+
+export type PromoteToLead_Params = { eventId: string; userId: string };
+export type PromoteToLead_Response = EventAttendeeData;
+export const PromoteToLead = () => ({
+    key: ['/eventattendees', 'promote'],
+    service: async (params: PromoteToLead_Params) =>
+        ApiService('protected').fetchData<PromoteToLead_Response>({
+            url: `/eventattendees/${params.eventId}/${params.userId}/promote`,
+            method: 'put',
+        }),
+});
+
+export type DemoteFromLead_Params = { eventId: string; userId: string };
+export type DemoteFromLead_Response = EventAttendeeData;
+export const DemoteFromLead = () => ({
+    key: ['/eventattendees', 'demote'],
+    service: async (params: DemoteFromLead_Params) =>
+        ApiService('protected').fetchData<DemoteFromLead_Response>({
+            url: `/eventattendees/${params.eventId}/${params.userId}/demote`,
+            method: 'put',
+        }),
+});
