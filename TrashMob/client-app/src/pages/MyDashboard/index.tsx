@@ -4,7 +4,7 @@ import orderBy from 'lodash/orderBy';
 import { Link, useNavigate, useLocation } from 'react-router';
 import { APIProvider } from '@vis.gl/react-google-maps';
 import { useQuery } from '@tanstack/react-query';
-import { Plus } from 'lucide-react';
+import { Plus, Users } from 'lucide-react';
 import { AxiosResponse } from 'axios';
 
 import * as SharingMessages from '@/store/SharingMessages';
@@ -16,6 +16,7 @@ import DisplayPartnershipData from '@/components/Models/DisplayPartnershipData';
 import DisplayPartnerAdminInvitationData from '@/components/Models/DisplayPartnerAdminInvitationData';
 import DisplayPartnerLocationEventData from '@/components/Models/DisplayPartnerLocationEventServiceData';
 import LitterReportData from '@/components/Models/LitterReportData';
+import TeamData from '@/components/Models/TeamData';
 
 import twofigure from '@/components/assets/card/twofigure.svg';
 import calendarclock from '@/components/assets/card/calendarclock.svg';
@@ -39,6 +40,7 @@ import { GetPartnerAdminsForUser } from '@/services/admin';
 import { GetPartnerAdminInvitationsByUser } from '@/services/invitations';
 import { GetEventPickupLocationsByUser, GetPartnerLocationEventServicesByUserId } from '@/services/locations';
 import { GetUserLitterReports } from '@/services/litter-report';
+import { GetMyTeams, GetTeamsILead } from '@/services/teams';
 
 import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
 import { useGetUserEvents } from '@/hooks/useGetUserEvents';
@@ -50,6 +52,7 @@ import { MyPartnersRequestTable } from '@/pages/MyDashboard/MyPartnersRequestTab
 import { PartnerAdminInvitationsTable } from '@/pages/MyDashboard/PartnerAdminInvitationsTable';
 import { MyLitterReportsTable } from '@/pages/MyDashboard/MyLitterReportsTable';
 import { NearbyLitterReportsWidget } from '@/pages/MyDashboard/NearbyLitterReportsWidget';
+import { MyTeamsTable } from '@/pages/MyDashboard/MyTeamsTable';
 
 const isUpcomingEvent = (event: EventData) => new Date(event.eventDate) >= new Date();
 const isPastEvent = (event: EventData) => new Date(event.eventDate) < new Date();
@@ -121,6 +124,20 @@ const MyDashboard: FC<MyDashboardProps> = () => {
     const { data: myLitterReports } = useQuery<AxiosResponse<LitterReportData[]>, unknown, LitterReportData[]>({
         queryKey: GetUserLitterReports({ userId }).key,
         queryFn: GetUserLitterReports({ userId }).service,
+        select: (res) => res.data,
+    });
+
+    // User's Teams
+    const { data: myTeams } = useQuery<AxiosResponse<TeamData[]>, unknown, TeamData[]>({
+        queryKey: GetMyTeams().key,
+        queryFn: GetMyTeams().service,
+        select: (res) => res.data,
+    });
+
+    // Teams user leads
+    const { data: teamsILead } = useQuery<AxiosResponse<TeamData[]>, unknown, TeamData[]>({
+        queryKey: GetTeamsILead().key,
+        queryFn: GetTeamsILead().service,
         select: (res) => res.data,
     });
 
@@ -293,6 +310,25 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                         ) : (
                             <EventsTable events={pastEvents} currentUser={currentUser} />
                         )}
+                    </CardContent>
+                </Card>
+
+                <Card className='mb-4'>
+                    <CardHeader>
+                        <div className='flex flex-row'>
+                            <CardTitle className='grow text-primary'>
+                                <Users className='inline-block h-5 w-5 mr-2' />
+                                My Teams ({(myTeams || []).length})
+                            </CardTitle>
+                            <Button variant='outline' size='sm' asChild>
+                                <Link to='/teams'>Browse Teams</Link>
+                            </Button>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <div className='overflow-auto'>
+                            <MyTeamsTable items={myTeams || []} teamsILead={teamsILead || []} />
+                        </div>
                     </CardContent>
                 </Card>
 
