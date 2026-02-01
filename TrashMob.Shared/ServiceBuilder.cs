@@ -78,6 +78,7 @@
             // Team managers
             services.AddScoped<ITeamManager, TeamManager>();
             services.AddScoped<ITeamMemberManager, TeamMemberManager>();
+            services.AddScoped<ITeamPhotoManager, TeamPhotoManager>();
 
             // Non-patterned
             services.AddScoped<IActiveDirectoryManager, ActiveDirectoryManager>();

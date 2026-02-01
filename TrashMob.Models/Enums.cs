@@ -217,6 +217,11 @@ namespace TrashMob.Models
         /// Image associated with a litter report.
         /// </summary>
         LitterImage = 4,
+
+        /// <summary>
+        /// Image associated with a team photo gallery.
+        /// </summary>
+        TeamPhoto = 5,
     }
 
     /// <summary>

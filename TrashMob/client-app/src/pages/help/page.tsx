@@ -248,6 +248,28 @@ const tabContents = [
                 `,
             },
             {
+                question: 'Team Photos',
+                answer: `
+                <p>Team leads can upload photos to showcase their team's cleanup activities and build community engagement.</p>
+                <h6>Uploading Photos</h6>
+                <ol class="list-decimal pl-8">
+                    <li>Go to your team's page and click "Manage Team" (you must be a team lead)</li>
+                    <li>Scroll down to the "Team Photos" section</li>
+                    <li>Click "Upload Photo" and select an image file (JPEG, PNG, etc.)</li>
+                    <li>The photo will be uploaded and appear in the gallery</li>
+                </ol>
+                <h6>Photo Guidelines</h6>
+                <ul class="list-disc pl-8">
+                    <li>Images must be less than 10MB in size</li>
+                    <li>Supported formats: JPEG, PNG, and other common image formats</li>
+                    <li>Photos are automatically resized for optimal display</li>
+                    <li>Only team leads can upload or delete photos</li>
+                </ul>
+                <h6>Viewing Photos</h6>
+                <p>Team photos are visible to anyone viewing the team's detail page. They help showcase your team's impact and can attract new members!</p>
+                `,
+            },
+            {
                 question: 'Joining a Team',
                 answer: `
                 <p>Finding and joining a team is easy:</p>
