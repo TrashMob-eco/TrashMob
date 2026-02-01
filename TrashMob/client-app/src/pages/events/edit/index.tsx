@@ -79,8 +79,13 @@ export const EditEventPage = () => {
         servicesByLocation,
     } = useEditEventPageQueries(eventId);
 
-    const { updateEvent, createEventPartnerLocationService, deleteEventPartnerLocationService, promoteToLead, demoteFromLead } =
-        useEditEventPageMutations();
+    const {
+        updateEvent,
+        createEventPartnerLocationService,
+        deleteEventPartnerLocationService,
+        promoteToLead,
+        demoteFromLead,
+    } = useEditEventPageMutations();
 
     const MAX_CO_LEADS = 5;
 
@@ -208,7 +213,7 @@ export const EditEventPage = () => {
 
     const numAttendees = (eventAttendees || []).length;
     const numLeads = (eventLeads || []).length;
-    const eventLeadIds = new Set((eventLeads || []).map(lead => lead.id));
+    const eventLeadIds = new Set((eventLeads || []).map((lead) => lead.id));
     const isEventCreator = (attendeeId: string) => event?.createdByUserId === attendeeId;
     const isLead = (attendeeId: string) => eventLeadIds.has(attendeeId);
     const canPromote = numLeads < MAX_CO_LEADS;
@@ -234,14 +239,22 @@ export const EditEventPage = () => {
                                     <div key={attendee.id} className='flex items-center justify-between space-x-4'>
                                         <div className='flex items-center space-x-2 min-w-0 flex-1'>
                                             <span className='relative flex shrink-0 overflow-hidden rounded-full h-8 w-8'>
-                                                {attendeeIsLead ? <Crown className='text-amber-500' /> : <UserRoundCheck />}
+                                                {attendeeIsLead ? (
+                                                    <Crown className='text-amber-500' />
+                                                ) : (
+                                                    <UserRoundCheck />
+                                                )}
                                             </span>
                                             <div className='grow min-w-0'>
                                                 <div className='flex items-center gap-2'>
-                                                    <p className='text-sm font-medium leading-none m-0 truncate'>{attendee.userName}</p>
-                                                    {attendeeIsLead ? <Badge variant='secondary' className='text-xs shrink-0'>
+                                                    <p className='text-sm font-medium leading-none m-0 truncate'>
+                                                        {attendee.userName}
+                                                    </p>
+                                                    {attendeeIsLead ? (
+                                                        <Badge variant='secondary' className='text-xs shrink-0'>
                                                             {attendeeIsCreator ? 'Creator' : 'Co-lead'}
-                                                        </Badge> : null}
+                                                        </Badge>
+                                                    ) : null}
                                                 </div>
                                                 <p className='text-sm text-muted-foreground m-0 truncate'>
                                                     {attendee.city} {attendee.country}
@@ -249,14 +262,20 @@ export const EditEventPage = () => {
                                             </div>
                                         </div>
                                         <div className='shrink-0'>
-                                            {!attendeeIsCreator && (
-                                                attendeeIsLead ? (
+                                            {!attendeeIsCreator &&
+                                                (attendeeIsLead ? (
                                                     <Button
                                                         size='sm'
                                                         variant='outline'
                                                         disabled={!canDemote || demoteFromLead.isPending}
-                                                        onClick={() => demoteFromLead.mutate({ eventId, userId: attendee.id })}
-                                                        title={!canDemote ? 'Cannot remove last co-lead' : 'Remove co-lead status'}
+                                                        onClick={() =>
+                                                            demoteFromLead.mutate({ eventId, userId: attendee.id })
+                                                        }
+                                                        title={
+                                                            !canDemote
+                                                                ? 'Cannot remove last co-lead'
+                                                                : 'Remove co-lead status'
+                                                        }
                                                     >
                                                         Demote
                                                     </Button>
@@ -265,13 +284,18 @@ export const EditEventPage = () => {
                                                         size='sm'
                                                         variant='outline'
                                                         disabled={!canPromote || promoteToLead.isPending}
-                                                        onClick={() => promoteToLead.mutate({ eventId, userId: attendee.id })}
-                                                        title={!canPromote ? `Maximum ${MAX_CO_LEADS} co-leads reached` : 'Promote to co-lead'}
+                                                        onClick={() =>
+                                                            promoteToLead.mutate({ eventId, userId: attendee.id })
+                                                        }
+                                                        title={
+                                                            !canPromote
+                                                                ? `Maximum ${MAX_CO_LEADS} co-leads reached`
+                                                                : 'Promote to co-lead'
+                                                        }
                                                     >
                                                         Promote
                                                     </Button>
-                                                )
-                                            )}
+                                                ))}
                                         </div>
                                     </div>
                                 );

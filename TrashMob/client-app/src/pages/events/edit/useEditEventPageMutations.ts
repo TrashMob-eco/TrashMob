@@ -3,7 +3,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router';
 import { useLogin } from '@/hooks/useLogin';
 
-import { GetUserEvents, UpdateEvent, PromoteToLead, DemoteFromLead, GetEventAttendees, GetEventLeads } from '@/services/events';
+import {
+    GetUserEvents,
+    UpdateEvent,
+    PromoteToLead,
+    DemoteFromLead,
+    GetEventAttendees,
+    GetEventLeads,
+} from '@/services/events';
 import {
     CreateEventPartnerLocationService,
     DeleteEventPartnerLocationService,
