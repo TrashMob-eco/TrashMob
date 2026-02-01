@@ -101,21 +101,26 @@ jobs:
 
           PERMISSIONS_ADDED=false
 
-          echo "Checking if Key Vault access policy already exists..."
-          EXISTING_KV_POLICY=$(az keyvault show \
-            --name ${{ env.KEY_VAULT_NAME }} \
-            --query "properties.accessPolicies[?objectId=='$PRINCIPAL_ID'].objectId" \
+          # Get Key Vault resource ID for role assignment scope
+          KEY_VAULT_ID=$(az keyvault show --name ${{ env.KEY_VAULT_NAME }} --query id -o tsv)
+
+          echo "Checking if Key Vault Secrets User role already assigned..."
+          EXISTING_KV_ROLE=$(az role assignment list \
+            --assignee $PRINCIPAL_ID \
+            --scope $KEY_VAULT_ID \
+            --role "Key Vault Secrets User" \
+            --query "[].id" \
             -o tsv)
 
-          if [ -z "$EXISTING_KV_POLICY" ]; then
-            echo "Key Vault access policy not found. Granting access..."
-            az keyvault set-policy \
-              --name ${{ env.KEY_VAULT_NAME }} \
-              --object-id $PRINCIPAL_ID \
-              --secret-permissions get list
+          if [ -z "$EXISTING_KV_ROLE" ]; then
+            echo "Key Vault role assignment not found. Granting Key Vault Secrets User role..."
+            az role assignment create \
+              --assignee $PRINCIPAL_ID \
+              --role "Key Vault Secrets User" \
+              --scope $KEY_VAULT_ID
             PERMISSIONS_ADDED=true
           else
-            echo "Key Vault access policy already exists"
+            echo "Key Vault Secrets User role already assigned"
           fi
 
           echo "Checking if Storage role assignment already exists..."

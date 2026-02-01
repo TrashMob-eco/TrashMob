@@ -95,7 +95,7 @@ jobs:
       # Note: Azure AD B2C configuration is now set via environment variables in containerApp.bicep
       # The B2C settings are public configuration values (not secrets) determined by the 'environment' parameter
 
-      - name: Grant Key Vault Access
+      - name: Grant Key Vault Access via RBAC
         run: |
           echo "Getting Container App managed identity..."
           PRINCIPAL_ID=$(az containerapp show \
@@ -105,22 +105,27 @@ jobs:
             -o tsv)
           echo "Principal ID: $PRINCIPAL_ID"
 
-          echo "Checking if Key Vault access policy already exists..."
-          EXISTING_POLICY=$(az keyvault show \
-            --name ${{ env.KEY_VAULT_NAME }} \
-            --query "properties.accessPolicies[?objectId=='$PRINCIPAL_ID'].objectId" \
+          # Get Key Vault resource ID for role assignment scope
+          KEY_VAULT_ID=$(az keyvault show --name ${{ env.KEY_VAULT_NAME }} --query id -o tsv)
+
+          echo "Checking if Key Vault Secrets User role already assigned..."
+          EXISTING_ROLE=$(az role assignment list \
+            --assignee $PRINCIPAL_ID \
+            --scope $KEY_VAULT_ID \
+            --role "Key Vault Secrets User" \
+            --query "[].id" \
             -o tsv)
 
-          if [ -z "$EXISTING_POLICY" ]; then
-            echo "Access policy not found. Granting Key Vault access..."
-            az keyvault set-policy \
-              --name ${{ env.KEY_VAULT_NAME }} \
-              --object-id $PRINCIPAL_ID \
-              --secret-permissions get list
+          if [ -z "$EXISTING_ROLE" ]; then
+            echo "Role assignment not found. Granting Key Vault Secrets User role..."
+            az role assignment create \
+              --assignee $PRINCIPAL_ID \
+              --role "Key Vault Secrets User" \
+              --scope $KEY_VAULT_ID
             echo "Waiting 30 seconds for permissions to propagate..."
             sleep 30
           else
-            echo "Access policy already exists for principal $PRINCIPAL_ID"
+            echo "Key Vault Secrets User role already assigned to principal $PRINCIPAL_ID"
           fi
 
       - name: Restart Container App

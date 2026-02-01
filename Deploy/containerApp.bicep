@@ -192,8 +192,8 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
   }
 }
 
-// Note: Key Vault access policy is granted in the GitHub workflow using Azure CLI
-// to avoid requiring the deployment identity to have Key Vault access policy permissions
+// Note: Key Vault access is granted via RBAC (Key Vault Secrets User role) in the GitHub workflow
+// See Project 26 (KeyVault RBAC Migration) for details on the RBAC authorization model
 
 output containerAppFqdn string = containerApp.properties.configuration.ingress.fqdn
 output containerAppName string = containerApp.name
