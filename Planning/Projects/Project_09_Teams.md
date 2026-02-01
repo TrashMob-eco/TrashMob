@@ -77,7 +77,7 @@ Enable users to form and join teams for recurring cleanup efforts. Teams provide
 - ✅ Teams map showing public team locations (private teams hidden)
 - ✅ List/Map view toggle on Teams page
 - ✅ Team detail pages (public teams visible to all; private teams visible to members only)
-- ☐ Photo album/gallery (future enhancement)
+- ✅ Photo album/gallery (team leads upload, visible on team detail page)
 - ✅ "My Teams" dashboard section
 
 ### Phase 6 - TrashMob Admin Tools ✅ (MVP Complete)
@@ -842,13 +842,13 @@ The Teams MVP is complete with the following functionality:
 - ✅ Team membership management (join requests, approvals, invitations, multiple leads)
 - ✅ Team events (link events to teams, view team event history)
 - ✅ Teams discovery (map view, list view, team detail pages)
+- ✅ Team photo gallery (upload, view, delete photos)
 - ✅ My Teams dashboard section
 - ✅ Site admin tools (view all teams, delete, reactivate)
 - ✅ Documentation (FAQ, Help, Getting Started)
 
 **Remaining for Future Enhancements:**
-- Team logo/photo upload
-- Photo album/gallery
+- Team logo upload (single team avatar/logo distinct from photo gallery)
 - Detailed metrics with sparkline charts (bags, hours, weight trends)
 - Advanced admin moderation tools
 - Team leaderboards (depends on Project 20)
