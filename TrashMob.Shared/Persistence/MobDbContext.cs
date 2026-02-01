@@ -1828,13 +1828,13 @@
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.UserFeedbackSubmitted)
                     .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.SetNull)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_UserFeedback_User");
 
                 entity.HasOne(d => d.ReviewedByUser)
                     .WithMany(p => p.UserFeedbackReviewed)
                     .HasForeignKey(d => d.ReviewedByUserId)
-                    .OnDelete(DeleteBehavior.SetNull)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_UserFeedback_ReviewedByUser");
 
                 entity.HasOne(d => d.CreatedByUser)
