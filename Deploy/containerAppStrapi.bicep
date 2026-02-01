@@ -6,7 +6,7 @@ param containerImage string
 param storageAccountName string
 param environment string
 param minReplicas int = 1
-param maxReplicas int = 1  // SQLite requires single replica
+param maxReplicas int = 3  // Azure SQL supports multiple replicas
 
 // Strapi secrets
 @secure()
@@ -17,6 +17,13 @@ param strapiApiTokenSalt string
 param strapiAppKeys string
 @secure()
 param strapiTransferTokenSalt string
+@secure()
+param strapiDbPassword string
+
+// Database settings
+var sqlServerName = 'sql-tm-${environment}-${region}'
+var databaseName = 'db-strapi-${environment}-${region}'
+var dbUsername = 'strapi-${environment}'
 
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' existing = {
   name: containerRegistryName
@@ -26,7 +33,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing 
   name: storageAccountName
 }
 
-// Create file share for Strapi uploads (SQLite uses local ephemeral storage due to SMB locking issues)
+// Create file share for Strapi uploads
 resource fileServices 'Microsoft.Storage/storageAccounts/fileServices@2023-01-01' existing = {
   parent: storageAccount
   name: 'default'
@@ -105,6 +112,10 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
           name: 'transfer-token-salt'
           value: strapiTransferTokenSalt
         }
+        {
+          name: 'db-password'
+          value: strapiDbPassword
+        }
       ]
     }
     template: {
@@ -119,7 +130,27 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
           env: [
             {
               name: 'DATABASE_CLIENT'
-              value: 'sqlite'  // SQLite uses local ephemeral storage (Azure Files SMB has locking issues)
+              value: 'mssql'  // Azure SQL Server
+            }
+            {
+              name: 'DATABASE_HOST'
+              value: '${sqlServerName}${az.environment().suffixes.sqlServerHostname}'
+            }
+            {
+              name: 'DATABASE_PORT'
+              value: '1433'
+            }
+            {
+              name: 'DATABASE_NAME'
+              value: databaseName
+            }
+            {
+              name: 'DATABASE_USERNAME'
+              value: dbUsername
+            }
+            {
+              name: 'DATABASE_PASSWORD'
+              secretRef: 'db-password'
             }
             {
               name: 'ADMIN_JWT_SECRET'
