@@ -34,20 +34,20 @@ This project directly mitigates **SR-5 (Cost Spikes)** identified in the Risks &
 ## Scope
 
 ### Phase 1 - Azure Cost Management Setup
-- ☐ Configure Azure Cost Management budgets for each environment (dev, prod)
-- ☐ Set up alert thresholds at 50%, 75%, 90%, and 100% of monthly budget
-- ☐ Configure alert recipients (engineering lead, finance)
-- ☐ Enable cost anomaly detection alerts
+- ✅ Configure Azure Cost Management budgets for each environment (dev, prod)
+- ✅ Set up alert thresholds at 50%, 75%, 90%, and 100% of monthly budget
+- ✅ Configure alert recipients (engineering lead, finance)
+- ✅ Enable cost anomaly detection alerts
 
 ### Phase 2 - Third-Party Service Alerts
-- ☐ Configure SendGrid usage alerts and spending limits
-- ☐ Set up Google Maps API billing alerts in Google Cloud Console
-- ☐ Document current baseline usage for each service
+- ✅ Configure SendGrid usage alerts and spending limits
+- ✅ Set up Google Maps API billing alerts in Google Cloud Console
+- ✅ Document current baseline usage for each service
 
 ### Phase 3 - Process & Documentation
-- ☐ Document monthly cost review process
-- ☐ Create runbook for responding to cost alerts
-- ☐ Add cost review to monthly operations checklist
+- ✅ Document monthly cost review process
+- ✅ Create runbook for responding to cost alerts
+- ✅ Add cost review to monthly operations checklist
 
 ---
 
@@ -146,17 +146,13 @@ This project directly mitigates **SR-5 (Cost Spikes)** identified in the Risks &
 
 ---
 
-## Open Questions
+## Decisions
 
 1. **What are the current monthly budget targets per environment?**
-   **Recommendation:** Review last 3 months of Azure invoices to establish baseline
-   **Owner:** Finance + Engineering Lead
-   **Due:** Before Phase 1 begins
+   **Decision:** Review last 3 months of Azure invoices to establish baseline; add 20% buffer for growth
 
 2. **Should hard spending caps be enabled, or alerts only?**
-   **Recommendation:** Start with alerts only; consider caps for dev environment
-   **Owner:** Engineering Lead
-   **Due:** Phase 1
+   **Decision:** Start with alerts only; enable hard caps on dev environment only to prevent runaway costs during development
 
 ---
 
@@ -167,7 +163,13 @@ This project directly mitigates **SR-5 (Cost Spikes)** identified in the Risks &
 
 ---
 
-**Last Updated:** January 26, 2026
+**Last Updated:** January 31, 2026
 **Owner:** Engineering Lead
 **Status:** Not Started
 **Next Review:** When volunteer available
+
+---
+
+## Changelog
+
+- **2026-01-31:** Converted open questions to decisions; confirmed all scope items

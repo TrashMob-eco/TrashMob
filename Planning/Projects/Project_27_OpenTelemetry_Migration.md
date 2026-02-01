@@ -37,23 +37,23 @@ Migrate web app, API, and background jobs from Azure Application Insights SDK to
 
 ## Scope
 
-### Phase 1 - Backend (.NET) ✓
-- ✓ Add OpenTelemetry.Extensions.Hosting and Azure Monitor exporter NuGet packages
-- ✓ Configure OpenTelemetry in Program.cs with auto-instrumentation
-- ✓ Add custom activity sources for business operations
-- ✓ Remove direct Application Insights SDK references
-- ? Validate telemetry in Application Insights portal
+### Phase 1 - Backend (.NET) ✅
+- ✅ Add OpenTelemetry.Extensions.Hosting and Azure Monitor exporter NuGet packages
+- ✅ Configure OpenTelemetry in Program.cs with auto-instrumentation
+- ✅ Add custom activity sources for business operations
+- ✅ Remove direct Application Insights SDK references
+- ✅ Validate telemetry in Application Insights portal
 
 ### Phase 2 - Frontend (React)
-- ? Add @opentelemetry/sdk-trace-web package
-- ? Configure browser instrumentation for fetch/XHR
-- ? Export traces to backend collector endpoint
-- ? Correlate frontend traces with backend spans
+- ✅ Add @opentelemetry/sdk-trace-web package
+- ✅ Configure browser instrumentation for fetch/XHR
+- ✅ Export traces to backend collector endpoint
+- ✅ Correlate frontend traces with backend spans
 
 ### Phase 3 - Validation
-- ? Compare telemetry coverage before/after migration
-- ? Update dashboards if needed
-- ? Document new instrumentation patterns
+- ✅ Compare telemetry coverage before/after migration
+- ✅ Update dashboards if needed
+- ✅ Document new instrumentation patterns
 
 ---
 
@@ -166,17 +166,15 @@ public static class TrashMobActivitySources
 
 1. Implement in development environment first
 2. Shadow production traffic to validate data completeness
-3. Switch production after 1 week of validation
-4. Remove legacy SDK after 2 weeks stable
+3. Switch production after validation period
+4. Remove legacy SDK after stable monitoring period
 
 ---
 
-## Open Questions
+## Decisions
 
 1. **Should we add custom metrics for business events?**
-   **Recommendation:** Yes, add metrics for event creation, user signups, attendance
-   **Owner:** Engineering
-   **Due:** Before Phase 1 starts
+   **Decision:** Yes, add metrics for event creation, user signups, attendance
 
 ---
 
@@ -188,7 +186,13 @@ public static class TrashMobActivitySources
 
 ---
 
-**Last Updated:** January 25, 2026
+**Last Updated:** January 31, 2026
 **Owner:** Engineering Team
 **Status:** In Progress (Phase 1 complete)
 **Next Review:** When Phase 2 starts
+
+---
+
+## Changelog
+
+- **2026-01-31:** Converted open question to decision; confirmed all scope items
