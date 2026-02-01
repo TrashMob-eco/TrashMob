@@ -103,33 +103,31 @@ export function FeedbackWidget() {
             {/* Floating feedback button */}
             <Button
                 onClick={handleOpen}
-                className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-shadow"
-                size="icon"
-                aria-label="Send feedback"
+                className='fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-shadow'
+                size='icon'
+                aria-label='Send feedback'
             >
-                <MessageSquarePlus className="h-6 w-6" />
+                <MessageSquarePlus className='h-6 w-6' />
             </Button>
 
             {/* Feedback dialog */}
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent className='sm:max-w-[425px]'>
                     <DialogHeader>
                         <DialogTitle>Send Feedback</DialogTitle>
-                        <DialogDescription>
-                            Help us improve TrashMob.eco! Your feedback is valuable.
-                        </DialogDescription>
+                        <DialogDescription>Help us improve TrashMob.eco! Your feedback is valuable.</DialogDescription>
                     </DialogHeader>
 
                     {submitStatus === 'success' ? (
-                        <div className="flex flex-col items-center justify-center py-8 text-center">
-                            <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
-                            <h3 className="text-lg font-semibold">Thank you!</h3>
-                            <p className="text-muted-foreground">Your feedback has been submitted.</p>
+                        <div className='flex flex-col items-center justify-center py-8 text-center'>
+                            <CheckCircle className='h-16 w-16 text-green-500 mb-4' />
+                            <h3 className='text-lg font-semibold'>Thank you!</h3>
+                            <p className='text-muted-foreground'>Your feedback has been submitted.</p>
                         </div>
                     ) : (
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="category">Category *</Label>
+                        <form onSubmit={handleSubmit} className='space-y-4'>
+                            <div className='space-y-2'>
+                                <Label htmlFor='category'>Category *</Label>
                                 <Select
                                     value={feedback.category}
                                     onValueChange={(value) =>
@@ -137,7 +135,7 @@ export function FeedbackWidget() {
                                     }
                                 >
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Select a category" />
+                                        <SelectValue placeholder='Select a category' />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {(Object.keys(categoryLabels) as FeedbackCategory[]).map((cat) => (
@@ -149,48 +147,48 @@ export function FeedbackWidget() {
                                 </Select>
                             </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="description">Description *</Label>
+                            <div className='space-y-2'>
+                                <Label htmlFor='description'>Description *</Label>
                                 <Textarea
-                                    id="description"
+                                    id='description'
                                     placeholder="Tell us what's on your mind..."
                                     value={feedback.description}
                                     onChange={(e) => setFeedback({ ...feedback, description: e.target.value })}
-                                    className="min-h-[120px]"
+                                    className='min-h-[120px]'
                                 />
                             </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="email">Email (optional)</Label>
+                            <div className='space-y-2'>
+                                <Label htmlFor='email'>Email (optional)</Label>
                                 <Input
-                                    id="email"
-                                    type="email"
-                                    placeholder="your@email.com"
+                                    id='email'
+                                    type='email'
+                                    placeholder='your@email.com'
                                     value={feedback.email}
                                     onChange={(e) => setFeedback({ ...feedback, email: e.target.value })}
                                 />
-                                <p className="text-xs text-muted-foreground">
+                                <p className='text-xs text-muted-foreground'>
                                     Provide your email if you'd like us to follow up.
                                 </p>
                             </div>
 
                             {submitStatus === 'error' && (
-                                <div className="flex items-center gap-2 text-destructive text-sm">
-                                    <AlertCircle className="h-4 w-4" />
+                                <div className='flex items-center gap-2 text-destructive text-sm'>
+                                    <AlertCircle className='h-4 w-4' />
                                     {errorMessage}
                                 </div>
                             )}
 
                             <DialogFooter>
-                                <Button type="button" variant="outline" onClick={handleClose}>
+                                <Button type='button' variant='outline' onClick={handleClose}>
                                     Cancel
                                 </Button>
-                                <Button type="submit" disabled={isSubmitting}>
+                                <Button type='submit' disabled={isSubmitting}>
                                     {isSubmitting ? (
                                         'Submitting...'
                                     ) : (
                                         <>
-                                            <Send className="h-4 w-4 mr-2" />
+                                            <Send className='h-4 w-4 mr-2' />
                                             Submit
                                         </>
                                     )}

@@ -25,7 +25,10 @@ export interface UpdateFeedbackRequest {
 }
 
 // Submit feedback (public endpoint)
-export type SubmitFeedback_Body = Omit<UserFeedbackData, 'id' | 'status' | 'internalNotes' | 'reviewedByUserId' | 'reviewedDate' | 'gitHubIssueUrl' | 'createdDate'>;
+export type SubmitFeedback_Body = Omit<
+    UserFeedbackData,
+    'id' | 'status' | 'internalNotes' | 'reviewedByUserId' | 'reviewedDate' | 'gitHubIssueUrl' | 'createdDate'
+>;
 export type SubmitFeedback_Response = UserFeedbackData;
 export const SubmitFeedback = () => ({
     key: ['/feedback', 'submit'],

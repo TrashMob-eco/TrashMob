@@ -22,8 +22,7 @@ export const SiteAdminFeedback = () => {
 
     const updateFeedback = useMutation({
         mutationKey: UpdateFeedback().key,
-        mutationFn: ({ id, status }: { id: string; status: string }) =>
-            UpdateFeedback().service({ id }, { status }),
+        mutationFn: ({ id, status }: { id: string; status: string }) => UpdateFeedback().service({ id }, { status }),
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ['/feedback'],
