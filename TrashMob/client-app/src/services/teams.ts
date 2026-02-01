@@ -340,3 +340,33 @@ export const DeleteTeamPhoto = () => ({
             method: 'delete',
         }),
 });
+
+// ============================================================================
+// Team Logo Operations
+// ============================================================================
+
+export type UploadTeamLogo_Params = { teamId: string };
+export type UploadTeamLogo_Response = TeamData;
+export const UploadTeamLogo = () => ({
+    key: ['/teams/logo', 'upload'],
+    service: async (params: UploadTeamLogo_Params, formData: FormData) =>
+        ApiService('protected').fetchData<UploadTeamLogo_Response>({
+            url: `/teams/${params.teamId}/logo`,
+            method: 'post',
+            data: formData,
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        }),
+});
+
+export type DeleteTeamLogo_Params = { teamId: string };
+export type DeleteTeamLogo_Response = TeamData;
+export const DeleteTeamLogo = () => ({
+    key: ['/teams/logo', 'delete'],
+    service: async (params: DeleteTeamLogo_Params) =>
+        ApiService('protected').fetchData<DeleteTeamLogo_Response>({
+            url: `/teams/${params.teamId}/logo`,
+            method: 'delete',
+        }),
+});

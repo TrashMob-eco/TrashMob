@@ -72,7 +72,7 @@ export const TeamsMap = (props: TeamsMapProps) => {
                 {showingTeam ? (
                     <InfoWindow
                         anchor={markersRef.current[showingTeamId]}
-                        headerContent={<TeamInfoWindowHeader name={showingTeam.name} />}
+                        headerContent={<TeamInfoWindowHeader name={showingTeam.name} logoUrl={showingTeam.logoUrl} />}
                         onClose={() => setShowingTeamId('')}
                     >
                         <TeamInfoWindowContent team={showingTeam} />

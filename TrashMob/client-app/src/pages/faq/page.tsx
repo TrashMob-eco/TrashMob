@@ -90,11 +90,15 @@ const faqs = [
             },
             {
                 question: 'What can Team Leads do?',
-                answer: 'Team leads can edit team details, invite new members, approve join requests, promote other members to co-lead status, remove members, upload team photos, and manage team events. A team can have multiple leads to help share the responsibility.',
+                answer: 'Team leads can edit team details, invite new members, approve join requests, promote other members to co-lead status, remove members, upload team photos and a team logo, and manage team events. A team can have multiple leads to help share the responsibility.',
             },
             {
                 question: 'How do I upload Team Photos?',
                 answer: 'Team leads can upload photos to showcase their team\'s cleanup activities. Go to your team\'s detail page, click "Manage Team", then scroll to the "Team Photos" section. Click "Upload Photo" to add images (JPEG, PNG, etc., up to 10MB). Photos will be visible on your team\'s public page to help attract new members and celebrate your team\'s impact!',
+            },
+            {
+                question: 'How do I add a Team Logo?',
+                answer: 'Team leads can upload a logo or avatar image for their team. Go to your team\'s detail page, click "Manage Team", then find the "Team Logo" section. Click "Upload Logo" to add an image (recommended: square image, at least 200x200 pixels, up to 5MB). The logo will be displayed on team cards, the team detail page, and map popups.',
             },
             {
                 question: 'How do I leave a Team?',

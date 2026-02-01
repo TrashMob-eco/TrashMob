@@ -6,12 +6,17 @@ import TeamData from '@/components/Models/TeamData';
 
 interface TeamInfoWindowHeaderProps {
     name: string;
+    logoUrl?: string;
 }
 
-export const TeamInfoWindowHeader = ({ name }: TeamInfoWindowHeaderProps) => {
+export const TeamInfoWindowHeader = ({ name, logoUrl }: TeamInfoWindowHeaderProps) => {
     return (
         <div className='flex items-center gap-2'>
-            <Users className='h-4 w-4' />
+            {logoUrl ? (
+                <img src={logoUrl} alt={`${name} logo`} className='w-6 h-6 rounded object-cover' />
+            ) : (
+                <Users className='h-4 w-4' />
+            )}
             <span className='font-semibold'>{name}</span>
         </div>
     );

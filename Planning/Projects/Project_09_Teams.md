@@ -843,12 +843,12 @@ The Teams MVP is complete with the following functionality:
 - ✅ Team events (link events to teams, view team event history)
 - ✅ Teams discovery (map view, list view, team detail pages)
 - ✅ Team photo gallery (upload, view, delete photos)
+- ✅ Team logo upload (avatar/logo displayed on cards, detail page, and map)
 - ✅ My Teams dashboard section
 - ✅ Site admin tools (view all teams, delete, reactivate)
 - ✅ Documentation (FAQ, Help, Getting Started)
 
 **Remaining for Future Enhancements:**
-- Team logo upload (single team avatar/logo distinct from photo gallery)
 - Detailed metrics with sparkline charts (bags, hours, weight trends)
 - Advanced admin moderation tools
 - Team leaderboards (depends on Project 20)
