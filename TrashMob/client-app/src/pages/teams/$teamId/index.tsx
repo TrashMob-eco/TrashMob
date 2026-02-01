@@ -128,9 +128,11 @@ export const TeamDetailPage = () => {
             cell: ({ row }) => (
                 <div className='flex items-center gap-2'>
                     <span>{row.original.userName || 'Unknown'}</span>
-                    {row.original.isTeamLead ? <Badge variant='outline' className='bg-primary text-white border-0'>
+                    {row.original.isTeamLead ? (
+                        <Badge variant='outline' className='bg-primary text-white border-0'>
                             <Crown className='h-3 w-3 mr-1' /> Lead
-                        </Badge> : null}
+                        </Badge>
+                    ) : null}
                 </div>
             ),
         },
@@ -228,10 +230,12 @@ export const TeamDetailPage = () => {
                             </CardHeader>
                             <CardContent>
                                 <div className='space-y-4'>
-                                    {team.description ? <div>
+                                    {team.description ? (
+                                        <div>
                                             <h3 className='font-semibold mb-2'>About</h3>
                                             <p className='text-muted-foreground'>{team.description}</p>
-                                        </div> : null}
+                                        </div>
+                                    ) : null}
                                     <div className='flex items-center gap-2 text-muted-foreground'>
                                         <MapPin className='h-4 w-4' />
                                         <span>{getLocation(team)}</span>
@@ -280,7 +284,8 @@ export const TeamDetailPage = () => {
                     {/* Sidebar */}
                     <div className='space-y-6'>
                         {/* Actions */}
-                        {isUserLoaded ? <Card>
+                        {isUserLoaded ? (
+                            <Card>
                                 <CardHeader>
                                     <CardTitle>Actions</CardTitle>
                                 </CardHeader>
@@ -300,9 +305,11 @@ export const TeamDetailPage = () => {
                                         </Button>
                                     ) : (
                                         <>
-                                            {isLead ? <Button variant='outline' className='w-full' asChild>
+                                            {isLead ? (
+                                                <Button variant='outline' className='w-full' asChild>
                                                     <Link to={`/teams/${teamId}/edit`}>Manage Team</Link>
-                                                </Button> : null}
+                                                </Button>
+                                            ) : null}
                                             <Button
                                                 variant='outline'
                                                 className='w-full'
@@ -324,7 +331,8 @@ export const TeamDetailPage = () => {
                                         </p>
                                     )}
                                 </CardContent>
-                            </Card> : null}
+                            </Card>
+                        ) : null}
 
                         {/* Team Stats */}
                         <Card>
@@ -348,17 +356,21 @@ export const TeamDetailPage = () => {
                         </Card>
 
                         {/* Member Status */}
-                        {isMember ? <Card>
+                        {isMember ? (
+                            <Card>
                                 <CardContent className='pt-6'>
                                     <div className='flex items-center gap-2 text-green-600'>
                                         <Users className='h-5 w-5' />
                                         <span className='font-medium'>You are a member</span>
-                                        {isLead ? <Badge variant='outline' className='bg-primary text-white border-0 ml-2'>
+                                        {isLead ? (
+                                            <Badge variant='outline' className='bg-primary text-white border-0 ml-2'>
                                                 <Crown className='h-3 w-3 mr-1' /> Lead
-                                            </Badge> : null}
+                                            </Badge>
+                                        ) : null}
                                     </div>
                                 </CardContent>
-                            </Card> : null}
+                            </Card>
+                        ) : null}
                     </div>
                 </div>
             </div>

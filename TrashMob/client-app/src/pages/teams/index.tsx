@@ -96,11 +96,13 @@ export const TeamsPage = () => {
                         <h2 className='text-2xl font-semibold'>Browse Teams</h2>
                         <p className='text-muted-foreground'>Find a team near you to join</p>
                     </div>
-                    {isUserLoaded ? <Button asChild>
+                    {isUserLoaded ? (
+                        <Button asChild>
                             <Link to='/teams/create'>
                                 <Plus className='h-4 w-4 mr-2' /> Create Team
                             </Link>
-                        </Button> : null}
+                        </Button>
+                    ) : null}
                 </div>
 
                 <Card>
@@ -116,11 +118,13 @@ export const TeamsPage = () => {
                                 <p className='text-muted-foreground mb-4'>
                                     Be the first to create a team and start organizing cleanups together!
                                 </p>
-                                {isUserLoaded ? <Button asChild>
+                                {isUserLoaded ? (
+                                    <Button asChild>
                                         <Link to='/teams/create'>
                                             <Plus className='h-4 w-4 mr-2' /> Create Team
                                         </Link>
-                                    </Button> : null}
+                                    </Button>
+                                ) : null}
                             </div>
                         )}
                     </CardContent>
