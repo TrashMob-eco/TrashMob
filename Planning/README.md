@@ -1,19 +1,19 @@
-# TrashMob.eco � 2026 Planning Documentation
+# TrashMob.eco — 2026 Planning Documentation
 
-**Version:** 1.0  
-**Date:** January 24, 2026  
+**Version:** 1.1
+**Date:** February 1, 2026
 **Owner:** Director of Product & Engineering
 
 ---
 
-## ?? Navigation
+## 📍 Navigation
 
 ### Core Documents
 
 - **[Executive Summary](./Executive_Summary.md)** - High-level overview, strategic objectives, and 2026 roadmap
 - **[Risks & Mitigations](./Risks_and_Mitigations.md)** - Cross-project risks and mitigation strategies
 
-### 2026 Projects (29 Total)
+### 2026 Projects (35 Total)
 
 **Note:** Projects are not time-bound. Volunteers pick up work based on priority and availability.
 
@@ -30,10 +30,10 @@
 | Project | Description | Status |
 |---------|-------------|--------|
 | [Project 2 - Home Page Improvements](./Projects/Project_02_Home_Page.md) | Dynamic content, ads, sponsors | Ready for Design Review |
-| [Project 3 - Litter Reporting Web](./Projects/Project_03_Litter_Reporting_Web.md) | Complete web parity for litter reports | Ready for Team Review |
+| [Project 3 - Litter Reporting Web](./Projects/Project_03_Litter_Reporting_Web.md) | Complete web parity for litter reports | ✅ Complete |
 | [Project 7 - Event Weights](./Projects/Project_07_Event_Weights.md) | Track weight metrics | Ready for Review |
 | [Project 8 - Waivers V3](./Projects/Project_08_Waivers_V3.md) | Community waivers, minors coverage | Requirements & Legal Review |
-| [Project 9 - Teams](./Projects/Project_09_Teams.md) | User-created teams MVP | Ready for Review |
+| [Project 9 - Teams](./Projects/Project_09_Teams.md) | User-created teams MVP | In Progress (MVP Complete) |
 | [Project 10 - Community Pages](./Projects/Project_10_Community_Pages.md) | Branded partner community pages | Planning in Progress |
 | [Project 13 - Bulk Email Invites](./Projects/Project_13_Bulk_Email_Invites.md) | Scale email invitations | Not Started |
 | [Project 23 - Parental Consent](./Projects/Project_23_Parental_Consent.md) | Privo.com integration for minors | Planning in Progress |
@@ -53,9 +53,15 @@
 | [Project 21 - Event Co-Leads](./Projects/Project_21_Event_Co_Leads.md) | Multiple event admins | Planning in Progress |
 | [Project 22 - Attendee Metrics](./Projects/Project_22_Attendee_Metrics.md) | Per-attendee event statistics | Not Started |
 | [Project 25 - Automated Testing](./Projects/Project_25_Automated_Testing.md) | E2E tests for web and mobile | Not Started |
-| [Project 26 - KeyVault RBAC Migration](./Projects/Project_26_KeyVault_RBAC_Migration.md) | Migrate from access policies to RBAC | Planning |
+| [Project 26 - KeyVault RBAC Migration](./Projects/Project_26_KeyVault_RBAC_Migration.md) | Migrate from access policies to RBAC | In Progress |
 | [Project 28 - Photo Moderation](./Projects/Project_28_Photo_Moderation.md) | Admin photo review and flagging | Not Started |
-| [Project 29 - Feature Usage Metrics](./Projects/Project_29_Feature_Usage_Metrics.md) | Track feature usage analytics | Not Started |
+| [Project 29 - Feature Usage Metrics](./Projects/Project_29_Feature_Usage_Metrics.md) | Track feature usage analytics | ✅ Complete |
+| [Project 30 - Azure Billing Alerts](./Projects/Project_30_Azure_Billing_Alerts.md) | Cost monitoring and alerts | Not Started |
+| [Project 31 - Feature Flags](./Projects/Project_31_Feature_Flags.md) | Feature flag infrastructure | Not Started |
+| [Project 32 - Database Backups](./Projects/Project_32_Database_Backups.md) | Backup retention policies | In Progress |
+| [Project 33 - Localization](./Projects/Project_33_Localization.md) | Multi-language support | Deprioritized |
+| [Project 34 - User Feedback](./Projects/Project_34_User_Feedback.md) | In-app feedback widget | In Progress |
+| [Project 35 - Partner Location Map](./Projects/Project_35_Partner_Location_Map.md) | Partner locations on map | Not Started |
 
 #### Low Priority (Nice-to-Have)
 
@@ -64,16 +70,17 @@
 | [Project 12 - In-App Messaging](./Projects/Project_12_In_App_Messaging.md) | Event lead communications | Not Started |
 | [Project 17 - MCP Server](./Projects/Project_17_MCP_Server.md) | AI access via MCP protocol | Not Started |
 | [Project 18 - Before/After Photos](./Projects/Project_18_Before_After_Photos.md) | Event impact photos | Planning in Progress |
-| [Project 27 - OpenTelemetry Migration](./Projects/Project_27_OpenTelemetry_Migration.md) | Vendor-neutral observability | In Progress |
+| [Project 27 - OpenTelemetry Migration](./Projects/Project_27_OpenTelemetry_Migration.md) | Vendor-neutral observability | ✅ Complete |
 
 ---
 
-## ?? Quick Links by Theme
+## 🔗 Quick Links by Theme
 
 ### Trust & Safety
 - [Project 1 - Auth Revamp](./Projects/Project_01_Auth_Revamp.md)
 - [Project 8 - Waivers V3](./Projects/Project_08_Waivers_V3.md)
 - [Project 23 - Parental Consent](./Projects/Project_23_Parental_Consent.md)
+- [Project 28 - Photo Moderation](./Projects/Project_28_Photo_Moderation.md)
 
 ### Community Features
 - [Project 9 - Teams](./Projects/Project_09_Teams.md)
@@ -90,16 +97,20 @@
 - [Project 5 - Deployment Pipelines](./Projects/Project_05_Deployment_Pipelines.md)
 - [Project 24 - API v2 Modernization](./Projects/Project_24_API_v2_Modernization.md)
 - [Project 25 - Automated Testing](./Projects/Project_25_Automated_Testing.md)
-- [Project 27 - OpenTelemetry Migration](./Projects/Project_27_OpenTelemetry_Migration.md)
-- [Project 29 - Feature Usage Metrics](./Projects/Project_29_Feature_Usage_Metrics.md)
+- [Project 27 - OpenTelemetry Migration](./Projects/Project_27_OpenTelemetry_Migration.md) ✅
+- [Project 29 - Feature Usage Metrics](./Projects/Project_29_Feature_Usage_Metrics.md) ✅
 
-### Trust & Safety (Additional)
-- [Project 28 - Photo Moderation](./Projects/Project_28_Photo_Moderation.md)
+### Infrastructure & Operations
+- [Project 26 - KeyVault RBAC Migration](./Projects/Project_26_KeyVault_RBAC_Migration.md)
+- [Project 30 - Azure Billing Alerts](./Projects/Project_30_Azure_Billing_Alerts.md)
+- [Project 31 - Feature Flags](./Projects/Project_31_Feature_Flags.md)
+- [Project 32 - Database Backups](./Projects/Project_32_Database_Backups.md)
 
 ### Engagement & Growth
 - [Project 12 - In-App Messaging](./Projects/Project_12_In_App_Messaging.md)
 - [Project 13 - Bulk Email Invites](./Projects/Project_13_Bulk_Email_Invites.md)
 - [Project 20 - Gamification](./Projects/Project_20_Gamification.md)
+- [Project 34 - User Feedback](./Projects/Project_34_User_Feedback.md)
 
 ---
 
@@ -107,25 +118,28 @@
 
 | Status | Count | Projects |
 |--------|-------|----------|
-| **In Progress** | 3 | Projects 6, 16, 27 |
+| ✅ **Complete** | 3 | Projects 3, 27, 29 |
+| **In Progress** | 7 | Projects 6, 9, 16, 26, 32, 34 |
 | **Developers Engaged** | 1 | Project 4 |
-| **Ready for Review** | 5 | Projects 2, 3, 5, 7, 9 |
-| **Planning** | 9 | Projects 1, 8, 10, 11, 15, 18, 21, 23, 26 |
-| **Not Started** | 11 | Projects 12, 13, 14, 17, 19, 20, 22, 24, 25, 28, 29 |
+| **Ready for Review** | 4 | Projects 2, 5, 7, 8 |
+| **Planning** | 7 | Projects 1, 10, 11, 15, 18, 21, 23 |
+| **Not Started** | 12 | Projects 12, 13, 14, 17, 19, 20, 22, 24, 25, 28, 30, 31, 35 |
+| **Deprioritized** | 1 | Project 33 |
 
-**Total:** 29 project specifications documented
+**Total:** 35 project specifications documented
 
 ---
 
-## ?? Related Documents
+## 📚 Related Documents
 
 - **[Product Requirements Document (PRD)](../TrashMob/TrashMob.prd)** - Complete user stories and requirements
 - **[Website User Stories](../WebsiteUserStories.md)** - Detailed user story backlog
 - **[Project-Specific Documentation](../claude.md)** - Root AI assistant context
 - **[TrashMob API Context](../TrashMob/claude.md)** - API development patterns
 - **[Mobile Development Guide](../TrashMobMobile/claude.md)** - MAUI app patterns (when created)
+- **[Feature Metrics Guide](./Projects/Project_29_Metrics_Guide.md)** - Stakeholder metrics documentation
 
-### ?? AI Assistant Commands
+### 🤖 AI Assistant Commands
 
 - **[Commands Index](./.claude_commands_index.md)** - Complete guide to all AI assistant commands
 - **[Add New Project Command](./.claude_add_project_command.md)** - Detailed guide for adding projects
@@ -134,17 +148,17 @@
 
 ---
 
-## ?? Document Conventions
+## 📋 Document Conventions
 
 ### Project File Structure
 
 Each project document follows a standardized format:
 
 ```markdown
-# Project ## � Title
+# Project ## — Title
 
 | Attribute | Value |
-| Status | Not Started / Planning / In Progress / Ready for Review |
+| Status | Not Started / Planning / In Progress / Ready for Review / Complete |
 | Priority | Low / Medium / High / Critical |
 | Risk | Low / Medium / High / Very High |
 | Size | Very Small / Small / Medium / Large / Very Large |
@@ -170,6 +184,7 @@ Each project document follows a standardized format:
 - **In Progress:** Active development underway
 - **Developers Engaged:** Team assigned and working
 - **Complete:** Delivered and in production
+- **Deprioritized:** Deferred to future consideration
 
 ### Priority Levels
 
@@ -178,8 +193,12 @@ Each project document follows a standardized format:
 - **Medium:** Should be done but flexible timing
 - **Low:** Nice-to-have, can defer to 2027
 
+### Feature Metrics
+
+All new features should consider adding feature usage tracking. See [Project 29 - Feature Usage Metrics](./Projects/Project_29_Feature_Usage_Metrics.md) for the tracking infrastructure and [Feature Metrics Guide](./Projects/Project_29_Metrics_Guide.md) for implementation details.
+
 ---
 
-**Last Updated:** January 24, 2026  
-**Maintained By:** Product & Engineering Team  
+**Last Updated:** February 1, 2026
+**Maintained By:** Product & Engineering Team
 **Next Review:** End of Q1 2026
