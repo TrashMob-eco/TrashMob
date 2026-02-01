@@ -420,16 +420,13 @@ public async Task<ActionResult> FlagPhoto(
 
 ---
 
-## Open Questions
+## Decisions
 
 1. **Should photos be hidden immediately when flagged?**
    **Decision:** Yes, flagged photos are immediately hidden (InReview=true) and never displayed until admin reviews. This protects users from inappropriate content even if it means some false positives.
-   **Status:** Decided
 
 2. **How long to retain rejected photos?**
-   **Recommendation:** 30 days for potential appeals, then permanently delete
-   **Owner:** Legal/Product
-   **Due:** Before Phase 1 starts
+   **Decision:** 30 days for potential appeals, then permanently delete. Illegal content retained per legal requirements.
 
 ---
 
@@ -442,7 +439,13 @@ public async Task<ActionResult> FlagPhoto(
 
 ---
 
-**Last Updated:** January 24, 2026
+**Last Updated:** January 31, 2026
 **Owner:** Engineering Team
 **Status:** Not Started
 **Next Review:** Q2 2026
+
+---
+
+## Changelog
+
+- **2026-01-31:** Converted open questions to decisions; confirmed all scope items

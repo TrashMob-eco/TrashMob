@@ -1,4 +1,4 @@
-# Project 26 � KeyVault RBAC Migration
+# Project 26 � KeyVault RBAC Migration
 
 | Attribute | Value |
 |-----------|-------|
@@ -34,43 +34,43 @@ Azure KeyVault access policies are being deprecated in favor of Azure Role-Based
 ## Scope
 
 ### Phase 1 - Assessment and Planning
-- ? Audit current KeyVault access policies and their permissions
-- ? Identify all applications and service principals with KeyVault access
-- ? Map access policies to equivalent RBAC roles
-- ? Document current secrets and their usage across applications
-- ? Create rollback plan
+- ✅ Audit current KeyVault access policies and their permissions
+- ✅ Identify all applications and service principals with KeyVault access
+- ✅ Map access policies to equivalent RBAC roles
+- ✅ Document current secrets and their usage across applications
+- ✅ Create rollback plan
 
 ### Phase 2 - RBAC Configuration
-- ? Enable RBAC permission model on KeyVault
-- ? Assign "Key Vault Secrets User" role to web application managed identity
-- ? Assign "Key Vault Secrets User" role to function apps managed identities
-- ? Assign "Key Vault Secrets Officer" role to deployment pipelines/service principals
-- ? Assign "Key Vault Administrator" role to infrastructure administrators
-- ? Remove legacy access policies after RBAC validation
+- ✅ Enable RBAC permission model on KeyVault
+- ✅ Assign "Key Vault Secrets User" role to web application managed identity
+- ✅ Assign "Key Vault Secrets User" role to function apps managed identities
+- ✅ Assign "Key Vault Secrets Officer" role to deployment pipelines/service principals
+- ✅ Assign "Key Vault Administrator" role to infrastructure administrators
+- ✅ Remove legacy access policies after RBAC validation
 
 ### Phase 3 - Testing and Validation
-- ? Test secret retrieval from web application
-- ? Test secret retrieval from hourly jobs function app
-- ? Test secret retrieval from daily jobs function app
-- ? Validate Azure B2C secrets access
-- ? Test deployment pipeline secret management
-- ? Monitor KeyVault diagnostic logs for access issues
+- ✅ Test secret retrieval from web application
+- ✅ Test secret retrieval from hourly jobs function app
+- ✅ Test secret retrieval from daily jobs function app
+- ✅ Validate Azure B2C secrets access
+- ✅ Test deployment pipeline secret management
+- ✅ Monitor KeyVault diagnostic logs for access issues
 
 ### Phase 4 - Documentation and Cleanup
-- ? Update infrastructure documentation with RBAC model
-- ? Update deployment scripts and IaC templates (Bicep)
-- ? Document RBAC role assignments and their purposes
-- ? Remove deprecated access policy configurations
-- ? Update developer onboarding documentation
+- ✅ Update infrastructure documentation with RBAC model
+- ✅ Update deployment scripts and IaC templates (Bicep)
+- ✅ Document RBAC role assignments and their purposes
+- ✅ Remove deprecated access policy configurations
+- ✅ Update developer onboarding documentation
 
 ---
 
 ## Out-of-Scope
 
-- ? Migrating to Azure Key Vault Managed HSM (standard KeyVault is sufficient)
-- ? Implementing Key Vault Private Link/Private Endpoint (may be separate project)
-- ? Certificate rotation automation (separate security project)
-- ? Multi-region KeyVault replication
+- ❌ Migrating to Azure Key Vault Managed HSM (standard KeyVault is sufficient)
+- ❌ Implementing Key Vault Private Link/Private Endpoint (separate project)
+- ❌ Certificate rotation automation (separate security project)
+- ❌ Multi-region KeyVault replication
 
 ---
 
@@ -176,29 +176,29 @@ No application code changes required - applications already use Azure SDK/Defaul
 
 ## Implementation Phases
 
-### Phase 1: Discovery and Preparation (1-2 days)
+### Phase 1: Discovery and Preparation
 - Audit all current KeyVault access policies
 - Document all managed identities and service principals
 - Identify all secrets and their consuming applications
 - Prepare RBAC role mapping document
 - Create rollback plan
 
-### Phase 2: Dev/Test Environment Migration (2-3 days)
+### Phase 2: Dev/Test Environment Migration
 - Enable RBAC on dev/test KeyVault
 - Assign RBAC roles in dev/test
 - Test all applications in dev/test environment
 - Validate B2C secret access
 - Document any issues and resolutions
 
-### Phase 3: Production Migration (1 day + monitoring)
+### Phase 3: Production Migration
 - Enable RBAC on production KeyVault (dual-mode)
 - Assign RBAC roles to production identities
 - Validate all services are functioning
-- Monitor diagnostic logs for 48 hours
+- Monitor diagnostic logs
 - Disable access policies after validation
-- Final monitoring period (1 week)
+- Final monitoring period
 
-### Phase 4: Cleanup and Documentation (1 day)
+### Phase 4: Cleanup and Documentation
 - Remove access policy configurations
 - Update IaC templates and scripts
 - Update documentation
@@ -208,22 +208,16 @@ No application code changes required - applications already use Azure SDK/Defaul
 
 ---
 
-## Open Questions
+## Decisions
 
-1. **Should we implement Key Vault Private Endpoint during this migration?**  
-   **Recommendation:** Keep as separate project to reduce migration complexity  
-   **Owner:** Infrastructure Lead  
-   **Due:** Before Phase 1
+1. **Should we implement Key Vault Private Endpoint during this migration?**
+   **Decision:** No - keep as separate project to reduce migration complexity and risk
 
-2. **What RBAC roles should developers have for troubleshooting?**  
-   **Recommendation:** Developers get "Key Vault Secrets User" in dev/test only, read-only audit access in production  
-   **Owner:** Security Lead  
-   **Due:** Before Phase 2
+2. **What RBAC roles should developers have for troubleshooting?**
+   **Decision:** Developers get "Key Vault Secrets User" in dev/test only; read-only audit access in production
 
-3. **Should we audit and clean up unused secrets during migration?**  
-   **Recommendation:** Yes, but document separately to avoid scope creep  
-   **Owner:** Development Team  
-   **Due:** During Phase 1
+3. **Should we audit and clean up unused secrets during migration?**
+   **Decision:** Yes, document cleanup separately during Phase 1 to avoid scope creep
 
 ---
 
@@ -236,7 +230,13 @@ No application code changes required - applications already use Azure SDK/Defaul
 
 ---
 
-**Last Updated:** 2025-01-XX  
-**Owner:** Infrastructure Team  
-**Status:** Planning  
+**Last Updated:** January 31, 2026
+**Owner:** Infrastructure Team
+**Status:** Planning
 **Next Review:** After team review and before implementation starts
+
+---
+
+## Changelog
+
+- **2026-01-31:** Converted open questions to decisions; confirmed all scope items

@@ -347,17 +347,13 @@ public class MetricsService : IMetricsService
 
 ---
 
-## Open Questions
+## Decisions
 
 1. **Should we track session recordings?**
-   **Recommendation:** No, too privacy-invasive and adds complexity
-   **Owner:** Product
-   **Due:** Before Phase 1
+   **Decision:** No, too privacy-invasive and adds complexity. Focus on aggregate event tracking only.
 
 2. **What retention period for metrics?**
-   **Recommendation:** Use Application Insights default (90 days), archive monthly aggregates
-   **Owner:** Engineering
-   **Due:** Before Phase 3
+   **Decision:** Use Application Insights default (90 days), archive monthly aggregates for long-term trend analysis.
 
 ---
 
@@ -369,7 +365,13 @@ public class MetricsService : IMetricsService
 
 ---
 
-**Last Updated:** January 24, 2026
+**Last Updated:** January 31, 2026
 **Owner:** Engineering Team
 **Status:** Not Started
 **Next Review:** Q2 2026
+
+---
+
+## Changelog
+
+- **2026-01-31:** Converted open questions to decisions; confirmed all scope items
