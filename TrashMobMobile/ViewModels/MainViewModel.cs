@@ -127,7 +127,7 @@ public partial class MainViewModel(IAuthService authService,
             }
             else
             {
-                await Shell.Current.GoToAsync($"{nameof(WelcomePage)}");
+                await Shell.Current.GoToAsync($"//{nameof(WelcomePage)}");
             }
 
             await RefreshStatistics();

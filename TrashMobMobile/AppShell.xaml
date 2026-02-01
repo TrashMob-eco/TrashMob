@@ -16,23 +16,12 @@
             StatusBarStyle="LightContent" />
     </Shell.Behaviors>
 
-    <TabBar>
-        <Tab Title="Home"
-             Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconHome}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
-            <ShellContent ContentTemplate="{DataTemplate local:MainPage}" Route="MainPage" />
-        </Tab>
-        <Tab Title="Dashboard"
-             Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconHeartPulse}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
-            <ShellContent ContentTemplate="{DataTemplate pages:MyDashboardPage}" Route="MyDashboardPage" />
-        </Tab>
-        <Tab Title="Location"
-             Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconHomeMapMarker}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
-            <ShellContent ContentTemplate="{DataTemplate pages:SetUserLocationPreferencePage}" Route="SetUserLocationPreferencePage" />
-        </Tab>
-        <Tab Title="More"
-             Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconViewList}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
-            <ShellContent ContentTemplate="{DataTemplate pages:MorePage}" Route="MorePage" />
-        </Tab>
-    </TabBar>
+    <ShellItem Route="WelcomePage">
+        <ShellContent ContentTemplate="{DataTemplate pages:WelcomePage}" />
+    </ShellItem>
+
+    <ShellItem Route="MainTabsPage">
+        <ShellContent ContentTemplate="{DataTemplate local:MainTabsPage}" />
+    </ShellItem>
 
 </Shell>

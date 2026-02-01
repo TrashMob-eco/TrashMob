@@ -4,7 +4,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:TrashMobMobile.ViewModels"
              x:DataType="vm:WelcomeViewModel"
-             x:Class="TrashMobMobile.Pages.WelcomePage">
+             x:Class="TrashMobMobile.Pages.WelcomePage"
+             Shell.NavBarIsVisible="False">
     <ScrollView>
         <Grid>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
