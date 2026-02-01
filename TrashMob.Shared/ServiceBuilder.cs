@@ -8,6 +8,7 @@
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Managers.LitterReport;
     using TrashMob.Shared.Managers.Partners;
+    using TrashMob.Shared.Managers.Teams;
     using TrashMob.Shared.Persistence;
     using TrashMob.Shared.Persistence.Interfaces;
 
@@ -74,6 +75,10 @@
             services.AddScoped<ILitterImageManager, LitterImageManager>();
             services.AddScoped<ILitterReportManager, LitterReportManager>();
 
+            // Team managers
+            services.AddScoped<ITeamManager, TeamManager>();
+            services.AddScoped<ITeamMemberManager, TeamMemberManager>();
+
             // Non-patterned
             services.AddScoped<IActiveDirectoryManager, ActiveDirectoryManager>();
             services.AddScoped<IEmailManager, EmailManager>();
@@ -132,6 +137,13 @@
             services.AddScoped<IKeyedRepository<UserNotification>, KeyedRepository<UserNotification>>();
             services.AddScoped<IKeyedRepository<Waiver>, KeyedRepository<Waiver>>();
             services.AddScoped<ILookupRepository<WeightUnit>, LookupRepository<WeightUnit>>();
+
+            // Team repositories
+            services.AddScoped<IKeyedRepository<Team>, KeyedRepository<Team>>();
+            services.AddScoped<IKeyedRepository<TeamMember>, KeyedRepository<TeamMember>>();
+            services.AddScoped<IKeyedRepository<TeamJoinRequest>, KeyedRepository<TeamJoinRequest>>();
+            services.AddScoped<IKeyedRepository<TeamEvent>, KeyedRepository<TeamEvent>>();
+            services.AddScoped<IKeyedRepository<TeamPhoto>, KeyedRepository<TeamPhoto>>();
 
             return services;
         }
