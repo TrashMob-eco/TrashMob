@@ -2,8 +2,8 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Not Started |
-| **Priority** | Low |
+| **Status** | Deprioritized |
+| **Priority** | None |
 | **Risk** | Medium |
 | **Size** | Large |
 | **Dependencies** | None |
@@ -13,6 +13,8 @@
 ## Business Rationale
 
 TrashMob's mission to reduce litter is global. Localizing the web and mobile applications enables volunteers worldwide to participate in their native language, increasing adoption and engagement in non-English speaking communities. This also supports partnerships with international environmental organizations.
+
+**Deprioritization Rationale (2026-01-31):** Modern browsers (Chrome, Edge, Safari, Firefox) now include built-in translation that handles most web content automatically. Given the significant ongoing maintenance burden of native localization for a volunteer-driven nonprofit, resources are better allocated to core features. Browser translation covers the primary use case; native localization may be reconsidered if there's demonstrated demand from non-English speaking communities that browser translation doesn't adequately serve (e.g., mobile app, email templates).
 
 ---
 
@@ -308,11 +310,12 @@ const LanguageSelector = () => {
 
 **Last Updated:** January 31, 2026
 **Owner:** Engineering Lead
-**Status:** Not Started
-**Next Review:** When prioritized
+**Status:** Deprioritized
+**Next Review:** If community demand arises
 
 ---
 
 ## Changelog
 
+- **2026-01-31:** Deprioritized indefinitely; browser translation covers primary use case
 - **2026-01-31:** Confirmed all scope items

@@ -35,7 +35,7 @@ Allow non-developers to update home page and partner content with preview, sched
 
 ### Phase 1 - Infrastructure
 - ✅ Deploy Strapi as Azure Container App
-- ✅ Configure Azure SQL database for Strapi
+- ⚠️ Configure Azure SQL database for Strapi *(Bicep template exists but dev uses SQLite - see Phase 5)*
 - ✅ Set up internal-only ingress (security)
 - ✅ GitHub Actions deployment workflow
 
@@ -56,6 +56,13 @@ Allow non-developers to update home page and partner content with preview, sched
 - ✅ Featured partners carousel/list
 - ✅ Featured communities carousel/list
 - ✅ Featured teams carousel/list
+
+### Phase 5 - Database Migration (SQLite → Azure SQL)
+- ✅ Wire up `Deploy/sqlDatabaseStrapi.bicep` to container app deployment
+- ✅ Update `containerAppStrapi.bicep` to use Azure SQL connection string
+- ✅ Migrate existing content from SQLite to Azure SQL
+- ✅ Validate Strapi functions correctly with Azure SQL
+- ✅ Enable Azure SQL backup policies (see Project 32)
 
 ---
 
@@ -273,6 +280,15 @@ Strapi/
 - React components for new home page sections
 - Preview API endpoint for draft content
 
+### Phase 5: Database Migration (SQLite → Azure SQL)
+- Update `containerAppStrapi.bicep` to reference Azure SQL database
+- Configure connection string via Key Vault secret
+- Export content from SQLite and import to Azure SQL
+- Validate Strapi admin and API functionality
+- Remove SQLite configuration
+
+**Current State:** Dev deployment uses SQLite with ephemeral storage (`DATABASE_CLIENT: 'sqlite'` in `containerAppStrapi.bicep` line 122). The `sqlDatabaseStrapi.bicep` template exists but is not wired up. Azure Files SMB has locking issues with SQLite, so database content is lost on container restart.
+
 ---
 
 ## Phase 4 Content Types
@@ -352,3 +368,9 @@ Phase 4 expands home page CMS content to include:
 **Owner:** Engineering Team
 **Status:** In Progress (PR #2364)
 **Next Review:** After PR merge
+
+---
+
+## Changelog
+
+- **2026-01-31:** Added Phase 5 (SQLite → Azure SQL migration); noted dev uses SQLite with ephemeral storage
