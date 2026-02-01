@@ -305,7 +305,7 @@
         public async Task<IActionResult> UpdateEvent(Event mobEvent, CancellationToken cancellationToken)
         {
             var authResult =
-                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
+                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserIsEventLead);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -365,7 +365,7 @@
                 .ConfigureAwait(false);
 
             var authResult = await AuthorizationService.AuthorizeAsync(User, mobEvent,
-                AuthorizationPolicyConstants.UserOwnsEntityOrIsAdmin);
+                AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {

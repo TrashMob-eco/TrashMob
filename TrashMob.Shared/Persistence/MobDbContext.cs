@@ -353,6 +353,9 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_EventAttendees_User_LastUpdatedBy");
+
+                entity.HasIndex(e => new { e.EventId, e.IsEventLead })
+                    .HasDatabaseName("IX_EventAttendees_EventId_IsEventLead");
             });
 
             modelBuilder.Entity<EventAttendeeRoute>(entity =>

@@ -28,6 +28,12 @@ namespace TrashMob.Models
         public DateTimeOffset? CanceledDate { get; set; }
 
         /// <summary>
+        /// Gets or sets whether this attendee is an event lead with management permissions.
+        /// Maximum 5 co-leads per event enforced at API level.
+        /// </summary>
+        public bool IsEventLead { get; set; }
+
+        /// <summary>
         /// Gets or sets the event being attended.
         /// </summary>
         public virtual Event Event { get; set; }

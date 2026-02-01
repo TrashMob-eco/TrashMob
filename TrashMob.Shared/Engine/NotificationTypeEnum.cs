@@ -139,5 +139,15 @@
         /// Weekly digest notification about new litter reports in the user's area.
         /// </summary>
         WeeklyLitterReportDigest = 27,
+
+        /// <summary>
+        /// Notification sent when a user is promoted to event co-lead.
+        /// </summary>
+        EventCoLeadAdded = 28,
+
+        /// <summary>
+        /// Notification sent when a user is removed as event co-lead.
+        /// </summary>
+        EventCoLeadRemoved = 29,
     }
 }

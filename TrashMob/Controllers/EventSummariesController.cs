@@ -115,7 +115,7 @@
         {
             var authResult =
                 await AuthorizationService.AuthorizeAsync(User, eventSummary,
-                    AuthorizationPolicyConstants.UserOwnsEntity);
+                    AuthorizationPolicyConstants.UserIsEventLead);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -141,7 +141,7 @@
         {
             var authResult =
                 await AuthorizationService.AuthorizeAsync(User, eventSummary,
-                    AuthorizationPolicyConstants.UserOwnsEntity);
+                    AuthorizationPolicyConstants.UserIsEventLead);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -169,7 +169,7 @@
             var mobEvent = eventManager.GetAsync(eventId, cancellationToken);
 
             var authResult =
-                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
+                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserIsEventLead);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {

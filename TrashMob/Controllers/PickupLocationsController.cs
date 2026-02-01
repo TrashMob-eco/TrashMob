@@ -72,7 +72,7 @@
             // Does the user own the pickup location?
             var authResult =
                 await AuthorizationService.AuthorizeAsync(User, localPickupLocation,
-                    AuthorizationPolicyConstants.UserOwnsEntity);
+                    AuthorizationPolicyConstants.UserIsEventLead);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -81,7 +81,7 @@
 
                 authResult =
                     await AuthorizationService.AuthorizeAsync(User, mobEvent,
-                        AuthorizationPolicyConstants.UserOwnsEntity);
+                        AuthorizationPolicyConstants.UserIsEventLead);
 
                 if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
                 {
@@ -119,7 +119,7 @@
         public async Task<IActionResult> MarkAsPickedUp(Guid pickupLocationId, CancellationToken cancellationToken)
         {
             // Todo: Add security
-            //var authResult = await AuthorizationService.AuthorizeAsync(User, pickupLocation, AuthorizationPolicyConstants.UserOwnsEntity);
+            //var authResult = await AuthorizationService.AuthorizeAsync(User, pickupLocation, AuthorizationPolicyConstants.UserIsEventLead);
 
             //if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             //{
@@ -146,7 +146,7 @@
             var mobEvent = await eventManager.GetAsync(instance.EventId, cancellationToken);
 
             var authResult =
-                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
+                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserIsEventLead);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -173,7 +173,7 @@
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
 
             var authResult =
-                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
+                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserIsEventLead);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -200,7 +200,7 @@
         {
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
             var authResult =
-                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
+                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserIsEventLead);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -265,7 +265,7 @@
             var entity = await Manager.GetAsync(id, cancellationToken);
 
             var authResult =
-                await AuthorizationService.AuthorizeAsync(User, entity, AuthorizationPolicyConstants.UserOwnsEntity);
+                await AuthorizationService.AuthorizeAsync(User, entity, AuthorizationPolicyConstants.UserIsEventLead);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -274,7 +274,7 @@
 
                 authResult =
                     await AuthorizationService.AuthorizeAsync(User, mobEvent,
-                        AuthorizationPolicyConstants.UserOwnsEntity);
+                        AuthorizationPolicyConstants.UserIsEventLead);
 
                 if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
                 {

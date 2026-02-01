@@ -161,7 +161,11 @@ public class Program
             .AddPolicy(AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin,
                 policy => policy.AddRequirements(new UserIsPartnerUserOrIsAdminRequirement()))
             .AddPolicy(AuthorizationPolicyConstants.UserIsAdmin,
-                policy => policy.AddRequirements(new UserIsAdminRequirement()));
+                policy => policy.AddRequirements(new UserIsAdminRequirement()))
+            .AddPolicy(AuthorizationPolicyConstants.UserIsEventLead,
+                policy => policy.AddRequirements(new UserIsEventLeadRequirement()))
+            .AddPolicy(AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin,
+                policy => policy.AddRequirements(new UserIsEventLeadOrIsAdminRequirement()));
 
         // In production, the React files will be served from this directory
         builder.Services.AddSpaStaticFiles(configuration => { configuration.RootPath = "client-app/build"; });
@@ -207,6 +211,8 @@ public class Program
         builder.Services.AddScoped<IAuthorizationHandler, UserIsAdminAuthHandler>();
         builder.Services.AddScoped<IAuthorizationHandler, UserOwnsEntityOrIsAdminAuthHandler>();
         builder.Services.AddScoped<IAuthorizationHandler, UserIsPartnerUserOrIsAdminAuthHandler>();
+        builder.Services.AddScoped<IAuthorizationHandler, UserIsEventLeadAuthHandler>();
+        builder.Services.AddScoped<IAuthorizationHandler, UserIsEventLeadOrIsAdminAuthHandler>();
 
         builder.Services.AddManagers();
         builder.Services.AddRepositories();

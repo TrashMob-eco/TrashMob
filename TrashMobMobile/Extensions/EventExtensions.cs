@@ -1,5 +1,6 @@
 ﻿namespace TrashMobMobile.Extensions
 {
+    using System.Linq;
     using TrashMob.Models;
 
     public static class EventExtensions
@@ -74,7 +75,23 @@
 
         public static bool IsEventLead(this Event mobEvent, Guid userId)
         {
-            return mobEvent.CreatedByUserId == userId;
+            // Check if user is the event creator
+            if (mobEvent.CreatedByUserId == userId)
+            {
+                return true;
+            }
+
+            // Check if user is marked as an event lead in EventAttendees
+            if (mobEvent.EventAttendees != null)
+            {
+                var attendee = mobEvent.EventAttendees.FirstOrDefault(ea => ea.UserId == userId);
+                if (attendee != null && attendee.IsEventLead)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public static bool IsCompleted(this Event mobEvent)

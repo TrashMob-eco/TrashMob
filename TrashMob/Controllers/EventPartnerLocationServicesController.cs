@@ -107,7 +107,7 @@
             }
 
             var authResult =
-                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
+                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserIsEventLead);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -250,7 +250,7 @@
             }
 
             var authResult =
-                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
+                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserIsEventLead);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
@@ -289,7 +289,7 @@
             }
 
             var authResult =
-                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserOwnsEntity);
+                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserIsEventLead);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {
