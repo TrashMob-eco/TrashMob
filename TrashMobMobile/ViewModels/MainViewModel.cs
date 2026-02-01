@@ -84,8 +84,6 @@ public partial class MainViewModel(IAuthService authService,
 
     public async Task Init()
     {
-        IsBusy = true;
-
         try
         {
             var signedIn = await authService.SignInSilentAsync();
@@ -122,8 +120,6 @@ public partial class MainViewModel(IAuthService authService,
 
                 IsMapSelected = true;
                 IsListSelected = false;
-
-                IsBusy = false;
             }
             else
             {
@@ -135,7 +131,6 @@ public partial class MainViewModel(IAuthService authService,
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
-            IsBusy = false;
             await NotificationService.NotifyError($"An error occurred while initializing the application. Please wait and try again in a moment.");
         }
     }
