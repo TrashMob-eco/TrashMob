@@ -132,16 +132,16 @@ az sql db ltr-policy set --name trashmob-db --server sql-tm-pr-westus2 \
 
 ### Strapi Database
 
-**If using Azure SQL:**
-- Apply same backup policies as main database
-- Separate retention policies if needed
+**Current State (Dev Deployment):**
+- **Database:** SQLite with ephemeral container storage
+- **Configuration:** `DATABASE_CLIENT: 'sqlite'` in `Deploy/containerAppStrapi.bicep`
+- **Limitation:** Azure Files SMB has locking issues with SQLite, so database is ephemeral
+- **Risk:** Data loss on container restart/redeployment
 
-**If using SQLite (current dev setup):**
-- SQLite file stored in ephemeral container storage is at risk
-- Options:
-  1. Migrate to Azure SQL (recommended for production)
-  2. Mount Azure File Share for persistent storage with backup
-  3. Scheduled export to Azure Blob Storage
+**Backup Options:**
+1. **Migrate to Azure SQL (recommended):** `Deploy/sqlDatabaseStrapi.bicep` exists but is not currently wired up. Migration would enable Azure's built-in backup with same policies as main database.
+2. **Scheduled SQLite export:** Use Strapi CLI or custom job to export to Azure Blob Storage before each deployment.
+3. **Accept ephemeral for dev:** If CMS content is recreatable, accept dev data loss; only implement backups for production.
 
 ### Restore Procedures
 
@@ -194,22 +194,17 @@ az sql db ltr-backup restore --dest-database trashmob-db-restored \
 
 ---
 
-## Open Questions
+## Decisions
 
 1. **What is the required data retention period for compliance?**
-   **Recommendation:** 12 months minimum for audit purposes
-   **Owner:** Legal/Compliance + Product Lead
-   **Due:** Before Phase 1
+   **Decision:** 12 months minimum for audit purposes
 
 2. **Should Strapi be migrated from SQLite to Azure SQL for production?**
-   **Recommendation:** Yes, for reliability and consistent backup strategy
-   **Owner:** Engineering Lead
-   **Due:** Phase 2
+   **Context:** Dev uses SQLite with ephemeral storage (`Deploy/containerAppStrapi.bicep` line 122). Bicep template for Azure SQL exists (`Deploy/sqlDatabaseStrapi.bicep`) but is not wired up.
+   **Decision:** Yes, migrate to Azure SQL for reliability and consistent backup strategy
 
 3. **Is cross-region replication needed for disaster recovery?**
-   **Recommendation:** Not initially; evaluate after core backups in place
-   **Owner:** Engineering Lead
-   **Due:** Post-Phase 3
+   **Decision:** Not initially; evaluate after core backups in place
 
 ---
 
@@ -230,4 +225,6 @@ az sql db ltr-backup restore --dest-database trashmob-db-restored \
 
 ## Changelog
 
+- **2026-01-31:** Converted open questions to decisions (12-month retention, migrate Strapi to Azure SQL, defer cross-region replication)
+- **2026-01-31:** Clarified Strapi uses SQLite with ephemeral storage in dev deployment
 - **2026-01-31:** Confirmed all scope items
