@@ -160,7 +160,40 @@ export const GettingStarted: React.FC = () => {
                     </div>
                 </div>
             </section>
-            <section className='bg-card py-12! flex flex-col justify-center text-center'>
+            <section className='bg-card'>
+                <div className='container py-24!'>
+                    <div className='flex flex-col md:flex-row gap-8 items-center'>
+                        <div className='w-full md:basis-1/2'>
+                            <h2 className='font-semibold'>Join or Create a Team</h2>
+                            <h4 className='mt-5!'>
+                                Teams help you make a bigger impact by working together with other volunteers in your
+                                community.
+                            </h4>
+                            <p className='font-light'>
+                                Whether you're looking to join an existing group or start your own, Teams make it easy
+                                to organize recurring cleanups, track your collective impact, and build lasting
+                                connections with fellow volunteers.
+                            </p>
+                            <ul className='list-disc pl-8 font-light'>
+                                <li>Find public teams on the Teams map</li>
+                                <li>Track your team's total bags, hours, and events</li>
+                                <li>Coordinate with team leads on cleanup schedules</li>
+                                <li>Build community with like-minded volunteers</li>
+                            </ul>
+                            <Button asChild className='mt-4'>
+                                <Link to='/teams'>Browse Teams</Link>
+                            </Button>
+                        </div>
+                        <div className='w-full md:basis-1/2 flex justify-center'>
+                            <div className='bg-primary/10 rounded-2xl p-12 text-center'>
+                                <div className='text-6xl mb-4'>👥</div>
+                                <p className='text-lg font-medium'>Together, we can make a bigger difference!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section className='bg-background py-12! flex flex-col justify-center text-center'>
                 <h2 className='font-semibold'>Ready to go?</h2>
                 <span>Find your first event now.</span>
                 <div className='px-5 mb-5'>

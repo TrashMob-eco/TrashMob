@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import events from '@/components/assets/faq/Event.svg';
 import attendees from '@/components/assets/faq/Attendees.svg';
 import volunteer from '@/components/assets/faq/volunteer.svg';
+import teams from '@/components/assets/card/twofigure.svg';
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -59,6 +60,41 @@ const faqs = [
             {
                 question: 'Can I change my base location?',
                 answer: 'Yes. Simply go to your <a href="https://www.trashmob.eco/locationpreference">Location Preference</a> page and drag the pin for your current location to wherever you want your base location to be. If you set the notification distance from this point, then you will be notified for any events that are created within that radius of your base location.',
+            },
+        ],
+    },
+    {
+        category: 'Teams',
+        desc: 'Creating and joining teams',
+        icon: teams,
+        questions: [
+            {
+                question: 'What is a Team?',
+                answer: 'A Team is a group of volunteers who work together on cleanup events. Teams can be public (visible to everyone and open for join requests) or private (invite-only). Teams help you organize recurring cleanups with a consistent group, track collective impact, and build community.',
+            },
+            {
+                question: 'How do I create a Team?',
+                answer: 'Go to the <a href="https://www.trashmob.eco/teams">Teams page</a> and click "Create Team". You\'ll need to provide a team name, description, and set your team\'s location. You can also choose whether your team is public or private, and whether new members require approval to join.',
+            },
+            {
+                question: 'What is the difference between public and private Teams?',
+                answer: 'Public teams are visible on the Teams map and in search results. Anyone can request to join a public team. Private teams are invite-only and are not visible on the map or in search results. Only team leads can invite new members to private teams.',
+            },
+            {
+                question: 'How do I join a Team?',
+                answer: 'Browse the <a href="https://www.trashmob.eco/teams">Teams page</a> to find public teams in your area. Click on a team to view its details, then click "Request to Join". The team lead will review your request and approve or decline it. For private teams, you\'ll need an invitation from a team lead.',
+            },
+            {
+                question: 'Can I be on multiple Teams?',
+                answer: 'Yes! There is no limit to the number of teams you can join. This allows you to participate in different cleanup efforts across your community.',
+            },
+            {
+                question: 'What can Team Leads do?',
+                answer: 'Team leads can edit team details, invite new members, approve join requests, promote other members to co-lead status, remove members, and manage team events. A team can have multiple leads to help share the responsibility.',
+            },
+            {
+                question: 'How do I leave a Team?',
+                answer: 'Go to your <a href="https://www.trashmob.eco/mydashboard">Dashboard</a> and find the team in "My Teams". Click on the team, then use the "Leave Team" option. Note: If you are the only team lead, you must either promote another member to lead or contact TrashMob support.',
             },
         ],
     },
