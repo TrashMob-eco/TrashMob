@@ -390,48 +390,41 @@ jobs:
 
 ## Rollout Plan
 
-### Phase 1 - Infrastructure (Weeks 1-2):
+### Step 1 - Infrastructure
 1. Set up API versioning middleware
 2. Implement pagination framework
 3. Configure OpenAPI 3.1
 4. Add Problem Details error handling
 5. Deploy correlation ID middleware
 
-### Phase 2 - Pilot Endpoints (Weeks 3-4):
+### Step 2 - Pilot Endpoint
 1. Create Events v2 controller as pilot
 2. Generate and test TypeScript client
 3. Generate and test .NET client
 4. Migrate one web page to use v2
 5. Migrate one mobile screen to use v2
-6. Gather developer feedback
 
-### Phase 3 - Core Endpoints (Weeks 5-8):
+### Step 3 - Core Endpoints
 1. Create remaining v2 controllers (Users, Partners, etc.)
-2. Comprehensive testing
-3. Update documentation
-4. Developer training sessions
+2. Update documentation
 
-### Phase 4 - Web Migration (Weeks 9-12):
+### Step 4 - Web Migration
 1. Migrate all React pages to v2 incrementally
 2. Remove manual API service code
-3. Performance testing
 
-### Phase 5 - Mobile Migration (Weeks 13-16):
+### Step 5 - Mobile Migration
 1. Migrate all mobile screens to v2
 2. Remove manual DTO classes
-3. Performance testing
 
-### Phase 6 - Advanced Features (Weeks 17-20):
+### Step 6 - Advanced Features
 1. Add response compression
 2. Implement ETags
 3. Add bulk operations
 4. Webhook infrastructure
 
-### Phase 7 - Stabilization (Weeks 21-24):
-1. Bug fixes
-2. Performance optimization
-3. Documentation finalization
-4. v1 deprecation announcements
+### Step 7 - Stabilization
+1. Bug fixes and performance optimization
+2. v1 deprecation announcements
 
 ## Monitoring & Observability
 
@@ -491,4 +484,5 @@ jobs:
 
 ## Changelog
 
+- **2026-01-31:** Removed week-based schedule from rollout plan (agile approach)
 - **2026-01-31:** Resolved open questions; confirmed all Phase 1-3 scope items; added out-of-scope items
