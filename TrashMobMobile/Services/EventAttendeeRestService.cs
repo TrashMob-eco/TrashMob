@@ -34,4 +34,29 @@ public class EventAttendeeRestService(IHttpClientFactory httpClientFactory) : Re
             response.EnsureSuccessStatusCode();
         }
     }
+
+    public async Task<IEnumerable<DisplayUser>> GetEventLeadsAsync(Guid eventId, CancellationToken cancellationToken = default)
+    {
+        var requestUri = string.Concat(Controller, $"/{eventId}/leads");
+        var eventLeads = await AuthorizedHttpClient.GetFromJsonAsync<IEnumerable<DisplayUser>>(requestUri, SerializerOptions, cancellationToken);
+        return eventLeads ?? [];
+    }
+
+    public async Task<EventAttendee> PromoteToLeadAsync(Guid eventId, Guid userId, CancellationToken cancellationToken = default)
+    {
+        var requestUri = string.Concat(Controller, $"/{eventId}/{userId}/promote");
+        var response = await AuthorizedHttpClient.PutAsync(requestUri, null, cancellationToken);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<EventAttendee>(SerializerOptions, cancellationToken);
+        return result!;
+    }
+
+    public async Task<EventAttendee> DemoteFromLeadAsync(Guid eventId, Guid userId, CancellationToken cancellationToken = default)
+    {
+        var requestUri = string.Concat(Controller, $"/{eventId}/{userId}/demote");
+        var response = await AuthorizedHttpClient.PutAsync(requestUri, null, cancellationToken);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<EventAttendee>(SerializerOptions, cancellationToken);
+        return result!;
+    }
 }
