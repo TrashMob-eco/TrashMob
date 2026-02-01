@@ -40,7 +40,7 @@ namespace TrashMob.Models
         /// <summary>
         /// Gets or sets the total weight of trash picked up during the event.
         /// </summary>
-        public int PickedWeight { get; set; }
+        public decimal PickedWeight { get; set; }
 
         /// <summary>
         /// Gets or sets the identifier of the weight unit used for the picked weight.

@@ -27,9 +27,9 @@
                 </Grid>
                 <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="*, *">
                     <Border Style="{x:StaticResource RoundBorder}" Margin="5,0" Grid.Row="0" Grid.ColumnSpan="2">
-                        <Grid RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="*, *, *">
+                        <Grid RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="*, *, *, *">
                             <Label Text="Here's what TrashMob volunteers accomplished at this event!" Grid.Row="0"
-                                   Grid.Column="0" Grid.ColumnSpan="3" FontSize="Micro" Margin="0, 0, 0, 10" />
+                                   Grid.Column="0" Grid.ColumnSpan="4" FontSize="Micro" Margin="0, 0, 0, 10" />
                             <Image Grid.Row="1" Grid.Column="0" Source="person" MaximumWidthRequest="25" />
                             <Label Grid.Row="2" Grid.Column="0"
                                    Text="{ Binding EventSummaryViewModel.ActualNumberOfAttendees }" FontSize="Micro"
@@ -45,7 +45,13 @@
                             <Label Grid.Row="2" Grid.Column="2"
                                    Text="{ Binding EventSummaryViewModel.DurationInMinutes }" FontSize="Micro"
                                    HorizontalTextAlignment="Center" />
-                            <Label Grid.Row="3" Grid.Column="2" Text="Duration in Minutes" FontSize="Micro"
+                            <Label Grid.Row="3" Grid.Column="2" Text="Duration (min)" FontSize="Micro"
+                                   HorizontalTextAlignment="Center" />
+                            <Image Grid.Row="1" Grid.Column="3" Source="scale" WidthRequest="25" />
+                            <Label Grid.Row="2" Grid.Column="3"
+                                   Text="{ Binding EventSummaryViewModel.WeightDisplay }" FontSize="Micro"
+                                   HorizontalTextAlignment="Center" />
+                            <Label Grid.Row="3" Grid.Column="3" Text="Weight" FontSize="Micro"
                                    HorizontalTextAlignment="Center" />
                         </Grid>
                     </Border>
