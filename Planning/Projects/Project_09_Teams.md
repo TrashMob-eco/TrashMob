@@ -94,6 +94,12 @@ Enable users to form and join teams for recurring cleanup efforts. Teams provide
 - ☐ Reactivate archived/deactivated teams
 - ☐ Team moderation (edit name/description for policy violations)
 
+### Phase 7 - Documentation
+- ☐ Update FAQ page with Teams-related questions
+- ☐ Update Help documentation for Teams feature
+- ☐ Add Teams section to Getting Started guide
+- ☐ Create Team Lead guide/tips content
+
 ---
 
 ## Out-of-Scope
@@ -732,6 +738,12 @@ public async Task<ActionResult> ReactivateTeam(Guid teamId)
 - Deactivate/delete teams
 - Reactivate archived teams
 - Team moderation capabilities
+
+### Phase 7: Documentation
+- Update FAQ with Teams questions
+- Update Help docs for Teams feature
+- Add to Getting Started guide
+- Create Team Lead guide
 
 **Note:** Phases can be worked on by different volunteers with coordination on shared components.
 
