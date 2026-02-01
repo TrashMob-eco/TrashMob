@@ -7,6 +7,24 @@
 
 ## Pre-Deployment Tasks
 
+### 0. Key Vault Secrets (If Not Already Created)
+
+Ensure required secrets exist before deployments:
+
+**Dev environment:**
+```bash
+# Strapi database password (required for Strapi Azure SQL)
+az keyvault secret show --vault-name kv-tm-dev-westus2 --name strapi-db-password || \
+  az keyvault secret set --vault-name kv-tm-dev-westus2 --name strapi-db-password --value "$(openssl rand -base64 32)"
+```
+
+**Production environment:**
+```bash
+# Strapi database password (required for Strapi Azure SQL)
+az keyvault secret show --vault-name kv-tm-pr-westus2 --name strapi-db-password || \
+  az keyvault secret set --vault-name kv-tm-pr-westus2 --name strapi-db-password --value "$(openssl rand -base64 32)"
+```
+
 ### 1. Database Migrations (REQUIRED)
 
 Run all 4 pending migrations in order:
