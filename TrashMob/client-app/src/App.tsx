@@ -53,6 +53,8 @@ import { CreateLitterReportPage } from './pages/litterreports/create';
 /** Teams */
 import { TeamsPage } from './pages/teams';
 import { TeamDetailPage } from './pages/teams/$teamId';
+import { CreateTeamPage } from './pages/teams/create';
+import { TeamEditPage } from './pages/teams/$teamId/edit';
 
 /** Partners */
 import { Partnerships } from './pages/partnerships/page';
@@ -223,6 +225,8 @@ const AppContent: FC = () => {
                             <Route path='/waivers' element={<Waivers />} />
                             <Route path='/litterreports/create' element={<CreateLitterReportPage />} />
                             <Route path='/litterreports/:litterReportId/edit' element={<LitterReportEditPage />} />
+                            <Route path='/teams/create' element={<CreateTeamPage />} />
+                            <Route path='/teams/:teamId/edit' element={<TeamEditPage />} />
                         </Route>
                         <Route element={<AuthSideAdminLayout />}>
                             <Route path='/siteadmin' element={<SiteAdminLayout />}>
