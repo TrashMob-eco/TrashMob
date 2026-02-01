@@ -415,27 +415,19 @@ jobs:
 
 ---
 
-## Open Questions
+## Decisions
 
 1. **Test data management strategy?**
-   **Recommendation:** Seed data before tests; cleanup after; isolated test users
-   **Owner:** Engineering
-   **Due:** Before Phase 1
+   **Decision:** Seed data before tests; cleanup after; use isolated test users per test run
 
 2. **Test environment?**
-   **Recommendation:** Use dev environment with test tenant; consider ephemeral environments
-   **Owner:** Engineering
-   **Due:** Before Phase 1
+   **Decision:** Use dev environment with test tenant; consider ephemeral environments for PR isolation in future
 
 3. **Required vs optional PR checks?**
-   **Recommendation:** Start optional; make required after 2 weeks stability
-   **Owner:** Engineering Lead
-   **Due:** After Phase 2
+   **Decision:** Start as optional checks; promote to required after 2 weeks of stability (< 5% flaky rate)
 
 4. **Browser/device matrix?**
-   **Recommendation:** Chrome + Firefox for web; Android for mobile; expand later
-   **Owner:** Engineering
-   **Due:** Before Phase 1
+   **Decision:** Chrome + Firefox for web; Android-first for mobile; expand to iOS after Android stable
 
 ---
 
@@ -447,7 +439,13 @@ jobs:
 
 ---
 
-**Last Updated:** January 24, 2026
+**Last Updated:** January 31, 2026
 **Owner:** Engineering Team
 **Status:** Not Started
 **Next Review:** When CI/CD stabilized
+
+---
+
+## Changelog
+
+- **2026-01-31:** Converted open questions to decisions; confirmed all scope items
