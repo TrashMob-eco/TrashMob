@@ -68,7 +68,9 @@ export const CommunityDetailPage = () => {
                     <div className='h-full bg-black/40 flex items-end'>
                         <div className='container pb-8'>
                             <h1 className='text-4xl font-bold text-white'>{community.name}</h1>
-                            {community.tagline ? <p className='text-xl text-white/90 mt-2'>{community.tagline}</p> : null}
+                            {community.tagline ? (
+                                <p className='text-xl text-white/90 mt-2'>{community.tagline}</p>
+                            ) : null}
                         </div>
                     </div>
                 </div>
@@ -138,7 +140,8 @@ export const CommunityDetailPage = () => {
                                     <span className='text-muted-foreground'>Location</span>
                                     <span className='font-medium text-right'>{getLocation(community)}</span>
                                 </div>
-                                {community.website ? <div className='flex justify-between items-center'>
+                                {community.website ? (
+                                    <div className='flex justify-between items-center'>
                                         <span className='text-muted-foreground'>Website</span>
                                         <a
                                             href={community.website}
@@ -148,7 +151,8 @@ export const CommunityDetailPage = () => {
                                         >
                                             Visit <ExternalLink className='h-3 w-3' />
                                         </a>
-                                    </div> : null}
+                                    </div>
+                                ) : null}
                             </CardContent>
                         </Card>
                     </div>

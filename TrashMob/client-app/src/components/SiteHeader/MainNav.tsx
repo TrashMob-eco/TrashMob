@@ -9,7 +9,18 @@ import {
     NavigationMenuTrigger,
     navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
-import { MapPin, CalendarPlus, Gauge, Map, BookOpen, HelpCircle, ShoppingBag, List, Users, Building2 } from 'lucide-react';
+import {
+    MapPin,
+    CalendarPlus,
+    Gauge,
+    Map,
+    BookOpen,
+    HelpCircle,
+    ShoppingBag,
+    List,
+    Users,
+    Building2,
+} from 'lucide-react';
 import React from 'react';
 
 interface ListItemProps extends React.ComponentPropsWithoutRef<'a'> {
