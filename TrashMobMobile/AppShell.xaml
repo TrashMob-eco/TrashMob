@@ -5,94 +5,10 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:TrashMobMobile"
+    xmlns:pages="clr-namespace:TrashMobMobile.Pages"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     Title="TrashMobMobile"
-    Shell.FlyoutBehavior="Flyout">
-
-    <Shell.TitleView>
-        <Image Source="{AppThemeBinding Light=bannerlogo_light.png, Dark=bannerlogo_dark.png}" />
-    </Shell.TitleView>
-    <Shell.ItemTemplate>
-        <DataTemplate>
-            <Border StrokeShape="RoundRectangle 22"
-                    HeightRequest="44"
-                    Margin="12,16"
-                    StrokeThickness="0"
-                    Padding="16,8">
-                <VisualStateManager.VisualStateGroups>
-                    <VisualStateGroupList>
-                        <VisualStateGroup x:Name="CommonStates">
-                            <VisualState x:Name="Normal">
-                                <VisualState.Setters>
-                                    <Setter Property="BackgroundColor"
-                                            Value="Transparent" />
-                                </VisualState.Setters>
-                            </VisualState>
-                            <VisualState x:Name="Selected">
-                                <VisualState.Setters>
-                                    <Setter Property="BackgroundColor"
-                                            Value="{AppThemeBinding Light={StaticResource LightFlyoutSelectedItemColor}, Dark={StaticResource DarkFlyoutSelectedItemColor}}" />
-                                </VisualState.Setters>
-                            </VisualState>
-                        </VisualStateGroup>
-                    </VisualStateGroupList>
-                </VisualStateManager.VisualStateGroups>
-                <Grid ColumnDefinitions="48,*"
-                      ColumnSpacing="12">
-                    <Image Source="{Binding FlyoutIcon}"
-                           Margin="5"
-                           HeightRequest="30"
-                           VerticalOptions="Center" />
-                    <Label Grid.Column="1"
-                           Text="{Binding Title}"
-                           FontSize="16"
-                           VerticalOptions="Center"
-                           VerticalTextAlignment="Center" />
-                </Grid>
-            </Border>
-        </DataTemplate>
-    </Shell.ItemTemplate>
-
-    <Shell.MenuItemTemplate>
-        <DataTemplate>
-            <Border StrokeShape="RoundRectangle 22"
-                    Height="44"
-                    StrokeThickness="0"
-                    Margin="12,16"
-                    Padding="16,8">
-                <VisualStateManager.VisualStateGroups>
-                    <VisualStateGroupList>
-                        <VisualStateGroup x:Name="CommonStates">
-                            <VisualState x:Name="Normal">
-                                <VisualState.Setters>
-                                    <Setter Property="BackgroundColor"
-                                            Value="Transparent" />
-                                </VisualState.Setters>
-                            </VisualState>
-                            <VisualState x:Name="Selected">
-                                <VisualState.Setters>
-                                    <Setter Property="BackgroundColor"
-                                            Value="{AppThemeBinding Light={StaticResource LightFlyoutSelectedItemColor}, Dark={StaticResource DarkFlyoutSelectedItemColor}}" />
-                                </VisualState.Setters>
-                            </VisualState>
-                        </VisualStateGroup>
-                    </VisualStateGroupList>
-                </VisualStateManager.VisualStateGroups>
-                <Grid ColumnDefinitions="48,*"
-                      ColumnSpacing="12">
-                    <Image Source="{Binding FlyoutIcon}"
-                           Margin="5"
-                           HeightRequest="30"
-                           VerticalOptions="Center" />
-                    <Label Grid.Column="1"
-                           Text="{Binding Title}"
-                           FontSize="16"
-                           VerticalOptions="Center"
-                           VerticalTextAlignment="Center" />
-                </Grid>
-            </Border>
-        </DataTemplate>
-    </Shell.MenuItemTemplate>
+    Shell.FlyoutBehavior="Disabled">
 
     <Shell.Behaviors>
         <toolkit:StatusBarBehavior
@@ -100,51 +16,23 @@
             StatusBarStyle="LightContent" />
     </Shell.Behaviors>
 
-    <FlyoutItem x:Name="Home"
-                Title="Home"                
-                Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconHome}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
-        <ShellContent ContentTemplate="{DataTemplate local:MainPage}" Route="MainPage" />
-    </FlyoutItem>
-
-    <MenuItem x:Name="Dashboard"
-              Text="My Dashboard"
-              Clicked="OnMyDashboardClicked"
-              IconImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconHeartPulse}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}" />
-
-    <MenuItem x:Name="SetMyLocation"
-              Text="Set My Location"
-              Clicked="OnSetMyLocationClicked"
-              IconImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconHomeMapMarker}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}" />
-
-    <MenuItem x:Name="PrivacyPolicy"
-              Text="Privacy Policy"
-              Clicked="OnPrivacyPolicyClicked"
-              IconImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconBinoculars}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}" />
-
-    <MenuItem x:Name="TermsOfUse"
-              Text="Terms of Use"
-              Clicked="OnTermsOfUseClicked"
-              IconImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconFileDocument}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}" />
-
-    <MenuItem x:Name="SignWaiver"
-              Text="Sign Waiver"
-              Clicked="OnSignWaiverClicked"
-              IconImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconSignatureText}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}" />
-
-    <MenuItem x:Name="Contact"
-              Text="Contact us"
-              Clicked="OnContactUsClicked"
-              IconImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconEmail}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}" />
-
-    <Shell.FlyoutFooter>
-        <VerticalStackLayout Padding="28,48">
-            <Button Style="{StaticResource SecondaryLargeButton}"
-                    ContentLayout="Left, 10"
-                    Clicked="OnLogoutClicked"
-                    Text="Sign out"
-                    FontSize="Small"
-                    ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconLogout}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />
-        </VerticalStackLayout>
-    </Shell.FlyoutFooter>
+    <TabBar>
+        <Tab Title="Home"
+             Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconHome}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
+            <ShellContent ContentTemplate="{DataTemplate local:MainPage}" Route="MainPage" />
+        </Tab>
+        <Tab Title="Dashboard"
+             Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconHeartPulse}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
+            <ShellContent ContentTemplate="{DataTemplate pages:MyDashboardPage}" Route="MyDashboardPage" />
+        </Tab>
+        <Tab Title="Location"
+             Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconHomeMapMarker}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
+            <ShellContent ContentTemplate="{DataTemplate pages:SetUserLocationPreferencePage}" Route="SetUserLocationPreferencePage" />
+        </Tab>
+        <Tab Title="More"
+             Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconViewList}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
+            <ShellContent ContentTemplate="{DataTemplate pages:MorePage}" Route="MorePage" />
+        </Tab>
+    </TabBar>
 
 </Shell>
