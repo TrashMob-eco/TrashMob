@@ -749,6 +749,14 @@ Parents without TrashMob accounts still receive critical notifications via email
 
 ---
 
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#956](https://github.com/trashmob/TrashMob/issues/956)** - Project 23: Parental Consent for Minors (tracking issue)
+
+---
+
 ## Related Documents
 
 - **[Privo Integration Package](./Project_23_Privo_Integration_Package.md)** - Document to send to Privo

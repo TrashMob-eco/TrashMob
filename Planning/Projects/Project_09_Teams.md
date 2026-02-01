@@ -793,6 +793,26 @@ public async Task<ActionResult> ReactivateTeam(Guid teamId)
 
 ---
 
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#2231](https://github.com/trashmob/TrashMob/issues/2231)** - Project 9: TrashMob Teams (tracking issue)
+- **[#2308](https://github.com/trashmob/TrashMob/issues/2308)** - UX Design for Teams Home Page
+- **[#2309](https://github.com/trashmob/TrashMob/issues/2309)** - Web UX Design for View Team Page
+- **[#2310](https://github.com/trashmob/TrashMob/issues/2310)** - Web UX Design for Edit Team Page
+- **[#2311](https://github.com/trashmob/TrashMob/issues/2311)** - Add Team entities to database model
+- **[#2312](https://github.com/trashmob/TrashMob/issues/2312)** - Add APIs to Back End for Teams functionality
+- **[#2313](https://github.com/trashmob/TrashMob/issues/2313)** - Web UX - Add View Teams on Map Functionality
+- **[#2314](https://github.com/trashmob/TrashMob/issues/2314)** - Web UX - Add View Team Details Functionality
+- **[#2315](https://github.com/trashmob/TrashMob/issues/2315)** - Web UX - Add Edit Team Page
+- **[#2316](https://github.com/trashmob/TrashMob/issues/2316)** - Web UX - Add View Teams in Community to Community Page
+- **[#2317](https://github.com/trashmob/TrashMob/issues/2317)** - Web UX - Add Search for Teams functionality to Teams page
+- **[#2318](https://github.com/trashmob/TrashMob/issues/2318)** - Web UX - Allow Team to create an event
+- **[#2319](https://github.com/trashmob/TrashMob/issues/2319)** - Web UX - Add Team Stats to Team Details Page
+
+---
+
 ## Related Documents
 
 - **[Project 11 - Adopt-A-Location](./Project_11_Adopt_A_Location.md)** - Teams adopt locations
@@ -801,7 +821,7 @@ public async Task<ActionResult> ReactivateTeam(Guid teamId)
 
 ---
 
-**Last Updated:** January 29, 2026
+**Last Updated:** January 31, 2026
 **Owner:** Product Lead + Web Team
 **Status:** Ready for Review
 **Next Review:** When volunteer picks up work

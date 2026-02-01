@@ -534,6 +534,14 @@ public async Task<ActionResult<IEnumerable<DelinquentAdoptionDto>>> GetDelinquen
 
 ---
 
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#2233](https://github.com/trashmob/TrashMob/issues/2233)** - Project 11: Adopt-a-Location (tracking issue)
+
+---
+
 ## Related Documents
 
 - **[Project 9 - Teams](./Project_09_Teams.md)** - Adopting entity

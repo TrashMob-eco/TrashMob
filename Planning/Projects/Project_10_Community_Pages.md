@@ -465,6 +465,23 @@ public async Task<ActionResult<IEnumerable<CommunityProgramDto>>> GetCommunityPr
 
 ---
 
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#2232](https://github.com/trashmob/TrashMob/issues/2232)** - Project 10: Community Pages (tracking issue)
+- **[#2299](https://github.com/trashmob/TrashMob/issues/2299)** - Create data model for community pages
+- **[#2300](https://github.com/trashmob/TrashMob/issues/2300)** - Update entities for community pages
+- **[#2301](https://github.com/trashmob/TrashMob/issues/2301)** - Add back end apis for community pages
+- **[#2302](https://github.com/trashmob/TrashMob/issues/2302)** - Community Page UX Design
+- **[#2303](https://github.com/trashmob/TrashMob/issues/2303)** - Website - Add Community Page View
+- **[#2304](https://github.com/trashmob/TrashMob/issues/2304)** - Website - Add Community Page Edit
+- **[#2305](https://github.com/trashmob/TrashMob/issues/2305)** - Website - Add Navigation from Home Page to Community Page
+- **[#2306](https://github.com/trashmob/TrashMob/issues/2306)** - Website - Add Featured Communities Widget to home page
+- **[#2307](https://github.com/trashmob/TrashMob/issues/2307)** - Website - Add FAQ for Communities Functionality
+
+---
+
 ## Related Documents
 
 - **[Project 1 - Auth Revamp](./Project_01_Auth_Revamp.md)** - SSO for community admins
@@ -474,7 +491,7 @@ public async Task<ActionResult<IEnumerable<CommunityProgramDto>>> GetCommunityPr
 
 ---
 
-**Last Updated:** January 29, 2026
+**Last Updated:** January 31, 2026
 **Owner:** Product Lead + Web Team
 **Status:** Planning in Progress
 **Next Review:** When dependencies complete

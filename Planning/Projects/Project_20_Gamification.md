@@ -587,6 +587,14 @@ public async Task<ActionResult<IEnumerable<UserAchievementDto>>> GetUserAchievem
 
 ---
 
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#2240](https://github.com/trashmob/TrashMob/issues/2240)** - Project 20: Gamification (tracking issue)
+
+---
+
 ## Related Documents
 
 - **[Project 7 - Event Weights](./Project_07_Event_Weights.md)** - Weight metrics

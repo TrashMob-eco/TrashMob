@@ -254,6 +254,14 @@ Create `CODING_STANDARDS.md`:
 
 ---
 
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#2228](https://github.com/trashmob/TrashMob/issues/2228)** - Project 6: Improve Back End Code Standards and Structure (tracking issue)
+
+---
+
 ## Related Documents
 
 - **[Project 24 - API v2](./Project_24_API_v2_Modernization.md)** - Benefits from clean code foundation
@@ -261,7 +269,7 @@ Create `CODING_STANDARDS.md`:
 
 ---
 
-**Last Updated:** January 26, 2026
+**Last Updated:** January 31, 2026
 **Owner:** Engineering Lead
 **Status:** In Progress (Phase 1 & 4 complete)
 **Next Review:** When Phase 2 or 3 starts

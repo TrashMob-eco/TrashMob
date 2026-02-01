@@ -436,6 +436,14 @@ public class RouteRecordingService
 
 ---
 
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#1202](https://github.com/trashmob/TrashMob/issues/1202)** - Project 15: Map Route Tracing with Decay (tracking issue)
+
+---
+
 ## Related Documents
 
 - **[Project 4 - Mobile Robustness](./Project_04_Mobile_Robustness.md)** - Stable GPS/background

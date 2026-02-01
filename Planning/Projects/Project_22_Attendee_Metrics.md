@@ -552,6 +552,20 @@ foreach (var eventSummary in existingEventSummaries)
 
 ---
 
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#2241](https://github.com/trashmob/TrashMob/issues/2241)** - Project 22: Attendee Level Event Metrics (tracking issue)
+- **[#2263](https://github.com/trashmob/TrashMob/issues/2263)** - Update Data Model to Allow event participants to contribute to event summary
+- **[#2264](https://github.com/trashmob/TrashMob/issues/2264)** - Update API's to allow for management of attendee-level metrics for an event
+- **[#2265](https://github.com/trashmob/TrashMob/issues/2265)** - Update Mobile app to allow for individual metrics
+- **[#2266](https://github.com/trashmob/TrashMob/issues/2266)** - Update Web UX to allow for individual metrics
+- **[#2267](https://github.com/trashmob/TrashMob/issues/2267)** - Update Mobile app design for individual metrics
+- **[#2268](https://github.com/trashmob/TrashMob/issues/2268)** - Update Web app design for individual metrics
+
+---
+
 ## Related Documents
 
 - **[Project 7 - Event Weights](./Project_07_Event_Weights.md)** - Event-level weight tracking

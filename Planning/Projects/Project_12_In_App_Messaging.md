@@ -577,6 +577,14 @@ Users can configure notification settings (in both web and mobile):
 
 ---
 
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#2234](https://github.com/trashmob/TrashMob/issues/2234)** - Project 12: In-App Messaging (tracking issue)
+
+---
+
 ## Related Documents
 
 - **[Project 9 - Teams](./Project_09_Teams.md)** - Future team messaging
