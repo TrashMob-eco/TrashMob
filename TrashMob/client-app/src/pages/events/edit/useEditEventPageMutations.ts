@@ -3,7 +3,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router';
 import { useLogin } from '@/hooks/useLogin';
 
-import { GetUserEvents, UpdateEvent } from '@/services/events';
+import {
+    GetUserEvents,
+    UpdateEvent,
+    PromoteToLead,
+    DemoteFromLead,
+    GetEventAttendees,
+    GetEventLeads,
+} from '@/services/events';
 import {
     CreateEventPartnerLocationService,
     DeleteEventPartnerLocationService,
@@ -80,9 +87,67 @@ export const useEditEventPageMutations = () => {
         },
     });
 
+    const promoteToLead = useMutation({
+        mutationKey: PromoteToLead().key,
+        mutationFn: PromoteToLead().service,
+        onSuccess: (_data, variables) => {
+            queryClient.invalidateQueries({
+                queryKey: GetEventAttendees({ eventId: variables.eventId }).key,
+                refetchType: 'all',
+            });
+            queryClient.invalidateQueries({
+                queryKey: GetEventLeads({ eventId: variables.eventId }).key,
+                refetchType: 'all',
+            });
+            toast({
+                duration: 5000,
+                variant: 'primary',
+                title: 'Co-lead added!',
+                description: 'The attendee has been promoted to event co-lead.',
+            });
+        },
+        onError: (error: Error) => {
+            toast({
+                variant: 'destructive',
+                title: 'Promote Error',
+                description: error.message,
+            });
+        },
+    });
+
+    const demoteFromLead = useMutation({
+        mutationKey: DemoteFromLead().key,
+        mutationFn: DemoteFromLead().service,
+        onSuccess: (_data, variables) => {
+            queryClient.invalidateQueries({
+                queryKey: GetEventAttendees({ eventId: variables.eventId }).key,
+                refetchType: 'all',
+            });
+            queryClient.invalidateQueries({
+                queryKey: GetEventLeads({ eventId: variables.eventId }).key,
+                refetchType: 'all',
+            });
+            toast({
+                duration: 5000,
+                variant: 'primary',
+                title: 'Co-lead removed',
+                description: 'The co-lead has been demoted to regular attendee.',
+            });
+        },
+        onError: (error: Error) => {
+            toast({
+                variant: 'destructive',
+                title: 'Demote Error',
+                description: error.message,
+            });
+        },
+    });
+
     return {
         updateEvent,
         createEventPartnerLocationService,
         deleteEventPartnerLocationService,
+        promoteToLead,
+        demoteFromLead,
     };
 };

@@ -1,6 +1,6 @@
 import { useQuery, useQueries } from '@tanstack/react-query';
 
-import { GetEventAttendees, GetEventById } from '@/services/events';
+import { GetEventAttendees, GetEventById, GetEventLeads } from '@/services/events';
 import {
     GetEventPartnerLocationServices,
     GetEventPartnerLocationServicesByLocationId,
@@ -30,6 +30,12 @@ export const useEditEventPageQueries = (eventId: string) => {
         select: (res) => res.data,
     });
 
+    const { data: eventLeads } = useQuery({
+        queryKey: GetEventLeads({ eventId }).key,
+        queryFn: GetEventLeads({ eventId }).service,
+        select: (res) => res.data,
+    });
+
     const { data: eventPartnerLocations } = useQuery({
         queryKey: GetEventPartnerLocationServices({ eventId }).key,
         queryFn: GetEventPartnerLocationServices({ eventId }).service,
@@ -54,6 +60,7 @@ export const useEditEventPageQueries = (eventId: string) => {
         // Event
         event,
         eventAttendees,
+        eventLeads,
         eventPartnerLocations,
         servicesByLocation,
     };

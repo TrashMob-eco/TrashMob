@@ -2,8 +2,14 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
-             x:Class="TrashMobMobile.Views.ViewEvent.TabAttendees">
-    <Grid RowDefinitions="*, *, *">
+             x:Class="TrashMobMobile.Views.ViewEvent.TabAttendees"
+             x:Name="TabAttendeesView">
+    <Grid RowDefinitions="Auto, *">
+        <Label Text="{Binding CoLeadCountDisplay}"
+               Style="{StaticResource FieldLabel}"
+               Grid.Row="0"
+               Margin="10,5"
+               IsVisible="{Binding CanManageCoLeads}" />
         <CollectionView x:Name="EventAttendeesCollection" Grid.Row="1"
                                     ItemsSource="{Binding EventAttendees}"
                                     SelectionMode="None">
@@ -11,13 +17,29 @@
                 <DataTemplate x:DataType="viewModels:EventAttendeeViewModel">
                     <StackLayout Margin="5">
                         <Border Style="{StaticResource RoundBorder}" Margin="5">
-                            <Grid ColumnDefinitions="*, *" RowDefinitions="*, *, *">
+                            <Grid ColumnDefinitions="*, *, Auto" RowDefinitions="*, *, *">
                                 <Label Text="User Name" Style="{StaticResource FieldLabel}" Grid.Row="0" />
                                 <Label Text="{Binding UserName}" Grid.Row="0" Grid.Column="1" />
                                 <Label Text="Member Since" Style="{StaticResource FieldLabel}" Grid.Row="1" />
                                 <Label Text="{Binding MemberSince}" Grid.Row="1" Grid.Column="1" />
                                 <Label Text="Event Role" Style="{StaticResource FieldLabel}" Grid.Row="2" />
                                 <Label Text="{Binding Role}" Grid.Row="2" Grid.Column="1"/>
+                                <StackLayout Grid.Row="0" Grid.RowSpan="3" Grid.Column="2" VerticalOptions="Center" Margin="10,0">
+                                    <Button Text="Promote"
+                                            Command="{Binding Source={x:Reference TabAttendeesView}, Path=BindingContext.PromoteToLeadCommand}"
+                                            CommandParameter="{Binding .}"
+                                            IsVisible="{Binding CanPromote}"
+                                            Style="{StaticResource PrimaryButton}"
+                                            Padding="10,5"
+                                            FontSize="12" />
+                                    <Button Text="Demote"
+                                            Command="{Binding Source={x:Reference TabAttendeesView}, Path=BindingContext.DemoteFromLeadCommand}"
+                                            CommandParameter="{Binding .}"
+                                            IsVisible="{Binding CanDemote}"
+                                            Style="{StaticResource SecondaryButton}"
+                                            Padding="10,5"
+                                            FontSize="12" />
+                                </StackLayout>
                             </Grid>
                         </Border>
                     </StackLayout>

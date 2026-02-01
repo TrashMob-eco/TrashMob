@@ -11,5 +11,11 @@
         Task AddAttendeeAsync(EventAttendee eventAttendee, CancellationToken cancellationToken = default);
 
         Task RemoveAttendeeAsync(EventAttendee eventAttendee, CancellationToken cancellationToken = default);
+
+        Task<IEnumerable<DisplayUser>> GetEventLeadsAsync(Guid eventId, CancellationToken cancellationToken = default);
+
+        Task<EventAttendee> PromoteToLeadAsync(Guid eventId, Guid userId, CancellationToken cancellationToken = default);
+
+        Task<EventAttendee> DemoteFromLeadAsync(Guid eventId, Guid userId, CancellationToken cancellationToken = default);
     }
 }
