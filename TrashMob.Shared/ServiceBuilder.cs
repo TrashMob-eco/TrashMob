@@ -9,6 +9,7 @@
     using TrashMob.Shared.Managers.LitterReport;
     using TrashMob.Shared.Managers.Partners;
     using TrashMob.Shared.Managers.Teams;
+    using TrashMob.Shared.Managers.Communities;
     using TrashMob.Shared.Persistence;
     using TrashMob.Shared.Persistence.Interfaces;
     using TrashMob.Shared.Services;
@@ -80,6 +81,9 @@
             services.AddScoped<ITeamManager, TeamManager>();
             services.AddScoped<ITeamMemberManager, TeamMemberManager>();
             services.AddScoped<ITeamPhotoManager, TeamPhotoManager>();
+
+            // Community managers
+            services.AddScoped<ICommunityManager, CommunityManager>();
 
             // User Feedback
             services.AddScoped<IUserFeedbackManager, UserFeedbackManager>();

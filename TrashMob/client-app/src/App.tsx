@@ -57,6 +57,10 @@ import { TeamDetailPage } from './pages/teams/$teamId';
 import { CreateTeamPage } from './pages/teams/create';
 import { TeamEditPage } from './pages/teams/$teamId/edit';
 
+/** Communities */
+import { CommunitiesPage } from './pages/communities';
+import { CommunityDetailPage } from './pages/communities/$slug';
+
 /** Partners */
 import { Partnerships } from './pages/partnerships/page';
 import { BecomeAPartnerPage } from './pages/_partnerRequest/becomeapartner';
@@ -259,6 +263,8 @@ const AppContent: FC = () => {
                             <Route path='/litterreports/:litterReportId' element={<LitterReportDetailPage />} />
                             <Route path='/teams' element={<TeamsPage />} />
                             <Route path='/teams/:teamId' element={<TeamDetailPage />} />
+                            <Route path='/communities' element={<CommunitiesPage />} />
+                            <Route path='/communities/:slug' element={<CommunityDetailPage />} />
                             <Route path='/partnerships' element={<Partnerships />} />
                             <Route path='/shop' element={<Shop />} />
                             <Route path='/help' element={<Help />} />

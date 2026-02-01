@@ -757,6 +757,21 @@
 
                 entity.Property(e => e.PrivateNotes).HasMaxLength(2048);
 
+                // Community Home Page Properties
+                entity.Property(e => e.Slug).HasMaxLength(100);
+                entity.HasIndex(e => e.Slug)
+                    .IsUnique()
+                    .HasFilter("[Slug] IS NOT NULL")
+                    .HasDatabaseName("IX_Partners_Slug");
+                entity.Property(e => e.HomePageEnabled).HasDefaultValue(false);
+                entity.Property(e => e.BrandingPrimaryColor).HasMaxLength(7);
+                entity.Property(e => e.BrandingSecondaryColor).HasMaxLength(7);
+                entity.Property(e => e.BannerImageUrl).HasMaxLength(500);
+                entity.Property(e => e.Tagline).HasMaxLength(500);
+                entity.Property(e => e.City).HasMaxLength(256);
+                entity.Property(e => e.Region).HasMaxLength(256);
+                entity.Property(e => e.Country).HasMaxLength(64);
+
                 entity.HasOne(d => d.CreatedByUser)
                     .WithMany(p => p.PartnersCreated)
                     .HasForeignKey(d => d.CreatedByUserId)
