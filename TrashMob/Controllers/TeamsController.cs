@@ -446,5 +446,104 @@ namespace TrashMob.Controllers
         }
 
         #endregion
+
+        #region Team Logo
+
+        /// <summary>
+        /// Uploads a logo for a team. Only team leads can upload logos.
+        /// </summary>
+        /// <param name="teamId">The team ID.</param>
+        /// <param name="imageUpload">The image upload data.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpPost("{teamId}/logo")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(Team), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UploadTeamLogo(
+            Guid teamId,
+            [FromForm] ImageUpload imageUpload,
+            CancellationToken cancellationToken)
+        {
+            var team = await teamManager.GetAsync(teamId, cancellationToken);
+            if (team == null)
+            {
+                return NotFound();
+            }
+
+            // Check if user is a team lead
+            var isLead = await teamMemberManager.IsTeamLeadAsync(teamId, UserId, cancellationToken);
+            if (!isLead)
+            {
+                return Forbid();
+            }
+
+            // Delete existing logo if present
+            if (!string.IsNullOrEmpty(team.LogoUrl))
+            {
+                await imageManager.DeleteImage(teamId, ImageTypeEnum.TeamLogo);
+            }
+
+            // Upload new logo to blob storage
+            imageUpload.ParentId = teamId;
+            imageUpload.ImageType = ImageTypeEnum.TeamLogo;
+            await imageManager.UploadImage(imageUpload);
+
+            // Get the image URL and update team
+            var logoUrl = await imageManager.GetImageUrlAsync(teamId, ImageTypeEnum.TeamLogo, ImageSizeEnum.Reduced, cancellationToken);
+            team.LogoUrl = logoUrl;
+            team.LastUpdatedByUserId = UserId;
+            team.LastUpdatedDate = DateTimeOffset.UtcNow;
+
+            var updatedTeam = await teamManager.UpdateAsync(team, UserId, cancellationToken);
+            return Ok(updatedTeam);
+        }
+
+        /// <summary>
+        /// Deletes the team logo. Only team leads can delete logos.
+        /// </summary>
+        /// <param name="teamId">The team ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpDelete("{teamId}/logo")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(Team), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteTeamLogo(
+            Guid teamId,
+            CancellationToken cancellationToken)
+        {
+            var team = await teamManager.GetAsync(teamId, cancellationToken);
+            if (team == null)
+            {
+                return NotFound();
+            }
+
+            // Check if user is a team lead
+            var isLead = await teamMemberManager.IsTeamLeadAsync(teamId, UserId, cancellationToken);
+            if (!isLead)
+            {
+                return Forbid();
+            }
+
+            // Delete logo from blob storage
+            if (!string.IsNullOrEmpty(team.LogoUrl))
+            {
+                await imageManager.DeleteImage(teamId, ImageTypeEnum.TeamLogo);
+            }
+
+            // Clear logo URL on team
+            team.LogoUrl = string.Empty;
+            team.LastUpdatedByUserId = UserId;
+            team.LastUpdatedDate = DateTimeOffset.UtcNow;
+
+            var updatedTeam = await teamManager.UpdateAsync(team, UserId, cancellationToken);
+            return Ok(updatedTeam);
+        }
+
+        #endregion
     }
 }

@@ -50,6 +50,8 @@ import {
     DemoteFromTeamLead,
     UploadTeamPhoto,
     DeleteTeamPhoto,
+    UploadTeamLogo,
+    DeleteTeamLogo,
     GetMyTeams,
     GetTeamsILead,
 } from '@/services/teams';
@@ -131,7 +133,10 @@ const EditTeamForm = () => {
     });
 
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const logoInputRef = useRef<HTMLInputElement>(null);
     const [isUploading, setIsUploading] = useState(false);
+    const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+    const [isDeletingLogo, setIsDeletingLogo] = useState(false);
     const [deletingPhotoId, setDeletingPhotoId] = useState<string | null>(null);
 
     const updateTeam = useMutation({
@@ -242,6 +247,35 @@ const EditTeamForm = () => {
         onError: (error: Error) => {
             toast({ variant: 'destructive', title: 'Error', description: error.message || 'Failed to delete photo.' });
             setDeletingPhotoId(null);
+        },
+    });
+
+    const uploadLogo = useMutation({
+        mutationKey: UploadTeamLogo().key,
+        mutationFn: ({ formData }: { formData: FormData }) => UploadTeamLogo().service({ teamId }, formData),
+        onSuccess: async () => {
+            toast({ title: 'Logo uploaded!' });
+            await queryClient.invalidateQueries({ queryKey: GetTeamById({ teamId }).key });
+            setIsUploadingLogo(false);
+            if (logoInputRef.current) logoInputRef.current.value = '';
+        },
+        onError: (error: Error) => {
+            toast({ variant: 'destructive', title: 'Error', description: error.message || 'Failed to upload logo.' });
+            setIsUploadingLogo(false);
+        },
+    });
+
+    const deleteLogo = useMutation({
+        mutationKey: DeleteTeamLogo().key,
+        mutationFn: DeleteTeamLogo().service,
+        onSuccess: async () => {
+            toast({ title: 'Logo removed' });
+            await queryClient.invalidateQueries({ queryKey: GetTeamById({ teamId }).key });
+            setIsDeletingLogo(false);
+        },
+        onError: (error: Error) => {
+            toast({ variant: 'destructive', title: 'Error', description: error.message || 'Failed to remove logo.' });
+            setIsDeletingLogo(false);
         },
     });
 
@@ -438,6 +472,44 @@ const EditTeamForm = () => {
         if (window.confirm('Are you sure you want to delete this photo?')) {
             setDeletingPhotoId(photoId);
             deletePhoto.mutate({ teamId, photoId });
+        }
+    };
+
+    const handleLogoFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            toast({
+                variant: 'destructive',
+                title: 'Invalid file type',
+                description: 'Please select an image file (JPEG, PNG, etc.)',
+            });
+            return;
+        }
+
+        // Validate file size (max 5MB for logo)
+        const maxSize = 5 * 1024 * 1024;
+        if (file.size > maxSize) {
+            toast({
+                variant: 'destructive',
+                title: 'File too large',
+                description: 'Please select an image smaller than 5MB.',
+            });
+            return;
+        }
+
+        setIsUploadingLogo(true);
+        const formData = new FormData();
+        formData.append('FormFile', file);
+        uploadLogo.mutate({ formData });
+    };
+
+    const handleDeleteLogo = () => {
+        if (window.confirm('Are you sure you want to remove the team logo?')) {
+            setIsDeletingLogo(true);
+            deleteLogo.mutate({ teamId });
         }
     };
 
@@ -796,6 +868,96 @@ const EditTeamForm = () => {
                                         </TableBody>
                                     </Table>
                                 )}
+                            </CardContent>
+                        </Card>
+
+                        {/* Team Logo */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className='flex items-center gap-2'>
+                                    <Users className='h-5 w-5' />
+                                    Team Logo
+                                </CardTitle>
+                                <CardDescription>
+                                    Upload a logo or avatar image for your team (displayed on team cards and details)
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className='space-y-4'>
+                                    {/* Current logo preview */}
+                                    {team.logoUrl ? (
+                                        <div className='flex items-center gap-4'>
+                                            <div className='relative'>
+                                                <img
+                                                    src={team.logoUrl}
+                                                    alt={`${team.name} logo`}
+                                                    className='w-24 h-24 rounded-lg object-cover border'
+                                                />
+                                            </div>
+                                            <div className='flex flex-col gap-2'>
+                                                <Button
+                                                    type='button'
+                                                    variant='outline'
+                                                    size='sm'
+                                                    onClick={() => logoInputRef.current?.click()}
+                                                    disabled={isUploadingLogo}
+                                                >
+                                                    {isUploadingLogo ? (
+                                                        <Loader2 className='h-4 w-4 mr-2 animate-spin' />
+                                                    ) : (
+                                                        <ImagePlus className='h-4 w-4 mr-2' />
+                                                    )}
+                                                    Change Logo
+                                                </Button>
+                                                <Button
+                                                    type='button'
+                                                    variant='outline'
+                                                    size='sm'
+                                                    onClick={handleDeleteLogo}
+                                                    disabled={isDeletingLogo}
+                                                    className='text-destructive hover:text-destructive'
+                                                >
+                                                    {isDeletingLogo ? (
+                                                        <Loader2 className='h-4 w-4 mr-2 animate-spin' />
+                                                    ) : (
+                                                        <Trash2 className='h-4 w-4 mr-2' />
+                                                    )}
+                                                    Remove Logo
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className='flex items-center gap-4'>
+                                            <div className='w-24 h-24 rounded-lg border-2 border-dashed border-muted-foreground/25 flex items-center justify-center'>
+                                                <Users className='h-8 w-8 text-muted-foreground/50' />
+                                            </div>
+                                            <Button
+                                                type='button'
+                                                variant='outline'
+                                                onClick={() => logoInputRef.current?.click()}
+                                                disabled={isUploadingLogo}
+                                            >
+                                                {isUploadingLogo ? (
+                                                    <Loader2 className='h-4 w-4 mr-2 animate-spin' />
+                                                ) : (
+                                                    <ImagePlus className='h-4 w-4 mr-2' />
+                                                )}
+                                                {isUploadingLogo ? 'Uploading...' : 'Upload Logo'}
+                                            </Button>
+                                        </div>
+                                    )}
+                                    <input
+                                        ref={logoInputRef}
+                                        type='file'
+                                        accept='image/*'
+                                        onChange={handleLogoFileSelect}
+                                        className='hidden'
+                                        id='logo-upload'
+                                    />
+                                    <p className='text-sm text-muted-foreground'>
+                                        Recommended: Square image, at least 200x200 pixels. Max 5MB.
+                                    </p>
+                                </div>
                             </CardContent>
                         </Card>
 

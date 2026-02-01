@@ -27,8 +27,19 @@ const columns: ColumnDef<TeamData>[] = [
         accessorKey: 'name',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Team Name' />,
         cell: ({ row }) => (
-            <Link to={`/teams/${row.original.id}`} className='text-primary hover:underline font-medium'>
-                {row.original.name}
+            <Link to={`/teams/${row.original.id}`} className='flex items-center gap-3 text-primary hover:underline'>
+                {row.original.logoUrl ? (
+                    <img
+                        src={row.original.logoUrl}
+                        alt={`${row.original.name} logo`}
+                        className='w-8 h-8 rounded object-cover'
+                    />
+                ) : (
+                    <div className='w-8 h-8 rounded bg-muted flex items-center justify-center'>
+                        <Users className='h-4 w-4 text-muted-foreground' />
+                    </div>
+                )}
+                <span className='font-medium'>{row.original.name}</span>
             </Link>
         ),
     },

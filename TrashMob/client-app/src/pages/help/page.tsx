@@ -270,6 +270,32 @@ const tabContents = [
                 `,
             },
             {
+                question: 'Team Logo',
+                answer: `
+                <p>Team leads can upload a logo or avatar image to give their team a visual identity.</p>
+                <h6>Uploading a Logo</h6>
+                <ol class="list-decimal pl-8">
+                    <li>Go to your team's page and click "Manage Team" (you must be a team lead)</li>
+                    <li>Find the "Team Logo" section</li>
+                    <li>Click "Upload Logo" and select an image file</li>
+                    <li>The logo will be uploaded and displayed on your team's profile</li>
+                </ol>
+                <h6>Logo Guidelines</h6>
+                <ul class="list-disc pl-8">
+                    <li>Recommended: Square image, at least 200x200 pixels</li>
+                    <li>Maximum file size: 5MB</li>
+                    <li>Supported formats: JPEG, PNG, and other common image formats</li>
+                    <li>Logos are automatically resized for optimal display</li>
+                </ul>
+                <h6>Where the Logo Appears</h6>
+                <ul class="list-disc pl-8">
+                    <li>Team detail page (next to team name)</li>
+                    <li>Teams list page (in the team name column)</li>
+                    <li>Teams map (in the info popup)</li>
+                </ul>
+                `,
+            },
+            {
                 question: 'Joining a Team',
                 answer: `
                 <p>Finding and joining a team is easy:</p>

@@ -222,6 +222,11 @@ namespace TrashMob.Models
         /// Image associated with a team photo gallery.
         /// </summary>
         TeamPhoto = 5,
+
+        /// <summary>
+        /// Logo/avatar image for a team.
+        /// </summary>
+        TeamLogo = 6,
     }
 
     /// <summary>

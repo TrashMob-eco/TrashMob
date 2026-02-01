@@ -226,10 +226,20 @@ export const TeamDetailPage = () => {
                         <Card>
                             <CardHeader>
                                 <div className='flex items-center justify-between'>
-                                    <CardTitle className='text-2xl flex items-center gap-2'>
-                                        <Users className='h-6 w-6' />
-                                        {team.name}
-                                    </CardTitle>
+                                    <div className='flex items-center gap-4'>
+                                        {team.logoUrl ? (
+                                            <img
+                                                src={team.logoUrl}
+                                                alt={`${team.name} logo`}
+                                                className='w-16 h-16 rounded-lg object-cover border'
+                                            />
+                                        ) : (
+                                            <div className='w-16 h-16 rounded-lg bg-muted flex items-center justify-center'>
+                                                <Users className='h-8 w-8 text-muted-foreground' />
+                                            </div>
+                                        )}
+                                        <CardTitle className='text-2xl'>{team.name}</CardTitle>
+                                    </div>
                                     <div className='flex items-center gap-2'>
                                         {team.isPublic ? (
                                             <Badge
