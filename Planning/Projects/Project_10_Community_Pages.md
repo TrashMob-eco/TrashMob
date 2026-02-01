@@ -37,20 +37,20 @@ Branded public pages for partner communities (cities, counties, organizations) w
 ## Scope
 
 ### Phase 1 - Community Discovery
-- ✅ Map showing community locations
-- ✅ List view with search/filter
-- ✅ Basic community detail pages
-- ✅ Link from partner pages
+- ☐ Map showing community locations
+- ☐ List view with search/filter
+- ☐ Basic community detail pages
+- ☐ Link from partner pages
 - ☐ Friendly URLs for each community (`/communities/{city-state}` e.g., `/communities/seattle-wa`)
 
 ### Phase 2 - Community Home Pages
-- ✅ Branded header with logo
-- ✅ About section (admin-editable, stored in database)
-- ✅ Contact information
-- ✅ Community map centered on location (events, litter reports, teams)
-- ✅ Events in this community
-- ✅ Teams in this community
-- ✅ Impact metrics display
+- ☐ Branded header with logo
+- ☐ About section (admin-editable, stored in database)
+- ☐ Contact information
+- ☐ Community map centered on location (events, litter reports, teams)
+- ☐ Events in this community
+- ☐ Teams in this community
+- ☐ Impact metrics display
 - ☐ Community leaderboards (individual and team) - future enhancement
 
 ### Community Page Customizable Fields (V1)
@@ -69,34 +69,18 @@ Branded public pages for partner communities (cities, counties, organizations) w
 | Social links | URLs | Facebook, Instagram, Twitter, LinkedIn |
 | Physical address | Text | For display |
 
-### Community Page Customizable Fields (V1)
-
-| Field | Type | Notes |
-|-------|------|-------|
-| Logo | Image upload | Standard size (200x200) |
-| Hero/Banner image | Image upload | Standard dimensions |
-| Primary color | Color picker | Hex value |
-| Secondary color | Color picker | Hex value |
-| About text | Textarea | Plain text or markdown |
-| Tagline | Text | Short descriptor |
-| Contact email | Email | Required |
-| Contact phone | Text | Optional |
-| Website URL | URL | Optional |
-| Social links | URLs | Facebook, Instagram, Twitter, LinkedIn |
-| Physical address | Text | For display |
-
 ### Phase 3 - Community Admin
-- ✅ Admin dashboard for community
-- ✅ Manage community content
-- ✅ View community metrics and reports
-- ✅ Download reports (CSV, PDF)
+- ☐ Admin dashboard for community
+- ☐ Manage community content
+- ☐ View community metrics and reports
+- ☐ Download reports (CSV, PDF)
 - ☐ SSO integration for community staff (secondary goal)
 
 ### Phase 4 - Programs Integration
-- ✅ Opt-in to Adopt-A-Location program
-- ✅ Manage adoptable areas
-- ✅ Review team applications
-- ✅ Community-specific events
+- ☐ Opt-in to Adopt-A-Location program
+- ☐ Manage adoptable areas
+- ☐ Review team applications
+- ☐ Community-specific events
 
 ### Phase 5 - Documentation
 - ☐ Update FAQ page with Community-related questions (see #2307)
@@ -503,7 +487,7 @@ The following GitHub issues are tracked as part of this project:
 
 ---
 
-**Last Updated:** January 31, 2026
+**Last Updated:** February 1, 2026
 **Owner:** Product Lead + Web Team
-**Status:** Planning in Progress
+**Status:** Not Started (0% implementation - legacy Community tables from 2022 exist but are unused)
 **Next Review:** When dependencies complete

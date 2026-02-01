@@ -9,7 +9,18 @@ import {
     NavigationMenuTrigger,
     navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
-import { MapPin, CalendarPlus, Gauge, Map, BookOpen, HelpCircle, ShoppingBag, List, Users } from 'lucide-react';
+import {
+    MapPin,
+    CalendarPlus,
+    Gauge,
+    Map,
+    BookOpen,
+    HelpCircle,
+    ShoppingBag,
+    List,
+    Users,
+    Building2,
+} from 'lucide-react';
 import React from 'react';
 
 interface ListItemProps extends React.ComponentPropsWithoutRef<'a'> {
@@ -95,6 +106,16 @@ export const MainNav = ({ className, isUserLoaded, ...props }: MainNavProps) => 
                                 <Link to='/teams'>
                                     <Users className='h-4 w-4 mr-1' />
                                     Teams
+                                </Link>
+                            </NavigationMenuLink>
+                        </NavigationMenuItem>
+
+                        {/* Communities - Direct Link */}
+                        <NavigationMenuItem>
+                            <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                                <Link to='/communities'>
+                                    <Building2 className='h-4 w-4 mr-1' />
+                                    Communities
                                 </Link>
                             </NavigationMenuLink>
                         </NavigationMenuItem>
@@ -197,6 +218,7 @@ export const MainNav = ({ className, isUserLoaded, ...props }: MainNavProps) => 
             <div className='flex flex-col gap-1 lg:hidden w-full'>
                 <MobileNavItem to='/#events'>Events</MobileNavItem>
                 <MobileNavItem to='/teams'>Teams</MobileNavItem>
+                <MobileNavItem to='/communities'>Communities</MobileNavItem>
                 <div className='border-l-2 border-muted pl-3 ml-2 space-y-1'>
                     <p className='text-xs text-muted-foreground uppercase tracking-wide pt-1'>Take Action</p>
                     <MobileNavItem to='/litterreports/create'>Report Litter</MobileNavItem>

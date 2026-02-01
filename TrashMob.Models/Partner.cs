@@ -58,6 +58,75 @@ namespace TrashMob.Models
         /// </summary>
         public string PrivateNotes { get; set; }
 
+        #region Community Home Page Properties
+
+        /// <summary>
+        /// Gets or sets the URL-friendly slug for the community page (e.g., "seattle-wa").
+        /// </summary>
+        public string Slug { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether the community home page is enabled.
+        /// </summary>
+        public bool HomePageEnabled { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the community home page becomes active.
+        /// </summary>
+        public DateTimeOffset? HomePageStartDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets when the community home page expires.
+        /// </summary>
+        public DateTimeOffset? HomePageEndDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the primary branding color (hex format, e.g., "#3B82F6").
+        /// </summary>
+        public string BrandingPrimaryColor { get; set; }
+
+        /// <summary>
+        /// Gets or sets the secondary branding color (hex format, e.g., "#1E40AF").
+        /// </summary>
+        public string BrandingSecondaryColor { get; set; }
+
+        /// <summary>
+        /// Gets or sets the URL of the community banner image.
+        /// </summary>
+        public string BannerImageUrl { get; set; }
+
+        /// <summary>
+        /// Gets or sets the tagline displayed on the community page.
+        /// </summary>
+        public string Tagline { get; set; }
+
+        /// <summary>
+        /// Gets or sets the latitude of the community center point.
+        /// </summary>
+        public double? Latitude { get; set; }
+
+        /// <summary>
+        /// Gets or sets the longitude of the community center point.
+        /// </summary>
+        public double? Longitude { get; set; }
+
+        /// <summary>
+        /// Gets or sets the city for the community.
+        /// </summary>
+        public string City { get; set; }
+
+        /// <summary>
+        /// Gets or sets the region/state for the community.
+        /// </summary>
+        public string Region { get; set; }
+
+        /// <summary>
+        /// Gets or sets the country for the community.
+        /// </summary>
+        public string Country { get; set; }
+
+        #endregion
+
         /// <summary>
         /// Gets or sets the collection of contacts for the partner.
         /// </summary>
