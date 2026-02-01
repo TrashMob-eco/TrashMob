@@ -15,11 +15,13 @@ This document lists open GitHub issues that are not currently tied to any projec
 | Category | Count |
 |----------|-------|
 | Website Bugs | 8 |
-| Website Enhancements | 12 |
+| Website Enhancements | 10 |
 | Infrastructure | 6 |
 | SEO/Marketing | 5 |
 | UX Improvements | 5 |
 | Design/Content | 3 |
+
+**Note:** Issues #550 and #294 moved to Project 34 (User Feedback) and Project 35 (Partner Location Map)
 
 ---
 
@@ -50,8 +52,6 @@ This document lists open GitHub issues that are not currently tied to any projec
 | [#675](https://github.com/trashmob/TrashMob/issues/675) | Add User Report Page | Analytics feature |
 | [#674](https://github.com/trashmob/TrashMob/issues/674) | Add Event Tags | Event categorization |
 | [#672](https://github.com/trashmob/TrashMob/issues/672) | Bi-directional relationship between fields and map | UX improvement |
-| [#550](https://github.com/trashmob/TrashMob/issues/550) | Add User Feedback tool | UX feedback loop |
-| [#294](https://github.com/trashmob/TrashMob/issues/294) | Partner Dashboard - Add Map of all Partner locations | Partner feature |
 
 ---
 
