@@ -3600,13 +3600,13 @@ namespace TrashMob.Migrations
                     b.HasOne("TrashMob.Models.User", "ReviewedByUser")
                         .WithMany("UserFeedbackReviewed")
                         .HasForeignKey("ReviewedByUserId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .HasConstraintName("FK_UserFeedback_ReviewedByUser");
 
                     b.HasOne("TrashMob.Models.User", "User")
                         .WithMany("UserFeedbackSubmitted")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .HasConstraintName("FK_UserFeedback_User");
 
                     b.Navigation("CreatedByUser");
