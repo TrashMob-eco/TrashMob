@@ -37,6 +37,8 @@ Model adoptable areas (roads, parks, trails) with availability and safety rules;
 
 ### Phase 1 - Adoptable Area Management
 - ✅ Define adoptable areas with polygons or routes
+- ✅ AI-assisted polygon lookup (user types "Central Park" → auto-fetch boundary from OSM/Azure Maps)
+- ✅ Manual polygon editing/adjustment after auto-fetch
 - ✅ Set availability (open, adopted, unavailable)
 - ✅ Define cleanup frequency requirements
 - ✅ Safety rules and guidelines per area
@@ -107,7 +109,7 @@ Model adoptable areas (roads, parks, trails) with availability and safety rules;
 
 | Risk | Likelihood | Impact | Mitigation |
 |------|------------|--------|------------|
-| **Complex polygon/route editing** | High | Medium | Use existing mapping libraries; simplify to key points |
+| **Complex polygon/route editing** | High | Medium | AI-assisted lookup from OSM for known places; manual editing with vertex simplification |
 | **Teams not meeting commitments** | Medium | High | Clear reminders; grace periods; easy termination |
 | **Community-specific requirements** | High | Medium | Configurable rules per program; templates |
 | **Liability concerns** | Medium | High | Clear agreements; waiver integration |
@@ -489,7 +491,42 @@ public async Task<ActionResult<IEnumerable<DelinquentAdoptionDto>>> GetDelinquen
 ### Phase 1: Area Definition
 - Database schema
 - Admin UI for creating areas
+- AI-assisted polygon lookup (see below)
 - Basic area listing
+
+**AI-Assisted Polygon Lookup:**
+The area creation UI includes a "Search for location" feature that auto-fetches boundaries:
+
+1. **User Flow:**
+   - Admin types location name (e.g., "Central Park, New York")
+   - System queries OpenStreetMap Nominatim API with `polygon_geojson=1`
+   - If boundary found, polygon is rendered on map
+   - Admin can adjust vertices if needed, then save
+   - If no boundary found, admin draws polygon manually
+
+2. **Technical Implementation:**
+   ```typescript
+   // Frontend service for polygon lookup
+   async function fetchLocationBoundary(query: string): Promise<GeoJSON | null> {
+     // Primary: OpenStreetMap Nominatim (free, good park/trail coverage)
+     const osmUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&polygon_geojson=1`;
+     const response = await fetch(osmUrl);
+     const results = await response.json();
+
+     if (results[0]?.geojson) {
+       return results[0].geojson;
+     }
+
+     // Fallback: Azure Maps (already used by TrashMob)
+     // Returns point, but could be combined with radius for simple areas
+     return null;
+   }
+   ```
+
+3. **Data Sources:**
+   - **Parks/Trails:** OpenStreetMap has excellent coverage
+   - **Highways:** May need manual definition (OSM has routes but not "adoptable segments")
+   - **Waterways:** OSM has good coverage for rivers, streams, lake shores
 
 ### Phase 2: Applications
 - Application workflow
