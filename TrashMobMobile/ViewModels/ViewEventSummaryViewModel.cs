@@ -90,6 +90,8 @@ public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager,
                     EventId = eventId,
                     Notes = eventSummary.Notes,
                     NumberOfBags = eventSummary.NumberOfBags,
+                    PickedWeight = eventSummary.PickedWeight,
+                    PickedWeightUnitId = eventSummary.PickedWeightUnitId,
                 };
             }
 

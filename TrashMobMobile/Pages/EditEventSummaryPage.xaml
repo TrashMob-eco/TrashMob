@@ -11,7 +11,7 @@
     <ScrollView>
         <Grid>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
-                <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="*">
+                <Grid RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="*">
                     <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="*" Grid.Row="0">
                         <Border Style="{x:StaticResource RoundBorder}" Grid.Row="0">
                             <Grid RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="*, *, *">
@@ -37,7 +37,30 @@
                         </Border>
                     </Grid>
 
-                    <VerticalStackLayout Grid.Row="1">
+                    <Border Style="{x:StaticResource RoundBorder}" Grid.Row="1" Margin="0,10">
+                        <VerticalStackLayout>
+                            <Label Text="Weight Collected (optional)" Style="{StaticResource FieldLabel}" Margin="0,0,0,5" />
+                            <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                                <controls:TMEntry
+                                    Text="{Binding EventSummaryViewModel.PickedWeight}"
+                                    Keyboard="Numeric"
+                                    WidthRequest="100"
+                                    Placeholder="0.0" />
+                                <Picker
+                                    ItemsSource="{Binding WeightUnits}"
+                                    ItemDisplayBinding="{Binding Name}"
+                                    SelectedItem="{Binding SelectedWeightUnit}"
+                                    WidthRequest="80" />
+                            </HorizontalStackLayout>
+                            <Label Text="A full 33-gallon bag typically weighs 15-25 lbs"
+                                   FontSize="Micro"
+                                   TextColor="{StaticResource Gray400}"
+                                   HorizontalTextAlignment="Center"
+                                   Margin="0,5,0,0" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <VerticalStackLayout Grid.Row="2">
                         <Label Text="Notes" Style="{StaticResource FieldLabel}" />
                         <controls:TMEntry
                             Text="{Binding EventSummaryViewModel.Notes}"
@@ -46,7 +69,7 @@
                             HorizontalTextAlignment="Center"/>
                     </VerticalStackLayout>
 
-                    <Button Text="Save Event Summary" Command="{Binding SaveEventSummaryCommand}" Grid.Row="2"
+                    <Button Text="Save Event Summary" Command="{Binding SaveEventSummaryCommand}" Grid.Row="3"
                         IsVisible="{Binding EnableSaveEventSummary}"
                         Style="{StaticResource PrimarySmallButton}"
                         Margin="10" />

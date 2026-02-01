@@ -1,6 +1,7 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using TrashMob.Models;
 
 public partial class EventSummaryViewModel : ObservableObject
 {
@@ -21,4 +22,27 @@ public partial class EventSummaryViewModel : ObservableObject
 
     [ObservableProperty]
     private int numberOfBuckets;
+
+    [ObservableProperty]
+    private decimal pickedWeight;
+
+    [ObservableProperty]
+    private int pickedWeightUnitId;
+
+    /// <summary>
+    /// Gets the display string for weight with unit (e.g., "25.5 lbs" or "11.5 kg").
+    /// </summary>
+    public string WeightDisplay
+    {
+        get
+        {
+            if (PickedWeight <= 0)
+            {
+                return "N/A";
+            }
+
+            var unit = PickedWeightUnitId == (int)WeightUnitEnum.Kilogram ? "kg" : "lbs";
+            return $"{PickedWeight:0.#} {unit}";
+        }
+    }
 }

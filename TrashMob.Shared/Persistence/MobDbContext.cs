@@ -569,6 +569,8 @@
 
                 entity.Property(e => e.PickedWeightUnitId).HasDefaultValue(0);
 
+                entity.Property(e => e.PickedWeight).HasPrecision(10, 1);
+
                 entity.HasOne(d => d.Event)
                     .WithMany()
                     .HasForeignKey(d => d.EventId)
