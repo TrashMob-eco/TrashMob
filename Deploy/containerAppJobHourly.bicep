@@ -99,8 +99,8 @@ resource containerAppJob 'Microsoft.App/jobs@2024-03-01' = {
   }
 }
 
-// Note: Key Vault access policy and Storage role assignment are granted in the GitHub workflow using Azure CLI
-// to avoid requiring the deployment identity to have Key Vault and role assignment permissions
+// Note: Key Vault access (via RBAC) and Storage role assignment are granted in the GitHub workflow
+// See Project 26 (KeyVault RBAC Migration) for details on the RBAC authorization model
 
 output containerAppJobName string = containerAppJob.name
 output principalId string = containerAppJob.identity.principalId

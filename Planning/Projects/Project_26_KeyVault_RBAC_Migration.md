@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Planning |
+| **Status** | In Progress |
 | **Priority** | High |
 | **Risk** | Moderate |
 | **Size** | Small |
@@ -233,14 +233,15 @@ No application code changes required - applications already use Azure SDK/Defaul
 
 ---
 
-**Last Updated:** January 31, 2026
+**Last Updated:** February 1, 2026
 **Owner:** Infrastructure Team
-**Status:** Planning
-**Next Review:** After team review and before implementation starts
+**Status:** In Progress
+**Next Review:** After dev deployment validation
 
 ---
 
 ## Changelog
 
+- **2026-02-01:** Implemented RBAC migration for dev and production workflows; updated Bicep templates
 - **2026-01-31:** Added access requirements note (Joe Beernink only human with prod KeyVault access)
 - **2026-01-31:** Converted open questions to decisions; confirmed all scope items
