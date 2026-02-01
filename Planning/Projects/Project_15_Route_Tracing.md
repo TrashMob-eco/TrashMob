@@ -6,7 +6,7 @@
 | **Priority** | Medium |
 | **Risk** | High (privacy) |
 | **Size** | Large |
-| **Dependencies** | Project 4 (Mobile Robustness) |
+| **Dependencies** | Project 4 (Mobile Robustness), Project 22 (Attendee Metrics) |
 
 ---
 
@@ -88,10 +88,10 @@ Record and share anonymized routes that attendees walk during cleanup events; en
 
 ### Blockers
 - **Project 4 (Mobile Robustness):** Stable mobile app for GPS tracking
+- **Project 22 (Attendee Metrics):** Required for route-associated litter volume tracking (bags, weight per route segment)
 
 ### Enables
 - **Project 20 (Gamification):** Distance-based achievements
-- **Project 22 (Attendee Metrics):** Route-associated metrics
 
 ---
 
@@ -356,11 +356,12 @@ public class RouteRecordingService
 - Trim controls (slider for start/end)
 - Privacy level selector
 
-### Web UX Changes
+### Web UX Changes (Read-Only)
+
+> **Note:** Web is view-only for routes. All route recording, editing, and privacy controls happen in the mobile app.
 
 - Event map showing combined routes
 - Individual route viewer (for own routes)
-- Privacy settings in user preferences
 - Route statistics in event summary
 - Heat map visualization (admin/community)
 
@@ -390,6 +391,17 @@ public class RouteRecordingService
 
 **Note:** Privacy is critical; extensive testing and user feedback required.
 
+### Current Implementation State
+- **Mobile app:** Partial implementation exists but untested due to lack of route simulation
+- **Priority:** Complete mobile app implementation first, then add web read-only views
+- **Web:** Read-only - no route creation or editing (mobile-only feature)
+
+### Testing Requirements
+- **Route simulation tool** for development/QA testing without physically walking routes
+- Generate synthetic routes with configurable parameters (distance, duration, accuracy)
+- Simulate various GPS conditions (urban canyons, tunnels, poor signal)
+- Seed test data for heat map visualization
+
 ---
 
 ## Privacy Considerations
@@ -406,25 +418,21 @@ public class RouteRecordingService
 
 ## Open Questions
 
-1. **Default decay period?**
-   **Recommendation:** 90 days for public routes; indefinite for private
-   **Owner:** Product + Legal
-   **Due:** Before Phase 3
+1. ~~**Default decay period?**~~
+   **Decision:** 2 years for public routes (enables year-over-year comparison); indefinite for private routes
+   **Status:** ✅ Resolved
 
-2. **GPS sampling rate?**
-   **Recommendation:** Adaptive: 10s stationary, 5s walking, 3s running
-   **Owner:** Mobile Team
-   **Due:** Before Phase 1
+2. ~~**GPS sampling rate?**~~
+   **Decision:** Adaptive rate: 10s stationary, 5s walking, 3s running (balances accuracy and battery)
+   **Status:** ✅ Resolved
 
-3. **Route data format?**
-   **Recommendation:** Encoded polyline (compact); GeoJSON for detailed analysis
-   **Owner:** Engineering
-   **Due:** Before Phase 1
+3. ~~**Route data format?**~~
+   **Decision:** Encoded polyline for compact storage; GeoJSON for detailed analysis/export
+   **Status:** ✅ Resolved
 
-4. **Heat map granularity?**
-   **Recommendation:** 50m grid cells; aggregate minimum 5 routes
-   **Owner:** Product Lead
-   **Due:** Before Phase 4
+4. ~~**Heat map granularity?**~~
+   **Decision:** 25m grid cells; minimum 10 routes to display (finer detail, more privacy-preserving)
+   **Status:** ✅ Resolved
 
 ---
 
@@ -436,7 +444,7 @@ public class RouteRecordingService
 
 ---
 
-**Last Updated:** January 24, 2026
+**Last Updated:** January 31, 2026
 **Owner:** Mobile Team + Backend
 **Status:** Planning in Progress
 **Next Review:** When Project 4 complete

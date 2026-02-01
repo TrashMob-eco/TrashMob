@@ -25,6 +25,7 @@ namespace TrashMob.Shared.Managers.LitterReport
         private readonly IEmailManager emailManager;
         private readonly ILitterImageManager litterImageManager;
         private readonly ILogger<LitterReportManager> logger;
+        private readonly IUserManager userManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LitterReportManager"/> class.
@@ -34,16 +35,19 @@ namespace TrashMob.Shared.Managers.LitterReport
         /// <param name="logger">The logger instance.</param>
         /// <param name="dbTransaction">The database transaction manager.</param>
         /// <param name="emailManager">The email manager for sending notifications.</param>
+        /// <param name="userManager">The user manager for looking up report creators.</param>
         public LitterReportManager(IKeyedRepository<LitterReport> repository,
             ILitterImageManager litterImageManager,
             ILogger<LitterReportManager> logger,
             IDbTransaction dbTransaction,
-            IEmailManager emailManager) : base(repository)
+            IEmailManager emailManager,
+            IUserManager userManager) : base(repository)
         {
             this.litterImageManager = litterImageManager;
             this.logger = logger;
             this.dbTransaction = dbTransaction;
             this.emailManager = emailManager;
+            this.userManager = userManager;
         }
 
         /// <inheritdoc />
@@ -67,6 +71,11 @@ namespace TrashMob.Shared.Managers.LitterReport
                 {
                     return null;
                 }
+
+                // Track if status is changing to Cleaned
+                var wasNotCleaned = existingInstance.LitterReportStatusId != (int)LitterReportStatusEnum.Cleaned;
+                var isNowCleaned = litterReport.LitterReportStatusId == (int)LitterReportStatusEnum.Cleaned;
+                var statusChangedToCleaned = wasNotCleaned && isNowCleaned;
 
                 existingInstance.Name = litterReport.Name;
                 existingInstance.Description = litterReport.Description;
@@ -100,12 +109,66 @@ namespace TrashMob.Shared.Managers.LitterReport
 
                 var resultLitterReport = await base.UpdateAsync(existingInstance, userId, cancellationToken);
 
+                // Send notification to creator if status changed to Cleaned
+                if (statusChangedToCleaned && resultLitterReport != null)
+                {
+                    await SendLitterReportCleanedNotificationAsync(resultLitterReport, cancellationToken);
+                }
+
                 return resultLitterReport;
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error adding litter report");
                 return null;
+            }
+        }
+
+        private async Task SendLitterReportCleanedNotificationAsync(LitterReport litterReport, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var creator = await userManager.GetUserByInternalIdAsync(litterReport.CreatedByUserId, cancellationToken);
+                if (creator == null || string.IsNullOrEmpty(creator.Email))
+                {
+                    logger.LogWarning("Could not find creator for litter report {LitterReportId} to send cleaned notification", litterReport.Id);
+                    return;
+                }
+
+                var firstImage = litterReport.LitterImages?.FirstOrDefault();
+                var reportLocation = firstImage?.DisplayAddress() ?? "Unknown location";
+                var reportUrl = $"https://www.trashmob.eco/litterreports/{litterReport.Id}";
+
+                var emailCopy = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.LitterReportCleaned.ToString());
+                emailCopy = emailCopy.Replace("{ReportName}", litterReport.Name ?? "Untitled Report");
+                emailCopy = emailCopy.Replace("{ReportLocation}", reportLocation);
+                emailCopy = emailCopy.Replace("{ReportUrl}", reportUrl);
+
+                var subject = "Your litter report has been cleaned!";
+
+                var recipients = new List<EmailAddress>
+                {
+                    new() { Name = creator.UserName, Email = creator.Email },
+                };
+
+                var dynamicTemplateData = new
+                {
+                    username = creator.UserName,
+                    emailCopy,
+                    subject,
+                };
+
+                await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.GenericEmail,
+                        SendGridEmailGroupId.LitterReportRelated, dynamicTemplateData, recipients,
+                        cancellationToken)
+                    .ConfigureAwait(false);
+
+                logger.LogInformation("Sent litter report cleaned notification to user {UserId} for report {LitterReportId}", creator.Id, litterReport.Id);
+            }
+            catch (Exception ex)
+            {
+                // Don't fail the update operation if email fails
+                logger.LogWarning(ex, "Failed to send litter report cleaned notification for report {LitterReportId}", litterReport.Id);
             }
         }
 
@@ -449,6 +512,21 @@ namespace TrashMob.Shared.Managers.LitterReport
                 await dbTransaction.RollbackTransactionAsync();
                 return ServiceResult<LitterReport>.Failure($"An unexpected error occurred: {ex.Message}");
             }
+        }
+
+        /// <inheritdoc />
+        public async Task<(int TotalCount, int CleanedCount)> GetLitterReportCountsAsync(CancellationToken cancellationToken = default)
+        {
+            var totalCount = await Repo.Get().CountAsync(cancellationToken);
+            var cleanedCount = await Repo.Get(lr => lr.LitterReportStatusId == (int)LitterReportStatusEnum.Cleaned)
+                .CountAsync(cancellationToken);
+            return (totalCount, cleanedCount);
+        }
+
+        /// <inheritdoc />
+        public async Task<int> GetUserLitterReportCountAsync(Guid userId, CancellationToken cancellationToken = default)
+        {
+            return await Repo.Get(lr => lr.CreatedByUserId == userId).CountAsync(cancellationToken);
         }
     }
 }

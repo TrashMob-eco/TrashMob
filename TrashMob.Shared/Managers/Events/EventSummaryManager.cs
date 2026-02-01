@@ -61,9 +61,9 @@
             stats.TotalWeightInKilograms = eventSummaries.Where(e => e.PickedWeightUnitId == (int)WeightUnitEnum.Kilogram).Sum(e => e.PickedWeight) +
                                          eventSummaries.Where(e => e.PickedWeightUnitId == (int)WeightUnitEnum.Pound).Sum(e => (int)(e.PickedWeight * 0.453592));
 
-            var litterReports = await litterReportManager.GetAsync(cancellationToken);
-            stats.TotalLitterReportsClosed = litterReports.Count(lr => lr.LitterReportStatusId == (int)LitterReportStatusEnum.Cleaned);
-            stats.TotalLitterReportsSubmitted = litterReports.Count();
+            var (totalLitterReports, cleanedLitterReports) = await litterReportManager.GetLitterReportCountsAsync(cancellationToken);
+            stats.TotalLitterReportsClosed = cleanedLitterReports;
+            stats.TotalLitterReportsSubmitted = totalLitterReports;
 
             return stats;
         }
@@ -90,7 +90,6 @@
                                        eventSummaries.Where(e => e.PickedWeightUnitId == (int)WeightUnitEnum.Kilogram).Sum(e => (int)(e.PickedWeight * 2.20462));
             stats.TotalWeightInKilograms = eventSummaries.Where(e => e.PickedWeightUnitId == (int)WeightUnitEnum.Kilogram).Sum(e => e.PickedWeight) +
                                          eventSummaries.Where(e => e.PickedWeightUnitId == (int)WeightUnitEnum.Pound).Sum(e => (int)(e.PickedWeight * 0.453592));
-            var litterReports = await litterReportManager.GetAsync(cancellationToken);
             var eventLitterReports = await eventLitterReportManager.GetAsync(cancellationToken);
 
             if (eventLitterReports == null)
@@ -102,7 +101,7 @@
                 stats.TotalLitterReportsClosed = eventLitterReports.Count(elr => eventIds.Contains(elr.EventId) && elr.LitterReport != null && elr.LitterReport.LitterReportStatusId == (int)LitterReportStatusEnum.Cleaned);
             }
 
-            stats.TotalLitterReportsSubmitted = litterReports.Count(lr => lr.CreatedByUserId == userId);
+            stats.TotalLitterReportsSubmitted = await litterReportManager.GetUserLitterReportCountAsync(userId, cancellationToken);
 
             return stats;
         }
@@ -163,6 +162,47 @@
             var eventSummary =
                 await Repository.Get(es => es.EventId == parentId).FirstOrDefaultAsync(cancellationToken);
             return await Repository.DeleteAsync(eventSummary);
+        }
+
+        /// <inheritdoc />
+        public override async Task<EventSummary> AddAsync(EventSummary eventSummary, Guid userId, CancellationToken cancellationToken = default)
+        {
+            // Add the event summary first
+            var result = await base.AddAsync(eventSummary, userId, cancellationToken).ConfigureAwait(false);
+
+            // Mark all associated litter reports as Cleaned
+            await MarkAssociatedLitterReportsAsCleanedAsync(eventSummary.EventId, userId, cancellationToken).ConfigureAwait(false);
+
+            return result;
+        }
+
+        /// <inheritdoc />
+        public override async Task<EventSummary> UpdateAsync(EventSummary eventSummary, Guid userId, CancellationToken cancellationToken = default)
+        {
+            // Update the event summary
+            var result = await base.UpdateAsync(eventSummary, userId, cancellationToken).ConfigureAwait(false);
+
+            // Mark all associated litter reports as Cleaned (in case new associations were added)
+            await MarkAssociatedLitterReportsAsCleanedAsync(eventSummary.EventId, userId, cancellationToken).ConfigureAwait(false);
+
+            return result;
+        }
+
+        private async Task MarkAssociatedLitterReportsAsCleanedAsync(Guid eventId, Guid userId, CancellationToken cancellationToken)
+        {
+            // Get all litter reports associated with this event
+            var eventLitterReports = await eventLitterReportManager.GetByParentIdAsync(eventId, cancellationToken).ConfigureAwait(false);
+
+            foreach (var eventLitterReport in eventLitterReports)
+            {
+                if (eventLitterReport.LitterReport != null &&
+                    eventLitterReport.LitterReport.LitterReportStatusId != (int)LitterReportStatusEnum.Cleaned)
+                {
+                    // Update the litter report status to Cleaned
+                    eventLitterReport.LitterReport.LitterReportStatusId = (int)LitterReportStatusEnum.Cleaned;
+                    await litterReportManager.UpdateAsync(eventLitterReport.LitterReport, userId, cancellationToken).ConfigureAwait(false);
+                }
+            }
         }
     }
 }

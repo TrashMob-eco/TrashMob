@@ -1,6 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router';
-import { Menu, Plus } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { MainNav } from './MainNav';
 import { Button } from '../ui/button';
@@ -48,14 +47,7 @@ export const SiteHeader = (props: SiteHeaderProps) => {
                         )}
                     >
                         <MainNav className='flex-1 py-4! lg:py-0!' isUserLoaded={isUserLoaded} />
-                        <div className={cn('flex flex-row gap-4')}>
-                            <Button asChild className='flex md:hidden xl:flex'>
-                                <Link to='/events/create'>
-                                    <Plus /> Create an Event
-                                </Link>
-                            </Button>
-                            <UserNav currentUser={currentUser} isUserLoaded={isUserLoaded} />
-                        </div>
+                        <UserNav currentUser={currentUser} isUserLoaded={isUserLoaded} />
                     </div>
                 </div>
             </div>

@@ -52,11 +52,13 @@ Support parent-managed dependents or direct minor registration with age verifica
 - ✅ Limited profile visibility
 - ✅ Parent view of minor activity
 
-### Phase 4 - Family Features
-- ❓ Parent can manage multiple minors
-- ❓ Family registration flow
-- ❓ Parent approval for event registration
-- ❓ Parent notification of event participation
+### Phase 4 - Family Features (Deferred)
+- ❌ Parent can manage multiple minors (future)
+- ❌ Family registration flow (future)
+- ❌ Parent approval for event registration (future)
+- ❌ Parent notification of event participation (future)
+
+> **Note:** Phase 4 deferred to a future project. Focus on Phases 1-3 for initial minor support.
 
 ---
 
@@ -96,6 +98,7 @@ Support parent-managed dependents or direct minor registration with age verifica
 - Youth volunteer participation
 - Family engagement
 - School/community partnerships
+- **Project 19 (Newsletter):** First name personalization (FirstName field added to User model)
 
 ---
 
@@ -146,15 +149,78 @@ public interface IPrivoService
 }
 ```
 
+### Privo Onboarding Requirements
+
+**Before Privo can begin integration work, TrashMob must provide:**
+
+| Requirement | Status | Owner |
+|-------------|--------|-------|
+| **Swim lane diagram** | ❌ Pending | Engineering |
+| **Feature set for parental consent** | ❌ Pending | Product |
+| **Business information** (name, address, website, privacy policy) | ❌ Pending | Business |
+| **Swimlane flow documentation** | ❌ Pending | Engineering |
+| **Branding assets** (logos, colors, etc.) | ❌ Pending | Marketing |
+
+**Features requiring parental consent:**
+
+*Core features:*
+- Newsletter subscriptions
+- In-app notifications
+- Event sign-up
+- Instant messaging (blocked for minors per Phase 3)
+- Geolocation sharing
+- Create an event
+- Photo uploads
+- Profile photo
+- Join a team
+
+*Location & tracking (sensitive):*
+- Route tracing during events (Project 15)
+- Litter report submission (includes location)
+
+*Public visibility:*
+- Appear on public leaderboards (Project 20)
+- Individual attendee metrics visible (Project 22)
+- Social media sharing with name/info (Project 14)
+
+*Communication:*
+- Contact information shared with event leads
+
+*Legal:*
+- Waiver signing (parent signs on behalf of minor - Project 8)
+
+**Integration data flows:**
+- Send user location to Privo after sign-up
+- Send parental waiver to parent on signup
+
+**Figma access required for Privo team:**
+- devops@privo.com
+- figmadevmode@privo.com
+- ttayloe@privo.com
+
 ---
 
 ## Implementation Plan
 
 ### Data Model Changes
 
-**Modification: User (add minor-related properties)**
+**Modification: User (add minor-related properties and optional name)**
 ```csharp
 // Add to existing TrashMob.Models/User.cs
+#region Profile (Optional Name)
+
+/// <summary>
+/// Gets or sets the user's first name (optional, for personalization).
+/// </summary>
+public string FirstName { get; set; }
+
+/// <summary>
+/// Gets or sets the user's last name (optional, required for minors per Privo).
+/// </summary>
+public string LastName { get; set; }
+
+#endregion
+
 #region Minor Support (Privo.com Integration)
 
 /// <summary>
@@ -368,6 +434,8 @@ namespace TrashMob.Models
 modelBuilder.Entity<User>(entity =>
 {
     // Add to existing User configuration
+    entity.Property(e => e.FirstName).HasMaxLength(100);
+    entity.Property(e => e.LastName).HasMaxLength(100);
     entity.Property(e => e.ConsentStatus).HasMaxLength(50);
     entity.Property(e => e.PrivoUserId).HasMaxLength(100);
 
@@ -546,14 +614,87 @@ User clicks "Sign Up"
    - No location sharing
 
 3. **Event Participation:**
-   - Adult must be present at event
+   - At least one adult must be present at any event with minors (no specific ratio)
    - Parent notification of registration
-   - Optional parent approval required
+   - Parent approval for events: deferred to Phase 4 (future)
 
 4. **Data Retention:**
    - Consent artifacts per legal requirements
    - Regular consent re-verification
    - Right to deletion (with parent request)
+
+---
+
+## Parent Account Requirements
+
+### Core Principle
+**Privo approval is sufficient for minor registration.** Parents do NOT need a TrashMob account to approve their child's participation. However, parents who create accounts unlock additional features.
+
+### Registration Scenarios
+
+| Scenario | Flow | Minor Status |
+|----------|------|--------------|
+| **Parent has no TrashMob account** | Minor registers → Parent approves via Privo email → Minor active | ✅ Fully functional |
+| **Parent creates account later** | Minor already active → Parent registers → Links to minor via email match | ✅ Enhanced features unlocked |
+| **Parent registers first** | Parent creates account → Adds minor as dependent → Minor registers with parent's email | ✅ Streamlined flow |
+| **Minor registers before parent approves** | Minor in "Pending" status → Limited access until Privo approval | ⏳ Waiting for approval |
+
+### Capability Matrix: Parent Account Requirements
+
+| Capability | No Parent Account | With Parent Account |
+|------------|-------------------|---------------------|
+| **Minor Registration** | ✅ Privo email approval sufficient | ✅ Can initiate from parent dashboard |
+| **Consent Approval** | ✅ Via Privo interface | ✅ Via Privo interface |
+| **Consent Revocation** | ✅ Via Privo interface | ✅ Via Privo OR TrashMob app |
+| **Event Registration Notifications** | ✅ Email only | ✅ Email + in-app notifications |
+| **View Minor's Activity** | ❌ Not available | ✅ Parent dashboard |
+| **View Minor's Event History** | ❌ Not available | ✅ Parent dashboard |
+| **View Minor's Metrics/Stats** | ❌ Not available | ✅ Parent dashboard |
+| **Approve Event Participation** | ❌ Not available (Phase 4) | ✅ In-app approval (Phase 4) |
+| **Manage Multiple Minors** | ❌ Not available | ✅ Single dashboard for all dependents |
+| **Update Minor's Profile** | ❌ Not available | ✅ Can edit on behalf of minor |
+| **Delete Minor's Account** | ✅ Via Privo (revoke consent) | ✅ Via Privo OR TrashMob app |
+| **Receive Minor's Achievements** | ❌ Not available | ✅ Notified of badges earned |
+| **Sign Waiver for Minor** | ✅ Via email link | ✅ Via TrashMob app |
+
+### Account Linking
+
+When a parent creates a TrashMob account after their minor is already registered:
+
+1. **Email Match:** System detects parent email matches a minor's `ParentEmail` field
+2. **Verification:** Parent confirms they are the parent of the listed minor(s)
+3. **Linking:** `User.ParentUserId` set on minor's account
+4. **Dashboard:** Parent dashboard shows linked minor(s)
+
+```csharp
+// Account linking logic
+public async Task LinkParentToMinors(Guid parentUserId, string parentEmail)
+{
+    var unlinkedMinors = await _context.Users
+        .Where(u => u.IsMinor &&
+                    u.ParentUserId == null &&
+                    u.ParentalConsents.Any(pc => pc.ParentEmail == parentEmail &&
+                                                  pc.Status == "Verified"))
+        .ToListAsync();
+
+    foreach (var minor in unlinkedMinors)
+    {
+        minor.ParentUserId = parentUserId;
+    }
+}
+```
+
+### Notifications to Non-Account Parents
+
+Parents without TrashMob accounts still receive critical notifications via email:
+
+| Notification | Delivery Method |
+|--------------|-----------------|
+| Minor registered for event | Email |
+| Event reminder (day before) | Email |
+| Event completed | Email |
+| Consent expiring (annual) | Email via Privo |
+| Waiver required | Email with sign link |
 
 ---
 
@@ -577,40 +718,34 @@ User clicks "Sign Up"
 - Adult presence tracking
 - Parent notification system
 
-### Phase 4: Family Features
-- Parent dashboard
-- Multiple minor management
-- Event approval workflow
-- Activity reporting
+### Phase 4: Family Features (Deferred)
+- Parent dashboard (future project)
+- Multiple minor management (future project)
+- Event approval workflow (future project)
+- Activity reporting (future project)
 
-**Note:** Legal sign-off required before Phase 1 deployment.
+**Note:** Legal sign-off required before Phase 1 deployment. Phase 4 deferred to focus on core minor safety features first.
 
 ---
 
-## Open Questions
+## Resolved Questions
 
 1. **Consent re-verification frequency?**
-   **Recommendation:** Annual re-verification; Privo handles timing
-   **Owner:** Legal + Product
-   **Due:** Before Phase 2
+   **Decision:** Annual re-verification; Privo handles timing automatically
 
 2. **Minimum adult-to-minor ratio at events?**
-   **Recommendation:** 1 adult per 5 minors; event lead discretion
-   **Owner:** Legal + Product
-   **Due:** Before Phase 3
+   **Decision:** No specific ratio enforcement; require at least 1 adult present at any event with minors
 
 3. **What if parent revokes consent?**
-   **Recommendation:** Immediate account suspension; data retention per legal
-   **Owner:** Legal
-   **Due:** Before Phase 2
+   **Decision:** Immediate account suspension; data retained per legal requirements (COPPA compliance)
 
 4. **School/organization bulk consent?**
-   **Recommendation:** Out of scope for v1; evaluate demand
-   **Owner:** Product Lead
-   **Due:** Future
+   **Decision:** Out of scope for v1; evaluate demand in future
 
-5. **Privo.com cost structure and timeline?**
-   **Recommendation:** Complete contract negotiation
+## Open Questions
+
+1. **Privo.com cost structure and timeline?**
+   **Status:** Pending contract negotiation
    **Owner:** Business Team
    **Due:** Before Phase 1
 
@@ -618,13 +753,14 @@ User clicks "Sign Up"
 
 ## Related Documents
 
+- **[Privo Integration Package](./Project_23_Privo_Integration_Package.md)** - Document to send to Privo
 - **[Project 1 - Auth Revamp](./Project_01_Auth_Revamp.md)** - Authentication integration
 - **[Project 8 - Waivers V3](./Project_08_Waivers_V3.md)** - Minor waiver handling
 - **[Privo.com](https://privo.com)** - Vendor documentation
 
 ---
 
-**Last Updated:** January 24, 2026
+**Last Updated:** January 31, 2026
 **Owner:** Product Lead + Legal + Engineering
 **Status:** Planning in Progress
 **Next Review:** After Privo contract finalization

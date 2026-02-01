@@ -11,6 +11,8 @@ import { Services } from '@/config/services.config';
 const defaultHeroContent: HeroSectionData = {
     primaryButtonText: 'Join us today',
     primaryButtonLink: '/gettingstarted',
+    secondaryButtonText: 'Report Litter',
+    secondaryButtonLink: '/litterreports/create',
     googlePlayUrl: 'https://play.google.com/store/apps/details?id=eco.trashmob.trashmobmobileapp',
     appStoreUrl:
         'https://apps.apple.com/us/app/trashmob/id1599996743?itscg=30200&itsct=apps_box_badge&mttnsubad=1599996743',
@@ -53,14 +55,22 @@ export const HeroSection = () => {
                         />
                     </div>
                     <div
-                        className={cn('transition-all duration-1000 ease-out delay-1000', {
-                            'opacity-100 translate-y-0': isInViewPort,
-                            'opacity-0 translate-y-10': !isInViewPort,
-                        })}
+                        className={cn(
+                            'flex flex-col sm:flex-row gap-3 transition-all duration-1000 ease-out delay-1000',
+                            {
+                                'opacity-100 translate-y-0': isInViewPort,
+                                'opacity-0 translate-y-10': !isInViewPort,
+                            },
+                        )}
                     >
                         <Button size='lg' asChild>
                             <Link to={content.primaryButtonLink}>{content.primaryButtonText}</Link>
                         </Button>
+                        {content.secondaryButtonText && content.secondaryButtonLink ? (
+                            <Button size='lg' variant='outline' asChild>
+                                <Link to={content.secondaryButtonLink}>{content.secondaryButtonText}</Link>
+                            </Button>
+                        ) : null}
                     </div>
                     <div
                         className={cn(

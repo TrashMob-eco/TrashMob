@@ -12,10 +12,14 @@ import { useQuery } from '@tanstack/react-query';
 import { GetFilteredEvents, GetFilteredEvents_Params } from '@/services/events';
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItemAlt, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { List, Map, Plus, Pencil } from 'lucide-react';
+import { List, Map, Plus, Pencil, Trash2 } from 'lucide-react';
 import { useGetDefaultMapCenter } from '@/hooks/useGetDefaultMapCenter';
 import { AzureMapSearchAddressReverse } from '@/services/maps';
 import { GetAllEventsBeingAttendedByUser } from '@/services/events';
+import { GetNotCancelledLitterReports } from '@/services/litter-report';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { litterReportColors } from '@/components/litterreports/litter-report-pin';
 
 import { EventList } from '@/components/events/event-list';
 import { useLogin } from '@/hooks/useLogin';
@@ -69,6 +73,15 @@ export const EventSection = (props: EventSectionProps) => {
 
     const [selectedLocation, setSelectedLocation] = useState<SearchLocationOption>();
     const [view, setView] = useState<string>('map');
+    const [showLitterReports, setShowLitterReports] = useState<boolean>(false);
+
+    /** Litter Reports for Map */
+    const { data: litterReports } = useQuery({
+        queryKey: GetNotCancelledLitterReports().key,
+        queryFn: GetNotCancelledLitterReports().service,
+        select: (res) => res.data,
+        enabled: showLitterReports,
+    });
 
     /** Time Ranges */
     const timeRangeOptions =
@@ -212,6 +225,25 @@ export const EventSection = (props: EventSectionProps) => {
                         </Select>
 
                         <div className='flex-1' />
+
+                        {/* Litter Reports Toggle - only shown in map view */}
+                        {view === 'map' && (
+                            <div className='flex items-center gap-2'>
+                                <Checkbox
+                                    id='show-litter-reports'
+                                    checked={showLitterReports}
+                                    onCheckedChange={(checked) => setShowLitterReports(checked === true)}
+                                />
+                                <Label
+                                    htmlFor='show-litter-reports'
+                                    className='text-sm font-medium cursor-pointer flex items-center gap-1'
+                                >
+                                    <Trash2 className='h-4 w-4' />
+                                    Show Litter Reports
+                                </Label>
+                            </div>
+                        )}
+
                         <ToggleGroup value={view} onValueChange={setView} type='single' variant='outline'>
                             <ToggleGroupItem
                                 value='list'
@@ -232,18 +264,49 @@ export const EventSection = (props: EventSectionProps) => {
                         {selectedLocation?.address.municipality || 'your area'}
                     </div>
                     {view === 'map' ? (
-                        <EventsMap
-                            events={eventsWithAttendance || []}
-                            isUserLoaded={isUserLoaded}
-                            currentUser={currentUser}
-                            gestureHandling='greedy'
-                            defaultCenter={
-                                selectedLocation
-                                    ? { lat: selectedLocation.position.lat, lng: selectedLocation.position.lon }
-                                    : undefined
-                            }
-                            defaultZoom={13}
-                        />
+                        <>
+                            {/* Legend for litter report pin colors */}
+                            {showLitterReports ? (
+                                <div className='flex flex-wrap items-center gap-4 mb-3 text-sm'>
+                                    <span className='font-medium'>Litter Reports:</span>
+                                    <div className='flex items-center gap-1.5'>
+                                        <div
+                                            className='w-3 h-3 rounded-full'
+                                            style={{ backgroundColor: litterReportColors.new }}
+                                        />
+                                        <span>New</span>
+                                    </div>
+                                    <div className='flex items-center gap-1.5'>
+                                        <div
+                                            className='w-3 h-3 rounded-full'
+                                            style={{ backgroundColor: litterReportColors.assigned }}
+                                        />
+                                        <span>Assigned</span>
+                                    </div>
+                                    <div className='flex items-center gap-1.5'>
+                                        <div
+                                            className='w-3 h-3 rounded-full'
+                                            style={{ backgroundColor: litterReportColors.cleaned }}
+                                        />
+                                        <span>Cleaned</span>
+                                    </div>
+                                </div>
+                            ) : null}
+                            <EventsMap
+                                events={eventsWithAttendance || []}
+                                isUserLoaded={isUserLoaded}
+                                currentUser={currentUser}
+                                gestureHandling='greedy'
+                                defaultCenter={
+                                    selectedLocation
+                                        ? { lat: selectedLocation.position.lat, lng: selectedLocation.position.lon }
+                                        : undefined
+                                }
+                                defaultZoom={13}
+                                litterReports={litterReports}
+                                showLitterReports={showLitterReports}
+                            />
+                        </>
                     ) : (
                         <EventList
                             events={eventsWithAttendance || []}

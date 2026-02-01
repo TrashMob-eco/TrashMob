@@ -44,6 +44,12 @@ import { EditEventSummary } from './pages/eventsummary/$eventId';
 import { PickupLocationCreate } from './pages/eventsummary/$eventId/pickup-locations.create';
 import { PickupLocationEdit } from './pages/eventsummary/$eventId/pickup-locations.$locationId.edit';
 
+/** Litter Reports */
+import { LitterReportsPage } from './pages/litterreports';
+import { LitterReportDetailPage } from './pages/litterreports/$litterReportId';
+import { LitterReportEditPage } from './pages/litterreports/$litterReportId/edit';
+import { CreateLitterReportPage } from './pages/litterreports/create';
+
 /** Partners */
 import { Partnerships } from './pages/partnerships/page';
 import { BecomeAPartnerPage } from './pages/_partnerRequest/becomeapartner';
@@ -82,6 +88,7 @@ import { SiteAdminJobOpportunityEdit } from './pages/siteadmin/job-opportunities
 import { SiteAdminEmailTemplates } from './pages/siteadmin/email-templates';
 import { SiteAdminSendNotification } from './pages/siteadmin/send-notification';
 import { SiteAdminContent } from './pages/siteadmin/content';
+import { SiteAdminLitterReports } from './pages/siteadmin/litter-reports/page';
 import { NoMatch } from './pages/nomatch';
 
 const queryClient = new QueryClient();
@@ -210,12 +217,15 @@ const AppContent: FC = () => {
                             <Route path='/inviteapartner' element={<InviteAPartnerPage />} />
                             <Route path='/locationpreference' element={<LocationPreference />} />
                             <Route path='/waivers' element={<Waivers />} />
+                            <Route path='/litterreports/create' element={<CreateLitterReportPage />} />
+                            <Route path='/litterreports/:litterReportId/edit' element={<LitterReportEditPage />} />
                         </Route>
                         <Route element={<AuthSideAdminLayout />}>
                             <Route path='/siteadmin' element={<SiteAdminLayout />}>
                                 <Route path='users' element={<SiteAdminUsers />} />
                                 <Route path='events' element={<SiteAdminEvents />} />
                                 <Route path='partners' element={<SiteAdminPartners />} />
+                                <Route path='litter-reports' element={<SiteAdminLitterReports />} />
                                 <Route path='partner-requests' element={<SiteAdminPartnerRequests />} />
                                 <Route path='job-opportunities' element={<SiteAdminJobOpportunities />}>
                                     <Route path=':jobId/edit' element={<SiteAdminJobOpportunityEdit />} />
@@ -232,6 +242,8 @@ const AppContent: FC = () => {
                                 element={<PartnerRequestDetails />}
                             />
                             <Route path='/eventdetails/:eventId?' element={<EventDetails />} />
+                            <Route path='/litterreports' element={<LitterReportsPage />} />
+                            <Route path='/litterreports/:litterReportId' element={<LitterReportDetailPage />} />
                             <Route path='/partnerships' element={<Partnerships />} />
                             <Route path='/shop' element={<Shop />} />
                             <Route path='/help' element={<Help />} />

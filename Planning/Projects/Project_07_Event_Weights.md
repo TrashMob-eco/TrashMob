@@ -286,6 +286,15 @@ const convertWeight = (weight: number, fromUnit: string, toUnit: string): number
 3. **Should we backfill historical events with estimated weights?**
    **Decision:** No - too much uncertainty; focus on new events only
 
+4. **How do we handle aggregations across events with different units?**
+   **Decision:** Store both original value and unit; aggregate by summing values in each unit separately; display in user's preferred unit
+
+5. **What precision should decimal weights support?**
+   **Decision:** One decimal place (0.1 lbs or 0.1 kg); use `decimal(10,1)` in database
+
+6. **Should we provide weight estimation guidance for users without scales?**
+   **Decision:** Yes, add help text: "A full 33-gallon bag typically weighs 15-25 lbs depending on contents"
+
 ---
 
 ## Related Documents

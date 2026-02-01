@@ -77,7 +77,7 @@
         {
             var authResult =
                 await AuthorizationService.AuthorizeAsync(User, eventLitterReport,
-                    AuthorizationPolicyConstants.UserOwnsEntity);
+                    AuthorizationPolicyConstants.UserIsEventLead);
 
             if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
             {

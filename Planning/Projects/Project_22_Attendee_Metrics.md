@@ -54,10 +54,10 @@ Let attendees enter personal stats and give leads tools to reconcile without dou
 - ✅ Event leaderboards
 
 ### Phase 4 - Integration
-- ❓ Route association (Project 15)
-- ❓ Photo association (Project 18)
-- ❓ Gamification integration (Project 20)
-- ❓ Team roll-ups (Project 9)
+- ✅ Route association (Project 15)
+- ✅ Photo association (Project 18)
+- ✅ Gamification integration (Project 20)
+- ✅ Team roll-ups (Project 9)
 
 ---
 
@@ -114,6 +114,10 @@ Let attendees enter personal stats and give leads tools to reconcile without dou
 
 > **Note:** This project builds on Project 7's `EventSummaryAttendee` for Phase 2 (attendee-level weight).
 > Consider whether `EventAttendeeMetrics` should replace or extend `EventSummaryAttendee`.
+
+> **Unattributed Totals:** When partial reporting occurs, unattributed totals (for non-reporting attendees)
+> are stored in `EventSummary.UnattributedBags`, `EventSummary.UnattributedWeight`, etc. The event's final
+> totals = sum of approved attendee metrics + unattributed amounts.
 
 **New Entity: EventAttendeeMetrics**
 ```csharp
@@ -200,6 +204,16 @@ namespace TrashMob.Models
         /// Gets or sets the date this entry was reviewed.
         /// </summary>
         public DateTimeOffset? ReviewedDate { get; set; }
+
+        #endregion
+
+        #region Privacy
+
+        /// <summary>
+        /// Gets or sets whether this attendee's metrics are publicly visible.
+        /// Default is true; attendee can opt-out to hide their contributions.
+        /// </summary>
+        public bool IsPublic { get; set; } = true;
 
         #endregion
 
@@ -391,11 +405,20 @@ public async Task<ActionResult<IEnumerable<DropLocationDto>>> GetDropLocations(G
 - Drop location reporting with map pin
 - Photo upload
 
+**Attendee Notifications:**
+- **Email reminder:** Sent 24 hours after event ends ("Report your impact from [Event Name]!")
+- **In-app banner:** Dashboard shows "You have unreported metrics" for recent events
+- **Follow-up email:** Sent at day 5 if not yet submitted ("2 days left to report...")
+- Link directly to metrics submission form
+
 **Event Lead Reconciliation:**
+- **Reporting status:** "3 of 10 attendees reported metrics" prominently displayed
 - List of attendee submissions
 - Comparison view (claimed vs. adjusted)
 - Quick approve/adjust actions
-- Auto-calculate totals button
+- **Unattributed totals:** Input fields for bags/weight not reported by specific attendees
+- Auto-calculate totals button (sums approved + unattributed)
+- Warning when reporting rate < 50%
 - Notes for adjustments
 
 **Event Summary Display:**
@@ -448,41 +471,84 @@ public async Task<ActionResult<IEnumerable<DropLocationDto>>> GetDropLocations(G
 
 1. **Default Behavior:**
    - If no attendee metrics: Lead enters event-level totals only
-   - If attendee metrics: Auto-sum approved entries
+   - If attendee metrics: Auto-sum approved entries + unattributed totals
 
-2. **Double Counting Prevention:**
+2. **Partial Reporting:**
+   - UI clearly displays "X of Y attendees reported metrics"
+   - Lead can enter **unattributed totals** for non-reporting attendees
+   - Event totals = Sum of approved attendee entries + unattributed amounts
+   - Warning displayed when calculating totals with < 50% reporting rate
+
+3. **Double Counting Prevention:**
    - Lead can mark entries as "shared" (e.g., two people carried same bag)
    - Adjusted values used for totals
    - Original values preserved for audit
 
-3. **Late Submissions:**
+4. **Late Submissions:**
    - Attendees can submit up to 7 days after event
    - Leads notified of new submissions
    - Late submissions don't auto-recalculate totals
 
 ---
 
-## Open Questions
+## Data Migration
+
+Existing events with EventSummary data need migration to populate EventAttendeeMetrics:
+
+```csharp
+// Migration logic for existing events
+foreach (var eventSummary in existingEventSummaries)
+{
+    var attendees = await GetEventAttendees(eventSummary.EventId);
+
+    if (attendees.Count == 1)
+    {
+        // Single attendee: attribute all metrics to them
+        CreateAttendeeMetrics(attendees[0], eventSummary.TotalBags, eventSummary.TotalWeight);
+    }
+    else if (attendees.Count > 1)
+    {
+        // Multiple attendees: split equally
+        var bagsPerAttendee = eventSummary.TotalBags / attendees.Count;
+        var weightPerAttendee = eventSummary.TotalWeight / attendees.Count;
+
+        foreach (var attendee in attendees)
+        {
+            CreateAttendeeMetrics(attendee, bagsPerAttendee, weightPerAttendee);
+        }
+
+        // Handle remainder as unattributed
+        var remainderBags = eventSummary.TotalBags % attendees.Count;
+        if (remainderBags > 0)
+            eventSummary.UnattributedBags = remainderBags;
+    }
+
+    // Mark migrated entries as "Approved" (already verified by lead)
+    SetStatus("Approved");
+}
+```
+
+**Migration Notes:**
+- All migrated entries marked as "Approved" status (lead already submitted the totals)
+- Fractional weights rounded; remainder stored as unattributed
+- Events with 0 attendees: metrics remain event-level only (unattributed)
+- Migration runs once during deployment; new events use new workflow
+
+---
+
+## Resolved Questions
 
 1. **Time window for attendee submissions?**
-   **Recommendation:** 7 days post-event; leads can extend
-   **Owner:** Product Lead
-   **Due:** Before Phase 1
+   **Decision:** 7 days post-event by default; event leads can extend the deadline if needed
 
 2. **Default metric values?**
-   **Recommendation:** No defaults; require entry if participating
-   **Owner:** Product Lead
-   **Due:** Before Phase 1
+   **Decision:** No defaults; require entry if participating in metrics tracking
 
 3. **Visibility of individual metrics?**
-   **Recommendation:** Public by default; privacy option to hide
-   **Owner:** Product Lead
-   **Due:** Before Phase 3
+   **Decision:** Public by default; privacy option available for attendees to hide their contributions
 
 4. **Integration with volunteer hour systems?**
-   **Recommendation:** Export feature; no direct integration for v1
-   **Owner:** Product Lead
-   **Due:** Future
+   **Decision:** Export feature only; no direct third-party integration for v1
 
 ---
 
@@ -494,7 +560,7 @@ public async Task<ActionResult<IEnumerable<DropLocationDto>>> GetDropLocations(G
 
 ---
 
-**Last Updated:** January 24, 2026
+**Last Updated:** January 31, 2026
 **Owner:** Product Lead + Engineering
 **Status:** Not Started
 **Next Review:** When Project 7 complete

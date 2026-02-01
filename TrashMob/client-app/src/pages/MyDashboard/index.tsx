@@ -15,10 +15,13 @@ import StatsData from '@/components/Models/StatsData';
 import DisplayPartnershipData from '@/components/Models/DisplayPartnershipData';
 import DisplayPartnerAdminInvitationData from '@/components/Models/DisplayPartnerAdminInvitationData';
 import DisplayPartnerLocationEventData from '@/components/Models/DisplayPartnerLocationEventServiceData';
+import LitterReportData from '@/components/Models/LitterReportData';
 
 import twofigure from '@/components/assets/card/twofigure.svg';
 import calendarclock from '@/components/assets/card/calendarclock.svg';
 import bucketplus from '@/components/assets/card/bucketplus.svg';
+import Weight from '@/components/assets/home/Weight.svg';
+import LitterReportIcon from '@/components/assets/home/LitterReport.svg';
 import { ShareToSocialsDialog } from '@/components/EventManagement/ShareToSocialsDialog';
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { EventsMap } from '@/components/events/event-map';
@@ -35,6 +38,7 @@ import { GetPartnerRequestByUserId } from '@/services/partners';
 import { GetPartnerAdminsForUser } from '@/services/admin';
 import { GetPartnerAdminInvitationsByUser } from '@/services/invitations';
 import { GetEventPickupLocationsByUser, GetPartnerLocationEventServicesByUserId } from '@/services/locations';
+import { GetUserLitterReports } from '@/services/litter-report';
 
 import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
 import { useGetUserEvents } from '@/hooks/useGetUserEvents';
@@ -44,6 +48,8 @@ import { MyPartnersTable } from '@/pages/MyDashboard/MyPartnersTable';
 import { MyPickupRequestsTable } from '@/pages/MyDashboard/MyPickupRequestsTable';
 import { MyPartnersRequestTable } from '@/pages/MyDashboard/MyPartnersRequestTable';
 import { PartnerAdminInvitationsTable } from '@/pages/MyDashboard/PartnerAdminInvitationsTable';
+import { MyLitterReportsTable } from '@/pages/MyDashboard/MyLitterReportsTable';
+import { NearbyLitterReportsWidget } from '@/pages/MyDashboard/NearbyLitterReportsWidget';
 
 const isUpcomingEvent = (event: EventData) => new Date(event.eventDate) >= new Date();
 const isPastEvent = (event: EventData) => new Date(event.eventDate) < new Date();
@@ -111,6 +117,13 @@ const MyDashboard: FC<MyDashboardProps> = () => {
         select: (res) => res.data,
     });
 
+    // User's Litter Reports
+    const { data: myLitterReports } = useQuery<AxiosResponse<LitterReportData[]>, unknown, LitterReportData[]>({
+        queryKey: GetUserLitterReports({ userId }).key,
+        queryFn: GetUserLitterReports({ userId }).service,
+        select: (res) => res.data,
+    });
+
     // getStatsForUser
     const { data: stats } = useQuery<AxiosResponse<StatsData>, unknown, StatsData>({
         queryKey: GetStatsForUser({ userId: currentUser.id }).key,
@@ -121,6 +134,12 @@ const MyDashboard: FC<MyDashboardProps> = () => {
     const totalBags = stats?.totalBags || 0;
     const totalHours = stats?.totalHours || 0;
     const totalEvents = stats?.totalEvents || 0;
+    const totalLitterReports = stats?.totalLitterReportsSubmitted || 0;
+
+    // Use user's weight preference (prefersMetric: true = kg, false = lbs)
+    const prefersMetric = currentUser?.prefersMetric ?? false;
+    const totalWeight = prefersMetric ? stats?.totalWeightInKilograms || 0 : stats?.totalWeightInPounds || 0;
+    const weightLabel = prefersMetric ? 'Weight (kg)' : 'Weight (lbs)';
 
     const setSharingEvent = useCallback((newEventToShare: EventData, updateShowModal: boolean) => {
         setEventToShare(newEventToShare);
@@ -172,6 +191,8 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                         { name: 'Events', value: totalEvents, img: twofigure },
                         { name: 'Hours', value: totalHours, img: calendarclock },
                         { name: 'Bags', value: totalBags, img: bucketplus },
+                        { name: weightLabel, value: totalWeight, img: Weight },
+                        { name: 'Litter Reports', value: totalLitterReports, img: LitterReportIcon },
                     ].map((stat) => (
                         <div
                             className='basis-full md:basis-[200px] md:max-w-[255px] md:grow bg-card px-7! relative rounded-lg'
@@ -272,6 +293,42 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                         )}
                     </CardContent>
                 </Card>
+
+                <Card className='mb-4'>
+                    <CardHeader>
+                        <div className='flex flex-row'>
+                            <CardTitle className='grow text-primary'>
+                                My Litter Reports ({(myLitterReports || []).length})
+                            </CardTitle>
+                            <Button variant='outline' size='sm' asChild>
+                                <Link to='/litterreports'>View All Reports</Link>
+                            </Button>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <div className='overflow-auto'>
+                            <MyLitterReportsTable items={myLitterReports || []} />
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {currentUser.latitude && currentUser.longitude ? (
+                    <Card className='mb-4'>
+                        <CardHeader>
+                            <CardTitle className='text-primary'>Nearby Litter Reports</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <NearbyLitterReportsWidget
+                                userLocation={{
+                                    lat: currentUser.latitude,
+                                    lng: currentUser.longitude,
+                                }}
+                                radiusMiles={currentUser.travelLimitForLocalEvents || 10}
+                            />
+                        </CardContent>
+                    </Card>
+                ) : null}
+
                 <div className='flex flex-col mt-10 mb-3'>
                     <h4 className='font-semibold text-3xl mr-2 mt-0 pb-2 border-b-[3px] border-primary'>
                         My Partnerships ({(myPartnerRequests || []).length + (myPartners || []).length})

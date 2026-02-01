@@ -123,6 +123,90 @@
             return new NoContentResult();
         }
 
+        /// <summary>
+        /// Gets all event leads for a given event.
+        /// </summary>
+        /// <param name="eventId">The event ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpGet("{eventId}/leads")]
+        [ProducesResponseType(typeof(IEnumerable<DisplayUser>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetEventLeads(Guid eventId, CancellationToken cancellationToken)
+        {
+            var result =
+                (await eventAttendeeManager.GetEventLeadsAsync(eventId, cancellationToken).ConfigureAwait(false))
+                .Select(ea => ea.User.ToDisplayUser());
+            TrackEvent(nameof(GetEventLeads));
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Promotes an attendee to event lead status. Requires write scope.
+        /// Only existing event leads can promote other attendees.
+        /// Maximum 5 co-leads per event.
+        /// </summary>
+        /// <param name="eventId">The event ID.</param>
+        /// <param name="userId">The user ID of the attendee to promote.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpPut("{eventId}/{userId}/promote")]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(EventAttendee), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> PromoteToLead(Guid eventId, Guid userId, CancellationToken cancellationToken)
+        {
+            // Check if current user is an event lead
+            var isCurrentUserLead = await eventAttendeeManager.IsEventLeadAsync(eventId, UserId, cancellationToken);
+            if (!isCurrentUserLead)
+            {
+                return Forbid();
+            }
+
+            try
+            {
+                var result = await eventAttendeeManager.PromoteToLeadAsync(eventId, userId, UserId, cancellationToken);
+                TrackEvent(nameof(PromoteToLead));
+                return Ok(result);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Demotes an event lead back to regular attendee status. Requires write scope.
+        /// Only existing event leads can demote other leads.
+        /// Cannot demote the last remaining lead.
+        /// </summary>
+        /// <param name="eventId">The event ID.</param>
+        /// <param name="userId">The user ID of the lead to demote.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpPut("{eventId}/{userId}/demote")]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(EventAttendee), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> DemoteFromLead(Guid eventId, Guid userId, CancellationToken cancellationToken)
+        {
+            // Check if current user is an event lead
+            var isCurrentUserLead = await eventAttendeeManager.IsEventLeadAsync(eventId, UserId, cancellationToken);
+            if (!isCurrentUserLead)
+            {
+                return Forbid();
+            }
+
+            try
+            {
+                var result = await eventAttendeeManager.DemoteFromLeadAsync(eventId, userId, UserId, cancellationToken);
+                TrackEvent(nameof(DemoteFromLead));
+                return Ok(result);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         private async Task<bool> EventAttendeeExists(Guid eventId, Guid userId, CancellationToken cancellationToken)
         {
             var attendee = await eventAttendeeManager

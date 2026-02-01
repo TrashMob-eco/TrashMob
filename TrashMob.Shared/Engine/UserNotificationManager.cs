@@ -15,6 +15,7 @@
         private readonly IEventAttendeeManager eventAttendeeManager;
         private readonly IEventManager eventManager;
         private readonly IBaseManager<EventSummary> eventSummaryManager;
+        private readonly ILitterReportManager litterReportManager;
         private readonly ILogger<UserNotificationManager> logger;
         private readonly IMapManager mapRepository;
         private readonly INonEventUserNotificationManager nonEventUserNotificationManager;
@@ -33,6 +34,7 @@
         /// <param name="emailManager">Manager for email operations.</param>
         /// <param name="mapRepository">Repository for map services.</param>
         /// <param name="eventSummaryManager">Manager for event summaries.</param>
+        /// <param name="litterReportManager">Manager for litter report operations.</param>
         /// <param name="logger">Logger instance.</param>
         public UserNotificationManager(IEventManager eventManager,
             IKeyedManager<User> userManager,
@@ -43,6 +45,7 @@
             IEmailManager emailManager,
             IMapManager mapRepository,
             IBaseManager<EventSummary> eventSummaryManager,
+            ILitterReportManager litterReportManager,
             ILogger<UserNotificationManager> logger)
         {
             this.eventManager = eventManager;
@@ -54,6 +57,7 @@
             this.emailManager = emailManager;
             this.mapRepository = mapRepository;
             this.eventSummaryManager = eventSummaryManager;
+            this.litterReportManager = litterReportManager;
             this.logger = logger;
         }
 
@@ -111,6 +115,11 @@
                 eventAttendeeManager, userNotificationManager, nonEventUserNotificationManager, emailSender,
                 emailManager, mapRepository, logger);
             await userProfileLocationNotifier.GenerateNotificationsAsync().ConfigureAwait(false);
+
+            var weeklyLitterReportsNotifier = new WeeklyLitterReportsInYourAreaNotifier(userManager,
+                litterReportManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository,
+                logger);
+            await weeklyLitterReportsNotifier.GenerateNotificationsAsync().ConfigureAwait(false);
 
             logger.LogInformation("Completed RunAllNotifications");
         }

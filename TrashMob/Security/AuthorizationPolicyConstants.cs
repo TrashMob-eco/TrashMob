@@ -10,6 +10,10 @@
 
         public const string UserOwnsEntityOrIsAdmin = "UserOwnsEntityOrIsAdmin";
 
+        public const string UserIsEventLead = "UserIsEventLead";
+
+        public const string UserIsEventLeadOrIsAdmin = "UserIsEventLeadOrIsAdmin";
+
         public const string ValidUser = "ValidUser";
 
         public const string IftttServiceKey = "IftttServiceKey";

@@ -25,10 +25,9 @@ Allow non-developers to update home page and partner content with preview, sched
 - **Non-developer content editing** for marketing/admin team
 
 ### Secondary Goals
-- Multi-language content support (future)
-- Content approval workflows
-- A/B testing support
-- Content analytics
+- Content analytics (view counts, engagement)
+- A/B testing support (future)
+- Content scheduling (future dates)
 
 ---
 
@@ -51,11 +50,12 @@ Allow non-developers to update home page and partner content with preview, sched
 - ✅ Link to Strapi admin panel
 - ✅ Content type documentation
 
-### Phase 4 - Expansion (Future)
-- ❓ Community page content
-- ❓ Team page branding
-- ❓ Partner page customization
-- ❓ News/announcements
+### Phase 4 - Home Page Expansion
+- ✅ News/announcements section
+- ✅ Sponsors section
+- ✅ Featured partners carousel/list
+- ✅ Featured communities carousel/list
+- ✅ Featured teams carousel/list
 
 ---
 
@@ -64,7 +64,11 @@ Allow non-developers to update home page and partner content with preview, sched
 - ❌ Full website CMS (blog, etc.)
 - ❌ User-generated content management
 - ❌ Event content (managed through app)
-- ❌ Multi-tenant CMS for communities (future)
+- ❌ Multi-tenant CMS for communities
+- ❌ Multi-language support (i18n)
+- ❌ Community page content (managed via dedicated admin pages - Project 10)
+- ❌ Team page branding (managed via dedicated admin pages - Project 9)
+- ❌ Partner page customization (managed via dedicated admin pages)
 
 ---
 
@@ -88,9 +92,8 @@ Allow non-developers to update home page and partner content with preview, sched
 None - independent infrastructure
 
 ### Enables
-- **Project 2 (Home Page):** Dynamic content for news, partners
-- **Project 10 (Community Pages):** Community-specific content
-- **Marketing velocity:** Faster content iterations
+- **Project 2 (Home Page):** Dynamic content for news, sponsors, featured content
+- **Marketing velocity:** Faster content iterations without developer involvement
 
 ---
 
@@ -263,39 +266,77 @@ Strapi/
 - Admin content page
 - Documentation
 
-### Phase 4: Expansion (Future)
-- Community content
-- Partner content
-- News/announcements
+### Phase 4: Home Page Expansion
+- News/announcements content type
+- Sponsors content type
+- Featured partners/communities/teams content types
+- React components for new home page sections
+- Preview API endpoint for draft content
 
 ---
 
-## Future Phases
+## Phase 4 Content Types
 
-This CMS foundation enables:
-- **Community Pages (Project 10):** Custom content per community
-- **Teams (Project 9):** Team branding and descriptions
-- **Partner Pages:** Partner-managed content
-- **Dynamic News:** Home page announcements
+Phase 4 expands home page CMS content to include:
+
+**News/Announcements:**
+- `headline` (string)
+- `body` (rich text)
+- `publishDate` (date)
+- `expirationDate` (date, optional)
+- `priority` (enum: normal, featured, urgent)
+- `link` (string, optional)
+
+**Sponsors (Collection Type):**
+- `name` (string)
+- `logo` (media)
+- `websiteUrl` (string)
+- `tier` (enum: platinum, gold, silver, bronze)
+- `displayOrder` (number)
+- `isActive` (boolean)
+
+**Featured Partners (Collection Type):**
+- `partnerId` (relation to Partner entity)
+- `headline` (string)
+- `description` (text)
+- `displayOrder` (number)
+- `featuredUntil` (date)
+
+**Featured Communities (Collection Type):**
+- `communityId` (relation to Community/Partner entity)
+- `headline` (string)
+- `description` (text)
+- `displayOrder` (number)
+- `featuredUntil` (date)
+
+**Featured Teams (Collection Type):**
+- `teamId` (relation to Team entity)
+- `headline` (string)
+- `description` (text)
+- `displayOrder` (number)
+- `featuredUntil` (date)
+
+**Note:** Community, Team, and Partner pages have their own dedicated admin pages (Projects 9, 10). The CMS only manages their featured display on the home page.
 
 ---
 
 ## Open Questions
 
-1. **Content preview environment?**
-   **Recommendation:** Use Strapi draft/publish; add preview API endpoint
-   **Owner:** Engineering
-   **Due:** Phase 4
+1. ~~**Content preview environment?**~~
+   **Decision:** Use Strapi's built-in draft/publish functionality with a preview API endpoint for content editors
+   **Status:** ✅ Resolved
 
-2. **Multi-language support?**
-   **Recommendation:** Strapi i18n plugin when needed
-   **Owner:** Product Lead
-   **Due:** When international expansion planned
+2. ~~**Multi-language support?**~~
+   **Decision:** Out of scope for this project
+   **Status:** ✅ Resolved
 
-3. **Content approval workflow?**
-   **Recommendation:** Simple for now; Strapi workflows for enterprise needs
-   **Owner:** Product Lead
-   **Due:** When team grows
+3. ~~**Content approval workflow?**~~
+   **Decision:** Keep simple - no formal approval workflow; editors publish directly
+   **Status:** ✅ Resolved
+
+4. ~~**Phase 4 scope?**~~
+   **Decision:** Phase 4 focuses only on home page content (news, sponsors, featured partners/communities/teams). Community and Team pages managed via dedicated admin pages in their respective projects.
+   **Status:** ✅ Resolved
 
 ---
 
@@ -307,7 +348,7 @@ This CMS foundation enables:
 
 ---
 
-**Last Updated:** January 24, 2026
+**Last Updated:** January 31, 2026
 **Owner:** Engineering Team
 **Status:** In Progress (PR #2364)
 **Next Review:** After PR merge

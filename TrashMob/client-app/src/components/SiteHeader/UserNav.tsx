@@ -6,18 +6,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-    ChevronDown,
-    CircleUserRound,
-    CircleHelp,
-    Gauge,
-    IdCard,
-    LogOut,
-    Map,
-    Plus,
-    User,
-    UserRoundX,
-} from 'lucide-react';
+import { ChevronDown, CircleUserRound, IdCard, LogOut, User, UserRoundX } from 'lucide-react';
 import { Link } from 'react-router';
 import { cn } from '@/lib/utils';
 import UserData from '../Models/UserData';
@@ -84,27 +73,9 @@ export const UserNav = (props: UserNavProps) => {
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                        <DropdownMenuItem asChild>
-                            <Link to='/mydashboard'>
-                                <Gauge />
-                                <span>My Dashboard</span>
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link to='/events/create'>
-                                <Plus />
-                                <span>Add Event</span>
-                            </Link>
-                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={profileEdit}>
                             <User />
                             <span>Update my profile</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link to='/locationpreference'>
-                                <Map />
-                                <span>My Location Preference</span>
-                            </Link>
                         </DropdownMenuItem>
                         {currentUser.isSiteAdmin ? (
                             <DropdownMenuItem asChild>
@@ -114,13 +85,13 @@ export const UserNav = (props: UserNavProps) => {
                                 </Link>
                             </DropdownMenuItem>
                         ) : null}
+                        <DropdownMenuSeparator />
                         <DropdownMenuItem asChild>
                             <Link to='/deletemydata'>
                                 <UserRoundX />
                                 <span>Delete my account</span>
                             </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={signOut}>
                             <LogOut />
                             <span>Sign out</span>
