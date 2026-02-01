@@ -98,6 +98,12 @@ Branded public pages for partner communities (cities, counties, organizations) w
 - ✅ Review team applications
 - ✅ Community-specific events
 
+### Phase 5 - Documentation
+- ☐ Update FAQ page with Community-related questions (see #2307)
+- ☐ Update Help documentation for Community features
+- ☐ Add Communities section to Getting Started guide
+- ☐ Create Community Admin guide/tips content
+
 ---
 
 ## Out-of-Scope
@@ -417,6 +423,12 @@ public async Task<ActionResult<IEnumerable<CommunityProgramDto>>> GetCommunityPr
 - Program types and setup
 - Integration with Adopt-A-Location
 - Application management
+
+### Phase 5: Documentation
+- Update FAQ with Community questions
+- Update Help docs for Community features
+- Add to Getting Started guide
+- Create Community Admin guide
 
 **Note:** Phases are sequential; SSO requires Project 1 completion.
 
