@@ -103,6 +103,16 @@
 
         public virtual DbSet<LitterReport> LitterReports { get; set; }
 
+        public virtual DbSet<Team> Teams { get; set; }
+
+        public virtual DbSet<TeamMember> TeamMembers { get; set; }
+
+        public virtual DbSet<TeamJoinRequest> TeamJoinRequests { get; set; }
+
+        public virtual DbSet<TeamEvent> TeamEvents { get; set; }
+
+        public virtual DbSet<TeamPhoto> TeamPhotos { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(configuration["TMDBServerConnectionString"], x => x.UseNetTopologySuite());
@@ -1576,6 +1586,207 @@
                                 IsActive = true,
                             });
                 });
+
+            modelBuilder.Entity<Team>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(200);
+
+                entity.HasIndex(e => e.Name)
+                    .IsUnique()
+                    .HasDatabaseName("IX_Teams_Name");
+
+                entity.Property(e => e.Description)
+                    .HasMaxLength(2048);
+
+                entity.Property(e => e.LogoUrl)
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.City)
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.Region)
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.Country)
+                    .HasMaxLength(64);
+
+                entity.Property(e => e.PostalCode)
+                    .HasMaxLength(25);
+
+                entity.Property(e => e.IsPublic)
+                    .HasDefaultValue(true);
+
+                entity.Property(e => e.RequiresApproval)
+                    .HasDefaultValue(true);
+
+                entity.Property(e => e.IsActive)
+                    .HasDefaultValue(true);
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.TeamsCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Teams_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.TeamsUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Teams_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<TeamMember>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.HasIndex(e => new { e.TeamId, e.UserId })
+                    .IsUnique()
+                    .HasDatabaseName("IX_TeamMembers_TeamId_UserId");
+
+                entity.HasIndex(e => new { e.TeamId, e.IsTeamLead })
+                    .HasDatabaseName("IX_TeamMembers_TeamId_IsTeamLead");
+
+                entity.HasOne(d => d.Team)
+                    .WithMany(d => d.Members)
+                    .HasForeignKey(d => d.TeamId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_TeamMembers_Team");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(d => d.TeamMemberships)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_TeamMembers_User");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.TeamMembersCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TeamMembers_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.TeamMembersUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TeamMembers_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<TeamJoinRequest>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.HasIndex(e => new { e.TeamId, e.UserId })
+                    .IsUnique()
+                    .HasDatabaseName("IX_TeamJoinRequests_TeamId_UserId");
+
+                entity.Property(e => e.Status)
+                    .IsRequired()
+                    .HasMaxLength(20)
+                    .HasDefaultValue("Pending");
+
+                entity.HasOne(d => d.Team)
+                    .WithMany(d => d.JoinRequests)
+                    .HasForeignKey(d => d.TeamId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_TeamJoinRequests_Team");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(d => d.TeamJoinRequests)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_TeamJoinRequests_User");
+
+                entity.HasOne(d => d.ReviewedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.ReviewedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TeamJoinRequests_ReviewedByUser");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.TeamJoinRequestsCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TeamJoinRequests_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.TeamJoinRequestsUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TeamJoinRequests_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<TeamEvent>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.HasIndex(e => new { e.TeamId, e.EventId })
+                    .IsUnique()
+                    .HasDatabaseName("IX_TeamEvents_TeamId_EventId");
+
+                entity.HasOne(d => d.Team)
+                    .WithMany(d => d.TeamEvents)
+                    .HasForeignKey(d => d.TeamId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_TeamEvents_Team");
+
+                entity.HasOne(d => d.Event)
+                    .WithMany()
+                    .HasForeignKey(d => d.EventId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_TeamEvents_Event");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.TeamEventsCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TeamEvents_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.TeamEventsUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TeamEvents_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<TeamPhoto>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.ImageUrl)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Caption)
+                    .HasMaxLength(500);
+
+                entity.HasOne(d => d.Team)
+                    .WithMany(d => d.Photos)
+                    .HasForeignKey(d => d.TeamId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_TeamPhotos_Team");
+
+                entity.HasOne(d => d.UploadedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.UploadedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TeamPhotos_UploadedByUser");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.TeamPhotosCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TeamPhotos_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.TeamPhotosUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TeamPhotos_User_LastUpdatedBy");
+            });
         }
     }
 }

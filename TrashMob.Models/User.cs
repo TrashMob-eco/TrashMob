@@ -415,5 +415,65 @@ namespace TrashMob.Models
         /// Gets or sets the collection of litter images last updated by this user.
         /// </summary>
         public virtual ICollection<LitterImage> LitterImagesUpdated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of team memberships for this user.
+        /// </summary>
+        public virtual ICollection<TeamMember> TeamMemberships { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of team join requests made by this user.
+        /// </summary>
+        public virtual ICollection<TeamJoinRequest> TeamJoinRequests { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of teams created by this user.
+        /// </summary>
+        public virtual ICollection<Team> TeamsCreated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of teams last updated by this user.
+        /// </summary>
+        public virtual ICollection<Team> TeamsUpdated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of team members created by this user.
+        /// </summary>
+        public virtual ICollection<TeamMember> TeamMembersCreated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of team members last updated by this user.
+        /// </summary>
+        public virtual ICollection<TeamMember> TeamMembersUpdated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of team join requests created by this user.
+        /// </summary>
+        public virtual ICollection<TeamJoinRequest> TeamJoinRequestsCreated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of team join requests last updated by this user.
+        /// </summary>
+        public virtual ICollection<TeamJoinRequest> TeamJoinRequestsUpdated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of team events created by this user.
+        /// </summary>
+        public virtual ICollection<TeamEvent> TeamEventsCreated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of team events last updated by this user.
+        /// </summary>
+        public virtual ICollection<TeamEvent> TeamEventsUpdated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of team photos created by this user.
+        /// </summary>
+        public virtual ICollection<TeamPhoto> TeamPhotosCreated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of team photos last updated by this user.
+        /// </summary>
+        public virtual ICollection<TeamPhoto> TeamPhotosUpdated { get; set; }
     }
 }
