@@ -484,9 +484,80 @@ az containerapp update --name ca-tm-pr-westus2 --resource-group rg-trashmob-pr-w
 5. Notify team of rollback
 6. Investigate root cause before redeploying
 
+### Database Backups & Restore
+
+Azure SQL databases have automated backup with the following retention policies:
+
+| Backup Type | Retention | Purpose |
+|-------------|-----------|---------|
+| **Point-in-Time (PITR)** | 14 days | Restore to any point within the retention window |
+| **Weekly LTR** | 4 weeks | Weekly full backups for longer-term recovery |
+| **Monthly LTR** | 12 months | Monthly backups for compliance and audit |
+
+**Backup configuration:** `Deploy/sqlDatabase.bicep` and `Deploy/sqlDatabaseStrapi.bicep`
+**Alerting:** `Deploy/backupAlerts.bicep` - Monitors database health and sends alerts to `info@trashmob.eco`
+
+**View current backup settings:**
+```bash
+# Short-term retention
+az sql db str-policy show --name db-tm-pr-westus2 --server sql-tm-pr-westus2 --resource-group rg-trashmob-pr-westus2
+
+# Long-term retention
+az sql db ltr-policy show --name db-tm-pr-westus2 --server sql-tm-pr-westus2 --resource-group rg-trashmob-pr-westus2
+```
+
+**Point-in-Time Restore (within 14 days):**
+```bash
+# Restore to a specific time (creates new database)
+az sql db restore --dest-name db-tm-pr-westus2-restored \
+  --name db-tm-pr-westus2 --server sql-tm-pr-westus2 \
+  --resource-group rg-trashmob-pr-westus2 \
+  --time "2026-01-25T12:00:00Z"
+```
+
+**Long-Term Retention Restore:**
+```bash
+# List available LTR backups
+az sql db ltr-backup list --location westus2 \
+  --server sql-tm-pr-westus2 --database db-tm-pr-westus2
+
+# Restore from LTR backup
+az sql db ltr-backup restore --dest-database db-tm-pr-westus2-restored \
+  --dest-server sql-tm-pr-westus2 \
+  --dest-resource-group rg-trashmob-pr-westus2 \
+  --backup-id "<backup-id-from-list>"
+```
+
+**Recovery objectives:**
+- **RPO (Recovery Point Objective):** < 1 hour
+- **RTO (Recovery Time Objective):** < 4 hours
+
+See Project 32 (Database Backups) for full documentation and runbook.
+
+### Key Vault Access (RBAC Authorization)
+
+TrashMob uses Azure Key Vault with **RBAC authorization** (not access policies). This means:
+
+1. **Managed Identities** (Container Apps, Container App Jobs) are granted the `Key Vault Secrets User` role to read secrets at runtime
+2. **Developers** need the `Key Vault Secrets Officer` role to create/update secrets
+3. **GitHub Actions** deployment workflows automatically grant RBAC roles to managed identities
+
+**Check your Key Vault permissions:**
+```bash
+# List your role assignments on the Key Vault
+az role assignment list --scope $(az keyvault show --name kv-tm-dev-westus2 --query id -o tsv) --assignee $(az account show --query user.name -o tsv) -o table
+```
+
+**Request access if needed:**
+Contact the engineering lead to be granted `Key Vault Secrets Officer` role for development environments.
+
+See `Deploy/keyVault.bicep` and Project 26 documentation for technical details on the RBAC model.
+
 ### Strapi CMS Infrastructure
 
-The Strapi CMS runs as a separate Container App (`strapi-tm-dev-westus2`) with internal-only ingress. It requires the following Key Vault secrets to be created before deployment:
+The Strapi CMS runs as a separate Container App (`strapi-tm-dev-westus2`) with internal-only ingress. It requires the following Key Vault secrets to be created before deployment.
+
+**Note:** You need the `Key Vault Secrets Officer` RBAC role to create secrets (see Key Vault Access section above).
 
 | Secret Name | Purpose |
 |-------------|---------|
