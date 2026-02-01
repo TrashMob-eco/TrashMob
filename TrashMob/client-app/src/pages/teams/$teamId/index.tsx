@@ -12,7 +12,14 @@ import TeamData from '@/components/Models/TeamData';
 import TeamMemberData from '@/components/Models/TeamMemberData';
 import TeamPhotoData from '@/components/Models/TeamPhotoData';
 import EventData from '@/components/Models/EventData';
-import { GetTeamById, GetTeamMembers, GetTeamPhotos, GetTeamUpcomingEvents, JoinTeam, RemoveTeamMember } from '@/services/teams';
+import {
+    GetTeamById,
+    GetTeamMembers,
+    GetTeamPhotos,
+    GetTeamUpcomingEvents,
+    JoinTeam,
+    RemoveTeamMember,
+} from '@/services/teams';
 import { useLogin } from '@/hooks/useLogin';
 import { useToast } from '@/hooks/use-toast';
 import { ColumnDef } from '@tanstack/react-table';
