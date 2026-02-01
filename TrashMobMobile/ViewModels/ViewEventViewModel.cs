@@ -81,6 +81,17 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     private bool areNoLitterReportsAvailable;
 
     [ObservableProperty]
+    private bool canManageCoLeads;
+
+    [ObservableProperty]
+    private int coLeadCount;
+
+    [ObservableProperty]
+    private string coLeadCountDisplay = string.Empty;
+
+    private const int MaxCoLeads = 5;
+
+    [ObservableProperty]
     private bool isLitterReportMapSelected;
 
     [ObservableProperty]
@@ -250,13 +261,28 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     private async Task GetAttendeeCount()
     {
         var attendees = await eventAttendeeRestService.GetEventAttendeesAsync(mobEvent.Id);
+        var eventLeads = await eventAttendeeRestService.GetEventLeadsAsync(mobEvent.Id);
+        var eventLeadIds = new HashSet<Guid>(eventLeads.Select(l => l.Id));
+
+        CoLeadCount = eventLeadIds.Count;
+        CoLeadCountDisplay = $"Co-leads: {CoLeadCount}/{MaxCoLeads}";
+        CanManageCoLeads = mobEvent.IsEventLead(userManager.CurrentUser.Id) && !mobEvent.IsCompleted();
 
         EventAttendees.Clear();
 
         foreach (var attendee in attendees)
         {
             var attendeeVm = attendee.ToEventAttendeeViewModel();
-            attendeeVm.Role = mobEvent.IsEventLead(attendee.Id) ? "Lead" : "Attendee";
+            var isLead = eventLeadIds.Contains(attendee.Id);
+            var isCreator = attendee.Id == mobEvent.CreatedByUserId;
+
+            attendeeVm.EventId = mobEvent.Id;
+            attendeeVm.IsEventLead = isLead;
+            attendeeVm.IsEventCreator = isCreator;
+            attendeeVm.Role = isLead ? (isCreator ? "Creator" : "Co-lead") : "Attendee";
+            attendeeVm.CanPromote = CanManageCoLeads && !isLead && CoLeadCount < MaxCoLeads;
+            attendeeVm.CanDemote = CanManageCoLeads && isLead && !isCreator && CoLeadCount > 1;
+
             EventAttendees.Add(attendeeVm);
         }
 
@@ -452,5 +478,59 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
         EnableRegister = !mobEvent.IsEventLead(userManager.CurrentUser.Id) && !isAttending && mobEvent.AreNewRegistrationsAllowed();
         EnableUnregister = !mobEvent.IsEventLead(userManager.CurrentUser.Id) && isAttending && mobEvent.AreUnregistrationsAllowed();
+    }
+
+    [RelayCommand]
+    private async Task PromoteToLead(EventAttendeeViewModel attendee)
+    {
+        if (!CanManageCoLeads || attendee.IsEventLead || CoLeadCount >= MaxCoLeads)
+        {
+            return;
+        }
+
+        IsBusy = true;
+
+        try
+        {
+            await eventAttendeeRestService.PromoteToLeadAsync(attendee.EventId, attendee.AttendeeId);
+            await GetAttendeeCount();
+            await NotificationService.Notify($"{attendee.UserName} has been promoted to co-lead.");
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            await NotificationService.NotifyError("An error occurred while promoting the attendee. Please try again.");
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task DemoteFromLead(EventAttendeeViewModel attendee)
+    {
+        if (!CanManageCoLeads || !attendee.IsEventLead || attendee.IsEventCreator || CoLeadCount <= 1)
+        {
+            return;
+        }
+
+        IsBusy = true;
+
+        try
+        {
+            await eventAttendeeRestService.DemoteFromLeadAsync(attendee.EventId, attendee.AttendeeId);
+            await GetAttendeeCount();
+            await NotificationService.Notify($"{attendee.UserName} has been demoted from co-lead.");
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            await NotificationService.NotifyError("An error occurred while demoting the co-lead. Please try again.");
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 }
