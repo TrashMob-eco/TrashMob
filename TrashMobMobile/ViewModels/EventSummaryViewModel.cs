@@ -30,7 +30,7 @@ public partial class EventSummaryViewModel : ObservableObject
     private int pickedWeightUnitId;
 
     /// <summary>
-    /// Gets the display string for weight with unit (e.g., "25.5 lbs" or "11.5 kg").
+    /// Gets the display string for weight with unit (e.g., "25 lbs" or "12 kg"), rounded to nearest whole number.
     /// </summary>
     public string WeightDisplay
     {
@@ -42,7 +42,7 @@ public partial class EventSummaryViewModel : ObservableObject
             }
 
             var unit = PickedWeightUnitId == (int)WeightUnitEnum.Kilogram ? "kg" : "lbs";
-            return $"{PickedWeight:0.#} {unit}";
+            return $"{Math.Round(PickedWeight)} {unit}";
         }
     }
 }

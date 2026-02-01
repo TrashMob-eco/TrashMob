@@ -46,7 +46,7 @@ export const StatsSection = () => {
 
     // Use user's weight preference (default to imperial/lbs for anonymous users)
     const prefersMetric = currentUser?.prefersMetric ?? false;
-    const weightValue = prefersMetric ? totalWeightInKilograms : totalWeightInPounds;
+    const weightValue = Math.round(prefersMetric ? totalWeightInKilograms : totalWeightInPounds);
     const weightLabel = prefersMetric ? 'Total Weight (kg)' : 'Total Weight (lbs)';
 
     const statItems = [
