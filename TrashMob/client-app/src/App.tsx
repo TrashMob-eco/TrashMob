@@ -7,6 +7,7 @@ import { InteractionType, PublicClientApplication } from '@azure/msal-browser';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from '@/components/ui/toaster';
+import { FeedbackWidget } from './components/FeedbackWidget/FeedbackWidget';
 
 import { initializeMsalClient } from './store/AuthStore';
 import { Shop } from './components/Shop';
@@ -96,6 +97,7 @@ import { SiteAdminEmailTemplates } from './pages/siteadmin/email-templates';
 import { SiteAdminSendNotification } from './pages/siteadmin/send-notification';
 import { SiteAdminContent } from './pages/siteadmin/content';
 import { SiteAdminLitterReports } from './pages/siteadmin/litter-reports/page';
+import { SiteAdminFeedback } from './pages/siteadmin/feedback/page';
 import { NoMatch } from './pages/nomatch';
 
 const queryClient = new QueryClient();
@@ -244,6 +246,7 @@ const AppContent: FC = () => {
                                 <Route path='email-templates' element={<SiteAdminEmailTemplates />} />
                                 <Route path='send-notifications' element={<SiteAdminSendNotification />} />
                                 <Route path='content' element={<SiteAdminContent />} />
+                                <Route path='feedback' element={<SiteAdminFeedback />} />
                             </Route>
                         </Route>
                         <Route>
@@ -310,6 +313,7 @@ export const App: FC = () => {
                 <AppContent />
             </MsalProvider>
             <Toaster />
+            <FeedbackWidget />
             <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
     );

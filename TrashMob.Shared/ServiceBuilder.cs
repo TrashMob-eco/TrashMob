@@ -80,6 +80,9 @@
             services.AddScoped<ITeamMemberManager, TeamMemberManager>();
             services.AddScoped<ITeamPhotoManager, TeamPhotoManager>();
 
+            // User Feedback
+            services.AddScoped<IUserFeedbackManager, UserFeedbackManager>();
+
             // Non-patterned
             services.AddScoped<IActiveDirectoryManager, ActiveDirectoryManager>();
             services.AddScoped<IEmailManager, EmailManager>();
@@ -145,6 +148,9 @@
             services.AddScoped<IKeyedRepository<TeamJoinRequest>, KeyedRepository<TeamJoinRequest>>();
             services.AddScoped<IKeyedRepository<TeamEvent>, KeyedRepository<TeamEvent>>();
             services.AddScoped<IKeyedRepository<TeamPhoto>, KeyedRepository<TeamPhoto>>();
+
+            // User Feedback repository
+            services.AddScoped<IKeyedRepository<UserFeedback>, KeyedRepository<UserFeedback>>();
 
             return services;
         }

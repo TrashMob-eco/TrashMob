@@ -36,6 +36,7 @@
     <None Remove="Engine\EmailCopy\WeeklyLitterReportDigest.html" />
     <None Remove="Engine\EmailCopy\EventCoLeadAdded.html" />
     <None Remove="Engine\EmailCopy\EventCoLeadRemoved.html" />
+    <None Remove="Engine\EmailCopy\UserFeedbackReceived.html" />
   </ItemGroup>
 
   <ItemGroup>
@@ -68,6 +69,7 @@
     <EmbeddedResource Include="Engine\EmailCopy\WeeklyLitterReportDigest.html" />
     <EmbeddedResource Include="Engine\EmailCopy\EventCoLeadAdded.html" />
     <EmbeddedResource Include="Engine\EmailCopy\EventCoLeadRemoved.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\UserFeedbackReceived.html" />
   </ItemGroup>
 
   <ItemGroup>

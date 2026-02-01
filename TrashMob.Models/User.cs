@@ -475,5 +475,25 @@ namespace TrashMob.Models
         /// Gets or sets the collection of team photos last updated by this user.
         /// </summary>
         public virtual ICollection<TeamPhoto> TeamPhotosUpdated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of user feedback submitted by this user.
+        /// </summary>
+        public virtual ICollection<UserFeedback> UserFeedbackSubmitted { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of user feedback reviewed by this user.
+        /// </summary>
+        public virtual ICollection<UserFeedback> UserFeedbackReviewed { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of user feedback created by this user.
+        /// </summary>
+        public virtual ICollection<UserFeedback> UserFeedbackCreated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of user feedback last updated by this user.
+        /// </summary>
+        public virtual ICollection<UserFeedback> UserFeedbackUpdated { get; set; }
     }
 }
