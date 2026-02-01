@@ -217,11 +217,17 @@ export const TeamDetailPage = () => {
                                     </CardTitle>
                                     <div className='flex items-center gap-2'>
                                         {team.isPublic ? (
-                                            <Badge variant='outline' className='bg-green-100 text-green-800 border-green-300'>
+                                            <Badge
+                                                variant='outline'
+                                                className='bg-green-100 text-green-800 border-green-300'
+                                            >
                                                 <Globe className='h-3 w-3 mr-1' /> Public
                                             </Badge>
                                         ) : (
-                                            <Badge variant='outline' className='bg-gray-100 text-gray-800 border-gray-300'>
+                                            <Badge
+                                                variant='outline'
+                                                className='bg-gray-100 text-gray-800 border-gray-300'
+                                            >
                                                 <Lock className='h-3 w-3 mr-1' /> Private
                                             </Badge>
                                         )}
