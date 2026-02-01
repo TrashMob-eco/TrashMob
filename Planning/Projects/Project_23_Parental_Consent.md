@@ -193,9 +193,7 @@ public interface IPrivoService
 - Send parental waiver to parent on signup
 
 **Figma access required for Privo team:**
-- devops@privo.com
-- figmadevmode@privo.com
-- ttayloe@privo.com
+*(Contact addresses stored in secure location - not in public repo)*
 
 ---
 

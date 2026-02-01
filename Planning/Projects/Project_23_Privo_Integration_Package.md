@@ -3,7 +3,7 @@
 **Document Version:** 1.0
 **Date:** January 31, 2026
 **Prepared for:** Privo.com Integration Team
-**Contact:** devops@privo.com, figmadevmode@privo.com, ttayloe@privo.com
+**Contact:** *(See secure contact list)*
 
 ---
 
@@ -353,10 +353,8 @@ TrashMob requests the following customizations on Privo's consent collection pag
 
 ## Appendix A: Figma Access
 
-Please provide Figma access to the following Privo team members for UI/UX review:
-- devops@privo.com
-- figmadevmode@privo.com
-- ttayloe@privo.com
+Please provide Figma access to the Privo team members for UI/UX review.
+*(Contact addresses stored in secure location - not in public repo)*
 
 ---
 
