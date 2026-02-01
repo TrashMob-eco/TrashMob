@@ -12,6 +12,7 @@ namespace TrashMob.Controllers
     using TrashMob.Security;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Poco;
 
     /// <summary>
     /// Controller for team operations.
@@ -20,6 +21,8 @@ namespace TrashMob.Controllers
     public class TeamsController(
         ITeamManager teamManager,
         ITeamMemberManager teamMemberManager,
+        ITeamPhotoManager teamPhotoManager,
+        IImageManager imageManager,
         IKeyedManager<User> userManager)
         : SecureController
     {
@@ -264,5 +267,184 @@ namespace TrashMob.Controllers
             await teamManager.UpdateAsync(existingTeam, UserId, cancellationToken);
             return NoContent();
         }
+
+        #region Team Photos
+
+        /// <summary>
+        /// Gets all photos for a team.
+        /// </summary>
+        /// <param name="teamId">The team ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpGet("{teamId}/photos")]
+        [ProducesResponseType(typeof(IEnumerable<TeamPhoto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetTeamPhotos(Guid teamId, CancellationToken cancellationToken)
+        {
+            var team = await teamManager.GetAsync(teamId, cancellationToken);
+            if (team == null)
+            {
+                return NotFound();
+            }
+
+            // Private teams can only have photos viewed by members
+            if (!team.IsPublic)
+            {
+                if (!User.Identity.IsAuthenticated)
+                {
+                    return NotFound();
+                }
+
+                var isMember = await teamMemberManager.IsMemberAsync(teamId, UserId, cancellationToken);
+                if (!isMember)
+                {
+                    return NotFound();
+                }
+            }
+
+            var photos = await teamPhotoManager.GetByTeamIdAsync(teamId, cancellationToken);
+            return Ok(photos);
+        }
+
+        /// <summary>
+        /// Uploads a photo for a team. Only team leads can upload photos.
+        /// </summary>
+        /// <param name="teamId">The team ID.</param>
+        /// <param name="imageUpload">The image upload data.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpPost("{teamId}/photos")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(TeamPhoto), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UploadTeamPhoto(
+            Guid teamId,
+            [FromForm] ImageUpload imageUpload,
+            CancellationToken cancellationToken)
+        {
+            var team = await teamManager.GetAsync(teamId, cancellationToken);
+            if (team == null)
+            {
+                return NotFound();
+            }
+
+            // Check if user is a team lead
+            var isLead = await teamMemberManager.IsTeamLeadAsync(teamId, UserId, cancellationToken);
+            if (!isLead)
+            {
+                return Forbid();
+            }
+
+            // Create the team photo record
+            var photoId = Guid.NewGuid();
+            var teamPhoto = new TeamPhoto
+            {
+                Id = photoId,
+                TeamId = teamId,
+                Caption = string.Empty,
+            };
+
+            // Upload to blob storage
+            imageUpload.ParentId = photoId;
+            imageUpload.ImageType = ImageTypeEnum.TeamPhoto;
+            await imageManager.UploadImage(imageUpload);
+
+            // Get the image URL and save photo record
+            var imageUrl = await imageManager.GetImageUrlAsync(photoId, ImageTypeEnum.TeamPhoto, ImageSizeEnum.Reduced, cancellationToken);
+            teamPhoto.ImageUrl = imageUrl;
+            var createdPhoto = await teamPhotoManager.AddAsync(teamPhoto, UserId, cancellationToken);
+
+            return CreatedAtAction(nameof(GetTeamPhotos), new { teamId }, createdPhoto);
+        }
+
+        /// <summary>
+        /// Deletes a team photo. Only team leads can delete photos.
+        /// </summary>
+        /// <param name="teamId">The team ID.</param>
+        /// <param name="photoId">The photo ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpDelete("{teamId}/photos/{photoId}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteTeamPhoto(
+            Guid teamId,
+            Guid photoId,
+            CancellationToken cancellationToken)
+        {
+            var team = await teamManager.GetAsync(teamId, cancellationToken);
+            if (team == null)
+            {
+                return NotFound();
+            }
+
+            // Check if user is a team lead
+            var isLead = await teamMemberManager.IsTeamLeadAsync(teamId, UserId, cancellationToken);
+            if (!isLead)
+            {
+                return Forbid();
+            }
+
+            var photo = await teamPhotoManager.GetAsync(photoId, cancellationToken);
+            if (photo == null || photo.TeamId != teamId)
+            {
+                return NotFound();
+            }
+
+            // HardDelete removes from blob storage and database
+            await teamPhotoManager.HardDeleteAsync(photoId, cancellationToken);
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Updates a team photo caption. Only team leads can update photos.
+        /// </summary>
+        /// <param name="teamId">The team ID.</param>
+        /// <param name="photoId">The photo ID.</param>
+        /// <param name="caption">The new caption.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpPut("{teamId}/photos/{photoId}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(TeamPhoto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateTeamPhotoCaption(
+            Guid teamId,
+            Guid photoId,
+            [FromBody] string caption,
+            CancellationToken cancellationToken)
+        {
+            var team = await teamManager.GetAsync(teamId, cancellationToken);
+            if (team == null)
+            {
+                return NotFound();
+            }
+
+            // Check if user is a team lead
+            var isLead = await teamMemberManager.IsTeamLeadAsync(teamId, UserId, cancellationToken);
+            if (!isLead)
+            {
+                return Forbid();
+            }
+
+            var photo = await teamPhotoManager.GetAsync(photoId, cancellationToken);
+            if (photo == null || photo.TeamId != teamId)
+            {
+                return NotFound();
+            }
+
+            photo.Caption = caption ?? string.Empty;
+            photo.LastUpdatedByUserId = UserId;
+            photo.LastUpdatedDate = DateTimeOffset.UtcNow;
+
+            var updatedPhoto = await teamPhotoManager.UpdateAsync(photo, UserId, cancellationToken);
+            return Ok(updatedPhoto);
+        }
+
+        #endregion
     }
 }

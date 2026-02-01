@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
@@ -6,7 +6,21 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { APIProvider, MapMouseEvent, Marker, useMap } from '@vis.gl/react-google-maps';
-import { ArrowLeft, Crown, Globe, Loader2, Lock, MapPin, Save, Trash2, UserMinus, UserPlus, Users } from 'lucide-react';
+import {
+    ArrowLeft,
+    Crown,
+    Globe,
+    ImagePlus,
+    Loader2,
+    Lock,
+    MapPin,
+    Save,
+    Trash2,
+    UserMinus,
+    UserPlus,
+    Users,
+    X,
+} from 'lucide-react';
 
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,14 +38,18 @@ import {
 } from '@/components/Map/AzureSearchLocationInput';
 import TeamData from '@/components/Models/TeamData';
 import TeamMemberData from '@/components/Models/TeamMemberData';
+import TeamPhotoData from '@/components/Models/TeamPhotoData';
 import {
     GetTeamById,
     GetTeamMembers,
+    GetTeamPhotos,
     UpdateTeam,
     DeactivateTeam,
     RemoveTeamMember,
     PromoteToTeamLead,
     DemoteFromTeamLead,
+    UploadTeamPhoto,
+    DeleteTeamPhoto,
     GetMyTeams,
     GetTeamsILead,
 } from '@/services/teams';
@@ -100,6 +118,21 @@ const EditTeamForm = () => {
         select: (res) => res.data,
         enabled: !!teamId,
     });
+
+    const { data: photos, isLoading: isLoadingPhotos } = useQuery<
+        AxiosResponse<TeamPhotoData[]>,
+        unknown,
+        TeamPhotoData[]
+    >({
+        queryKey: GetTeamPhotos({ teamId }).key,
+        queryFn: GetTeamPhotos({ teamId }).service,
+        select: (res) => res.data,
+        enabled: !!teamId,
+    });
+
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [isUploading, setIsUploading] = useState(false);
+    const [deletingPhotoId, setDeletingPhotoId] = useState<string | null>(null);
 
     const updateTeam = useMutation({
         mutationKey: UpdateTeam().key,
@@ -180,6 +213,35 @@ const EditTeamForm = () => {
         onError: (error: Error) => {
             toast({ variant: 'destructive', title: 'Error', description: error.message || 'Failed to demote member.' });
             setProcessingMemberId(null);
+        },
+    });
+
+    const uploadPhoto = useMutation({
+        mutationKey: UploadTeamPhoto().key,
+        mutationFn: ({ formData }: { formData: FormData }) => UploadTeamPhoto().service({ teamId }, formData),
+        onSuccess: async () => {
+            toast({ title: 'Photo uploaded!' });
+            await queryClient.invalidateQueries({ queryKey: GetTeamPhotos({ teamId }).key });
+            setIsUploading(false);
+            if (fileInputRef.current) fileInputRef.current.value = '';
+        },
+        onError: (error: Error) => {
+            toast({ variant: 'destructive', title: 'Error', description: error.message || 'Failed to upload photo.' });
+            setIsUploading(false);
+        },
+    });
+
+    const deletePhoto = useMutation({
+        mutationKey: DeleteTeamPhoto().key,
+        mutationFn: DeleteTeamPhoto().service,
+        onSuccess: async () => {
+            toast({ title: 'Photo deleted' });
+            await queryClient.invalidateQueries({ queryKey: GetTeamPhotos({ teamId }).key });
+            setDeletingPhotoId(null);
+        },
+        onError: (error: Error) => {
+            toast({ variant: 'destructive', title: 'Error', description: error.message || 'Failed to delete photo.' });
+            setDeletingPhotoId(null);
         },
     });
 
@@ -338,6 +400,44 @@ const EditTeamForm = () => {
         if (window.confirm(`Remove lead role from "${userName}"?`)) {
             setProcessingMemberId(userId);
             demoteMember.mutate({ teamId, userId });
+        }
+    };
+
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            toast({
+                variant: 'destructive',
+                title: 'Invalid file type',
+                description: 'Please select an image file (JPEG, PNG, etc.)',
+            });
+            return;
+        }
+
+        // Validate file size (max 10MB)
+        const maxSize = 10 * 1024 * 1024;
+        if (file.size > maxSize) {
+            toast({
+                variant: 'destructive',
+                title: 'File too large',
+                description: 'Please select an image smaller than 10MB.',
+            });
+            return;
+        }
+
+        setIsUploading(true);
+        const formData = new FormData();
+        formData.append('FormFile', file);
+        uploadPhoto.mutate({ formData });
+    };
+
+    const handleDeletePhoto = (photoId: string) => {
+        if (window.confirm('Are you sure you want to delete this photo?')) {
+            setDeletingPhotoId(photoId);
+            deletePhoto.mutate({ teamId, photoId });
         }
     };
 
@@ -696,6 +796,84 @@ const EditTeamForm = () => {
                                         </TableBody>
                                     </Table>
                                 )}
+                            </CardContent>
+                        </Card>
+
+                        {/* Team Photos */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className='flex items-center gap-2'>
+                                    <ImagePlus className='h-5 w-5' />
+                                    Team Photos ({photos?.length || 0})
+                                </CardTitle>
+                                <CardDescription>Upload photos to showcase your team's activities</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className='space-y-4'>
+                                    {/* Upload button */}
+                                    <div>
+                                        <input
+                                            ref={fileInputRef}
+                                            type='file'
+                                            accept='image/*'
+                                            onChange={handleFileSelect}
+                                            className='hidden'
+                                            id='photo-upload'
+                                        />
+                                        <Button
+                                            type='button'
+                                            variant='outline'
+                                            onClick={() => fileInputRef.current?.click()}
+                                            disabled={isUploading}
+                                        >
+                                            {isUploading ? (
+                                                <Loader2 className='h-4 w-4 mr-2 animate-spin' />
+                                            ) : (
+                                                <ImagePlus className='h-4 w-4 mr-2' />
+                                            )}
+                                            {isUploading ? 'Uploading...' : 'Upload Photo'}
+                                        </Button>
+                                    </div>
+
+                                    {/* Photo grid */}
+                                    {isLoadingPhotos ? (
+                                        <div className='text-center py-4'>
+                                            <Loader2 className='h-6 w-6 animate-spin mx-auto' />
+                                        </div>
+                                    ) : photos && photos.length > 0 ? (
+                                        <div className='grid grid-cols-2 md:grid-cols-3 gap-4'>
+                                            {photos.map((photo) => (
+                                                <div
+                                                    key={photo.id}
+                                                    className='relative group rounded-lg overflow-hidden border'
+                                                >
+                                                    <img
+                                                        src={photo.imageUrl}
+                                                        alt={photo.caption || 'Team photo'}
+                                                        className='w-full h-32 object-cover'
+                                                    />
+                                                    <Button
+                                                        variant='destructive'
+                                                        size='icon'
+                                                        className='absolute top-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity'
+                                                        onClick={() => handleDeletePhoto(photo.id)}
+                                                        disabled={deletingPhotoId === photo.id}
+                                                    >
+                                                        {deletingPhotoId === photo.id ? (
+                                                            <Loader2 className='h-4 w-4 animate-spin' />
+                                                        ) : (
+                                                            <X className='h-4 w-4' />
+                                                        )}
+                                                    </Button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p className='text-sm text-muted-foreground text-center py-4'>
+                                            No photos yet. Upload photos to showcase your team's cleanup activities!
+                                        </p>
+                                    )}
+                                </div>
                             </CardContent>
                         </Card>
                     </div>

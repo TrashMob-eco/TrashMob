@@ -5,6 +5,7 @@ import EventData from '../components/Models/EventData';
 import TeamData from '../components/Models/TeamData';
 import TeamEventData from '../components/Models/TeamEventData';
 import TeamMemberData from '../components/Models/TeamMemberData';
+import TeamPhotoData from '../components/Models/TeamPhotoData';
 
 // ============================================================================
 // Team Operations
@@ -282,6 +283,60 @@ export const UnlinkEventFromTeam = () => ({
     service: async (params: UnlinkEventFromTeam_Params) =>
         ApiService('protected').fetchData<UnlinkEventFromTeam_Response>({
             url: `/teams/${params.teamId}/events/${params.eventId}`,
+            method: 'delete',
+        }),
+});
+
+// ============================================================================
+// Team Photo Operations
+// ============================================================================
+
+export type GetTeamPhotos_Params = { teamId: string };
+export type GetTeamPhotos_Response = TeamPhotoData[];
+export const GetTeamPhotos = (params: GetTeamPhotos_Params) => ({
+    key: ['/teams/', params.teamId, '/photos'],
+    service: async () =>
+        ApiService('public').fetchData<GetTeamPhotos_Response>({
+            url: `/teams/${params.teamId}/photos`,
+            method: 'get',
+        }),
+});
+
+export type UploadTeamPhoto_Params = { teamId: string };
+export type UploadTeamPhoto_Response = TeamPhotoData;
+export const UploadTeamPhoto = () => ({
+    key: ['/teams/photos', 'upload'],
+    service: async (params: UploadTeamPhoto_Params, formData: FormData) =>
+        ApiService('protected').fetchData<UploadTeamPhoto_Response>({
+            url: `/teams/${params.teamId}/photos`,
+            method: 'post',
+            data: formData,
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        }),
+});
+
+export type UpdateTeamPhotoCaption_Params = { teamId: string; photoId: string };
+export type UpdateTeamPhotoCaption_Body = string;
+export type UpdateTeamPhotoCaption_Response = TeamPhotoData;
+export const UpdateTeamPhotoCaption = () => ({
+    key: ['/teams/photos', 'update'],
+    service: async (params: UpdateTeamPhotoCaption_Params, caption: UpdateTeamPhotoCaption_Body) =>
+        ApiService('protected').fetchData<UpdateTeamPhotoCaption_Response, UpdateTeamPhotoCaption_Body>({
+            url: `/teams/${params.teamId}/photos/${params.photoId}`,
+            method: 'put',
+            data: caption,
+        }),
+});
+
+export type DeleteTeamPhoto_Params = { teamId: string; photoId: string };
+export type DeleteTeamPhoto_Response = void;
+export const DeleteTeamPhoto = () => ({
+    key: ['/teams/photos', 'delete'],
+    service: async (params: DeleteTeamPhoto_Params) =>
+        ApiService('protected').fetchData<DeleteTeamPhoto_Response>({
+            url: `/teams/${params.teamId}/photos/${params.photoId}`,
             method: 'delete',
         }),
 });

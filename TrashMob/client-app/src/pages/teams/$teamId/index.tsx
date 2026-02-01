@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
-import { MapPin, Users, ArrowLeft, Crown, Globe, Lock, Calendar, UserPlus, LogOut, Loader2 } from 'lucide-react';
+import { MapPin, Users, ArrowLeft, Crown, Globe, Lock, Calendar, UserPlus, LogOut, Loader2, Image } from 'lucide-react';
 
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,8 +10,9 @@ import { Button } from '@/components/ui/button';
 import { DataTable, DataTableColumnHeader } from '@/components/ui/data-table';
 import TeamData from '@/components/Models/TeamData';
 import TeamMemberData from '@/components/Models/TeamMemberData';
+import TeamPhotoData from '@/components/Models/TeamPhotoData';
 import EventData from '@/components/Models/EventData';
-import { GetTeamById, GetTeamMembers, GetTeamUpcomingEvents, JoinTeam, RemoveTeamMember } from '@/services/teams';
+import { GetTeamById, GetTeamMembers, GetTeamPhotos, GetTeamUpcomingEvents, JoinTeam, RemoveTeamMember } from '@/services/teams';
 import { useLogin } from '@/hooks/useLogin';
 import { useToast } from '@/hooks/use-toast';
 import { ColumnDef } from '@tanstack/react-table';
@@ -57,6 +58,13 @@ export const TeamDetailPage = () => {
     const { data: upcomingEvents } = useQuery<AxiosResponse<EventData[]>, unknown, EventData[]>({
         queryKey: GetTeamUpcomingEvents({ teamId }).key,
         queryFn: GetTeamUpcomingEvents({ teamId }).service,
+        select: (res) => res.data,
+        enabled: !!teamId,
+    });
+
+    const { data: photos } = useQuery<AxiosResponse<TeamPhotoData[]>, unknown, TeamPhotoData[]>({
+        queryKey: GetTeamPhotos({ teamId }).key,
+        queryFn: GetTeamPhotos({ teamId }).service,
         select: (res) => res.data,
         enabled: !!teamId,
     });
@@ -285,6 +293,34 @@ export const TeamDetailPage = () => {
                                 )}
                             </CardContent>
                         </Card>
+
+                        {/* Team Photos */}
+                        {photos && photos.length > 0 ? (
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className='flex items-center gap-2'>
+                                        <Image className='h-5 w-5' />
+                                        Team Photos ({photos.length})
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className='grid grid-cols-2 md:grid-cols-3 gap-4'>
+                                        {photos.map((photo) => (
+                                            <div
+                                                key={photo.id}
+                                                className='relative rounded-lg overflow-hidden border aspect-square'
+                                            >
+                                                <img
+                                                    src={photo.imageUrl}
+                                                    alt={photo.caption || 'Team photo'}
+                                                    className='w-full h-full object-cover'
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ) : null}
                     </div>
 
                     {/* Sidebar */}
