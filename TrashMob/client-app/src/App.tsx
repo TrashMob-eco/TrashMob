@@ -50,6 +50,10 @@ import { LitterReportDetailPage } from './pages/litterreports/$litterReportId';
 import { LitterReportEditPage } from './pages/litterreports/$litterReportId/edit';
 import { CreateLitterReportPage } from './pages/litterreports/create';
 
+/** Teams */
+import { TeamsPage } from './pages/teams';
+import { TeamDetailPage } from './pages/teams/$teamId';
+
 /** Partners */
 import { Partnerships } from './pages/partnerships/page';
 import { BecomeAPartnerPage } from './pages/_partnerRequest/becomeapartner';
@@ -244,6 +248,8 @@ const AppContent: FC = () => {
                             <Route path='/eventdetails/:eventId?' element={<EventDetails />} />
                             <Route path='/litterreports' element={<LitterReportsPage />} />
                             <Route path='/litterreports/:litterReportId' element={<LitterReportDetailPage />} />
+                            <Route path='/teams' element={<TeamsPage />} />
+                            <Route path='/teams/:teamId' element={<TeamDetailPage />} />
                             <Route path='/partnerships' element={<Partnerships />} />
                             <Route path='/shop' element={<Shop />} />
                             <Route path='/help' element={<Help />} />
