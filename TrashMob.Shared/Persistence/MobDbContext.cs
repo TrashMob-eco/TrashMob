@@ -113,6 +113,8 @@
 
         public virtual DbSet<TeamPhoto> TeamPhotos { get; set; }
 
+        public virtual DbSet<UserFeedback> UserFeedback { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(configuration["TMDBServerConnectionString"], x => x.UseNetTopologySuite());
@@ -1786,6 +1788,66 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_TeamPhotos_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<UserFeedback>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Category)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Description)
+                    .IsRequired()
+                    .HasMaxLength(4000);
+
+                entity.Property(e => e.Email)
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.ScreenshotUrl)
+                    .HasMaxLength(2048);
+
+                entity.Property(e => e.PageUrl)
+                    .HasMaxLength(2048);
+
+                entity.Property(e => e.UserAgent)
+                    .HasMaxLength(1024);
+
+                entity.Property(e => e.Status)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .HasDefaultValue("New");
+
+                entity.Property(e => e.InternalNotes)
+                    .HasMaxLength(4000);
+
+                entity.Property(e => e.GitHubIssueUrl)
+                    .HasMaxLength(2048);
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.UserFeedbackSubmitted)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.SetNull)
+                    .HasConstraintName("FK_UserFeedback_User");
+
+                entity.HasOne(d => d.ReviewedByUser)
+                    .WithMany(p => p.UserFeedbackReviewed)
+                    .HasForeignKey(d => d.ReviewedByUserId)
+                    .OnDelete(DeleteBehavior.SetNull)
+                    .HasConstraintName("FK_UserFeedback_ReviewedByUser");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.UserFeedbackCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserFeedback_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.UserFeedbackUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserFeedback_User_LastUpdatedBy");
             });
         }
     }

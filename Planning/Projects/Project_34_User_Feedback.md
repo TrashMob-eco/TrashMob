@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Not Started |
+| **Status** | In Progress |
 | **Priority** | Low |
 | **Risk** | Low |
 | **Size** | Small |
@@ -39,7 +39,7 @@ A lightweight feedback widget enables users to report issues, suggest features, 
 ### Phase 1 - Basic Feedback Widget
 - ✅ Add floating feedback button to website
 - ✅ Feedback form with category, description, and optional email
-- ✅ Screenshot capture functionality
+- ⬜ Screenshot capture functionality
 - ✅ Store feedback in database
 - ✅ Email notification to admin on new feedback
 
@@ -47,13 +47,13 @@ A lightweight feedback widget enables users to report issues, suggest features, 
 - ✅ View all feedback submissions
 - ✅ Filter by category, status, date
 - ✅ Mark feedback as reviewed/resolved/deferred
-- ✅ Add internal notes to feedback items
-- ✅ Export feedback to CSV
+- ⬜ Add internal notes to feedback items (backend ready)
+- ⬜ Export feedback to CSV
 
 ### Phase 3 - Integration
-- ✅ Create GitHub issue from feedback (optional)
+- ⬜ Create GitHub issue from feedback (optional)
 - ✅ Link feedback to user account (if logged in)
-- ✅ Aggregate feedback analytics
+- ⬜ Aggregate feedback analytics
 
 ---
 
@@ -268,13 +268,20 @@ The following GitHub issues are tracked as part of this project:
 
 ---
 
-**Last Updated:** January 31, 2026
+**Last Updated:** February 1, 2026
 **Owner:** Product Lead + Engineering Team
-**Status:** Not Started
-**Next Review:** When prioritized
+**Status:** In Progress
+**Next Review:** After Phase 1 complete
 
 ---
 
 ## Changelog
 
+- **2026-02-01:** Implemented Phase 1 - feedback widget, API, admin page
+  - Created UserFeedback entity and migration
+  - Created UserFeedbackManager with email notifications
+  - Created UserFeedbackController (public submit, admin CRUD)
+  - Created FeedbackWidget component with floating button and dialog
+  - Created admin feedback page at /siteadmin/feedback
+  - Added status filtering for admin dashboard
 - **2026-01-31:** Created project from Issue #550

@@ -19,6 +19,7 @@ export const SiteAdminLayout = () => {
         { name: 'Send Notifications', value: `${pathPrefix}/send-notifications` },
         { name: 'View Email Templates', value: `${pathPrefix}/email-templates` },
         { name: 'Manage Content', value: `${pathPrefix}/content` },
+        { name: 'User Feedback', value: `${pathPrefix}/feedback` },
     ];
 
     const handleValueChange = useCallback(

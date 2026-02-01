@@ -149,5 +149,10 @@
         /// Notification sent when a user is removed as event co-lead.
         /// </summary>
         EventCoLeadRemoved = 29,
+
+        /// <summary>
+        /// Notification sent to admins when user feedback is submitted.
+        /// </summary>
+        UserFeedbackReceived = 30,
     }
 }
