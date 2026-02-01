@@ -15,7 +15,7 @@ Create a modern, scalable, and developer-friendly API layer (v2) that improves r
 
 ### Core Improvements:
 - Implement pagination on all collection endpoints (cursor and offset-based)
-- Standardized error responses (RFC 7807 Problem Details)
+- Standardized error responses (RFC 9457 Problem Details)
 - Auto-generate TypeScript clients for React app
 - Auto-generate .NET clients for MAUI mobile app
 - Comprehensive OpenAPI 3.1 documentation
@@ -38,36 +38,40 @@ Create a modern, scalable, and developer-friendly API layer (v2) that improves r
 ## Scope
 
 ### Phase 1 - Foundation (Q2 2026):
-- ? API versioning infrastructure
-- ? Pagination framework (cursor + offset)
-- ? Problem Details error responses
-- ? OpenAPI 3.1 specification
-- ? NSwag/Kiota setup for client generation
-- ? Response wrapper pattern
-- ? Correlation ID middleware
+- ✅ API versioning infrastructure
+- ✅ Pagination framework (offset default, cursor optional)
+- ✅ Problem Details error responses (RFC 9457, formerly RFC 7807)
+- ✅ OpenAPI 3.1 specification
+- ✅ NSwag (TypeScript) + Kiota (.NET) for client generation
+- ✅ Response wrapper pattern
+- ✅ Correlation ID middleware
 
 ### Phase 2 - Core Endpoints (Q3 2026):
-- ? Events v2 endpoints with pagination
-- ? Users v2 endpoints
-- ? Partners v2 endpoints
-- ? EventAttendees v2 endpoints
-- ? EventSummaries v2 endpoints
-- ? LitterReports v2 endpoints
-- ? Auto-generated TypeScript client
-- ? Auto-generated .NET MAUI client
+- ✅ Events v2 endpoints with pagination
+- ✅ Users v2 endpoints
+- ✅ Partners v2 endpoints
+- ✅ EventAttendees v2 endpoints
+- ✅ EventSummaries v2 endpoints
+- ✅ LitterReports v2 endpoints
+- ✅ Auto-generated TypeScript client (NSwag)
+- ✅ Auto-generated .NET MAUI client (Kiota)
 
 ### Phase 3 - Advanced Features (Q4 2026):
-- ? Response compression
-- ? ETags and conditional requests
-- ? Bulk operations (batch create/update)
-- ? Webhook infrastructure
-- ? Field filtering
-- ? Sorting
-- ? Advanced filtering
+- ✅ Response compression (Gzip/Brotli)
+- ✅ ETags and conditional requests
+- ✅ Bulk operations (batch create/update)
+- ✅ Webhook infrastructure
+- ✅ Field filtering (`?fields=name,date`)
+- ✅ Sorting (`?sort=-date,name`)
+- ✅ Advanced filtering (OData subset)
 
 ## Out-of-Scope
 
-- ? v1 endpoint removal (maintain both versions until mobile apps updated)
+- ❌ v1 endpoint removal (maintain both versions until mobile apps updated)
+- ❌ GraphQL API (evaluate separately if demand exists)
+- ❌ API Gateway (defer until microservices architecture needed)
+- ❌ gRPC endpoints (not needed for current use cases)
+- ❌ External API access (public developer API) - internal use only for now
 
 ## Success Metrics
 
@@ -132,7 +136,7 @@ public class CursorPagedResponse<T>
 }
 ```
 
-### Error Models (RFC 7807)
+### Error Models (RFC 9457 Problem Details)
 
 ```csharp
 public class ProblemDetailsExtension : ProblemDetails
@@ -462,22 +466,29 @@ jobs:
 - Postman collection
 - OpenAPI specification JSON/YAML
 
-## Open Questions
+## Decisions
 
-1. **Should we use Kiota (Microsoft) or NSwag for client generation?**  
-   **Recommendation:** Kiota for .NET, NSwag for TypeScript
+1. **Client generation tools?**
+   **Decision:** NSwag for TypeScript (React), Kiota for .NET (MAUI) - best of both worlds
 
-2. **OData query syntax vs custom filtering?**  
-   **Recommendation:** Simplified OData subset for consistency with industry standards
+2. **Query filtering syntax?**
+   **Decision:** Simplified OData subset for consistency with industry standards (Azure APIs)
 
-3. **Cursor vs offset pagination default?**  
-   **Recommendation:** Offset for simplicity, cursor optional for real-time feeds
+3. **Pagination default?**
+   **Decision:** Offset-based default for simplicity; cursor-based available as option for real-time feeds
 
-4. **API Gateway evaluation timeline?**
-   **Recommendation:** Defer until microservices architecture needed
+4. **API Gateway?**
+   **Decision:** Defer until microservices architecture needed (out of scope for v2)
 
 ---
 
-**Last Updated:** January 23, 2026  
-**Owner:** Engineering Team  
-**Next Review:** Quarterly
+**Last Updated:** January 31, 2026
+**Owner:** Engineering Team
+**Status:** Not Started
+**Next Review:** Before Phase 1 kickoff
+
+---
+
+## Changelog
+
+- **2026-01-31:** Resolved open questions; confirmed all Phase 1-3 scope items; added out-of-scope items
