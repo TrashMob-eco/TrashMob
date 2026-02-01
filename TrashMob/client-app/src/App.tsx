@@ -87,6 +87,7 @@ import { SiteAdminLayout } from './pages/siteadmin/_layout';
 import { SiteAdminUsers } from './pages/siteadmin/users/page';
 import { SiteAdminEvents } from './pages/siteadmin/events/page';
 import { SiteAdminPartners } from './pages/siteadmin/partners/page';
+import { SiteAdminTeams } from './pages/siteadmin/teams/page';
 import { SiteAdminPartnerRequests } from './pages/siteadmin/partner-requests/page';
 import { SiteAdminJobOpportunities } from './pages/siteadmin/job-opportunities/page';
 import { SiteAdminJobOpportunityCreate } from './pages/siteadmin/job-opportunities/create';
@@ -233,6 +234,7 @@ const AppContent: FC = () => {
                                 <Route path='users' element={<SiteAdminUsers />} />
                                 <Route path='events' element={<SiteAdminEvents />} />
                                 <Route path='partners' element={<SiteAdminPartners />} />
+                                <Route path='teams' element={<SiteAdminTeams />} />
                                 <Route path='litter-reports' element={<SiteAdminLitterReports />} />
                                 <Route path='partner-requests' element={<SiteAdminPartnerRequests />} />
                                 <Route path='job-opportunities' element={<SiteAdminJobOpportunities />}>

@@ -11,6 +11,7 @@ export const SiteAdminLayout = () => {
         { name: 'Manage Users', value: `${pathPrefix}/users` },
         { name: 'Manage Events', value: `${pathPrefix}/events` },
         { name: 'Manage Partners', value: `${pathPrefix}/partners` },
+        { name: 'Manage Teams', value: `${pathPrefix}/teams` },
         { name: 'Manage Litter Reports', value: `${pathPrefix}/litter-reports` },
         { name: 'Manage Partner Requests', value: `${pathPrefix}/partner-requests` },
         { name: 'Manage Job Opportunities', value: `${pathPrefix}/job-opportunities` },
