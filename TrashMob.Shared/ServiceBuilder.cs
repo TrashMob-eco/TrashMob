@@ -11,6 +11,7 @@
     using TrashMob.Shared.Managers.Teams;
     using TrashMob.Shared.Persistence;
     using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Shared.Services;
 
     public static class ServiceBuilder
     {
@@ -82,6 +83,9 @@
 
             // User Feedback
             services.AddScoped<IUserFeedbackManager, UserFeedbackManager>();
+
+            // Feature Metrics
+            services.AddSingleton<IFeatureMetricsService, FeatureMetricsService>();
 
             // Non-patterned
             services.AddScoped<IActiveDirectoryManager, ActiveDirectoryManager>();

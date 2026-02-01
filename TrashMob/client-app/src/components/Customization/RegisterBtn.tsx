@@ -10,6 +10,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { GetTrashMobWaivers } from '../../services/waivers';
 import { AddEventAttendee, GetAllEventsBeingAttendedByUser } from '../../services/events';
 import { cn } from '@/lib/utils';
+import { useFeatureMetrics } from '@/hooks/useFeatureMetrics';
 
 interface RegisterBtnProps {
     currentUser: UserData;
@@ -30,6 +31,7 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
     const navigate = useNavigate();
     const [registered, setRegistered] = useState<boolean>(false);
     const queryClient = useQueryClient();
+    const { trackAttendance } = useFeatureMetrics();
 
     const { data: waiver } = useQuery({
         queryKey: GetTrashMobWaivers().key,
@@ -41,6 +43,9 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
         mutationKey: AddEventAttendee().key,
         mutationFn: AddEventAttendee().service,
         onSuccess: () => {
+            // Track attendance registration
+            trackAttendance('Register', eventId);
+
             // Invalidate user's list of attended events, triggerring refetch
             queryClient.invalidateQueries(GetAllEventsBeingAttendedByUser({ userId }).key);
 

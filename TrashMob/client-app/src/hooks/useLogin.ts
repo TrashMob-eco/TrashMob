@@ -3,11 +3,13 @@ import { useEffect, useState } from 'react';
 import * as msal from '@azure/msal-browser';
 import { getApiConfig, getMsalClientInstance } from '@/store/AuthStore';
 import { GetUserByEmail, GetUserById } from '@/services/users';
+import { useFeatureMetrics } from './useFeatureMetrics';
 
 export const useLogin = () => {
     const [callbackId, setCallbackId] = useState('');
     const [currentUser, setCurrentUser] = useState<UserData>(new UserData());
     const isUserLoaded = !!currentUser.email;
+    const { trackAuth } = useFeatureMetrics();
 
     useEffect(() => {
         if (callbackId) {
@@ -15,9 +17,11 @@ export const useLogin = () => {
         }
         const id = getMsalClientInstance().addEventCallback((message: msal.EventMessage) => {
             if (message.eventType === msal.EventType.LOGIN_SUCCESS) {
+                trackAuth('Login', true);
                 verifyAccount(message.payload as msal.AuthenticationResult);
             }
             if (message.eventType === msal.EventType.LOGOUT_SUCCESS) {
+                trackAuth('Logout', true);
                 clearUser();
             }
         });

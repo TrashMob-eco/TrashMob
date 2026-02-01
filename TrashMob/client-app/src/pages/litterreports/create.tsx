@@ -23,6 +23,7 @@ import { CreateLitterReport, UploadLitterImage, GetUserLitterReports } from '@/s
 import { useLogin } from '@/hooks/useLogin';
 import { useToast } from '@/hooks/use-toast';
 import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
+import { useFeatureMetrics } from '@/hooks/useFeatureMetrics';
 
 const formSchema = z.object({
     name: z.string().min(1, 'Report name is required').max(256, 'Name must be less than 256 characters'),
@@ -36,6 +37,7 @@ const CreateLitterReportPageInner = () => {
     const queryClient = useQueryClient();
     const { currentUser } = useLogin();
     const { toast } = useToast();
+    const { trackLitterReport } = useFeatureMetrics();
 
     const [images, setImages] = useState<ImageWithLocation[]>([]);
     const [editingImageId, setEditingImageId] = useState<string | null>(null);
@@ -148,6 +150,9 @@ const CreateLitterReportPageInner = () => {
                     });
                 }
             }
+
+            // Track litter report creation
+            trackLitterReport('Create', createdReport.id, { imageCount: images.length });
 
             // Invalidate queries and navigate
             await queryClient.invalidateQueries({
