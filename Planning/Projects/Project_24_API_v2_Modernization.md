@@ -39,6 +39,8 @@ Create a modern, scalable, and developer-friendly API layer (v2) that improves r
 
 ### Phase 1 - Foundation (Q2 2026):
 - ✅ API versioning infrastructure
+- ✅ V2 DTO layer (decoupled from entity models, enables MCP server reuse)
+- ✅ Manual entity-to-DTO mapping (no AutoMapper)
 - ✅ Pagination framework (offset default, cursor optional)
 - ✅ Problem Details error responses (RFC 9457, formerly RFC 7807)
 - ✅ OpenAPI 3.1 specification
@@ -133,6 +135,69 @@ public class CursorPagedResponse<T>
     public string? NextCursor { get; set; }
     public string? PreviousCursor { get; set; }
     public bool HasMore { get; set; }
+}
+```
+
+### V2 DTO Pattern (Manual Mapping)
+
+```csharp
+// TrashMob.Shared/DTOs/V2/EventDto.cs
+namespace TrashMob.Shared.DTOs.V2
+{
+    /// <summary>
+    /// Event data transfer object for API v2.
+    /// Decoupled from Event entity; reusable for MCP server tools.
+    /// </summary>
+    public class EventDto
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public DateTimeOffset EventDate { get; set; }
+        public string City { get; set; }
+        public string Region { get; set; }
+        public string Country { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+        public int MaxNumberOfParticipants { get; set; }
+        public bool IsEventPublic { get; set; }
+        public Guid CreatedByUserId { get; set; }
+        public string CreatedByUserName { get; set; }
+        public int AttendeeCount { get; set; }
+    }
+}
+
+// TrashMob.Shared/DTOs/V2/Mappings/EventMappings.cs
+namespace TrashMob.Shared.DTOs.V2.Mappings
+{
+    public static class EventMappings
+    {
+        public static EventDto ToDto(this Event entity, User createdBy = null, int? attendeeCount = null)
+        {
+            return new EventDto
+            {
+                Id = entity.Id,
+                Name = entity.Name,
+                Description = entity.Description,
+                EventDate = entity.EventDate,
+                City = entity.City,
+                Region = entity.Region,
+                Country = entity.Country,
+                Latitude = entity.Latitude,
+                Longitude = entity.Longitude,
+                MaxNumberOfParticipants = entity.MaxNumberOfParticipants,
+                IsEventPublic = entity.IsEventPublic,
+                CreatedByUserId = entity.CreatedByUserId,
+                CreatedByUserName = createdBy?.UserName,
+                AttendeeCount = attendeeCount ?? 0
+            };
+        }
+
+        public static IEnumerable<EventDto> ToDtos(this IEnumerable<Event> entities)
+        {
+            return entities.Select(e => e.ToDto());
+        }
+    }
 }
 ```
 
@@ -392,10 +457,12 @@ jobs:
 
 ### Step 1 - Infrastructure
 1. Set up API versioning middleware
-2. Implement pagination framework
-3. Configure OpenAPI 3.1
-4. Add Problem Details error handling
-5. Deploy correlation ID middleware
+2. Create v2 DTO layer (`TrashMob.Shared/DTOs/V2/`)
+3. Establish manual mapping pattern with extension methods
+4. Implement pagination framework
+5. Configure OpenAPI 3.1
+6. Add Problem Details error handling
+7. Deploy correlation ID middleware
 
 ### Step 2 - Pilot Endpoint
 1. Create Events v2 controller as pilot
@@ -473,6 +540,12 @@ jobs:
 4. **API Gateway?**
    **Decision:** Defer until microservices architecture needed (out of scope for v2)
 
+5. **DTO mapping approach?**
+   **Decision:** Manual mapping (no AutoMapper) - clearer code, better performance, easier debugging, and avoids magic/conventions
+
+6. **Should DTOs be reused for MCP server?**
+   **Decision:** Yes - v2 DTOs designed for reuse as MCP tool schemas; provides stable contracts for both REST API and AI tool interfaces
+
 ---
 
 **Last Updated:** January 31, 2026
@@ -484,5 +557,6 @@ jobs:
 
 ## Changelog
 
+- **2026-01-31:** Added v2 DTO layer requirement with manual mapping (MCP server reuse)
 - **2026-01-31:** Removed week-based schedule from rollout plan (agile approach)
 - **2026-01-31:** Resolved open questions; confirmed all Phase 1-3 scope items; added out-of-scope items
