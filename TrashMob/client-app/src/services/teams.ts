@@ -10,6 +10,41 @@ import TeamMemberData from '../components/Models/TeamMemberData';
 // Team Operations
 // ============================================================================
 
+// Admin endpoint - returns all teams including private
+export type GetAllTeams_Response = TeamData[];
+export const GetAllTeams = () => ({
+    key: ['/admin/teams'],
+    service: async () =>
+        ApiService('protected').fetchData<GetAllTeams_Response>({
+            url: '/admin/teams',
+            method: 'get',
+        }),
+});
+
+// Admin endpoint - delete team permanently
+export type DeleteTeam_Params = { teamId: string };
+export type DeleteTeam_Response = void;
+export const DeleteTeam = () => ({
+    key: ['/admin/teams', 'delete'],
+    service: async (params: DeleteTeam_Params) =>
+        ApiService('protected').fetchData<DeleteTeam_Response>({
+            url: `/admin/teams/${params.teamId}`,
+            method: 'delete',
+        }),
+});
+
+// Admin endpoint - reactivate a deactivated team
+export type ReactivateTeam_Params = { teamId: string };
+export type ReactivateTeam_Response = TeamData;
+export const ReactivateTeam = () => ({
+    key: ['/admin/teams', 'reactivate'],
+    service: async (params: ReactivateTeam_Params) =>
+        ApiService('protected').fetchData<ReactivateTeam_Response>({
+            url: `/admin/teams/${params.teamId}/reactivate`,
+            method: 'post',
+        }),
+});
+
 export type GetPublicTeams_Params = {
     latitude?: number;
     longitude?: number;
