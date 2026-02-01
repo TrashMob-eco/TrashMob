@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TrashMobMobile.Pages.MorePage"
+             Title="More">
+    <ScrollView>
+        <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
+            <Button Style="{StaticResource SecondaryLargeButton}"
+                    ContentLayout="Left, 12"
+                    Clicked="OnPrivacyPolicyClicked"
+                    Text="Privacy Policy"
+                    ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconBinoculars}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />
+            <Button Style="{StaticResource SecondaryLargeButton}"
+                    ContentLayout="Left, 12"
+                    Clicked="OnTermsOfUseClicked"
+                    Text="Terms of Use"
+                    ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconFileDocument}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />
+            <Button Style="{StaticResource SecondaryLargeButton}"
+                    ContentLayout="Left, 12"
+                    Clicked="OnSignWaiverClicked"
+                    Text="Sign Waiver"
+                    ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconSignatureText}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />
+            <Button Style="{StaticResource SecondaryLargeButton}"
+                    ContentLayout="Left, 12"
+                    Clicked="OnContactUsClicked"
+                    Text="Contact us"
+                    ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconEmail}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />
+            <Button Style="{StaticResource SecondaryLargeButton}"
+                    ContentLayout="Left, 12"
+                    Clicked="OnLogoutClicked"
+                    Text="Sign out"
+                    ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconLogout}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

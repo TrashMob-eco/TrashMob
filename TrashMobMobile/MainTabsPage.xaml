@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:local="clr-namespace:TrashMobMobile"
+       xmlns:pages="clr-namespace:TrashMobMobile.Pages"
+       x:Class="TrashMobMobile.MainTabsPage"
+       Shell.NavBarIsVisible="False">
+    <TabBar>
+        <Tab Title="Home"
+             Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconHome}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
+            <ShellContent ContentTemplate="{DataTemplate local:MainPage}" Route="MainPage" />
+        </Tab>
+        <Tab Title="Dashboard"
+             Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconHeartPulse}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
+            <ShellContent ContentTemplate="{DataTemplate pages:MyDashboardPage}" Route="MyDashboardPage" />
+        </Tab>
+        <Tab Title="Location"
+             Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconHomeMapMarker}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
+            <ShellContent ContentTemplate="{DataTemplate pages:SetUserLocationPreferencePage}" Route="SetUserLocationPreferencePage" />
+        </Tab>
+        <Tab Title="More"
+             Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconViewList}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
+            <ShellContent ContentTemplate="{DataTemplate pages:MorePage}" Route="MorePage" />
+        </Tab>
+    </TabBar>
+</Shell>

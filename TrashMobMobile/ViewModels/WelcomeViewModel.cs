@@ -51,7 +51,7 @@ public partial class WelcomeViewModel(IAuthService authService, IStatsRestServic
 
             if (signedIn.Succeeded)
             {
-                await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                await Shell.Current.GoToAsync($"//{nameof(MainTabsPage)}");
             }
             else
             {

@@ -15,7 +15,7 @@ public class LogoutViewModel(IAuthService authService, IStatsRestService statsRe
         {
             await authService.SignOutAsync();
 
-            await Shell.Current.GoToAsync($"{nameof(WelcomePage)}");
+            await Shell.Current.GoToAsync($"//{nameof(WelcomePage)}");
 
             IsBusy = false;
         }
