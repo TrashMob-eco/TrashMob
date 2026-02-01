@@ -67,6 +67,7 @@
 
   <ItemGroup>
     <None Remove="client-app\public\TME_FB_SharedImage4_1200x630.png" />
+    <None Remove="client-app\src\api\trashmob-api.ts" />
     <None Remove="client-app\src\components\assets\brian-yurasits-0G2jF-c704s-unsplash.jpg" />
     <None Remove="client-app\src\components\assets\brian-yurasits-43upsZNmy9Q-unsplash.jpg" />
     <None Remove="client-app\src\components\assets\brian-yurasits-AANTeiHQmRU-unsplash.jpg" />

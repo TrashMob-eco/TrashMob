@@ -1,13 +1,13 @@
 import { ApiService } from '.';
 import StatsData from '../components/Models/StatsData';
+import { trashmobApiClient } from '../api/trashmob-api'
+import type { Stats } from "../api/trashmob-api.v2.generated";
 
-export type GetStats_Response = StatsData;
 export const GetStats = () => ({
-    key: ['/stats'],
-    service: async () =>
-        ApiService('public')
-            .fetchData<GetStats_Response>({ url: '/stats', method: 'get' })
-            .then((res) => res.data),
+  key: ['/stats/'],
+  service: async (): Promise<Stats> => {
+    return await trashmobApiClient.stats();
+  }
 });
 
 export type GetStatsForUser_Params = { userId: string };
@@ -15,7 +15,7 @@ export type GetStatsForUser_Response = StatsData;
 export const GetStatsForUser = (params: GetStatsForUser_Params) => ({
     key: ['/stats/', params],
     service: async () =>
-        ApiService('protected').fetchData<GetStats_Response>({
+        ApiService('protected').fetchData<GetStatsForUser_Response>({
             url: `/stats/${params.userId}`,
             method: 'get',
         }),

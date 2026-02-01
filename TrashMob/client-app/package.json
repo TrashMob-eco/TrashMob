@@ -60,7 +60,7 @@
     "test": "vitest",
     "lint": "eslint . --fix",
     "format": "prettier . --write",
-    "generate:ts": "nswag openapi2csclient /input:https://localhost:44332/swagger/v2/swagger.json /namespace:trashmob-api /output:./src/api/trashmobapi.v2.generated.ts ",
+    "generate:ts": "nswag openapi2tsclient /input:https://localhost:44332/swagger/v2/swagger.json /output:./src/api/trashmob-api.v2.generated.ts",
     "generate:cs": "nswag openapi2csclient /input:https://localhost:44332/swagger/v2/swagger.json  /output:TrashMobApiClient.Generated.cs /namespace:TrashMob.Client"
   },
     "browserslist": {

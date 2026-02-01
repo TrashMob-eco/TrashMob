@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers.Events;
+namespace TrashMob.Shared.Managers.Events;
 
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -84,8 +84,8 @@ public class EventSummaryManager : BaseManager<EventSummary>, IEventSummaryManag
             TotalBags = eventStatistics.TotalBags,
             TotalHours = eventStatistics.TotalHours,
             TotalParticipants = eventStatistics.TotalParticipants,
-            TotalWeightInPounds = eventStatistics.TotalWeightInPounds,
-            TotalWeightInKilograms = eventStatistics.TotalWeightInKilograms,
+            TotalWeightInPounds = (int)eventStatistics.TotalWeightInPounds,
+            TotalWeightInKilograms = (int)eventStatistics.TotalWeightInKilograms,
             TotalLitterReportsClosed = litterReports.Count(lr => lr.LitterReportStatusId == (int)LitterReportStatusEnum.Cleaned),
             TotalLitterReportsSubmitted = litterReports.Count()
         };
