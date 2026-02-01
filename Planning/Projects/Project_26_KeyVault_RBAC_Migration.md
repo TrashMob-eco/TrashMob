@@ -95,6 +95,9 @@ Azure KeyVault access policies are being deprecated in favor of Azure Role-Based
 ### Blockers (Must be complete before this project starts)
 None - This is an infrastructure modernization that can proceed independently
 
+### Access Requirements
+- **Production KeyVault:** Only Joe Beernink (subscription owner) has human access (managed identities have app access). Phase 3 (Production Migration) must be performed by Joe.
+
 ### Enablers for Other Projects (What this unlocks)
 - **Project 05 - Deployment Pipelines:** Ensures pipelines use modern RBAC for secret access
 - **Project 01 - Auth Revamp:** Supports secure access to Azure B2C secrets via RBAC
@@ -239,4 +242,5 @@ No application code changes required - applications already use Azure SDK/Defaul
 
 ## Changelog
 
+- **2026-01-31:** Added access requirements note (Joe Beernink only human with prod KeyVault access)
 - **2026-01-31:** Converted open questions to decisions; confirmed all scope items

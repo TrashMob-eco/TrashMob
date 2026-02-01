@@ -14,6 +14,13 @@
 
 Understanding how users interact with TrashMob features is critical for making data-driven product decisions. Currently, we have basic telemetry through Application Insights but lack structured feature usage tracking. Adding explicit feature metrics will help:
 
+**Current State:**
+- **Microsoft Clarity:** Session recordings, heatmaps, UX behavior analysis (already integrated)
+- **Application Insights:** Performance monitoring, error tracking (already integrated)
+- **Gap:** Structured custom event tracking for feature adoption metrics
+
+This project focuses on adding structured event tracking to Application Insights. Clarity remains for UX team insights.
+
 - Identify which features are most/least used
 - Understand user journeys and drop-off points
 - Prioritize development efforts based on actual usage
@@ -350,7 +357,7 @@ public class MetricsService : IMetricsService
 ## Decisions
 
 1. **Should we track session recordings?**
-   **Decision:** No, too privacy-invasive and adds complexity. Focus on aggregate event tracking only.
+   **Decision:** Microsoft Clarity already handles session recordings for UX analysis. This project focuses on aggregate event metrics in Application Insights only.
 
 2. **What retention period for metrics?**
    **Decision:** Use Application Insights default (90 days), archive monthly aggregates for long-term trend analysis.
@@ -374,4 +381,5 @@ public class MetricsService : IMetricsService
 
 ## Changelog
 
+- **2026-01-31:** Documented Microsoft Clarity for UX analysis; clarified App Insights for aggregate metrics
 - **2026-01-31:** Converted open questions to decisions; confirmed all scope items

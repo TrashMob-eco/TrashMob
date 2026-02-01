@@ -14,6 +14,8 @@
 
 As a nonprofit, TrashMob must carefully manage cloud costs. Unexpected spikes in Azure, Maps API, or SendGrid usage could strain the budget and divert funds from mission-critical activities. Proactive billing alerts and spending caps provide early warning and automatic protection against runaway costs.
 
+**Critical Context:** TrashMob receives an annual Microsoft nonprofit grant that covers Azure costs. This grant often hides actual costs in billing. **An alert at $1/year is essential** - any charge above this threshold may indicate the grant has expired or is not being applied correctly.
+
 This project directly mitigates **SR-5 (Cost Spikes)** identified in the Risks & Mitigations document.
 
 ---
@@ -38,6 +40,8 @@ This project directly mitigates **SR-5 (Cost Spikes)** identified in the Risks &
 - ✅ Set up alert thresholds at 50%, 75%, 90%, and 100% of monthly budget
 - ✅ Configure alert recipients (engineering lead, finance)
 - ✅ Enable cost anomaly detection alerts
+- ✅ **Critical:** Set $1/year threshold alert to detect Microsoft nonprofit grant expiration
+- ✅ **Critical:** Configure $500 hard spending cap to automatically stop resources if exceeded
 
 ### Phase 2 - Third-Party Service Alerts
 - ✅ Configure SendGrid usage alerts and spending limits
@@ -95,32 +99,107 @@ This project directly mitigates **SR-5 (Cost Spikes)** identified in the Risks &
 
 ## Implementation Plan
 
-### Azure Portal Configuration
+**Principle:** Use vendor APIs for configuration where available. API-based setup is preferred over manual portal configuration to ensure consistency and repeatability. Where APIs are not available, explicit step-by-step manual instructions are documented.
 
-1. **Create Budget in Azure Cost Management**
-   - Navigate to Cost Management + Billing > Budgets
-   - Create budget for each subscription/resource group
-   - Set monthly budget amount based on historical usage + buffer
+### Azure Cost Management (API Available ✅)
 
-2. **Configure Alert Rules**
-   - Add action groups for email notifications
-   - Set thresholds: 50% (informational), 75% (warning), 90% (critical), 100% (exceeded)
+**Preferred: Azure CLI / Bicep**
+```bash
+# Create budget with alerts via Azure CLI
+az consumption budget create \
+  --budget-name "TrashMob-Prod-Monthly" \
+  --amount 500 \
+  --time-grain Monthly \
+  --start-date 2026-02-01 \
+  --end-date 2027-01-31 \
+  --resource-group rg-trashmob-pr-westus2 \
+  --notifications '{
+    "Actual_GreaterThan_1": {
+      "enabled": true,
+      "operator": "GreaterThan",
+      "threshold": 1,
+      "contactEmails": ["joe@trashmob.eco"],
+      "thresholdType": "Actual"
+    },
+    "Actual_GreaterThan_500": {
+      "enabled": true,
+      "operator": "GreaterThan",
+      "threshold": 500,
+      "contactEmails": ["joe@trashmob.eco"],
+      "thresholdType": "Actual"
+    }
+  }'
 
-3. **Enable Anomaly Detection**
-   - Navigate to Cost Management > Cost alerts
-   - Enable anomaly alerts for unexpected spikes
+# Create $1/year grant expiration alert
+az consumption budget create \
+  --budget-name "TrashMob-Grant-Monitor" \
+  --amount 1 \
+  --time-grain Annually \
+  --resource-group rg-trashmob-pr-westus2 \
+  --notifications '{
+    "Grant_Expired": {
+      "enabled": true,
+      "operator": "GreaterThan",
+      "threshold": 100,
+      "contactEmails": ["joe@trashmob.eco"],
+      "thresholdType": "Actual"
+    }
+  }'
+```
 
-### SendGrid Configuration
+**Fallback: Manual Portal Steps**
+1. Azure Portal > Cost Management + Billing > Budgets
+2. Click "+ Add"
+3. Name: "TrashMob-Prod-Monthly", Amount: $500, Reset: Monthly
+4. Add alert conditions: 50%, 75%, 90%, 100%
+5. Recipients: joe@trashmob.eco
+6. Repeat for $1/year grant expiration monitor
 
-1. Log into SendGrid dashboard
-2. Navigate to Settings > Billing > Alerts
-3. Configure usage alerts at 75% and 90% of plan limits
+### SendGrid (API Available ✅)
 
-### Google Maps Configuration
+**Preferred: SendGrid API**
+```bash
+# Note: SendGrid billing alerts require contacting support or using dashboard
+# API endpoint for usage limits not publicly available
+# Must use manual configuration
+```
 
-1. Log into Google Cloud Console
-2. Navigate to Billing > Budgets & alerts
-3. Create budget for Maps API usage
+**Required: Manual Portal Steps**
+1. Log into https://app.sendgrid.com
+2. Settings > Account Details > Billing
+3. Under "Billing Alerts", click "Add Alert"
+4. Set alert at 75% of monthly email limit
+5. Set alert at 90% of monthly email limit
+6. Add recipient: joe@trashmob.eco
+7. **For hard cap:** Settings > Mail Settings > Email Activity > Set daily sending limit
+
+### Google Maps Platform (API Available ✅)
+
+**Preferred: gcloud CLI**
+```bash
+# Create budget alert for Maps API
+gcloud billing budgets create \
+  --billing-account=BILLING_ACCOUNT_ID \
+  --display-name="TrashMob Maps API" \
+  --budget-amount=100USD \
+  --threshold-rule=percent=0.5,basis=CURRENT_SPEND \
+  --threshold-rule=percent=0.9,basis=CURRENT_SPEND \
+  --threshold-rule=percent=1.0,basis=CURRENT_SPEND \
+  --notifications-rule-pubsub-topic=projects/trashmob/topics/billing-alerts
+
+# Set hard cap (requires quota adjustment)
+gcloud services api-keys update KEY_ID \
+  --api-target=service=maps-backend.googleapis.com
+```
+
+**Fallback: Manual Portal Steps**
+1. Log into https://console.cloud.google.com
+2. Billing > Budgets & alerts
+3. Click "Create Budget"
+4. Name: "TrashMob Maps API", Amount: $100/month
+5. Set thresholds: 50%, 90%, 100%
+6. Enable email notifications
+7. **For hard cap:** APIs & Services > Quotas > Maps API > Edit Quota > Set daily request limit
 
 ---
 
@@ -152,7 +231,7 @@ This project directly mitigates **SR-5 (Cost Spikes)** identified in the Risks &
    **Decision:** Review last 3 months of Azure invoices to establish baseline; add 20% buffer for growth
 
 2. **Should hard spending caps be enabled, or alerts only?**
-   **Decision:** Start with alerts only; enable hard caps on dev environment only to prevent runaway costs during development
+   **Decision:** Yes, enable hard spending caps. Any expense exceeding $500 must be immediately stopped. This protects against runaway costs given the nonprofit grant context.
 
 ---
 
@@ -172,4 +251,6 @@ This project directly mitigates **SR-5 (Cost Spikes)** identified in the Risks &
 
 ## Changelog
 
+- **2026-01-31:** Added $500 hard spending cap requirement
+- **2026-01-31:** Added $1/year threshold alert for Microsoft nonprofit grant expiration detection
 - **2026-01-31:** Converted open questions to decisions; confirmed all scope items
