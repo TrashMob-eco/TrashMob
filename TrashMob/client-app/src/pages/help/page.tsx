@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Link } from 'react-router';
 import events from '@/components/assets/faq/Event.svg';
 import gloves from '@/components/assets/gloves.svg';
+import teams from '@/components/assets/card/twofigure.svg';
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -199,6 +200,67 @@ const tabContents = [
                 goodwill within the community, and helping to create a cleaner planet!
             </p>
           `,
+            },
+        ],
+    },
+    {
+        category: 'Teams',
+        desc: 'How to create and manage a team',
+        icon: teams,
+        questions: [
+            {
+                question: 'How to create a Team',
+                answer: `
+                <p>Teams allow you to organize regular cleanup efforts with a consistent group of volunteers. Here's how to get started:</p>
+                <p>First, make sure you are signed in. If you don't have an account, create one by clicking the sign in button.</p>
+                <p>Navigate to the <a href='https://www.trashmob.eco/teams'>Teams page</a> and click the "Create Team" button.</p>
+                <p>Fill in your team details:</p>
+                <ul class="list-disc pl-8">
+                    <li><strong>Team Name:</strong> Choose a unique, descriptive name for your team</li>
+                    <li><strong>Description:</strong> Tell others about your team's focus, meeting frequency, or areas you clean</li>
+                    <li><strong>Location:</strong> Set your team's primary location using the map or search box</li>
+                    <li><strong>Visibility:</strong> Choose Public (visible on map, open for join requests) or Private (invite-only)</li>
+                    <li><strong>Require Approval:</strong> Decide if you want to approve new member requests or allow anyone to join immediately</li>
+                </ul>
+                <p>Click "Create Team" to finish. You'll be automatically added as the team lead.</p>
+                `,
+            },
+            {
+                question: 'Managing your Team',
+                answer: `
+                <p>As a team lead, you have several management capabilities:</p>
+                <h6>Editing Team Details</h6>
+                <p>Go to your team's page and click "Edit Team" to update the name, description, location, or visibility settings.</p>
+                <h6>Managing Members</h6>
+                <p>From the team edit page, you can:</p>
+                <ul class="list-disc pl-8">
+                    <li><strong>View pending join requests:</strong> Approve or decline requests from users who want to join</li>
+                    <li><strong>Promote to Co-Lead:</strong> Give other members lead privileges to help manage the team</li>
+                    <li><strong>Remove members:</strong> Remove members who are no longer active or appropriate for the team</li>
+                </ul>
+                <h6>Tips for Team Leads</h6>
+                <ul class="list-disc pl-8">
+                    <li>Have at least 2 team leads to ensure continuity</li>
+                    <li>Keep your team description up-to-date with meeting schedules</li>
+                    <li>Respond to join requests promptly to keep new volunteers engaged</li>
+                    <li>Consider making your team public to attract more members from your community</li>
+                </ul>
+                `,
+            },
+            {
+                question: 'Joining a Team',
+                answer: `
+                <p>Finding and joining a team is easy:</p>
+                <ol class="list-decimal pl-8">
+                    <li>Go to the <a href='https://www.trashmob.eco/teams'>Teams page</a></li>
+                    <li>Browse the list view or switch to map view to find teams near you</li>
+                    <li>Click on a team to view its details, including description, location, and member count</li>
+                    <li>Click "Request to Join" to submit your request</li>
+                    <li>Wait for a team lead to approve your request (you'll receive an email notification)</li>
+                </ol>
+                <p>Once approved, the team will appear in your dashboard under "My Teams". You can then participate in team events and track your collective impact!</p>
+                <p><strong>Note:</strong> Private teams are not visible in search results. You'll need a direct invitation from a team lead to join a private team.</p>
+                `,
             },
         ],
     },
