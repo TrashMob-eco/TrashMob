@@ -154,7 +154,11 @@ export function useFeatureMetrics() {
      * Track attendance actions (register, unregister, check-in)
      */
     const trackAttendance = useCallback(
-        (action: 'Register' | 'Unregister', eventId: string, properties?: Record<string, string | number | boolean>) => {
+        (
+            action: 'Register' | 'Unregister',
+            eventId: string,
+            properties?: Record<string, string | number | boolean>,
+        ) => {
             track({
                 category: 'Attendance',
                 action,
