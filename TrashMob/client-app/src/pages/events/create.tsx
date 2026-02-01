@@ -33,6 +33,7 @@ import { AzureMapSearchAddressReverse, AzureMapSearchAddressReverse_Params } fro
 import { useGetAzureKey } from '@/hooks/useGetAzureKey';
 import { useLogin } from '@/hooks/useLogin';
 import { useToast } from '@/hooks/use-toast';
+import { useFeatureMetrics } from '@/hooks/useFeatureMetrics';
 import { useLocation, useNavigate } from 'react-router';
 import { Badge } from '@/components/ui/badge';
 import { Loader2 } from 'lucide-react';
@@ -81,6 +82,7 @@ export const CreateEventPage = () => {
     const queryClient = useQueryClient();
     const navigate = useNavigate();
     const location = useLocation();
+    const { trackEventAction } = useFeatureMetrics();
 
     // Check if we're creating an event from a litter report
     const { fromLitterReport } = (location.state || {}) as { fromLitterReport?: LitterReportData };
@@ -102,6 +104,14 @@ export const CreateEventPage = () => {
         mutationKey: CreateEvent().key,
         mutationFn: CreateEvent().service,
         onSuccess: async (response, variable) => {
+            // Track event creation
+            if (response.data?.id) {
+                trackEventAction('Create', response.data.id, {
+                    eventTypeId: variable.eventTypeId,
+                    fromLitterReport: !!fromLitterReport,
+                });
+            }
+
             // If this event was created from a litter report, associate them
             if (fromLitterReport && response.data?.id) {
                 try {

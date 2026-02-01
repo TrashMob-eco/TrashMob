@@ -33,6 +33,11 @@ public static class TrashMobActivitySources
     public static readonly ActivitySource Partners = new("TrashMob.Partners", "1.0.0");
 
     /// <summary>
+    /// Activity source for feature usage metrics.
+    /// </summary>
+    public static readonly ActivitySource FeatureMetrics = new("TrashMob.FeatureMetrics", "1.0.0");
+
+    /// <summary>
     /// All activity source names for registration with OpenTelemetry.
     /// </summary>
     public static readonly string[] AllSourceNames =
@@ -41,6 +46,7 @@ public static class TrashMobActivitySources
         "TrashMob.Users",
         "TrashMob.Notifications",
         "TrashMob.LitterReports",
-        "TrashMob.Partners"
+        "TrashMob.Partners",
+        "TrashMob.FeatureMetrics"
     ];
 }

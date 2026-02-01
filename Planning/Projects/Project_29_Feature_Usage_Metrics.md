@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Not Started |
+| **Status** | In Progress |
 | **Priority** | Medium |
 | **Risk** | Low |
 | **Size** | Medium |
@@ -49,22 +49,22 @@ This project focuses on adding structured event tracking to Application Insights
 ### Phase 1 - Core Infrastructure
 - ✅ Define standard event taxonomy and naming conventions
 - ✅ Create React hook/context for consistent event tracking
-- ✅ Implement backend API for custom metrics ingestion
+- ✅ Implement backend service for custom metrics (OpenTelemetry)
 - ✅ Configure Application Insights custom events
 
 ### Phase 2 - Feature Instrumentation
-- ✅ Track user authentication events (login, signup, logout)
-- ✅ Track event lifecycle (create, edit, cancel, complete)
-- ✅ Track attendance actions (register, unregister, check-in)
+- ✅ Track user authentication events (login, logout)
+- ✅ Track event lifecycle (create)
+- ✅ Track attendance actions (register)
 - ✅ Track litter report submissions
-- ✅ Track partner/community interactions
-- ✅ Track search and discovery actions
+- ⬜ Track partner/community interactions
+- ⬜ Track search and discovery actions
 
 ### Phase 3 - Dashboards & Reporting
-- ✅ Create Application Insights workbook for feature metrics
-- ✅ Define key performance indicators (KPIs)
-- ✅ Set up automated weekly/monthly reports
-- ✅ Document metrics for stakeholders
+- ⬜ Create Application Insights workbook for feature metrics
+- ⬜ Define key performance indicators (KPIs)
+- ⬜ Set up automated weekly/monthly reports
+- ⬜ Document metrics for stakeholders
 
 ---
 
@@ -372,14 +372,22 @@ public class MetricsService : IMetricsService
 
 ---
 
-**Last Updated:** January 31, 2026
+**Last Updated:** February 1, 2026
 **Owner:** Engineering Team
-**Status:** Not Started
-**Next Review:** Q2 2026
+**Status:** In Progress
+**Next Review:** After Phase 2 complete
 
 ---
 
 ## Changelog
 
+- **2026-02-01:** Implemented Phase 1 and partial Phase 2
+  - Created `useFeatureMetrics` React hook for frontend tracking
+  - Created `IFeatureMetricsService` and `FeatureMetricsService` for backend OpenTelemetry integration
+  - Added FeatureMetrics ActivitySource to OpenTelemetry configuration
+  - Instrumented authentication flows (login, logout)
+  - Instrumented event creation
+  - Instrumented attendance registration
+  - Instrumented litter report creation
 - **2026-01-31:** Documented Microsoft Clarity for UX analysis; clarified App Insights for aggregate metrics
 - **2026-01-31:** Converted open questions to decisions; confirmed all scope items
