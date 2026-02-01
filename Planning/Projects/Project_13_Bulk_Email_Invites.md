@@ -598,6 +598,14 @@ When a team lead sends invites, the following flow ensures invited users are aut
 
 ---
 
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#2235](https://github.com/trashmob/TrashMob/issues/2235)** - Project 13: Bulk Email Invites (tracking issue)
+
+---
+
 ## Related Documents
 
 - **[Project 10 - Community Pages](./Project_10_Community_Pages.md)** - Community invites

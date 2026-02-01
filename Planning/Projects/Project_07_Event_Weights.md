@@ -297,6 +297,14 @@ const convertWeight = (weight: number, fromUnit: string, toUnit: string): number
 
 ---
 
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#1181](https://github.com/trashmob/TrashMob/issues/1181)** - Project 7: Allow attendees to add bags/weight collected (tracking issue)
+
+---
+
 ## Related Documents
 
 - **[Project 22 - Attendee Metrics](./Project_22_Attendee_Metrics.md)** - Attendee-level weight and metrics tracking

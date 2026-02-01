@@ -559,6 +559,14 @@ public async Task<ActionResult> ProcessNewsletterWebhook([FromBody] SendGridEven
 
 ---
 
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#2239](https://github.com/trashmob/TrashMob/issues/2239)** - Project 19: TrashMob.eco Newsletter Support (tracking issue)
+
+---
+
 ## Related Documents
 
 - **[Project 13 - Bulk Email](./Project_13_Bulk_Email_Invites.md)** - Shared email infrastructure

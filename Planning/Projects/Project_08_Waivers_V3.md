@@ -690,6 +690,17 @@ public async Task<ActionResult<WaiverStatusDto>> CheckEventWaiverStatus(
 
 ---
 
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#2230](https://github.com/trashmob/TrashMob/issues/2230)** - Project 8: Liability Waivers V3 (tracking issue)
+- **[#1032](https://github.com/trashmob/TrashMob/issues/1032)** - Move waiver versions to database instead of hardcoding them
+- **[#938](https://github.com/trashmob/TrashMob/issues/938)** - Allow admin to view a report of when users have signed waivers
+- **[#2146](https://github.com/trashmob/TrashMob/issues/2146)** - Waiver pops up briefly, then automatically registers without giving chance to read
+
+---
+
 ## Related Documents
 
 - **[Project 1 - Auth Revamp](./Project_01_Auth_Revamp.md)** - Minors authentication
@@ -699,7 +710,7 @@ public async Task<ActionResult<WaiverStatusDto>> CheckEventWaiverStatus(
 
 ---
 
-**Last Updated:** January 29, 2026
+**Last Updated:** January 31, 2026
 **Owner:** Product Lead + Legal Counsel
 **Status:** Requirements & Legal Review
 **Next Review:** After legal team approval

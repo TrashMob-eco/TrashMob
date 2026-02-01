@@ -403,6 +403,52 @@ public static MauiApp CreateMauiApp()
 
 ---
 
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#2226](https://github.com/trashmob/TrashMob/issues/2226)** - Project 4: Mobile App Robustness (tracking issue)
+- **[#2243](https://github.com/trashmob/TrashMob/issues/2243)** - Convert Mobile app to .NET 10
+- **[#2244](https://github.com/trashmob/TrashMob/issues/2244)** - Document and test how to set up Android Mobile Emulator
+- **[#2245](https://github.com/trashmob/TrashMob/issues/2245)** - Document and Test how to set up the iOS Emulator
+- **[#2246](https://github.com/trashmob/TrashMob/issues/2246)** - Add Unit Tests for the Mobile App where needed
+- **[#2247](https://github.com/trashmob/TrashMob/issues/2247)** - Ensure user metrics are gathered appropriately from the mobile app
+- **[#2248](https://github.com/trashmob/TrashMob/issues/2248)** - Review design patterns used in the mobile app
+- **[#2249](https://github.com/trashmob/TrashMob/issues/2249)** - Ensure exceptions in mobile app do not cause app crash
+- **[#2250](https://github.com/trashmob/TrashMob/issues/2250)** - Document minimum iOS and Android versions which can run the app
+- **[#2251](https://github.com/trashmob/TrashMob/issues/2251)** - Review Apple Store settings
+- **[#2252](https://github.com/trashmob/TrashMob/issues/2252)** - Review Android Store settings
+- **[#2219](https://github.com/trashmob/TrashMob/issues/2219)** - Mobile App - Add way to see app version number in app
+- **[#1291](https://github.com/trashmob/TrashMob/issues/1291)** - [Mobile] A better way of managing secrets and config
+- **[#1204](https://github.com/trashmob/TrashMob/issues/1204)** - Google Mobile Usability Issues detected
+
+**Mobile Bug Issues:**
+- **[#2340](https://github.com/trashmob/TrashMob/issues/2340)** - Home screen loads very slowly
+- **[#2339](https://github.com/trashmob/TrashMob/issues/2339)** - Home screen not visible on IOS
+- **[#2337](https://github.com/trashmob/TrashMob/issues/2337)** - Add a Search / Apply Filters button to the Events search screen
+- **[#2336](https://github.com/trashmob/TrashMob/issues/2336)** - Event search returns no results unless a new event is created
+- **[#2335](https://github.com/trashmob/TrashMob/issues/2335)** - iOS: Cannot create Litter Report — photos not saved
+- **[#2332](https://github.com/trashmob/TrashMob/issues/2332)** - Problem with sign out on IOS
+- **[#1477](https://github.com/trashmob/TrashMob/issues/1477)** - All Forms - Tie validation errors to location of field
+- **[#1475](https://github.com/trashmob/TrashMob/issues/1475)** - All Forms - Disable save if no changes pending
+- **[#1474](https://github.com/trashmob/TrashMob/issues/1474)** - Search Pages - Events not in a city?
+- **[#1471](https://github.com/trashmob/TrashMob/issues/1471)** - Properly handle exceptions for GetLocation calls
+- **[#1470](https://github.com/trashmob/TrashMob/issues/1470)** - All pages - Save change should close page
+- **[#1468](https://github.com/trashmob/TrashMob/issues/1468)** - Edit event - Form validation
+- **[#1466](https://github.com/trashmob/TrashMob/issues/1466)** - View Event - Format What to Expect
+- **[#1465](https://github.com/trashmob/TrashMob/issues/1465)** - View Event - Registered Pop up
+- **[#1464](https://github.com/trashmob/TrashMob/issues/1464)** - View Event - Fix Duration versus end time
+- **[#1463](https://github.com/trashmob/TrashMob/issues/1463)** - View Event - Prevent registration to full events
+- **[#1462](https://github.com/trashmob/TrashMob/issues/1462)** - Create Event - Improve form validation
+- **[#1459](https://github.com/trashmob/TrashMob/issues/1459)** - Edit Litter Report - Prevent deletion of last image
+- **[#1458](https://github.com/trashmob/TrashMob/issues/1458)** - Litter Report Controller - Validate authorization
+- **[#1456](https://github.com/trashmob/TrashMob/issues/1456)** - Search Litter Report - List - Change Addresses
+- **[#1453](https://github.com/trashmob/TrashMob/issues/1453)** - Search Events - Implement Paging
+- **[#1439](https://github.com/trashmob/TrashMob/issues/1439)** - Create/Edit Pickup Location: Make description field optional
+- **[#1438](https://github.com/trashmob/TrashMob/issues/1438)** - Add Required field indicators to all Mobile app pages
+
+---
+
 ## Related Documents
 
 - **[Project 5 - Deployment Pipelines](./Project_05_Deployment_Pipelines.md)** - CI/CD improvements
@@ -412,7 +458,7 @@ public static MauiApp CreateMauiApp()
 
 ---
 
-**Last Updated:** January 24, 2026  
+**Last Updated:** January 31, 2026  
 **Owner:** Mobile Product Lead + MAUI Developers  
 **Status:** Active Development  
 **Next Review:** Regular standups during development

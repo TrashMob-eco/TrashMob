@@ -307,6 +307,14 @@ No mobile app changes required (web-only improvements).
 
 ---
 
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#2225](https://github.com/trashmob/TrashMob/issues/2225)** - Project 2: Home Page Improvements (tracking issue)
+
+---
+
 ## Related Documents
 
 - **[Project 16 - Content Management](./Project_16_Content_Management.md)** - CMS dependency
@@ -316,7 +324,7 @@ No mobile app changes required (web-only improvements).
 
 ---
 
-**Last Updated:** January 24, 2026  
+**Last Updated:** January 31, 2026  
 **Owner:** Web Product Lead + UX Designer  
 **Status:** Ready for Design Review  
 **Next Review:** Before implementation begins

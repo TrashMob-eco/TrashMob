@@ -255,6 +255,15 @@ public async Task<ActionResult> TrackShare([FromBody] ShareTrackRequest request)
 
 ---
 
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#2236](https://github.com/trashmob/TrashMob/issues/2236)** - Project 14: Improve Social Media Integration (tracking issue)
+- **[#206](https://github.com/trashmob/TrashMob/issues/206)** - Allow users to post an event to their Instagram page
+
+---
+
 ## Related Documents
 
 - **[Project 2 - Home Page](./Project_02_Home_Page.md)** - Social proof on home page

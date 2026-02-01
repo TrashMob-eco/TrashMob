@@ -410,6 +410,14 @@ public async Task HandleUserDeletionAsync(Guid userId)
 
 ---
 
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#968](https://github.com/trashmob/TrashMob/issues/968)** - Project 21: Event Co-Leads (tracking issue)
+
+---
+
 ## Related Documents
 
 - **[Project 9 - Teams](./Project_09_Teams.md)** - Team leads pattern

@@ -254,6 +254,28 @@ Modernize authentication system to improve brand consistency, simplify maintenan
 
 ---
 
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#2242](https://github.com/trashmob/TrashMob/issues/2242)** - Project 1: Revamp Sign Up / Sign-In Process (tracking issue)
+- **[#2253](https://github.com/trashmob/TrashMob/issues/2253)** - Investigate Converting from AzureB2C to Entra External ID
+- **[#2254](https://github.com/trashmob/TrashMob/issues/2254)** - Update the Graphics on the Sign In / Sign Up page
+- **[#2255](https://github.com/trashmob/TrashMob/issues/2255)** - Add/Test current 3rd party integrations to EEID interface
+- **[#2256](https://github.com/trashmob/TrashMob/issues/2256)** - Add integration with existing TrashMob APIs to Sign In Process
+- **[#2257](https://github.com/trashmob/TrashMob/issues/2257)** - User can select home location during sign-up process
+- **[#2258](https://github.com/trashmob/TrashMob/issues/2258)** - User can allow TrashMob to use their profile photo from 3rd party IDP
+- **[#2259](https://github.com/trashmob/TrashMob/issues/2259)** - Allow user to upload a profile photo to TrashMob
+- **[#2260](https://github.com/trashmob/TrashMob/issues/2260)** - Allow user to update/delete profile photo from TrashMob
+- **[#2261](https://github.com/trashmob/TrashMob/issues/2261)** - Migrate current users from B2C to EEID
+- **[#2262](https://github.com/trashmob/TrashMob/issues/2262)** - Allow TrashMob to set up Single Sign On with Partners
+- **[#677](https://github.com/trashmob/TrashMob/issues/677)** - Add User Profile Images
+- **[#948](https://github.com/trashmob/TrashMob/issues/948)** - Clean up B2C Redirects in prod
+- **[#1015](https://github.com/trashmob/TrashMob/issues/1015)** - Convert to use Azure Graph for User Details
+- **[#2321](https://github.com/trashmob/TrashMob/issues/2321)** - When trying to sign up with an id that already exists, the workflow hangs
+
+---
+
 ## Related Documents
 
 - **[Project 10 - Community Pages](./Project_10_Community_Pages.md)** - Partner SSO (nice-to-have)
@@ -262,7 +284,7 @@ Modernize authentication system to improve brand consistency, simplify maintenan
 
 ---
 
-**Last Updated:** January 24, 2026  
+**Last Updated:** January 31, 2026  
 **Owner:** Security Engineer + Product Lead  
 **Status:** Ready for Decision  
 **Next Review:** Before implementation phase begins

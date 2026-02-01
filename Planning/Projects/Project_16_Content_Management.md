@@ -356,6 +356,14 @@ Phase 4 expands home page CMS content to include:
 
 ---
 
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#2237](https://github.com/trashmob/TrashMob/issues/2237)** - Project 16: Page Content Management (tracking issue)
+
+---
+
 ## Related Documents
 
 - **[Project 2 - Home Page](./Project_02_Home_Page.md)** - Uses CMS content

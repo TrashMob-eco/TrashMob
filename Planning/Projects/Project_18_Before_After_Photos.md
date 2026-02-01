@@ -461,6 +461,15 @@ trashmob-photos/
 
 ---
 
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#202](https://github.com/trashmob/TrashMob/issues/202)** - Project 18: Allow event creators to post "before" and "after" photos (tracking issue)
+- **[#1170](https://github.com/trashmob/TrashMob/issues/1170)** - Website: Allow photo uploads for pickup location
+
+---
+
 ## Related Documents
 
 - **[Project 9 - Teams](./Project_09_Teams.md)** - Team photo galleries

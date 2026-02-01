@@ -387,6 +387,14 @@ MCP (Model Context Protocol) is an open protocol that allows AI assistants to co
 
 ---
 
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#2238](https://github.com/trashmob/TrashMob/issues/2238)** - Project 17: TrashMob.eco MCP Server (tracking issue)
+
+---
+
 ## Related Documents
 
 - **[MCP Specification](https://modelcontextprotocol.io)** - Protocol documentation

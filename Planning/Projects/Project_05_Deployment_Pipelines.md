@@ -487,6 +487,15 @@ jobs:
 
 ---
 
+## GitHub Issues
+
+The following GitHub issues are tracked as part of this project:
+
+- **[#2227](https://github.com/trashmob/TrashMob/issues/2227)** - Project 5: Improve Deployment Pipelines and Infrastructure (tracking issue)
+- **[#1519](https://github.com/trashmob/TrashMob/issues/1519)** - Dependency Dashboard
+
+---
+
 ## Related Documents
 
 - **[Project 4 - Mobile Robustness](./Project_04_Mobile_Robustness.md)** - Benefits from automated builds
@@ -495,7 +504,7 @@ jobs:
 
 ---
 
-**Last Updated:** January 29, 2026
+**Last Updated:** January 31, 2026
 **Owner:** DevOps/Build Engineer
 **Status:** In Progress
 **Next Review:** Regular standups during development
