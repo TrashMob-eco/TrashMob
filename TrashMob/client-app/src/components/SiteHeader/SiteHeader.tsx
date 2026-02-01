@@ -36,7 +36,7 @@ export const SiteHeader = (props: SiteHeaderProps) => {
                     <div
                         className={cn(
                             'flex flex-1 px-4!',
-                            'overflow-hidden transition-all duration-300',
+                            'overflow-hidden lg:overflow-visible transition-all duration-300',
                             'items-start justify-between flex-col basis-full',
                             'lg:items-center lg:justify-between lg:flex-row lg:basis-0',
                             'lg:max-h-none',
