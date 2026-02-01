@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Not Started |
+| **Status** | In Progress |
 | **Priority** | High |
 | **Risk** | Low |
 | **Size** | Small |
@@ -216,15 +216,19 @@ az sql db ltr-backup restore --dest-database trashmob-db-restored \
 
 ---
 
-**Last Updated:** January 31, 2026
+**Last Updated:** February 1, 2026
 **Owner:** Engineering Lead
-**Status:** Not Started
-**Next Review:** When volunteer available
+**Status:** In Progress
+**Next Review:** After Phase 1 complete
 
 ---
 
 ## Changelog
 
+- **2026-02-01:** Implemented Phase 1 - configured 14-day PITR and weekly/monthly LTR for production database
+- **2026-02-01:** Created backupAlerts.bicep and deployed monitoring alerts
+- **2026-02-01:** Updated sqlDatabase.bicep and sqlDatabaseStrapi.bicep with backup retention policies
+- **2026-02-01:** Added restore procedures documentation to CLAUDE.md
 - **2026-01-31:** Converted open questions to decisions (12-month retention, migrate Strapi to Azure SQL, defer cross-region replication)
 - **2026-01-31:** Clarified Strapi uses SQLite with ephemeral storage in dev deployment
 - **2026-01-31:** Confirmed all scope items
