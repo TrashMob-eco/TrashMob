@@ -78,18 +78,18 @@ export const CommunityTeamsSection = ({ teams, isLoading }: CommunityTeamsSectio
                                             <Users className='h-3 w-3' />
                                             <span>{team.memberCount || 0} members</span>
                                         </div>
-                                        {team.city ? <div className='flex items-center gap-1'>
+                                        {team.city ? (
+                                            <div className='flex items-center gap-1'>
                                                 <MapPin className='h-3 w-3' />
                                                 <span className='truncate'>{team.city}</span>
-                                            </div> : null}
+                                            </div>
+                                        ) : null}
                                     </div>
                                 </div>
                             </Link>
                         ))}
                         {teams.length > 5 && (
-                            <p className='text-xs text-muted-foreground text-center'>
-                                + {teams.length - 5} more teams
-                            </p>
+                            <p className='text-xs text-muted-foreground text-center'>+ {teams.length - 5} more teams</p>
                         )}
                     </div>
                 )}

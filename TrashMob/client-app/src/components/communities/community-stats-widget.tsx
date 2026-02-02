@@ -65,10 +65,7 @@ export const CommunityStatsWidget = ({ stats }: CommunityStatsWidgetProps) => {
             <CardContent ref={viewportRef}>
                 <div className='grid grid-cols-2 gap-3'>
                     {statItems.map((item) => (
-                        <div
-                            key={item.id}
-                            className='flex flex-col items-center p-3 bg-muted rounded-lg'
-                        >
+                        <div key={item.id} className='flex flex-col items-center p-3 bg-muted rounded-lg'>
                             <item.icon className='h-5 w-5 text-primary mb-1' />
                             <span className='text-xl font-bold text-primary'>
                                 <CountUp isCounting={isInViewPort} end={item.value} duration={2} />

@@ -247,9 +247,7 @@ export const CommunityDetailMap = (props: CommunityDetailMapProps) => {
                         {showingTeam ? (
                             <InfoWindow
                                 anchor={teamMarkersRef.current[showingTeamId]}
-                                headerContent={
-                                    <div className='font-semibold text-sm'>{showingTeam.name}</div>
-                                }
+                                headerContent={<div className='font-semibold text-sm'>{showingTeam.name}</div>}
                                 onClose={closeInfoWindow}
                             >
                                 <div className='text-xs text-muted-foreground'>

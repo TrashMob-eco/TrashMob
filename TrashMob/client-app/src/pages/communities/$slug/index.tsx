@@ -39,11 +39,7 @@ export const CommunityDetailPage = () => {
         enabled: !!slug,
     });
 
-    const { data: events = [], isLoading: eventsLoading } = useQuery<
-        AxiosResponse<EventData[]>,
-        unknown,
-        EventData[]
-    >({
+    const { data: events = [], isLoading: eventsLoading } = useQuery<AxiosResponse<EventData[]>, unknown, EventData[]>({
         queryKey: GetCommunityEvents({ slug }).key,
         queryFn: GetCommunityEvents({ slug }).service,
         select: (res) => res.data,
@@ -116,14 +112,18 @@ export const CommunityDetailPage = () => {
                 >
                     <div className='h-full bg-black/40 flex items-end'>
                         <div className='container pb-8 flex items-end gap-4'>
-                            {community.logoUrl ? <img
+                            {community.logoUrl ? (
+                                <img
                                     src={community.logoUrl}
                                     alt={`${community.name} logo`}
                                     className='w-20 h-20 rounded-lg object-cover border-2 border-white shadow-lg'
-                                /> : null}
+                                />
+                            ) : null}
                             <div>
                                 <h1 className='text-4xl font-bold text-white'>{community.name}</h1>
-                                {community.tagline ? <p className='text-xl text-white/90 mt-2'>{community.tagline}</p> : null}
+                                {community.tagline ? (
+                                    <p className='text-xl text-white/90 mt-2'>{community.tagline}</p>
+                                ) : null}
                             </div>
                         </div>
                     </div>
@@ -170,12 +170,14 @@ export const CommunityDetailPage = () => {
                             </CardHeader>
                             <CardContent>
                                 <div className='space-y-4'>
-                                    {community.publicNotes ? <div>
+                                    {community.publicNotes ? (
+                                        <div>
                                             <h3 className='font-semibold mb-2'>About</h3>
                                             <p className='text-muted-foreground whitespace-pre-wrap'>
                                                 {community.publicNotes}
                                             </p>
-                                        </div> : null}
+                                        </div>
+                                    ) : null}
                                     <div className='flex items-center gap-2 text-muted-foreground'>
                                         <MapPin className='h-4 w-4' />
                                         <span>{getLocation(community)}</span>
@@ -185,13 +187,15 @@ export const CommunityDetailPage = () => {
                         </Card>
 
                         {/* Community Map */}
-                        {hasLocation ? <CommunityDetailMap
+                        {hasLocation ? (
+                            <CommunityDetailMap
                                 events={events}
                                 teams={teams}
                                 litterReports={litterReports}
                                 centerLat={community.latitude!}
                                 centerLng={community.longitude!}
-                            /> : null}
+                            />
+                        ) : null}
 
                         {/* Events Section */}
                         <CommunityEventsSection events={events} isLoading={eventsLoading} />
@@ -223,7 +227,8 @@ export const CommunityDetailPage = () => {
                                     <span className='text-muted-foreground'>Location</span>
                                     <span className='font-medium text-right'>{getLocation(community)}</span>
                                 </div>
-                                {community.website ? <div className='flex justify-between items-center'>
+                                {community.website ? (
+                                    <div className='flex justify-between items-center'>
                                         <span className='text-muted-foreground'>Website</span>
                                         <a
                                             href={
@@ -237,7 +242,8 @@ export const CommunityDetailPage = () => {
                                         >
                                             Visit <ExternalLink className='h-3 w-3' />
                                         </a>
-                                    </div> : null}
+                                    </div>
+                                ) : null}
                             </CardContent>
                         </Card>
                     </div>
