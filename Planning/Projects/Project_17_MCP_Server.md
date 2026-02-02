@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phase 1 Complete) |
+| **Status** | In Progress (Phase 2 Complete) |
 | **Priority** | Low |
 | **Risk** | Moderate |
 | **Size** | Medium |
@@ -40,11 +40,12 @@ Provide safe, privacy-aware AI access to events/metrics via Model Context Protoc
 - ✅ Stats/metrics tool (sitewide) - `GetStatsTool`
 - ⬜ Authentication via API tokens (deferred)
 
-### Phase 2 - Enhanced Tools (Partial)
-- ⬜ User dashboard data (authenticated)
+### Phase 2 - Enhanced Tools ✅
+- ⬜ User dashboard data (requires authentication - deferred)
 - ✅ Team lookup - `SearchTeamsTool`
 - ✅ Litter report discovery - `SearchLitterReportsTool`
-- ⬜ Partner/location search
+- ✅ Partner/location search - `SearchPartnerLocationsTool`
+- ✅ Community search - `SearchCommunitiesTool`
 
 ### Phase 3 - AI Features
 - ⬜ Event recommendations based on user location/history
