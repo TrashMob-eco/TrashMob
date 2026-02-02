@@ -122,7 +122,7 @@ const faqs = [
             },
             {
                 question: 'What can I see on a Community page?',
-                answer: 'Community pages display: the community\'s banner and branding, an about section describing the partnership, contact information, upcoming and past events in the area, teams operating in the community, impact statistics (bags collected, volunteers, hours), and links to the community\'s website and social media.',
+                answer: "Community pages display: the community's banner and branding, an about section describing the partnership, contact information, upcoming and past events in the area, teams operating in the community, impact statistics (bags collected, volunteers, hours), and links to the community's website and social media.",
             },
             {
                 question: 'How are Communities different from Teams?',
@@ -130,7 +130,7 @@ const faqs = [
             },
             {
                 question: 'Can I join a Community?',
-                answer: 'Communities are geographic partnerships, not membership groups. You automatically participate in a community\'s impact when you attend events or join teams in that area. To get more involved, look for teams in the community or contact the community administrators through the information on their page.',
+                answer: "Communities are geographic partnerships, not membership groups. You automatically participate in a community's impact when you attend events or join teams in that area. To get more involved, look for teams in the community or contact the community administrators through the information on their page.",
             },
             {
                 question: 'How do I become a Community partner?',
@@ -138,7 +138,7 @@ const faqs = [
             },
             {
                 question: 'Who manages a Community?',
-                answer: 'Communities are managed by designated Community Admins from the partner organization. Admins can update community information, branding, and content. They can also view statistics and activity within their community. If you need to contact a community admin, look for contact information on the community\'s page.',
+                answer: "Communities are managed by designated Community Admins from the partner organization. Admins can update community information, branding, and content. They can also view statistics and activity within their community. If you need to contact a community admin, look for contact information on the community's page.",
             },
         ],
     },
