@@ -74,12 +74,12 @@ export const getColumns = ({ onDeactivate }: GetColumnsProps): ColumnDef<WaiverV
                                 Edit Waiver
                             </Link>
                         </DropdownMenuItem>
-                        {waiver.isActive && (
+                        {waiver.isActive ? (
                             <DropdownMenuItem onClick={() => onDeactivate(waiver.id, waiver.name)}>
                                 <SquareX />
                                 Deactivate Waiver
                             </DropdownMenuItem>
-                        )}
+                        ) : null}
                     </DropdownMenuContent>
                 </DropdownMenu>
             );
