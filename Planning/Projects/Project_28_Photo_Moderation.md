@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Not Started |
+| **Status** | In Progress (Phase 1 Complete) |
 | **Priority** | Medium |
 | **Risk** | Low |
 | **Size** | Medium |
@@ -51,7 +51,7 @@ User-generated content (event photos, litter report images) requires moderation 
 
 ## Scope
 
-### Phase 1 - Data Model & API
+### Phase 1 - Data Model & API ✅
 - ✅ Add PhotoModerationStatus enum and fields to photo tables
 - ✅ Create PhotoFlag table for user reports
 - ✅ Create PhotoModerationLog audit table
@@ -59,15 +59,15 @@ User-generated content (event photos, litter report images) requires moderation 
 - ✅ Implement user flagging API endpoint
 
 ### Phase 2 - Admin UI
-- ✅ Site Admin > Photo Moderation page
-- ✅ Pending/Flagged/Recently Moderated tabs
-- ✅ Photo detail modal with context (event/litter report info)
-- ✅ Approve/Reject actions with reason codes
+- ⬜ Site Admin > Photo Moderation page
+- ⬜ Pending/Flagged/Recently Moderated tabs
+- ⬜ Photo detail modal with context (event/litter report info)
+- ⬜ Approve/Reject actions with reason codes
 
 ### Phase 3 - User-Facing & Notifications
-- ✅ Add "Report Photo" option on public photo views
-- ✅ Email notification on photo removal
-- ✅ Documentation and admin training
+- ⬜ Add "Report Photo" option on public photo views
+- ⬜ Email notification on photo removal
+- ⬜ Documentation and admin training
 
 ---
 
@@ -439,7 +439,7 @@ public async Task<ActionResult> FlagPhoto(
 
 ---
 
-**Last Updated:** January 31, 2026
+**Last Updated:** February 1, 2026
 **Owner:** Engineering Team
 **Status:** Not Started
 **Next Review:** Q2 2026

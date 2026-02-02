@@ -88,6 +88,9 @@
             // User Feedback
             services.AddScoped<IUserFeedbackManager, UserFeedbackManager>();
 
+            // Photo Moderation
+            services.AddScoped<IPhotoModerationManager, PhotoModerationManager>();
+
             // Feature Metrics
             services.AddSingleton<IFeatureMetricsService, FeatureMetricsService>();
 
