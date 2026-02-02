@@ -89,6 +89,7 @@
             // Adoption managers
             services.AddScoped<IAdoptableAreaManager, AdoptableAreaManager>();
             services.AddScoped<ITeamAdoptionManager, TeamAdoptionManager>();
+            services.AddScoped<ITeamAdoptionEventManager, TeamAdoptionEventManager>();
 
             // User Feedback
             services.AddScoped<IUserFeedbackManager, UserFeedbackManager>();
@@ -171,6 +172,7 @@
             // Adoption repositories
             services.AddScoped<IKeyedRepository<AdoptableArea>, KeyedRepository<AdoptableArea>>();
             services.AddScoped<IKeyedRepository<TeamAdoption>, KeyedRepository<TeamAdoption>>();
+            services.AddScoped<IKeyedRepository<TeamAdoptionEvent>, KeyedRepository<TeamAdoptionEvent>>();
 
             // User Feedback repository
             services.AddScoped<IKeyedRepository<UserFeedback>, KeyedRepository<UserFeedback>>();

@@ -53,6 +53,41 @@ namespace TrashMob.Models
         /// </summary>
         public string RejectionReason { get; set; }
 
+        #region Adoption Period
+
+        /// <summary>
+        /// Gets or sets the start date of the adoption period.
+        /// Set when the application is approved.
+        /// </summary>
+        public DateOnly? AdoptionStartDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the end date of the adoption period.
+        /// Can be set for fixed-term adoptions or when an adoption is terminated.
+        /// </summary>
+        public DateOnly? AdoptionEndDate { get; set; }
+
+        #endregion
+
+        #region Compliance Tracking
+
+        /// <summary>
+        /// Gets or sets the date of the most recent linked cleanup event.
+        /// </summary>
+        public DateTimeOffset? LastEventDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the total count of cleanup events linked to this adoption.
+        /// </summary>
+        public int EventCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether the team is currently compliant with cleanup requirements.
+        /// </summary>
+        public bool IsCompliant { get; set; }
+
+        #endregion
+
         #region Navigation Properties
 
         /// <summary>
@@ -70,6 +105,19 @@ namespace TrashMob.Models
         /// </summary>
         public virtual User ReviewedByUser { get; set; }
 
+        /// <summary>
+        /// Gets or sets the collection of events linked to this adoption.
+        /// </summary>
+        public virtual ICollection<TeamAdoptionEvent> AdoptionEvents { get; set; }
+
         #endregion
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TeamAdoption"/> class.
+        /// </summary>
+        public TeamAdoption()
+        {
+            AdoptionEvents = [];
+        }
     }
 }
