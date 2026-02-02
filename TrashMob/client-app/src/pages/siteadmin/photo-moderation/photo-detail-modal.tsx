@@ -11,13 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CheckCircle, XCircle, Flag, ExternalLink, Image } from 'lucide-react';
 import {
     PhotoModerationItem,
@@ -159,7 +153,9 @@ export const PhotoDetailModal = ({ photo, open, onOpenChange, tab }: PhotoDetail
                         <div>
                             <Label className='text-muted-foreground'>Uploaded By</Label>
                             <p className='font-medium'>{photo.uploaderName || 'Unknown'}</p>
-                            {photo.uploaderEmail ? <p className='text-muted-foreground text-xs'>{photo.uploaderEmail}</p> : null}
+                            {photo.uploaderEmail ? (
+                                <p className='text-muted-foreground text-xs'>{photo.uploaderEmail}</p>
+                            ) : null}
                         </div>
                         <div>
                             <Label className='text-muted-foreground'>Uploaded Date</Label>
@@ -169,52 +165,67 @@ export const PhotoDetailModal = ({ photo, open, onOpenChange, tab }: PhotoDetail
                         </div>
 
                         {/* Context - Litter Report or Team */}
-                        {photo.litterReportName ? <div className='col-span-2'>
+                        {photo.litterReportName ? (
+                            <div className='col-span-2'>
                                 <Label className='text-muted-foreground'>Litter Report</Label>
                                 <p className='font-medium flex items-center gap-1'>
                                     {photo.litterReportName}
-                                    {photo.litterReportId ? <a
+                                    {photo.litterReportId ? (
+                                        <a
                                             href={`/litterreports/${photo.litterReportId}`}
                                             target='_blank'
                                             rel='noopener noreferrer'
                                             className='text-primary hover:underline'
                                         >
                                             <ExternalLink className='h-3 w-3' />
-                                        </a> : null}
+                                        </a>
+                                    ) : null}
                                 </p>
-                            </div> : null}
-                        {photo.teamName ? <div className='col-span-2'>
+                            </div>
+                        ) : null}
+                        {photo.teamName ? (
+                            <div className='col-span-2'>
                                 <Label className='text-muted-foreground'>Team</Label>
                                 <p className='font-medium flex items-center gap-1'>
                                     {photo.teamName}
-                                    {photo.teamId ? <a
+                                    {photo.teamId ? (
+                                        <a
                                             href={`/teams/${photo.teamId}`}
                                             target='_blank'
                                             rel='noopener noreferrer'
                                             className='text-primary hover:underline'
                                         >
                                             <ExternalLink className='h-3 w-3' />
-                                        </a> : null}
+                                        </a>
+                                    ) : null}
                                 </p>
-                            </div> : null}
+                            </div>
+                        ) : null}
 
                         {/* Caption if available */}
-                        {photo.caption ? <div className='col-span-2'>
+                        {photo.caption ? (
+                            <div className='col-span-2'>
                                 <Label className='text-muted-foreground'>Caption</Label>
                                 <p className='font-medium'>{photo.caption}</p>
-                            </div> : null}
+                            </div>
+                        ) : null}
 
                         {/* Flag info for flagged photos */}
-                        {photo.inReview && photo.flagReason ? <div className='col-span-2 bg-yellow-50 p-3 rounded-md border border-yellow-200'>
+                        {photo.inReview && photo.flagReason ? (
+                            <div className='col-span-2 bg-yellow-50 p-3 rounded-md border border-yellow-200'>
                                 <Label className='text-yellow-700'>Flag Reason</Label>
                                 <p className='font-medium text-yellow-900'>{photo.flagReason}</p>
-                                {photo.flaggedDate ? <p className='text-xs text-yellow-600 mt-1'>
+                                {photo.flaggedDate ? (
+                                    <p className='text-xs text-yellow-600 mt-1'>
                                         Flagged on {new Date(photo.flaggedDate).toLocaleString()}
-                                    </p> : null}
-                            </div> : null}
+                                    </p>
+                                ) : null}
+                            </div>
+                        ) : null}
 
                         {/* Moderation info for moderated photos */}
-                        {tab === 'moderated' && photo.moderatedDate ? <div className='col-span-2 bg-gray-50 p-3 rounded-md border'>
+                        {tab === 'moderated' && photo.moderatedDate ? (
+                            <div className='col-span-2 bg-gray-50 p-3 rounded-md border'>
                                 <div className='flex justify-between'>
                                     <div>
                                         <Label className='text-muted-foreground'>Moderated By</Label>
@@ -222,20 +233,22 @@ export const PhotoDetailModal = ({ photo, open, onOpenChange, tab }: PhotoDetail
                                     </div>
                                     <div>
                                         <Label className='text-muted-foreground'>Moderated Date</Label>
-                                        <p className='font-medium'>
-                                            {new Date(photo.moderatedDate).toLocaleString()}
-                                        </p>
+                                        <p className='font-medium'>{new Date(photo.moderatedDate).toLocaleString()}</p>
                                     </div>
                                 </div>
-                                {photo.moderationReason ? <div className='mt-2'>
+                                {photo.moderationReason ? (
+                                    <div className='mt-2'>
                                         <Label className='text-muted-foreground'>Reason</Label>
                                         <p className='font-medium'>{photo.moderationReason}</p>
-                                    </div> : null}
-                            </div> : null}
+                                    </div>
+                                ) : null}
+                            </div>
+                        ) : null}
                     </div>
 
                     {/* Rejection Form */}
-                    {showRejectForm ? <div className='border-t pt-4'>
+                    {showRejectForm ? (
+                        <div className='border-t pt-4'>
                             <Label htmlFor='reject-reason'>Rejection Reason</Label>
                             <Select value={rejectReason} onValueChange={setRejectReason}>
                                 <SelectTrigger id='reject-reason' className='mt-1'>
@@ -249,7 +262,8 @@ export const PhotoDetailModal = ({ photo, open, onOpenChange, tab }: PhotoDetail
                                     ))}
                                 </SelectContent>
                             </Select>
-                        </div> : null}
+                        </div>
+                    ) : null}
                 </div>
 
                 <DialogFooter className='flex-col sm:flex-row gap-2'>
@@ -283,7 +297,8 @@ export const PhotoDetailModal = ({ photo, open, onOpenChange, tab }: PhotoDetail
                         </>
                     )}
 
-                    {showRejectForm ? <>
+                    {showRejectForm ? (
+                        <>
                             <Button variant='outline' onClick={() => setShowRejectForm(false)} disabled={isProcessing}>
                                 Cancel
                             </Button>
@@ -295,7 +310,8 @@ export const PhotoDetailModal = ({ photo, open, onOpenChange, tab }: PhotoDetail
                                 <XCircle className='mr-2 h-4 w-4' />
                                 Confirm Rejection
                             </Button>
-                        </> : null}
+                        </>
+                    ) : null}
 
                     {tab === 'moderated' && (
                         <Button variant='outline' onClick={handleClose}>
