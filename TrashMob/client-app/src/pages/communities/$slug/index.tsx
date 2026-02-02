@@ -7,7 +7,22 @@ import { HeroSection } from '@/components/Customization/HeroSection';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import CommunityData from '@/components/Models/CommunityData';
-import { GetCommunityBySlug } from '@/services/communities';
+import EventData from '@/components/Models/EventData';
+import TeamData from '@/components/Models/TeamData';
+import LitterReportData from '@/components/Models/LitterReportData';
+import StatsData from '@/components/Models/StatsData';
+import {
+    GetCommunityBySlug,
+    GetCommunityEvents,
+    GetCommunityTeams,
+    GetCommunityLitterReports,
+    GetCommunityStats,
+} from '@/services/communities';
+import { CommunityStatsWidget } from '@/components/communities/community-stats-widget';
+import { CommunityContactCard } from '@/components/communities/community-contact-card';
+import { CommunityEventsSection } from '@/components/communities/community-events-section';
+import { CommunityTeamsSection } from '@/components/communities/community-teams-section';
+import { CommunityDetailMap } from '@/components/communities/community-detail-map';
 
 const getLocation = (community: CommunityData) => {
     const parts = [community.city, community.region, community.country].filter(Boolean);
@@ -22,6 +37,34 @@ export const CommunityDetailPage = () => {
         queryFn: GetCommunityBySlug({ slug }).service,
         select: (res) => res.data,
         enabled: !!slug,
+    });
+
+    const { data: events = [], isLoading: eventsLoading } = useQuery<AxiosResponse<EventData[]>, unknown, EventData[]>({
+        queryKey: GetCommunityEvents({ slug }).key,
+        queryFn: GetCommunityEvents({ slug }).service,
+        select: (res) => res.data,
+        enabled: !!slug && !!community,
+    });
+
+    const { data: teams = [], isLoading: teamsLoading } = useQuery<AxiosResponse<TeamData[]>, unknown, TeamData[]>({
+        queryKey: GetCommunityTeams({ slug }).key,
+        queryFn: GetCommunityTeams({ slug }).service,
+        select: (res) => res.data,
+        enabled: !!slug && !!community,
+    });
+
+    const { data: litterReports = [] } = useQuery<AxiosResponse<LitterReportData[]>, unknown, LitterReportData[]>({
+        queryKey: GetCommunityLitterReports({ slug }).key,
+        queryFn: GetCommunityLitterReports({ slug }).service,
+        select: (res) => res.data,
+        enabled: !!slug && !!community,
+    });
+
+    const { data: stats } = useQuery<AxiosResponse<StatsData>, unknown, StatsData>({
+        queryKey: GetCommunityStats({ slug }).key,
+        queryFn: GetCommunityStats({ slug }).service,
+        select: (res) => res.data,
+        enabled: !!slug && !!community,
     });
 
     if (isLoading) {
@@ -57,20 +100,31 @@ export const CommunityDetailPage = () => {
         '--community-secondary': community.brandingSecondaryColor || '#1E40AF',
     } as React.CSSProperties;
 
+    const hasLocation = community.latitude && community.longitude;
+
     return (
         <div style={brandingStyles}>
             {/* Custom banner if available */}
             {community.bannerImageUrl ? (
                 <div
-                    className='h-64 bg-cover bg-center'
+                    className='h-64 bg-cover bg-center relative'
                     style={{ backgroundImage: `url(${community.bannerImageUrl})` }}
                 >
                     <div className='h-full bg-black/40 flex items-end'>
-                        <div className='container pb-8'>
-                            <h1 className='text-4xl font-bold text-white'>{community.name}</h1>
-                            {community.tagline ? (
-                                <p className='text-xl text-white/90 mt-2'>{community.tagline}</p>
+                        <div className='container pb-8 flex items-end gap-4'>
+                            {community.logoUrl ? (
+                                <img
+                                    src={community.logoUrl}
+                                    alt={`${community.name} logo`}
+                                    className='w-20 h-20 rounded-lg object-cover border-2 border-white shadow-lg'
+                                />
                             ) : null}
+                            <div>
+                                <h1 className='text-4xl font-bold text-white'>{community.name}</h1>
+                                {community.tagline ? (
+                                    <p className='text-xl text-white/90 mt-2'>{community.tagline}</p>
+                                ) : null}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -90,10 +144,17 @@ export const CommunityDetailPage = () => {
                 <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
                     {/* Main content */}
                     <div className='lg:col-span-2 space-y-6'>
+                        {/* About Card */}
                         <Card>
                             <CardHeader>
                                 <div className='flex items-center gap-4'>
-                                    {community.bannerImageUrl ? (
+                                    {community.logoUrl ? (
+                                        <img
+                                            src={community.logoUrl}
+                                            alt={`${community.name} logo`}
+                                            className='w-16 h-16 rounded-lg object-cover border'
+                                        />
+                                    ) : community.bannerImageUrl ? (
                                         <img
                                             src={community.bannerImageUrl}
                                             alt={`${community.name} logo`}
@@ -125,12 +186,38 @@ export const CommunityDetailPage = () => {
                             </CardContent>
                         </Card>
 
-                        {/* Future: Events in this community */}
-                        {/* Future: Teams in this community */}
+                        {/* Community Map */}
+                        {hasLocation ? (
+                            <CommunityDetailMap
+                                events={events}
+                                teams={teams}
+                                litterReports={litterReports}
+                                centerLat={community.latitude!}
+                                centerLng={community.longitude!}
+                            />
+                        ) : null}
+
+                        {/* Events Section */}
+                        <CommunityEventsSection events={events} isLoading={eventsLoading} />
+
+                        {/* Teams Section */}
+                        <CommunityTeamsSection teams={teams} isLoading={teamsLoading} />
                     </div>
 
                     {/* Sidebar */}
                     <div className='space-y-6'>
+                        {/* Stats Widget */}
+                        {stats ? <CommunityStatsWidget stats={stats} /> : null}
+
+                        {/* Contact Card */}
+                        <CommunityContactCard
+                            contactEmail={community.contactEmail}
+                            contactPhone={community.contactPhone}
+                            physicalAddress={community.physicalAddress}
+                            website={community.website}
+                        />
+
+                        {/* Community Info Card */}
                         <Card>
                             <CardHeader>
                                 <CardTitle>Community Info</CardTitle>
@@ -144,7 +231,11 @@ export const CommunityDetailPage = () => {
                                     <div className='flex justify-between items-center'>
                                         <span className='text-muted-foreground'>Website</span>
                                         <a
-                                            href={community.website}
+                                            href={
+                                                community.website.startsWith('http')
+                                                    ? community.website
+                                                    : `https://${community.website}`
+                                            }
                                             target='_blank'
                                             rel='noopener noreferrer'
                                             className='flex items-center gap-1 text-primary hover:underline'

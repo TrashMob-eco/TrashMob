@@ -125,6 +125,26 @@ namespace TrashMob.Models
         /// </summary>
         public string Country { get; set; }
 
+        /// <summary>
+        /// Gets or sets the URL of the community logo (200x200).
+        /// </summary>
+        public string LogoUrl { get; set; }
+
+        /// <summary>
+        /// Gets or sets the contact email for the community.
+        /// </summary>
+        public string ContactEmail { get; set; }
+
+        /// <summary>
+        /// Gets or sets the contact phone for the community.
+        /// </summary>
+        public string ContactPhone { get; set; }
+
+        /// <summary>
+        /// Gets or sets the physical address for display.
+        /// </summary>
+        public string PhysicalAddress { get; set; }
+
         #endregion
 
         /// <summary>

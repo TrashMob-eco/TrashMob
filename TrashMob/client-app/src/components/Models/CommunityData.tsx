@@ -35,6 +35,14 @@ class CommunityData {
 
     country: string = '';
 
+    logoUrl: string = '';
+
+    contactEmail: string = '';
+
+    contactPhone: string = '';
+
+    physicalAddress: string = '';
+
     partnerStatusId: number = 0;
 
     createdByUserId: string = Guid.EMPTY;
