@@ -214,15 +214,17 @@ export const LitterReportDetailPage = () => {
                                                             />
                                                             {/* Report button - show for logged in users who aren't the uploader */}
                                                             {isUserLoaded &&
-                                                                image.createdByUserId !== currentUser.id ? <div className='absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity'>
-                                                                        <ReportPhotoButton
-                                                                            photoId={image.id}
-                                                                            photoType='LitterImage'
-                                                                            variant='secondary'
-                                                                            size='icon'
-                                                                            className='h-8 w-8 bg-white/80 hover:bg-white'
-                                                                        />
-                                                                    </div> : null}
+                                                            image.createdByUserId !== currentUser.id ? (
+                                                                <div className='absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity'>
+                                                                    <ReportPhotoButton
+                                                                        photoId={image.id}
+                                                                        photoType='LitterImage'
+                                                                        variant='secondary'
+                                                                        size='icon'
+                                                                        className='h-8 w-8 bg-white/80 hover:bg-white'
+                                                                    />
+                                                                </div>
+                                                            ) : null}
                                                             {/* In review badge for admins */}
                                                             {image.inReview && currentUser.isSiteAdmin ? (
                                                                 <Badge className='absolute bottom-2 left-2 bg-yellow-500'>

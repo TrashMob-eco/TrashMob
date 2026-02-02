@@ -318,8 +318,8 @@ export const TeamDetailPage = () => {
                                 <CardHeader>
                                     <CardTitle className='flex items-center gap-2'>
                                         <Image className='h-5 w-5' />
-                                        Team Photos ({photos.filter((p) => !p.inReview || currentUser.isSiteAdmin).length}
-                                        )
+                                        Team Photos (
+                                        {photos.filter((p) => !p.inReview || currentUser.isSiteAdmin).length})
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
