@@ -192,5 +192,10 @@ namespace TrashMob.Models
         /// Gets or sets the type of the partner.
         /// </summary>
         public virtual PartnerType PartnerType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of waivers assigned to this community.
+        /// </summary>
+        public virtual ICollection<CommunityWaiver> CommunityWaivers { get; set; }
     }
 }

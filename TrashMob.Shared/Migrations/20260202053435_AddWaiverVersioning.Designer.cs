@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using TrashMob.Shared.Persistence;
@@ -12,9 +13,11 @@ using TrashMob.Shared.Persistence;
 namespace TrashMob.Migrations
 {
     [DbContext(typeof(MobDbContext))]
-    partial class MobDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260202053435_AddWaiverVersioning")]
+    partial class AddWaiverVersioning
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2348,73 +2351,6 @@ namespace TrashMob.Migrations
                     b.ToTable("Teams");
                 });
 
-            modelBuilder.Entity("TrashMob.Models.TeamAdoption", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("AdoptableAreaId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("ApplicationDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("ApplicationNotes")
-                        .HasMaxLength(2048)
-                        .HasColumnType("nvarchar(2048)");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid>("LastUpdatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("LastUpdatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("RejectionReason")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<Guid?>("ReviewedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("ReviewedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
-                        .HasDefaultValue("Pending");
-
-                    b.Property<Guid>("TeamId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AdoptableAreaId");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("LastUpdatedByUserId");
-
-                    b.HasIndex("ReviewedByUserId");
-
-                    b.HasIndex("Status")
-                        .HasDatabaseName("IX_TeamAdoptions_Status");
-
-                    b.HasIndex("TeamId", "AdoptableAreaId")
-                        .IsUnique()
-                        .HasDatabaseName("IX_TeamAdoptions_TeamId_AdoptableAreaId");
-
-                    b.ToTable("TeamAdoptions");
-                });
-
             modelBuilder.Entity("TrashMob.Models.TeamEvent", b =>
                 {
                     b.Property<Guid>("Id")
@@ -4157,50 +4093,6 @@ namespace TrashMob.Migrations
                     b.Navigation("LastUpdatedByUser");
                 });
 
-            modelBuilder.Entity("TrashMob.Models.TeamAdoption", b =>
-                {
-                    b.HasOne("TrashMob.Models.AdoptableArea", "AdoptableArea")
-                        .WithMany("Adoptions")
-                        .HasForeignKey("AdoptableAreaId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired()
-                        .HasConstraintName("FK_TeamAdoptions_AdoptableArea");
-
-                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_TeamAdoptions_User_CreatedBy");
-
-                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
-                        .WithMany()
-                        .HasForeignKey("LastUpdatedByUserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_TeamAdoptions_User_LastUpdatedBy");
-
-                    b.HasOne("TrashMob.Models.User", "ReviewedByUser")
-                        .WithMany()
-                        .HasForeignKey("ReviewedByUserId")
-                        .HasConstraintName("FK_TeamAdoptions_ReviewedByUser");
-
-                    b.HasOne("TrashMob.Models.Team", "Team")
-                        .WithMany("Adoptions")
-                        .HasForeignKey("TeamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_TeamAdoptions_Team");
-
-                    b.Navigation("AdoptableArea");
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("LastUpdatedByUser");
-
-                    b.Navigation("ReviewedByUser");
-
-                    b.Navigation("Team");
-                });
-
             modelBuilder.Entity("TrashMob.Models.TeamEvent", b =>
                 {
                     b.HasOne("TrashMob.Models.User", "CreatedByUser")
@@ -4559,11 +4451,6 @@ namespace TrashMob.Migrations
                     b.Navigation("LastUpdatedByUser");
                 });
 
-            modelBuilder.Entity("TrashMob.Models.AdoptableArea", b =>
-                {
-                    b.Navigation("Adoptions");
-                });
-
             modelBuilder.Entity("TrashMob.Models.Event", b =>
                 {
                     b.Navigation("EventAttendeeRoutes");
@@ -4659,8 +4546,6 @@ namespace TrashMob.Migrations
 
             modelBuilder.Entity("TrashMob.Models.Team", b =>
                 {
-                    b.Navigation("Adoptions");
-
                     b.Navigation("JoinRequests");
 
                     b.Navigation("Members");

@@ -96,6 +96,9 @@
             // Photo Moderation
             services.AddScoped<IPhotoModerationManager, PhotoModerationManager>();
 
+            // Waiver V3
+            services.AddScoped<IWaiverVersionManager, WaiverVersionManager>();
+
             // Feature Metrics
             services.AddSingleton<IFeatureMetricsService, FeatureMetricsService>();
 
@@ -171,6 +174,11 @@
 
             // User Feedback repository
             services.AddScoped<IKeyedRepository<UserFeedback>, KeyedRepository<UserFeedback>>();
+
+            // Waiver V3 repositories
+            services.AddScoped<IKeyedRepository<WaiverVersion>, KeyedRepository<WaiverVersion>>();
+            services.AddScoped<IBaseRepository<CommunityWaiver>, BaseRepository<CommunityWaiver>>();
+            services.AddScoped<IKeyedRepository<UserWaiver>, KeyedRepository<UserWaiver>>();
 
             return services;
         }

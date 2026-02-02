@@ -534,5 +534,54 @@ namespace TrashMob.Models
         public virtual ICollection<PhotoModerationLog> PhotoModerationLogsPerformed { get; set; }
 
         #endregion
+
+        #region Waiver V3 Collections
+
+        /// <summary>
+        /// Gets or sets the collection of waivers accepted by this user.
+        /// </summary>
+        public virtual ICollection<UserWaiver> UserWaivers { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of paper waivers uploaded by this user.
+        /// </summary>
+        public virtual ICollection<UserWaiver> UserWaiversUploaded { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of waivers where this user is the guardian.
+        /// </summary>
+        public virtual ICollection<UserWaiver> UserWaiversAsGuardian { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of waiver versions created by this user.
+        /// </summary>
+        public virtual ICollection<WaiverVersion> WaiverVersionsCreated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of waiver versions last updated by this user.
+        /// </summary>
+        public virtual ICollection<WaiverVersion> WaiverVersionsUpdated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of community waivers created by this user.
+        /// </summary>
+        public virtual ICollection<CommunityWaiver> CommunityWaiversCreated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of community waivers last updated by this user.
+        /// </summary>
+        public virtual ICollection<CommunityWaiver> CommunityWaiversUpdated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of user waivers created by this user.
+        /// </summary>
+        public virtual ICollection<UserWaiver> UserWaiversCreated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of user waivers last updated by this user.
+        /// </summary>
+        public virtual ICollection<UserWaiver> UserWaiversUpdated { get; set; }
+
+        #endregion
     }
 }

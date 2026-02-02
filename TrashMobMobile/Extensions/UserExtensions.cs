@@ -5,7 +5,7 @@
 
     public static class UserExtensions
     {
-        public static bool HasUserSignedWaiver(this User user, Waiver waiver, WaiverVersion waiverVersion)
+        public static bool HasUserSignedWaiver(this User user, Waiver waiver, TrashMobMobile.Models.WaiverVersion waiverVersion)
         {
             // If there is no waiver, skip it
             if (waiver == null)
