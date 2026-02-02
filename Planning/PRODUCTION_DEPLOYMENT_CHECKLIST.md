@@ -1,6 +1,6 @@
 # Production Deployment Checklist
 
-**Last Updated:** February 1, 2026
+**Last Updated:** February 2, 2026
 **Commits Since Last Release:** ~100+ commits from main
 
 ---
@@ -39,6 +39,7 @@ dotnet ef database update
 2. `20260201013924_ChangePickedWeightToDecimal` - Changes EventSummaries.PickedWeight from int to decimal(10,1)
 3. `20260201030122_AddTeamsFeature` - Creates Teams, TeamMembers, TeamEvents, TeamJoinRequests, TeamPhotos tables
 4. `20260201164845_AddUserFeedback` - Creates UserFeedback table for in-app feedback
+5. `20260202000411_AddCommunityPhase2Fields` - Adds LogoUrl, ContactEmail, ContactPhone, PhysicalAddress to Partner (Community)
 
 **Note:** Migration #1 includes data backfill SQL that marks all event creators as event leads.
 
@@ -152,6 +153,14 @@ git push origin release
   - [ ] Event creation tracked
   - [ ] Attendance registration tracked
 
+- [ ] **Community Pages (Project 10)**
+  - [ ] Communities discovery page at /communities
+  - [ ] Community detail page at /communities/{slug}
+  - [ ] Community map shows events, teams, litter reports
+  - [ ] Stats widget shows community impact metrics
+  - [ ] Contact card displays email/phone/address
+  - [ ] Events and Teams sections display nearby data
+
 ---
 
 ## Rollback Plan
@@ -191,6 +200,7 @@ Database migrations do NOT have automatic rollback. If critical issues:
 | Feature | Project | Description |
 |---------|---------|-------------|
 | Teams | Project 9 | User-created teams with membership, photos, events |
+| Community Pages | Project 10 | Discovery, detail pages with map, stats, events, teams |
 | User Feedback | Project 34 | In-app feedback widget + admin dashboard |
 | Event Co-Leads | Project 21 | Multiple leads per event |
 | Weight Tracking | Project 7 | Decimal weights, weight units |
