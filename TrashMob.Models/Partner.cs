@@ -26,6 +26,7 @@ namespace TrashMob.Models
             PartnerLocations = new HashSet<PartnerLocation>();
             PartnerAdmins = new HashSet<PartnerAdmin>();
             PartnerAdminInvitations = new HashSet<PartnerAdminInvitation>();
+            AdoptableAreas = new HashSet<AdoptableArea>();
         }
 
         /// <summary>
@@ -176,6 +177,11 @@ namespace TrashMob.Models
         /// Gets or sets the collection of admin invitations for the partner.
         /// </summary>
         public virtual ICollection<PartnerAdminInvitation> PartnerAdminInvitations { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of adoptable areas for the community.
+        /// </summary>
+        public virtual ICollection<AdoptableArea> AdoptableAreas { get; set; }
 
         /// <summary>
         /// Gets or sets the status of the partner.

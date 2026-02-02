@@ -73,6 +73,8 @@
 
         public virtual DbSet<Partner> Partners { get; set; }
 
+        public virtual DbSet<AdoptableArea> AdoptableAreas { get; set; }
+
         public virtual DbSet<PartnerStatus> PartnerStatus { get; set; }
 
         public virtual DbSet<PartnerType> PartnerTypes { get; set; }
@@ -803,6 +805,69 @@
                     .HasForeignKey(d => d.PartnerTypeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Partners_PartnerType");
+            });
+
+            modelBuilder.Entity<AdoptableArea>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.Description)
+                    .HasMaxLength(2048);
+
+                entity.Property(e => e.AreaType)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Status)
+                    .HasMaxLength(20)
+                    .HasDefaultValue("Available");
+
+                entity.Property(e => e.SafetyRequirements)
+                    .HasMaxLength(4000);
+
+                entity.Property(e => e.IsActive)
+                    .HasDefaultValue(true);
+
+                entity.Property(e => e.AllowCoAdoption)
+                    .HasDefaultValue(false);
+
+                entity.Property(e => e.CleanupFrequencyDays)
+                    .HasDefaultValue(90);
+
+                entity.Property(e => e.MinEventsPerYear)
+                    .HasDefaultValue(4);
+
+                entity.HasOne(e => e.Partner)
+                    .WithMany(p => p.AdoptableAreas)
+                    .HasForeignKey(e => e.PartnerId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_AdoptableAreas_Partners");
+
+                entity.HasIndex(e => e.PartnerId)
+                    .HasDatabaseName("IX_AdoptableAreas_PartnerId");
+
+                entity.HasIndex(e => e.Status)
+                    .HasDatabaseName("IX_AdoptableAreas_Status");
+
+                entity.HasIndex(e => new { e.PartnerId, e.Name })
+                    .IsUnique()
+                    .HasDatabaseName("IX_AdoptableAreas_PartnerId_Name");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AdoptableAreas_CreatedByUser_Id");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AdoptableAreas_LastUpdatedByUser_Id");
             });
 
             modelBuilder.Entity<PartnerLocation>(entity =>
