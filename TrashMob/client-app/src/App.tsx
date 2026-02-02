@@ -102,6 +102,7 @@ import { SiteAdminSendNotification } from './pages/siteadmin/send-notification';
 import { SiteAdminContent } from './pages/siteadmin/content';
 import { SiteAdminLitterReports } from './pages/siteadmin/litter-reports/page';
 import { SiteAdminFeedback } from './pages/siteadmin/feedback/page';
+import { SiteAdminPhotoModeration } from './pages/siteadmin/photo-moderation/page';
 import { NoMatch } from './pages/nomatch';
 
 const queryClient = new QueryClient();
@@ -251,6 +252,7 @@ const AppContent: FC = () => {
                                 <Route path='send-notifications' element={<SiteAdminSendNotification />} />
                                 <Route path='content' element={<SiteAdminContent />} />
                                 <Route path='feedback' element={<SiteAdminFeedback />} />
+                                <Route path='photo-moderation' element={<SiteAdminPhotoModeration />} />
                             </Route>
                         </Route>
                         <Route>

@@ -20,6 +20,7 @@ export const SiteAdminLayout = () => {
         { name: 'View Email Templates', value: `${pathPrefix}/email-templates` },
         { name: 'Manage Content', value: `${pathPrefix}/content` },
         { name: 'User Feedback', value: `${pathPrefix}/feedback` },
+        { name: 'Photo Moderation', value: `${pathPrefix}/photo-moderation` },
     ];
 
     const handleValueChange = useCallback(
