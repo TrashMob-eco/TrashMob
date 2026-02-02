@@ -28,6 +28,11 @@ class LitterImageData {
     lastUpdatedByUserId: string = '';
 
     lastUpdatedDate: Date | null = null;
+
+    // Moderation fields
+    moderationStatus: number = 0; // 0=Pending, 1=Approved, 2=Rejected
+
+    inReview: boolean = false;
 }
 
 export default LitterImageData;

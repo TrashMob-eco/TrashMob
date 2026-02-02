@@ -22,6 +22,7 @@ import {
 } from '@/services/teams';
 import { useLogin } from '@/hooks/useLogin';
 import { useToast } from '@/hooks/use-toast';
+import { ReportPhotoButton } from '@/components/ReportPhotoButton';
 import { ColumnDef } from '@tanstack/react-table';
 import moment from 'moment';
 
@@ -312,28 +313,49 @@ export const TeamDetailPage = () => {
                         </Card>
 
                         {/* Team Photos */}
-                        {photos && photos.length > 0 ? (
+                        {photos && photos.filter((p) => !p.inReview || currentUser.isSiteAdmin).length > 0 ? (
                             <Card>
                                 <CardHeader>
                                     <CardTitle className='flex items-center gap-2'>
                                         <Image className='h-5 w-5' />
-                                        Team Photos ({photos.length})
+                                        Team Photos ({photos.filter((p) => !p.inReview || currentUser.isSiteAdmin).length}
+                                        )
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <div className='grid grid-cols-2 md:grid-cols-3 gap-4'>
-                                        {photos.map((photo) => (
-                                            <div
-                                                key={photo.id}
-                                                className='relative rounded-lg overflow-hidden border aspect-square'
-                                            >
-                                                <img
-                                                    src={photo.imageUrl}
-                                                    alt={photo.caption || 'Team photo'}
-                                                    className='w-full h-full object-cover'
-                                                />
-                                            </div>
-                                        ))}
+                                        {photos
+                                            .filter((p) => !p.inReview || currentUser.isSiteAdmin)
+                                            .map((photo) => (
+                                                <div
+                                                    key={photo.id}
+                                                    className='relative rounded-lg overflow-hidden border aspect-square group'
+                                                >
+                                                    <img
+                                                        src={photo.imageUrl}
+                                                        alt={photo.caption || 'Team activity'}
+                                                        className='w-full h-full object-cover'
+                                                    />
+                                                    {/* Report button - show for logged in users who aren't the uploader */}
+                                                    {isUserLoaded && photo.uploadedByUserId !== currentUser.id ? (
+                                                        <div className='absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity'>
+                                                            <ReportPhotoButton
+                                                                photoId={photo.id}
+                                                                photoType='TeamPhoto'
+                                                                variant='secondary'
+                                                                size='icon'
+                                                                className='h-8 w-8 bg-white/80 hover:bg-white'
+                                                            />
+                                                        </div>
+                                                    ) : null}
+                                                    {/* In review badge for admins */}
+                                                    {photo.inReview && currentUser.isSiteAdmin ? (
+                                                        <Badge className='absolute bottom-2 left-2 bg-yellow-500'>
+                                                            Flagged
+                                                        </Badge>
+                                                    ) : null}
+                                                </div>
+                                            ))}
                                     </div>
                                 </CardContent>
                             </Card>

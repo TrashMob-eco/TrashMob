@@ -37,6 +37,8 @@
     <None Remove="Engine\EmailCopy\EventCoLeadAdded.html" />
     <None Remove="Engine\EmailCopy\EventCoLeadRemoved.html" />
     <None Remove="Engine\EmailCopy\UserFeedbackReceived.html" />
+    <None Remove="Engine\EmailCopy\PhotoRemoved.html" />
+    <None Remove="Engine\EmailCopy\PhotoFlagged.html" />
   </ItemGroup>
 
   <ItemGroup>
@@ -70,6 +72,8 @@
     <EmbeddedResource Include="Engine\EmailCopy\EventCoLeadAdded.html" />
     <EmbeddedResource Include="Engine\EmailCopy\EventCoLeadRemoved.html" />
     <EmbeddedResource Include="Engine\EmailCopy\UserFeedbackReceived.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\PhotoRemoved.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\PhotoFlagged.html" />
   </ItemGroup>
 
   <ItemGroup>
