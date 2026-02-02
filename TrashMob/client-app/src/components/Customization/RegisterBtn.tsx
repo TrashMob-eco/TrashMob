@@ -115,11 +115,13 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
                 {registered ? 'Attended!' : 'Attend'}
             </Button>
 
-            {requiredWaivers ? <WaiverSigningFlow
+            {requiredWaivers ? (
+                <WaiverSigningFlow
                     waivers={requiredWaivers}
                     open={showWaiverFlow}
                     onComplete={handleWaiverFlowComplete}
-                /> : null}
+                />
+            ) : null}
         </>
     );
 };

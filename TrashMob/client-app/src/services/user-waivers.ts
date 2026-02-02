@@ -14,9 +14,7 @@ export type GetRequiredWaivers_Response = WaiverVersionData[];
 export const GetRequiredWaivers = (params?: GetRequiredWaivers_Params) => ({
     key: ['/waivers/required', params],
     service: async () => {
-        const url = params?.communityId
-            ? `/waivers/required?communityId=${params.communityId}`
-            : '/waivers/required';
+        const url = params?.communityId ? `/waivers/required?communityId=${params.communityId}` : '/waivers/required';
         return ApiService('protected').fetchData<GetRequiredWaivers_Response>({
             url,
             method: 'get',

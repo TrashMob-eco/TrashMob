@@ -15,11 +15,7 @@ interface WaiverSigningFlowProps {
  * Handles signing multiple waivers in sequence.
  * Shows waivers one at a time with progress indicator.
  */
-export const WaiverSigningFlow: React.FC<WaiverSigningFlowProps> = ({
-    waivers,
-    open,
-    onComplete,
-}) => {
+export const WaiverSigningFlow: React.FC<WaiverSigningFlowProps> = ({ waivers, open, onComplete }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
 
     // Reset when flow reopens

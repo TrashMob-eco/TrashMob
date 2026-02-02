@@ -83,7 +83,9 @@ export const WaiverSigningDialog: React.FC<WaiverSigningDialogProps> = ({
                 <DialogHeader>
                     <DialogTitle className='flex items-center justify-between'>
                         <span>{waiver.name}</span>
-                        {progress ? <span className='text-sm font-normal text-muted-foreground'>{progress}</span> : null}
+                        {progress ? (
+                            <span className='text-sm font-normal text-muted-foreground'>{progress}</span>
+                        ) : null}
                     </DialogTitle>
                     <DialogDescription>
                         Please read the waiver carefully and scroll to the bottom before signing.
@@ -141,17 +143,14 @@ export const WaiverSigningDialog: React.FC<WaiverSigningDialogProps> = ({
                     <Button variant='outline' onClick={onClose} disabled={acceptMutation.isPending}>
                         Cancel
                     </Button>
-                    <Button
-                        onClick={handleSign}
-                        disabled={!canSign || acceptMutation.isPending}
-                    >
+                    <Button onClick={handleSign} disabled={!canSign || acceptMutation.isPending}>
                         {acceptMutation.isPending ? 'Signing...' : 'Sign Waiver'}
                     </Button>
                 </DialogFooter>
 
-                {acceptMutation.isError ? <p className='text-sm text-destructive text-center'>
-                        Failed to sign waiver. Please try again.
-                    </p> : null}
+                {acceptMutation.isError ? (
+                    <p className='text-sm text-destructive text-center'>Failed to sign waiver. Please try again.</p>
+                ) : null}
             </DialogContent>
         </Dialog>
     );

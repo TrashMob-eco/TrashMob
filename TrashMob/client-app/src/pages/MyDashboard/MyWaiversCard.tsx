@@ -70,10 +70,12 @@ export const MyWaiversCard: FC<MyWaiversCardProps> = ({ userId }) => {
                     <div className='flex flex-row items-center'>
                         <FileText className='inline-block h-5 w-5 mr-2 text-primary' />
                         <CardTitle className='grow text-primary'>My Waivers ({waiverCount})</CardTitle>
-                        {hasPendingWaivers ? <Button variant='outline' size='sm' onClick={() => setShowWaiverFlow(true)}>
+                        {hasPendingWaivers ? (
+                            <Button variant='outline' size='sm' onClick={() => setShowWaiverFlow(true)}>
                                 <AlertTriangle className='h-4 w-4 mr-1 text-amber-500' />
                                 Sign Required Waivers ({pendingWaivers.length})
-                            </Button> : null}
+                            </Button>
+                        ) : null}
                     </div>
                 </CardHeader>
                 <CardContent>
@@ -151,11 +153,13 @@ export const MyWaiversCard: FC<MyWaiversCardProps> = ({ userId }) => {
                 </CardContent>
             </Card>
 
-            {pendingWaivers ? <WaiverSigningFlow
+            {pendingWaivers ? (
+                <WaiverSigningFlow
                     waivers={pendingWaivers}
                     open={showWaiverFlow}
                     onComplete={handleWaiverFlowComplete}
-                /> : null}
+                />
+            ) : null}
         </>
     );
 };
