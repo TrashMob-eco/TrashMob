@@ -193,7 +193,40 @@ export const GettingStarted: React.FC = () => {
                     </div>
                 </div>
             </section>
-            <section className='bg-background py-12! flex flex-col justify-center text-center'>
+            <section className='bg-background'>
+                <div className='container py-24!'>
+                    <div className='flex flex-col md:flex-row gap-8 items-center'>
+                        <div className='w-full md:basis-1/2 flex justify-center md:order-1'>
+                            <div className='bg-primary/10 rounded-2xl p-12 text-center'>
+                                <div className='text-6xl mb-4'>🏘️</div>
+                                <p className='text-lg font-medium'>Discover what's happening in your area!</p>
+                            </div>
+                        </div>
+                        <div className='w-full md:basis-1/2 md:order-2'>
+                            <h2 className='font-semibold'>Explore Your Community</h2>
+                            <h4 className='mt-5!'>
+                                Communities are local areas that have partnered with TrashMob to organize cleanup
+                                efforts in their region.
+                            </h4>
+                            <p className='font-light'>
+                                Find your community to see local events, discover teams in your area, and view the
+                                collective impact of volunteers near you. Community pages showcase everything happening
+                                in a region, making it easy to get involved.
+                            </p>
+                            <ul className='list-disc pl-8 font-light'>
+                                <li>See upcoming events in your area</li>
+                                <li>Find local teams to join</li>
+                                <li>View community impact statistics</li>
+                                <li>Connect with community organizers</li>
+                            </ul>
+                            <Button asChild className='mt-4'>
+                                <Link to='/communities'>Browse Communities</Link>
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section className='bg-card py-12! flex flex-col justify-center text-center'>
                 <h2 className='font-semibold'>Ready to go?</h2>
                 <span>Find your first event now.</span>
                 <div className='px-5 mb-5'>

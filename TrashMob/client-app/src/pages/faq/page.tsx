@@ -4,6 +4,7 @@ import events from '@/components/assets/faq/Event.svg';
 import attendees from '@/components/assets/faq/Attendees.svg';
 import volunteer from '@/components/assets/faq/volunteer.svg';
 import teams from '@/components/assets/card/twofigure.svg';
+import communities from '@/components/assets/home/Person.svg';
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -103,6 +104,41 @@ const faqs = [
             {
                 question: 'How do I leave a Team?',
                 answer: 'Go to your <a href="https://www.trashmob.eco/mydashboard">Dashboard</a> and find the team in "My Teams". Click on the team, then use the "Leave Team" option. Note: If you are the only team lead, you must either promote another member to lead or contact TrashMob support.',
+            },
+        ],
+    },
+    {
+        category: 'Communities',
+        desc: 'Local community partnerships',
+        icon: communities,
+        questions: [
+            {
+                question: 'What is a Community?',
+                answer: 'A Community in TrashMob represents a local area or city that has partnered with TrashMob to organize cleanup efforts. Communities have their own branded pages showcasing local events, teams, impact statistics, and information about the partnership. Examples include cities, neighborhoods, or regional organizations.',
+            },
+            {
+                question: 'How do I find a Community?',
+                answer: 'Visit the <a href="https://www.trashmob.eco/communities">Communities page</a> to browse all active communities. You can search by name or location to find communities near you. Each community card shows key information like location and a brief description.',
+            },
+            {
+                question: 'What can I see on a Community page?',
+                answer: "Community pages display: the community's banner and branding, an about section describing the partnership, contact information, upcoming and past events in the area, teams operating in the community, impact statistics (bags collected, volunteers, hours), and links to the community's website and social media.",
+            },
+            {
+                question: 'How are Communities different from Teams?',
+                answer: 'Communities represent geographic areas or organizational partnerships (like a city or regional organization), while Teams are groups of individual volunteers. A Community can have multiple Teams operating within it. Communities are managed by partner organizations, whereas Teams are created and led by volunteers.',
+            },
+            {
+                question: 'Can I join a Community?',
+                answer: "Communities are geographic partnerships, not membership groups. You automatically participate in a community's impact when you attend events or join teams in that area. To get more involved, look for teams in the community or contact the community administrators through the information on their page.",
+            },
+            {
+                question: 'How do I become a Community partner?',
+                answer: 'If you represent a city, organization, or regional group interested in partnering with TrashMob, please <a href="https://www.trashmob.eco/contactus">Contact us</a>. We\'ll work with you to set up a branded community page and discuss how we can support cleanup efforts in your area.',
+            },
+            {
+                question: 'Who manages a Community?',
+                answer: "Communities are managed by designated Community Admins from the partner organization. Admins can update community information, branding, and content. They can also view statistics and activity within their community. If you need to contact a community admin, look for contact information on the community's page.",
             },
         ],
     },
