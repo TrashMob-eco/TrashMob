@@ -50,7 +50,7 @@
 | [Project 16 - Content Management](./Projects/Project_16_Content_Management.md) | Strapi CMS integration | ✅ Complete |
 | [Project 19 - Newsletter Support](./Projects/Project_19_Newsletter.md) | Monthly communication | Not Started |
 | [Project 20 - Gamification](./Projects/Project_20_Gamification.md) | Leaderboards and engagement | Not Started |
-| [Project 21 - Event Co-Leads](./Projects/Project_21_Event_Co_Leads.md) | Multiple event admins | Planning in Progress |
+| [Project 21 - Event Co-Leads](./Projects/Project_21_Event_Co_Leads.md) | Multiple event admins | ✅ Complete |
 | [Project 22 - Attendee Metrics](./Projects/Project_22_Attendee_Metrics.md) | Per-attendee event statistics | Not Started |
 | [Project 25 - Automated Testing](./Projects/Project_25_Automated_Testing.md) | E2E tests for web and mobile | Not Started |
 | [Project 26 - KeyVault RBAC Migration](./Projects/Project_26_KeyVault_RBAC_Migration.md) | Migrate from access policies to RBAC | ✅ Complete |
@@ -90,6 +90,7 @@
 ### Impact Tracking
 - [Project 7 - Event Weights](./Projects/Project_07_Event_Weights.md) ✅
 - [Project 15 - Route Tracing](./Projects/Project_15_Route_Tracing.md)
+- [Project 21 - Event Co-Leads](./Projects/Project_21_Event_Co_Leads.md) ✅
 - [Project 22 - Attendee Metrics](./Projects/Project_22_Attendee_Metrics.md)
 
 ### Platform Quality
@@ -118,11 +119,11 @@
 
 | Status | Count | Projects |
 |--------|-------|----------|
-| ✅ **Complete** | 13 | Projects 3, 7, 9, 10, 16, 17, 26, 27, 28, 29, 32, 34 |
+| ✅ **Complete** | 14 | Projects 3, 7, 9, 10, 16, 17, 21, 26, 27, 28, 29, 32, 34 |
 | **In Progress** | 1 | Project 6 |
 | **Developers Engaged** | 1 | Project 4 |
 | **Ready for Review** | 3 | Projects 2, 5, 8 |
-| **Planning** | 6 | Projects 1, 11, 15, 18, 21, 23 |
+| **Planning** | 5 | Projects 1, 11, 15, 18, 23 |
 | **Not Started** | 10 | Projects 12, 13, 14, 19, 20, 22, 24, 25, 30, 31, 35 |
 | **Deprioritized** | 1 | Project 33 |
 
