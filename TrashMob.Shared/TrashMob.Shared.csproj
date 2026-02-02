@@ -42,6 +42,7 @@
     <None Remove="Engine\EmailCopy\AdoptionApplicationSubmitted.html" />
     <None Remove="Engine\EmailCopy\AdoptionApplicationApproved.html" />
     <None Remove="Engine\EmailCopy\AdoptionApplicationRejected.html" />
+    <None Remove="Engine\EmailCopy\WaiverExpiringReminder.html" />
   </ItemGroup>
 
   <ItemGroup>
@@ -80,6 +81,7 @@
     <EmbeddedResource Include="Engine\EmailCopy\AdoptionApplicationSubmitted.html" />
     <EmbeddedResource Include="Engine\EmailCopy\AdoptionApplicationApproved.html" />
     <EmbeddedResource Include="Engine\EmailCopy\AdoptionApplicationRejected.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\WaiverExpiringReminder.html" />
   </ItemGroup>
 
   <ItemGroup>
@@ -100,6 +102,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="QuestPDF" Version="2025.1.0" />
     <PackageReference Include="SendGrid" Version="9.29.3" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
   </ItemGroup>

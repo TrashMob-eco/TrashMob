@@ -53,6 +53,7 @@ import { PartnerAdminInvitationsTable } from '@/pages/MyDashboard/PartnerAdminIn
 import { MyLitterReportsTable } from '@/pages/MyDashboard/MyLitterReportsTable';
 import { NearbyLitterReportsWidget } from '@/pages/MyDashboard/NearbyLitterReportsWidget';
 import { MyTeamsTable } from '@/pages/MyDashboard/MyTeamsTable';
+import { MyWaiversCard } from '@/pages/MyDashboard/MyWaiversCard';
 
 const isUpcomingEvent = (event: EventData) => new Date(event.eventDate) >= new Date();
 const isPastEvent = (event: EventData) => new Date(event.eventDate) < new Date();
@@ -227,6 +228,9 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                         </div>
                     ))}
                 </div>
+            </div>
+            <div className='container my-8!'>
+                <MyWaiversCard userId={userId} />
             </div>
             <div className='container my-12!'>
                 <div className='flex justify-between'>

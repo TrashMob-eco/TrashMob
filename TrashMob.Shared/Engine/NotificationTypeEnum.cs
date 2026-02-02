@@ -179,5 +179,10 @@
         /// Notification sent to team leads when their adoption application is rejected.
         /// </summary>
         AdoptionApplicationRejected = 35,
+
+        /// <summary>
+        /// Reminder notification sent to users when their waiver is expiring soon.
+        /// </summary>
+        WaiverExpiringReminder = 36,
     }
 }

@@ -99,6 +99,8 @@
 
             // Waiver V3
             services.AddScoped<IWaiverVersionManager, WaiverVersionManager>();
+            services.AddScoped<IUserWaiverManager, UserWaiverManager>();
+            services.AddScoped<IWaiverDocumentManager, WaiverDocumentManager>();
 
             // Feature Metrics
             services.AddSingleton<IFeatureMetricsService, FeatureMetricsService>();

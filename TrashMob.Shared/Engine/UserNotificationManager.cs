@@ -21,6 +21,7 @@
         private readonly INonEventUserNotificationManager nonEventUserNotificationManager;
         private readonly IKeyedManager<User> userManager;
         private readonly IKeyedManager<UserNotification> userNotificationManager;
+        private readonly IUserWaiverManager userWaiverManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserNotificationManager"/> class.
@@ -35,6 +36,7 @@
         /// <param name="mapRepository">Repository for map services.</param>
         /// <param name="eventSummaryManager">Manager for event summaries.</param>
         /// <param name="litterReportManager">Manager for litter report operations.</param>
+        /// <param name="userWaiverManager">Manager for user waiver operations.</param>
         /// <param name="logger">Logger instance.</param>
         public UserNotificationManager(IEventManager eventManager,
             IKeyedManager<User> userManager,
@@ -46,6 +48,7 @@
             IMapManager mapRepository,
             IBaseManager<EventSummary> eventSummaryManager,
             ILitterReportManager litterReportManager,
+            IUserWaiverManager userWaiverManager,
             ILogger<UserNotificationManager> logger)
         {
             this.eventManager = eventManager;
@@ -58,6 +61,7 @@
             this.mapRepository = mapRepository;
             this.eventSummaryManager = eventSummaryManager;
             this.litterReportManager = litterReportManager;
+            this.userWaiverManager = userWaiverManager;
             this.logger = logger;
         }
 
@@ -120,6 +124,11 @@
                 litterReportManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository,
                 logger);
             await weeklyLitterReportsNotifier.GenerateNotificationsAsync().ConfigureAwait(false);
+
+            var waiverExpiringNotifier = new WaiverExpiringNotifier(eventManager, userManager,
+                eventAttendeeManager, userNotificationManager, nonEventUserNotificationManager, emailSender,
+                emailManager, mapRepository, userWaiverManager, logger);
+            await waiverExpiringNotifier.GenerateNotificationsAsync().ConfigureAwait(false);
 
             logger.LogInformation("Completed RunAllNotifications");
         }
