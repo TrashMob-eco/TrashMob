@@ -21,6 +21,7 @@ namespace TrashMob.Models
             JoinRequests = [];
             TeamEvents = [];
             Photos = [];
+            Adoptions = [];
         }
 
         /// <summary>
@@ -105,5 +106,10 @@ namespace TrashMob.Models
         /// Gets or sets the collection of photos in the team's gallery.
         /// </summary>
         public virtual ICollection<TeamPhoto> Photos { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of area adoptions for this team.
+        /// </summary>
+        public virtual ICollection<TeamAdoption> Adoptions { get; set; }
     }
 }

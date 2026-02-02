@@ -164,5 +164,20 @@
         /// Notification sent to admins when a photo is flagged for review.
         /// </summary>
         PhotoFlagged = 32,
+
+        /// <summary>
+        /// Notification sent to community admins when a team submits an adoption application.
+        /// </summary>
+        AdoptionApplicationSubmitted = 33,
+
+        /// <summary>
+        /// Notification sent to team leads when their adoption application is approved.
+        /// </summary>
+        AdoptionApplicationApproved = 34,
+
+        /// <summary>
+        /// Notification sent to team leads when their adoption application is rejected.
+        /// </summary>
+        AdoptionApplicationRejected = 35,
     }
 }
