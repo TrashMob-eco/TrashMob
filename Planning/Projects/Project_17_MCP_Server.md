@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Not Started |
+| **Status** | In Progress (Phase 1 Complete) |
 | **Priority** | Low |
 | **Risk** | Moderate |
 | **Size** | Medium |
@@ -34,23 +34,23 @@ Provide safe, privacy-aware AI access to events/metrics via Model Context Protoc
 
 ## Scope
 
-### Phase 1 - Core MCP Server
-- ✅ MCP server implementation (.NET)
-- ✅ Event search tool (location, date, type)
-- ✅ Stats/metrics tool (sitewide, community)
-- ✅ Authentication via API tokens
+### Phase 1 - Core MCP Server ✅
+- ✅ MCP server implementation (.NET) - `TrashMobMCP/`
+- ✅ Event search tool (location, date, type) - `SearchEventsTool`
+- ✅ Stats/metrics tool (sitewide) - `GetStatsTool`
+- ⬜ Authentication via API tokens (deferred)
 
-### Phase 2 - Enhanced Tools
-- ✅ User dashboard data (authenticated)
-- ✅ Team and community lookup
-- ✅ Litter report discovery
-- ✅ Partner/location search
+### Phase 2 - Enhanced Tools (Partial)
+- ⬜ User dashboard data (authenticated)
+- ✅ Team lookup - `SearchTeamsTool`
+- ✅ Litter report discovery - `SearchLitterReportsTool`
+- ⬜ Partner/location search
 
 ### Phase 3 - AI Features
-- ✅ Event recommendations based on user location/history
-- ✅ Impact summaries (event, community, sitewide)
-- ✅ Volunteer activity analysis (anonymized trends)
-- ✅ Community health metrics
+- ⬜ Event recommendations based on user location/history
+- ⬜ Impact summaries (event, community, sitewide)
+- ⬜ Volunteer activity analysis (anonymized trends)
+- ⬜ Community health metrics
 
 ---
 
