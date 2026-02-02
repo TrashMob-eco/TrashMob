@@ -79,3 +79,63 @@ export interface WaiverVersionRequest {
 export interface AssignWaiverRequest {
     waiverId: string;
 }
+
+/**
+ * Represents a user's signed waiver with audit trail.
+ */
+export interface UserWaiverData {
+    /** Unique identifier for the user waiver. */
+    id: string;
+    /** The user who signed the waiver. */
+    userId: string;
+    /** The waiver version that was signed. */
+    waiverVersionId: string;
+    /** When the waiver was signed. */
+    acceptedDate: string;
+    /** When this waiver acceptance expires (typically end of calendar year). */
+    expiryDate: string;
+    /** The typed legal name entered by the signer. */
+    typedLegalName: string;
+    /** Snapshot of waiver text at time of signing. */
+    waiverTextSnapshot?: string;
+    /** How the waiver was signed (ESignatureWeb, ESignatureMobile, PaperUpload). */
+    signingMethod?: string;
+    /** URL to the PDF document in blob storage. */
+    documentUrl?: string | null;
+    /** Whether the signer was a minor. */
+    isMinor: boolean;
+    /** Guardian's name if signer is a minor. */
+    guardianName?: string;
+    /** Guardian's relationship to the minor. */
+    guardianRelationship?: string;
+    /** The waiver version details (populated when included). */
+    waiverVersion?: WaiverVersionData;
+    /** Audit fields. */
+    createdDate?: string;
+    lastUpdatedDate?: string;
+}
+
+/**
+ * Request model for accepting a waiver.
+ */
+export interface AcceptWaiverRequest {
+    /** The waiver version ID to accept. */
+    waiverVersionId: string;
+    /** The typed legal name entered by the signer. */
+    typedLegalName: string;
+    /** Whether the signer is a minor. */
+    isMinor?: boolean;
+    /** Guardian's user ID if the signer is a minor. */
+    guardianUserId?: string;
+    /** Guardian's name if not a registered user. */
+    guardianName?: string;
+    /** Guardian's relationship to the minor. */
+    guardianRelationship?: string;
+}
+
+/**
+ * Result of checking waiver status.
+ */
+export interface WaiverCheckResult {
+    hasValidWaiver: boolean;
+}

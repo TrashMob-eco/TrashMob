@@ -164,5 +164,10 @@
         /// Notification sent to admins when a photo is flagged for review.
         /// </summary>
         PhotoFlagged = 32,
+
+        /// <summary>
+        /// Reminder notification sent to users when their waiver is expiring soon.
+        /// </summary>
+        WaiverExpiringReminder = 33,
     }
 }

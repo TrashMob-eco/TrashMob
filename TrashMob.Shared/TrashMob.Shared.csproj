@@ -39,6 +39,7 @@
     <None Remove="Engine\EmailCopy\UserFeedbackReceived.html" />
     <None Remove="Engine\EmailCopy\PhotoRemoved.html" />
     <None Remove="Engine\EmailCopy\PhotoFlagged.html" />
+    <None Remove="Engine\EmailCopy\WaiverExpiringReminder.html" />
   </ItemGroup>
 
   <ItemGroup>
@@ -74,6 +75,7 @@
     <EmbeddedResource Include="Engine\EmailCopy\UserFeedbackReceived.html" />
     <EmbeddedResource Include="Engine\EmailCopy\PhotoRemoved.html" />
     <EmbeddedResource Include="Engine\EmailCopy\PhotoFlagged.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\WaiverExpiringReminder.html" />
   </ItemGroup>
 
   <ItemGroup>
@@ -94,6 +96,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="QuestPDF" Version="2025.1.0" />
     <PackageReference Include="SendGrid" Version="9.29.3" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
   </ItemGroup>
