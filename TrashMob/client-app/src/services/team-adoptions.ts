@@ -2,6 +2,7 @@
 
 import { ApiService } from '.';
 import TeamAdoptionData from '../components/Models/TeamAdoptionData';
+import { AdoptionComplianceStats } from '../components/Models/AdoptionComplianceStats';
 
 // ============================================================================
 // Team-Centric Operations
@@ -81,5 +82,42 @@ export const RejectAdoption = () => ({
             url: `/communities/${params.partnerId}/adoptions/${params.adoptionId}/reject`,
             method: 'post',
             data: body,
+        }),
+});
+
+// ============================================================================
+// Community Admin - Compliance & Reporting (Phase 4)
+// ============================================================================
+
+export type GetDelinquentAdoptions_Params = { partnerId: string };
+export type GetDelinquentAdoptions_Response = TeamAdoptionData[];
+export const GetDelinquentAdoptions = (params: GetDelinquentAdoptions_Params) => ({
+    key: ['/communities/', params.partnerId, '/adoptions/delinquent'],
+    service: async () =>
+        ApiService('protected').fetchData<GetDelinquentAdoptions_Response>({
+            url: `/communities/${params.partnerId}/adoptions/delinquent`,
+            method: 'get',
+        }),
+});
+
+export type GetComplianceStats_Params = { partnerId: string };
+export type GetComplianceStats_Response = AdoptionComplianceStats;
+export const GetComplianceStats = (params: GetComplianceStats_Params) => ({
+    key: ['/communities/', params.partnerId, '/adoptions/stats'],
+    service: async () =>
+        ApiService('protected').fetchData<GetComplianceStats_Response>({
+            url: `/communities/${params.partnerId}/adoptions/stats`,
+            method: 'get',
+        }),
+});
+
+export type ExportAdoptions_Params = { partnerId: string };
+export const ExportAdoptions = (params: ExportAdoptions_Params) => ({
+    key: ['/communities/', params.partnerId, '/adoptions/export'],
+    service: async () =>
+        ApiService('protected').fetchData<Blob>({
+            url: `/communities/${params.partnerId}/adoptions/export`,
+            method: 'get',
+            responseType: 'blob',
         }),
 });

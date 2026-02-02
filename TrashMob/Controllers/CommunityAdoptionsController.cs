@@ -12,6 +12,7 @@ namespace TrashMob.Controllers
     using TrashMob.Security;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Poco;
 
     /// <summary>
     /// Controller for community admin adoption management.
@@ -186,6 +187,139 @@ namespace TrashMob.Controllers
             }
 
             return Ok(result.Data);
+        }
+
+        /// <summary>
+        /// Gets delinquent adoptions for a community (teams not meeting cleanup requirements).
+        /// </summary>
+        /// <param name="partnerId">The community (partner) ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpGet("delinquent")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobReadScope)]
+        [ProducesResponseType(typeof(IEnumerable<TeamAdoption>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetDelinquentAdoptions(Guid partnerId, CancellationToken cancellationToken)
+        {
+            var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
+            if (partner == null)
+            {
+                return NotFound();
+            }
+
+            // Check authorization
+            var authResult = await AuthorizationService.AuthorizeAsync(
+                User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+            if (!authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            var adoptions = await adoptionManager.GetDelinquentByCommunityAsync(partnerId, cancellationToken);
+            return Ok(adoptions);
+        }
+
+        /// <summary>
+        /// Gets compliance statistics for a community's adoption program.
+        /// </summary>
+        /// <param name="partnerId">The community (partner) ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpGet("stats")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobReadScope)]
+        [ProducesResponseType(typeof(AdoptionComplianceStats), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetComplianceStats(Guid partnerId, CancellationToken cancellationToken)
+        {
+            var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
+            if (partner == null)
+            {
+                return NotFound();
+            }
+
+            // Check authorization
+            var authResult = await AuthorizationService.AuthorizeAsync(
+                User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+            if (!authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            var stats = await adoptionManager.GetComplianceStatsByCommunityAsync(partnerId, cancellationToken);
+            return Ok(stats);
+        }
+
+        /// <summary>
+        /// Exports all adoptions for a community in CSV format for signage updates.
+        /// </summary>
+        /// <param name="partnerId">The community (partner) ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpGet("export")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobReadScope)]
+        [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ExportAdoptions(Guid partnerId, CancellationToken cancellationToken)
+        {
+            var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
+            if (partner == null)
+            {
+                return NotFound();
+            }
+
+            // Check authorization
+            var authResult = await AuthorizationService.AuthorizeAsync(
+                User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+            if (!authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            var adoptions = await adoptionManager.GetAllForExportByCommunityAsync(partnerId, cancellationToken);
+
+            // Build CSV content
+            var csv = new System.Text.StringBuilder();
+            csv.AppendLine("Area Name,Area Type,Team Name,Status,Compliant,Event Count,Last Event Date,Adoption Start,Adoption End,Safety Requirements");
+
+            foreach (var adoption in adoptions)
+            {
+                var areaName = EscapeCsvField(adoption.AdoptableArea?.Name ?? "");
+                var areaType = EscapeCsvField(adoption.AdoptableArea?.AreaType ?? "");
+                var teamName = EscapeCsvField(adoption.Team?.Name ?? "");
+                var status = adoption.Status;
+                var isCompliant = adoption.IsCompliant ? "Yes" : "No";
+                var eventCount = adoption.EventCount.ToString();
+                var lastEventDate = adoption.LastEventDate?.ToString("yyyy-MM-dd") ?? "";
+                var startDate = adoption.AdoptionStartDate?.ToString("yyyy-MM-dd") ?? "";
+                var endDate = adoption.AdoptionEndDate?.ToString("yyyy-MM-dd") ?? "";
+                var safetyReqs = EscapeCsvField(adoption.AdoptableArea?.SafetyRequirements ?? "");
+
+                csv.AppendLine($"{areaName},{areaType},{teamName},{status},{isCompliant},{eventCount},{lastEventDate},{startDate},{endDate},{safetyReqs}");
+            }
+
+            var bytes = System.Text.Encoding.UTF8.GetBytes(csv.ToString());
+            var fileName = $"{partner.Name.Replace(" ", "_")}_Adoptions_{DateTime.UtcNow:yyyyMMdd}.csv";
+
+            return File(bytes, "text/csv", fileName);
+        }
+
+        private static string EscapeCsvField(string field)
+        {
+            if (string.IsNullOrEmpty(field))
+            {
+                return "";
+            }
+
+            // If field contains comma, quote, or newline, wrap in quotes and escape internal quotes
+            if (field.Contains(',') || field.Contains('"') || field.Contains('\n') || field.Contains('\r'))
+            {
+                return $"\"{field.Replace("\"", "\"\"")}\"";
+            }
+
+            return field;
         }
     }
 

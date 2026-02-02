@@ -247,6 +247,101 @@ namespace TrashMob.Shared.Managers.Adoptions
                 .ConfigureAwait(false);
         }
 
+        /// <inheritdoc />
+        public async Task<IEnumerable<TeamAdoption>> GetDelinquentByCommunityAsync(
+            Guid partnerId,
+            CancellationToken cancellationToken = default)
+        {
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+            return await Repo.Get()
+                .Where(a => a.AdoptableArea.PartnerId == partnerId
+                    && a.Status == "Approved"
+                    && !a.IsCompliant
+                    && (a.AdoptionEndDate == null || a.AdoptionEndDate >= today))
+                .Include(a => a.Team)
+                .Include(a => a.AdoptableArea)
+                .OrderBy(a => a.LastEventDate)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        /// <inheritdoc />
+        public async Task<AdoptionComplianceStats> GetComplianceStatsByCommunityAsync(
+            Guid partnerId,
+            CancellationToken cancellationToken = default)
+        {
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+            var adoptions = await Repo.Get()
+                .Where(a => a.AdoptableArea.PartnerId == partnerId
+                    && a.Status == "Approved"
+                    && (a.AdoptionEndDate == null || a.AdoptionEndDate >= today))
+                .Include(a => a.AdoptableArea)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            var areas = await adoptableAreaManager.GetByCommunityAsync(partnerId, cancellationToken)
+                .ConfigureAwait(false);
+
+            var activeAreas = areas.Where(a => a.IsActive).ToList();
+            var adoptedAreaIds = adoptions.Select(a => a.AdoptableAreaId).Distinct().ToList();
+
+            // Calculate at-risk (approaching delinquency - within 14 days of required cleanup)
+            var atRiskCount = adoptions.Count(a => a.IsCompliant && IsApproachingDelinquency(a));
+
+            return new AdoptionComplianceStats
+            {
+                TotalAdoptions = adoptions.Count,
+                CompliantAdoptions = adoptions.Count(a => a.IsCompliant),
+                AtRiskAdoptions = atRiskCount,
+                DelinquentAdoptions = adoptions.Count(a => !a.IsCompliant),
+                TotalAvailableAreas = activeAreas.Count,
+                AdoptedAreas = activeAreas.Count(a => adoptedAreaIds.Contains(a.Id) || a.Status == "Adopted"),
+                TotalLinkedEvents = adoptions.Sum(a => a.EventCount)
+            };
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<TeamAdoption>> GetAllForExportByCommunityAsync(
+            Guid partnerId,
+            CancellationToken cancellationToken = default)
+        {
+            return await Repo.Get()
+                .Where(a => a.AdoptableArea.PartnerId == partnerId && a.Status == "Approved")
+                .Include(a => a.Team)
+                .Include(a => a.AdoptableArea)
+                .OrderBy(a => a.AdoptableArea.Name)
+                .ThenBy(a => a.Team.Name)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Checks if an adoption is approaching delinquency (within 14 days of required cleanup).
+        /// </summary>
+        private static bool IsApproachingDelinquency(TeamAdoption adoption)
+        {
+            if (!adoption.LastEventDate.HasValue)
+            {
+                // Check if approaching first event deadline
+                if (!adoption.AdoptionStartDate.HasValue)
+                {
+                    return false;
+                }
+
+                var daysSinceStart = (DateOnly.FromDateTime(DateTime.UtcNow).DayNumber - adoption.AdoptionStartDate.Value.DayNumber);
+                var gracePeriod = 90; // 90 days for first event
+                return daysSinceStart >= (gracePeriod - 14) && daysSinceStart < gracePeriod;
+            }
+
+            var daysSinceLastEvent = (DateTimeOffset.UtcNow - adoption.LastEventDate.Value).TotalDays;
+            var requiredFrequency = adoption.AdoptableArea?.CleanupFrequencyDays ?? 90;
+
+            // At-risk if within 14 days of deadline (but not past it yet)
+            return daysSinceLastEvent >= (requiredFrequency - 14) && daysSinceLastEvent < requiredFrequency;
+        }
+
         /// <summary>
         /// Sends a notification to community admins when a team submits an adoption application.
         /// </summary>
