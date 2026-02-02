@@ -8,8 +8,10 @@
     using Microsoft.EntityFrameworkCore;
     using TrashMob.Models;
     using TrashMob.Models.Poco;
+    using TrashMob.Shared.Engine;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
+    using TrashMob.Shared.Poco;
 
     /// <summary>
     /// Manages event attendee registrations and tracks which events users are attending.
@@ -141,6 +143,7 @@
             }
 
             var attendee = await Repository.Get(ea => ea.EventId == eventId && ea.UserId == userId)
+                .Include(ea => ea.User)
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (attendee == null)
@@ -159,6 +162,9 @@
 
             await Repository.UpdateAsync(attendee);
 
+            // Send notification email to the promoted user
+            await SendCoLeadNotificationAsync(eventId, attendee.User, NotificationTypeEnum.EventCoLeadAdded, cancellationToken);
+
             return attendee;
         }
 
@@ -175,6 +181,7 @@
             }
 
             var attendee = await Repository.Get(ea => ea.EventId == eventId && ea.UserId == userId)
+                .Include(ea => ea.User)
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (attendee == null)
@@ -193,7 +200,54 @@
 
             await Repository.UpdateAsync(attendee);
 
+            // Send notification email to the demoted user
+            await SendCoLeadNotificationAsync(eventId, attendee.User, NotificationTypeEnum.EventCoLeadRemoved, cancellationToken);
+
             return attendee;
+        }
+
+        private async Task SendCoLeadNotificationAsync(Guid eventId, User user, NotificationTypeEnum notificationType, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(user?.Email))
+            {
+                return;
+            }
+
+            var evt = await eventRepository.GetAsync(eventId, cancellationToken);
+            if (evt == null)
+            {
+                return;
+            }
+
+            var eventDate = evt.EventDate.ToLocalTime();
+            var subject = notificationType == NotificationTypeEnum.EventCoLeadAdded
+                ? $"You've been made a co-lead for {evt.Name}"
+                : $"You've been removed as co-lead for {evt.Name}";
+
+            var message = emailManager.GetHtmlEmailCopy(notificationType.ToString());
+            message = message.Replace("{EventName}", evt.Name);
+            message = message.Replace("{EventDate}", eventDate.ToString("D"));
+            message = message.Replace("{EventTime}", eventDate.ToString("t"));
+
+            var recipients = new List<EmailAddress>
+            {
+                new() { Name = user.UserName ?? "TrashMob User", Email = user.Email }
+            };
+
+            var dynamicTemplateData = new
+            {
+                username = user.UserName ?? "TrashMob User",
+                emailCopy = message,
+                subject
+            };
+
+            await emailManager.SendTemplatedEmailAsync(
+                subject,
+                SendGridEmailTemplateId.GenericEmail,
+                SendGridEmailGroupId.General,
+                dynamicTemplateData,
+                recipients,
+                cancellationToken);
         }
     }
 }
