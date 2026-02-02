@@ -32,7 +32,7 @@
 | [Project 2 - Home Page Improvements](./Projects/Project_02_Home_Page.md) | Dynamic content, ads, sponsors | Ready for Design Review |
 | [Project 3 - Litter Reporting Web](./Projects/Project_03_Litter_Reporting_Web.md) | Complete web parity for litter reports | ✅ Complete |
 | [Project 7 - Event Weights](./Projects/Project_07_Event_Weights.md) | Track weight metrics | ✅ Complete |
-| [Project 8 - Waivers V3](./Projects/Project_08_Waivers_V3.md) | Community waivers, minors coverage | Requirements & Legal Review |
+| [Project 8 - Waivers V3](./Projects/Project_08_Waivers_V3.md) | Community waivers, minors coverage | In Progress (Phase 1 & 2 Complete) |
 | [Project 9 - Teams](./Projects/Project_09_Teams.md) | User-created teams MVP | ✅ Complete |
 | [Project 10 - Community Pages](./Projects/Project_10_Community_Pages.md) | Branded partner community pages | ✅ Complete |
 | [Project 13 - Bulk Email Invites](./Projects/Project_13_Bulk_Email_Invites.md) | Scale email invitations | Not Started |
@@ -120,9 +120,9 @@
 | Status | Count | Projects |
 |--------|-------|----------|
 | ✅ **Complete** | 14 | Projects 3, 7, 9, 10, 16, 17, 21, 26, 27, 28, 29, 32, 34 |
-| **In Progress** | 1 | Project 6 |
+| **In Progress** | 2 | Projects 6, 8 (Phase 1 & 2 Complete) |
 | **Developers Engaged** | 1 | Project 4 |
-| **Ready for Review** | 3 | Projects 2, 5, 8 |
+| **Ready for Review** | 2 | Projects 2, 5 |
 | **Planning** | 5 | Projects 1, 11, 15, 18, 23 |
 | **Not Started** | 10 | Projects 12, 13, 14, 19, 20, 22, 24, 25, 30, 31, 35 |
 | **Deprioritized** | 1 | Project 33 |
@@ -200,6 +200,6 @@ All new features should consider adding feature usage tracking. See [Project 29 
 
 ---
 
-**Last Updated:** February 1, 2026
+**Last Updated:** February 2, 2026
 **Maintained By:** Product & Engineering Team
 **Next Review:** End of Q1 2026

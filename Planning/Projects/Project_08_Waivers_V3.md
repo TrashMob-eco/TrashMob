@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Requirements & Legal Review |
+| **Status** | In Progress (Phase 1 & 2 Complete) |
 | **Priority** | High |
 | **Risk** | Very High |
 | **Size** | Very Large |
@@ -117,24 +117,24 @@ Users must be able to download their signed waivers as PDF documents containing:
 
 ---
 
-### Phase 1 - Waiver Management Infrastructure
-- ☐ Database schema for flexible waivers (versioned, with validity periods)
-- ☐ Waiver upload and version control
-- ☐ Effective/expiry date management
-- ☐ Scheduled activation for future waivers
-- ☐ Waiver assignment to communities
-- ☐ Immutable document storage (Azure Blob with legal hold)
+### Phase 1 - Waiver Management Infrastructure ✅ Complete
+- ✅ Database schema for flexible waivers (versioned, with validity periods)
+- ✅ Waiver upload and version control
+- ✅ Effective/expiry date management
+- ✅ Scheduled activation for future waivers
+- ✅ Waiver assignment to communities
+- ✅ Immutable document storage (Azure Blob with legal hold)
 
-### Phase 2 - User Workflows (E-Signature)
-- ☐ Website click-to-accept flow (checkbox + typed legal name)
-- ☐ Mobile app click-to-accept flow
-- ☐ Multi-waiver signing (TrashMob + community in one flow)
-- ☐ Waiver text snapshot storage at signing time
-- ☐ Server-side PDF generation with waiver text, signature, audit trail
-- ☐ PDF download for signed waivers
-- ☐ Waiver viewing and printing
-- ☐ Re-consent when waiver updates
-- ☐ Email notifications for expiring waivers
+### Phase 2 - User Workflows (E-Signature) ✅ Complete
+- ✅ Website click-to-accept flow (checkbox + typed legal name)
+- ☐ Mobile app click-to-accept flow (deferred)
+- ✅ Multi-waiver signing (TrashMob + community in one flow)
+- ✅ Waiver text snapshot storage at signing time
+- ✅ Server-side PDF generation with waiver text, signature, audit trail
+- ✅ PDF download for signed waivers
+- ✅ Waiver viewing and printing (My Dashboard)
+- ✅ Re-consent when waiver updates
+- ✅ Email notifications for expiring waivers
 
 ### Phase 3 - Manual Upload Workflow
 - ☐ Paper waiver upload by authorized users (staff, community mgr, team lead, event lead)
@@ -710,9 +710,9 @@ The following GitHub issues are tracked as part of this project:
 
 ---
 
-**Last Updated:** January 31, 2026
+**Last Updated:** February 2, 2026
 **Owner:** Product Lead + Legal Counsel
-**Status:** Requirements & Legal Review
-**Next Review:** After legal team approval
+**Status:** In Progress (Phase 1 & 2 Complete)
+**Next Review:** After Phase 3 implementation
 
 **?? CRITICAL:** No development work begins until legal team provides written approval of approach.
