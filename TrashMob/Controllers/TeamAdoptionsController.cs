@@ -21,6 +21,7 @@ namespace TrashMob.Controllers
     public class TeamAdoptionsController : SecureController
     {
         private readonly ITeamAdoptionManager adoptionManager;
+        private readonly ITeamAdoptionEventManager adoptionEventManager;
         private readonly IKeyedManager<Team> teamManager;
         private readonly ITeamMemberManager teamMemberManager;
 
@@ -28,14 +29,17 @@ namespace TrashMob.Controllers
         /// Initializes a new instance of the <see cref="TeamAdoptionsController"/> class.
         /// </summary>
         /// <param name="adoptionManager">The team adoption manager.</param>
+        /// <param name="adoptionEventManager">The team adoption event manager.</param>
         /// <param name="teamManager">The team manager.</param>
         /// <param name="teamMemberManager">The team member manager.</param>
         public TeamAdoptionsController(
             ITeamAdoptionManager adoptionManager,
+            ITeamAdoptionEventManager adoptionEventManager,
             IKeyedManager<Team> teamManager,
             ITeamMemberManager teamMemberManager)
         {
             this.adoptionManager = adoptionManager;
+            this.adoptionEventManager = adoptionEventManager;
             this.teamManager = teamManager;
             this.teamMemberManager = teamMemberManager;
         }
@@ -114,6 +118,37 @@ namespace TrashMob.Controllers
             }
 
             return CreatedAtAction(nameof(GetTeamAdoptions), new { teamId }, result.Data);
+        }
+
+        /// <summary>
+        /// Gets active adoptions for a team that can have events linked to them.
+        /// Useful for event creation dropdown.
+        /// </summary>
+        /// <param name="teamId">The team ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpGet("active")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobReadScope)]
+        [ProducesResponseType(typeof(IEnumerable<TeamAdoption>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetActiveAdoptions(Guid teamId, CancellationToken cancellationToken)
+        {
+            var team = await teamManager.GetAsync(teamId, cancellationToken);
+            if (team == null)
+            {
+                return NotFound();
+            }
+
+            // Only team members can view team's active adoptions
+            var isMember = await teamMemberManager.IsMemberAsync(teamId, UserId, cancellationToken);
+            if (!isMember)
+            {
+                return Forbid();
+            }
+
+            var adoptions = await adoptionEventManager.GetActiveAdoptionsForTeamAsync(teamId, cancellationToken);
+            return Ok(adoptions);
         }
     }
 

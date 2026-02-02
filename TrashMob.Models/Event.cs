@@ -23,6 +23,7 @@ namespace TrashMob.Models
             UserNotifications = [];
             PickupLocations = [];
             EventAttendees = [];
+            AdoptionEvents = [];
         }
 
         /// <summary>
@@ -149,5 +150,10 @@ namespace TrashMob.Models
         /// Gets or sets the collection of litter reports associated with the event.
         /// </summary>
         public virtual ICollection<EventLitterReport> EventLitterReports { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of team adoption events linking this event to adoptions.
+        /// </summary>
+        public virtual ICollection<TeamAdoptionEvent> AdoptionEvents { get; set; }
     }
 }
