@@ -168,6 +168,8 @@ npm start
 - `release` - Production releases
 - `dev/{developer}/{feature}` - Feature branches
 
+**IMPORTANT: Never push directly to main.** All changes must go through a pull request, even hotfixes. Create a feature branch, push it, and create a PR for review.
+
 ## Coding Standards & Patterns
 
 ### General Principles
