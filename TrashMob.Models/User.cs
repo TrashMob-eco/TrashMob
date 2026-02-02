@@ -495,5 +495,44 @@ namespace TrashMob.Models
         /// Gets or sets the collection of user feedback last updated by this user.
         /// </summary>
         public virtual ICollection<UserFeedback> UserFeedbackUpdated { get; set; }
+
+        #region Photo Moderation Collections
+
+        /// <summary>
+        /// Gets or sets the collection of litter images flagged for review by this user.
+        /// </summary>
+        public virtual ICollection<LitterImage> LitterImagesReviewRequested { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of litter images moderated by this user.
+        /// </summary>
+        public virtual ICollection<LitterImage> LitterImagesModerated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of team photos flagged for review by this user.
+        /// </summary>
+        public virtual ICollection<TeamPhoto> TeamPhotosReviewRequested { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of team photos moderated by this user.
+        /// </summary>
+        public virtual ICollection<TeamPhoto> TeamPhotosModerated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of photo flags submitted by this user.
+        /// </summary>
+        public virtual ICollection<PhotoFlag> PhotoFlagsFlagged { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of photo flags resolved by this user.
+        /// </summary>
+        public virtual ICollection<PhotoFlag> PhotoFlagsResolved { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of photo moderation actions performed by this user.
+        /// </summary>
+        public virtual ICollection<PhotoModerationLog> PhotoModerationLogsPerformed { get; set; }
+
+        #endregion
     }
 }

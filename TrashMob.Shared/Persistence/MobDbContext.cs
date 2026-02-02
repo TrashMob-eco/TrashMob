@@ -115,6 +115,10 @@
 
         public virtual DbSet<UserFeedback> UserFeedback { get; set; }
 
+        public virtual DbSet<PhotoFlag> PhotoFlags { get; set; }
+
+        public virtual DbSet<PhotoModerationLog> PhotoModerationLogs { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(configuration["TMDBServerConnectionString"], x => x.UseNetTopologySuite());
@@ -1506,6 +1510,24 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_LitterImage_LastUpdatedBy");
+
+                entity.Property(e => e.ModerationStatus).HasDefaultValue(PhotoModerationStatus.Pending);
+
+                entity.Property(e => e.InReview).HasDefaultValue(false);
+
+                entity.Property(e => e.ModerationReason).HasMaxLength(500);
+
+                entity.HasOne(d => d.ReviewRequestedByUser)
+                    .WithMany(p => p.LitterImagesReviewRequested)
+                    .HasForeignKey(d => d.ReviewRequestedByUserId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_LitterImage_ReviewRequestedByUser");
+
+                entity.HasOne(d => d.ModeratedByUser)
+                    .WithMany(p => p.LitterImagesModerated)
+                    .HasForeignKey(d => d.ModeratedByUserId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_LitterImage_ModeratedByUser");
             });
 
             modelBuilder.Entity<Models.LitterReport>(entity =>
@@ -1807,6 +1829,24 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_TeamPhotos_User_LastUpdatedBy");
+
+                entity.Property(e => e.ModerationStatus).HasDefaultValue(PhotoModerationStatus.Pending);
+
+                entity.Property(e => e.InReview).HasDefaultValue(false);
+
+                entity.Property(e => e.ModerationReason).HasMaxLength(500);
+
+                entity.HasOne(d => d.ReviewRequestedByUser)
+                    .WithMany(p => p.TeamPhotosReviewRequested)
+                    .HasForeignKey(d => d.ReviewRequestedByUserId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_TeamPhotos_ReviewRequestedByUser");
+
+                entity.HasOne(d => d.ModeratedByUser)
+                    .WithMany(p => p.TeamPhotosModerated)
+                    .HasForeignKey(d => d.ModeratedByUserId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_TeamPhotos_ModeratedByUser");
             });
 
             modelBuilder.Entity<UserFeedback>(entity =>
@@ -1867,6 +1907,80 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_UserFeedback_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<PhotoFlag>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.PhotoType)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.FlagReason)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Resolution)
+                    .HasMaxLength(50);
+
+                entity.HasOne(d => d.FlaggedByUser)
+                    .WithMany(p => p.PhotoFlagsFlagged)
+                    .HasForeignKey(d => d.FlaggedByUserId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_PhotoFlag_FlaggedByUser");
+
+                entity.HasOne(d => d.ResolvedByUser)
+                    .WithMany(p => p.PhotoFlagsResolved)
+                    .HasForeignKey(d => d.ResolvedByUserId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_PhotoFlag_ResolvedByUser");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PhotoFlag_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PhotoFlag_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<PhotoModerationLog>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.PhotoType)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Action)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Reason)
+                    .HasMaxLength(500);
+
+                entity.HasOne(d => d.PerformedByUser)
+                    .WithMany(p => p.PhotoModerationLogsPerformed)
+                    .HasForeignKey(d => d.PerformedByUserId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_PhotoModerationLog_PerformedByUser");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PhotoModerationLog_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PhotoModerationLog_User_LastUpdatedBy");
             });
         }
     }
