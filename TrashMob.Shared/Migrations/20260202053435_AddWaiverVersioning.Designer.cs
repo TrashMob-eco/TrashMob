@@ -13,7 +13,7 @@ using TrashMob.Shared.Persistence;
 namespace TrashMob.Migrations
 {
     [DbContext(typeof(MobDbContext))]
-    [Migration("20260202042448_AddWaiverVersioning")]
+    [Migration("20260202053435_AddWaiverVersioning")]
     partial class AddWaiverVersioning
     {
         /// <inheritdoc />
