@@ -77,5 +77,31 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
         /// <returns>Stats for the community.</returns>
         Task<Stats> GetCommunityStatsAsync(string slug, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets a community by its ID (for admin operations).
+        /// </summary>
+        /// <param name="partnerId">The partner/community ID.</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>The community or null if not found.</returns>
+        Task<Partner> GetByIdAsync(Guid partnerId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Updates community content (for admin operations).
+        /// Only updates fields that are editable by community admins.
+        /// </summary>
+        /// <param name="community">The community data to update.</param>
+        /// <param name="userId">The ID of the user making the update.</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>The updated community.</returns>
+        Task<Partner> UpdateCommunityContentAsync(Partner community, Guid userId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets admin dashboard data for a community.
+        /// </summary>
+        /// <param name="partnerId">The partner/community ID.</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>Dashboard data including recent activity and metrics.</returns>
+        Task<CommunityDashboard> GetCommunityDashboardAsync(Guid partnerId, CancellationToken cancellationToken = default);
     }
 }

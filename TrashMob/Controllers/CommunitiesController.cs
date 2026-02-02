@@ -1,12 +1,15 @@
 namespace TrashMob.Controllers
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using TrashMob.Models;
     using TrashMob.Models.Poco;
+    using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
 
     /// <summary>
@@ -14,7 +17,7 @@ namespace TrashMob.Controllers
     /// Communities are partners with enabled home pages.
     /// </summary>
     [Route("api/communities")]
-    public class CommunitiesController(ICommunityManager communityManager) : BaseController
+    public class CommunitiesController(ICommunityManager communityManager) : SecureController
     {
         /// <summary>
         /// Gets all communities with enabled home pages.
@@ -167,6 +170,121 @@ namespace TrashMob.Controllers
 
             var stats = await communityManager.GetCommunityStatsAsync(slug, cancellationToken);
             return Ok(stats);
+        }
+
+        // ============================================================================
+        // Admin Endpoints (Require Authentication and Authorization)
+        // ============================================================================
+
+        /// <summary>
+        /// Gets admin dashboard data for a community.
+        /// Requires the user to be a community admin or site admin.
+        /// </summary>
+        /// <param name="communityId">The community/partner ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpGet("admin/{communityId:guid}/dashboard")]
+        [Authorize]
+        [ProducesResponseType(typeof(CommunityDashboard), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> GetCommunityDashboard(
+            Guid communityId,
+            CancellationToken cancellationToken = default)
+        {
+            var community = await communityManager.GetByIdAsync(communityId, cancellationToken);
+            if (community == null)
+            {
+                return NotFound();
+            }
+
+            // Authorize: user must be partner admin or site admin
+            var authResult = await AuthorizationService.AuthorizeAsync(
+                User, community, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            var dashboard = await communityManager.GetCommunityDashboardAsync(communityId, cancellationToken);
+            return Ok(dashboard);
+        }
+
+        /// <summary>
+        /// Gets community details for admin editing.
+        /// Requires the user to be a community admin or site admin.
+        /// </summary>
+        /// <param name="communityId">The community/partner ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpGet("admin/{communityId:guid}")]
+        [Authorize]
+        [ProducesResponseType(typeof(Partner), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> GetCommunityForAdmin(
+            Guid communityId,
+            CancellationToken cancellationToken = default)
+        {
+            var community = await communityManager.GetByIdAsync(communityId, cancellationToken);
+            if (community == null)
+            {
+                return NotFound();
+            }
+
+            // Authorize: user must be partner admin or site admin
+            var authResult = await AuthorizationService.AuthorizeAsync(
+                User, community, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            return Ok(community);
+        }
+
+        /// <summary>
+        /// Updates community content (branding, about, contact info).
+        /// Requires the user to be a community admin or site admin.
+        /// </summary>
+        /// <param name="communityId">The community/partner ID.</param>
+        /// <param name="community">The updated community data.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpPut("admin/{communityId:guid}")]
+        [Authorize]
+        [ProducesResponseType(typeof(Partner), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UpdateCommunityContent(
+            Guid communityId,
+            [FromBody] Partner community,
+            CancellationToken cancellationToken = default)
+        {
+            if (community == null || community.Id != communityId)
+            {
+                return BadRequest("Community ID in URL must match the body.");
+            }
+
+            var existing = await communityManager.GetByIdAsync(communityId, cancellationToken);
+            if (existing == null)
+            {
+                return NotFound();
+            }
+
+            // Authorize: user must be partner admin or site admin
+            var authResult = await AuthorizationService.AuthorizeAsync(
+                User, existing, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            var updated = await communityManager.UpdateCommunityContentAsync(community, UserId, cancellationToken);
+            TrackEvent(nameof(UpdateCommunityContent));
+
+            return Ok(updated);
         }
     }
 }

@@ -248,5 +248,137 @@ namespace TrashMob.Shared.Managers.Communities
 
             return stats;
         }
+
+        /// <inheritdoc />
+        public async Task<Partner> GetByIdAsync(Guid partnerId, CancellationToken cancellationToken = default)
+        {
+            return await partnerRepository.GetAsync(partnerId, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public async Task<Partner> UpdateCommunityContentAsync(Partner community, Guid userId, CancellationToken cancellationToken = default)
+        {
+            var existing = await partnerRepository.GetAsync(community.Id, cancellationToken);
+            if (existing == null)
+            {
+                return null;
+            }
+
+            // Only update fields that community admins are allowed to edit
+            existing.PublicNotes = community.PublicNotes;
+            existing.Tagline = community.Tagline;
+            existing.BrandingPrimaryColor = community.BrandingPrimaryColor;
+            existing.BrandingSecondaryColor = community.BrandingSecondaryColor;
+            existing.BannerImageUrl = community.BannerImageUrl;
+            existing.LogoUrl = community.LogoUrl;
+            existing.ContactEmail = community.ContactEmail;
+            existing.ContactPhone = community.ContactPhone;
+            existing.PhysicalAddress = community.PhysicalAddress;
+            existing.Website = community.Website;
+            existing.LastUpdatedByUserId = userId;
+            existing.LastUpdatedDate = DateTimeOffset.UtcNow;
+
+            return await partnerRepository.UpdateAsync(existing);
+        }
+
+        /// <inheritdoc />
+        public async Task<CommunityDashboard> GetCommunityDashboardAsync(Guid partnerId, CancellationToken cancellationToken = default)
+        {
+            var community = await partnerRepository.GetAsync(partnerId, cancellationToken);
+            if (community == null)
+            {
+                return null;
+            }
+
+            var dashboard = new CommunityDashboard
+            {
+                Community = community,
+                Stats = new Stats(),
+                RecentEvents = new List<Event>(),
+                UpcomingEvents = new List<Event>(),
+                RecentActivity = new List<CommunityActivity>(),
+            };
+
+            // Get stats if we have city/region
+            if (!string.IsNullOrWhiteSpace(community.Slug))
+            {
+                dashboard.Stats = await GetCommunityStatsAsync(community.Slug, cancellationToken);
+            }
+
+            // Get events in this community
+            if (!string.IsNullOrWhiteSpace(community.City) && !string.IsNullOrWhiteSpace(community.Region))
+            {
+                var now = DateTimeOffset.UtcNow;
+                var thirtyDaysAgo = now.AddDays(-30);
+
+                // Upcoming events
+                var upcomingEvents = await eventRepository.Get()
+                    .Where(e => e.City == community.City
+                        && e.Region == community.Region
+                        && e.EventStatusId != CancelledEventStatusId
+                        && e.EventDate >= now)
+                    .OrderBy(e => e.EventDate)
+                    .Take(5)
+                    .ToListAsync(cancellationToken);
+                dashboard.UpcomingEvents = upcomingEvents;
+
+                // Recent events (completed in last 30 days)
+                var recentEvents = await eventRepository.Get()
+                    .Where(e => e.City == community.City
+                        && e.Region == community.Region
+                        && e.EventStatusId != CancelledEventStatusId
+                        && e.EventDate < now
+                        && e.EventDate >= thirtyDaysAgo)
+                    .OrderByDescending(e => e.EventDate)
+                    .Take(5)
+                    .ToListAsync(cancellationToken);
+                dashboard.RecentEvents = recentEvents;
+
+                // Build recent activity from completed events
+                var recentActivity = new List<CommunityActivity>();
+                foreach (var evt in recentEvents.Take(10))
+                {
+                    recentActivity.Add(new CommunityActivity
+                    {
+                        ActivityType = "EventCompleted",
+                        Description = $"Event \"{evt.Name}\" completed",
+                        ActivityDate = evt.EventDate,
+                        RelatedEntityId = evt.Id,
+                    });
+                }
+
+                dashboard.RecentActivity = recentActivity.OrderByDescending(a => a.ActivityDate).ToList();
+            }
+
+            // Get team count
+            if (community.Latitude.HasValue && community.Longitude.HasValue)
+            {
+                var teams = await teamRepository.Get()
+                    .Where(t => t.IsPublic && t.IsActive && t.Latitude.HasValue && t.Longitude.HasValue)
+                    .ToListAsync(cancellationToken);
+
+                dashboard.TeamCount = teams
+                    .Count(t => CalculateDistance(community.Latitude.Value, community.Longitude.Value, t.Latitude.Value, t.Longitude.Value) <= 50);
+            }
+
+            // Get open litter reports count
+            if (!string.IsNullOrWhiteSpace(community.City) && !string.IsNullOrWhiteSpace(community.Region))
+            {
+                var litterImages = await litterImageRepository.Get()
+                    .Include(li => li.LitterReport)
+                    .Where(li => li.City == community.City && li.Region == community.Region && !li.IsCancelled)
+                    .ToListAsync(cancellationToken);
+
+                var openLitterReportIds = litterImages
+                    .Where(li => li.LitterReport != null && li.LitterReport.LitterReportStatusId == (int)LitterReportStatusEnum.New)
+                    .Select(li => li.LitterReportId)
+                    .Distinct()
+                    .ToList();
+
+                dashboard.OpenLitterReportsCount = openLitterReportIds.Count;
+            }
+
+            return dashboard;
+        }
     }
 }
