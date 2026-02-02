@@ -21,6 +21,7 @@ export const SiteAdminLayout = () => {
         { name: 'Manage Content', value: `${pathPrefix}/content` },
         { name: 'User Feedback', value: `${pathPrefix}/feedback` },
         { name: 'Photo Moderation', value: `${pathPrefix}/photo-moderation` },
+        { name: 'Manage Waivers', value: `${pathPrefix}/waivers` },
     ];
 
     const handleValueChange = useCallback(
