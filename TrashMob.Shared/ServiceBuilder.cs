@@ -10,6 +10,7 @@
     using TrashMob.Shared.Managers.Partners;
     using TrashMob.Shared.Managers.Teams;
     using TrashMob.Shared.Managers.Communities;
+    using TrashMob.Shared.Managers.Adoptions;
     using TrashMob.Shared.Persistence;
     using TrashMob.Shared.Persistence.Interfaces;
     using TrashMob.Shared.Services;
@@ -85,6 +86,9 @@
             // Community managers
             services.AddScoped<ICommunityManager, CommunityManager>();
 
+            // Adoption managers
+            services.AddScoped<IAdoptableAreaManager, AdoptableAreaManager>();
+
             // User Feedback
             services.AddScoped<IUserFeedbackManager, UserFeedbackManager>();
 
@@ -159,6 +163,9 @@
             services.AddScoped<IKeyedRepository<TeamJoinRequest>, KeyedRepository<TeamJoinRequest>>();
             services.AddScoped<IKeyedRepository<TeamEvent>, KeyedRepository<TeamEvent>>();
             services.AddScoped<IKeyedRepository<TeamPhoto>, KeyedRepository<TeamPhoto>>();
+
+            // Adoption repositories
+            services.AddScoped<IKeyedRepository<AdoptableArea>, KeyedRepository<AdoptableArea>>();
 
             // User Feedback repository
             services.AddScoped<IKeyedRepository<UserFeedback>, KeyedRepository<UserFeedback>>();

@@ -24,6 +24,7 @@ export const CommunityAdminLayout = () => {
     const navs = [
         { name: 'Dashboard', value: `${pathPrefix}` },
         { name: 'Edit Content', value: `${pathPrefix}/content` },
+        { name: 'Adoptable Areas', value: `${pathPrefix}/areas` },
     ];
 
     const handleValueChange = useCallback(
