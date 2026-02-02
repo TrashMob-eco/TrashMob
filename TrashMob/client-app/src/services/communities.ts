@@ -108,3 +108,58 @@ export const GetCommunityStats = (params: GetCommunityStats_Params) => ({
             method: 'get',
         }),
 });
+
+// ============================================================================
+// Community Admin Operations (Protected)
+// ============================================================================
+
+export interface CommunityActivity {
+    activityType: string;
+    description: string;
+    activityDate: string;
+    relatedEntityId?: string;
+}
+
+export interface CommunityDashboardData {
+    community: CommunityData;
+    stats: StatsData;
+    recentEvents: EventData[];
+    upcomingEvents: EventData[];
+    teamCount: number;
+    openLitterReportsCount: number;
+    recentActivity: CommunityActivity[];
+}
+
+export type GetCommunityDashboard_Params = { communityId: string };
+export type GetCommunityDashboard_Response = CommunityDashboardData;
+export const GetCommunityDashboard = (params: GetCommunityDashboard_Params) => ({
+    key: ['/communities/admin/', params.communityId, '/dashboard'],
+    service: async () =>
+        ApiService('protected').fetchData<GetCommunityDashboard_Response>({
+            url: `/communities/admin/${params.communityId}/dashboard`,
+            method: 'get',
+        }),
+});
+
+export type GetCommunityForAdmin_Params = { communityId: string };
+export type GetCommunityForAdmin_Response = CommunityData;
+export const GetCommunityForAdmin = (params: GetCommunityForAdmin_Params) => ({
+    key: ['/communities/admin/', params.communityId],
+    service: async () =>
+        ApiService('protected').fetchData<GetCommunityForAdmin_Response>({
+            url: `/communities/admin/${params.communityId}`,
+            method: 'get',
+        }),
+});
+
+export type UpdateCommunityContent_Params = CommunityData;
+export type UpdateCommunityContent_Response = CommunityData;
+export const UpdateCommunityContent = () => ({
+    key: ['/communities/admin/', 'update'],
+    service: async (params: UpdateCommunityContent_Params) =>
+        ApiService('protected').fetchData<UpdateCommunityContent_Response>({
+            url: `/communities/admin/${params.id}`,
+            method: 'put',
+            data: params,
+        }),
+});

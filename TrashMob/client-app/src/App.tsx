@@ -60,6 +60,9 @@ import { TeamEditPage } from './pages/teams/$teamId/edit';
 /** Communities */
 import { CommunitiesPage } from './pages/communities';
 import { CommunityDetailPage } from './pages/communities/$slug';
+import { CommunityAdminLayout } from './pages/communities/$slug/admin/_layout';
+import { CommunityAdminDashboard } from './pages/communities/$slug/admin';
+import { CommunityContentEdit } from './pages/communities/$slug/admin/content';
 
 /** Partners */
 import { Partnerships } from './pages/partnerships/page';
@@ -234,6 +237,10 @@ const AppContent: FC = () => {
                             <Route path='/litterreports/:litterReportId/edit' element={<LitterReportEditPage />} />
                             <Route path='/teams/create' element={<CreateTeamPage />} />
                             <Route path='/teams/:teamId/edit' element={<TeamEditPage />} />
+                            <Route path='/communities/:slug/admin' element={<CommunityAdminLayout />}>
+                                <Route index element={<CommunityAdminDashboard />} />
+                                <Route path='content' element={<CommunityContentEdit />} />
+                            </Route>
                         </Route>
                         <Route element={<AuthSideAdminLayout />}>
                             <Route path='/siteadmin' element={<SiteAdminLayout />}>
