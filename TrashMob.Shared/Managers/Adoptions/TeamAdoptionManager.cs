@@ -18,7 +18,7 @@ namespace TrashMob.Shared.Managers.Adoptions
     public class TeamAdoptionManager : KeyedManager<TeamAdoption>, ITeamAdoptionManager
     {
         private readonly IEmailManager emailManager;
-        private readonly IKeyedManager<Team> teamManager;
+        private readonly ITeamManager teamManager;
         private readonly ITeamMemberManager teamMemberManager;
         private readonly IAdoptableAreaManager adoptableAreaManager;
         private readonly IKeyedManager<Partner> partnerManager;
@@ -30,7 +30,7 @@ namespace TrashMob.Shared.Managers.Adoptions
         public TeamAdoptionManager(
             IKeyedRepository<TeamAdoption> repository,
             IEmailManager emailManager,
-            IKeyedManager<Team> teamManager,
+            ITeamManager teamManager,
             ITeamMemberManager teamMemberManager,
             IAdoptableAreaManager adoptableAreaManager,
             IKeyedManager<Partner> partnerManager,
