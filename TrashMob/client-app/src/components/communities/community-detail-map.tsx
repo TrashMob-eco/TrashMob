@@ -11,7 +11,10 @@ import { cn } from '@/lib/utils';
 import { EventPin } from '../events/event-pin';
 import { TeamPin } from '../teams/team-pin';
 import { LitterReportPin, litterReportColors } from '../litterreports/litter-report-pin';
-import { LitterReportInfoWindowHeader, LitterReportInfoWindowContent } from '../litterreports/litter-report-info-window';
+import {
+    LitterReportInfoWindowHeader,
+    LitterReportInfoWindowContent,
+} from '../litterreports/litter-report-info-window';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -161,61 +164,71 @@ export const CommunityDetailMap = (props: CommunityDetailMapProps) => {
                         {...rest}
                     >
                         {/* Event Markers */}
-                        {showEvents ? eventsWithLocation.map((event) => (
-                                <AdvancedMarker
-                                    key={`event-${event.id}`}
-                                    ref={(el) => {
-                                        eventMarkersRef.current[event.id] = el!;
-                                    }}
-                                    className={cn({
-                                        'animate-[bounce_1s_both_3s]': isInViewPort,
-                                    })}
-                                    position={{ lat: event.latitude, lng: event.longitude }}
-                                    onMouseEnter={() => handleEventMarkerHover(event.id)}
-                                    zIndex={10}
-                                >
-                                    <EventPin color={colors.event} size={40} />
-                                </AdvancedMarker>
-                            )) : null}
+                        {showEvents
+                            ? eventsWithLocation.map((event) => (
+                                  <AdvancedMarker
+                                      key={`event-${event.id}`}
+                                      ref={(el) => {
+                                          eventMarkersRef.current[event.id] = el!;
+                                      }}
+                                      className={cn({
+                                          'animate-[bounce_1s_both_3s]': isInViewPort,
+                                      })}
+                                      position={{ lat: event.latitude, lng: event.longitude }}
+                                      onMouseEnter={() => handleEventMarkerHover(event.id)}
+                                      zIndex={10}
+                                  >
+                                      <EventPin color={colors.event} size={40} />
+                                  </AdvancedMarker>
+                              ))
+                            : null}
 
                         {/* Team Markers */}
-                        {showTeams ? teamsWithLocation.map((team) => (
-                                <AdvancedMarker
-                                    key={`team-${team.id}`}
-                                    ref={(el) => {
-                                        teamMarkersRef.current[team.id] = el!;
-                                    }}
-                                    className={cn({
-                                        'animate-[bounce_1s_both_3s]': isInViewPort,
-                                    })}
-                                    position={{ lat: team.latitude!, lng: team.longitude! }}
-                                    onMouseEnter={() => handleTeamMarkerHover(team.id)}
-                                    zIndex={5}
-                                >
-                                    <TeamPin color={colors.team} size={36} />
-                                </AdvancedMarker>
-                            )) : null}
+                        {showTeams
+                            ? teamsWithLocation.map((team) => (
+                                  <AdvancedMarker
+                                      key={`team-${team.id}`}
+                                      ref={(el) => {
+                                          teamMarkersRef.current[team.id] = el!;
+                                      }}
+                                      className={cn({
+                                          'animate-[bounce_1s_both_3s]': isInViewPort,
+                                      })}
+                                      position={{ lat: team.latitude!, lng: team.longitude! }}
+                                      onMouseEnter={() => handleTeamMarkerHover(team.id)}
+                                      zIndex={5}
+                                  >
+                                      <TeamPin color={colors.team} size={36} />
+                                  </AdvancedMarker>
+                              ))
+                            : null}
 
                         {/* Litter Report Markers */}
-                        {showLitterReports ? litterReportsWithLocation.map((report) => (
-                                <AdvancedMarker
-                                    key={`litter-${report.id}`}
-                                    ref={(el) => {
-                                        litterReportMarkersRef.current[report.id] = el!;
-                                    }}
-                                    className={cn({
-                                        'animate-[bounce_1s_both_3s]': isInViewPort,
-                                    })}
-                                    position={{ lat: report.latitude, lng: report.longitude }}
-                                    onMouseEnter={() => handleLitterReportMarkerHover(report.id)}
-                                    zIndex={1}
-                                >
-                                    <LitterReportPin color={getLitterReportColor(report.litterReportStatusId)} size={32} />
-                                </AdvancedMarker>
-                            )) : null}
+                        {showLitterReports
+                            ? litterReportsWithLocation.map((report) => (
+                                  <AdvancedMarker
+                                      key={`litter-${report.id}`}
+                                      ref={(el) => {
+                                          litterReportMarkersRef.current[report.id] = el!;
+                                      }}
+                                      className={cn({
+                                          'animate-[bounce_1s_both_3s]': isInViewPort,
+                                      })}
+                                      position={{ lat: report.latitude, lng: report.longitude }}
+                                      onMouseEnter={() => handleLitterReportMarkerHover(report.id)}
+                                      zIndex={1}
+                                  >
+                                      <LitterReportPin
+                                          color={getLitterReportColor(report.litterReportStatusId)}
+                                          size={32}
+                                      />
+                                  </AdvancedMarker>
+                              ))
+                            : null}
 
                         {/* Event Info Window */}
-                        {showingEvent ? <InfoWindow
+                        {showingEvent ? (
+                            <InfoWindow
                                 anchor={eventMarkersRef.current[showingEventId]}
                                 headerContent={<EventDetailInfoWindowHeader name={showingEvent.name} />}
                                 onClose={closeInfoWindow}
@@ -227,10 +240,12 @@ export const CommunityDetailMap = (props: CommunityDetailMapProps) => {
                                     }}
                                     isAttending={false}
                                 />
-                            </InfoWindow> : null}
+                            </InfoWindow>
+                        ) : null}
 
                         {/* Team Info Window */}
-                        {showingTeam ? <InfoWindow
+                        {showingTeam ? (
+                            <InfoWindow
                                 anchor={teamMarkersRef.current[showingTeamId]}
                                 headerContent={
                                     <div className='font-semibold text-sm'>{showingTeam.name}</div>
@@ -239,20 +254,25 @@ export const CommunityDetailMap = (props: CommunityDetailMapProps) => {
                             >
                                 <div className='text-xs text-muted-foreground'>
                                     <p>{showingTeam.description?.slice(0, 100)}...</p>
-                                    {showingTeam.city ? <p className='mt-1'>
+                                    {showingTeam.city ? (
+                                        <p className='mt-1'>
                                             {showingTeam.city}, {showingTeam.region}
-                                        </p> : null}
+                                        </p>
+                                    ) : null}
                                 </div>
-                            </InfoWindow> : null}
+                            </InfoWindow>
+                        ) : null}
 
                         {/* Litter Report Info Window */}
-                        {showingLitterReport ? <InfoWindow
+                        {showingLitterReport ? (
+                            <InfoWindow
                                 anchor={litterReportMarkersRef.current[showingLitterReportId]}
                                 headerContent={<LitterReportInfoWindowHeader name={showingLitterReport.name} />}
                                 onClose={closeInfoWindow}
                             >
                                 <LitterReportInfoWindowContent litterReport={showingLitterReport} />
-                            </InfoWindow> : null}
+                            </InfoWindow>
+                        ) : null}
                     </GoogleMap>
                 </div>
             </CardContent>
