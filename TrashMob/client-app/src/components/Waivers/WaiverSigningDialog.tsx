@@ -83,9 +83,7 @@ export const WaiverSigningDialog: React.FC<WaiverSigningDialogProps> = ({
                 <DialogHeader>
                     <DialogTitle className='flex items-center justify-between'>
                         <span>{waiver.name}</span>
-                        {progress && (
-                            <span className='text-sm font-normal text-muted-foreground'>{progress}</span>
-                        )}
+                        {progress ? <span className='text-sm font-normal text-muted-foreground'>{progress}</span> : null}
                     </DialogTitle>
                     <DialogDescription>
                         Please read the waiver carefully and scroll to the bottom before signing.
@@ -151,11 +149,9 @@ export const WaiverSigningDialog: React.FC<WaiverSigningDialogProps> = ({
                     </Button>
                 </DialogFooter>
 
-                {acceptMutation.isError && (
-                    <p className='text-sm text-destructive text-center'>
+                {acceptMutation.isError ? <p className='text-sm text-destructive text-center'>
                         Failed to sign waiver. Please try again.
-                    </p>
-                )}
+                    </p> : null}
             </DialogContent>
         </Dialog>
     );
