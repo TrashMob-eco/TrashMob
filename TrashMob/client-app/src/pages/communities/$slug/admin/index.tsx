@@ -43,7 +43,11 @@ export const CommunityAdminDashboard = () => {
         enabled: !!slug,
     });
 
-    const { data: dashboard, isLoading } = useQuery<AxiosResponse<CommunityDashboardData>, unknown, CommunityDashboardData>({
+    const { data: dashboard, isLoading } = useQuery<
+        AxiosResponse<CommunityDashboardData>,
+        unknown,
+        CommunityDashboardData
+    >({
         queryKey: GetCommunityDashboard({ communityId: community?.id || '' }).key,
         queryFn: GetCommunityDashboard({ communityId: community?.id || '' }).service,
         select: (res) => res.data,
@@ -83,7 +87,12 @@ export const CommunityAdminDashboard = () => {
 
             {/* Stats Grid */}
             <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8'>
-                <StatCard title='Total Events' value={dashboard.stats.totalEvents} icon={Calendar} description='All time' />
+                <StatCard
+                    title='Total Events'
+                    value={dashboard.stats.totalEvents}
+                    icon={Calendar}
+                    description='All time'
+                />
                 <StatCard
                     title='Total Participants'
                     value={dashboard.stats.totalParticipants}

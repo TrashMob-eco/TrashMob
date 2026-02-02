@@ -185,7 +185,9 @@ export const CommunityContentEdit = () => {
                                         <FormControl>
                                             <Input {...field} placeholder='A short description of your community' />
                                         </FormControl>
-                                        <FormDescription>A brief tagline displayed below your community name.</FormDescription>
+                                        <FormDescription>
+                                            A brief tagline displayed below your community name.
+                                        </FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -203,7 +205,9 @@ export const CommunityContentEdit = () => {
                                                 className='h-32'
                                             />
                                         </FormControl>
-                                        <FormDescription>This text appears in the About section of your community page.</FormDescription>
+                                        <FormDescription>
+                                            This text appears in the About section of your community page.
+                                        </FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -335,9 +339,15 @@ export const CommunityContentEdit = () => {
                                     <FormItem>
                                         <FormLabel>Physical Address</FormLabel>
                                         <FormControl>
-                                            <Textarea {...field} placeholder='123 Main St, City, State 12345' className='h-20' />
+                                            <Textarea
+                                                {...field}
+                                                placeholder='123 Main St, City, State 12345'
+                                                className='h-20'
+                                            />
                                         </FormControl>
-                                        <FormDescription>Displayed on your community page for visitors.</FormDescription>
+                                        <FormDescription>
+                                            Displayed on your community page for visitors.
+                                        </FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}
