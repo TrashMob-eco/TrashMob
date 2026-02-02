@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import events from '@/components/assets/faq/Event.svg';
 import gloves from '@/components/assets/gloves.svg';
 import teams from '@/components/assets/card/twofigure.svg';
+import communities from '@/components/assets/home/Person.svg';
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -308,6 +309,105 @@ const tabContents = [
                 </ol>
                 <p>Once approved, the team will appear in your dashboard under "My Teams". You can then participate in team events and track your collective impact!</p>
                 <p><strong>Note:</strong> Private teams are not visible in search results. You'll need a direct invitation from a team lead to join a private team.</p>
+                `,
+            },
+        ],
+    },
+    {
+        category: 'Communities',
+        desc: 'How to explore and engage with communities',
+        icon: communities,
+        questions: [
+            {
+                question: 'Exploring Communities',
+                answer: `
+                <p>Communities represent local areas or organizations that have partnered with TrashMob to organize cleanup efforts in their region.</p>
+                <h6>Finding Communities</h6>
+                <ol class="list-decimal pl-8">
+                    <li>Go to the <a href='https://www.trashmob.eco/communities'>Communities page</a></li>
+                    <li>Browse the list of available communities</li>
+                    <li>Use the search box to find communities by name or location</li>
+                    <li>Click on a community card to view its full details</li>
+                </ol>
+                <h6>What You'll Find</h6>
+                <p>Each community page includes:</p>
+                <ul class="list-disc pl-8">
+                    <li><strong>Banner and branding:</strong> Visual identity of the community</li>
+                    <li><strong>About section:</strong> Description of the community and its cleanup initiatives</li>
+                    <li><strong>Contact information:</strong> Email, phone, and address for the community</li>
+                    <li><strong>Events:</strong> Upcoming and past cleanup events in the area</li>
+                    <li><strong>Teams:</strong> Volunteer teams operating in the community</li>
+                    <li><strong>Impact statistics:</strong> Total bags collected, volunteers, hours, and more</li>
+                </ul>
+                `,
+            },
+            {
+                question: 'Getting Involved in a Community',
+                answer: `
+                <p>Communities are geographic partnerships, not membership groups like Teams. Here's how you can participate:</p>
+                <h6>Attend Events</h6>
+                <p>Browse the events listed on a community's page and register for upcoming cleanups in that area. Your participation automatically contributes to the community's impact statistics.</p>
+                <h6>Join Local Teams</h6>
+                <p>Many communities have active teams. Check the Teams section on a community page to find groups you can join for regular cleanup activities.</p>
+                <h6>Report Litter</h6>
+                <p>If you notice litter in a community, submit a <a href='https://www.trashmob.eco/litterreport'>Litter Report</a> to help identify areas that need attention.</p>
+                <h6>Contact the Community</h6>
+                <p>Have questions or ideas? Use the contact information on the community page to reach out to the community administrators.</p>
+                `,
+            },
+            {
+                question: 'Community Administration',
+                answer: `
+                <p>Community Admins are designated by partner organizations to manage their community's presence on TrashMob.</p>
+                <h6>Accessing the Admin Dashboard</h6>
+                <p>If you are a designated Community Admin:</p>
+                <ol class="list-decimal pl-8">
+                    <li>Sign in to your TrashMob account</li>
+                    <li>Go to your <a href='https://www.trashmob.eco/mydashboard'>Dashboard</a></li>
+                    <li>Look for "My Communities" section to find communities you administer</li>
+                    <li>Click "Manage" to access the Community Admin Dashboard</li>
+                </ol>
+                <h6>Admin Capabilities</h6>
+                <p>As a Community Admin, you can:</p>
+                <ul class="list-disc pl-8">
+                    <li>Update community branding (banner image, logo, tagline)</li>
+                    <li>Edit the About section and community description</li>
+                    <li>Manage contact information (email, phone, address)</li>
+                    <li>View community statistics and recent activity</li>
+                    <li>See events and teams associated with the community</li>
+                </ul>
+                <h6>Becoming an Admin</h6>
+                <p>Community Admin access is granted to representatives of partner organizations. If you represent an organization and want to administer your community page, <a href='https://www.trashmob.eco/contactus'>Contact us</a> to discuss partnership options.</p>
+                `,
+            },
+            {
+                question: 'Becoming a Community Partner',
+                answer: `
+                <p>If you represent a city, organization, or regional group interested in creating a community page on TrashMob, here's how to get started:</p>
+                <h6>Who Can Become a Partner?</h6>
+                <ul class="list-disc pl-8">
+                    <li>Cities and municipalities</li>
+                    <li>Regional environmental organizations</li>
+                    <li>Neighborhood associations</li>
+                    <li>Business improvement districts</li>
+                    <li>Other organizations focused on community cleanliness</li>
+                </ul>
+                <h6>Getting Started</h6>
+                <ol class="list-decimal pl-8">
+                    <li><a href='https://www.trashmob.eco/contactus'>Contact us</a> to express your interest</li>
+                    <li>We'll discuss your goals and how TrashMob can help</li>
+                    <li>Complete the partnership application process</li>
+                    <li>Once approved, we'll set up your branded community page</li>
+                    <li>You'll be given Community Admin access to manage your page</li>
+                </ol>
+                <h6>Benefits of Partnership</h6>
+                <ul class="list-disc pl-8">
+                    <li>Branded community page showcasing your area</li>
+                    <li>Visibility into cleanup events and volunteer activity</li>
+                    <li>Impact statistics to share with stakeholders</li>
+                    <li>Connection with active volunteer teams</li>
+                    <li>Tools to promote cleanup initiatives</li>
+                </ul>
                 `,
             },
         ],
