@@ -7,14 +7,7 @@ import { Loader2, Plus, Pencil, Trash2, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -142,22 +135,14 @@ export const AreasIndex = () => {
                                         <TableCell>{area.minEventsPerYear}</TableCell>
                                         <TableCell className='text-right'>
                                             <div className='flex justify-end gap-2'>
-                                                <Button
-                                                    variant='outline'
-                                                    size='sm'
-                                                    asChild
-                                                >
+                                                <Button variant='outline' size='sm' asChild>
                                                     <Link to={`/communities/${slug}/admin/areas/${area.id}/edit`}>
                                                         <Pencil className='h-4 w-4' />
                                                     </Link>
                                                 </Button>
                                                 <AlertDialog>
                                                     <AlertDialogTrigger asChild>
-                                                        <Button
-                                                            variant='outline'
-                                                            size='sm'
-                                                            disabled={isDeleting}
-                                                        >
+                                                        <Button variant='outline' size='sm' disabled={isDeleting}>
                                                             <Trash2 className='h-4 w-4' />
                                                         </Button>
                                                     </AlertDialogTrigger>
@@ -165,7 +150,8 @@ export const AreasIndex = () => {
                                                         <AlertDialogHeader>
                                                             <AlertDialogTitle>Delete Area</AlertDialogTitle>
                                                             <AlertDialogDescription>
-                                                                Are you sure you want to delete "{area.name}"? This action cannot be undone.
+                                                                Are you sure you want to delete "{area.name}"? This
+                                                                action cannot be undone.
                                                             </AlertDialogDescription>
                                                         </AlertDialogHeader>
                                                         <AlertDialogFooter>
@@ -187,7 +173,8 @@ export const AreasIndex = () => {
                             <MapPin className='h-12 w-12 mx-auto text-muted-foreground mb-4' />
                             <h3 className='text-lg font-medium mb-2'>No adoptable areas yet</h3>
                             <p className='text-muted-foreground mb-4'>
-                                Create your first adoptable area to allow teams to adopt and care for locations in your community.
+                                Create your first adoptable area to allow teams to adopt and care for locations in your
+                                community.
                             </p>
                             <Button onClick={() => navigate(`/communities/${slug}/admin/areas/create`)}>
                                 <Plus className='h-4 w-4 mr-2' />

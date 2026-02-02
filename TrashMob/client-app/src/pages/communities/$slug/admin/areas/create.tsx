@@ -52,7 +52,11 @@ export const CreateArea = () => {
     const { toast } = useToast();
 
     // Get community data
-    const { data: community, isLoading: communityLoading } = useQuery<AxiosResponse<CommunityData>, unknown, CommunityData>({
+    const { data: community, isLoading: communityLoading } = useQuery<
+        AxiosResponse<CommunityData>,
+        unknown,
+        CommunityData
+    >({
         queryKey: GetCommunityBySlug({ slug }).key,
         queryFn: GetCommunityBySlug({ slug }).service,
         select: (res) => res.data,
@@ -61,7 +65,8 @@ export const CreateArea = () => {
 
     const { mutate, isPending: isSubmitting } = useMutation({
         mutationKey: CreateAdoptableArea().key,
-        mutationFn: (body: AdoptableAreaData) => CreateAdoptableArea().service({ partnerId: community?.id || '' }, body),
+        mutationFn: (body: AdoptableAreaData) =>
+            CreateAdoptableArea().service({ partnerId: community?.id || '' }, body),
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: GetAdoptableAreas({ partnerId: community?.id || '' }).key,
@@ -167,9 +172,7 @@ export const CreateArea = () => {
                                         <FormControl>
                                             <Input {...field} placeholder='e.g., Highway 101 Mile Marker 5-10' />
                                         </FormControl>
-                                        <FormDescription>
-                                            A descriptive name for this adoptable area.
-                                        </FormDescription>
+                                        <FormDescription>A descriptive name for this adoptable area.</FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -225,9 +228,7 @@ export const CreateArea = () => {
                     <Card>
                         <CardHeader>
                             <CardTitle>Requirements</CardTitle>
-                            <CardDescription>
-                                Set expectations for teams adopting this area.
-                            </CardDescription>
+                            <CardDescription>Set expectations for teams adopting this area.</CardDescription>
                         </CardHeader>
                         <CardContent className='space-y-4'>
                             <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
@@ -256,9 +257,7 @@ export const CreateArea = () => {
                                             <FormControl>
                                                 <Input {...field} type='number' min={1} max={52} />
                                             </FormControl>
-                                            <FormDescription>
-                                                Minimum cleanup events required annually.
-                                            </FormDescription>
+                                            <FormDescription>Minimum cleanup events required annually.</FormDescription>
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -327,8 +326,8 @@ export const CreateArea = () => {
                                             />
                                         </FormControl>
                                         <FormDescription>
-                                            Paste GeoJSON polygon or linestring to define the area boundaries.
-                                            Map-based editing will be available in a future update.
+                                            Paste GeoJSON polygon or linestring to define the area boundaries. Map-based
+                                            editing will be available in a future update.
                                         </FormDescription>
                                         <FormMessage />
                                     </FormItem>
