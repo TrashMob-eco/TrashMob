@@ -5,6 +5,7 @@ namespace TrashMob.Shared.Managers.Interfaces
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
+    using TrashMob.Models.Poco;
 
     /// <summary>
     /// Defines operations for managing community pages.
@@ -42,5 +43,39 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
         /// <returns>True if the slug is available; otherwise, false.</returns>
         Task<bool> IsSlugAvailableAsync(string slug, Guid? excludePartnerId = null, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets events in a community filtered by city/region matching.
+        /// </summary>
+        /// <param name="slug">The community slug.</param>
+        /// <param name="upcomingOnly">If true, only returns upcoming events.</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>A collection of events in the community.</returns>
+        Task<IEnumerable<Event>> GetCommunityEventsAsync(string slug, bool upcomingOnly = true, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets teams near a community by location proximity.
+        /// </summary>
+        /// <param name="slug">The community slug.</param>
+        /// <param name="radiusMiles">The radius in miles to search within.</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>A collection of teams near the community.</returns>
+        Task<IEnumerable<Team>> GetCommunityTeamsAsync(string slug, double radiusMiles = 50, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets litter reports in a community by city/region matching.
+        /// </summary>
+        /// <param name="slug">The community slug.</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>A collection of litter reports in the community.</returns>
+        Task<IEnumerable<LitterReport>> GetCommunityLitterReportsAsync(string slug, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets aggregated stats for a community.
+        /// </summary>
+        /// <param name="slug">The community slug.</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>Stats for the community.</returns>
+        Task<Stats> GetCommunityStatsAsync(string slug, CancellationToken cancellationToken = default);
     }
 }

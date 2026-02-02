@@ -771,6 +771,10 @@
                 entity.Property(e => e.City).HasMaxLength(256);
                 entity.Property(e => e.Region).HasMaxLength(256);
                 entity.Property(e => e.Country).HasMaxLength(64);
+                entity.Property(e => e.LogoUrl).HasMaxLength(500);
+                entity.Property(e => e.ContactEmail).HasMaxLength(256);
+                entity.Property(e => e.ContactPhone).HasMaxLength(50);
+                entity.Property(e => e.PhysicalAddress).HasMaxLength(500);
 
                 entity.HasOne(d => d.CreatedByUser)
                     .WithMany(p => p.PartnersCreated)
