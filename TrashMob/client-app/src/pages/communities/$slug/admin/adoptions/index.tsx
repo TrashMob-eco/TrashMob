@@ -233,7 +233,8 @@ export const AdoptionsIndex = () => {
     return (
         <div className='container py-8 space-y-6'>
             {/* Compliance Stats Dashboard */}
-            {complianceStats ? <div className='grid gap-4 md:grid-cols-4'>
+            {complianceStats ? (
+                <div className='grid gap-4 md:grid-cols-4'>
                     <Card>
                         <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
                             <CardTitle className='text-sm font-medium'>Total Adoptions</CardTitle>
@@ -265,9 +266,7 @@ export const AdoptionsIndex = () => {
                         </CardHeader>
                         <CardContent>
                             <div className='text-2xl font-bold text-yellow-600'>{complianceStats.atRiskAdoptions}</div>
-                            <p className='text-xs text-muted-foreground'>
-                                Approaching delinquency
-                            </p>
+                            <p className='text-xs text-muted-foreground'>Approaching delinquency</p>
                         </CardContent>
                     </Card>
                     <Card>
@@ -277,12 +276,11 @@ export const AdoptionsIndex = () => {
                         </CardHeader>
                         <CardContent>
                             <div className='text-2xl font-bold text-red-600'>{complianceStats.delinquentAdoptions}</div>
-                            <p className='text-xs text-muted-foreground'>
-                                Need follow-up
-                            </p>
+                            <p className='text-xs text-muted-foreground'>Need follow-up</p>
                         </CardContent>
                     </Card>
-                </div> : null}
+                </div>
+            ) : null}
 
             <Card>
                 <CardHeader>
@@ -476,12 +474,16 @@ export const AdoptionsIndex = () => {
                                     </TableHeader>
                                     <TableBody>
                                         {delinquentAdoptions.map((adoption) => {
-                                            const lastEvent = adoption.lastEventDate ? new Date(adoption.lastEventDate) : null;
+                                            const lastEvent = adoption.lastEventDate
+                                                ? new Date(adoption.lastEventDate)
+                                                : null;
                                             const daysSinceEvent = lastEvent
                                                 ? Math.floor((Date.now() - lastEvent.getTime()) / (1000 * 60 * 60 * 24))
                                                 : null;
-                                            const requiredFrequency = adoption.adoptableArea?.cleanupFrequencyDays || 90;
-                                            const daysOverdue = daysSinceEvent !== null ? daysSinceEvent - requiredFrequency : null;
+                                            const requiredFrequency =
+                                                adoption.adoptableArea?.cleanupFrequencyDays || 90;
+                                            const daysOverdue =
+                                                daysSinceEvent !== null ? daysSinceEvent - requiredFrequency : null;
                                             return (
                                                 <TableRow key={adoption.id}>
                                                     <TableCell className='font-medium'>
@@ -490,7 +492,9 @@ export const AdoptionsIndex = () => {
                                                             {adoption.team?.name || 'Unknown Team'}
                                                         </div>
                                                     </TableCell>
-                                                    <TableCell>{adoption.adoptableArea?.name || 'Unknown Area'}</TableCell>
+                                                    <TableCell>
+                                                        {adoption.adoptableArea?.name || 'Unknown Area'}
+                                                    </TableCell>
                                                     <TableCell>{adoption.adoptableArea?.areaType || '-'}</TableCell>
                                                     <TableCell>{adoption.eventCount}</TableCell>
                                                     <TableCell>
