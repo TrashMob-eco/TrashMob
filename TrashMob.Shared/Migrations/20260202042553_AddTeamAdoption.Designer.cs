@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using TrashMob.Shared.Persistence;
@@ -12,9 +13,11 @@ using TrashMob.Shared.Persistence;
 namespace TrashMob.Migrations
 {
     [DbContext(typeof(MobDbContext))]
-    partial class MobDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260202042553_AddTeamAdoption")]
+    partial class AddTeamAdoption
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -120,49 +123,6 @@ namespace TrashMob.Migrations
                         .HasDatabaseName("IX_AdoptableAreas_PartnerId_Name");
 
                     b.ToTable("AdoptableAreas");
-                });
-
-            modelBuilder.Entity("TrashMob.Models.CommunityWaiver", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CommunityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<bool>("IsRequired")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<Guid>("LastUpdatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("LastUpdatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid>("WaiverVersionId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("LastUpdatedByUserId");
-
-                    b.HasIndex("WaiverVersionId");
-
-                    b.HasIndex("CommunityId", "WaiverVersionId")
-                        .IsUnique()
-                        .HasDatabaseName("IX_CommunityWaivers_CommunityId_WaiverVersionId");
-
-                    b.ToTable("CommunityWaivers");
                 });
 
             modelBuilder.Entity("TrashMob.Models.ContactRequest", b =>
@@ -2965,102 +2925,6 @@ namespace TrashMob.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TrashMob.Models.UserWaiver", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("AcceptedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("DocumentUrl")
-                        .HasMaxLength(2048)
-                        .HasColumnType("nvarchar(2048)");
-
-                    b.Property<DateTimeOffset>("ExpiryDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("GuardianName")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("GuardianRelationship")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<Guid?>("GuardianUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("IPAddress")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<bool>("IsMinor")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<Guid>("LastUpdatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("LastUpdatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("SigningMethod")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("TypedLegalName")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<Guid?>("UploadedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("UserAgent")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("WaiverTextSnapshot")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("WaiverVersionId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("ExpiryDate")
-                        .HasDatabaseName("IX_UserWaivers_ExpiryDate");
-
-                    b.HasIndex("GuardianUserId");
-
-                    b.HasIndex("LastUpdatedByUserId");
-
-                    b.HasIndex("UploadedByUserId");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("IX_UserWaivers_UserId");
-
-                    b.HasIndex("WaiverVersionId")
-                        .HasDatabaseName("IX_UserWaivers_WaiverVersionId");
-
-                    b.HasIndex("UserId", "WaiverVersionId")
-                        .HasDatabaseName("IX_UserWaivers_UserId_WaiverVersionId");
-
-                    b.ToTable("UserWaivers");
-                });
-
             modelBuilder.Entity("TrashMob.Models.Waiver", b =>
                 {
                     b.Property<string>("Name")
@@ -3102,67 +2966,6 @@ namespace TrashMob.Migrations
                             IsWaiverEnabled = false,
                             LastUpdatedByUserId = new Guid("00000000-0000-0000-0000-000000000000")
                         });
-                });
-
-            modelBuilder.Entity("TrashMob.Models.WaiverVersion", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset>("EffectiveDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset?>("ExpiryDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<Guid>("LastUpdatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("LastUpdatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<int>("Scope")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Version")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("WaiverText")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("LastUpdatedByUserId");
-
-                    b.HasIndex("Name", "Version")
-                        .IsUnique()
-                        .HasDatabaseName("IX_WaiverVersions_Name_Version");
-
-                    b.HasIndex("Scope", "IsActive")
-                        .HasDatabaseName("IX_WaiverVersions_Scope_IsActive");
-
-                    b.ToTable("WaiverVersions");
                 });
 
             modelBuilder.Entity("TrashMob.Models.WeightUnit", b =>
@@ -3241,43 +3044,6 @@ namespace TrashMob.Migrations
                     b.Navigation("LastUpdatedByUser");
 
                     b.Navigation("Partner");
-                });
-
-            modelBuilder.Entity("TrashMob.Models.CommunityWaiver", b =>
-                {
-                    b.HasOne("TrashMob.Models.Partner", "Community")
-                        .WithMany("CommunityWaivers")
-                        .HasForeignKey("CommunityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_CommunityWaivers_Partner");
-
-                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
-                        .WithMany("CommunityWaiversCreated")
-                        .HasForeignKey("CreatedByUserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_CommunityWaivers_User_CreatedBy");
-
-                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
-                        .WithMany("CommunityWaiversUpdated")
-                        .HasForeignKey("LastUpdatedByUserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_CommunityWaivers_User_LastUpdatedBy");
-
-                    b.HasOne("TrashMob.Models.WaiverVersion", "WaiverVersion")
-                        .WithMany("CommunityWaivers")
-                        .HasForeignKey("WaiverVersionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_CommunityWaivers_WaiverVersion");
-
-                    b.Navigation("Community");
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("LastUpdatedByUser");
-
-                    b.Navigation("WaiverVersion");
                 });
 
             modelBuilder.Entity("TrashMob.Models.ContactRequest", b =>
@@ -4468,59 +4234,6 @@ namespace TrashMob.Migrations
                     b.Navigation("UserNotificationType");
                 });
 
-            modelBuilder.Entity("TrashMob.Models.UserWaiver", b =>
-                {
-                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
-                        .WithMany("UserWaiversCreated")
-                        .HasForeignKey("CreatedByUserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_UserWaivers_User_CreatedBy");
-
-                    b.HasOne("TrashMob.Models.User", "GuardianUser")
-                        .WithMany("UserWaiversAsGuardian")
-                        .HasForeignKey("GuardianUserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .HasConstraintName("FK_UserWaivers_GuardianUser");
-
-                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
-                        .WithMany("UserWaiversUpdated")
-                        .HasForeignKey("LastUpdatedByUserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_UserWaivers_User_LastUpdatedBy");
-
-                    b.HasOne("TrashMob.Models.User", "UploadedByUser")
-                        .WithMany("UserWaiversUploaded")
-                        .HasForeignKey("UploadedByUserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .HasConstraintName("FK_UserWaivers_UploadedByUser");
-
-                    b.HasOne("TrashMob.Models.User", "User")
-                        .WithMany("UserWaivers")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_UserWaivers_User");
-
-                    b.HasOne("TrashMob.Models.WaiverVersion", "WaiverVersion")
-                        .WithMany("UserWaivers")
-                        .HasForeignKey("WaiverVersionId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired()
-                        .HasConstraintName("FK_UserWaivers_WaiverVersion");
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("GuardianUser");
-
-                    b.Navigation("LastUpdatedByUser");
-
-                    b.Navigation("UploadedByUser");
-
-                    b.Navigation("User");
-
-                    b.Navigation("WaiverVersion");
-                });
-
             modelBuilder.Entity("TrashMob.Models.Waiver", b =>
                 {
                     b.HasOne("TrashMob.Models.User", "CreatedByUser")
@@ -4534,25 +4247,6 @@ namespace TrashMob.Migrations
                         .HasForeignKey("LastUpdatedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_WaiverStatuses_User_LastUpdatedBy");
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("LastUpdatedByUser");
-                });
-
-            modelBuilder.Entity("TrashMob.Models.WaiverVersion", b =>
-                {
-                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
-                        .WithMany("WaiverVersionsCreated")
-                        .HasForeignKey("CreatedByUserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_WaiverVersions_User_CreatedBy");
-
-                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
-                        .WithMany("WaiverVersionsUpdated")
-                        .HasForeignKey("LastUpdatedByUserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_WaiverVersions_User_LastUpdatedBy");
 
                     b.Navigation("CreatedByUser");
 
@@ -4613,8 +4307,6 @@ namespace TrashMob.Migrations
                 {
                     b.Navigation("AdoptableAreas");
 
-                    b.Navigation("CommunityWaivers");
-
                     b.Navigation("PartnerAdminInvitations");
 
                     b.Navigation("PartnerAdmins");
@@ -4672,10 +4364,6 @@ namespace TrashMob.Migrations
 
             modelBuilder.Entity("TrashMob.Models.User", b =>
                 {
-                    b.Navigation("CommunityWaiversCreated");
-
-                    b.Navigation("CommunityWaiversUpdated");
-
                     b.Navigation("ContactRequestsCreated");
 
                     b.Navigation("ContactRequestsUpdated");
@@ -4834,16 +4522,6 @@ namespace TrashMob.Migrations
 
                     b.Navigation("UserNotificationsUpdated");
 
-                    b.Navigation("UserWaivers");
-
-                    b.Navigation("UserWaiversAsGuardian");
-
-                    b.Navigation("UserWaiversCreated");
-
-                    b.Navigation("UserWaiversUpdated");
-
-                    b.Navigation("UserWaiversUploaded");
-
                     b.Navigation("UsersCreated");
 
                     b.Navigation("UsersUpdated");
@@ -4851,10 +4529,6 @@ namespace TrashMob.Migrations
                     b.Navigation("WaiverStatusesCreated");
 
                     b.Navigation("WaiverStatusesUpdated");
-
-                    b.Navigation("WaiverVersionsCreated");
-
-                    b.Navigation("WaiverVersionsUpdated");
                 });
 
             modelBuilder.Entity("TrashMob.Models.UserNotificationType", b =>
@@ -4862,13 +4536,6 @@ namespace TrashMob.Migrations
                     b.Navigation("NonEventUserNotifications");
 
                     b.Navigation("UserNotifications");
-                });
-
-            modelBuilder.Entity("TrashMob.Models.WaiverVersion", b =>
-                {
-                    b.Navigation("CommunityWaivers");
-
-                    b.Navigation("UserWaivers");
                 });
 
             modelBuilder.Entity("TrashMob.Models.WeightUnit", b =>

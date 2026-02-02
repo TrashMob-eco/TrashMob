@@ -117,6 +117,8 @@
 
         public virtual DbSet<TeamJoinRequest> TeamJoinRequests { get; set; }
 
+        public virtual DbSet<TeamAdoption> TeamAdoptions { get; set; }
+
         public virtual DbSet<TeamEvent> TeamEvents { get; set; }
 
         public virtual DbSet<TeamPhoto> TeamPhotos { get; set; }
@@ -1831,6 +1833,59 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_TeamJoinRequests_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<TeamAdoption>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.HasIndex(e => new { e.TeamId, e.AdoptableAreaId })
+                    .IsUnique()
+                    .HasDatabaseName("IX_TeamAdoptions_TeamId_AdoptableAreaId");
+
+                entity.HasIndex(e => e.Status)
+                    .HasDatabaseName("IX_TeamAdoptions_Status");
+
+                entity.Property(e => e.Status)
+                    .IsRequired()
+                    .HasMaxLength(20)
+                    .HasDefaultValue("Pending");
+
+                entity.Property(e => e.ApplicationNotes)
+                    .HasMaxLength(2048);
+
+                entity.Property(e => e.RejectionReason)
+                    .HasMaxLength(1000);
+
+                entity.HasOne(d => d.Team)
+                    .WithMany(d => d.Adoptions)
+                    .HasForeignKey(d => d.TeamId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_TeamAdoptions_Team");
+
+                entity.HasOne(d => d.AdoptableArea)
+                    .WithMany(d => d.Adoptions)
+                    .HasForeignKey(d => d.AdoptableAreaId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_TeamAdoptions_AdoptableArea");
+
+                entity.HasOne(d => d.ReviewedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.ReviewedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TeamAdoptions_ReviewedByUser");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TeamAdoptions_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TeamAdoptions_User_LastUpdatedBy");
             });
 
             modelBuilder.Entity<TeamEvent>(entity =>

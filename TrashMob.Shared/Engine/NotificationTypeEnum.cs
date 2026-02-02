@@ -166,8 +166,23 @@
         PhotoFlagged = 32,
 
         /// <summary>
+        /// Notification sent to community admins when a team submits an adoption application.
+        /// </summary>
+        AdoptionApplicationSubmitted = 33,
+
+        /// <summary>
+        /// Notification sent to team leads when their adoption application is approved.
+        /// </summary>
+        AdoptionApplicationApproved = 34,
+
+        /// <summary>
+        /// Notification sent to team leads when their adoption application is rejected.
+        /// </summary>
+        AdoptionApplicationRejected = 35,
+
+        /// <summary>
         /// Reminder notification sent to users when their waiver is expiring soon.
         /// </summary>
-        WaiverExpiringReminder = 33,
+        WaiverExpiringReminder = 36,
     }
 }

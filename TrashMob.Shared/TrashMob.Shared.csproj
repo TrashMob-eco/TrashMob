@@ -39,6 +39,9 @@
     <None Remove="Engine\EmailCopy\UserFeedbackReceived.html" />
     <None Remove="Engine\EmailCopy\PhotoRemoved.html" />
     <None Remove="Engine\EmailCopy\PhotoFlagged.html" />
+    <None Remove="Engine\EmailCopy\AdoptionApplicationSubmitted.html" />
+    <None Remove="Engine\EmailCopy\AdoptionApplicationApproved.html" />
+    <None Remove="Engine\EmailCopy\AdoptionApplicationRejected.html" />
     <None Remove="Engine\EmailCopy\WaiverExpiringReminder.html" />
   </ItemGroup>
 
@@ -75,6 +78,9 @@
     <EmbeddedResource Include="Engine\EmailCopy\UserFeedbackReceived.html" />
     <EmbeddedResource Include="Engine\EmailCopy\PhotoRemoved.html" />
     <EmbeddedResource Include="Engine\EmailCopy\PhotoFlagged.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\AdoptionApplicationSubmitted.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\AdoptionApplicationApproved.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\AdoptionApplicationRejected.html" />
     <EmbeddedResource Include="Engine\EmailCopy\WaiverExpiringReminder.html" />
   </ItemGroup>
 

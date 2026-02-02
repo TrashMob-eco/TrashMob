@@ -13,6 +13,14 @@ namespace TrashMob.Models
     public class AdoptableArea : KeyedModel
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="AdoptableArea"/> class.
+        /// </summary>
+        public AdoptableArea()
+        {
+            Adoptions = [];
+        }
+
+        /// <summary>
         /// Gets or sets the community (partner) this area belongs to.
         /// </summary>
         public Guid PartnerId { get; set; }
@@ -108,6 +116,11 @@ namespace TrashMob.Models
         /// Gets or sets the community (partner) that owns this area.
         /// </summary>
         public virtual Partner Partner { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of team adoptions for this area.
+        /// </summary>
+        public virtual ICollection<TeamAdoption> Adoptions { get; set; }
 
         #endregion
     }
