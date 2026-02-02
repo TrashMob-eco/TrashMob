@@ -95,6 +95,12 @@
 
         public virtual DbSet<Waiver> WaiverStatuses { get; set; }
 
+        public virtual DbSet<WaiverVersion> WaiverVersions { get; set; }
+
+        public virtual DbSet<CommunityWaiver> CommunityWaivers { get; set; }
+
+        public virtual DbSet<UserWaiver> UserWaivers { get; set; }
+
         public virtual DbSet<WeightUnit> WeightUnits { get; set; }
 
         public virtual DbSet<LitterReportStatus> LitterReportStatuses { get; set; }
@@ -2046,6 +2052,162 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PhotoModerationLog_User_LastUpdatedBy");
+            });
+
+            // Waiver V3 Entities
+
+            modelBuilder.Entity<WaiverVersion>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.Version)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.WaiverText)
+                    .IsRequired();
+
+                entity.Property(e => e.Scope)
+                    .IsRequired();
+
+                entity.Property(e => e.IsActive)
+                    .HasDefaultValue(true);
+
+                entity.HasIndex(e => new { e.Name, e.Version })
+                    .IsUnique()
+                    .HasDatabaseName("IX_WaiverVersions_Name_Version");
+
+                entity.HasIndex(e => new { e.Scope, e.IsActive })
+                    .HasDatabaseName("IX_WaiverVersions_Scope_IsActive");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.WaiverVersionsCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_WaiverVersions_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.WaiverVersionsUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_WaiverVersions_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<CommunityWaiver>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.IsRequired)
+                    .HasDefaultValue(true);
+
+                entity.HasIndex(e => new { e.CommunityId, e.WaiverVersionId })
+                    .IsUnique()
+                    .HasDatabaseName("IX_CommunityWaivers_CommunityId_WaiverVersionId");
+
+                entity.HasOne(d => d.Community)
+                    .WithMany(p => p.CommunityWaivers)
+                    .HasForeignKey(d => d.CommunityId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_CommunityWaivers_Partner");
+
+                entity.HasOne(d => d.WaiverVersion)
+                    .WithMany(p => p.CommunityWaivers)
+                    .HasForeignKey(d => d.WaiverVersionId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_CommunityWaivers_WaiverVersion");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.CommunityWaiversCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CommunityWaivers_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.CommunityWaiversUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CommunityWaivers_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<UserWaiver>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.TypedLegalName)
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.SigningMethod)
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.DocumentUrl)
+                    .HasMaxLength(2048);
+
+                entity.Property(e => e.IPAddress)
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.UserAgent)
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.GuardianName)
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.GuardianRelationship)
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.IsMinor)
+                    .HasDefaultValue(false);
+
+                entity.HasIndex(e => e.UserId)
+                    .HasDatabaseName("IX_UserWaivers_UserId");
+
+                entity.HasIndex(e => e.WaiverVersionId)
+                    .HasDatabaseName("IX_UserWaivers_WaiverVersionId");
+
+                entity.HasIndex(e => e.ExpiryDate)
+                    .HasDatabaseName("IX_UserWaivers_ExpiryDate");
+
+                entity.HasIndex(e => new { e.UserId, e.WaiverVersionId })
+                    .HasDatabaseName("IX_UserWaivers_UserId_WaiverVersionId");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.UserWaivers)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_UserWaivers_User");
+
+                entity.HasOne(d => d.WaiverVersion)
+                    .WithMany(p => p.UserWaivers)
+                    .HasForeignKey(d => d.WaiverVersionId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_UserWaivers_WaiverVersion");
+
+                entity.HasOne(d => d.UploadedByUser)
+                    .WithMany(p => p.UserWaiversUploaded)
+                    .HasForeignKey(d => d.UploadedByUserId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_UserWaivers_UploadedByUser");
+
+                entity.HasOne(d => d.GuardianUser)
+                    .WithMany(p => p.UserWaiversAsGuardian)
+                    .HasForeignKey(d => d.GuardianUserId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_UserWaivers_GuardianUser");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.UserWaiversCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserWaivers_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.UserWaiversUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserWaivers_User_LastUpdatedBy");
             });
         }
     }
