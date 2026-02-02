@@ -20,6 +20,11 @@ class TeamPhotoData {
     lastUpdatedByUserId: string = Guid.EMPTY;
 
     lastUpdatedDate: Date = new Date();
+
+    // Moderation fields
+    moderationStatus: number = 0; // 0=Pending, 1=Approved, 2=Rejected
+
+    inReview: boolean = false;
 }
 
 export default TeamPhotoData;

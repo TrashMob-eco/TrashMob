@@ -154,5 +154,15 @@
         /// Notification sent to admins when user feedback is submitted.
         /// </summary>
         UserFeedbackReceived = 30,
+
+        /// <summary>
+        /// Notification sent to the photo uploader when their photo is removed by moderation.
+        /// </summary>
+        PhotoRemoved = 31,
+
+        /// <summary>
+        /// Notification sent to admins when a photo is flagged for review.
+        /// </summary>
+        PhotoFlagged = 32,
     }
 }

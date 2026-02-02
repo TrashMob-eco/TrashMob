@@ -25,6 +25,7 @@ import {
 import { GetLitterReport, DeleteLitterReport, GetUserLitterReports } from '@/services/litter-report';
 import { useLogin } from '@/hooks/useLogin';
 import { useToast } from '@/hooks/use-toast';
+import { ReportPhotoButton } from '@/components/ReportPhotoButton';
 
 const formatDate = (date: Date | null) => {
     if (!date) return '-';
@@ -186,29 +187,58 @@ export const LitterReportDetailPage = () => {
                             <Card>
                                 <CardHeader>
                                     <CardTitle className='flex items-center gap-2'>
-                                        <ImageIcon className='h-5 w-5' /> Photos ({litterReport.litterImages.length})
+                                        <ImageIcon className='h-5 w-5' /> Photos (
+                                        {
+                                            litterReport.litterImages.filter(
+                                                (img) => !img.inReview || currentUser.isSiteAdmin,
+                                            ).length
+                                        }
+                                        )
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <div className='grid grid-cols-2 md:grid-cols-3 gap-4'>
-                                        {litterReport.litterImages.map((image) => (
-                                            <div
-                                                key={image.id}
-                                                className='aspect-square relative rounded-lg overflow-hidden bg-muted'
-                                            >
-                                                {image.imageURL ? (
-                                                    <img
-                                                        src={image.imageURL}
-                                                        alt='Litter'
-                                                        className='object-cover w-full h-full'
-                                                    />
-                                                ) : (
-                                                    <div className='flex items-center justify-center h-full text-muted-foreground'>
-                                                        <ImageIcon className='h-8 w-8' />
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ))}
+                                        {litterReport.litterImages
+                                            .filter((img) => !img.inReview || currentUser.isSiteAdmin)
+                                            .map((image) => (
+                                                <div
+                                                    key={image.id}
+                                                    className='aspect-square relative rounded-lg overflow-hidden bg-muted group'
+                                                >
+                                                    {image.imageURL ? (
+                                                        <>
+                                                            <img
+                                                                src={image.imageURL}
+                                                                alt='Litter'
+                                                                className='object-cover w-full h-full'
+                                                            />
+                                                            {/* Report button - show for logged in users who aren't the uploader */}
+                                                            {isUserLoaded &&
+                                                            image.createdByUserId !== currentUser.id ? (
+                                                                <div className='absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity'>
+                                                                    <ReportPhotoButton
+                                                                        photoId={image.id}
+                                                                        photoType='LitterImage'
+                                                                        variant='secondary'
+                                                                        size='icon'
+                                                                        className='h-8 w-8 bg-white/80 hover:bg-white'
+                                                                    />
+                                                                </div>
+                                                            ) : null}
+                                                            {/* In review badge for admins */}
+                                                            {image.inReview && currentUser.isSiteAdmin ? (
+                                                                <Badge className='absolute bottom-2 left-2 bg-yellow-500'>
+                                                                    Flagged
+                                                                </Badge>
+                                                            ) : null}
+                                                        </>
+                                                    ) : (
+                                                        <div className='flex items-center justify-center h-full text-muted-foreground'>
+                                                            <ImageIcon className='h-8 w-8' />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
                                     </div>
                                 </CardContent>
                             </Card>
@@ -271,18 +301,22 @@ export const LitterReportDetailPage = () => {
                         ) : null}
 
                         {/* Location details for each image */}
-                        {litterReport.litterImages && litterReport.litterImages.length > 1 ? (
+                        {litterReport.litterImages &&
+                        litterReport.litterImages.filter((img) => !img.inReview || currentUser.isSiteAdmin).length >
+                            1 ? (
                             <Card>
                                 <CardHeader>
                                     <CardTitle>Photo Locations</CardTitle>
                                 </CardHeader>
                                 <CardContent className='space-y-3'>
-                                    {litterReport.litterImages.map((image, index) => (
-                                        <div key={image.id} className='text-sm'>
-                                            <p className='font-medium'>Photo {index + 1}</p>
-                                            <p className='text-muted-foreground'>{getFullAddress(image)}</p>
-                                        </div>
-                                    ))}
+                                    {litterReport.litterImages
+                                        .filter((img) => !img.inReview || currentUser.isSiteAdmin)
+                                        .map((image, index) => (
+                                            <div key={image.id} className='text-sm'>
+                                                <p className='font-medium'>Photo {index + 1}</p>
+                                                <p className='text-muted-foreground'>{getFullAddress(image)}</p>
+                                            </div>
+                                        ))}
                                 </CardContent>
                             </Card>
                         ) : null}
