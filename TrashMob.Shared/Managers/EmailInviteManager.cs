@@ -203,6 +203,27 @@ namespace TrashMob.Shared.Managers
                 .ToListAsync(cancellationToken);
         }
 
+        /// <inheritdoc />
+        public async Task<IEnumerable<EmailInviteBatch>> GetUserBatchesAsync(Guid userId, CancellationToken cancellationToken = default)
+        {
+            return await Repository.Get(b => b.SenderUserId == userId && b.BatchType == "User")
+                .Include(b => b.SenderUser)
+                .OrderByDescending(b => b.CreatedDate)
+                .ToListAsync(cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public async Task<int> GetUserMonthlyInviteCountAsync(Guid userId, CancellationToken cancellationToken = default)
+        {
+            var startOfMonth = new DateTimeOffset(DateTimeOffset.UtcNow.Year, DateTimeOffset.UtcNow.Month, 1, 0, 0, 0, TimeSpan.Zero);
+
+            return await emailInviteRepository.Get(i =>
+                    i.Batch.SenderUserId == userId &&
+                    i.Batch.BatchType == "User" &&
+                    i.Batch.CreatedDate >= startOfMonth)
+                .CountAsync(cancellationToken);
+        }
+
         private async Task SendInviteEmailAsync(EmailInvite invite, string senderName, string communityName, string teamName, CancellationToken cancellationToken)
         {
             string emailCopy;
