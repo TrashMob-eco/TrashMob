@@ -7,12 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import {
-    GetComplianceSummary,
-    GetUserWaivers,
-    GetActiveWaiverVersions,
-    ExportWaivers,
-} from '@/services/waiver-admin';
+import { GetComplianceSummary, GetUserWaivers, GetActiveWaiverVersions, ExportWaivers } from '@/services/waiver-admin';
 import { UserWaiverFilter } from '@/components/Models/WaiverVersionData';
 import { Download, FileText, Search, Users, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 
@@ -167,9 +162,7 @@ export const WaiverComplianceDashboard = () => {
                     <div className='flex items-center justify-between'>
                         <div>
                             <CardTitle>Signed Waivers</CardTitle>
-                            <CardDescription>
-                                {waiversResult?.totalCount ?? 0} total records
-                            </CardDescription>
+                            <CardDescription>{waiversResult?.totalCount ?? 0} total records</CardDescription>
                         </div>
                         <Button onClick={handleExport} disabled={exportMutation.isPending}>
                             <Download className='mr-2 h-4 w-4' />
@@ -221,10 +214,7 @@ export const WaiverComplianceDashboard = () => {
                             <Select
                                 value={filter.isValid === undefined ? 'all' : filter.isValid ? 'valid' : 'expired'}
                                 onValueChange={(v) =>
-                                    handleFilterChange(
-                                        'isValid',
-                                        v === 'all' ? undefined : v === 'valid'
-                                    )
+                                    handleFilterChange('isValid', v === 'all' ? undefined : v === 'valid')
                                 }
                             >
                                 <SelectTrigger>
@@ -268,9 +258,11 @@ export const WaiverComplianceDashboard = () => {
                                         <TableCell>
                                             <div>
                                                 <p>{waiver.typedLegalName}</p>
-                                                {waiver.isMinor ? <Badge variant='outline' className='text-xs'>
+                                                {waiver.isMinor ? (
+                                                    <Badge variant='outline' className='text-xs'>
                                                         Minor
-                                                    </Badge> : null}
+                                                    </Badge>
+                                                ) : null}
                                             </div>
                                         </TableCell>
                                         <TableCell>
@@ -301,7 +293,8 @@ export const WaiverComplianceDashboard = () => {
                     </div>
 
                     {/* Pagination */}
-                    {waiversResult && waiversResult.totalPages > 1 ? <div className='mt-4 flex items-center justify-between'>
+                    {waiversResult && waiversResult.totalPages > 1 ? (
+                        <div className='mt-4 flex items-center justify-between'>
                             <p className='text-sm text-muted-foreground'>
                                 Page {waiversResult.page} of {waiversResult.totalPages}
                             </p>
@@ -323,7 +316,8 @@ export const WaiverComplianceDashboard = () => {
                                     Next
                                 </Button>
                             </div>
-                        </div> : null}
+                        </div>
+                    ) : null}
                 </CardContent>
             </Card>
         </div>
