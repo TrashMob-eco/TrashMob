@@ -133,6 +133,10 @@
 
         public virtual DbSet<EventAttendeeMetrics> EventAttendeeMetrics { get; set; }
 
+        public virtual DbSet<EmailInviteBatch> EmailInviteBatches { get; set; }
+
+        public virtual DbSet<EmailInvite> EmailInvites { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(configuration["TMDBServerConnectionString"], x => x.UseNetTopologySuite());
@@ -2385,6 +2389,109 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_UserWaivers_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<EmailInviteBatch>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.BatchType)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Status)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .HasDefaultValue("Pending");
+
+                entity.HasIndex(e => e.SenderUserId)
+                    .HasDatabaseName("IX_EmailInviteBatches_SenderUserId");
+
+                entity.HasIndex(e => e.Status)
+                    .HasDatabaseName("IX_EmailInviteBatches_Status");
+
+                entity.HasIndex(e => e.CreatedDate)
+                    .HasDatabaseName("IX_EmailInviteBatches_CreatedDate");
+
+                entity.HasOne(d => d.SenderUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.SenderUserId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_EmailInviteBatches_SenderUser");
+
+                entity.HasOne(d => d.Community)
+                    .WithMany()
+                    .HasForeignKey(d => d.CommunityId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_EmailInviteBatches_Community");
+
+                entity.HasOne(d => d.Team)
+                    .WithMany()
+                    .HasForeignKey(d => d.TeamId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_EmailInviteBatches_Team");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EmailInviteBatches_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EmailInviteBatches_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<EmailInvite>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Email)
+                    .IsRequired()
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.Status)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .HasDefaultValue("Pending");
+
+                entity.Property(e => e.ErrorMessage)
+                    .HasMaxLength(1000);
+
+                entity.HasIndex(e => e.BatchId)
+                    .HasDatabaseName("IX_EmailInvites_BatchId");
+
+                entity.HasIndex(e => e.Email)
+                    .HasDatabaseName("IX_EmailInvites_Email");
+
+                entity.HasIndex(e => e.Status)
+                    .HasDatabaseName("IX_EmailInvites_Status");
+
+                entity.HasOne(d => d.Batch)
+                    .WithMany(b => b.Invites)
+                    .HasForeignKey(d => d.BatchId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_EmailInvites_Batch");
+
+                entity.HasOne(d => d.SignedUpUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.SignedUpUserId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_EmailInvites_SignedUpUser");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EmailInvites_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EmailInvites_User_LastUpdatedBy");
             });
         }
     }

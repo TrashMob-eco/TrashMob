@@ -106,6 +106,9 @@
             // Feature Metrics
             services.AddSingleton<IFeatureMetricsService, FeatureMetricsService>();
 
+            // Email Invites
+            services.AddScoped<IEmailInviteManager, EmailInviteManager>();
+
             // Non-patterned
             services.AddScoped<IActiveDirectoryManager, ActiveDirectoryManager>();
             services.AddScoped<IEmailManager, EmailManager>();
@@ -185,6 +188,10 @@
             services.AddScoped<IKeyedRepository<WaiverVersion>, KeyedRepository<WaiverVersion>>();
             services.AddScoped<IBaseRepository<CommunityWaiver>, BaseRepository<CommunityWaiver>>();
             services.AddScoped<IKeyedRepository<UserWaiver>, KeyedRepository<UserWaiver>>();
+
+            // Email Invite repositories
+            services.AddScoped<IKeyedRepository<EmailInviteBatch>, KeyedRepository<EmailInviteBatch>>();
+            services.AddScoped<IKeyedRepository<EmailInvite>, KeyedRepository<EmailInvite>>();
 
             return services;
         }

@@ -184,5 +184,10 @@
         /// Reminder notification sent to users when their waiver is expiring soon.
         /// </summary>
         WaiverExpiringReminder = 36,
+
+        /// <summary>
+        /// Invitation sent to potential volunteers to join TrashMob.
+        /// </summary>
+        InviteToJoinTrashMob = 37,
     }
 }
