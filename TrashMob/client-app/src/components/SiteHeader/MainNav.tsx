@@ -20,6 +20,7 @@ import {
     List,
     Users,
     Building2,
+    Trophy,
 } from 'lucide-react';
 import React from 'react';
 
@@ -116,6 +117,16 @@ export const MainNav = ({ className, isUserLoaded, ...props }: MainNavProps) => 
                                 <Link to='/communities'>
                                     <Building2 className='h-4 w-4 mr-1' />
                                     Communities
+                                </Link>
+                            </NavigationMenuLink>
+                        </NavigationMenuItem>
+
+                        {/* Leaderboards - Direct Link */}
+                        <NavigationMenuItem>
+                            <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                                <Link to='/leaderboards'>
+                                    <Trophy className='h-4 w-4 mr-1' />
+                                    Leaderboards
                                 </Link>
                             </NavigationMenuLink>
                         </NavigationMenuItem>
@@ -219,6 +230,7 @@ export const MainNav = ({ className, isUserLoaded, ...props }: MainNavProps) => 
                 <MobileNavItem to='/#events'>Events</MobileNavItem>
                 <MobileNavItem to='/teams'>Teams</MobileNavItem>
                 <MobileNavItem to='/communities'>Communities</MobileNavItem>
+                <MobileNavItem to='/leaderboards'>Leaderboards</MobileNavItem>
                 <div className='border-l-2 border-muted pl-3 ml-2 space-y-1'>
                     <p className='text-xs text-muted-foreground uppercase tracking-wide pt-1'>Take Action</p>
                     <MobileNavItem to='/litterreports/create'>Report Litter</MobileNavItem>
