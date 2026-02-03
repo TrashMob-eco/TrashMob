@@ -139,6 +139,14 @@
 
         public virtual DbSet<LeaderboardCache> LeaderboardCaches { get; set; }
 
+        public virtual DbSet<NewsletterCategory> NewsletterCategories { get; set; }
+
+        public virtual DbSet<NewsletterTemplate> NewsletterTemplates { get; set; }
+
+        public virtual DbSet<Newsletter> Newsletters { get; set; }
+
+        public virtual DbSet<UserNewsletterPreference> UserNewsletterPreferences { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(configuration["TMDBServerConnectionString"], x => x.UseNetTopologySuite());
@@ -2535,6 +2543,94 @@
                 // Index for entity-specific lookups
                 entity.HasIndex(e => e.EntityId)
                     .HasDatabaseName("IX_LeaderboardCache_EntityId");
+            });
+
+            // Newsletter Entities
+
+            modelBuilder.Entity<NewsletterCategory>(entity =>
+            {
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.Description)
+                    .HasMaxLength(500);
+            });
+
+            modelBuilder.Entity<NewsletterTemplate>(entity =>
+            {
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.Description)
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.ThumbnailUrl)
+                    .HasMaxLength(500);
+            });
+
+            modelBuilder.Entity<Newsletter>(entity =>
+            {
+                entity.Property(e => e.Subject)
+                    .IsRequired()
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.PreviewText)
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.TargetType)
+                    .HasMaxLength(50)
+                    .HasDefaultValue("All");
+
+                entity.Property(e => e.Status)
+                    .HasMaxLength(50)
+                    .HasDefaultValue("Draft");
+
+                entity.HasOne(d => d.Category)
+                    .WithMany(c => c.Newsletters)
+                    .HasForeignKey(d => d.CategoryId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_Newsletters_NewsletterCategory");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.NewslettersCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Newsletters_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.NewslettersUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Newsletters_User_LastUpdatedBy");
+
+                entity.HasIndex(e => e.Status)
+                    .HasDatabaseName("IX_Newsletters_Status");
+
+                entity.HasIndex(e => e.ScheduledDate)
+                    .HasFilter("[Status] = 'Scheduled'")
+                    .HasDatabaseName("IX_Newsletters_Scheduled");
+            });
+
+            modelBuilder.Entity<UserNewsletterPreference>(entity =>
+            {
+                entity.HasKey(e => new { e.UserId, e.CategoryId });
+
+                entity.HasOne(e => e.User)
+                    .WithMany(u => u.NewsletterPreferences)
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_UserNewsletterPreferences_User");
+
+                entity.HasOne(e => e.Category)
+                    .WithMany(c => c.UserPreferences)
+                    .HasForeignKey(e => e.CategoryId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_UserNewsletterPreferences_Category");
+
+                entity.HasIndex(e => e.UserId)
+                    .HasDatabaseName("IX_UserNewsletterPreferences_UserId");
             });
         }
     }

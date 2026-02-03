@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Not Started |
+| **Status** | In Progress (Phase 1 Complete) |
 | **Priority** | Medium |
 | **Risk** | Low |
 | **Size** | Medium |
@@ -575,7 +575,53 @@ The following GitHub issues are tracked as part of this project:
 
 ---
 
-**Last Updated:** January 31, 2026
+**Last Updated:** February 3, 2026
 **Owner:** Marketing + Engineering
-**Status:** Not Started
-**Next Review:** When prioritized
+**Status:** In Progress (Phase 1 Complete)
+**Next Review:** Q1 2026
+
+---
+
+## Implementation Progress
+
+### Phase 1 - Core Infrastructure (Complete)
+
+**Database Models:**
+- `NewsletterCategory` - Newsletter category lookup table with seed data (Monthly Digest, Event Updates, Community News, Team Updates)
+- `UserNewsletterPreference` - User subscription preferences per category
+- `Newsletter` - Newsletter entity with targeting, status, scheduling, and statistics
+- `NewsletterTemplate` - Reusable newsletter templates with HTML/text content
+
+**Backend:**
+- Migration: `20260203151205_AddNewsletterSupport` - Creates all tables with indexes and seed data
+- `INewsletterManager` / `NewsletterManager` - Newsletter CRUD, scheduling, sending, statistics
+- `IUserNewsletterPreferenceManager` / `UserNewsletterPreferenceManager` - User preferences management
+- `NewsletterPreferencesController` - User-facing API for preferences (GET/PUT preferences, unsubscribe all)
+- `NewslettersController` - Admin API for newsletter management (CRUD, schedule, send, templates)
+
+**Frontend:**
+- `services/newsletters.ts` - API service layer for all newsletter endpoints
+- `pages/siteadmin/newsletters/` - Admin UI for newsletter management
+  - Newsletter list with status filtering
+  - Create/Edit newsletter dialog with template selection
+  - Schedule dialog for future sends
+  - Send now functionality
+  - Delete draft newsletters
+
+### Remaining Phases
+
+**Phase 2 - Sending & Tracking:**
+- Background job for processing scheduled newsletters
+- SendGrid webhook integration for open/click/bounce tracking
+- Batch sending for large lists
+- Test send functionality
+
+**Phase 3 - Team/Community:**
+- Team newsletters (team leads can send to members)
+- Community newsletters (community admins can send)
+- Newsletter preview before sending
+
+**Phase 4 - User Experience:**
+- User settings page for newsletter preferences
+- Unsubscribe page (from email link)
+- Newsletter archive/history view
