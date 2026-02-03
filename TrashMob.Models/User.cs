@@ -93,6 +93,16 @@ namespace TrashMob.Models
         public bool PrefersMetric { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the user appears on public leaderboards.
+        /// </summary>
+        public bool ShowOnLeaderboards { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the user receives achievement notifications.
+        /// </summary>
+        public bool AchievementNotificationsEnabled { get; set; } = true;
+
+        /// <summary>
         /// Gets or sets the maximum travel distance (in miles or kilometers) the user is willing to travel for local events.
         /// </summary>
         public int TravelLimitForLocalEvents { get; set; }

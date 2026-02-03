@@ -11,6 +11,7 @@
     using TrashMob.Shared.Managers.Teams;
     using TrashMob.Shared.Managers.Communities;
     using TrashMob.Shared.Managers.Adoptions;
+    using TrashMob.Shared.Managers.Gamification;
     using TrashMob.Shared.Persistence;
     using TrashMob.Shared.Persistence.Interfaces;
     using TrashMob.Shared.Services;
@@ -108,6 +109,9 @@
 
             // Email Invites
             services.AddScoped<IEmailInviteManager, EmailInviteManager>();
+
+            // Gamification
+            services.AddScoped<ILeaderboardManager, LeaderboardManager>();
 
             // Non-patterned
             services.AddScoped<IActiveDirectoryManager, ActiveDirectoryManager>();
