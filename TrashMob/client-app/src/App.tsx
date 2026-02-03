@@ -64,6 +64,8 @@ import { CommunityDetailPage } from './pages/communities/$slug';
 import { CommunityAdminLayout } from './pages/communities/$slug/admin/_layout';
 import { CommunityAdminDashboard } from './pages/communities/$slug/admin';
 import { CommunityContentEdit } from './pages/communities/$slug/admin/content';
+import { CommunityAdminInvites } from './pages/communities/$slug/admin/invites';
+import { CommunityAdminInviteDetails } from './pages/communities/$slug/admin/invites/$batchId';
 
 /** Partners */
 import { Partnerships } from './pages/partnerships/page';
@@ -248,6 +250,8 @@ const AppContent: FC = () => {
                             <Route path='/communities/:slug/admin' element={<CommunityAdminLayout />}>
                                 <Route index element={<CommunityAdminDashboard />} />
                                 <Route path='content' element={<CommunityContentEdit />} />
+                                <Route path='invites' element={<CommunityAdminInvites />} />
+                                <Route path='invites/:batchId' element={<CommunityAdminInviteDetails />} />
                             </Route>
                         </Route>
                         <Route element={<AuthSideAdminLayout />}>

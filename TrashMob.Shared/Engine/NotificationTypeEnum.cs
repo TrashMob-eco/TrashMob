@@ -189,5 +189,10 @@
         /// Invitation sent to potential volunteers to join TrashMob.
         /// </summary>
         InviteToJoinTrashMob = 37,
+
+        /// <summary>
+        /// Invitation sent to potential volunteers to join a specific community.
+        /// </summary>
+        InviteToJoinCommunity = 38,
     }
 }

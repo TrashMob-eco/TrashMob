@@ -78,3 +78,42 @@ export const CreateAdminInviteBatch = () => ({
             data: body,
         }),
 });
+
+// ========================================
+// Community Email Invite Endpoints
+// ========================================
+
+export type GetCommunityInviteBatches_Params = { communityId: string };
+export type GetCommunityInviteBatches_Response = EmailInviteBatch[];
+export const GetCommunityInviteBatches = (params: GetCommunityInviteBatches_Params) => ({
+    key: ['/communities', params.communityId, 'invites/batches'],
+    service: async () =>
+        ApiService('protected').fetchData<GetCommunityInviteBatches_Response>({
+            url: `/communities/${params.communityId}/invites/batches`,
+            method: 'get',
+        }),
+});
+
+export type GetCommunityInviteBatchDetails_Params = { communityId: string; id: string };
+export type GetCommunityInviteBatchDetails_Response = EmailInviteBatch;
+export const GetCommunityInviteBatchDetails = (params: GetCommunityInviteBatchDetails_Params) => ({
+    key: ['/communities', params.communityId, 'invites/batches', params.id],
+    service: async () =>
+        ApiService('protected').fetchData<GetCommunityInviteBatchDetails_Response>({
+            url: `/communities/${params.communityId}/invites/batches/${params.id}`,
+            method: 'get',
+        }),
+});
+
+export type CreateCommunityInviteBatch_Params = { communityId: string };
+export type CreateCommunityInviteBatch_Body = CreateEmailInviteBatchRequest;
+export type CreateCommunityInviteBatch_Response = EmailInviteBatch;
+export const CreateCommunityInviteBatch = (params: CreateCommunityInviteBatch_Params) => ({
+    key: ['/communities', params.communityId, 'invites/batch', 'create'],
+    service: async (body: CreateCommunityInviteBatch_Body) =>
+        ApiService('protected').fetchData<CreateCommunityInviteBatch_Response, CreateCommunityInviteBatch_Body>({
+            url: `/communities/${params.communityId}/invites/batch`,
+            method: 'post',
+            data: body,
+        }),
+});

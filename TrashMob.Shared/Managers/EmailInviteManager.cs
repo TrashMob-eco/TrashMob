@@ -20,6 +20,7 @@ namespace TrashMob.Shared.Managers
         private readonly IKeyedRepository<EmailInvite> emailInviteRepository;
         private readonly IEmailManager emailManager;
         private readonly IUserManager userManager;
+        private readonly IKeyedManager<Partner> partnerManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmailInviteManager"/> class.
@@ -28,16 +29,19 @@ namespace TrashMob.Shared.Managers
         /// <param name="emailInviteRepository">The repository for individual email invite data access.</param>
         /// <param name="emailManager">The email manager for sending notifications.</param>
         /// <param name="userManager">The manager for user operations.</param>
+        /// <param name="partnerManager">The manager for partner/community operations.</param>
         public EmailInviteManager(
             IKeyedRepository<EmailInviteBatch> emailInviteBatchRepository,
             IKeyedRepository<EmailInvite> emailInviteRepository,
             IEmailManager emailManager,
-            IUserManager userManager)
+            IUserManager userManager,
+            IKeyedManager<Partner> partnerManager)
             : base(emailInviteBatchRepository)
         {
             this.emailInviteRepository = emailInviteRepository;
             this.emailManager = emailManager;
             this.userManager = userManager;
+            this.partnerManager = partnerManager;
         }
 
         /// <inheritdoc />
@@ -116,11 +120,19 @@ namespace TrashMob.Shared.Managers
             var senderName = batch.SenderUser?.UserName ?? "TrashMob.eco";
             var pendingInvites = batch.Invites.Where(i => i.Status == "Pending").ToList();
 
+            // Get community name if this is a community batch
+            string communityName = null;
+            if (batch.CommunityId.HasValue)
+            {
+                var community = await partnerManager.GetAsync(batch.CommunityId.Value, cancellationToken);
+                communityName = community?.Name;
+            }
+
             foreach (var invite in pendingInvites)
             {
                 try
                 {
-                    await SendInviteEmailAsync(invite, senderName, cancellationToken);
+                    await SendInviteEmailAsync(invite, senderName, communityName, cancellationToken);
                     invite.Status = "Sent";
                     invite.SentDate = DateTimeOffset.UtcNow;
                     batch.SentCount++;
@@ -161,10 +173,33 @@ namespace TrashMob.Shared.Managers
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
-        private async Task SendInviteEmailAsync(EmailInvite invite, string senderName, CancellationToken cancellationToken)
+        /// <inheritdoc />
+        public async Task<IEnumerable<EmailInviteBatch>> GetCommunityBatchesAsync(Guid communityId, CancellationToken cancellationToken = default)
         {
-            var emailCopy = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.InviteToJoinTrashMob.ToString());
-            var subject = "You're Invited to Join TrashMob.eco!";
+            return await Repository.Get(b => b.CommunityId == communityId)
+                .Include(b => b.SenderUser)
+                .OrderByDescending(b => b.CreatedDate)
+                .ToListAsync(cancellationToken);
+        }
+
+        private async Task SendInviteEmailAsync(EmailInvite invite, string senderName, string communityName, CancellationToken cancellationToken)
+        {
+            string emailCopy;
+            string subject;
+
+            if (!string.IsNullOrEmpty(communityName))
+            {
+                // Use community-specific template
+                emailCopy = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.InviteToJoinCommunity.ToString());
+                emailCopy = emailCopy.Replace("{communityName}", communityName);
+                subject = $"You're Invited to Join {communityName} on TrashMob.eco!";
+            }
+            else
+            {
+                // Use generic TrashMob template
+                emailCopy = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.InviteToJoinTrashMob.ToString());
+                subject = "You're Invited to Join TrashMob.eco!";
+            }
 
             var dynamicTemplateData = new
             {

@@ -44,6 +44,7 @@
     <None Remove="Engine\EmailCopy\AdoptionApplicationRejected.html" />
     <None Remove="Engine\EmailCopy\WaiverExpiringReminder.html" />
     <None Remove="Engine\EmailCopy\InviteToJoinTrashMob.html" />
+    <None Remove="Engine\EmailCopy\InviteToJoinCommunity.html" />
   </ItemGroup>
 
   <ItemGroup>
@@ -84,6 +85,7 @@
     <EmbeddedResource Include="Engine\EmailCopy\AdoptionApplicationRejected.html" />
     <EmbeddedResource Include="Engine\EmailCopy\WaiverExpiringReminder.html" />
     <EmbeddedResource Include="Engine\EmailCopy\InviteToJoinTrashMob.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\InviteToJoinCommunity.html" />
   </ItemGroup>
 
   <ItemGroup>
