@@ -23,13 +23,15 @@ export const InviteFriendsCard = () => {
     const queryClient = useQueryClient();
     const [emailText, setEmailText] = useState('');
 
-    const { data: quota, isLoading: isLoadingQuota } = useQuery<AxiosResponse<UserInviteQuota>, unknown, UserInviteQuota>(
-        {
-            queryKey: GetUserInviteQuota().key,
-            queryFn: GetUserInviteQuota().service,
-            select: (res) => res.data,
-        },
-    );
+    const { data: quota, isLoading: isLoadingQuota } = useQuery<
+        AxiosResponse<UserInviteQuota>,
+        unknown,
+        UserInviteQuota
+    >({
+        queryKey: GetUserInviteQuota().key,
+        queryFn: GetUserInviteQuota().service,
+        select: (res) => res.data,
+    });
 
     const { data: batches, isLoading: isLoadingBatches } = useQuery<
         AxiosResponse<EmailInviteBatch[]>,
@@ -130,18 +132,22 @@ export const InviteFriendsCard = () => {
                     <Users className='h-5 w-5' />
                     Invite Friends to TrashMob
                 </CardTitle>
-                <CardDescription>Share TrashMob with your friends and help grow our community of volunteers.</CardDescription>
+                <CardDescription>
+                    Share TrashMob with your friends and help grow our community of volunteers.
+                </CardDescription>
             </CardHeader>
             <CardContent className='space-y-6'>
                 {/* Quota Info */}
-                {!isLoadingQuota && quota ? <Alert>
+                {!isLoadingQuota && quota ? (
+                    <Alert>
                         <Info className='h-4 w-4' />
                         <AlertDescription>
                             You can invite up to <strong>{quota.maxPerBatch}</strong> friends at a time, and{' '}
-                            <strong>{quota.remainingThisMonth}</strong> more this month (
-                            {quota.usedThisMonth}/{quota.maxPerMonth} used).
+                            <strong>{quota.remainingThisMonth}</strong> more this month ({quota.usedThisMonth}/
+                            {quota.maxPerMonth} used).
                         </AlertDescription>
-                    </Alert> : null}
+                    </Alert>
+                ) : null}
 
                 {/* Email Input */}
                 <div className='space-y-2'>
@@ -180,7 +186,8 @@ export const InviteFriendsCard = () => {
                 </Button>
 
                 {/* Recent Invites */}
-                {!isLoadingBatches && batches && batches.length > 0 ? <div className='pt-4 border-t'>
+                {!isLoadingBatches && batches && batches.length > 0 ? (
+                    <div className='pt-4 border-t'>
                         <h4 className='font-medium mb-3 flex items-center gap-2'>
                             <Mail className='h-4 w-4' />
                             Recent Invites
@@ -209,7 +216,8 @@ export const InviteFriendsCard = () => {
                                 ))}
                             </TableBody>
                         </Table>
-                    </div> : null}
+                    </div>
+                ) : null}
             </CardContent>
         </Card>
     );
