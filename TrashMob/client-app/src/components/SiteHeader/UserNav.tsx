@@ -6,7 +6,8 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ChevronDown, CircleUserRound, IdCard, LogOut, User, UserRoundX } from 'lucide-react';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import { CircleUserRound, IdCard, LogOut, MapPin, User, UserRoundX } from 'lucide-react';
 import { Link } from 'react-router';
 import { cn } from '@/lib/utils';
 import UserData from '../Models/UserData';
@@ -64,40 +65,79 @@ export const UserNav = (props: UserNavProps) => {
                 </Button>
             )}
             {isUserLoaded ? (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant='outline'>
-                            <CircleUserRound size={32} />
-                            {currentUser.userName || 'Welcome'}
-                            <ChevronDown />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        <DropdownMenuItem onClick={profileEdit}>
-                            <User />
-                            <span>Update my profile</span>
-                        </DropdownMenuItem>
-                        {currentUser.isSiteAdmin ? (
+                <HoverCard openDelay={200} closeDelay={100}>
+                    <DropdownMenu>
+                        <HoverCardTrigger asChild>
+                            <DropdownMenuTrigger asChild>
+                                <Button
+                                    variant='outline'
+                                    size='icon'
+                                    className='rounded-full h-10 w-10'
+                                    aria-label={`Account menu for ${currentUser.userName}`}
+                                >
+                                    <CircleUserRound size={24} />
+                                </Button>
+                            </DropdownMenuTrigger>
+                        </HoverCardTrigger>
+                        <HoverCardContent align='end' className='w-72'>
+                            <div className='flex flex-col gap-2'>
+                                <div className='flex items-center gap-3'>
+                                    <CircleUserRound size={40} className='text-muted-foreground' />
+                                    <div className='flex flex-col overflow-hidden'>
+                                        <span className='font-semibold truncate'>
+                                            {currentUser.userName || 'Welcome'}
+                                        </span>
+                                        {currentUser.email ? (
+                                            <span className='text-sm text-muted-foreground truncate'>
+                                                {currentUser.email}
+                                            </span>
+                                        ) : null}
+                                    </div>
+                                </div>
+                                {currentUser.city || currentUser.region ? (
+                                    <div className='flex items-center gap-2 text-sm text-muted-foreground'>
+                                        <MapPin size={14} />
+                                        <span>
+                                            {[currentUser.city, currentUser.region, currentUser.country]
+                                                .filter(Boolean)
+                                                .join(', ')}
+                                        </span>
+                                    </div>
+                                ) : null}
+                                {currentUser.isSiteAdmin ? (
+                                    <span className='text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full w-fit'>
+                                        Site Admin
+                                    </span>
+                                ) : null}
+                            </div>
+                        </HoverCardContent>
+                        <DropdownMenuContent align='end'>
+                            <DropdownMenuItem onClick={profileEdit}>
+                                <User />
+                                <span>Update my profile</span>
+                            </DropdownMenuItem>
+                            {currentUser.isSiteAdmin ? (
+                                <DropdownMenuItem asChild>
+                                    <Link to='/siteadmin'>
+                                        <IdCard />
+                                        <span>Site Administration</span>
+                                    </Link>
+                                </DropdownMenuItem>
+                            ) : null}
+                            <DropdownMenuSeparator />
                             <DropdownMenuItem asChild>
-                                <Link to='/siteadmin'>
-                                    <IdCard />
-                                    <span>Site Administration</span>
+                                <Link to='/deletemydata'>
+                                    <UserRoundX />
+                                    <span>Delete my account</span>
                                 </Link>
                             </DropdownMenuItem>
-                        ) : null}
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem asChild>
-                            <Link to='/deletemydata'>
-                                <UserRoundX />
-                                <span>Delete my account</span>
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={signOut}>
-                            <LogOut />
-                            <span>Sign out</span>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                            <DropdownMenuItem onClick={signOut}>
+                                <LogOut />
+                                <span>Sign out</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </HoverCard>
             ) : null}
         </div>
     );
