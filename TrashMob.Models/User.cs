@@ -30,6 +30,9 @@ namespace TrashMob.Models
             EventAttendees = new HashSet<EventAttendee>();
             EventAttendeeRoutes = new HashSet<EventAttendeeRoute>();
             AttendeeMetrics = new HashSet<EventAttendeeMetrics>();
+            NewsletterPreferences = new HashSet<UserNewsletterPreference>();
+            NewslettersCreated = new HashSet<Newsletter>();
+            NewslettersUpdated = new HashSet<Newsletter>();
             Achievements = new HashSet<UserAchievement>();
         }
 
@@ -603,6 +606,25 @@ namespace TrashMob.Models
         /// Gets or sets the collection of achievements earned by this user.
         /// </summary>
         public virtual ICollection<UserAchievement> Achievements { get; set; }
+
+        #endregion
+
+        #region Newsletter Collections
+
+        /// <summary>
+        /// Gets or sets the collection of newsletter preferences for this user.
+        /// </summary>
+        public virtual ICollection<UserNewsletterPreference> NewsletterPreferences { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of newsletters created by this user.
+        /// </summary>
+        public virtual ICollection<Newsletter> NewslettersCreated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of newsletters last updated by this user.
+        /// </summary>
+        public virtual ICollection<Newsletter> NewslettersUpdated { get; set; }
 
         #endregion
     }

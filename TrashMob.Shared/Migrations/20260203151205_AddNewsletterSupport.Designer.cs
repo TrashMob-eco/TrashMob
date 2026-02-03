@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using TrashMob.Shared.Persistence;
@@ -12,9 +13,11 @@ using TrashMob.Shared.Persistence;
 namespace TrashMob.Migrations
 {
     [DbContext(typeof(MobDbContext))]
-    partial class MobDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260203151205_AddNewsletterSupport")]
+    partial class AddNewsletterSupport
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -23,139 +26,6 @@ namespace TrashMob.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("TrashMob.Models.AchievementType", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Criteria")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("DisplayName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<int?>("DisplayOrder")
-                        .HasColumnType("int");
-
-                    b.Property<string>("IconUrl")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<bool?>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("Points")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AchievementTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Category = "Participation",
-                            Criteria = "{\"eventsAttended\": 1}",
-                            Description = "Attended your first cleanup event",
-                            DisplayName = "First Steps",
-                            DisplayOrder = 1,
-                            IsActive = true,
-                            Name = "FirstSteps",
-                            Points = 10
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Category = "Participation",
-                            Criteria = "{\"eventsAttended\": 10}",
-                            Description = "Attended 10 cleanup events",
-                            DisplayName = "Regular Volunteer",
-                            DisplayOrder = 2,
-                            IsActive = true,
-                            Name = "RegularVolunteer",
-                            Points = 50
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Category = "Participation",
-                            Criteria = "{\"eventsAttended\": 25}",
-                            Description = "Attended 25 cleanup events",
-                            DisplayName = "Dedicated Volunteer",
-                            DisplayOrder = 3,
-                            IsActive = true,
-                            Name = "DedicatedVolunteer",
-                            Points = 100
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Category = "Impact",
-                            Criteria = "{\"bagsCollected\": 10}",
-                            Description = "Collected 10 bags of trash",
-                            DisplayName = "Trash Collector",
-                            DisplayOrder = 4,
-                            IsActive = true,
-                            Name = "TrashCollector",
-                            Points = 25
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Category = "Impact",
-                            Criteria = "{\"bagsCollected\": 100}",
-                            Description = "Collected 100 bags of trash",
-                            DisplayName = "Trash Hero",
-                            DisplayOrder = 5,
-                            IsActive = true,
-                            Name = "TrashHero",
-                            Points = 150
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Category = "Special",
-                            Criteria = "{\"joinedTeam\": true}",
-                            Description = "Joined a cleanup team",
-                            DisplayName = "Team Player",
-                            DisplayOrder = 6,
-                            IsActive = true,
-                            Name = "TeamPlayer",
-                            Points = 20
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Category = "Special",
-                            Criteria = "{\"eventsCreated\": 1}",
-                            Description = "Created your first cleanup event",
-                            DisplayName = "Event Creator",
-                            DisplayOrder = 7,
-                            IsActive = true,
-                            Name = "EventCreator",
-                            Points = 30
-                        });
-                });
 
             modelBuilder.Entity("TrashMob.Models.AdoptableArea", b =>
                 {
@@ -3411,50 +3281,6 @@ namespace TrashMob.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TrashMob.Models.UserAchievement", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("AchievementTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset>("EarnedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid>("LastUpdatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("LastUpdatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<bool>("NotificationSent")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AchievementTypeId");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("LastUpdatedByUserId");
-
-                    b.HasIndex("UserId", "AchievementTypeId")
-                        .IsUnique()
-                        .HasDatabaseName("IX_UserAchievements_UserId_AchievementTypeId");
-
-                    b.ToTable("UserAchievements");
-                });
-
             modelBuilder.Entity("TrashMob.Models.UserFeedback", b =>
                 {
                     b.Property<Guid>("Id")
@@ -5333,43 +5159,6 @@ namespace TrashMob.Migrations
                     b.Navigation("LastUpdatedByUser");
                 });
 
-            modelBuilder.Entity("TrashMob.Models.UserAchievement", b =>
-                {
-                    b.HasOne("TrashMob.Models.AchievementType", "AchievementType")
-                        .WithMany("UserAchievements")
-                        .HasForeignKey("AchievementTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_UserAchievements_AchievementType");
-
-                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_UserAchievements_User_CreatedBy");
-
-                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
-                        .WithMany()
-                        .HasForeignKey("LastUpdatedByUserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_UserAchievements_User_LastUpdatedBy");
-
-                    b.HasOne("TrashMob.Models.User", "User")
-                        .WithMany("Achievements")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_UserAchievements_User");
-
-                    b.Navigation("AchievementType");
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("LastUpdatedByUser");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("TrashMob.Models.UserFeedback", b =>
                 {
                     b.HasOne("TrashMob.Models.User", "CreatedByUser")
@@ -5560,11 +5349,6 @@ namespace TrashMob.Migrations
                     b.Navigation("LastUpdatedByUser");
                 });
 
-            modelBuilder.Entity("TrashMob.Models.AchievementType", b =>
-                {
-                    b.Navigation("UserAchievements");
-                });
-
             modelBuilder.Entity("TrashMob.Models.AdoptableArea", b =>
                 {
                     b.Navigation("Adoptions");
@@ -5699,8 +5483,6 @@ namespace TrashMob.Migrations
 
             modelBuilder.Entity("TrashMob.Models.User", b =>
                 {
-                    b.Navigation("Achievements");
-
                     b.Navigation("AttendeeMetrics");
 
                     b.Navigation("CommunityWaiversCreated");

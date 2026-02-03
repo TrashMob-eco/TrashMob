@@ -114,6 +114,10 @@
             services.AddScoped<ILeaderboardManager, LeaderboardManager>();
             services.AddScoped<IAchievementManager, AchievementManager>();
 
+            // Newsletter
+            services.AddScoped<INewsletterManager, NewsletterManager>();
+            services.AddScoped<IUserNewsletterPreferenceManager, UserNewsletterPreferenceManager>();
+
             // Non-patterned
             services.AddScoped<IActiveDirectoryManager, ActiveDirectoryManager>();
             services.AddScoped<IEmailManager, EmailManager>();
@@ -197,6 +201,11 @@
             // Email Invite repositories
             services.AddScoped<IKeyedRepository<EmailInviteBatch>, KeyedRepository<EmailInviteBatch>>();
             services.AddScoped<IKeyedRepository<EmailInvite>, KeyedRepository<EmailInvite>>();
+
+            // Newsletter repositories
+            services.AddScoped<IKeyedRepository<Newsletter>, KeyedRepository<Newsletter>>();
+            services.AddScoped<ILookupRepository<NewsletterCategory>, LookupRepository<NewsletterCategory>>();
+            services.AddScoped<ILookupRepository<NewsletterTemplate>, LookupRepository<NewsletterTemplate>>();
 
             return services;
         }
