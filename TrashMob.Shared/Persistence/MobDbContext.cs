@@ -147,6 +147,10 @@
 
         public virtual DbSet<UserNewsletterPreference> UserNewsletterPreferences { get; set; }
 
+        public virtual DbSet<AchievementType> AchievementTypes { get; set; }
+
+        public virtual DbSet<UserAchievement> UserAchievements { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(configuration["TMDBServerConnectionString"], x => x.UseNetTopologySuite());
@@ -2631,6 +2635,121 @@
 
                 entity.HasIndex(e => e.UserId)
                     .HasDatabaseName("IX_UserNewsletterPreferences_UserId");
+            });
+
+            // Achievement Entities
+
+            modelBuilder.Entity<AchievementType>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.DisplayName)
+                    .IsRequired()
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.Description)
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Category)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.IconUrl)
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Criteria)
+                    .IsRequired()
+                    .HasMaxLength(1000);
+
+                // Seed initial achievement types
+                entity.HasData(
+                    new AchievementType
+                    {
+                        Id = 1, Name = "FirstSteps", DisplayName = "First Steps",
+                        Description = "Attended your first cleanup event",
+                        Category = "Participation", Criteria = "{\"eventsAttended\": 1}",
+                        Points = 10, DisplayOrder = 1, IsActive = true,
+                    },
+                    new AchievementType
+                    {
+                        Id = 2, Name = "RegularVolunteer", DisplayName = "Regular Volunteer",
+                        Description = "Attended 10 cleanup events",
+                        Category = "Participation", Criteria = "{\"eventsAttended\": 10}",
+                        Points = 50, DisplayOrder = 2, IsActive = true,
+                    },
+                    new AchievementType
+                    {
+                        Id = 3, Name = "DedicatedVolunteer", DisplayName = "Dedicated Volunteer",
+                        Description = "Attended 25 cleanup events",
+                        Category = "Participation", Criteria = "{\"eventsAttended\": 25}",
+                        Points = 100, DisplayOrder = 3, IsActive = true,
+                    },
+                    new AchievementType
+                    {
+                        Id = 4, Name = "TrashCollector", DisplayName = "Trash Collector",
+                        Description = "Collected 10 bags of trash",
+                        Category = "Impact", Criteria = "{\"bagsCollected\": 10}",
+                        Points = 25, DisplayOrder = 4, IsActive = true,
+                    },
+                    new AchievementType
+                    {
+                        Id = 5, Name = "TrashHero", DisplayName = "Trash Hero",
+                        Description = "Collected 100 bags of trash",
+                        Category = "Impact", Criteria = "{\"bagsCollected\": 100}",
+                        Points = 150, DisplayOrder = 5, IsActive = true,
+                    },
+                    new AchievementType
+                    {
+                        Id = 6, Name = "TeamPlayer", DisplayName = "Team Player",
+                        Description = "Joined a cleanup team",
+                        Category = "Special", Criteria = "{\"joinedTeam\": true}",
+                        Points = 20, DisplayOrder = 6, IsActive = true,
+                    },
+                    new AchievementType
+                    {
+                        Id = 7, Name = "EventCreator", DisplayName = "Event Creator",
+                        Description = "Created your first cleanup event",
+                        Category = "Special", Criteria = "{\"eventsCreated\": 1}",
+                        Points = 30, DisplayOrder = 7, IsActive = true,
+                    });
+            });
+
+            modelBuilder.Entity<UserAchievement>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                // Unique constraint: each user can only earn each achievement once
+                entity.HasIndex(e => new { e.UserId, e.AchievementTypeId })
+                    .IsUnique()
+                    .HasDatabaseName("IX_UserAchievements_UserId_AchievementTypeId");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Achievements)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_UserAchievements_User");
+
+                entity.HasOne(d => d.AchievementType)
+                    .WithMany(p => p.UserAchievements)
+                    .HasForeignKey(d => d.AchievementTypeId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("FK_UserAchievements_AchievementType");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserAchievements_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserAchievements_User_LastUpdatedBy");
             });
         }
     }

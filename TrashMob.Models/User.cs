@@ -33,6 +33,7 @@ namespace TrashMob.Models
             NewsletterPreferences = new HashSet<UserNewsletterPreference>();
             NewslettersCreated = new HashSet<Newsletter>();
             NewslettersUpdated = new HashSet<Newsletter>();
+            Achievements = new HashSet<UserAchievement>();
         }
 
         /// <summary>
@@ -600,6 +601,11 @@ namespace TrashMob.Models
         /// Gets or sets the collection of user waivers last updated by this user.
         /// </summary>
         public virtual ICollection<UserWaiver> UserWaiversUpdated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of achievements earned by this user.
+        /// </summary>
+        public virtual ICollection<UserAchievement> Achievements { get; set; }
 
         #endregion
 

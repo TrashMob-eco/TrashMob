@@ -112,6 +112,7 @@
 
             // Gamification
             services.AddScoped<ILeaderboardManager, LeaderboardManager>();
+            services.AddScoped<IAchievementManager, AchievementManager>();
 
             // Newsletter
             services.AddScoped<INewsletterManager, NewsletterManager>();

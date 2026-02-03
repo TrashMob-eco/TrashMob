@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using TrashMob.Shared.Persistence;
@@ -12,9 +13,11 @@ using TrashMob.Shared.Persistence;
 namespace TrashMob.Migrations
 {
     [DbContext(typeof(MobDbContext))]
-    partial class MobDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260203150803_AddAchievements")]
+    partial class AddAchievements
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1600,171 +1603,6 @@ namespace TrashMob.Migrations
                     b.HasIndex("LastUpdatedByUserId");
 
                     b.ToTable("MessageRequests");
-                });
-
-            modelBuilder.Entity("TrashMob.Models.Newsletter", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("BounceCount")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ClickCount")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<int>("DeliveredCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("HtmlContent")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("LastUpdatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("LastUpdatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<int>("OpenCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PreviewText")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int>("RecipientCount")
-                        .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ScheduledDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<int>("SentCount")
-                        .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("SentDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Status")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasDefaultValue("Draft");
-
-                    b.Property<string>("Subject")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<Guid?>("TargetId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("TargetType")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasDefaultValue("All");
-
-                    b.Property<string>("TextContent")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UnsubscribeCount")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("LastUpdatedByUserId");
-
-                    b.HasIndex("ScheduledDate")
-                        .HasDatabaseName("IX_Newsletters_Scheduled")
-                        .HasFilter("[Status] = 'Scheduled'");
-
-                    b.HasIndex("Status")
-                        .HasDatabaseName("IX_Newsletters_Status");
-
-                    b.ToTable("Newsletters");
-                });
-
-            modelBuilder.Entity("TrashMob.Models.NewsletterCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int?>("DisplayOrder")
-                        .HasColumnType("int");
-
-                    b.Property<bool?>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDefault")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("NewsletterCategories");
-                });
-
-            modelBuilder.Entity("TrashMob.Models.NewsletterTemplate", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int?>("DisplayOrder")
-                        .HasColumnType("int");
-
-                    b.Property<string>("HtmlContent")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool?>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("TextContent")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ThumbnailUrl")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("NewsletterTemplates");
                 });
 
             modelBuilder.Entity("TrashMob.Models.NonEventUserNotification", b =>
@@ -3535,33 +3373,6 @@ namespace TrashMob.Migrations
                     b.ToTable("UserFeedback");
                 });
 
-            modelBuilder.Entity("TrashMob.Models.UserNewsletterPreference", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsSubscribed")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset?>("SubscribedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset?>("UnsubscribedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.HasKey("UserId", "CategoryId");
-
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("IX_UserNewsletterPreferences_UserId");
-
-                    b.ToTable("UserNewsletterPreferences");
-                });
-
             modelBuilder.Entity("TrashMob.Models.UserNotification", b =>
                 {
                     b.Property<Guid>("Id")
@@ -4544,34 +4355,6 @@ namespace TrashMob.Migrations
                     b.Navigation("LastUpdatedByUser");
                 });
 
-            modelBuilder.Entity("TrashMob.Models.Newsletter", b =>
-                {
-                    b.HasOne("TrashMob.Models.NewsletterCategory", "Category")
-                        .WithMany("Newsletters")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired()
-                        .HasConstraintName("FK_Newsletters_NewsletterCategory");
-
-                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
-                        .WithMany("NewslettersCreated")
-                        .HasForeignKey("CreatedByUserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_Newsletters_User_CreatedBy");
-
-                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
-                        .WithMany("NewslettersUpdated")
-                        .HasForeignKey("LastUpdatedByUserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_Newsletters_User_LastUpdatedBy");
-
-                    b.Navigation("Category");
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("LastUpdatedByUser");
-                });
-
             modelBuilder.Entity("TrashMob.Models.NonEventUserNotification", b =>
                 {
                     b.HasOne("TrashMob.Models.User", "CreatedByUser")
@@ -5405,27 +5188,6 @@ namespace TrashMob.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("TrashMob.Models.UserNewsletterPreference", b =>
-                {
-                    b.HasOne("TrashMob.Models.NewsletterCategory", "Category")
-                        .WithMany("UserPreferences")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_UserNewsletterPreferences_Category");
-
-                    b.HasOne("TrashMob.Models.User", "User")
-                        .WithMany("NewsletterPreferences")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_UserNewsletterPreferences_User");
-
-                    b.Navigation("Category");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("TrashMob.Models.UserNotification", b =>
                 {
                     b.HasOne("TrashMob.Models.User", "CreatedByUser")
@@ -5624,13 +5386,6 @@ namespace TrashMob.Migrations
                     b.Navigation("LitterReports");
                 });
 
-            modelBuilder.Entity("TrashMob.Models.NewsletterCategory", b =>
-                {
-                    b.Navigation("Newsletters");
-
-                    b.Navigation("UserPreferences");
-                });
-
             modelBuilder.Entity("TrashMob.Models.Partner", b =>
                 {
                     b.Navigation("AdoptableAreas");
@@ -5762,12 +5517,6 @@ namespace TrashMob.Migrations
                     b.Navigation("MessageRequestsCreated");
 
                     b.Navigation("MessageRequestsUpdated");
-
-                    b.Navigation("NewsletterPreferences");
-
-                    b.Navigation("NewslettersCreated");
-
-                    b.Navigation("NewslettersUpdated");
 
                     b.Navigation("NonEventUserNotifications");
 
