@@ -357,6 +357,28 @@ namespace TrashMob.Controllers
             var totals = await metricsManager.CalculateTotalsAsync(eventId, cancellationToken);
             return Ok(totals);
         }
+
+        /// <summary>
+        /// Gets the public metrics summary for an event, including approved contributor breakdown.
+        /// This endpoint is publicly accessible and returns only approved metrics from users who opted into public visibility.
+        /// </summary>
+        /// <param name="eventId">The event ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpGet("public")]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(EventMetricsPublicSummary), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetPublicMetrics(Guid eventId, CancellationToken cancellationToken)
+        {
+            var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
+            if (mobEvent == null)
+            {
+                return NotFound();
+            }
+
+            var summary = await metricsManager.GetPublicMetricsSummaryAsync(eventId, cancellationToken);
+            return Ok(summary);
+        }
     }
 
     /// <summary>

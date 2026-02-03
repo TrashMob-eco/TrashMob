@@ -22,6 +22,7 @@ import {
 import { EventPlaceAndLocation } from '@/components/events/event-list';
 import { EventAttendeeTable } from '@/components/events/event-attendee-table';
 import { AttendeeMetricsForm } from '@/components/events/AttendeeMetricsForm';
+import { EventContributorsCard } from '@/components/events/EventContributorsCard';
 
 import { Calendar, Share2, ClipboardList } from 'lucide-react';
 import makeUrls from '@/lib/add-to-calendar';
@@ -211,6 +212,11 @@ export const EventDetails: FC<EventDetailsProps> = () => {
                                 <span className='ml-2 text-muted-foreground'>{maxNumberOfParticipants}</span>
                             </p>
                             <EventAttendeeTable users={eventAttendees || []} event={event} />
+                        </div>
+                    ) : null}
+                    {isEventCompleted ? (
+                        <div className='container mx-auto mb-16'>
+                            <EventContributorsCard eventId={eventId} isEventCompleted={isEventCompleted} />
                         </div>
                     ) : null}
                     {currentUser && isEventCompleted && isAttending === 'Yes' ? (

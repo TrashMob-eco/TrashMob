@@ -12,12 +12,13 @@
     using TrashMob.Security;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Poco;
 
     /// <summary>
     /// Controller for managing users, including retrieval, update, and deletion operations.
     /// </summary>
     [Route("api/users")]
-    public class UsersController(IUserManager userManager) : SecureController
+    public class UsersController(IUserManager userManager, IEventAttendeeMetricsManager metricsManager) : SecureController
     {
         /// <summary>
         /// Retrieves all users. Admin access required.
@@ -162,6 +163,28 @@
             TrackEvent(nameof(DeleteUser));
 
             return Ok(id);
+        }
+
+        /// <summary>
+        /// Gets a user's personal impact statistics across all events.
+        /// </summary>
+        /// <param name="userId">The ID of the user.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>User's aggregated impact statistics from approved attendee metrics.</remarks>
+        [HttpGet("{userId}/impact")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobReadScope)]
+        public async Task<IActionResult> GetUserImpact(Guid userId, CancellationToken cancellationToken)
+        {
+            var user = await userManager.GetUserByInternalIdAsync(userId, cancellationToken).ConfigureAwait(false);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var impactStats = await metricsManager.GetUserImpactStatsAsync(userId, cancellationToken).ConfigureAwait(false);
+            return Ok(impactStats);
         }
 
         private bool ValidateUser(string userId)
