@@ -59,5 +59,13 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A list of batches for the community.</returns>
         Task<IEnumerable<EmailInviteBatch>> GetCommunityBatchesAsync(Guid communityId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets email invite batches for a specific team.
+        /// </summary>
+        /// <param name="teamId">The team ID.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A list of batches for the team.</returns>
+        Task<IEnumerable<EmailInviteBatch>> GetTeamBatchesAsync(Guid teamId, CancellationToken cancellationToken = default);
     }
 }

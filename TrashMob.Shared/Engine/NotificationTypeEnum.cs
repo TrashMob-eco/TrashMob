@@ -194,5 +194,10 @@
         /// Invitation sent to potential volunteers to join a specific community.
         /// </summary>
         InviteToJoinCommunity = 38,
+
+        /// <summary>
+        /// Invitation sent to potential volunteers to join a specific team.
+        /// </summary>
+        InviteToJoinTeam = 39,
     }
 }

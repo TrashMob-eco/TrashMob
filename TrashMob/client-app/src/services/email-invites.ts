@@ -117,3 +117,42 @@ export const CreateCommunityInviteBatch = (params: CreateCommunityInviteBatch_Pa
             data: body,
         }),
 });
+
+// ========================================
+// Team Email Invite Endpoints
+// ========================================
+
+export type GetTeamInviteBatches_Params = { teamId: string };
+export type GetTeamInviteBatches_Response = EmailInviteBatch[];
+export const GetTeamInviteBatches = (params: GetTeamInviteBatches_Params) => ({
+    key: ['/teams', params.teamId, 'invites/batches'],
+    service: async () =>
+        ApiService('protected').fetchData<GetTeamInviteBatches_Response>({
+            url: `/teams/${params.teamId}/invites/batches`,
+            method: 'get',
+        }),
+});
+
+export type GetTeamInviteBatchDetails_Params = { teamId: string; id: string };
+export type GetTeamInviteBatchDetails_Response = EmailInviteBatch;
+export const GetTeamInviteBatchDetails = (params: GetTeamInviteBatchDetails_Params) => ({
+    key: ['/teams', params.teamId, 'invites/batches', params.id],
+    service: async () =>
+        ApiService('protected').fetchData<GetTeamInviteBatchDetails_Response>({
+            url: `/teams/${params.teamId}/invites/batches/${params.id}`,
+            method: 'get',
+        }),
+});
+
+export type CreateTeamInviteBatch_Params = { teamId: string };
+export type CreateTeamInviteBatch_Body = CreateEmailInviteBatchRequest;
+export type CreateTeamInviteBatch_Response = EmailInviteBatch;
+export const CreateTeamInviteBatch = (params: CreateTeamInviteBatch_Params) => ({
+    key: ['/teams', params.teamId, 'invites/batch', 'create'],
+    service: async (body: CreateTeamInviteBatch_Body) =>
+        ApiService('protected').fetchData<CreateTeamInviteBatch_Response, CreateTeamInviteBatch_Body>({
+            url: `/teams/${params.teamId}/invites/batch`,
+            method: 'post',
+            data: body,
+        }),
+});
