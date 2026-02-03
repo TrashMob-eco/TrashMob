@@ -57,6 +57,8 @@ import { TeamsPage } from './pages/teams';
 import { TeamDetailPage } from './pages/teams/$teamId';
 import { CreateTeamPage } from './pages/teams/create';
 import { TeamEditPage } from './pages/teams/$teamId/edit';
+import { TeamInvitesPage } from './pages/teams/$teamId/invites';
+import { TeamInviteDetailsPage } from './pages/teams/$teamId/invites/$batchId';
 
 /** Communities */
 import { CommunitiesPage } from './pages/communities';
@@ -247,6 +249,8 @@ const AppContent: FC = () => {
                             <Route path='/litterreports/:litterReportId/edit' element={<LitterReportEditPage />} />
                             <Route path='/teams/create' element={<CreateTeamPage />} />
                             <Route path='/teams/:teamId/edit' element={<TeamEditPage />} />
+                            <Route path='/teams/:teamId/invites' element={<TeamInvitesPage />} />
+                            <Route path='/teams/:teamId/invites/:batchId' element={<TeamInviteDetailsPage />} />
                             <Route path='/communities/:slug/admin' element={<CommunityAdminLayout />}>
                                 <Route index element={<CommunityAdminDashboard />} />
                                 <Route path='content' element={<CommunityContentEdit />} />

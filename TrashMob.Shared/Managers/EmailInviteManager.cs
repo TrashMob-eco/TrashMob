@@ -21,6 +21,7 @@ namespace TrashMob.Shared.Managers
         private readonly IEmailManager emailManager;
         private readonly IUserManager userManager;
         private readonly IKeyedManager<Partner> partnerManager;
+        private readonly ITeamManager teamManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmailInviteManager"/> class.
@@ -30,18 +31,21 @@ namespace TrashMob.Shared.Managers
         /// <param name="emailManager">The email manager for sending notifications.</param>
         /// <param name="userManager">The manager for user operations.</param>
         /// <param name="partnerManager">The manager for partner/community operations.</param>
+        /// <param name="teamManager">The manager for team operations.</param>
         public EmailInviteManager(
             IKeyedRepository<EmailInviteBatch> emailInviteBatchRepository,
             IKeyedRepository<EmailInvite> emailInviteRepository,
             IEmailManager emailManager,
             IUserManager userManager,
-            IKeyedManager<Partner> partnerManager)
+            IKeyedManager<Partner> partnerManager,
+            ITeamManager teamManager)
             : base(emailInviteBatchRepository)
         {
             this.emailInviteRepository = emailInviteRepository;
             this.emailManager = emailManager;
             this.userManager = userManager;
             this.partnerManager = partnerManager;
+            this.teamManager = teamManager;
         }
 
         /// <inheritdoc />
@@ -128,11 +132,19 @@ namespace TrashMob.Shared.Managers
                 communityName = community?.Name;
             }
 
+            // Get team name if this is a team batch
+            string teamName = null;
+            if (batch.TeamId.HasValue)
+            {
+                var team = await teamManager.GetAsync(batch.TeamId.Value, cancellationToken);
+                teamName = team?.Name;
+            }
+
             foreach (var invite in pendingInvites)
             {
                 try
                 {
-                    await SendInviteEmailAsync(invite, senderName, communityName, cancellationToken);
+                    await SendInviteEmailAsync(invite, senderName, communityName, teamName, cancellationToken);
                     invite.Status = "Sent";
                     invite.SentDate = DateTimeOffset.UtcNow;
                     batch.SentCount++;
@@ -182,12 +194,28 @@ namespace TrashMob.Shared.Managers
                 .ToListAsync(cancellationToken);
         }
 
-        private async Task SendInviteEmailAsync(EmailInvite invite, string senderName, string communityName, CancellationToken cancellationToken)
+        /// <inheritdoc />
+        public async Task<IEnumerable<EmailInviteBatch>> GetTeamBatchesAsync(Guid teamId, CancellationToken cancellationToken = default)
+        {
+            return await Repository.Get(b => b.TeamId == teamId)
+                .Include(b => b.SenderUser)
+                .OrderByDescending(b => b.CreatedDate)
+                .ToListAsync(cancellationToken);
+        }
+
+        private async Task SendInviteEmailAsync(EmailInvite invite, string senderName, string communityName, string teamName, CancellationToken cancellationToken)
         {
             string emailCopy;
             string subject;
 
-            if (!string.IsNullOrEmpty(communityName))
+            if (!string.IsNullOrEmpty(teamName))
+            {
+                // Use team-specific template
+                emailCopy = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.InviteToJoinTeam.ToString());
+                emailCopy = emailCopy.Replace("{teamName}", teamName);
+                subject = $"You're Invited to Join {teamName} on TrashMob.eco!";
+            }
+            else if (!string.IsNullOrEmpty(communityName))
             {
                 // Use community-specific template
                 emailCopy = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.InviteToJoinCommunity.ToString());
