@@ -139,3 +139,115 @@ export interface AcceptWaiverRequest {
 export interface WaiverCheckResult {
     hasValidWaiver: boolean;
 }
+
+// ========================================
+// Compliance Dashboard Types
+// ========================================
+
+/**
+ * Summary statistics for waiver compliance dashboard.
+ */
+export interface WaiverComplianceSummary {
+    /** Total number of active users. */
+    totalActiveUsers: number;
+    /** Number of users with valid waivers. */
+    usersWithValidWaivers: number;
+    /** Number of users with expiring waivers (within 30 days). */
+    usersWithExpiringWaivers: number;
+    /** Number of users without any valid waiver. */
+    usersWithoutWaivers: number;
+    /** Total number of signed waivers. */
+    totalSignedWaivers: number;
+    /** Number of waivers signed via e-signature. */
+    eSignatureCount: number;
+    /** Number of waivers uploaded as paper. */
+    paperUploadCount: number;
+    /** Number of waivers for minors. */
+    minorWaiversCount: number;
+    /** Compliance percentage (users with valid waivers / total active users). */
+    compliancePercentage: number;
+    /** Timestamp when this summary was generated. */
+    generatedAt: string;
+}
+
+/**
+ * Detailed user waiver record for admin viewing.
+ */
+export interface UserWaiverDetail {
+    /** The user waiver ID. */
+    id: string;
+    /** The user ID. */
+    userId: string;
+    /** The user's name. */
+    userName: string;
+    /** The user's email. */
+    userEmail: string;
+    /** The waiver version ID. */
+    waiverVersionId: string;
+    /** The waiver name. */
+    waiverName: string;
+    /** The waiver version string. */
+    waiverVersion: string;
+    /** The typed legal name. */
+    typedLegalName: string;
+    /** When the waiver was accepted. */
+    acceptedDate: string;
+    /** When the waiver expires. */
+    expiryDate: string;
+    /** The signing method. */
+    signingMethod: string;
+    /** Whether this was signed by a minor. */
+    isMinor: boolean;
+    /** Guardian name if signed by a minor. */
+    guardianName?: string;
+    /** Whether the waiver is currently valid. */
+    isValid: boolean;
+    /** IP address at signing (for audit). */
+    ipAddress?: string;
+    /** Document URL if available. */
+    documentUrl?: string;
+}
+
+/**
+ * Filter parameters for querying user waivers.
+ */
+export interface UserWaiverFilter {
+    /** Page number (1-based). */
+    page?: number;
+    /** Page size. */
+    pageSize?: number;
+    /** Waiver version ID filter. */
+    waiverVersionId?: string;
+    /** Signing method filter. */
+    signingMethod?: string;
+    /** Filter for valid waivers only. */
+    isValid?: boolean;
+    /** Filter for minor waivers only. */
+    isMinor?: boolean;
+    /** Minimum accepted date filter. */
+    acceptedDateFrom?: string;
+    /** Maximum accepted date filter. */
+    acceptedDateTo?: string;
+    /** Minimum expiry date filter. */
+    expiryDateFrom?: string;
+    /** Maximum expiry date filter. */
+    expiryDateTo?: string;
+    /** Search term to filter by user name or email. */
+    searchTerm?: string;
+}
+
+/**
+ * Paginated result of user waivers.
+ */
+export interface UserWaiverListResult {
+    /** List of user waiver details. */
+    items: UserWaiverDetail[];
+    /** Total count of matching records. */
+    totalCount: number;
+    /** Current page number. */
+    page: number;
+    /** Page size. */
+    pageSize: number;
+    /** Total number of pages. */
+    totalPages: number;
+}

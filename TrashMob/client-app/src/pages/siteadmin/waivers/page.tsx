@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
-import { Plus } from 'lucide-react';
+import { Plus, BarChart3 } from 'lucide-react';
 import { Link, Outlet, useMatch, useNavigate } from 'react-router';
 
 import { getColumns } from './columns';
@@ -42,8 +42,14 @@ export const SiteAdminWaivers = () => {
 
     return (
         <Card>
-            <CardHeader>
+            <CardHeader className='flex flex-row items-center justify-between'>
                 <CardTitle>Waivers ({len})</CardTitle>
+                <Button variant='outline' asChild>
+                    <Link to='compliance'>
+                        <BarChart3 className='mr-2 h-4 w-4' />
+                        Compliance Dashboard
+                    </Link>
+                </Button>
             </CardHeader>
             <CardContent>
                 <DataTable columns={columns} data={waivers || []} />

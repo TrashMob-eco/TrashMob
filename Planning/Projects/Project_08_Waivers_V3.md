@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phase 1-4 Complete) |
+| **Status** | In Progress (Phase 1-4, 6 Complete) |
 | **Priority** | High |
 | **Risk** | Very High |
 | **Size** | Very Large |
@@ -156,12 +156,12 @@ Users must be able to download their signed waivers as PDF documents containing:
 - ☐ Minors require adult presence at events
 - ☐ Age verification integration (with Project 23)
 
-### Phase 6 - Admin & Viewing Tools
-- ☐ Admin dashboard for waiver compliance
-- ☐ View waivers by authorized party (signer, community lead, team lead, staff)
-- ☐ Bulk export for legal review
-- ☐ Audit logs and reporting
-- ☐ Exception handling workflow
+### Phase 6 - Admin & Viewing Tools ✅ Complete
+- ✅ Admin dashboard for waiver compliance (summary stats, filtering, pagination)
+- ✅ View waivers by admin (all signed waivers with user details)
+- ✅ Bulk export for legal review (CSV export with all audit data)
+- ✅ Audit logs in export (IP, user agent, signing method, timestamps)
+- ☐ Exception handling workflow (future: manual override for edge cases)
 
 ---
 
@@ -712,7 +712,7 @@ The following GitHub issues are tracked as part of this project:
 
 **Last Updated:** February 2, 2026
 **Owner:** Product Lead + Legal Counsel
-**Status:** In Progress (Phase 1-4 Complete)
-**Next Review:** After Phase 5 implementation (Minors Support)
+**Status:** In Progress (Phase 1-4, 6 Complete)
+**Next Review:** After Phase 5 implementation (Minors Support - depends on Project 23)
 
 **?? CRITICAL:** No development work begins until legal team provides written approval of approach.

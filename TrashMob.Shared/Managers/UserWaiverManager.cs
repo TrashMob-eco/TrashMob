@@ -426,6 +426,263 @@ namespace TrashMob.Shared.Managers
             });
         }
 
+        /// <inheritdoc />
+        public async Task<WaiverComplianceSummary> GetComplianceSummaryAsync(CancellationToken cancellationToken = default)
+        {
+            var now = DateTimeOffset.UtcNow;
+            var thirtyDaysFromNow = now.AddDays(30);
+
+            // Get total active users (users who have logged in within last year)
+            var oneYearAgo = now.AddYears(-1);
+            var totalActiveUsers = await userRepository
+                .Get(u => u.DateAgreedToTrashMobWaiver >= oneYearAgo || u.MemberSince >= oneYearAgo)
+                .CountAsync(cancellationToken);
+
+            // Get users with valid waivers
+            var usersWithValidWaivers = await Repo
+                .Get(uw => uw.ExpiryDate >= now)
+                .Select(uw => uw.UserId)
+                .Distinct()
+                .CountAsync(cancellationToken);
+
+            // Get users with expiring waivers (within 30 days)
+            var usersWithExpiringWaivers = await Repo
+                .Get(uw => uw.ExpiryDate >= now && uw.ExpiryDate <= thirtyDaysFromNow)
+                .Select(uw => uw.UserId)
+                .Distinct()
+                .CountAsync(cancellationToken);
+
+            // Get all signed waivers count
+            var allWaivers = await Repo.Get().ToListAsync(cancellationToken);
+
+            var totalSignedWaivers = allWaivers.Count;
+            var eSignatureCount = allWaivers.Count(w => w.SigningMethod != "PaperUpload");
+            var paperUploadCount = allWaivers.Count(w => w.SigningMethod == "PaperUpload");
+            var minorWaiversCount = allWaivers.Count(w => w.IsMinor);
+
+            var usersWithoutWaivers = totalActiveUsers - usersWithValidWaivers;
+            if (usersWithoutWaivers < 0) usersWithoutWaivers = 0;
+
+            var compliancePercentage = totalActiveUsers > 0
+                ? Math.Round((decimal)usersWithValidWaivers / totalActiveUsers * 100, 2)
+                : 0;
+
+            return new WaiverComplianceSummary
+            {
+                TotalActiveUsers = totalActiveUsers,
+                UsersWithValidWaivers = usersWithValidWaivers,
+                UsersWithExpiringWaivers = usersWithExpiringWaivers,
+                UsersWithoutWaivers = usersWithoutWaivers,
+                TotalSignedWaivers = totalSignedWaivers,
+                ESignatureCount = eSignatureCount,
+                PaperUploadCount = paperUploadCount,
+                MinorWaiversCount = minorWaiversCount,
+                CompliancePercentage = compliancePercentage,
+                GeneratedAt = now
+            };
+        }
+
+        /// <inheritdoc />
+        public async Task<UserWaiverListResult> GetUserWaiversFilteredAsync(UserWaiverFilter filter, CancellationToken cancellationToken = default)
+        {
+            var now = DateTimeOffset.UtcNow;
+            var query = Repo.Get()
+                .Include(uw => uw.User)
+                .Include(uw => uw.WaiverVersion)
+                .AsQueryable();
+
+            // Apply filters
+            if (filter.WaiverVersionId.HasValue)
+            {
+                query = query.Where(uw => uw.WaiverVersionId == filter.WaiverVersionId.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(filter.SigningMethod))
+            {
+                query = query.Where(uw => uw.SigningMethod == filter.SigningMethod);
+            }
+
+            if (filter.IsValid.HasValue)
+            {
+                if (filter.IsValid.Value)
+                {
+                    query = query.Where(uw => uw.ExpiryDate >= now);
+                }
+                else
+                {
+                    query = query.Where(uw => uw.ExpiryDate < now);
+                }
+            }
+
+            if (filter.IsMinor.HasValue)
+            {
+                query = query.Where(uw => uw.IsMinor == filter.IsMinor.Value);
+            }
+
+            if (filter.AcceptedDateFrom.HasValue)
+            {
+                query = query.Where(uw => uw.AcceptedDate >= filter.AcceptedDateFrom.Value);
+            }
+
+            if (filter.AcceptedDateTo.HasValue)
+            {
+                query = query.Where(uw => uw.AcceptedDate <= filter.AcceptedDateTo.Value);
+            }
+
+            if (filter.ExpiryDateFrom.HasValue)
+            {
+                query = query.Where(uw => uw.ExpiryDate >= filter.ExpiryDateFrom.Value);
+            }
+
+            if (filter.ExpiryDateTo.HasValue)
+            {
+                query = query.Where(uw => uw.ExpiryDate <= filter.ExpiryDateTo.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
+            {
+                var searchTerm = filter.SearchTerm.ToLower();
+                // Suppressing CA1862 - ToLower().Contains() is required for EF Core SQL translation (LOWER() function)
+#pragma warning disable CA1862
+                query = query.Where(uw =>
+                    uw.User.UserName.ToLower().Contains(searchTerm) ||
+                    uw.User.Email.ToLower().Contains(searchTerm) ||
+                    uw.TypedLegalName.ToLower().Contains(searchTerm));
+#pragma warning restore CA1862
+            }
+
+            // Get total count
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            // Apply pagination and ordering
+            var skip = (filter.Page - 1) * filter.PageSize;
+            var items = await query
+                .OrderByDescending(uw => uw.AcceptedDate)
+                .Skip(skip)
+                .Take(filter.PageSize)
+                .Select(uw => new UserWaiverDetail
+                {
+                    Id = uw.Id,
+                    UserId = uw.UserId,
+                    UserName = uw.User.UserName,
+                    UserEmail = uw.User.Email,
+                    WaiverVersionId = uw.WaiverVersionId,
+                    WaiverName = uw.WaiverVersion.Name,
+                    WaiverVersion = uw.WaiverVersion.Version,
+                    TypedLegalName = uw.TypedLegalName,
+                    AcceptedDate = uw.AcceptedDate,
+                    ExpiryDate = uw.ExpiryDate,
+                    SigningMethod = uw.SigningMethod,
+                    IsMinor = uw.IsMinor,
+                    GuardianName = uw.GuardianName,
+                    IsValid = uw.ExpiryDate >= now,
+                    IPAddress = uw.IPAddress,
+                    DocumentUrl = uw.DocumentUrl
+                })
+                .ToListAsync(cancellationToken);
+
+            return new UserWaiverListResult
+            {
+                Items = items,
+                TotalCount = totalCount,
+                Page = filter.Page,
+                PageSize = filter.PageSize
+            };
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<WaiverExportRecord>> GetWaiversForExportAsync(UserWaiverFilter filter, CancellationToken cancellationToken = default)
+        {
+            var now = DateTimeOffset.UtcNow;
+            var query = Repo.Get()
+                .Include(uw => uw.User)
+                .Include(uw => uw.WaiverVersion)
+                .AsQueryable();
+
+            // Apply same filters as GetUserWaiversFilteredAsync (but without pagination)
+            if (filter.WaiverVersionId.HasValue)
+            {
+                query = query.Where(uw => uw.WaiverVersionId == filter.WaiverVersionId.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(filter.SigningMethod))
+            {
+                query = query.Where(uw => uw.SigningMethod == filter.SigningMethod);
+            }
+
+            if (filter.IsValid.HasValue)
+            {
+                if (filter.IsValid.Value)
+                {
+                    query = query.Where(uw => uw.ExpiryDate >= now);
+                }
+                else
+                {
+                    query = query.Where(uw => uw.ExpiryDate < now);
+                }
+            }
+
+            if (filter.IsMinor.HasValue)
+            {
+                query = query.Where(uw => uw.IsMinor == filter.IsMinor.Value);
+            }
+
+            if (filter.AcceptedDateFrom.HasValue)
+            {
+                query = query.Where(uw => uw.AcceptedDate >= filter.AcceptedDateFrom.Value);
+            }
+
+            if (filter.AcceptedDateTo.HasValue)
+            {
+                query = query.Where(uw => uw.AcceptedDate <= filter.AcceptedDateTo.Value);
+            }
+
+            if (filter.ExpiryDateFrom.HasValue)
+            {
+                query = query.Where(uw => uw.ExpiryDate >= filter.ExpiryDateFrom.Value);
+            }
+
+            if (filter.ExpiryDateTo.HasValue)
+            {
+                query = query.Where(uw => uw.ExpiryDate <= filter.ExpiryDateTo.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
+            {
+                var searchTerm = filter.SearchTerm.ToLower();
+                // Suppressing CA1862 - ToLower().Contains() is required for EF Core SQL translation (LOWER() function)
+#pragma warning disable CA1862
+                query = query.Where(uw =>
+                    uw.User.UserName.ToLower().Contains(searchTerm) ||
+                    uw.User.Email.ToLower().Contains(searchTerm) ||
+                    uw.TypedLegalName.ToLower().Contains(searchTerm));
+#pragma warning restore CA1862
+            }
+
+            return await query
+                .OrderByDescending(uw => uw.AcceptedDate)
+                .Select(uw => new WaiverExportRecord
+                {
+                    UserWaiverId = uw.Id.ToString(),
+                    UserId = uw.UserId.ToString(),
+                    UserName = uw.User.UserName,
+                    UserEmail = uw.User.Email,
+                    TypedLegalName = uw.TypedLegalName,
+                    WaiverName = uw.WaiverVersion.Name,
+                    WaiverVersion = uw.WaiverVersion.Version,
+                    AcceptedDate = uw.AcceptedDate.ToString("yyyy-MM-dd HH:mm:ss"),
+                    ExpiryDate = uw.ExpiryDate.ToString("yyyy-MM-dd HH:mm:ss"),
+                    SigningMethod = uw.SigningMethod,
+                    IsMinor = uw.IsMinor ? "Yes" : "No",
+                    GuardianName = uw.GuardianName ?? "",
+                    GuardianRelationship = uw.GuardianRelationship ?? "",
+                    IPAddress = uw.IPAddress ?? "",
+                    UserAgent = uw.UserAgent ?? "",
+                    DocumentUrl = uw.DocumentUrl ?? ""
+                })
+                .ToListAsync(cancellationToken);
+        }
+
         private static DateTimeOffset GetEndOfYear()
         {
             var now = DateTimeOffset.UtcNow;
