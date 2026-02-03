@@ -29,6 +29,7 @@ namespace TrashMob.Models
             PartnersUpdated = new HashSet<Partner>();
             EventAttendees = new HashSet<EventAttendee>();
             EventAttendeeRoutes = new HashSet<EventAttendeeRoute>();
+            AttendeeMetrics = new HashSet<EventAttendeeMetrics>();
         }
 
         /// <summary>
@@ -125,6 +126,11 @@ namespace TrashMob.Models
         /// Gets or sets the collection of routes the user has taken during events.
         /// </summary>
         public virtual ICollection<EventAttendeeRoute> EventAttendeeRoutes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of metrics submitted by this user for events.
+        /// </summary>
+        public virtual ICollection<EventAttendeeMetrics> AttendeeMetrics { get; set; }
 
         /// <summary>
         /// Gets or sets the collection of events created by this user.

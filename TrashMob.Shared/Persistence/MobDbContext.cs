@@ -131,6 +131,8 @@
 
         public virtual DbSet<PhotoModerationLog> PhotoModerationLogs { get; set; }
 
+        public virtual DbSet<EventAttendeeMetrics> EventAttendeeMetrics { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(configuration["TMDBServerConnectionString"], x => x.UseNetTopologySuite());
@@ -1931,6 +1933,81 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_TeamAdoptionEvents_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<EventAttendeeMetrics>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                // Unique constraint: one submission per attendee per event
+                entity.HasIndex(e => new { e.EventId, e.UserId })
+                    .IsUnique()
+                    .HasDatabaseName("IX_EventAttendeeMetrics_EventId_UserId");
+
+                entity.HasIndex(e => e.Status)
+                    .HasDatabaseName("IX_EventAttendeeMetrics_Status");
+
+                entity.Property(e => e.Status)
+                    .IsRequired()
+                    .HasMaxLength(20)
+                    .HasDefaultValue("Pending");
+
+                entity.Property(e => e.PickedWeight)
+                    .HasColumnType("decimal(10,1)");
+
+                entity.Property(e => e.AdjustedPickedWeight)
+                    .HasColumnType("decimal(10,1)");
+
+                entity.Property(e => e.Notes)
+                    .HasMaxLength(2048);
+
+                entity.Property(e => e.RejectionReason)
+                    .HasMaxLength(1000);
+
+                entity.Property(e => e.AdjustmentReason)
+                    .HasMaxLength(1000);
+
+                entity.HasOne(d => d.Event)
+                    .WithMany(p => p.AttendeeMetrics)
+                    .HasForeignKey(d => d.EventId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_EventAttendeeMetrics_Event");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.AttendeeMetrics)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_EventAttendeeMetrics_User");
+
+                entity.HasOne(d => d.ReviewedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.ReviewedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventAttendeeMetrics_ReviewedByUser");
+
+                entity.HasOne(d => d.PickedWeightUnit)
+                    .WithMany(p => p.AttendeeMetricsForPicked)
+                    .HasForeignKey(d => d.PickedWeightUnitId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventAttendeeMetrics_PickedWeightUnit");
+
+                entity.HasOne(d => d.AdjustedPickedWeightUnit)
+                    .WithMany(p => p.AttendeeMetricsForAdjusted)
+                    .HasForeignKey(d => d.AdjustedPickedWeightUnitId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventAttendeeMetrics_AdjustedPickedWeightUnit");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventAttendeeMetrics_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventAttendeeMetrics_User_LastUpdatedBy");
             });
 
             modelBuilder.Entity<TeamEvent>(entity =>

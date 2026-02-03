@@ -113,6 +113,7 @@ namespace TrashMob.Security
                 EventSummary es => es.EventId,
                 EventAttendee ea => ea.EventId,
                 EventAttendeeRoute ear => ear.EventId,
+                EventAttendeeMetrics eam => eam.EventId,
                 EventLitterReport elr => elr.EventId,
                 EventPartnerLocationService epls => epls.EventId,
                 PickupLocation pl => pl.EventId,
