@@ -44,7 +44,7 @@
 | Project | Description | Status |
 |---------|-------------|--------|
 | [Project 6 - Backend Standards](./Projects/Project_06_Backend_Standards.md) | Code standards, .NET 10 upgrades | In Progress |
-| [Project 11 - Adopt-A-Location](./Projects/Project_11_Adopt_A_Location.md) | Location adoption program | Planning in Progress |
+| [Project 11 - Adopt-A-Location](./Projects/Project_11_Adopt_A_Location.md) | Location adoption program | ✅ Complete |
 | [Project 14 - Social Media Integration](./Projects/Project_14_Social_Media.md) | Modernize social sharing | Not Started |
 | [Project 15 - Route Tracing](./Projects/Project_15_Route_Tracing.md) | Map route tracing with privacy | Planning in Progress |
 | [Project 16 - Content Management](./Projects/Project_16_Content_Management.md) | Strapi CMS integration | ✅ Complete |
@@ -85,7 +85,7 @@
 ### Community Features
 - [Project 9 - Teams](./Projects/Project_09_Teams.md) ✅
 - [Project 10 - Community Pages](./Projects/Project_10_Community_Pages.md) ✅
-- [Project 11 - Adopt-A-Location](./Projects/Project_11_Adopt_A_Location.md)
+- [Project 11 - Adopt-A-Location](./Projects/Project_11_Adopt_A_Location.md) ✅
 
 ### Impact Tracking
 - [Project 7 - Event Weights](./Projects/Project_07_Event_Weights.md) ✅
@@ -119,11 +119,11 @@
 
 | Status | Count | Projects |
 |--------|-------|----------|
-| ✅ **Complete** | 14 | Projects 3, 7, 9, 10, 16, 17, 21, 26, 27, 28, 29, 32, 34 |
+| ✅ **Complete** | 15 | Projects 3, 7, 9, 10, 11, 16, 17, 21, 26, 27, 28, 29, 32, 34 |
 | **In Progress** | 2 | Projects 6, 8 (Phase 1 & 2 Complete) |
 | **Developers Engaged** | 1 | Project 4 |
 | **Ready for Review** | 2 | Projects 2, 5 |
-| **Planning** | 5 | Projects 1, 11, 15, 18, 23 |
+| **Planning** | 4 | Projects 1, 15, 18, 23 |
 | **Not Started** | 10 | Projects 12, 13, 14, 19, 20, 22, 24, 25, 30, 31, 35 |
 | **Deprioritized** | 1 | Project 33 |
 
