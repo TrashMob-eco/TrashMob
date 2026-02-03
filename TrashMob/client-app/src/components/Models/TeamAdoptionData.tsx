@@ -21,6 +21,17 @@ class TeamAdoptionData {
 
     rejectionReason: string = '';
 
+    // Compliance tracking fields (Phase 3)
+    adoptionStartDate: string | null = null;
+
+    adoptionEndDate: string | null = null;
+
+    lastEventDate: Date | null = null;
+
+    eventCount: number = 0;
+
+    isCompliant: boolean = false;
+
     // Navigation properties (populated by API when included)
     team?: {
         id: string;

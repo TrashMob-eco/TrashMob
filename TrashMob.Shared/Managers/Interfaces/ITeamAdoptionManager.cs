@@ -105,5 +105,35 @@ namespace TrashMob.Shared.Managers.Interfaces
             Guid teamId,
             Guid adoptableAreaId,
             CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets delinquent adoptions for a community (teams not meeting cleanup requirements).
+        /// </summary>
+        /// <param name="partnerId">The community (partner) ID.</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>A collection of non-compliant adoptions for the community.</returns>
+        Task<IEnumerable<TeamAdoption>> GetDelinquentByCommunityAsync(
+            Guid partnerId,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets compliance statistics for a community's adoption program.
+        /// </summary>
+        /// <param name="partnerId">The community (partner) ID.</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>Compliance statistics for the community.</returns>
+        Task<AdoptionComplianceStats> GetComplianceStatsByCommunityAsync(
+            Guid partnerId,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets all adoptions for a community with full details for export.
+        /// </summary>
+        /// <param name="partnerId">The community (partner) ID.</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>A collection of all adoptions with details for the community.</returns>
+        Task<IEnumerable<TeamAdoption>> GetAllForExportByCommunityAsync(
+            Guid partnerId,
+            CancellationToken cancellationToken = default);
     }
 }
