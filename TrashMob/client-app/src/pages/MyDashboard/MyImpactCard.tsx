@@ -151,9 +151,7 @@ export const MyImpactCard: FC<MyImpactCardProps> = ({ userId, prefersMetric = fa
                                             <TableCell className='text-right'>{event.bagsCollected}</TableCell>
                                             <TableCell className='text-right'>
                                                 {formatWeight(
-                                                    prefersMetric
-                                                        ? event.weightPounds / 2.20462
-                                                        : event.weightPounds,
+                                                    prefersMetric ? event.weightPounds / 2.20462 : event.weightPounds,
                                                 )}{' '}
                                                 {weightUnit}
                                             </TableCell>
