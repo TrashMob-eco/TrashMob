@@ -26,6 +26,7 @@ export const CommunityAdminLayout = () => {
         { name: 'Edit Content', value: `${pathPrefix}/content` },
         { name: 'Adoptable Areas', value: `${pathPrefix}/areas` },
         { name: 'Adoptions', value: `${pathPrefix}/adoptions` },
+        { name: 'Invites', value: `${pathPrefix}/invites` },
     ];
 
     const handleValueChange = useCallback(
