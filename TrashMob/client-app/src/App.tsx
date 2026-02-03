@@ -39,6 +39,7 @@ import Waivers from './pages/waivers/page';
 /** Events */
 import { CreateEventWrapper } from './pages/events/create';
 import { EventDetails } from './pages/eventdetails/$eventId/page';
+import { AttendeeMetricsReview } from './pages/eventdetails/$eventId/attendee-metrics/page';
 import { EditEventPage } from './pages/events/edit';
 import { CancelEvent } from './pages/events/$eventId/delete';
 import { EditEventSummary } from './pages/eventsummary/$eventId';
@@ -275,6 +276,7 @@ const AppContent: FC = () => {
                                 element={<PartnerRequestDetails />}
                             />
                             <Route path='/eventdetails/:eventId?' element={<EventDetails />} />
+                            <Route path='/eventdetails/:eventId/attendee-metrics' element={<AttendeeMetricsReview />} />
                             <Route path='/litterreports' element={<LitterReportsPage />} />
                             <Route path='/litterreports/:litterReportId' element={<LitterReportDetailPage />} />
                             <Route path='/teams' element={<TeamsPage />} />
