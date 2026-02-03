@@ -5,6 +5,7 @@ import { LeaderboardEntry } from '@/components/Models/LeaderboardData';
 interface LeaderboardTableProps {
     entries: LeaderboardEntry[];
     isLoading?: boolean;
+    entityType?: 'users' | 'teams';
 }
 
 const getRankIcon = (rank: number) => {
@@ -33,7 +34,7 @@ const getRankBadgeClass = (rank: number): string => {
     }
 };
 
-export const LeaderboardTable = ({ entries, isLoading }: LeaderboardTableProps) => {
+export const LeaderboardTable = ({ entries, isLoading, entityType = 'users' }: LeaderboardTableProps) => {
     if (isLoading) {
         return (
             <div className='flex justify-center items-center py-12'>
@@ -56,7 +57,7 @@ export const LeaderboardTable = ({ entries, isLoading }: LeaderboardTableProps) 
             <TableHeader>
                 <TableRow>
                     <TableHead className='w-20'>Rank</TableHead>
-                    <TableHead>Volunteer</TableHead>
+                    <TableHead>{entityType === 'teams' ? 'Team' : 'Volunteer'}</TableHead>
                     <TableHead className='hidden sm:table-cell'>Location</TableHead>
                     <TableHead className='text-right'>Score</TableHead>
                 </TableRow>

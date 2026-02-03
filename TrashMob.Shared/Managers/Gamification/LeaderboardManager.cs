@@ -261,5 +261,214 @@ namespace TrashMob.Shared.Managers.Gamification
                 _ => DateTimeOffset.MinValue
             };
         }
+
+        /// <inheritdoc />
+        public async Task<LeaderboardResponse> GetTeamLeaderboardAsync(
+            string leaderboardType,
+            string timeRange = "Month",
+            string locationScope = "Global",
+            string locationValue = null,
+            int limit = 50,
+            CancellationToken cancellationToken = default)
+        {
+            // Validate parameters
+            if (!LeaderboardTypes.Contains(leaderboardType, StringComparer.OrdinalIgnoreCase))
+            {
+                leaderboardType = "Events";
+            }
+
+            if (!TimeRanges.Contains(timeRange, StringComparer.OrdinalIgnoreCase))
+            {
+                timeRange = "Month";
+            }
+
+            if (!LocationScopes.Contains(locationScope, StringComparer.OrdinalIgnoreCase))
+            {
+                locationScope = "Global";
+            }
+
+            if (limit <= 0 || limit > 100)
+            {
+                limit = 50;
+            }
+
+            // Query the cache for team leaderboards
+            var query = dbContext.LeaderboardCaches
+                .AsNoTracking()
+                .Where(l => l.EntityType == "Team"
+                    && l.LeaderboardType == leaderboardType
+                    && l.TimeRange == timeRange
+                    && l.LocationScope == locationScope);
+
+            if (locationScope != "Global" && !string.IsNullOrEmpty(locationValue))
+            {
+                query = query.Where(l => l.LocationValue == locationValue);
+            }
+            else if (locationScope == "Global")
+            {
+                query = query.Where(l => l.LocationValue == null || l.LocationValue == "");
+            }
+
+            var totalCount = await query.CountAsync(cancellationToken).ConfigureAwait(false);
+
+            var entries = await query
+                .OrderBy(l => l.Rank)
+                .Take(limit)
+                .Select(l => new LeaderboardEntry
+                {
+                    EntityId = l.EntityId,
+                    EntityName = l.EntityName,
+                    EntityType = l.EntityType,
+                    Rank = l.Rank,
+                    Score = l.Score,
+                    FormattedScore = FormatScore(l.Score, leaderboardType)
+                })
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            var computedDate = await query
+                .Select(l => l.ComputedDate)
+                .FirstOrDefaultAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            return new LeaderboardResponse
+            {
+                LeaderboardType = leaderboardType,
+                TimeRange = timeRange,
+                LocationScope = locationScope,
+                LocationValue = locationValue,
+                ComputedDate = computedDate,
+                TotalEntries = totalCount,
+                Entries = entries
+            };
+        }
+
+        /// <inheritdoc />
+        public async Task<TeamRankResponse> GetTeamRankAsync(
+            Guid teamId,
+            string leaderboardType = "Events",
+            string timeRange = "AllTime",
+            CancellationToken cancellationToken = default)
+        {
+            // Validate parameters
+            if (!LeaderboardTypes.Contains(leaderboardType, StringComparer.OrdinalIgnoreCase))
+            {
+                leaderboardType = "Events";
+            }
+
+            if (!TimeRanges.Contains(timeRange, StringComparer.OrdinalIgnoreCase))
+            {
+                timeRange = "AllTime";
+            }
+
+            // Check if team exists and is active
+            var team = await dbContext.Teams
+                .AsNoTracking()
+                .Where(t => t.Id == teamId)
+                .Select(t => new { t.Name, t.IsActive })
+                .FirstOrDefaultAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            if (team == null)
+            {
+                return new TeamRankResponse
+                {
+                    TeamId = teamId,
+                    LeaderboardType = leaderboardType,
+                    TimeRange = timeRange,
+                    IsEligible = false,
+                    IneligibleReason = "Team not found."
+                };
+            }
+
+            if (!team.IsActive)
+            {
+                return new TeamRankResponse
+                {
+                    TeamId = teamId,
+                    TeamName = team.Name,
+                    LeaderboardType = leaderboardType,
+                    TimeRange = timeRange,
+                    IsEligible = false,
+                    IneligibleReason = "This team is no longer active."
+                };
+            }
+
+            // Get total ranked count
+            var totalRanked = await dbContext.LeaderboardCaches
+                .AsNoTracking()
+                .Where(l => l.EntityType == "Team"
+                    && l.LeaderboardType == leaderboardType
+                    && l.TimeRange == timeRange
+                    && l.LocationScope == "Global")
+                .CountAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            // Get team's entry
+            var teamEntry = await dbContext.LeaderboardCaches
+                .AsNoTracking()
+                .Where(l => l.EntityType == "Team"
+                    && l.EntityId == teamId
+                    && l.LeaderboardType == leaderboardType
+                    && l.TimeRange == timeRange
+                    && l.LocationScope == "Global")
+                .FirstOrDefaultAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            if (teamEntry == null)
+            {
+                // Team not ranked - check why
+                var eventCount = await GetTeamEventCountAsync(teamId, timeRange, cancellationToken).ConfigureAwait(false);
+                var ineligibleReason = eventCount < 3
+                    ? $"Teams need at least 3 events with member participation to appear on leaderboards. This team has {eventCount} event(s)."
+                    : "This team is not yet ranked on this leaderboard.";
+
+                return new TeamRankResponse
+                {
+                    TeamId = teamId,
+                    TeamName = team.Name,
+                    LeaderboardType = leaderboardType,
+                    TimeRange = timeRange,
+                    TotalRanked = totalRanked,
+                    IsEligible = eventCount >= 3,
+                    IneligibleReason = eventCount < 3 ? ineligibleReason : null
+                };
+            }
+
+            return new TeamRankResponse
+            {
+                TeamId = teamId,
+                TeamName = team.Name,
+                LeaderboardType = leaderboardType,
+                TimeRange = timeRange,
+                Rank = teamEntry.Rank,
+                Score = teamEntry.Score,
+                FormattedScore = FormatScore(teamEntry.Score, leaderboardType),
+                TotalRanked = totalRanked,
+                IsEligible = true
+            };
+        }
+
+        private async Task<int> GetTeamEventCountAsync(Guid teamId, string timeRange, CancellationToken cancellationToken)
+        {
+            // Count distinct events where any team member participated
+            var query = dbContext.TeamMembers
+                .AsNoTracking()
+                .Where(tm => tm.TeamId == teamId)
+                .SelectMany(tm => tm.User.EventAttendees)
+                .Select(ea => new { ea.EventId, ea.Event.EventDate });
+
+            if (timeRange != "AllTime")
+            {
+                var startDate = GetStartDateForTimeRange(timeRange);
+                query = query.Where(x => x.EventDate >= startDate);
+            }
+
+            return await query
+                .Select(x => x.EventId)
+                .Distinct()
+                .CountAsync(cancellationToken)
+                .ConfigureAwait(false);
+        }
     }
 }
