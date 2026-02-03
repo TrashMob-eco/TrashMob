@@ -51,7 +51,7 @@
 | [Project 19 - Newsletter Support](./Projects/Project_19_Newsletter.md) | Monthly communication | Not Started |
 | [Project 20 - Gamification](./Projects/Project_20_Gamification.md) | Leaderboards and engagement | Not Started |
 | [Project 21 - Event Co-Leads](./Projects/Project_21_Event_Co_Leads.md) | Multiple event admins | ✅ Complete |
-| [Project 22 - Attendee Metrics](./Projects/Project_22_Attendee_Metrics.md) | Per-attendee event statistics | Not Started |
+| [Project 22 - Attendee Metrics](./Projects/Project_22_Attendee_Metrics.md) | Per-attendee event statistics | In Progress (Phase 1 Complete) |
 | [Project 25 - Automated Testing](./Projects/Project_25_Automated_Testing.md) | E2E tests for web and mobile | Not Started |
 | [Project 26 - KeyVault RBAC Migration](./Projects/Project_26_KeyVault_RBAC_Migration.md) | Migrate from access policies to RBAC | ✅ Complete |
 | [Project 28 - Photo Moderation](./Projects/Project_28_Photo_Moderation.md) | Admin photo review and flagging | ✅ Complete |
@@ -120,11 +120,11 @@
 | Status | Count | Projects |
 |--------|-------|----------|
 | ✅ **Complete** | 15 | Projects 3, 7, 9, 10, 11, 16, 17, 21, 26, 27, 28, 29, 32, 34 |
-| **In Progress** | 2 | Projects 6, 8 (Phase 1 & 2 Complete) |
+| **In Progress** | 3 | Projects 6, 8 (Phase 1 & 2 Complete), 22 (Phase 1 Complete) |
 | **Developers Engaged** | 1 | Project 4 |
 | **Ready for Review** | 2 | Projects 2, 5 |
 | **Planning** | 4 | Projects 1, 15, 18, 23 |
-| **Not Started** | 10 | Projects 12, 13, 14, 19, 20, 22, 24, 25, 30, 31, 35 |
+| **Not Started** | 9 | Projects 12, 13, 14, 19, 20, 24, 25, 30, 31, 35 |
 | **Deprioritized** | 1 | Project 33 |
 
 **Total:** 35 project specifications documented

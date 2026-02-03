@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Not Started |
+| **Status** | In Progress (Phase 1 Complete) |
 | **Priority** | Medium |
 | **Risk** | Medium |
 | **Size** | Medium |
@@ -34,30 +34,29 @@ Let attendees enter personal stats and give leads tools to reconcile without dou
 
 ## Scope
 
-### Phase 1 - Attendee Entry
-- ✅ Attendees can enter their own metrics
-- ✅ Bags collected (count)
-- ✅ Weight collected (with units)
-- ✅ Time spent (duration)
-- ✅ Notes/comments
+### Phase 1 - Backend Infrastructure ✅ Complete
+- ✅ `EventAttendeeMetrics` model with approval workflow
+- ✅ API endpoints for attendee submission (`/my-metrics`)
+- ✅ API endpoints for lead operations (approve/reject/adjust)
+- ✅ Totals calculation with weight conversion
+- ✅ Bulk approve-all functionality
 
-### Phase 2 - Reconciliation
-- ✅ Lead sees all attendee entries
-- ✅ Approve/adjust individual entries
-- ✅ Auto-calculate event totals
-- ✅ Handle double-counting conflicts
+### Phase 2 - Frontend UI (Next)
+- ⬜ Attendee submission form on event page
+- ⬜ Lead review dashboard with approve/reject actions
+- ⬜ Totals display in event summary
 
 ### Phase 3 - Display
-- ✅ Event summary shows breakdown
-- ✅ Per-attendee contributions visible
-- ✅ Dashboard shows personal impact
-- ✅ Event leaderboards
+- ⬜ Event summary shows breakdown
+- ⬜ Per-attendee contributions visible
+- ⬜ Dashboard shows personal impact
+- ⬜ Event leaderboards
 
 ### Phase 4 - Integration
-- ✅ Route association (Project 15)
-- ✅ Photo association (Project 18)
-- ✅ Gamification integration (Project 20)
-- ✅ Team roll-ups (Project 9)
+- ⬜ Route association (Project 15)
+- ⬜ Photo association (Project 18)
+- ⬜ Gamification integration (Project 20)
+- ⬜ Team roll-ups (Project 9)
 
 ---
 
@@ -574,7 +573,7 @@ The following GitHub issues are tracked as part of this project:
 
 ---
 
-**Last Updated:** January 31, 2026
+**Last Updated:** February 2, 2026
 **Owner:** Product Lead + Engineering
-**Status:** Not Started
-**Next Review:** When Project 7 complete
+**Status:** In Progress (Phase 1 Complete)
+**Next Review:** Phase 2 frontend implementation
