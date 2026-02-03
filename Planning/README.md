@@ -49,7 +49,7 @@
 | [Project 15 - Route Tracing](./Projects/Project_15_Route_Tracing.md) | Map route tracing with privacy | Planning in Progress |
 | [Project 16 - Content Management](./Projects/Project_16_Content_Management.md) | Strapi CMS integration | ✅ Complete |
 | [Project 19 - Newsletter Support](./Projects/Project_19_Newsletter.md) | Monthly communication | Not Started |
-| [Project 20 - Gamification](./Projects/Project_20_Gamification.md) | Leaderboards and engagement | Not Started |
+| [Project 20 - Gamification](./Projects/Project_20_Gamification.md) | Leaderboards and engagement | In Progress (Phase 1 Backend Complete) |
 | [Project 21 - Event Co-Leads](./Projects/Project_21_Event_Co_Leads.md) | Multiple event admins | ✅ Complete |
 | [Project 22 - Attendee Metrics](./Projects/Project_22_Attendee_Metrics.md) | Per-attendee event statistics | In Progress (Phase 1-3 Complete) |
 | [Project 25 - Automated Testing](./Projects/Project_25_Automated_Testing.md) | E2E tests for web and mobile | Not Started |

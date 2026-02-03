@@ -137,6 +137,8 @@
 
         public virtual DbSet<EmailInvite> EmailInvites { get; set; }
 
+        public virtual DbSet<LeaderboardCache> LeaderboardCaches { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(configuration["TMDBServerConnectionString"], x => x.UseNetTopologySuite());
@@ -2492,6 +2494,47 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_EmailInvites_User_LastUpdatedBy");
+            });
+
+            // Gamification Entities
+
+            modelBuilder.Entity<LeaderboardCache>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.EntityType)
+                    .IsRequired()
+                    .HasMaxLength(10);
+
+                entity.Property(e => e.EntityName)
+                    .IsRequired()
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.LeaderboardType)
+                    .IsRequired()
+                    .HasMaxLength(20);
+
+                entity.Property(e => e.TimeRange)
+                    .IsRequired()
+                    .HasMaxLength(20);
+
+                entity.Property(e => e.LocationScope)
+                    .IsRequired()
+                    .HasMaxLength(20);
+
+                entity.Property(e => e.LocationValue)
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.Score)
+                    .HasColumnType("decimal(18,2)");
+
+                // Index for efficient leaderboard queries
+                entity.HasIndex(e => new { e.EntityType, e.LeaderboardType, e.TimeRange, e.LocationScope, e.LocationValue, e.Rank })
+                    .HasDatabaseName("IX_LeaderboardCache_Lookup");
+
+                // Index for entity-specific lookups
+                entity.HasIndex(e => e.EntityId)
+                    .HasDatabaseName("IX_LeaderboardCache_EntityId");
             });
         }
     }

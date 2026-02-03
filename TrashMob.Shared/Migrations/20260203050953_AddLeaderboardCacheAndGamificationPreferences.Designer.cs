@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using TrashMob.Shared.Persistence;
@@ -12,9 +13,11 @@ using TrashMob.Shared.Persistence;
 namespace TrashMob.Migrations
 {
     [DbContext(typeof(MobDbContext))]
-    partial class MobDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260203050953_AddLeaderboardCacheAndGamificationPreferences")]
+    partial class AddLeaderboardCacheAndGamificationPreferences
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -202,152 +205,6 @@ namespace TrashMob.Migrations
                     b.HasIndex("LastUpdatedByUserId");
 
                     b.ToTable("ContactRequests");
-                });
-
-            modelBuilder.Entity("TrashMob.Models.EmailInvite", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("BatchId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset?>("DeliveredDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("ErrorMessage")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<Guid>("LastUpdatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("LastUpdatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset?>("SentDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset?>("SignedUpDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid?>("SignedUpUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasDefaultValue("Pending");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BatchId")
-                        .HasDatabaseName("IX_EmailInvites_BatchId");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("Email")
-                        .HasDatabaseName("IX_EmailInvites_Email");
-
-                    b.HasIndex("LastUpdatedByUserId");
-
-                    b.HasIndex("SignedUpUserId");
-
-                    b.HasIndex("Status")
-                        .HasDatabaseName("IX_EmailInvites_Status");
-
-                    b.ToTable("EmailInvites");
-                });
-
-            modelBuilder.Entity("TrashMob.Models.EmailInviteBatch", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("BatchType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("BouncedCount")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("CommunityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("CompletedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<int>("DeliveredCount")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("LastUpdatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("LastUpdatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid>("SenderUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("SentCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasDefaultValue("Pending");
-
-                    b.Property<Guid?>("TeamId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("TotalCount")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CommunityId");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("CreatedDate")
-                        .HasDatabaseName("IX_EmailInviteBatches_CreatedDate");
-
-                    b.HasIndex("LastUpdatedByUserId");
-
-                    b.HasIndex("SenderUserId")
-                        .HasDatabaseName("IX_EmailInviteBatches_SenderUserId");
-
-                    b.HasIndex("Status")
-                        .HasDatabaseName("IX_EmailInviteBatches_Status");
-
-                    b.HasIndex("TeamId");
-
-                    b.ToTable("EmailInviteBatches");
                 });
 
             modelBuilder.Entity("TrashMob.Models.Event", b =>
@@ -3670,86 +3527,6 @@ namespace TrashMob.Migrations
                     b.Navigation("LastUpdatedByUser");
                 });
 
-            modelBuilder.Entity("TrashMob.Models.EmailInvite", b =>
-                {
-                    b.HasOne("TrashMob.Models.EmailInviteBatch", "Batch")
-                        .WithMany("Invites")
-                        .HasForeignKey("BatchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_EmailInvites_Batch");
-
-                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_EmailInvites_User_CreatedBy");
-
-                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
-                        .WithMany()
-                        .HasForeignKey("LastUpdatedByUserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_EmailInvites_User_LastUpdatedBy");
-
-                    b.HasOne("TrashMob.Models.User", "SignedUpUser")
-                        .WithMany()
-                        .HasForeignKey("SignedUpUserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .HasConstraintName("FK_EmailInvites_SignedUpUser");
-
-                    b.Navigation("Batch");
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("LastUpdatedByUser");
-
-                    b.Navigation("SignedUpUser");
-                });
-
-            modelBuilder.Entity("TrashMob.Models.EmailInviteBatch", b =>
-                {
-                    b.HasOne("TrashMob.Models.Partner", "Community")
-                        .WithMany()
-                        .HasForeignKey("CommunityId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .HasConstraintName("FK_EmailInviteBatches_Community");
-
-                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_EmailInviteBatches_User_CreatedBy");
-
-                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
-                        .WithMany()
-                        .HasForeignKey("LastUpdatedByUserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_EmailInviteBatches_User_LastUpdatedBy");
-
-                    b.HasOne("TrashMob.Models.User", "SenderUser")
-                        .WithMany()
-                        .HasForeignKey("SenderUserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired()
-                        .HasConstraintName("FK_EmailInviteBatches_SenderUser");
-
-                    b.HasOne("TrashMob.Models.Team", "Team")
-                        .WithMany()
-                        .HasForeignKey("TeamId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .HasConstraintName("FK_EmailInviteBatches_Team");
-
-                    b.Navigation("Community");
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("LastUpdatedByUser");
-
-                    b.Navigation("SenderUser");
-
-                    b.Navigation("Team");
-                });
-
             modelBuilder.Entity("TrashMob.Models.Event", b =>
                 {
                     b.HasOne("TrashMob.Models.User", "CreatedByUser")
@@ -5108,11 +4885,6 @@ namespace TrashMob.Migrations
             modelBuilder.Entity("TrashMob.Models.AdoptableArea", b =>
                 {
                     b.Navigation("Adoptions");
-                });
-
-            modelBuilder.Entity("TrashMob.Models.EmailInviteBatch", b =>
-                {
-                    b.Navigation("Invites");
                 });
 
             modelBuilder.Entity("TrashMob.Models.Event", b =>

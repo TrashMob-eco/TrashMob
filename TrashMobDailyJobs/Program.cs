@@ -24,6 +24,9 @@ namespace TrashMobDailyJobs
 
             var statGenerator = scope.ServiceProvider.GetRequiredService<StatGenerator>();
             await statGenerator.RunAsync();
+
+            var leaderboardGenerator = scope.ServiceProvider.GetRequiredService<LeaderboardGenerator>();
+            await leaderboardGenerator.RunAsync();
         }
 
         private static void ConfigureServices(IServiceCollection services)
@@ -42,6 +45,7 @@ namespace TrashMobDailyJobs
             });
 
             services.AddScoped<StatGenerator>();
+            services.AddScoped<LeaderboardGenerator>();
             ServiceBuilder.AddManagers(services);
             ServiceBuilder.AddRepositories(services);
             services.AddDbContext<MobDbContext>();
