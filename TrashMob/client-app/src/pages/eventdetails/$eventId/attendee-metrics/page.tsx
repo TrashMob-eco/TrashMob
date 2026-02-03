@@ -355,9 +355,7 @@ export const AttendeeMetricsReview = () => {
                         </CardHeader>
                         <CardContent>
                             <div className='text-2xl font-bold'>{totals.totalSubmissions}</div>
-                            <p className='text-xs text-muted-foreground'>
-                                {totals.pendingSubmissions} pending review
-                            </p>
+                            <p className='text-xs text-muted-foreground'>{totals.pendingSubmissions} pending review</p>
                         </CardContent>
                     </Card>
                     <Card>
@@ -488,7 +486,9 @@ export const AttendeeMetricsReview = () => {
                                                             </AlertDialogTrigger>
                                                             <AlertDialogContent>
                                                                 <AlertDialogHeader>
-                                                                    <AlertDialogTitle>Approve Submission</AlertDialogTitle>
+                                                                    <AlertDialogTitle>
+                                                                        Approve Submission
+                                                                    </AlertDialogTitle>
                                                                     <AlertDialogDescription>
                                                                         Are you sure you want to approve this submission
                                                                         from <strong>{metrics.userName}</strong>?
@@ -643,9 +643,7 @@ export const AttendeeMetricsReview = () => {
                                 <div className='text-center py-12'>
                                     <X className='h-12 w-12 mx-auto text-muted-foreground mb-4' />
                                     <h3 className='text-lg font-medium mb-2'>No rejected submissions</h3>
-                                    <p className='text-muted-foreground'>
-                                        Rejected submissions will appear here.
-                                    </p>
+                                    <p className='text-muted-foreground'>Rejected submissions will appear here.</p>
                                 </div>
                             )}
                         </TabsContent>

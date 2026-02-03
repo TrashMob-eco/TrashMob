@@ -37,24 +37,27 @@ interface AttendeeMetricsFormProps {
     isAttending: boolean;
 }
 
-const statusConfig: Record<MetricsStatus, { icon: FC<{ className?: string }>; variant: 'default' | 'secondary' | 'destructive' | 'outline'; label: string }> = {
+const statusConfig: Record<
+    MetricsStatus,
+    { icon: FC<{ className?: string }>; variant: 'default' | 'secondary' | 'destructive' | 'outline'; label: string }
+> = {
     Pending: { icon: Clock, variant: 'secondary', label: 'Pending Review' },
     Approved: { icon: CheckCircle2, variant: 'default', label: 'Approved' },
     Rejected: { icon: XCircle, variant: 'destructive', label: 'Rejected' },
     Adjusted: { icon: CheckCircle2, variant: 'default', label: 'Approved (Adjusted)' },
 };
 
-export const AttendeeMetricsForm: FC<AttendeeMetricsFormProps> = ({
-    eventId,
-    isEventCompleted,
-    isAttending,
-}) => {
+export const AttendeeMetricsForm: FC<AttendeeMetricsFormProps> = ({ eventId, isEventCompleted, isAttending }) => {
     const { currentUser } = useLogin();
     const { toast } = useToast();
     const queryClient = useQueryClient();
 
     // Fetch existing metrics submission
-    const { data: existingMetrics, isLoading: isLoadingMetrics, error: metricsError } = useQuery({
+    const {
+        data: existingMetrics,
+        isLoading: isLoadingMetrics,
+        error: metricsError,
+    } = useQuery({
         queryKey: GetMyMetrics({ eventId }).key,
         queryFn: GetMyMetrics({ eventId }).service,
         select: (res) => res.data,
@@ -76,8 +79,7 @@ export const AttendeeMetricsForm: FC<AttendeeMetricsFormProps> = ({
     // Submit mutation
     const submitMetrics = useMutation({
         mutationKey: SubmitMyMetrics().key,
-        mutationFn: (values: AttendeeMetricsFormValues) =>
-            SubmitMyMetrics().service({ eventId }, values),
+        mutationFn: (values: AttendeeMetricsFormValues) => SubmitMyMetrics().service({ eventId }, values),
         onSuccess: () => {
             toast({
                 variant: 'primary',
@@ -158,36 +160,47 @@ export const AttendeeMetricsForm: FC<AttendeeMetricsFormProps> = ({
                                 : 'Submit your personal metrics from this event for the lead to review.'}
                         </CardDescription>
                     </div>
-                    {statusInfo ? <Badge variant={statusInfo.variant} className='flex items-center gap-1'>
+                    {statusInfo ? (
+                        <Badge variant={statusInfo.variant} className='flex items-center gap-1'>
                             <statusInfo.icon className='h-3 w-3' />
                             {statusInfo.label}
-                        </Badge> : null}
+                        </Badge>
+                    ) : null}
                 </div>
             </CardHeader>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                     <CardContent className='space-y-4'>
-                        {status === 'Rejected' && existingMetrics?.rejectionReason ? <Alert variant='destructive'>
+                        {status === 'Rejected' && existingMetrics?.rejectionReason ? (
+                            <Alert variant='destructive'>
                                 <AlertCircle className='h-4 w-4' />
                                 <AlertTitle>Submission Rejected</AlertTitle>
-                                <AlertDescription>
-                                    {existingMetrics.rejectionReason}
-                                </AlertDescription>
-                            </Alert> : null}
+                                <AlertDescription>{existingMetrics.rejectionReason}</AlertDescription>
+                            </Alert>
+                        ) : null}
 
-                        {status === 'Adjusted' && existingMetrics?.adjustmentReason ? <Alert>
+                        {status === 'Adjusted' && existingMetrics?.adjustmentReason ? (
+                            <Alert>
                                 <AlertCircle className='h-4 w-4' />
                                 <AlertTitle>Values Adjusted by Lead</AlertTitle>
                                 <AlertDescription>
                                     {existingMetrics.adjustmentReason}
                                     <div className='mt-2 text-sm'>
-                                        Adjusted values: {existingMetrics.adjustedBagsCollected ?? existingMetrics.bagsCollected} bags,{' '}
+                                        Adjusted values:{' '}
+                                        {existingMetrics.adjustedBagsCollected ?? existingMetrics.bagsCollected} bags,{' '}
                                         {existingMetrics.adjustedPickedWeight ?? existingMetrics.pickedWeight}{' '}
-                                        {weightUnits?.find(u => u.id === (existingMetrics.adjustedPickedWeightUnitId ?? existingMetrics.pickedWeightUnitId))?.name || 'lbs'},{' '}
-                                        {existingMetrics.adjustedDurationMinutes ?? existingMetrics.durationMinutes} minutes
+                                        {weightUnits?.find(
+                                            (u) =>
+                                                u.id ===
+                                                (existingMetrics.adjustedPickedWeightUnitId ??
+                                                    existingMetrics.pickedWeightUnitId),
+                                        )?.name || 'lbs'}
+                                        , {existingMetrics.adjustedDurationMinutes ?? existingMetrics.durationMinutes}{' '}
+                                        minutes
                                     </div>
                                 </AlertDescription>
-                            </Alert> : null}
+                            </Alert>
+                        ) : null}
 
                         <div className='grid gap-4 grid-cols-12'>
                             <FormField
@@ -301,10 +314,12 @@ export const AttendeeMetricsForm: FC<AttendeeMetricsFormProps> = ({
                         </div>
                     </CardContent>
                     <CardFooter className='justify-end'>
-                        {isEditable ? <Button type='submit' disabled={submitMetrics.isPending}>
+                        {isEditable ? (
+                            <Button type='submit' disabled={submitMetrics.isPending}>
                                 {submitMetrics.isPending ? <Loader2 className='h-4 w-4 animate-spin mr-2' /> : null}
                                 {hasSubmission ? 'Update Metrics' : 'Submit Metrics'}
-                            </Button> : null}
+                            </Button>
+                        ) : null}
                     </CardFooter>
                 </form>
             </Form>

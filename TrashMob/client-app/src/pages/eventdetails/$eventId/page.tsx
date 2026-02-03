@@ -91,10 +91,9 @@ export const EventDetails: FC<EventDetailsProps> = () => {
     const isAttending = (myAttendanceList || []).findIndex((e) => e.id === eventId) >= 0 ? 'Yes' : 'No';
 
     // Check if current user is an event lead (creator or promoted lead)
-    const isEventLead = currentUser && (
-        createdByUserId === currentUser.id ||
-        (eventLeads || []).some((lead) => lead.id === currentUser.id)
-    );
+    const isEventLead =
+        currentUser &&
+        (createdByUserId === currentUser.id || (eventLeads || []).some((lead) => lead.id === currentUser.id));
 
     const urls = makeUrls({
         name: eventName,
@@ -217,9 +216,7 @@ export const EventDetails: FC<EventDetailsProps> = () => {
                     {currentUser && isEventCompleted && isAttending === 'Yes' ? (
                         <div className='container mx-auto mb-16'>
                             <hr />
-                            <h2 className='font-semibold text-xl mt-5 mb-4'>
-                                Submit Your Metrics
-                            </h2>
+                            <h2 className='font-semibold text-xl mt-5 mb-4'>Submit Your Metrics</h2>
                             <AttendeeMetricsForm
                                 eventId={eventId}
                                 isEventCompleted={isEventCompleted}
@@ -230,9 +227,7 @@ export const EventDetails: FC<EventDetailsProps> = () => {
                     {currentUser && isEventCompleted && isEventLead ? (
                         <div className='container mx-auto mb-16'>
                             <hr />
-                            <h2 className='font-semibold text-xl mt-5 mb-4'>
-                                Event Lead Actions
-                            </h2>
+                            <h2 className='font-semibold text-xl mt-5 mb-4'>Event Lead Actions</h2>
                             <Link to={`/eventdetails/${eventId}/attendee-metrics`}>
                                 <Button variant='outline'>
                                     <ClipboardList className='h-4 w-4 mr-2' />
