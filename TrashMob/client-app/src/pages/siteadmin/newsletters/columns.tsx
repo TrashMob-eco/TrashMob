@@ -134,8 +134,7 @@ export const getColumns = ({ onEdit, onSend, onSchedule, onDelete }: GetColumnsP
                                 </>
                             )}
                         </DropdownMenuItem>
-                        {isDraft && (
-                            <>
+                        {isDraft ? <>
                                 <DropdownMenuItem onClick={() => onSchedule(newsletter.id)}>
                                     <Calendar className='mr-2 h-4 w-4' />
                                     Schedule
@@ -152,8 +151,7 @@ export const getColumns = ({ onEdit, onSend, onSchedule, onDelete }: GetColumnsP
                                     <Trash2 className='mr-2 h-4 w-4' />
                                     Delete
                                 </DropdownMenuItem>
-                            </>
-                        )}
+                            </> : null}
                     </DropdownMenuContent>
                 </DropdownMenu>
             );

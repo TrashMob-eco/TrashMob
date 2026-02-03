@@ -198,8 +198,7 @@ export const NewsletterEditorDialog = ({ open, onOpenChange, newsletter }: Newsl
                         />
                     </div>
 
-                    {!isReadOnly && templates && templates.length > 0 && (
-                        <div className='space-y-2'>
+                    {!isReadOnly && templates && templates.length > 0 ? <div className='space-y-2'>
                             <Label>Apply Template</Label>
                             <Select onValueChange={handleApplyTemplate}>
                                 <SelectTrigger>
@@ -213,8 +212,7 @@ export const NewsletterEditorDialog = ({ open, onOpenChange, newsletter }: Newsl
                                     ))}
                                 </SelectContent>
                             </Select>
-                        </div>
-                    )}
+                        </div> : null}
 
                     <div className='space-y-2'>
                         <Label htmlFor='htmlContent'>HTML Content</Label>
