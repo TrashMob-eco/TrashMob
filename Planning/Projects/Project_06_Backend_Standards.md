@@ -58,6 +58,13 @@ Unify coding patterns across the backend codebase, upgrade to .NET 10, secure al
 - ✓ Document common patterns in wiki
 - ✓ Create coding standards guide
 
+### Phase 5 - Unit Test Coverage
+- ? Increase test coverage for TrashMob.Shared managers
+- ? Add tests for repository layer
+- ? Add tests for controller validation logic
+- ? Achieve minimum 70% code coverage for business logic
+- ? Integrate coverage reporting in CI/CD
+
 ---
 
 ## Out-of-Scope
@@ -72,7 +79,7 @@ Unify coding patterns across the backend codebase, upgrade to .NET 10, secure al
 ## Success Metrics
 
 ### Quantitative
-- **Code coverage:** Maintain or increase current levels
+- **Code coverage:** Achieve ≥ 70% coverage for TrashMob.Shared managers
 - **Compilation warnings:** Reduce to zero
 - **Security vulnerabilities:** Zero high/critical
 - **API documentation:** 100% of endpoints documented
@@ -222,6 +229,13 @@ Create `CODING_STANDARDS.md`:
 - Write coding standards
 - Create contribution guide
 
+### Phase 5: Unit Test Coverage
+- Add unit tests for managers in TrashMob.Shared
+- Test repository methods with in-memory database
+- Add controller validation tests
+- Configure code coverage reporting (Coverlet)
+- Set up coverage thresholds in CI pipeline
+
 **Note:** Each phase can be picked up by different volunteers independently.
 
 ---
@@ -269,7 +283,7 @@ The following GitHub issues are tracked as part of this project:
 
 ---
 
-**Last Updated:** January 31, 2026
+**Last Updated:** February 3, 2026
 **Owner:** Engineering Lead
 **Status:** In Progress (Phase 1 & 4 complete)
-**Next Review:** When Phase 2 or 3 starts
+**Next Review:** When Phase 2, 3, or 5 starts
