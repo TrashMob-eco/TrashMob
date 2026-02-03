@@ -223,7 +223,7 @@ export const WaiverComplianceDashboard = () => {
                                 onValueChange={(v) =>
                                     handleFilterChange(
                                         'isValid',
-                                        v === 'all' ? undefined : v === 'valid' ? true : false
+                                        v === 'all' ? undefined : v === 'valid'
                                     )
                                 }
                             >
@@ -268,11 +268,9 @@ export const WaiverComplianceDashboard = () => {
                                         <TableCell>
                                             <div>
                                                 <p>{waiver.typedLegalName}</p>
-                                                {waiver.isMinor && (
-                                                    <Badge variant='outline' className='text-xs'>
+                                                {waiver.isMinor ? <Badge variant='outline' className='text-xs'>
                                                         Minor
-                                                    </Badge>
-                                                )}
+                                                    </Badge> : null}
                                             </div>
                                         </TableCell>
                                         <TableCell>
@@ -303,8 +301,7 @@ export const WaiverComplianceDashboard = () => {
                     </div>
 
                     {/* Pagination */}
-                    {waiversResult && waiversResult.totalPages > 1 && (
-                        <div className='mt-4 flex items-center justify-between'>
+                    {waiversResult && waiversResult.totalPages > 1 ? <div className='mt-4 flex items-center justify-between'>
                             <p className='text-sm text-muted-foreground'>
                                 Page {waiversResult.page} of {waiversResult.totalPages}
                             </p>
@@ -326,8 +323,7 @@ export const WaiverComplianceDashboard = () => {
                                     Next
                                 </Button>
                             </div>
-                        </div>
-                    )}
+                        </div> : null}
                 </CardContent>
             </Card>
         </div>
