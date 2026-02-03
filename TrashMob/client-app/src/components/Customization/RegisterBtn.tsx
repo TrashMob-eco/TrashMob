@@ -55,6 +55,15 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
             // re-direct user to event details page once they are registered
             navigate(`/eventdetails/${eventId}`);
         },
+        onError: (error: { response?: { status?: number; data?: { requiredWaiverCount?: number } } }) => {
+            // Handle waiver requirement error (400 with waiver info)
+            // This catches cases where user bypassed frontend waiver check
+            if (error?.response?.status === 400 && error?.response?.data?.requiredWaiverCount) {
+                refetchWaivers().then(() => {
+                    setShowWaiverFlow(true);
+                });
+            }
+        },
     });
 
     const addAttendee = async (eventId: string) => {

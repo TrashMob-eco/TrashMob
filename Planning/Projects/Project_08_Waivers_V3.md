@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phase 1 & 2 Complete) |
+| **Status** | In Progress (Phase 1-4 Complete) |
 | **Priority** | High |
 | **Risk** | Very High |
 | **Size** | Very Large |
@@ -136,19 +136,19 @@ Users must be able to download their signed waivers as PDF documents containing:
 - ✅ Re-consent when waiver updates
 - ✅ Email notifications for expiring waivers
 
-### Phase 3 - Manual Upload Workflow
-- ☐ Paper waiver upload by authorized users (staff, community mgr, team lead, event lead)
-- ☐ Image/PDF upload with metadata (signer name, date, event)
-- ☐ Validation workflow for uploaded documents
-- ☐ Link uploaded waiver to user account
-- ☐ Event page admin panel for waiver management (upload, view status, bulk actions)
+### Phase 3 - Manual Upload Workflow ✅ Complete
+- ✅ Paper waiver upload by authorized users (staff, community mgr, team lead, event lead)
+- ✅ Image/PDF upload with metadata (signer name, date, event)
+- ✅ Validation workflow for uploaded documents
+- ✅ Link uploaded waiver to user account
+- ✅ Event page admin panel for waiver management (upload, view status, bulk actions)
 
-### Phase 4 - Event Integration
-- ☐ Event registration waiver checks
-- ☐ Determine which waivers required (TrashMob + community)
-- ☐ Block registration if waiver missing/expired
-- ☐ Event lead view of attendee waiver status
-- ☐ Day-of check-in waiver verification
+### Phase 4 - Event Integration ✅ Complete
+- ✅ Event registration waiver checks
+- ✅ Determine which waivers required (TrashMob + community)
+- ✅ Block registration if waiver missing/expired
+- ✅ Event lead view of attendee waiver status
+- ✅ Day-of check-in waiver verification
 
 ### Phase 5 - Minors Support
 - ☐ Guardian consent workflow
@@ -712,7 +712,7 @@ The following GitHub issues are tracked as part of this project:
 
 **Last Updated:** February 2, 2026
 **Owner:** Product Lead + Legal Counsel
-**Status:** In Progress (Phase 1 & 2 Complete)
-**Next Review:** After Phase 3 implementation
+**Status:** In Progress (Phase 1-4 Complete)
+**Next Review:** After Phase 5 implementation (Minors Support)
 
 **?? CRITICAL:** No development work begins until legal team provides written approval of approach.
