@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phase 1 Complete) |
+| **Status** | In Progress (Phase 1-2 Complete) |
 | **Priority** | Medium |
 | **Risk** | Medium |
 | **Size** | Medium |
@@ -41,10 +41,10 @@ Let attendees enter personal stats and give leads tools to reconcile without dou
 - ✅ Totals calculation with weight conversion
 - ✅ Bulk approve-all functionality
 
-### Phase 2 - Frontend UI (Next)
-- ⬜ Attendee submission form on event page
-- ⬜ Lead review dashboard with approve/reject actions
-- ⬜ Totals display in event summary
+### Phase 2 - Frontend UI ✅ Complete
+- ✅ Attendee submission form on event page
+- ✅ Lead review dashboard with approve/reject/adjust actions
+- ✅ Totals display in lead review dashboard
 
 ### Phase 3 - Display
 - ⬜ Event summary shows breakdown
@@ -575,5 +575,5 @@ The following GitHub issues are tracked as part of this project:
 
 **Last Updated:** February 2, 2026
 **Owner:** Product Lead + Engineering
-**Status:** In Progress (Phase 1 Complete)
-**Next Review:** Phase 2 frontend implementation
+**Status:** In Progress (Phase 1-2 Complete)
+**Next Review:** Phase 3 display integration

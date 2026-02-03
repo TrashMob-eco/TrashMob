@@ -1,5 +1,5 @@
 import { FC, useState } from 'react';
-import { useParams } from 'react-router';
+import { useParams, Link } from 'react-router';
 import moment from 'moment';
 import { useQuery } from '@tanstack/react-query';
 import * as MapStore from '@/store/MapStore';
@@ -8,7 +8,7 @@ import { ShareToSocialsDialog } from '@/components/EventManagement/ShareToSocial
 import { RegisterBtn } from '@/components/Customization/RegisterBtn';
 import { HeroSection } from '@/components/Customization/HeroSection';
 import * as SharingMessages from '@/store/SharingMessages';
-import { GetAllEventsBeingAttendedByUser, GetEventAttendees } from '@/services/events';
+import { GetAllEventsBeingAttendedByUser, GetEventAttendees, GetEventLeads } from '@/services/events';
 import { useGetEvent } from '@/hooks/useGetEvent';
 import { useGetEventType } from '@/hooks/useGetEventType';
 import { Button } from '@/components/ui/button';
@@ -21,8 +21,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { EventPlaceAndLocation } from '@/components/events/event-list';
 import { EventAttendeeTable } from '@/components/events/event-attendee-table';
+import { AttendeeMetricsForm } from '@/components/events/AttendeeMetricsForm';
 
-import { Calendar, Share2 } from 'lucide-react';
+import { Calendar, Share2, ClipboardList } from 'lucide-react';
 import makeUrls from '@/lib/add-to-calendar';
 import { GoogleMapWithKey as GoogleMap } from '@/components/Map/GoogleMap';
 import { useLogin } from '@/hooks/useLogin';
@@ -46,6 +47,15 @@ const useGetEventsAttendedByUser = (userId: string) => {
     });
 };
 
+const useGetEventLeads = (eventId: string) => {
+    return useQuery({
+        queryKey: GetEventLeads({ eventId }).key,
+        queryFn: GetEventLeads({ eventId }).service,
+        select: (res) => res.data,
+        enabled: !!eventId,
+    });
+};
+
 export const EventDetails: FC<EventDetailsProps> = () => {
     const { eventId } = useParams<{ eventId: string }>() as { eventId: string };
     const { currentUser, isUserLoaded } = useLogin();
@@ -54,6 +64,7 @@ export const EventDetails: FC<EventDetailsProps> = () => {
     const { data: eventType } = useGetEventType(event?.eventTypeId || 0);
     const { data: eventAttendees } = useGetEventAttendees(eventId);
     const { data: myAttendanceList } = useGetEventsAttendedByUser(currentUser.id);
+    const { data: eventLeads } = useGetEventLeads(eventId);
     const [showModal, setShowSocialsModal] = useState<boolean>(false);
 
     const isDataLoaded = isSuccess;
@@ -78,6 +89,11 @@ export const EventDetails: FC<EventDetailsProps> = () => {
     const endDateTime = moment(startDateTime).add(durationHours, 'hours').add(durationMinutes, 'minutes');
 
     const isAttending = (myAttendanceList || []).findIndex((e) => e.id === eventId) >= 0 ? 'Yes' : 'No';
+
+    // Check if current user is an event lead (creator or promoted lead)
+    const isEventLead =
+        currentUser &&
+        (createdByUserId === currentUser.id || (eventLeads || []).some((lead) => lead.id === currentUser.id));
 
     const urls = makeUrls({
         name: eventName,
@@ -195,6 +211,29 @@ export const EventDetails: FC<EventDetailsProps> = () => {
                                 <span className='ml-2 text-muted-foreground'>{maxNumberOfParticipants}</span>
                             </p>
                             <EventAttendeeTable users={eventAttendees || []} event={event} />
+                        </div>
+                    ) : null}
+                    {currentUser && isEventCompleted && isAttending === 'Yes' ? (
+                        <div className='container mx-auto mb-16'>
+                            <hr />
+                            <h2 className='font-semibold text-xl mt-5 mb-4'>Submit Your Metrics</h2>
+                            <AttendeeMetricsForm
+                                eventId={eventId}
+                                isEventCompleted={isEventCompleted}
+                                isAttending={isAttending === 'Yes'}
+                            />
+                        </div>
+                    ) : null}
+                    {currentUser && isEventCompleted && isEventLead ? (
+                        <div className='container mx-auto mb-16'>
+                            <hr />
+                            <h2 className='font-semibold text-xl mt-5 mb-4'>Event Lead Actions</h2>
+                            <Link to={`/eventdetails/${eventId}/attendee-metrics`}>
+                                <Button variant='outline'>
+                                    <ClipboardList className='h-4 w-4 mr-2' />
+                                    Review Attendee Metrics
+                                </Button>
+                            </Link>
                         </div>
                     ) : null}
                 </>
