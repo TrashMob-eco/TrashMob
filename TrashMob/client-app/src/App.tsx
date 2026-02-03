@@ -110,6 +110,8 @@ import { SiteAdminWaivers } from './pages/siteadmin/waivers/page';
 import { SiteAdminWaiverCreate } from './pages/siteadmin/waivers/create';
 import { SiteAdminWaiverEdit } from './pages/siteadmin/waivers/$waiverId.edit';
 import { WaiverComplianceDashboard } from './pages/siteadmin/waivers/compliance';
+import { SiteAdminInvites } from './pages/siteadmin/invites/page';
+import { SiteAdminInviteDetails } from './pages/siteadmin/invites/$batchId';
 import { NoMatch } from './pages/nomatch';
 
 const queryClient = new QueryClient();
@@ -269,6 +271,8 @@ const AppContent: FC = () => {
                                     <Route path='create' element={<SiteAdminWaiverCreate />} />
                                 </Route>
                                 <Route path='waivers/compliance' element={<WaiverComplianceDashboard />} />
+                                <Route path='invites' element={<SiteAdminInvites />} />
+                                <Route path='invites/:batchId' element={<SiteAdminInviteDetails />} />
                             </Route>
                         </Route>
                         <Route>
