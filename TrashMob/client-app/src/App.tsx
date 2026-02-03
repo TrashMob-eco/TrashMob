@@ -63,6 +63,9 @@ import { TeamInviteDetailsPage } from './pages/teams/$teamId/invites/$batchId';
 /** Leaderboards */
 import { LeaderboardsPage } from './pages/leaderboards/page';
 
+/** Achievements */
+import { AchievementsPage } from './pages/achievements/page';
+
 /** Communities */
 import { CommunitiesPage } from './pages/communities';
 import { CommunityDetailPage } from './pages/communities/$slug';
@@ -248,6 +251,7 @@ const AppContent: FC = () => {
                             <Route path='/inviteapartner' element={<InviteAPartnerPage />} />
                             <Route path='/locationpreference' element={<LocationPreference />} />
                             <Route path='/waivers' element={<Waivers />} />
+                            <Route path='/achievements' element={<AchievementsPage />} />
                             <Route path='/litterreports/create' element={<CreateLitterReportPage />} />
                             <Route path='/litterreports/:litterReportId/edit' element={<LitterReportEditPage />} />
                             <Route path='/teams/create' element={<CreateTeamPage />} />
