@@ -61,6 +61,7 @@
             services.AddScoped<IEventAttendeeRouteManager, EventAttendeeRouteManager>();
             services.AddScoped<IEventLitterReportManager, EventLitterReportManager>();
             services.AddScoped<IEventSummaryManager, EventSummaryManager>();
+            services.AddScoped<IEventAttendeeMetricsManager, EventAttendeeMetricsManager>();
             services.AddScoped<IEventManager, EventManager>();
             services.AddScoped<IEventPartnerLocationServiceManager, EventPartnerLocationServiceManager>();
             services.AddScoped<IPartnerAdminManager, PartnerAdminManager>();
@@ -134,6 +135,7 @@
                     LookupRepository<EventPartnerLocationServiceStatus>>();
             services.AddScoped<ILookupRepository<EventStatus>, LookupRepository<EventStatus>>();
             services.AddScoped<IBaseRepository<EventSummary>, BaseRepository<EventSummary>>();
+            services.AddScoped<IKeyedRepository<EventAttendeeMetrics>, KeyedRepository<EventAttendeeMetrics>>();
             services.AddScoped<ILookupRepository<EventType>, LookupRepository<EventType>>();
             services.AddScoped<IBaseRepository<IftttTrigger>, BaseRepository<IftttTrigger>>();
             services.AddScoped<ILookupRepository<InvitationStatus>, LookupRepository<InvitationStatus>>();
