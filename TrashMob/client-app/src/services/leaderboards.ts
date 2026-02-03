@@ -1,18 +1,22 @@
 // Leaderboards API service
 
 import { ApiService } from '.';
-import { LeaderboardEntry, LeaderboardOptions, LeaderboardResponse, UserRankResponse } from '../components/Models/LeaderboardData';
+import {
+    LeaderboardOptions,
+    LeaderboardResponse,
+    UserRankResponse,
+} from '../components/Models/LeaderboardData';
 
 // ============================================================================
 // Leaderboard Operations
 // ============================================================================
 
 export type GetLeaderboard_Params = {
-    type?: string;      // Events, Bags, Weight, Hours (default: Events)
+    type?: string; // Events, Bags, Weight, Hours (default: Events)
     timeRange?: string; // Week, Month, Year, AllTime (default: Month)
-    scope?: string;     // Global, Region, City (default: Global)
-    location?: string;  // Required if scope is not Global
-    limit?: number;     // 1-100 (default: 50)
+    scope?: string; // Global, Region, City (default: Global)
+    location?: string; // Required if scope is not Global
+    limit?: number; // 1-100 (default: 50)
 };
 export type GetLeaderboard_Response = LeaderboardResponse;
 export const GetLeaderboard = (params?: GetLeaderboard_Params) => ({
@@ -33,7 +37,7 @@ export const GetLeaderboard = (params?: GetLeaderboard_Params) => ({
 });
 
 export type GetMyRank_Params = {
-    type?: string;      // Events, Bags, Weight, Hours (default: Events)
+    type?: string; // Events, Bags, Weight, Hours (default: Events)
     timeRange?: string; // Week, Month, Year, AllTime (default: AllTime)
 };
 export type GetMyRank_Response = UserRankResponse;

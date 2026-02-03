@@ -98,7 +98,8 @@ export const LeaderboardsPage = () => {
                 {/* Sidebar with user rank and stats */}
                 <div className='lg:col-span-1 space-y-4'>
                     {/* User's Rank Card */}
-                    {isUserLoaded && myRank ? <Card>
+                    {isUserLoaded && myRank ? (
+                        <Card>
                             <CardHeader className='pb-3'>
                                 <CardTitle className='text-lg flex items-center gap-2'>
                                     <TrendingUp className='h-5 w-5 text-primary' />
@@ -122,11 +123,15 @@ export const LeaderboardsPage = () => {
                                     </div>
                                 ) : (
                                     <div className='text-sm text-muted-foreground'>
-                                        <p>{myRank.ineligibleReason || 'Complete 3+ events to appear on leaderboards.'}</p>
+                                        <p>
+                                            {myRank.ineligibleReason ||
+                                                'Complete 3+ events to appear on leaderboards.'}
+                                        </p>
                                     </div>
                                 )}
                             </CardContent>
-                        </Card> : null}
+                        </Card>
+                    ) : null}
 
                     {/* Stats Card */}
                     <Card>
@@ -142,9 +147,11 @@ export const LeaderboardsPage = () => {
                                     <span className='text-muted-foreground'>Ranked Volunteers</span>
                                     <span className='font-semibold'>{leaderboard?.totalEntries || 0}</span>
                                 </div>
-                                {leaderboard?.computedDate ? <div className='text-xs text-muted-foreground mt-2'>
+                                {leaderboard?.computedDate ? (
+                                    <div className='text-xs text-muted-foreground mt-2'>
                                         Last updated: {formatLastUpdated(leaderboard.computedDate)}
-                                    </div> : null}
+                                    </div>
+                                ) : null}
                             </div>
                         </CardContent>
                     </Card>
@@ -172,10 +179,12 @@ export const LeaderboardsPage = () => {
                     <Card>
                         <CardHeader>
                             <CardTitle>
-                                {LeaderboardTypeLabels[leaderboardType] || leaderboardType} - {TimeRangeLabels[timeRange] || timeRange}
+                                {LeaderboardTypeLabels[leaderboardType] || leaderboardType} -{' '}
+                                {TimeRangeLabels[timeRange] || timeRange}
                             </CardTitle>
                             <CardDescription>
-                                Top volunteers ranked by {(LeaderboardTypeLabels[leaderboardType] || leaderboardType).toLowerCase()}
+                                Top volunteers ranked by{' '}
+                                {(LeaderboardTypeLabels[leaderboardType] || leaderboardType).toLowerCase()}
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
