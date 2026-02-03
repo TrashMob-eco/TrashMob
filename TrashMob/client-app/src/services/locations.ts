@@ -344,3 +344,33 @@ export const PickupLocationMarkAsPickedUp = () => ({
             method: 'post',
         }),
 });
+
+// ========================================
+// Nearby Partners Search (Public)
+// ========================================
+
+export interface NearbyPartner {
+    id: string;
+    name: string;
+    website?: string;
+    publicNotes?: string;
+    city?: string;
+    region?: string;
+    country?: string;
+    logoUrl?: string;
+}
+
+export type GetNearbyPartners_Params = {
+    latitude: number;
+    longitude: number;
+    radiusMiles?: number;
+};
+export type GetNearbyPartners_Response = NearbyPartner[];
+export const GetNearbyPartners = (params: GetNearbyPartners_Params) => ({
+    key: ['/partnerlocations/nearby', params],
+    service: async () =>
+        ApiService('public').fetchData<GetNearbyPartners_Response>({
+            url: `/partnerlocations/nearby?latitude=${params.latitude}&longitude=${params.longitude}${params.radiusMiles ? `&radiusMiles=${params.radiusMiles}` : ''}`,
+            method: 'get',
+        }),
+});
