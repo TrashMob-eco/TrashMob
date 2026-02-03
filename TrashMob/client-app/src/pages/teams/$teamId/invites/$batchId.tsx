@@ -147,9 +147,7 @@ export const TeamInviteDetailsPage = () => {
                                 <Mail className='h-5 w-5' />
                                 Batch Summary
                             </CardTitle>
-                            <CardDescription>
-                                Created on {new Date(batch.createdDate).toLocaleString()}
-                            </CardDescription>
+                            <CardDescription>Created on {new Date(batch.createdDate).toLocaleString()}</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className='grid gap-4 md:grid-cols-5'>
@@ -181,7 +179,9 @@ export const TeamInviteDetailsPage = () => {
                     <Card>
                         <CardHeader>
                             <CardTitle>Individual Invites</CardTitle>
-                            <CardDescription>{batch.invites?.length || 0} email addresses in this batch</CardDescription>
+                            <CardDescription>
+                                {batch.invites?.length || 0} email addresses in this batch
+                            </CardDescription>
                         </CardHeader>
                         <CardContent>
                             <Table>
