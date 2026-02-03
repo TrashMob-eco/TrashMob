@@ -21,10 +21,14 @@
     public class EventAttendeesController : SecureController
     {
         private readonly IEventAttendeeManager eventAttendeeManager;
+        private readonly IUserWaiverManager userWaiverManager;
 
-        public EventAttendeesController(IEventAttendeeManager eventAttendeeManager)
+        public EventAttendeesController(
+            IEventAttendeeManager eventAttendeeManager,
+            IUserWaiverManager userWaiverManager)
         {
             this.eventAttendeeManager = eventAttendeeManager;
+            this.userWaiverManager = userWaiverManager;
         }
 
         /// <summary>
@@ -87,17 +91,38 @@
         }
 
         /// <summary>
-        /// Adds a new event attendee. Requires a valid user.
+        /// Adds a new event attendee. Requires a valid user and all required waivers to be signed.
         /// </summary>
         /// <param name="eventAttendee">The event attendee to add.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Ok if registration succeeds, BadRequest if waivers are required.</returns>
         [HttpPost]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(WaiverRequiredResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddEventAttendee(EventAttendee eventAttendee,
             CancellationToken cancellationToken)
         {
+            // Validate waiver compliance before registration
+            var hasValidWaiver = await userWaiverManager
+                .HasValidWaiverForEventAsync(eventAttendee.UserId, eventAttendee.EventId, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!hasValidWaiver)
+            {
+                var requiredWaivers = await userWaiverManager
+                    .GetRequiredWaiversForEventAsync(eventAttendee.UserId, eventAttendee.EventId, cancellationToken)
+                    .ConfigureAwait(false);
+
+                return BadRequest(new WaiverRequiredResponse
+                {
+                    Message = "You must sign all required waivers before registering for this event.",
+                    RequiredWaiverCount = requiredWaivers.Count(),
+                    RequiredWaiverIds = requiredWaivers.Select(w => w.Id).ToList()
+                });
+            }
+
             await eventAttendeeManager.AddAsync(eventAttendee, UserId, cancellationToken).ConfigureAwait(false);
             TrackEvent(nameof(AddEventAttendee));
             return Ok();
@@ -207,6 +232,44 @@
             }
         }
 
+        /// <summary>
+        /// Verifies an attendee's waiver status at check-in time.
+        /// Only accessible by event leads or admins.
+        /// </summary>
+        /// <param name="eventId">The event ID.</param>
+        /// <param name="userId">The user ID of the attendee to check.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>The waiver status for the attendee.</returns>
+        [HttpGet("{eventId}/attendees/{userId}/waiver-status")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobReadScope)]
+        [ProducesResponseType(typeof(WaiverCheckResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> VerifyAttendeeWaiverStatus(
+            Guid eventId,
+            Guid userId,
+            CancellationToken cancellationToken = default)
+        {
+            // Check if caller is event lead or admin
+            var isAdmin = User.IsInRole("Admin");
+            var isEventLead = await eventAttendeeManager
+                .IsEventLeadAsync(eventId, UserId, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!isAdmin && !isEventLead)
+            {
+                return Forbid();
+            }
+
+            var hasValidWaiver = await userWaiverManager
+                .HasValidWaiverForEventAsync(userId, eventId, cancellationToken)
+                .ConfigureAwait(false);
+
+            TrackEvent(nameof(VerifyAttendeeWaiverStatus));
+
+            return Ok(new WaiverCheckResult { HasValidWaiver = hasValidWaiver });
+        }
+
         private async Task<bool> EventAttendeeExists(Guid eventId, Guid userId, CancellationToken cancellationToken)
         {
             var attendee = await eventAttendeeManager
@@ -214,5 +277,26 @@
 
             return attendee?.FirstOrDefault() != null;
         }
+    }
+
+    /// <summary>
+    /// Response model when waiver signing is required before event registration.
+    /// </summary>
+    public class WaiverRequiredResponse
+    {
+        /// <summary>
+        /// Gets or sets the error message.
+        /// </summary>
+        public string Message { get; set; }
+
+        /// <summary>
+        /// Gets or sets the count of required waivers that need to be signed.
+        /// </summary>
+        public int RequiredWaiverCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the IDs of the waiver versions that need to be signed.
+        /// </summary>
+        public List<Guid> RequiredWaiverIds { get; set; }
     }
 }

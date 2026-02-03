@@ -270,3 +270,17 @@ export const DemoteFromLead = () => ({
             method: 'put',
         }),
 });
+
+/**
+ * Verifies an attendee's waiver status at check-in (event leads/admins only).
+ */
+export type VerifyAttendeeWaiverStatus_Params = { eventId: string; userId: string };
+export type VerifyAttendeeWaiverStatus_Response = { hasValidWaiver: boolean };
+export const VerifyAttendeeWaiverStatus = (params: VerifyAttendeeWaiverStatus_Params) => ({
+    key: ['/eventattendees', params.eventId, 'attendees', params.userId, 'waiver-status'],
+    service: async () =>
+        ApiService('protected').fetchData<VerifyAttendeeWaiverStatus_Response>({
+            url: `/eventattendees/${params.eventId}/attendees/${params.userId}/waiver-status`,
+            method: 'get',
+        }),
+});
