@@ -119,6 +119,46 @@ namespace TrashMob.Shared.Managers
             return stream;
         }
 
+        /// <inheritdoc />
+        public async Task<string> StorePaperWaiverAsync(
+            UserWaiver userWaiver,
+            Stream fileStream,
+            string contentType,
+            CancellationToken cancellationToken = default)
+        {
+            var blobContainer = blobServiceClient.GetBlobContainerClient(WaiversContainerName);
+            await blobContainer.CreateIfNotExistsAsync(PublicAccessType.None, cancellationToken: cancellationToken);
+
+            // Determine file extension from content type
+            var extension = GetExtensionFromContentType(contentType);
+            var blobName = $"{userWaiver.UserId}/{userWaiver.Id}{extension}";
+            var blobClient = blobContainer.GetBlobClient(blobName);
+
+            await blobClient.UploadAsync(
+                fileStream,
+                new BlobHttpHeaders { ContentType = contentType },
+                cancellationToken: cancellationToken);
+
+            logger.LogInformation(
+                "Stored paper waiver document for user {UserId}, waiver {UserWaiverId}",
+                userWaiver.UserId,
+                userWaiver.Id);
+
+            return blobClient.Uri.ToString();
+        }
+
+        private static string GetExtensionFromContentType(string contentType)
+        {
+            return contentType?.ToLowerInvariant() switch
+            {
+                "application/pdf" => ".pdf",
+                "image/jpeg" => ".jpg",
+                "image/png" => ".png",
+                "image/webp" => ".webp",
+                _ => ".bin"
+            };
+        }
+
         private static void ComposeHeader(IContainer container, string waiverName)
         {
             container.Row(row =>

@@ -70,5 +70,22 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>The user waiver with waiver version details.</returns>
         Task<UserWaiver> GetUserWaiverWithDetailsAsync(Guid userWaiverId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Uploads a paper waiver on behalf of a user.
+        /// </summary>
+        /// <param name="request">The paper waiver upload request.</param>
+        /// <param name="uploadedByUserId">The user ID of the person uploading the waiver.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Service result containing the created UserWaiver or error.</returns>
+        Task<ServiceResult<UserWaiver>> UploadPaperWaiverAsync(PaperWaiverUploadRequest request, Guid uploadedByUserId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets waiver status for all attendees of an event.
+        /// </summary>
+        /// <param name="eventId">The event ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Collection of attendee waiver statuses.</returns>
+        Task<IEnumerable<AttendeeWaiverStatus>> GetEventAttendeeWaiverStatusAsync(Guid eventId, CancellationToken cancellationToken = default);
     }
 }

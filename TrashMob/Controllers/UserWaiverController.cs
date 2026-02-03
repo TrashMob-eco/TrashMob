@@ -24,6 +24,7 @@ namespace TrashMob.Controllers
         private readonly IUserWaiverManager userWaiverManager;
         private readonly IWaiverDocumentManager waiverDocumentManager;
         private readonly IUserManager userManager;
+        private readonly IEventAttendeeManager eventAttendeeManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserWaiverController"/> class.
@@ -31,14 +32,17 @@ namespace TrashMob.Controllers
         /// <param name="userWaiverManager">The user waiver manager.</param>
         /// <param name="waiverDocumentManager">The waiver document manager.</param>
         /// <param name="userManager">The user manager.</param>
+        /// <param name="eventAttendeeManager">The event attendee manager.</param>
         public UserWaiverController(
             IUserWaiverManager userWaiverManager,
             IWaiverDocumentManager waiverDocumentManager,
-            IUserManager userManager)
+            IUserManager userManager,
+            IEventAttendeeManager eventAttendeeManager)
         {
             this.userWaiverManager = userWaiverManager;
             this.waiverDocumentManager = waiverDocumentManager;
             this.userManager = userManager;
+            this.eventAttendeeManager = eventAttendeeManager;
         }
 
         /// <summary>
@@ -296,6 +300,128 @@ namespace TrashMob.Controllers
             return Ok(new WaiverCheckResult { HasValidWaiver = hasValidWaiver });
         }
 
+        /// <summary>
+        /// Uploads a paper waiver on behalf of a user.
+        /// Can be used by event leads for their event attendees, or by admins for any user.
+        /// </summary>
+        /// <param name="request">The paper waiver upload request.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>The created user waiver.</returns>
+        [HttpPost("upload-paper")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(UserWaiver), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> UploadPaperWaiver(
+            [FromForm] PaperWaiverUploadApiRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            if (request == null)
+            {
+                return BadRequest("Request is required.");
+            }
+
+            if (request.FormFile == null || request.FormFile.Length == 0)
+            {
+                return BadRequest("File is required.");
+            }
+
+            if (request.UserId == Guid.Empty)
+            {
+                return BadRequest("User ID is required.");
+            }
+
+            if (request.WaiverVersionId == Guid.Empty)
+            {
+                return BadRequest("Waiver version ID is required.");
+            }
+
+            if (string.IsNullOrWhiteSpace(request.SignerName))
+            {
+                return BadRequest("Signer name is required.");
+            }
+
+            // Check authorization
+            var isAdmin = User.IsInRole("Admin");
+            var isEventLead = false;
+
+            if (request.EventId.HasValue)
+            {
+                isEventLead = await eventAttendeeManager
+                    .IsEventLeadAsync(request.EventId.Value, UserId, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+
+            // Event leads can only upload for their events, admins can upload for anyone
+            if (!isAdmin && !isEventLead)
+            {
+                return Forbid();
+            }
+
+            var uploadRequest = new PaperWaiverUploadRequest
+            {
+                FormFile = request.FormFile,
+                UserId = request.UserId,
+                WaiverVersionId = request.WaiverVersionId,
+                SignerName = request.SignerName,
+                DateSigned = request.DateSigned,
+                EventId = request.EventId,
+                IsMinor = request.IsMinor,
+                GuardianName = request.GuardianName,
+                GuardianRelationship = request.GuardianRelationship,
+            };
+
+            var result = await userWaiverManager
+                .UploadPaperWaiverAsync(uploadRequest, UserId, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result.ErrorMessage);
+            }
+
+            TrackEvent(nameof(UploadPaperWaiver));
+
+            return CreatedAtAction(nameof(GetUserWaiver), new { userWaiverId = result.Data.Id }, result.Data);
+        }
+
+        /// <summary>
+        /// Gets waiver status for all attendees of an event.
+        /// Only accessible by event leads.
+        /// </summary>
+        /// <param name="eventId">The event ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>List of attendee waiver statuses.</returns>
+        [HttpGet("event/{eventId}/attendees")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobReadScope)]
+        [ProducesResponseType(typeof(IEnumerable<AttendeeWaiverStatus>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> GetEventAttendeeWaiverStatus(
+            Guid eventId,
+            CancellationToken cancellationToken = default)
+        {
+            // Check if user is event lead or admin
+            var isAdmin = User.IsInRole("Admin");
+            var isEventLead = await eventAttendeeManager
+                .IsEventLeadAsync(eventId, UserId, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!isAdmin && !isEventLead)
+            {
+                return Forbid();
+            }
+
+            var result = await userWaiverManager
+                .GetEventAttendeeWaiverStatusAsync(eventId, cancellationToken)
+                .ConfigureAwait(false);
+
+            TrackEvent(nameof(GetEventAttendeeWaiverStatus));
+
+            return Ok(result);
+        }
+
         private string GetClientIpAddress()
         {
             // Check for X-Forwarded-For header (when behind a proxy/load balancer)
@@ -356,5 +482,56 @@ namespace TrashMob.Controllers
         /// Gets or sets whether the user has valid waivers.
         /// </summary>
         public bool HasValidWaiver { get; set; }
+    }
+
+    /// <summary>
+    /// API request model for uploading a paper waiver.
+    /// </summary>
+    public class PaperWaiverUploadApiRequest
+    {
+        /// <summary>
+        /// Gets or sets the uploaded file (PDF, JPEG, PNG, or WebP).
+        /// </summary>
+        public IFormFile FormFile { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user ID of the person who signed the waiver.
+        /// </summary>
+        public Guid UserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the waiver version being signed.
+        /// </summary>
+        public Guid WaiverVersionId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name as written on the paper waiver.
+        /// </summary>
+        public string SignerName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the date the paper waiver was signed.
+        /// </summary>
+        public DateTimeOffset DateSigned { get; set; }
+
+        /// <summary>
+        /// Gets or sets the optional event ID if uploading for a specific event.
+        /// </summary>
+        public Guid? EventId { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether the signer is a minor.
+        /// </summary>
+        public bool IsMinor { get; set; }
+
+        /// <summary>
+        /// Gets or sets the guardian's name if the signer is a minor.
+        /// </summary>
+        public string GuardianName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the guardian's relationship to the minor.
+        /// </summary>
+        public string GuardianRelationship { get; set; }
     }
 }

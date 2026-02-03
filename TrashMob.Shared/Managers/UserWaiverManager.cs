@@ -16,10 +16,22 @@ namespace TrashMob.Shared.Managers
     /// </summary>
     public class UserWaiverManager : KeyedManager<UserWaiver>, IUserWaiverManager
     {
+        private static readonly HashSet<string> AllowedContentTypes = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "application/pdf",
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+        };
+
+        private const long MaxFileSizeBytes = 10 * 1024 * 1024; // 10MB
+
         private readonly IKeyedRepository<WaiverVersion> waiverVersionRepository;
         private readonly IBaseRepository<CommunityWaiver> communityWaiverRepository;
         private readonly IBaseRepository<EventPartnerLocationService> eventPartnerLocationServiceRepository;
         private readonly IKeyedRepository<User> userRepository;
+        private readonly IBaseRepository<EventAttendee> eventAttendeeRepository;
+        private readonly IWaiverDocumentManager waiverDocumentManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserWaiverManager"/> class.
@@ -29,18 +41,24 @@ namespace TrashMob.Shared.Managers
         /// <param name="communityWaiverRepository">The community waiver repository.</param>
         /// <param name="eventPartnerLocationServiceRepository">The event partner location service repository.</param>
         /// <param name="userRepository">The user repository.</param>
+        /// <param name="eventAttendeeRepository">The event attendee repository.</param>
+        /// <param name="waiverDocumentManager">The waiver document manager.</param>
         public UserWaiverManager(
             IKeyedRepository<UserWaiver> repository,
             IKeyedRepository<WaiverVersion> waiverVersionRepository,
             IBaseRepository<CommunityWaiver> communityWaiverRepository,
             IBaseRepository<EventPartnerLocationService> eventPartnerLocationServiceRepository,
-            IKeyedRepository<User> userRepository)
+            IKeyedRepository<User> userRepository,
+            IBaseRepository<EventAttendee> eventAttendeeRepository,
+            IWaiverDocumentManager waiverDocumentManager)
             : base(repository)
         {
             this.waiverVersionRepository = waiverVersionRepository;
             this.communityWaiverRepository = communityWaiverRepository;
             this.eventPartnerLocationServiceRepository = eventPartnerLocationServiceRepository;
             this.userRepository = userRepository;
+            this.eventAttendeeRepository = eventAttendeeRepository;
+            this.waiverDocumentManager = waiverDocumentManager;
         }
 
         /// <inheritdoc />
@@ -273,6 +291,139 @@ namespace TrashMob.Shared.Managers
                 .Include(uw => uw.WaiverVersion)
                 .Include(uw => uw.User)
                 .FirstOrDefaultAsync(cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public async Task<ServiceResult<UserWaiver>> UploadPaperWaiverAsync(
+            PaperWaiverUploadRequest request,
+            Guid uploadedByUserId,
+            CancellationToken cancellationToken = default)
+        {
+            // Validate file
+            if (request.FormFile == null || request.FormFile.Length == 0)
+            {
+                return ServiceResult<UserWaiver>.Failure("No file was uploaded.");
+            }
+
+            if (request.FormFile.Length > MaxFileSizeBytes)
+            {
+                return ServiceResult<UserWaiver>.Failure("File size exceeds the 10MB limit.");
+            }
+
+            if (!AllowedContentTypes.Contains(request.FormFile.ContentType))
+            {
+                return ServiceResult<UserWaiver>.Failure("Invalid file type. Allowed types: PDF, JPEG, PNG, WebP.");
+            }
+
+            // Validate signer name
+            if (string.IsNullOrWhiteSpace(request.SignerName))
+            {
+                return ServiceResult<UserWaiver>.Failure("Signer name is required.");
+            }
+
+            // Validate user exists
+            var user = await userRepository.GetAsync(request.UserId, cancellationToken);
+            if (user == null)
+            {
+                return ServiceResult<UserWaiver>.Failure("User not found.");
+            }
+
+            // Validate waiver version exists and is active
+            var waiverVersion = await waiverVersionRepository.GetAsync(request.WaiverVersionId, cancellationToken);
+            if (waiverVersion == null)
+            {
+                return ServiceResult<UserWaiver>.Failure("Waiver version not found.");
+            }
+
+            if (!waiverVersion.IsActive)
+            {
+                return ServiceResult<UserWaiver>.Failure("This waiver version is no longer active.");
+            }
+
+            var now = DateTimeOffset.UtcNow;
+
+            // Check if user already has a valid waiver for this version
+            var existingWaiver = await Repo.Get(uw =>
+                    uw.UserId == request.UserId &&
+                    uw.WaiverVersionId == request.WaiverVersionId &&
+                    uw.ExpiryDate >= now)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (existingWaiver != null)
+            {
+                return ServiceResult<UserWaiver>.Failure("User has already signed this waiver version.");
+            }
+
+            // Create the UserWaiver record
+            var userWaiver = new UserWaiver
+            {
+                Id = Guid.NewGuid(),
+                UserId = request.UserId,
+                WaiverVersionId = request.WaiverVersionId,
+                AcceptedDate = request.DateSigned,
+                ExpiryDate = GetEndOfYear(),
+                TypedLegalName = request.SignerName,
+                WaiverTextSnapshot = waiverVersion.WaiverText,
+                SigningMethod = "PaperUpload",
+                UploadedByUserId = uploadedByUserId,
+                IsMinor = request.IsMinor,
+                GuardianName = request.GuardianName,
+                GuardianRelationship = request.GuardianRelationship,
+                CreatedByUserId = uploadedByUserId,
+                LastUpdatedByUserId = uploadedByUserId,
+                CreatedDate = now,
+                LastUpdatedDate = now,
+            };
+
+            // Store the uploaded document
+            await using var fileStream = request.FormFile.OpenReadStream();
+            var documentUrl = await waiverDocumentManager.StorePaperWaiverAsync(
+                userWaiver,
+                fileStream,
+                request.FormFile.ContentType,
+                cancellationToken);
+
+            userWaiver.DocumentUrl = documentUrl;
+
+            var created = await Repo.AddAsync(userWaiver);
+            return ServiceResult<UserWaiver>.Success(created);
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<AttendeeWaiverStatus>> GetEventAttendeeWaiverStatusAsync(
+            Guid eventId,
+            CancellationToken cancellationToken = default)
+        {
+            var now = DateTimeOffset.UtcNow;
+
+            // Get all attendees for the event
+            var attendees = await eventAttendeeRepository
+                .Get(ea => ea.EventId == eventId)
+                .Include(ea => ea.User)
+                .ToListAsync(cancellationToken);
+
+            if (!attendees.Any())
+            {
+                return Enumerable.Empty<AttendeeWaiverStatus>();
+            }
+
+            var attendeeUserIds = attendees.Select(a => a.UserId).ToList();
+
+            // Get valid waivers for these users
+            var validWaiverUserIds = await Repo
+                .Get(uw => attendeeUserIds.Contains(uw.UserId) && uw.ExpiryDate >= now)
+                .Select(uw => uw.UserId)
+                .Distinct()
+                .ToListAsync(cancellationToken);
+
+            var validWaiverUserIdSet = validWaiverUserIds.ToHashSet();
+
+            return attendees.Select(a => new AttendeeWaiverStatus
+            {
+                UserId = a.UserId,
+                UserName = a.User?.UserName ?? "Unknown",
+                HasValidWaiver = validWaiverUserIdSet.Contains(a.UserId)
+            });
         }
 
         private static DateTimeOffset GetEndOfYear()

@@ -38,5 +38,19 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Stream containing the PDF content.</returns>
         Task<Stream> GetWaiverPdfAsync(string documentUrl, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Stores an uploaded paper waiver document in blob storage.
+        /// </summary>
+        /// <param name="userWaiver">The user waiver record.</param>
+        /// <param name="fileStream">The file stream to upload.</param>
+        /// <param name="contentType">The content type of the file.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>The URL of the stored document.</returns>
+        Task<string> StorePaperWaiverAsync(
+            UserWaiver userWaiver,
+            Stream fileStream,
+            string contentType,
+            CancellationToken cancellationToken = default);
     }
 }
