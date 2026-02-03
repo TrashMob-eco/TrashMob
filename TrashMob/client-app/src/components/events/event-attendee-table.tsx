@@ -54,9 +54,7 @@ export const EventAttendeeTable = (props: EventAttendeeTableProps) => {
     });
 
     // Create a map of userId -> waiver status for quick lookup
-    const waiverStatusMap = new Map(
-        (waiverStatuses || []).map((status) => [status.userId, status.hasValidWaiver])
-    );
+    const waiverStatusMap = new Map((waiverStatuses || []).map((status) => [status.userId, status.hasValidWaiver]));
 
     // Check if a user is a lead
     const isUserLead = (userId: string) => {
@@ -213,7 +211,9 @@ export const EventAttendeeTable = (props: EventAttendeeTableProps) => {
                                                         </DropdownMenuItem>
                                                     ) : null}
                                                     {!canPromote && !canDemote && hasValidWaiver ? (
-                                                        <DropdownMenuItem disabled>No actions available</DropdownMenuItem>
+                                                        <DropdownMenuItem disabled>
+                                                            No actions available
+                                                        </DropdownMenuItem>
                                                     ) : null}
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
