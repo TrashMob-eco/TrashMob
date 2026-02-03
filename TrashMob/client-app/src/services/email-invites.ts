@@ -156,3 +156,57 @@ export const CreateTeamInviteBatch = (params: CreateTeamInviteBatch_Params) => (
             data: body,
         }),
 });
+
+// ========================================
+// User Email Invite Endpoints
+// ========================================
+
+export interface UserInviteQuota {
+    maxPerBatch: number;
+    maxPerMonth: number;
+    usedThisMonth: number;
+    remainingThisMonth: number;
+}
+
+export type GetUserInviteBatches_Response = EmailInviteBatch[];
+export const GetUserInviteBatches = () => ({
+    key: ['/invites/batches'],
+    service: async () =>
+        ApiService('protected').fetchData<GetUserInviteBatches_Response>({
+            url: '/invites/batches',
+            method: 'get',
+        }),
+});
+
+export type GetUserInviteBatchDetails_Params = { id: string };
+export type GetUserInviteBatchDetails_Response = EmailInviteBatch;
+export const GetUserInviteBatchDetails = (params: GetUserInviteBatchDetails_Params) => ({
+    key: ['/invites/batches', params.id],
+    service: async () =>
+        ApiService('protected').fetchData<GetUserInviteBatchDetails_Response>({
+            url: `/invites/batches/${params.id}`,
+            method: 'get',
+        }),
+});
+
+export type GetUserInviteQuota_Response = UserInviteQuota;
+export const GetUserInviteQuota = () => ({
+    key: ['/invites/quota'],
+    service: async () =>
+        ApiService('protected').fetchData<GetUserInviteQuota_Response>({
+            url: '/invites/quota',
+            method: 'get',
+        }),
+});
+
+export type CreateUserInviteBatch_Body = CreateEmailInviteBatchRequest;
+export type CreateUserInviteBatch_Response = EmailInviteBatch;
+export const CreateUserInviteBatch = () => ({
+    key: ['/invites/batch', 'create'],
+    service: async (body: CreateUserInviteBatch_Body) =>
+        ApiService('protected').fetchData<CreateUserInviteBatch_Response, CreateUserInviteBatch_Body>({
+            url: '/invites/batch',
+            method: 'post',
+            data: body,
+        }),
+});

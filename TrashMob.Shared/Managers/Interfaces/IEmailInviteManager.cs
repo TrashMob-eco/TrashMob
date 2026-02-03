@@ -67,5 +67,21 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A list of batches for the team.</returns>
         Task<IEnumerable<EmailInviteBatch>> GetTeamBatchesAsync(Guid teamId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets email invite batches sent by a specific user (User type only).
+        /// </summary>
+        /// <param name="userId">The user ID.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A list of batches sent by the user.</returns>
+        Task<IEnumerable<EmailInviteBatch>> GetUserBatchesAsync(Guid userId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets the count of invites sent by a user in the current month (for rate limiting).
+        /// </summary>
+        /// <param name="userId">The user ID.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The number of invites sent this month.</returns>
+        Task<int> GetUserMonthlyInviteCountAsync(Guid userId, CancellationToken cancellationToken = default);
     }
 }
