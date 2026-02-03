@@ -53,7 +53,9 @@ const AchievementCard = ({ achievement }: { achievement: AchievementDto }) => {
                             </Badge>
                         </div>
                         <p className='text-sm text-muted-foreground mt-1'>{achievement.description}</p>
-                        {achievement.isEarned && achievement.earnedDate ? <p className='text-xs text-primary mt-2'>Earned on {formatDate(achievement.earnedDate)}</p> : null}
+                        {achievement.isEarned && achievement.earnedDate ? (
+                            <p className='text-xs text-primary mt-2'>Earned on {formatDate(achievement.earnedDate)}</p>
+                        ) : null}
                     </div>
                 </div>
             </CardContent>
@@ -200,25 +202,27 @@ export const AchievementsPage = () => {
                     </div>
 
                     {/* Achievement Categories */}
-                    {groupedAchievements ? Object.entries(groupedAchievements).map(([category, categoryAchievements]) => (
-                            <div key={category}>
-                                <div className='flex items-center gap-2 mb-4'>
-                                    {getCategoryIcon(category)}
-                                    <h2 className='text-xl font-semibold'>
-                                        {AchievementCategoryLabels[category] || category}
-                                    </h2>
-                                    <Badge variant='secondary' className='ml-2'>
-                                        {categoryAchievements.filter((a) => a.isEarned).length} /{' '}
-                                        {categoryAchievements.length}
-                                    </Badge>
-                                </div>
-                                <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-3'>
-                                    {categoryAchievements.map((achievement) => (
-                                        <AchievementCard key={achievement.id} achievement={achievement} />
-                                    ))}
-                                </div>
-                            </div>
-                        )) : null}
+                    {groupedAchievements
+                        ? Object.entries(groupedAchievements).map(([category, categoryAchievements]) => (
+                              <div key={category}>
+                                  <div className='flex items-center gap-2 mb-4'>
+                                      {getCategoryIcon(category)}
+                                      <h2 className='text-xl font-semibold'>
+                                          {AchievementCategoryLabels[category] || category}
+                                      </h2>
+                                      <Badge variant='secondary' className='ml-2'>
+                                          {categoryAchievements.filter((a) => a.isEarned).length} /{' '}
+                                          {categoryAchievements.length}
+                                      </Badge>
+                                  </div>
+                                  <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-3'>
+                                      {categoryAchievements.map((achievement) => (
+                                          <AchievementCard key={achievement.id} achievement={achievement} />
+                                      ))}
+                                  </div>
+                              </div>
+                          ))
+                        : null}
                 </div>
             ) : (
                 <div className='text-center py-12'>
