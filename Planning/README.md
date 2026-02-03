@@ -13,7 +13,7 @@
 - **[Executive Summary](./Executive_Summary.md)** - High-level overview, strategic objectives, and 2026 roadmap
 - **[Risks & Mitigations](./Risks_and_Mitigations.md)** - Cross-project risks and mitigation strategies
 
-### 2026 Projects (35 Total)
+### 2026 Projects (36 Total)
 
 **Note:** Projects are not time-bound. Volunteers pick up work based on priority and availability.
 
@@ -35,7 +35,7 @@
 | [Project 8 - Waivers V3](./Projects/Project_08_Waivers_V3.md) | Community waivers, minors coverage | In Progress (Phase 1-4 Complete) |
 | [Project 9 - Teams](./Projects/Project_09_Teams.md) | User-created teams MVP | ✅ Complete |
 | [Project 10 - Community Pages](./Projects/Project_10_Community_Pages.md) | Branded partner community pages | ✅ Complete |
-| [Project 13 - Bulk Email Invites](./Projects/Project_13_Bulk_Email_Invites.md) | Scale email invitations | In Progress (Phase 1 Complete) |
+| [Project 13 - Bulk Email Invites](./Projects/Project_13_Bulk_Email_Invites.md) | Scale email invitations | ✅ Complete |
 | [Project 23 - Parental Consent](./Projects/Project_23_Parental_Consent.md) | Privo.com integration for minors | Planning in Progress |
 | [Project 24 - API v2 Modernization](./Projects/Project_24_API_v2_Modernization.md) | Pagination, error handling, auto-generated clients | Not Started |
 
@@ -62,6 +62,12 @@
 | [Project 33 - Localization](./Projects/Project_33_Localization.md) | Multi-language support | Deprioritized |
 | [Project 34 - User Feedback](./Projects/Project_34_User_Feedback.md) | In-app feedback widget | ✅ Complete |
 | [Project 35 - Partner Location Map](./Projects/Project_35_Partner_Location_Map.md) | Partner locations on map | Not Started |
+
+#### High Priority (Marketing & Growth)
+
+| Project | Description | Status |
+|---------|-------------|--------|
+| [Project 36 - Marketing Materials](./Projects/Project_36_Marketing_Materials.md) | 2026 release marketing, pricing, enrollment | Not Started |
 
 #### Low Priority (Nice-to-Have)
 
@@ -109,9 +115,10 @@
 
 ### Engagement & Growth
 - [Project 12 - In-App Messaging](./Projects/Project_12_In_App_Messaging.md)
-- [Project 13 - Bulk Email Invites](./Projects/Project_13_Bulk_Email_Invites.md)
+- [Project 13 - Bulk Email Invites](./Projects/Project_13_Bulk_Email_Invites.md) ✅
 - [Project 20 - Gamification](./Projects/Project_20_Gamification.md)
 - [Project 34 - User Feedback](./Projects/Project_34_User_Feedback.md) ✅
+- [Project 36 - Marketing Materials](./Projects/Project_36_Marketing_Materials.md)
 
 ---
 
@@ -119,15 +126,15 @@
 
 | Status | Count | Projects |
 |--------|-------|----------|
-| ✅ **Complete** | 15 | Projects 3, 7, 9, 10, 11, 16, 17, 21, 26, 27, 28, 29, 32, 34 |
-| **In Progress** | 4 | Projects 6, 8 (Phase 1-4 Complete), 13 (Phase 1 Complete), 22 (Phase 1-3 Complete) |
+| ✅ **Complete** | 16 | Projects 3, 7, 9, 10, 11, 13, 16, 17, 21, 26, 27, 28, 29, 32, 34 |
+| **In Progress** | 3 | Projects 6, 8 (Phase 1-4 Complete), 22 (Phase 1-3 Complete) |
 | **Developers Engaged** | 1 | Project 4 |
 | **Ready for Review** | 2 | Projects 2, 5 |
 | **Planning** | 4 | Projects 1, 15, 18, 23 |
-| **Not Started** | 8 | Projects 12, 14, 19, 20, 24, 25, 30, 31, 35 |
+| **Not Started** | 9 | Projects 12, 14, 19, 20, 24, 25, 30, 31, 35, 36 |
 | **Deprioritized** | 1 | Project 33 |
 
-**Total:** 35 project specifications documented
+**Total:** 36 project specifications documented
 
 ---
 
@@ -200,6 +207,6 @@ All new features should consider adding feature usage tracking. See [Project 29 
 
 ---
 
-**Last Updated:** February 2, 2026
+**Last Updated:** February 3, 2026
 **Maintained By:** Product & Engineering Team
 **Next Review:** End of Q1 2026
