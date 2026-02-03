@@ -49,7 +49,7 @@
 | [Project 15 - Route Tracing](./Projects/Project_15_Route_Tracing.md) | Map route tracing with privacy | Planning in Progress |
 | [Project 16 - Content Management](./Projects/Project_16_Content_Management.md) | Strapi CMS integration | ✅ Complete |
 | [Project 19 - Newsletter Support](./Projects/Project_19_Newsletter.md) | Monthly communication | In Progress (Phase 1 Complete) |
-| [Project 20 - Gamification](./Projects/Project_20_Gamification.md) | Leaderboards and engagement | In Progress (Phase 1 Complete) |
+| [Project 20 - Gamification](./Projects/Project_20_Gamification.md) | Leaderboards and achievements | ✅ Complete |
 | [Project 21 - Event Co-Leads](./Projects/Project_21_Event_Co_Leads.md) | Multiple event admins | ✅ Complete |
 | [Project 22 - Attendee Metrics](./Projects/Project_22_Attendee_Metrics.md) | Per-attendee event statistics | In Progress (Phase 1-3 Complete) |
 | [Project 25 - Automated Testing](./Projects/Project_25_Automated_Testing.md) | E2E tests for web and mobile | Not Started |
@@ -116,7 +116,7 @@
 ### Engagement & Growth
 - [Project 12 - In-App Messaging](./Projects/Project_12_In_App_Messaging.md)
 - [Project 13 - Bulk Email Invites](./Projects/Project_13_Bulk_Email_Invites.md) ✅
-- [Project 20 - Gamification](./Projects/Project_20_Gamification.md)
+- [Project 20 - Gamification](./Projects/Project_20_Gamification.md) ✅
 - [Project 34 - User Feedback](./Projects/Project_34_User_Feedback.md) ✅
 - [Project 36 - Marketing Materials](./Projects/Project_36_Marketing_Materials.md)
 
@@ -126,12 +126,12 @@
 
 | Status | Count | Projects |
 |--------|-------|----------|
-| ✅ **Complete** | 16 | Projects 3, 7, 9, 10, 11, 13, 16, 17, 21, 26, 27, 28, 29, 32, 34, 35 |
-| **In Progress** | 5 | Projects 6, 8 (Phase 1-4 Complete), 19 (Phase 1 Complete), 20 (Phase 1 Complete), 22 (Phase 1-3 Complete) |
+| ✅ **Complete** | 17 | Projects 3, 7, 9, 10, 11, 13, 16, 17, 20, 21, 26, 27, 28, 29, 32, 34, 35 |
+| **In Progress** | 4 | Projects 6, 8 (Phase 1-4 Complete), 19 (Phase 1 Complete), 22 (Phase 1-3 Complete) |
 | **Developers Engaged** | 1 | Project 4 |
 | **Ready for Review** | 2 | Projects 2, 5 |
 | **Planning** | 4 | Projects 1, 15, 18, 23 |
-| **Not Started** | 7 | Projects 12, 14, 24, 25, 30, 31, 36 |
+| **Not Started** | 6 | Projects 12, 14, 24, 25, 30, 31, 36 |
 | **Deprioritized** | 1 | Project 33 |
 
 **Total:** 36 project specifications documented
