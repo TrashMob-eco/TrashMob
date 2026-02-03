@@ -109,6 +109,7 @@ import { SiteAdminPhotoModeration } from './pages/siteadmin/photo-moderation/pag
 import { SiteAdminWaivers } from './pages/siteadmin/waivers/page';
 import { SiteAdminWaiverCreate } from './pages/siteadmin/waivers/create';
 import { SiteAdminWaiverEdit } from './pages/siteadmin/waivers/$waiverId.edit';
+import { WaiverComplianceDashboard } from './pages/siteadmin/waivers/compliance';
 import { NoMatch } from './pages/nomatch';
 
 const queryClient = new QueryClient();
@@ -267,6 +268,7 @@ const AppContent: FC = () => {
                                     <Route path=':waiverId/edit' element={<SiteAdminWaiverEdit />} />
                                     <Route path='create' element={<SiteAdminWaiverCreate />} />
                                 </Route>
+                                <Route path='waivers/compliance' element={<WaiverComplianceDashboard />} />
                             </Route>
                         </Route>
                         <Route>

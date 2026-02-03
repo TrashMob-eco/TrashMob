@@ -87,5 +87,28 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Collection of attendee waiver statuses.</returns>
         Task<IEnumerable<AttendeeWaiverStatus>> GetEventAttendeeWaiverStatusAsync(Guid eventId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets waiver compliance summary statistics for admin dashboard.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Compliance summary statistics.</returns>
+        Task<WaiverComplianceSummary> GetComplianceSummaryAsync(CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets paginated list of user waivers with optional filtering for admin viewing.
+        /// </summary>
+        /// <param name="filter">Filter parameters.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Paginated list of user waiver details.</returns>
+        Task<UserWaiverListResult> GetUserWaiversFilteredAsync(UserWaiverFilter filter, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets user waivers for CSV export.
+        /// </summary>
+        /// <param name="filter">Filter parameters (pagination ignored for export).</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Collection of export records.</returns>
+        Task<IEnumerable<WaiverExportRecord>> GetWaiversForExportAsync(UserWaiverFilter filter, CancellationToken cancellationToken = default);
     }
 }

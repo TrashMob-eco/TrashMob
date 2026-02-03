@@ -4,7 +4,12 @@ import {
     CommunityWaiverData,
     WaiverVersionRequest,
     AssignWaiverRequest,
+    WaiverComplianceSummary,
+    UserWaiverFilter,
+    UserWaiverListResult,
+    UserWaiverData,
 } from '../components/Models/WaiverVersionData';
+import UserData from '../components/Models/UserData';
 
 // ========================================
 // Waiver Version Admin Endpoints
@@ -113,5 +118,80 @@ export const RemoveWaiverFromCommunity = () => ({
         ApiService('protected').fetchData<RemoveWaiverFromCommunity_Response>({
             url: `/admin/communities/${params.communityId}/waivers/${params.waiverId}`,
             method: 'delete',
+        }),
+});
+
+// ========================================
+// Waiver Compliance Dashboard Endpoints
+// ========================================
+
+/**
+ * Gets waiver compliance summary statistics for the admin dashboard.
+ */
+export type GetComplianceSummary_Response = WaiverComplianceSummary;
+export const GetComplianceSummary = () => ({
+    key: ['/admin/waivers/compliance/summary'],
+    service: async () =>
+        ApiService('protected').fetchData<GetComplianceSummary_Response>({
+            url: '/admin/waivers/compliance/summary',
+            method: 'get',
+        }),
+});
+
+/**
+ * Gets paginated list of all signed user waivers with filtering options.
+ */
+export type GetUserWaivers_Body = UserWaiverFilter;
+export type GetUserWaivers_Response = UserWaiverListResult;
+export const GetUserWaivers = () => ({
+    key: ['/admin/waivers/compliance/waivers'],
+    service: async (body: GetUserWaivers_Body) =>
+        ApiService('protected').fetchData<GetUserWaivers_Response, GetUserWaivers_Body>({
+            url: '/admin/waivers/compliance/waivers',
+            method: 'post',
+            data: body,
+        }),
+});
+
+/**
+ * Gets users with waivers expiring within the specified number of days.
+ */
+export type GetUsersWithExpiringWaivers_Params = { days?: number };
+export type GetUsersWithExpiringWaivers_Response = UserData[];
+export const GetUsersWithExpiringWaivers = (params?: GetUsersWithExpiringWaivers_Params) => ({
+    key: ['/admin/waivers/compliance/expiring', params?.days ?? 30],
+    service: async () =>
+        ApiService('protected').fetchData<GetUsersWithExpiringWaivers_Response>({
+            url: `/admin/waivers/compliance/expiring${params?.days ? `?days=${params.days}` : ''}`,
+            method: 'get',
+        }),
+});
+
+/**
+ * Exports user waivers to CSV format for legal review.
+ */
+export type ExportWaivers_Body = UserWaiverFilter;
+export const ExportWaivers = () => ({
+    key: ['/admin/waivers/compliance/export'],
+    service: async (body: ExportWaivers_Body) =>
+        ApiService('protected').fetchData<Blob, ExportWaivers_Body>({
+            url: '/admin/waivers/compliance/export',
+            method: 'post',
+            data: body,
+            responseType: 'blob',
+        }),
+});
+
+/**
+ * Gets a specific user waiver record with full details.
+ */
+export type GetUserWaiverDetails_Params = { userWaiverId: string };
+export type GetUserWaiverDetails_Response = UserWaiverData;
+export const GetUserWaiverDetails = (params: GetUserWaiverDetails_Params) => ({
+    key: ['/admin/waivers/compliance/waivers', params.userWaiverId],
+    service: async () =>
+        ApiService('protected').fetchData<GetUserWaiverDetails_Response>({
+            url: `/admin/waivers/compliance/waivers/${params.userWaiverId}`,
+            method: 'get',
         }),
 });
