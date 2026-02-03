@@ -56,9 +56,7 @@ export const ScheduleDialog = ({ open, onOpenChange, newsletterId }: ScheduleDia
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Schedule Newsletter</DialogTitle>
-                    <DialogDescription>
-                        Choose when you want this newsletter to be sent.
-                    </DialogDescription>
+                    <DialogDescription>Choose when you want this newsletter to be sent.</DialogDescription>
                 </DialogHeader>
 
                 <div className='grid gap-4 py-4'>

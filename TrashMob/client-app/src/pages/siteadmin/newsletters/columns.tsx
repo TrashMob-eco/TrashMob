@@ -86,10 +86,13 @@ export const getColumns = ({ onEdit, onSend, onSchedule, onDelete }: GetColumnsP
             if (newsletter.status === 'Draft' || newsletter.status === 'Scheduled') {
                 return <span className='text-muted-foreground'>-</span>;
             }
-            const openRate = newsletter.sentCount > 0
-                ? ((newsletter.openCount / newsletter.sentCount) * 100).toFixed(1)
-                : '0';
-            return <span>{newsletter.openCount.toLocaleString()} ({openRate}%)</span>;
+            const openRate =
+                newsletter.sentCount > 0 ? ((newsletter.openCount / newsletter.sentCount) * 100).toFixed(1) : '0';
+            return (
+                <span>
+                    {newsletter.openCount.toLocaleString()} ({openRate}%)
+                </span>
+            );
         },
     },
     {
@@ -134,7 +137,8 @@ export const getColumns = ({ onEdit, onSend, onSchedule, onDelete }: GetColumnsP
                                 </>
                             )}
                         </DropdownMenuItem>
-                        {isDraft ? <>
+                        {isDraft ? (
+                            <>
                                 <DropdownMenuItem onClick={() => onSchedule(newsletter.id)}>
                                     <Calendar className='mr-2 h-4 w-4' />
                                     Schedule
@@ -151,7 +155,8 @@ export const getColumns = ({ onEdit, onSend, onSchedule, onDelete }: GetColumnsP
                                     <Trash2 className='mr-2 h-4 w-4' />
                                     Delete
                                 </DropdownMenuItem>
-                            </> : null}
+                            </>
+                        ) : null}
                     </DropdownMenuContent>
                 </DropdownMenu>
             );

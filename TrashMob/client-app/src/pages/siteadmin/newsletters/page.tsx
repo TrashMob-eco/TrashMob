@@ -5,12 +5,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
 import { Plus } from 'lucide-react';
-import {
-    GetNewsletters,
-    DeleteNewsletter,
-    SendNewsletter,
-    Newsletter,
-} from '@/services/newsletters';
+import { GetNewsletters, DeleteNewsletter, SendNewsletter, Newsletter } from '@/services/newsletters';
 import { getColumns } from './columns';
 import { NewsletterEditorDialog } from './newsletter-editor-dialog';
 import { ScheduleDialog } from './schedule-dialog';
@@ -121,17 +116,9 @@ export const SiteAdminNewsletters = () => {
                 </CardContent>
             </Card>
 
-            <NewsletterEditorDialog
-                open={editorOpen}
-                onOpenChange={setEditorOpen}
-                newsletter={editingNewsletter}
-            />
+            <NewsletterEditorDialog open={editorOpen} onOpenChange={setEditorOpen} newsletter={editingNewsletter} />
 
-            <ScheduleDialog
-                open={scheduleOpen}
-                onOpenChange={setScheduleOpen}
-                newsletterId={schedulingId}
-            />
+            <ScheduleDialog open={scheduleOpen} onOpenChange={setScheduleOpen} newsletterId={schedulingId} />
         </>
     );
 };

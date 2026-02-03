@@ -12,13 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
     Newsletter,
     GetNewsletterCategories,
@@ -141,7 +135,9 @@ export const NewsletterEditorDialog = ({ open, onOpenChange, newsletter }: Newsl
                             <Label htmlFor='category'>Category</Label>
                             <Select
                                 value={formData.categoryId.toString()}
-                                onValueChange={(value) => setFormData((prev) => ({ ...prev, categoryId: parseInt(value) }))}
+                                onValueChange={(value) =>
+                                    setFormData((prev) => ({ ...prev, categoryId: parseInt(value) }))
+                                }
                                 disabled={isReadOnly}
                             >
                                 <SelectTrigger>
@@ -198,7 +194,8 @@ export const NewsletterEditorDialog = ({ open, onOpenChange, newsletter }: Newsl
                         />
                     </div>
 
-                    {!isReadOnly && templates && templates.length > 0 ? <div className='space-y-2'>
+                    {!isReadOnly && templates && templates.length > 0 ? (
+                        <div className='space-y-2'>
                             <Label>Apply Template</Label>
                             <Select onValueChange={handleApplyTemplate}>
                                 <SelectTrigger>
@@ -212,7 +209,8 @@ export const NewsletterEditorDialog = ({ open, onOpenChange, newsletter }: Newsl
                                     ))}
                                 </SelectContent>
                             </Select>
-                        </div> : null}
+                        </div>
+                    ) : null}
 
                     <div className='space-y-2'>
                         <Label htmlFor='htmlContent'>HTML Content</Label>
