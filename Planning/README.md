@@ -61,7 +61,7 @@
 | [Project 32 - Database Backups](./Projects/Project_32_Database_Backups.md) | Backup retention policies | ✅ Complete |
 | [Project 33 - Localization](./Projects/Project_33_Localization.md) | Multi-language support | Deprioritized |
 | [Project 34 - User Feedback](./Projects/Project_34_User_Feedback.md) | In-app feedback widget | ✅ Complete |
-| [Project 35 - Partner Location Map](./Projects/Project_35_Partner_Location_Map.md) | Partner locations on map | Not Started |
+| [Project 35 - Partner Location Map](./Projects/Project_35_Partner_Location_Map.md) | Partner locations on map | ✅ Complete |
 
 #### High Priority (Marketing & Growth)
 
@@ -126,12 +126,12 @@
 
 | Status | Count | Projects |
 |--------|-------|----------|
-| ✅ **Complete** | 16 | Projects 3, 7, 9, 10, 11, 13, 16, 17, 21, 26, 27, 28, 29, 32, 34 |
+| ✅ **Complete** | 17 | Projects 3, 7, 9, 10, 11, 13, 16, 17, 21, 26, 27, 28, 29, 32, 34, 35 |
 | **In Progress** | 3 | Projects 6, 8 (Phase 1-4 Complete), 22 (Phase 1-3 Complete) |
 | **Developers Engaged** | 1 | Project 4 |
 | **Ready for Review** | 2 | Projects 2, 5 |
 | **Planning** | 4 | Projects 1, 15, 18, 23 |
-| **Not Started** | 9 | Projects 12, 14, 19, 20, 24, 25, 30, 31, 35, 36 |
+| **Not Started** | 8 | Projects 12, 14, 19, 20, 24, 25, 30, 31, 36 |
 | **Deprioritized** | 1 | Project 33 |
 
 **Total:** 36 project specifications documented

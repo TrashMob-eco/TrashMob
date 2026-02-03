@@ -1,10 +1,12 @@
 ﻿namespace TrashMob.Controllers
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using TrashMob.Models;
     using TrashMob.Security;
@@ -153,6 +155,46 @@
             TrackEvent(nameof(DeletePartnerLocation));
 
             return Ok(partnerLocationId);
+        }
+
+        /// <summary>
+        /// Finds partners with locations near a specified point.
+        /// </summary>
+        /// <param name="latitude">The latitude of the search center.</param>
+        /// <param name="longitude">The longitude of the search center.</param>
+        /// <param name="radiusMiles">The search radius in miles (default: 25).</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>List of partners with locations within the radius.</returns>
+        [AllowAnonymous]
+        [HttpGet("nearby")]
+        [ProducesResponseType(typeof(IEnumerable<Partner>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetNearbyPartners(
+            [FromQuery] double latitude,
+            [FromQuery] double longitude,
+            [FromQuery] double radiusMiles = 25,
+            CancellationToken cancellationToken = default)
+        {
+            // Validate coordinates
+            if (latitude < -90 || latitude > 90)
+            {
+                return BadRequest("Latitude must be between -90 and 90.");
+            }
+
+            if (longitude < -180 || longitude > 180)
+            {
+                return BadRequest("Longitude must be between -180 and 180.");
+            }
+
+            if (radiusMiles <= 0 || radiusMiles > 500)
+            {
+                return BadRequest("Radius must be between 0 and 500 miles.");
+            }
+
+            var partners = await partnerLocationManager.GetNearbyPartnersAsync(latitude, longitude, radiusMiles, cancellationToken);
+            TrackEvent(nameof(GetNearbyPartners));
+
+            return Ok(partners);
         }
     }
 }
