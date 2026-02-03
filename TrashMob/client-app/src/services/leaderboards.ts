@@ -1,7 +1,12 @@
 // Leaderboards API service
 
 import { ApiService } from '.';
-import { LeaderboardOptions, LeaderboardResponse, TeamRankResponse, UserRankResponse } from '../components/Models/LeaderboardData';
+import {
+    LeaderboardOptions,
+    LeaderboardResponse,
+    TeamRankResponse,
+    UserRankResponse,
+} from '../components/Models/LeaderboardData';
 
 // ============================================================================
 // Leaderboard Operations
