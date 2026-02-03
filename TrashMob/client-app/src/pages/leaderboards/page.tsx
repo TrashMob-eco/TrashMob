@@ -124,8 +124,7 @@ export const LeaderboardsPage = () => {
                                 ) : (
                                     <div className='text-sm text-muted-foreground'>
                                         <p>
-                                            {myRank.ineligibleReason ||
-                                                'Complete 3+ events to appear on leaderboards.'}
+                                            {myRank.ineligibleReason || 'Complete 3+ events to appear on leaderboards.'}
                                         </p>
                                     </div>
                                 )}
