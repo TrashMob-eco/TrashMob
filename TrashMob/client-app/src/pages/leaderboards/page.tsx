@@ -2,14 +2,16 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LeaderboardTable } from '@/components/leaderboards/LeaderboardTable';
-import { GetLeaderboard, GetLeaderboardOptions, GetMyRank } from '@/services/leaderboards';
+import { GetLeaderboard, GetLeaderboardOptions, GetMyRank, GetTeamLeaderboard } from '@/services/leaderboards';
 import { LeaderboardTypeLabels, TimeRangeLabels } from '@/components/Models/LeaderboardData';
 import { useLogin } from '@/hooks/useLogin';
-import { Trophy, TrendingUp, Users, Info } from 'lucide-react';
+import { Trophy, TrendingUp, Users, Info, Users2 } from 'lucide-react';
 
 export const LeaderboardsPage = () => {
     const { isUserLoaded } = useLogin();
+    const [entityType, setEntityType] = useState<'users' | 'teams'>('users');
     const [leaderboardType, setLeaderboardType] = useState('Events');
     const [timeRange, setTimeRange] = useState('Month');
 
@@ -20,20 +22,32 @@ export const LeaderboardsPage = () => {
     });
     const options = optionsResponse?.data;
 
-    // Fetch leaderboard data
-    const { data: leaderboardResponse, isLoading } = useQuery({
+    // Fetch user leaderboard data
+    const { data: userLeaderboardResponse, isLoading: isLoadingUsers } = useQuery({
         queryKey: GetLeaderboard({ type: leaderboardType, timeRange, limit: 50 }).key,
         queryFn: GetLeaderboard({ type: leaderboardType, timeRange, limit: 50 }).service,
+        enabled: entityType === 'users',
     });
-    const leaderboard = leaderboardResponse?.data;
+    const userLeaderboard = userLeaderboardResponse?.data;
 
-    // Fetch current user's rank (only when logged in)
+    // Fetch team leaderboard data
+    const { data: teamLeaderboardResponse, isLoading: isLoadingTeams } = useQuery({
+        queryKey: GetTeamLeaderboard({ type: leaderboardType, timeRange, limit: 50 }).key,
+        queryFn: GetTeamLeaderboard({ type: leaderboardType, timeRange, limit: 50 }).service,
+        enabled: entityType === 'teams',
+    });
+    const teamLeaderboard = teamLeaderboardResponse?.data;
+
+    // Fetch current user's rank (only when logged in and viewing users)
     const { data: myRankResponse } = useQuery({
         queryKey: GetMyRank({ type: leaderboardType, timeRange }).key,
         queryFn: GetMyRank({ type: leaderboardType, timeRange }).service,
-        enabled: isUserLoaded,
+        enabled: isUserLoaded && entityType === 'users',
     });
     const myRank = myRankResponse?.data;
+
+    const currentLeaderboard = entityType === 'users' ? userLeaderboard : teamLeaderboard;
+    const isLoading = entityType === 'users' ? isLoadingUsers : isLoadingTeams;
 
     const formatLastUpdated = (dateStr?: string) => {
         if (!dateStr) return '';
@@ -55,9 +69,23 @@ export const LeaderboardsPage = () => {
                     Leaderboards
                 </h1>
                 <p className='text-muted-foreground mt-2'>
-                    See how TrashMob volunteers are making an impact in their communities.
+                    See how TrashMob volunteers and teams are making an impact in their communities.
                 </p>
             </div>
+
+            {/* Entity Type Tabs */}
+            <Tabs value={entityType} onValueChange={(v) => setEntityType(v as 'users' | 'teams')} className='mb-6'>
+                <TabsList>
+                    <TabsTrigger value='users' className='gap-2'>
+                        <Users className='h-4 w-4' />
+                        Volunteers
+                    </TabsTrigger>
+                    <TabsTrigger value='teams' className='gap-2'>
+                        <Users2 className='h-4 w-4' />
+                        Teams
+                    </TabsTrigger>
+                </TabsList>
+            </Tabs>
 
             {/* Filters */}
             <div className='flex flex-wrap gap-4 mb-6'>
@@ -97,8 +125,8 @@ export const LeaderboardsPage = () => {
             <div className='grid gap-6 lg:grid-cols-4'>
                 {/* Sidebar with user rank and stats */}
                 <div className='lg:col-span-1 space-y-4'>
-                    {/* User's Rank Card */}
-                    {isUserLoaded && myRank ? (
+                    {/* User's Rank Card (only for volunteers tab) */}
+                    {entityType === 'users' && isUserLoaded && myRank ? (
                         <Card>
                             <CardHeader className='pb-3'>
                                 <CardTitle className='text-lg flex items-center gap-2'>
@@ -136,19 +164,25 @@ export const LeaderboardsPage = () => {
                     <Card>
                         <CardHeader className='pb-3'>
                             <CardTitle className='text-lg flex items-center gap-2'>
-                                <Users className='h-5 w-5 text-primary' />
+                                {entityType === 'users' ? (
+                                    <Users className='h-5 w-5 text-primary' />
+                                ) : (
+                                    <Users2 className='h-5 w-5 text-primary' />
+                                )}
                                 Stats
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className='space-y-2'>
                                 <div className='flex justify-between items-center'>
-                                    <span className='text-muted-foreground'>Ranked Volunteers</span>
-                                    <span className='font-semibold'>{leaderboard?.totalEntries || 0}</span>
+                                    <span className='text-muted-foreground'>
+                                        {entityType === 'users' ? 'Ranked Volunteers' : 'Ranked Teams'}
+                                    </span>
+                                    <span className='font-semibold'>{currentLeaderboard?.totalEntries || 0}</span>
                                 </div>
-                                {leaderboard?.computedDate ? (
+                                {currentLeaderboard?.computedDate ? (
                                     <div className='text-xs text-muted-foreground mt-2'>
-                                        Last updated: {formatLastUpdated(leaderboard.computedDate)}
+                                        Last updated: {formatLastUpdated(currentLeaderboard.computedDate)}
                                     </div>
                                 ) : null}
                             </div>
@@ -163,9 +197,19 @@ export const LeaderboardsPage = () => {
                                 <div>
                                     <p className='font-medium text-foreground'>How Rankings Work</p>
                                     <ul className='mt-1 space-y-1 text-xs'>
-                                        <li>Attend at least 3 events to qualify</li>
-                                        <li>Rankings update daily</li>
-                                        <li>Opt-out anytime in your profile settings</li>
+                                        {entityType === 'users' ? (
+                                            <>
+                                                <li>Attend at least 3 events to qualify</li>
+                                                <li>Rankings update daily</li>
+                                                <li>Opt-out anytime in your profile settings</li>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <li>Team members must attend 3+ events combined</li>
+                                                <li>Scores aggregate all member contributions</li>
+                                                <li>Rankings update daily</li>
+                                            </>
+                                        )}
                                     </ul>
                                 </div>
                             </div>
@@ -182,12 +226,16 @@ export const LeaderboardsPage = () => {
                                 {TimeRangeLabels[timeRange] || timeRange}
                             </CardTitle>
                             <CardDescription>
-                                Top volunteers ranked by{' '}
+                                Top {entityType === 'users' ? 'volunteers' : 'teams'} ranked by{' '}
                                 {(LeaderboardTypeLabels[leaderboardType] || leaderboardType).toLowerCase()}
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <LeaderboardTable entries={leaderboard?.entries || []} isLoading={isLoading} />
+                            <LeaderboardTable
+                                entries={currentLeaderboard?.entries || []}
+                                isLoading={isLoading}
+                                entityType={entityType}
+                            />
                         </CardContent>
                     </Card>
                 </div>

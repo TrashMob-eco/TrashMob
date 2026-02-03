@@ -89,4 +89,60 @@ namespace TrashMob.Shared.Poco
         /// </summary>
         public string IneligibleReason { get; set; }
     }
+
+    /// <summary>
+    /// Represents a team's rank on a leaderboard.
+    /// </summary>
+    public class TeamRankResponse
+    {
+        /// <summary>
+        /// Gets or sets the team ID.
+        /// </summary>
+        public System.Guid TeamId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the team name.
+        /// </summary>
+        public string TeamName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the leaderboard type.
+        /// </summary>
+        public string LeaderboardType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the time range.
+        /// </summary>
+        public string TimeRange { get; set; }
+
+        /// <summary>
+        /// Gets or sets the team's current rank. Null if not ranked.
+        /// </summary>
+        public int? Rank { get; set; }
+
+        /// <summary>
+        /// Gets or sets the team's score. Null if not ranked.
+        /// </summary>
+        public decimal? Score { get; set; }
+
+        /// <summary>
+        /// Gets or sets the formatted score for display.
+        /// </summary>
+        public string FormattedScore { get; set; }
+
+        /// <summary>
+        /// Gets or sets the total number of ranked teams.
+        /// </summary>
+        public int TotalRanked { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether the team is eligible to appear on leaderboards.
+        /// </summary>
+        public bool IsEligible { get; set; }
+
+        /// <summary>
+        /// Gets or sets the reason if not eligible.
+        /// </summary>
+        public string IneligibleReason { get; set; }
+    }
 }

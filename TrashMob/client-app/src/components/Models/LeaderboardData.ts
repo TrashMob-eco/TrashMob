@@ -32,6 +32,19 @@ export interface UserRankResponse {
     ineligibleReason?: string;
 }
 
+export interface TeamRankResponse {
+    teamId: string;
+    teamName?: string;
+    leaderboardType: string;
+    timeRange: string;
+    rank?: number;
+    score?: number;
+    formattedScore?: string;
+    totalRanked: number;
+    isEligible: boolean;
+    ineligibleReason?: string;
+}
+
 export interface LeaderboardOptions {
     types: string[];
     timeRanges: string[];

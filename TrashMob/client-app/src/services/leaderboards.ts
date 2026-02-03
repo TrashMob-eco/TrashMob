@@ -1,7 +1,12 @@
 // Leaderboards API service
 
 import { ApiService } from '.';
-import { LeaderboardOptions, LeaderboardResponse, UserRankResponse } from '../components/Models/LeaderboardData';
+import {
+    LeaderboardOptions,
+    LeaderboardResponse,
+    TeamRankResponse,
+    UserRankResponse,
+} from '../components/Models/LeaderboardData';
 
 // ============================================================================
 // Leaderboard Operations
@@ -59,4 +64,53 @@ export const GetLeaderboardOptions = () => ({
             url: '/leaderboards/options',
             method: 'get',
         }),
+});
+
+// ============================================================================
+// Team Leaderboard Operations
+// ============================================================================
+
+export type GetTeamLeaderboard_Params = {
+    type?: string; // Events, Bags, Weight, Hours (default: Events)
+    timeRange?: string; // Week, Month, Year, AllTime (default: Month)
+    scope?: string; // Global, Region, City (default: Global)
+    location?: string; // Required if scope is not Global
+    limit?: number; // 1-100 (default: 50)
+};
+export type GetTeamLeaderboard_Response = LeaderboardResponse;
+export const GetTeamLeaderboard = (params?: GetTeamLeaderboard_Params) => ({
+    key: ['/leaderboards/teams', params],
+    service: async () => {
+        const queryParams = new URLSearchParams();
+        if (params?.type) queryParams.append('type', params.type);
+        if (params?.timeRange) queryParams.append('timeRange', params.timeRange);
+        if (params?.scope) queryParams.append('scope', params.scope);
+        if (params?.location) queryParams.append('location', params.location);
+        if (params?.limit !== undefined) queryParams.append('limit', params.limit.toString());
+        const queryString = queryParams.toString();
+        return ApiService('public').fetchData<GetTeamLeaderboard_Response>({
+            url: `/leaderboards/teams${queryString ? `?${queryString}` : ''}`,
+            method: 'get',
+        });
+    },
+});
+
+export type GetTeamRank_Params = {
+    teamId: string;
+    type?: string; // Events, Bags, Weight, Hours (default: Events)
+    timeRange?: string; // Week, Month, Year, AllTime (default: AllTime)
+};
+export type GetTeamRank_Response = TeamRankResponse;
+export const GetTeamRank = (params: GetTeamRank_Params) => ({
+    key: ['/leaderboards/teams', params.teamId, 'rank', params],
+    service: async () => {
+        const queryParams = new URLSearchParams();
+        if (params.type) queryParams.append('type', params.type);
+        if (params.timeRange) queryParams.append('timeRange', params.timeRange);
+        const queryString = queryParams.toString();
+        return ApiService('public').fetchData<GetTeamRank_Response>({
+            url: `/leaderboards/teams/${params.teamId}/rank${queryString ? `?${queryString}` : ''}`,
+            method: 'get',
+        });
+    },
 });

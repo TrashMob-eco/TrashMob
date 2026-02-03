@@ -37,14 +37,25 @@ namespace TrashMobDailyJobs
             // Clear existing cache
             await ClearLeaderboardCache(conn);
 
-            // Compute leaderboards for each time range
+            // Compute user leaderboards for each time range
             foreach (var timeRange in TimeRanges)
             {
-                logger.LogInformation("Computing leaderboards for time range: {TimeRange}", timeRange);
+                logger.LogInformation("Computing user leaderboards for time range: {TimeRange}", timeRange);
 
                 foreach (var leaderboardType in LeaderboardTypes)
                 {
                     await ComputeUserLeaderboard(conn, leaderboardType, timeRange);
+                }
+            }
+
+            // Compute team leaderboards for each time range
+            foreach (var timeRange in TimeRanges)
+            {
+                logger.LogInformation("Computing team leaderboards for time range: {TimeRange}", timeRange);
+
+                foreach (var leaderboardType in LeaderboardTypes)
+                {
+                    await ComputeTeamLeaderboard(conn, leaderboardType, timeRange);
                 }
             }
 
@@ -171,6 +182,106 @@ ORDER BY Rank";
                 "AllTime" => "",
                 _ => ""
             };
+        }
+
+        private async Task ComputeTeamLeaderboard(SqlConnection conn, string leaderboardType, string timeRange)
+        {
+            var dateFilter = GetDateFilter(timeRange);
+            var sql = GetTeamLeaderboardQuery(leaderboardType, dateFilter);
+
+            logger.LogInformation("Computing team {Type} leaderboard for {TimeRange}...", leaderboardType, timeRange);
+
+            using var cmd = new SqlCommand(sql, conn);
+            using var reader = await cmd.ExecuteReaderAsync();
+
+            var entries = 0;
+            var computedDate = DateTimeOffset.UtcNow;
+
+            while (await reader.ReadAsync())
+            {
+                var teamId = reader.GetGuid(0);
+                var teamName = reader.GetString(1);
+                var region = reader.IsDBNull(2) ? null : reader.GetString(2);
+                var city = reader.IsDBNull(3) ? null : reader.GetString(3);
+                var score = reader.GetDecimal(4);
+                var rank = reader.GetInt32(5);
+
+                // Insert Global entry
+                await InsertLeaderboardEntry(conn, "Team", teamId, teamName, leaderboardType, timeRange, "Global", null, score, rank, computedDate);
+
+                // Insert Region entry if available
+                if (!string.IsNullOrEmpty(region))
+                {
+                    await InsertLeaderboardEntry(conn, "Team", teamId, teamName, leaderboardType, timeRange, "Region", region, score, rank, computedDate);
+                }
+
+                // Insert City entry if available
+                if (!string.IsNullOrEmpty(city))
+                {
+                    await InsertLeaderboardEntry(conn, "Team", teamId, teamName, leaderboardType, timeRange, "City", city, score, rank, computedDate);
+                }
+
+                entries++;
+            }
+
+            logger.LogInformation("Computed {Count} entries for team {Type} {TimeRange} leaderboard.", entries, leaderboardType, timeRange);
+        }
+
+        private static string GetTeamLeaderboardQuery(string leaderboardType, string dateFilter)
+        {
+            var scoreExpression = leaderboardType switch
+            {
+                "Events" => "COUNT(DISTINCT ea.EventId)",
+                "Bags" => "ISNULL(SUM(eam.BagsCollected), 0)",
+                "Weight" => @"ISNULL(SUM(
+                    CASE
+                        WHEN eam.AdjustedPickedWeight IS NOT NULL THEN eam.AdjustedPickedWeight
+                        WHEN eam.PickedWeightUnitId = 2 THEN eam.PickedWeight * 2.20462
+                        ELSE eam.PickedWeight
+                    END
+                ), 0)",
+                "Hours" => "ISNULL(SUM(eam.DurationMinutes), 0) / 60.0",
+                _ => "COUNT(DISTINCT ea.EventId)"
+            };
+
+            var joinClause = leaderboardType switch
+            {
+                "Events" => "",
+                _ => @"LEFT JOIN dbo.EventAttendeeMetrics eam ON ea.EventId = eam.EventId AND ea.UserId = eam.UserId
+                       AND eam.Status IN ('Approved', 'Adjusted')"
+            };
+
+            // Team leaderboards aggregate metrics from all team members' event participation
+            return $@"
+WITH TeamStats AS (
+    SELECT
+        t.Id AS TeamId,
+        t.Name AS TeamName,
+        t.Region,
+        t.City,
+        {scoreExpression} AS Score,
+        COUNT(DISTINCT ea.EventId) AS EventCount
+    FROM dbo.Teams t
+    INNER JOIN dbo.TeamMembers tm ON t.Id = tm.TeamId
+    INNER JOIN dbo.EventAttendees ea ON tm.UserId = ea.UserId
+    INNER JOIN dbo.Events e ON ea.EventId = e.Id
+    {joinClause}
+    WHERE t.IsActive = 1
+      AND e.EventStatusId != 3
+      {dateFilter}
+    GROUP BY t.Id, t.Name, t.Region, t.City
+    HAVING COUNT(DISTINCT ea.EventId) >= {MinimumEventsToQualify}
+)
+SELECT
+    TeamId,
+    TeamName,
+    Region,
+    City,
+    CAST(Score AS DECIMAL(18,2)) AS Score,
+    ROW_NUMBER() OVER (ORDER BY Score DESC, EventCount DESC, TeamId) AS Rank
+FROM TeamStats
+WHERE Score > 0
+ORDER BY Rank";
         }
 
         private async Task InsertLeaderboardEntry(

@@ -60,5 +60,37 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// </summary>
         /// <returns>Array of available location scopes.</returns>
         string[] GetAvailableLocationScopes();
+
+        /// <summary>
+        /// Gets the team leaderboard for the specified parameters.
+        /// </summary>
+        /// <param name="leaderboardType">The type of leaderboard (Events, Bags, Weight, Hours).</param>
+        /// <param name="timeRange">The time range (Week, Month, Year, AllTime). Default: Month.</param>
+        /// <param name="locationScope">The location scope (Global, Region, City). Default: Global.</param>
+        /// <param name="locationValue">The location value (region or city name). Required if scope is not Global.</param>
+        /// <param name="limit">Maximum number of entries to return. Default: 50.</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>The leaderboard response containing team entries and metadata.</returns>
+        Task<LeaderboardResponse> GetTeamLeaderboardAsync(
+            string leaderboardType,
+            string timeRange = "Month",
+            string locationScope = "Global",
+            string locationValue = null,
+            int limit = 50,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets a specific team's rank on a leaderboard.
+        /// </summary>
+        /// <param name="teamId">The team ID.</param>
+        /// <param name="leaderboardType">The type of leaderboard. Default: Events.</param>
+        /// <param name="timeRange">The time range. Default: AllTime.</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>The team's rank information.</returns>
+        Task<TeamRankResponse> GetTeamRankAsync(
+            Guid teamId,
+            string leaderboardType = "Events",
+            string timeRange = "AllTime",
+            CancellationToken cancellationToken = default);
     }
 }
