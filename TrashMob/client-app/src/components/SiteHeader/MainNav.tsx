@@ -21,6 +21,7 @@ import {
     Users,
     Building2,
     Trophy,
+    Award,
 } from 'lucide-react';
 import React from 'react';
 
@@ -181,6 +182,13 @@ export const MainNav = ({ className, isUserLoaded, ...props }: MainNavProps) => 
                                         >
                                             Set your preferred location for nearby events.
                                         </ListItem>
+                                        <ListItem
+                                            to='/achievements'
+                                            title='Achievements'
+                                            icon={<Award className='h-4 w-4' />}
+                                        >
+                                            Track your volunteer milestones and badges.
+                                        </ListItem>
                                     </ul>
                                 </NavigationMenuContent>
                             </NavigationMenuItem>
@@ -242,6 +250,7 @@ export const MainNav = ({ className, isUserLoaded, ...props }: MainNavProps) => 
                         <p className='text-xs text-muted-foreground uppercase tracking-wide pt-1'>My TrashMob</p>
                         <MobileNavItem to='/mydashboard'>My Dashboard</MobileNavItem>
                         <MobileNavItem to='/locationpreference'>Location Preference</MobileNavItem>
+                        <MobileNavItem to='/achievements'>Achievements</MobileNavItem>
                     </div>
                 ) : null}
                 <div className='border-l-2 border-muted pl-3 ml-2 space-y-1'>

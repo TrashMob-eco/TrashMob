@@ -112,6 +112,7 @@
 
             // Gamification
             services.AddScoped<ILeaderboardManager, LeaderboardManager>();
+            services.AddScoped<IAchievementManager, AchievementManager>();
 
             // Non-patterned
             services.AddScoped<IActiveDirectoryManager, ActiveDirectoryManager>();
