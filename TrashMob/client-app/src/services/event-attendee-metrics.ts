@@ -3,6 +3,8 @@
 import { ApiService } from '.';
 import EventAttendeeMetricsData from '../components/Models/EventAttendeeMetricsData';
 import AttendeeMetricsTotals from '../components/Models/AttendeeMetricsTotals';
+import EventMetricsPublicSummary from '../components/Models/EventMetricsPublicSummary';
+import UserImpactStats from '../components/Models/UserImpactStats';
 
 // ============================================================================
 // Attendee Operations
@@ -119,6 +121,32 @@ export const GetMetricsTotals = (params: GetMetricsTotals_Params) => ({
     service: async () =>
         ApiService('protected').fetchData<GetMetricsTotals_Response>({
             url: `/events/${params.eventId}/attendee-metrics/totals`,
+            method: 'get',
+        }),
+});
+
+// ============================================================================
+// Public Operations (Phase 3 - Display)
+// ============================================================================
+
+export type GetPublicMetrics_Params = { eventId: string };
+export type GetPublicMetrics_Response = EventMetricsPublicSummary;
+export const GetPublicMetrics = (params: GetPublicMetrics_Params) => ({
+    key: ['/events/', params.eventId, '/attendee-metrics/public'],
+    service: async () =>
+        ApiService('public').fetchData<GetPublicMetrics_Response>({
+            url: `/events/${params.eventId}/attendee-metrics/public`,
+            method: 'get',
+        }),
+});
+
+export type GetUserImpact_Params = { userId: string };
+export type GetUserImpact_Response = UserImpactStats;
+export const GetUserImpact = (params: GetUserImpact_Params) => ({
+    key: ['/users/', params.userId, '/impact'],
+    service: async () =>
+        ApiService('protected').fetchData<GetUserImpact_Response>({
+            url: `/users/${params.userId}/impact`,
             method: 'get',
         }),
 });

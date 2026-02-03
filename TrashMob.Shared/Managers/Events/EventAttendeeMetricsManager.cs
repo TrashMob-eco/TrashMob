@@ -347,5 +347,172 @@ namespace TrashMob.Shared.Managers.Events
                 .AnyAsync(m => m.EventId == eventId && m.UserId == userId, cancellationToken)
                 .ConfigureAwait(false);
         }
+
+        /// <inheritdoc />
+        public async Task<EventMetricsPublicSummary> GetPublicMetricsSummaryAsync(
+            Guid eventId,
+            CancellationToken cancellationToken = default)
+        {
+            var approvedMetrics = await Repo.Get()
+                .Where(m => m.EventId == eventId && (m.Status == "Approved" || m.Status == "Adjusted"))
+                .Include(m => m.User)
+                .Include(m => m.PickedWeightUnit)
+                .Include(m => m.AdjustedPickedWeightUnit)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            var summary = new EventMetricsPublicSummary
+            {
+                EventId = eventId,
+                ContributorCount = approvedMetrics.Count
+            };
+
+            foreach (var metrics in approvedMetrics)
+            {
+                int? bags;
+                decimal? weight;
+                int? weightUnitId;
+                int? duration;
+
+                if (metrics.Status == "Adjusted")
+                {
+                    bags = metrics.AdjustedBagsCollected ?? metrics.BagsCollected;
+                    weight = metrics.AdjustedPickedWeight ?? metrics.PickedWeight;
+                    weightUnitId = metrics.AdjustedPickedWeightUnitId ?? metrics.PickedWeightUnitId;
+                    duration = metrics.AdjustedDurationMinutes ?? metrics.DurationMinutes;
+                }
+                else
+                {
+                    bags = metrics.BagsCollected;
+                    weight = metrics.PickedWeight;
+                    weightUnitId = metrics.PickedWeightUnitId;
+                    duration = metrics.DurationMinutes;
+                }
+
+                // Calculate totals
+                if (bags.HasValue)
+                {
+                    summary.TotalBagsCollected += bags.Value;
+                }
+
+                decimal weightInPounds = 0;
+                if (weight.HasValue && weightUnitId.HasValue)
+                {
+                    weightInPounds = weightUnitId.Value == WeightUnitKilograms
+                        ? weight.Value * KgToLbsConversion
+                        : weight.Value;
+                    summary.TotalWeightPounds += weightInPounds;
+                }
+
+                if (duration.HasValue)
+                {
+                    summary.TotalDurationMinutes += duration.Value;
+                }
+
+                // Add to contributors list (all approved metrics are public by default)
+                if (metrics.User != null)
+                {
+                    summary.Contributors.Add(new PublicAttendeeMetrics
+                    {
+                        UserId = metrics.UserId,
+                        UserName = metrics.User.UserName,
+                        BagsCollected = bags,
+                        WeightPounds = weightInPounds > 0 ? weightInPounds : null,
+                        DurationMinutes = duration,
+                        Status = metrics.Status
+                    });
+                }
+            }
+
+            // Sort contributors by bags collected descending (leaderboard)
+            summary.Contributors = summary.Contributors
+                .OrderByDescending(c => c.BagsCollected ?? 0)
+                .ThenByDescending(c => c.WeightPounds ?? 0)
+                .ToList();
+
+            return summary;
+        }
+
+        /// <inheritdoc />
+        public async Task<UserImpactStats> GetUserImpactStatsAsync(
+            Guid userId,
+            CancellationToken cancellationToken = default)
+        {
+            var userMetrics = await Repo.Get()
+                .Where(m => m.UserId == userId && (m.Status == "Approved" || m.Status == "Adjusted"))
+                .Include(m => m.Event)
+                .Include(m => m.PickedWeightUnit)
+                .Include(m => m.AdjustedPickedWeightUnit)
+                .OrderByDescending(m => m.Event.EventDate)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            var stats = new UserImpactStats
+            {
+                EventsWithMetrics = userMetrics.Count
+            };
+
+            foreach (var metrics in userMetrics)
+            {
+                int? bags;
+                decimal? weight;
+                int? weightUnitId;
+                int? duration;
+
+                if (metrics.Status == "Adjusted")
+                {
+                    bags = metrics.AdjustedBagsCollected ?? metrics.BagsCollected;
+                    weight = metrics.AdjustedPickedWeight ?? metrics.PickedWeight;
+                    weightUnitId = metrics.AdjustedPickedWeightUnitId ?? metrics.PickedWeightUnitId;
+                    duration = metrics.AdjustedDurationMinutes ?? metrics.DurationMinutes;
+                }
+                else
+                {
+                    bags = metrics.BagsCollected;
+                    weight = metrics.PickedWeight;
+                    weightUnitId = metrics.PickedWeightUnitId;
+                    duration = metrics.DurationMinutes;
+                }
+
+                decimal weightInPounds = 0;
+                if (weight.HasValue && weightUnitId.HasValue)
+                {
+                    weightInPounds = weightUnitId.Value == WeightUnitKilograms
+                        ? weight.Value * KgToLbsConversion
+                        : weight.Value;
+                }
+
+                if (bags.HasValue)
+                {
+                    stats.TotalBagsCollected += bags.Value;
+                }
+
+                stats.TotalWeightPounds += weightInPounds;
+                stats.TotalWeightKilograms += weightInPounds / KgToLbsConversion;
+
+                if (duration.HasValue)
+                {
+                    stats.TotalDurationMinutes += duration.Value;
+                }
+
+                // Add event breakdown
+                if (metrics.Event != null)
+                {
+                    stats.EventBreakdown.Add(new UserEventMetricsSummary
+                    {
+                        EventId = metrics.EventId,
+                        EventName = metrics.Event.Name,
+                        EventDate = metrics.Event.EventDate,
+                        BagsCollected = bags ?? 0,
+                        WeightPounds = weightInPounds,
+                        DurationMinutes = duration ?? 0,
+                        Status = metrics.Status
+                    });
+                }
+            }
+
+            return stats;
+        }
     }
 }
+

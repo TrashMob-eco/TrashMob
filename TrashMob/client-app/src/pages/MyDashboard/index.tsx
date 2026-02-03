@@ -54,6 +54,7 @@ import { MyLitterReportsTable } from '@/pages/MyDashboard/MyLitterReportsTable';
 import { NearbyLitterReportsWidget } from '@/pages/MyDashboard/NearbyLitterReportsWidget';
 import { MyTeamsTable } from '@/pages/MyDashboard/MyTeamsTable';
 import { MyWaiversCard } from '@/pages/MyDashboard/MyWaiversCard';
+import { MyImpactCard } from '@/pages/MyDashboard/MyImpactCard';
 
 const isUpcomingEvent = (event: EventData) => new Date(event.eventDate) >= new Date();
 const isPastEvent = (event: EventData) => new Date(event.eventDate) < new Date();
@@ -231,6 +232,9 @@ const MyDashboard: FC<MyDashboardProps> = () => {
             </div>
             <div className='container my-8!'>
                 <MyWaiversCard userId={userId} />
+            </div>
+            <div className='container my-8!'>
+                <MyImpactCard userId={userId} prefersMetric={currentUser?.prefersMetric ?? false} />
             </div>
             <div className='container my-12!'>
                 <div className='flex justify-between'>

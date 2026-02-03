@@ -133,5 +133,25 @@ namespace TrashMob.Shared.Managers.Interfaces
             Guid eventId,
             Guid userId,
             CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets the public metrics summary for an event, including approved contributor breakdown.
+        /// </summary>
+        /// <param name="eventId">The event ID.</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>Public metrics summary with contributor breakdown.</returns>
+        Task<EventMetricsPublicSummary> GetPublicMetricsSummaryAsync(
+            Guid eventId,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets a user's personal impact statistics across all events.
+        /// </summary>
+        /// <param name="userId">The user ID.</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>User's aggregated impact statistics.</returns>
+        Task<UserImpactStats> GetUserImpactStatsAsync(
+            Guid userId,
+            CancellationToken cancellationToken = default);
     }
 }
