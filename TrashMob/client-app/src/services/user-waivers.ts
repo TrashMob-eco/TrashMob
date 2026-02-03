@@ -5,6 +5,7 @@ import {
     AcceptWaiverRequest,
     WaiverCheckResult,
 } from '../components/Models/WaiverVersionData';
+import { PaperWaiverUploadRequest, AttendeeWaiverStatus } from '../components/Models/PaperWaiverUpload';
 
 /**
  * Gets waivers the current user needs to sign.
@@ -98,3 +99,51 @@ export const CheckWaiversForEvent = (params: CheckWaiversForEvent_Params) => ({
 export const getWaiverDownloadUrl = (userWaiverId: string): string => {
     return `/api/waivers/${userWaiverId}/download`;
 };
+
+/**
+ * Uploads a paper waiver on behalf of a user.
+ */
+export type UploadPaperWaiver_Body = PaperWaiverUploadRequest;
+export type UploadPaperWaiver_Response = UserWaiverData;
+export const UploadPaperWaiver = () => ({
+    key: ['/waivers/upload-paper'],
+    service: async (body: UploadPaperWaiver_Body) => {
+        const formData = new FormData();
+        formData.append('FormFile', body.formFile);
+        formData.append('UserId', body.userId);
+        formData.append('WaiverVersionId', body.waiverVersionId);
+        formData.append('SignerName', body.signerName);
+        formData.append('DateSigned', body.dateSigned);
+        if (body.eventId) {
+            formData.append('EventId', body.eventId);
+        }
+        if (body.isMinor !== undefined) {
+            formData.append('IsMinor', String(body.isMinor));
+        }
+        if (body.guardianName) {
+            formData.append('GuardianName', body.guardianName);
+        }
+        if (body.guardianRelationship) {
+            formData.append('GuardianRelationship', body.guardianRelationship);
+        }
+        return ApiService('protected').fetchData<UploadPaperWaiver_Response>({
+            url: '/waivers/upload-paper',
+            method: 'post',
+            data: formData,
+        });
+    },
+});
+
+/**
+ * Gets waiver status for all attendees of an event.
+ */
+export type GetEventAttendeeWaiverStatus_Params = { eventId: string };
+export type GetEventAttendeeWaiverStatus_Response = AttendeeWaiverStatus[];
+export const GetEventAttendeeWaiverStatus = (params: GetEventAttendeeWaiverStatus_Params) => ({
+    key: ['/waivers/event', params.eventId, 'attendees'],
+    service: async () =>
+        ApiService('protected').fetchData<GetEventAttendeeWaiverStatus_Response>({
+            url: `/waivers/event/${params.eventId}/attendees`,
+            method: 'get',
+        }),
+});
