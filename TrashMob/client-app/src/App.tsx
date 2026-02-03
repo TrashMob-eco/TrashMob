@@ -60,6 +60,9 @@ import { TeamEditPage } from './pages/teams/$teamId/edit';
 import { TeamInvitesPage } from './pages/teams/$teamId/invites';
 import { TeamInviteDetailsPage } from './pages/teams/$teamId/invites/$batchId';
 
+/** Leaderboards */
+import { LeaderboardsPage } from './pages/leaderboards/page';
+
 /** Communities */
 import { CommunitiesPage } from './pages/communities';
 import { CommunityDetailPage } from './pages/communities/$slug';
@@ -295,6 +298,7 @@ const AppContent: FC = () => {
                             <Route path='/litterreports/:litterReportId' element={<LitterReportDetailPage />} />
                             <Route path='/teams' element={<TeamsPage />} />
                             <Route path='/teams/:teamId' element={<TeamDetailPage />} />
+                            <Route path='/leaderboards' element={<LeaderboardsPage />} />
                             <Route path='/communities' element={<CommunitiesPage />} />
                             <Route path='/communities/:slug' element={<CommunityDetailPage />} />
                             <Route path='/partnerships' element={<Partnerships />} />
