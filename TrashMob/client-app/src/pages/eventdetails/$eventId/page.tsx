@@ -227,11 +227,13 @@ export const EventDetails: FC<EventDetailsProps> = () => {
                             currentUserId={currentUser?.id}
                             onUploadClick={() => setShowPhotoUploader(true)}
                         />
-                        {currentUser ? <EventPhotoUploader
+                        {currentUser ? (
+                            <EventPhotoUploader
                                 eventId={eventId}
                                 open={showPhotoUploader}
                                 onOpenChange={setShowPhotoUploader}
-                            /> : null}
+                            />
+                        ) : null}
                     </div>
                     {isEventCompleted ? (
                         <div className='container mx-auto mb-16'>

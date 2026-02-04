@@ -13,13 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Camera, Upload, X, Loader2, ImagePlus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -199,25 +193,16 @@ export const EventPhotoUploader: FC<EventPhotoUploaderProps> = ({ eventId, open,
                             className='hidden'
                         />
                         <ImagePlus className='h-10 w-10 mx-auto text-muted-foreground mb-2' />
-                        <p className='text-sm text-muted-foreground'>
-                            Click to select photos or drag and drop
-                        </p>
-                        <p className='text-xs text-muted-foreground mt-1'>
-                            JPEG, PNG, WebP up to 10MB each
-                        </p>
+                        <p className='text-sm text-muted-foreground'>Click to select photos or drag and drop</p>
+                        <p className='text-xs text-muted-foreground mt-1'>JPEG, PNG, WebP up to 10MB each</p>
                     </div>
 
                     {/* Photo previews */}
                     {photos.length > 0 && (
                         <div className='space-y-4'>
-                            <h4 className='font-medium'>
-                                Selected Photos ({photos.length})
-                            </h4>
+                            <h4 className='font-medium'>Selected Photos ({photos.length})</h4>
                             {photos.map((photo, index) => (
-                                <div
-                                    key={index}
-                                    className='flex gap-4 p-3 border rounded-lg bg-muted/30'
-                                >
+                                <div key={index} className='flex gap-4 p-3 border rounded-lg bg-muted/30'>
                                     {/* Thumbnail */}
                                     <div className='relative flex-shrink-0'>
                                         <img
@@ -277,7 +262,8 @@ export const EventPhotoUploader: FC<EventPhotoUploaderProps> = ({ eventId, open,
                     )}
 
                     {/* Upload progress */}
-                    {isUploading ? <div className='space-y-2'>
+                    {isUploading ? (
+                        <div className='space-y-2'>
                             <div className='flex items-center justify-between text-sm'>
                                 <span>Uploading...</span>
                                 <span>{Math.round(uploadProgress)}%</span>
@@ -288,17 +274,15 @@ export const EventPhotoUploader: FC<EventPhotoUploaderProps> = ({ eventId, open,
                                     style={{ width: `${uploadProgress}%` }}
                                 />
                             </div>
-                        </div> : null}
+                        </div>
+                    ) : null}
                 </div>
 
                 <DialogFooter>
                     <Button variant='outline' onClick={handleClose} disabled={isUploading}>
                         Cancel
                     </Button>
-                    <Button
-                        onClick={handleUpload}
-                        disabled={photos.length === 0 || isUploading}
-                    >
+                    <Button onClick={handleUpload} disabled={photos.length === 0 || isUploading}>
                         {isUploading ? (
                             <>
                                 <Loader2 className='h-4 w-4 mr-2 animate-spin' />

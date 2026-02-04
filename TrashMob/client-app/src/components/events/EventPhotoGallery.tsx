@@ -136,10 +136,12 @@ export const EventPhotoGallery: FC<EventPhotoGalleryProps> = ({
                             </CardTitle>
                             <CardDescription>Photos from this cleanup event</CardDescription>
                         </div>
-                        {canUpload && onUploadClick ? <Button variant='outline' onClick={onUploadClick}>
+                        {canUpload && onUploadClick ? (
+                            <Button variant='outline' onClick={onUploadClick}>
                                 <Camera className='h-4 w-4 mr-2' />
                                 Add Photos
-                            </Button> : null}
+                            </Button>
+                        ) : null}
                     </div>
                 </CardHeader>
                 <CardContent>
@@ -174,15 +176,14 @@ export const EventPhotoGallery: FC<EventPhotoGalleryProps> = ({
                                         alt={photo.caption || 'Event photo'}
                                         className='w-full h-32 object-cover transition-transform group-hover:scale-105'
                                     />
-                                    <Badge
-                                        variant='secondary'
-                                        className='absolute bottom-2 left-2 text-xs'
-                                    >
+                                    <Badge variant='secondary' className='absolute bottom-2 left-2 text-xs'>
                                         {getEventPhotoTypeLabel(photo.photoType)}
                                     </Badge>
-                                    {photo.inReview ? <Badge variant='destructive' className='absolute top-2 left-2 text-xs'>
+                                    {photo.inReview ? (
+                                        <Badge variant='destructive' className='absolute top-2 left-2 text-xs'>
                                             Under Review
-                                        </Badge> : null}
+                                        </Badge>
+                                    ) : null}
                                 </div>
                             ))}
                         </div>
@@ -190,9 +191,11 @@ export const EventPhotoGallery: FC<EventPhotoGalleryProps> = ({
                         <div className='text-center py-8 text-muted-foreground'>
                             <ImageOff className='h-12 w-12 mx-auto mb-2 opacity-50' />
                             <p>No photos yet for this event.</p>
-                            {canUpload && onUploadClick ? <Button variant='link' onClick={onUploadClick} className='mt-2'>
+                            {canUpload && onUploadClick ? (
+                                <Button variant='link' onClick={onUploadClick} className='mt-2'>
                                     Be the first to add photos!
-                                </Button> : null}
+                                </Button>
+                            ) : null}
                         </div>
                     )}
                 </CardContent>
@@ -201,7 +204,8 @@ export const EventPhotoGallery: FC<EventPhotoGalleryProps> = ({
             {/* Photo Lightbox */}
             <Dialog open={selectedPhotoIndex !== null} onOpenChange={() => setSelectedPhotoIndex(null)}>
                 <DialogContent className='max-w-4xl p-0 overflow-hidden'>
-                    {selectedPhoto ? <>
+                    {selectedPhoto ? (
+                        <>
                             <div className='relative bg-black'>
                                 <img
                                     src={selectedPhoto.imageUrl}
@@ -209,7 +213,8 @@ export const EventPhotoGallery: FC<EventPhotoGalleryProps> = ({
                                     className='w-full max-h-[70vh] object-contain'
                                 />
                                 {/* Navigation arrows */}
-                                {photos && photos.length > 1 ? <>
+                                {photos && photos.length > 1 ? (
+                                    <>
                                         <Button
                                             variant='ghost'
                                             size='icon'
@@ -232,7 +237,8 @@ export const EventPhotoGallery: FC<EventPhotoGalleryProps> = ({
                                         >
                                             <ChevronRight className='h-6 w-6' />
                                         </Button>
-                                    </> : null}
+                                    </>
+                                ) : null}
                                 {/* Close button */}
                                 <Button
                                     variant='ghost'
@@ -249,10 +255,14 @@ export const EventPhotoGallery: FC<EventPhotoGalleryProps> = ({
                                         <Badge variant='secondary' className='mb-2'>
                                             {getEventPhotoTypeLabel(selectedPhoto.photoType)}
                                         </Badge>
-                                        {selectedPhoto.caption ? <p className='text-sm text-foreground'>{selectedPhoto.caption}</p> : null}
-                                        {selectedPhoto.takenAt ? <p className='text-xs text-muted-foreground mt-1'>
+                                        {selectedPhoto.caption ? (
+                                            <p className='text-sm text-foreground'>{selectedPhoto.caption}</p>
+                                        ) : null}
+                                        {selectedPhoto.takenAt ? (
+                                            <p className='text-xs text-muted-foreground mt-1'>
                                                 Taken: {new Date(selectedPhoto.takenAt).toLocaleString()}
-                                            </p> : null}
+                                            </p>
+                                        ) : null}
                                     </div>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
@@ -277,11 +287,14 @@ export const EventPhotoGallery: FC<EventPhotoGalleryProps> = ({
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </div>
-                                {photos && photos.length > 1 ? <p className='text-xs text-muted-foreground mt-2'>
+                                {photos && photos.length > 1 ? (
+                                    <p className='text-xs text-muted-foreground mt-2'>
                                         {(selectedPhotoIndex ?? 0) + 1} of {photos.length}
-                                    </p> : null}
+                                    </p>
+                                ) : null}
                             </div>
-                        </> : null}
+                        </>
+                    ) : null}
                 </DialogContent>
             </Dialog>
 
@@ -308,10 +321,7 @@ export const EventPhotoGallery: FC<EventPhotoGalleryProps> = ({
                         <Button variant='outline' onClick={() => setFlagDialogOpen(false)}>
                             Cancel
                         </Button>
-                        <Button
-                            onClick={submitFlag}
-                            disabled={!flagReason.trim() || flagMutation.isPending}
-                        >
+                        <Button onClick={submitFlag} disabled={!flagReason.trim() || flagMutation.isPending}>
                             {flagMutation.isPending ? <Loader2 className='h-4 w-4 mr-2 animate-spin' /> : null}
                             Submit Report
                         </Button>

@@ -320,7 +320,7 @@ const AppContent: FC = () => {
                             <Route path='/volunteeropportunities' element={<VolunteerOpportunities />} />
                             <Route path='/' element={<Home />} />
                         </Route>
-                        <Route element={<NoMatch />} />
+                        <Route path='*' element={<NoMatch />} />
                     </Routes>
                 </div>
                 <SiteFooter />
