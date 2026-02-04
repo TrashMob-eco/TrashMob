@@ -3,7 +3,7 @@ import { GetEventPartnerLocationServiceStatuses } from '../services/locations';
 
 export function getEventPartnerLocationServiceStatus(
     eventPartnerLocationServiceStatusList: EventPartnerLocationServiceStatusData[],
-    eventPartnerLocationServiceStatusId: any,
+    eventPartnerLocationServiceStatusId: number,
 ): string {
     const eventPartnerStatus = eventPartnerLocationServiceStatusList.find(
         (et) => et.id === eventPartnerLocationServiceStatusId,
@@ -12,7 +12,7 @@ export function getEventPartnerLocationServiceStatus(
 }
 
 export async function getEventPartnerLocationServiceStatusAsync(
-    eventPartnerLocationServiceStatusId: any,
+    eventPartnerLocationServiceStatusId: number,
 ): Promise<string> {
     const eventPartnerLocationServiceStatusList = await getEventPartnerLocationServiceStatuses();
     return getEventPartnerLocationServiceStatus(
@@ -25,6 +25,6 @@ async function getEventPartnerLocationServiceStatuses(): Promise<EventPartnerLoc
     const result = await GetEventPartnerLocationServiceStatuses()
         .service()
         .then((res) => res.data)
-        .catch((err) => []);
+        .catch(() => []);
     return result;
 }

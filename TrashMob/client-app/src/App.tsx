@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from '@/components/ui/toaster';
 import { FeedbackWidget } from './components/FeedbackWidget/FeedbackWidget';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 import { initializeMsalClient } from './store/AuthStore';
 import { Shop } from './components/Shop';
@@ -358,7 +359,9 @@ export const App: FC = () => {
     return (
         <QueryClientProvider client={queryClient}>
             <MsalProvider instance={msalClient}>
-                <AppContent />
+                <ErrorBoundary>
+                    <AppContent />
+                </ErrorBoundary>
             </MsalProvider>
             <Toaster />
             <FeedbackWidget />
