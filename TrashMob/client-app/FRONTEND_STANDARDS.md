@@ -22,17 +22,17 @@ This document outlines the coding standards, patterns, and best practices for th
 
 ## Technology Stack
 
-| Category | Technology | Version |
-|----------|------------|---------|
-| Framework | React | 18.x |
-| Language | TypeScript | 5.8+ |
-| Build Tool | Vite | 7.x |
-| Routing | React Router | 7.x |
-| State (Server) | TanStack Query | 4.x |
-| HTTP Client | Axios | 1.x |
-| UI Components | Radix UI | Latest |
-| Styling | Tailwind CSS | 4.x |
-| Forms | React Hook Form + Zod | Latest |
+| Category       | Technology            | Version |
+| -------------- | --------------------- | ------- |
+| Framework      | React                 | 18.x    |
+| Language       | TypeScript            | 5.8+    |
+| Build Tool     | Vite                  | 7.x     |
+| Routing        | React Router          | 7.x     |
+| State (Server) | TanStack Query        | 4.x     |
+| HTTP Client    | Axios                 | 1.x     |
+| UI Components  | Radix UI              | Latest  |
+| Styling        | Tailwind CSS          | 4.x     |
+| Forms          | React Hook Form + Zod | Latest  |
 
 ---
 
@@ -85,11 +85,7 @@ interface EventCardProps {
     className?: string;
 }
 
-export const EventCard: React.FC<EventCardProps> = ({
-    event,
-    onSelect,
-    className
-}) => {
+export const EventCard: React.FC<EventCardProps> = ({ event, onSelect, className }) => {
     const handleClick = () => {
         onSelect?.(event);
     };
@@ -157,11 +153,11 @@ Prefer controlled components for form inputs:
 ```tsx
 // Controlled (preferred)
 const [value, setValue] = useState('');
-<Input value={value} onChange={(e) => setValue(e.target.value)} />
+<Input value={value} onChange={(e) => setValue(e.target.value)} />;
 
 // Uncontrolled (use for simple cases)
 const inputRef = useRef<HTMLInputElement>(null);
-<Input ref={inputRef} defaultValue="" />
+<Input ref={inputRef} defaultValue='' />;
 ```
 
 ---
@@ -248,14 +244,8 @@ const EventPage = ({ eventId }: { eventId: string }) => {
     return (
         <div>
             <EventDetails event={eventQuery.data} />
-            <AttendeeList
-                attendees={attendeesQuery.data}
-                isLoading={attendeesQuery.isLoading}
-            />
-            <Comments
-                comments={commentsQuery.data}
-                isLoading={commentsQuery.isLoading}
-            />
+            <AttendeeList attendees={attendeesQuery.data} isLoading={attendeesQuery.isLoading} />
+            <Comments comments={commentsQuery.data} isLoading={commentsQuery.isLoading} />
         </div>
     );
 };
@@ -269,12 +259,12 @@ const EventPage = ({ eventId }: { eventId: string }) => {
 
 Distinguish between server state (data from API) and client state (UI state):
 
-| State Type | Solution | Examples |
-|------------|----------|----------|
-| Server State | TanStack Query | User data, events, attendees |
-| Global Client State | Context/Store | Auth state, theme, preferences |
-| Local Client State | useState | Form inputs, modal open/close |
-| URL State | React Router | Filters, pagination, search |
+| State Type          | Solution       | Examples                       |
+| ------------------- | -------------- | ------------------------------ |
+| Server State        | TanStack Query | User data, events, attendees   |
+| Global Client State | Context/Store  | Auth state, theme, preferences |
+| Local Client State  | useState       | Form inputs, modal open/close  |
+| URL State           | React Router   | Filters, pagination, search    |
 
 ### Avoid Prop Drilling
 
@@ -283,10 +273,10 @@ Use composition or context for deeply nested props:
 ```tsx
 // Option 1: Composition (preferred for simple cases)
 <EventList>
-    {events.map(event => (
+    {events.map((event) => (
         <EventCard key={event.id} event={event} />
     ))}
-</EventList>
+</EventList>;
 
 // Option 2: Context (for truly global state)
 const EventContext = createContext<EventContextValue | null>(null);
@@ -310,7 +300,7 @@ Wrap components that may fail with ErrorBoundary:
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 const MyPage = () => (
-    <ErrorBoundary errorMessage="Failed to load events">
+    <ErrorBoundary errorMessage='Failed to load events'>
         <EventList />
     </ErrorBoundary>
 );
@@ -326,7 +316,7 @@ const { data, isLoading, error } = useGetEvent(eventId);
 if (error) {
     // Check error type for specific handling
     if (error.response?.status === 404) {
-        return <NotFound message="Event not found" />;
+        return <NotFound message='Event not found' />;
     }
     return <ErrorMessage error={error} />;
 }
@@ -348,7 +338,7 @@ const onSubmit = async (data: EventFormData) => {
         toast({
             title: 'Error',
             description: 'Failed to create event. Please try again.',
-            variant: 'destructive'
+            variant: 'destructive',
         });
     }
 };
@@ -368,8 +358,8 @@ const EventCard = ({ event }: { event?: EventData }) => {
         return (
             <Card>
                 <CardHeader>
-                    <Skeleton className="h-6 w-3/4" />
-                    <Skeleton className="h-4 w-1/2" />
+                    <Skeleton className='h-6 w-3/4' />
+                    <Skeleton className='h-4 w-1/2' />
                 </CardHeader>
             </Card>
         );
@@ -446,7 +436,7 @@ const EventForm = () => {
             <form onSubmit={form.handleSubmit(onSubmit)}>
                 <FormField
                     control={form.control}
-                    name="name"
+                    name='name'
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Event Name</FormLabel>
@@ -457,7 +447,7 @@ const EventForm = () => {
                         </FormItem>
                     )}
                 />
-                <Button type="submit">Create Event</Button>
+                <Button type='submit'>Create Event</Button>
             </form>
         </Form>
     );
@@ -539,10 +529,8 @@ function Select<T>({ options, value, onChange, getLabel, getValue }: SelectProps
 Use Tailwind utility classes consistently:
 
 ```tsx
-<div className="flex items-center justify-between gap-4 rounded-lg bg-card p-4 shadow-sm">
-    <span className="text-sm font-medium text-muted-foreground">
-        {event.date}
-    </span>
+<div className='flex items-center justify-between gap-4 rounded-lg bg-card p-4 shadow-sm'>
+    <span className='text-sm font-medium text-muted-foreground'>{event.date}</span>
 </div>
 ```
 
@@ -553,33 +541,28 @@ Use `class-variance-authority` for component variants:
 ```tsx
 import { cva, type VariantProps } from 'class-variance-authority';
 
-const buttonVariants = cva(
-    'inline-flex items-center justify-center rounded-md font-medium transition-colors',
-    {
-        variants: {
-            variant: {
-                default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-                destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-                outline: 'border border-input bg-background hover:bg-accent',
-                ghost: 'hover:bg-accent hover:text-accent-foreground',
-            },
-            size: {
-                default: 'h-10 px-4 py-2',
-                sm: 'h-9 px-3',
-                lg: 'h-11 px-8',
-                icon: 'h-10 w-10',
-            },
+const buttonVariants = cva('inline-flex items-center justify-center rounded-md font-medium transition-colors', {
+    variants: {
+        variant: {
+            default: 'bg-primary text-primary-foreground hover:bg-primary/90',
+            destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+            outline: 'border border-input bg-background hover:bg-accent',
+            ghost: 'hover:bg-accent hover:text-accent-foreground',
         },
-        defaultVariants: {
-            variant: 'default',
-            size: 'default',
+        size: {
+            default: 'h-10 px-4 py-2',
+            sm: 'h-9 px-3',
+            lg: 'h-11 px-8',
+            icon: 'h-10 w-10',
         },
-    }
-);
+    },
+    defaultVariants: {
+        variant: 'default',
+        size: 'default',
+    },
+});
 
-interface ButtonProps
-    extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-        VariantProps<typeof buttonVariants> {}
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {}
 
 const Button = ({ className, variant, size, ...props }: ButtonProps) => (
     <button className={cn(buttonVariants({ variant, size }), className)} {...props} />
@@ -593,12 +576,14 @@ Use `cn` utility for conditional classes:
 ```tsx
 import { cn } from '@/lib/utils';
 
-<div className={cn(
-    'base-classes',
-    condition && 'conditional-classes',
-    isActive ? 'active-classes' : 'inactive-classes',
-    className
-)} />
+<div
+    className={cn(
+        'base-classes',
+        condition && 'conditional-classes',
+        isActive ? 'active-classes' : 'inactive-classes',
+        className,
+    )}
+/>;
 ```
 
 ---
@@ -613,7 +598,7 @@ Use memoization judiciously:
 // Memoize expensive calculations
 const sortedEvents = useMemo(
     () => events.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
-    [events]
+    [events],
 );
 
 // Memoize callbacks passed to children
@@ -646,14 +631,7 @@ const App = () => (
 Use proper image sizing and lazy loading:
 
 ```tsx
-<img
-    src={event.imageUrl}
-    alt={event.name}
-    loading="lazy"
-    width={400}
-    height={300}
-    className="object-cover"
-/>
+<img src={event.imageUrl} alt={event.name} loading='lazy' width={400} height={300} className='object-cover' />
 ```
 
 ---
@@ -681,11 +659,7 @@ const createWrapper = () => {
     const queryClient = new QueryClient({
         defaultOptions: { queries: { retry: false } },
     });
-    return ({ children }) => (
-        <QueryClientProvider client={queryClient}>
-            {children}
-        </QueryClientProvider>
-    );
+    return ({ children }) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 };
 
 describe('EventCard', () => {
@@ -699,7 +673,7 @@ describe('EventCard', () => {
         const onSelect = vi.fn();
 
         render(<EventCard event={mockEvent} onSelect={onSelect} />, {
-            wrapper: createWrapper()
+            wrapper: createWrapper(),
         });
 
         await user.click(screen.getByRole('article'));
@@ -707,7 +681,7 @@ describe('EventCard', () => {
     });
 
     it('handles async data loading', async () => {
-        render(<EventDetails eventId="123" />, { wrapper: createWrapper() });
+        render(<EventDetails eventId='123' />, { wrapper: createWrapper() });
 
         // Wait for loading to complete
         await waitFor(() => {
@@ -749,7 +723,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogTitle } from '@/components/
         <DialogTitle>Modal Title</DialogTitle>
         {/* Content */}
     </DialogContent>
-</Dialog>
+</Dialog>;
 ```
 
 ### Screen Reader Support
@@ -793,8 +767,8 @@ npm run format     # Format code with Prettier
 
 ### Environment Variables
 
-| Variable | Description |
-|----------|-------------|
+| Variable       | Description                                 |
+| -------------- | ------------------------------------------- |
 | `VITE_API_URL` | API base URL (optional, defaults to `/api`) |
 
 ---
