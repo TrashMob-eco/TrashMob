@@ -56,7 +56,7 @@ test.describe('Public Pages', () => {
             await expect(page).toHaveURL('/communities');
         });
 
-        test('should navigate to What\'s New page from About menu', async ({ page }) => {
+        test("should navigate to What's New page from About menu", async ({ page }) => {
             const homePage = new HomePage(page);
             await homePage.goto();
 
@@ -92,7 +92,7 @@ test.describe('Public Pages', () => {
             await expect(page.locator('h1')).toBeVisible();
         });
 
-        test('should load What\'s New page', async ({ page }) => {
+        test("should load What's New page", async ({ page }) => {
             await page.goto('/whatsnew');
             await expect(page).toHaveTitle(/what's new|trashmob/i);
             await expect(page.locator('h1')).toContainText(/what's new/i);
