@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Phase 1 In Progress |
+| **Status** | Phase 2 Complete |
 | **Priority** | Low |
 | **Risk** | Moderate |
 | **Size** | Medium |
@@ -34,18 +34,18 @@ Empower leads to document impact visually with before and after photos. Visual p
 
 ## Scope
 
-### Phase 1 - Photo Upload (Backend Complete)
+### Phase 1 - Photo Upload ✅ Complete
 - ✅ Upload photos during/after event (API ready)
 - ✅ Associate photos with events (EventPhoto model)
 - ✅ Mark as before, during, or after (EventPhotoType enum)
 - ✅ Add captions/descriptions (Caption field)
-- ⏳ Frontend upload UI (service ready, UI pending)
+- ✅ Frontend upload UI (EventPhotoUploader component)
 
-### Phase 2 - Display
-- Photo gallery on event detail page
-- Before/after comparison view
-- Photo lightbox/viewer
-- Download original images
+### Phase 2 - Display ✅ Complete
+- ✅ Photo gallery on event detail page (EventPhotoGallery component)
+- ⏳ Before/after comparison view (future enhancement)
+- ✅ Photo lightbox/viewer (Dialog-based with navigation)
+- ⏳ Download original images (future enhancement)
 
 ### Phase 3 - Moderation (Backend Complete)
 - ✅ Report inappropriate photo (FlagPhoto API)

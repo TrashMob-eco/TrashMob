@@ -23,6 +23,8 @@ import { EventPlaceAndLocation } from '@/components/events/event-list';
 import { EventAttendeeTable } from '@/components/events/event-attendee-table';
 import { AttendeeMetricsForm } from '@/components/events/AttendeeMetricsForm';
 import { EventContributorsCard } from '@/components/events/EventContributorsCard';
+import { EventPhotoGallery } from '@/components/events/EventPhotoGallery';
+import { EventPhotoUploader } from '@/components/events/EventPhotoUploader';
 
 import { Calendar, Share2, ClipboardList } from 'lucide-react';
 import makeUrls from '@/lib/add-to-calendar';
@@ -67,6 +69,7 @@ export const EventDetails: FC<EventDetailsProps> = () => {
     const { data: myAttendanceList } = useGetEventsAttendedByUser(currentUser.id);
     const { data: eventLeads } = useGetEventLeads(eventId);
     const [showModal, setShowSocialsModal] = useState<boolean>(false);
+    const [showPhotoUploader, setShowPhotoUploader] = useState<boolean>(false);
 
     const isDataLoaded = isSuccess;
 
@@ -214,6 +217,24 @@ export const EventDetails: FC<EventDetailsProps> = () => {
                             <EventAttendeeTable users={eventAttendees || []} event={event} />
                         </div>
                     ) : null}
+                    {/* Event Photos Section */}
+                    <div className='container mx-auto mb-16'>
+                        <hr className='mb-5' />
+                        <EventPhotoGallery
+                            eventId={eventId}
+                            canUpload={!!currentUser && (isAttending === 'Yes' || isEventLead)}
+                            canDelete={isEventLead}
+                            currentUserId={currentUser?.id}
+                            onUploadClick={() => setShowPhotoUploader(true)}
+                        />
+                        {currentUser ? (
+                            <EventPhotoUploader
+                                eventId={eventId}
+                                open={showPhotoUploader}
+                                onOpenChange={setShowPhotoUploader}
+                            />
+                        ) : null}
+                    </div>
                     {isEventCompleted ? (
                         <div className='container mx-auto mb-16'>
                             <EventContributorsCard eventId={eventId} isEventCompleted={isEventCompleted} />
