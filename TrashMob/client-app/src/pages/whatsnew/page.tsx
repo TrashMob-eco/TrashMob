@@ -41,9 +41,11 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description, lin
         </CardHeader>
         <CardContent>
             <CardDescription className='text-sm text-foreground/75'>{description}</CardDescription>
-            {link ? <Button asChild variant='link' className='px-0 mt-2'>
+            {link ? (
+                <Button asChild variant='link' className='px-0 mt-2'>
                     <Link to={link}>{linkText || 'Learn more'}</Link>
-                </Button> : null}
+                </Button>
+            ) : null}
         </CardContent>
     </Card>
 );
@@ -77,7 +79,7 @@ const completedFeatures = [
         icon: <Scale className='h-5 w-5' />,
         title: 'Weight Tracking',
         description:
-            'Record the actual weight of litter collected at events. Get more accurate impact data beyond just bag counts to show the real difference you\'re making.',
+            "Record the actual weight of litter collected at events. Get more accurate impact data beyond just bag counts to show the real difference you're making.",
     },
     {
         icon: <MapPin className='h-5 w-5' />,

@@ -114,7 +114,11 @@ export const MainNav = ({ className, isUserLoaded, ...props }: MainNavProps) => 
                                     >
                                         Discover community programs and partnerships.
                                     </ListItem>
-                                    <ListItem to='/leaderboards' title='Leaderboards' icon={<Trophy className='h-4 w-4' />}>
+                                    <ListItem
+                                        to='/leaderboards'
+                                        title='Leaderboards'
+                                        icon={<Trophy className='h-4 w-4' />}
+                                    >
                                         See top volunteers and teams.
                                     </ListItem>
                                 </ul>
@@ -188,11 +192,7 @@ export const MainNav = ({ className, isUserLoaded, ...props }: MainNavProps) => 
                             <NavigationMenuTrigger>About</NavigationMenuTrigger>
                             <NavigationMenuContent>
                                 <ul className='grid w-[280px] gap-1 p-2'>
-                                    <ListItem
-                                        to='/whatsnew'
-                                        title="What's New"
-                                        icon={<Sparkles className='h-4 w-4' />}
-                                    >
+                                    <ListItem to='/whatsnew' title="What's New" icon={<Sparkles className='h-4 w-4' />}>
                                         See the latest features and updates.
                                     </ListItem>
                                     <ListItem
