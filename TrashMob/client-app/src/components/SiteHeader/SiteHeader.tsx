@@ -18,7 +18,7 @@ export const SiteHeader = (props: SiteHeaderProps) => {
     const [show, setShow] = React.useState<boolean>(false);
 
     return (
-        <div className='border-b shadow-md shadow-black/10 bg-white py-4'>
+        <header className='border-b shadow-md shadow-black/10 bg-white py-4 overflow-visible relative z-50'>
             <div className='container'>
                 <div className='flex items-center flex-wrap flex-row'>
                     <a className='-ml-2 grow lg:grow-0' href='/'>
@@ -51,6 +51,6 @@ export const SiteHeader = (props: SiteHeaderProps) => {
                     </div>
                 </div>
             </div>
-        </div>
+        </header>
     );
 };
