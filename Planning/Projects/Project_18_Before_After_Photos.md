@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Planning in Progress |
+| **Status** | Phase 1 In Progress |
 | **Priority** | Low |
 | **Risk** | Moderate |
 | **Size** | Medium |
@@ -34,28 +34,29 @@ Empower leads to document impact visually with before and after photos. Visual p
 
 ## Scope
 
-### Phase 1 - Photo Upload
-- ✅ Upload photos during/after event
-- ✅ Associate photos with events
-- ✅ Mark as before, during, or after
-- ✅ Add captions/descriptions
+### Phase 1 - Photo Upload (Backend Complete)
+- ✅ Upload photos during/after event (API ready)
+- ✅ Associate photos with events (EventPhoto model)
+- ✅ Mark as before, during, or after (EventPhotoType enum)
+- ✅ Add captions/descriptions (Caption field)
+- ⏳ Frontend upload UI (service ready, UI pending)
 
 ### Phase 2 - Display
-- ✅ Photo gallery on event detail page
-- ✅ Before/after comparison view
-- ✅ Photo lightbox/viewer
-- ✅ Download original images
+- Photo gallery on event detail page
+- Before/after comparison view
+- Photo lightbox/viewer
+- Download original images
 
-### Phase 3 - Moderation
-- ✅ Report inappropriate photo
-- ✅ Admin moderation queue
-- ✅ Remove photo with notification
-- ✅ Appeal process
+### Phase 3 - Moderation (Backend Complete)
+- ✅ Report inappropriate photo (FlagPhoto API)
+- ✅ Admin moderation queue (PhotoModerationManager supports EventPhoto)
+- ✅ Remove photo with notification (email notification on reject)
+- Appeal process
 
 ### Phase 4 - Albums
-- ✅ Team photo albums
-- ✅ Community photo galleries
-- ✅ Featured photos on home page
+- Team photo albums
+- Community photo galleries
+- Featured photos on home page
 
 ---
 
@@ -478,7 +479,7 @@ The following GitHub issues are tracked as part of this project:
 
 ---
 
-**Last Updated:** January 31, 2026
+**Last Updated:** February 3, 2026
 **Owner:** Web Team
-**Status:** Planning in Progress
-**Next Review:** When prioritized
+**Status:** Phase 1 In Progress
+**Next Review:** When frontend UI is implemented

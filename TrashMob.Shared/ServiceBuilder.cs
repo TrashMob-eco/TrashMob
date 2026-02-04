@@ -56,6 +56,7 @@
             services.AddScoped<ILookupManager<WeightUnit>, LookupManager<WeightUnit>>();
             services.AddScoped<IKeyedManager<LitterReport>, LitterReportManager>();
             services.AddScoped<IKeyedManager<LitterImage>, LitterImageManager>();
+            services.AddScoped<IKeyedManager<EventPhoto>, EventPhotoManager>();
 
             // Intentional deviation due to unique methods
             services.AddScoped<IEventAttendeeManager, EventAttendeeManager>();
@@ -84,6 +85,9 @@
             services.AddScoped<ITeamManager, TeamManager>();
             services.AddScoped<ITeamMemberManager, TeamMemberManager>();
             services.AddScoped<ITeamPhotoManager, TeamPhotoManager>();
+
+            // Event Photo managers
+            services.AddScoped<IEventPhotoManager, EventPhotoManager>();
 
             // Community managers
             services.AddScoped<ICommunityManager, CommunityManager>();
