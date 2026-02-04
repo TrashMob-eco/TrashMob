@@ -147,9 +147,7 @@ export const CommunityPhotoUploader: FC<CommunityPhotoUploaderProps> = ({ slug, 
                         <Camera className='h-5 w-5' />
                         Upload Community Photos
                     </DialogTitle>
-                    <DialogDescription>
-                        Share photos showcasing your community's cleanup efforts.
-                    </DialogDescription>
+                    <DialogDescription>Share photos showcasing your community's cleanup efforts.</DialogDescription>
                 </DialogHeader>
 
                 <div className='space-y-4 py-4'>

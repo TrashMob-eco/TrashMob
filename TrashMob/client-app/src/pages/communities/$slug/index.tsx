@@ -219,8 +219,8 @@ export const CommunityDetailPage = () => {
                         {/* Photo Gallery Section */}
                         <CommunityPhotoGallery
                             slug={slug}
-                            canUpload={isUserLoaded && !!currentUser.id}
-                            canDelete={isUserLoaded && !!currentUser.id}
+                            canUpload={isUserLoaded ? !!currentUser.id : null}
+                            canDelete={isUserLoaded ? !!currentUser.id : null}
                             onUploadClick={() => setShowPhotoUploader(true)}
                         />
                     </div>
@@ -273,11 +273,7 @@ export const CommunityDetailPage = () => {
 
             {/* Photo Uploader Modal */}
             {isUserLoaded && currentUser.id ? (
-                <CommunityPhotoUploader
-                    slug={slug}
-                    open={showPhotoUploader}
-                    onOpenChange={setShowPhotoUploader}
-                />
+                <CommunityPhotoUploader slug={slug} open={showPhotoUploader} onOpenChange={setShowPhotoUploader} />
             ) : null}
         </div>
     );

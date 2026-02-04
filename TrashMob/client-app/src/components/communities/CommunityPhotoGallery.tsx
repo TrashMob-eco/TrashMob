@@ -26,11 +26,7 @@ export const CommunityPhotoGallery: FC<CommunityPhotoGalleryProps> = ({
     const queryClient = useQueryClient();
     const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
 
-    const { data: photos = [], isLoading } = useQuery<
-        AxiosResponse<PartnerPhotoData[]>,
-        unknown,
-        PartnerPhotoData[]
-    >({
+    const { data: photos = [], isLoading } = useQuery<AxiosResponse<PartnerPhotoData[]>, unknown, PartnerPhotoData[]>({
         queryKey: GetCommunityPhotos({ slug }).key,
         queryFn: GetCommunityPhotos({ slug }).service,
         select: (res) => res.data,
