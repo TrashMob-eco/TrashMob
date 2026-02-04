@@ -1,4 +1,4 @@
-# Project 6 � Backend Code Standards & Structure
+# Project 6 — Code Standards & Structure
 
 | Attribute | Value |
 |-----------|-------|
@@ -12,7 +12,7 @@
 
 ## Business Rationale
 
-Unify coding patterns across the backend codebase, upgrade to .NET 10, secure all endpoints, update dependencies, and improve API documentation via Swagger/OpenAPI. This improves maintainability, reduces bugs, and makes onboarding new developers easier.
+Unify coding patterns across the full-stack codebase, upgrade to .NET 10, secure all endpoints, update dependencies, and improve API documentation via Swagger/OpenAPI. This includes establishing React best practices and integrating modern AI tooling (Vercel AI SDK) for enhanced user experiences. This improves maintainability, reduces bugs, and makes onboarding new developers easier.
 
 ---
 
@@ -59,11 +59,19 @@ Unify coding patterns across the backend codebase, upgrade to .NET 10, secure al
 - ✓ Create coding standards guide
 
 ### Phase 5 - Unit Test Coverage
-- ? Increase test coverage for TrashMob.Shared managers
+- ✓ Increase test coverage for TrashMob.Shared managers (see Project 37)
 - ? Add tests for repository layer
 - ? Add tests for controller validation logic
-- ? Achieve minimum 70% code coverage for business logic
+- ✓ Achieve minimum 70% code coverage for business logic (242 tests added)
 - ? Integrate coverage reporting in CI/CD
+
+### Phase 6 - Frontend Standards (React)
+- ? Implement Vercel AI SDK for AI-powered features
+- ? Establish React component best practices
+- ? Add React Query patterns for data fetching
+- ? Implement proper error boundaries
+- ? Add TypeScript strict mode compliance
+- ? Document frontend coding standards
 
 ---
 
@@ -236,6 +244,61 @@ Create `CODING_STANDARDS.md`:
 - Configure code coverage reporting (Coverlet)
 - Set up coverage thresholds in CI pipeline
 
+### Phase 6: Frontend Standards (React)
+- Integrate Vercel AI SDK for AI-powered features
+- Establish component patterns and folder structure
+- Implement React Query for server state management
+- Add proper TypeScript configurations
+- Create frontend coding standards documentation
+
+#### Vercel AI SDK Integration
+
+```typescript
+// Example: AI-powered event description generator
+import { useCompletion } from 'ai/react';
+
+export function EventDescriptionGenerator({ eventName, location }: Props) {
+  const { completion, input, handleInputChange, handleSubmit, isLoading } = useCompletion({
+    api: '/api/ai/generate-description',
+  });
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <textarea
+        value={input}
+        onChange={handleInputChange}
+        placeholder="Describe your cleanup event..."
+      />
+      <button type="submit" disabled={isLoading}>
+        {isLoading ? 'Generating...' : 'Generate Description'}
+      </button>
+      {completion && <div className="generated">{completion}</div>}
+    </form>
+  );
+}
+```
+
+#### React Best Practices
+
+```typescript
+// Component structure pattern
+// src/components/events/EventCard/
+//   ├── EventCard.tsx        // Main component
+//   ├── EventCard.test.tsx   // Tests
+//   ├── EventCard.styles.ts  // Styled components or Tailwind
+//   └── index.ts             // Public export
+
+// Custom hooks pattern
+// src/hooks/useEvent.ts
+export function useEvent(eventId: string) {
+  return useQuery({
+    queryKey: ['event', eventId],
+    queryFn: () => eventService.getEvent(eventId),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+}
+```
+
 **Note:** Each phase can be picked up by different volunteers independently.
 
 ---
@@ -285,5 +348,5 @@ The following GitHub issues are tracked as part of this project:
 
 **Last Updated:** February 3, 2026
 **Owner:** Engineering Lead
-**Status:** In Progress (Phase 1 & 4 complete)
-**Next Review:** When Phase 2, 3, or 5 starts
+**Status:** In Progress (Phase 1 & 4 complete, Phase 5 partially complete via Project 37)
+**Next Review:** When Phase 2, 3, or 6 starts
