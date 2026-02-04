@@ -13,7 +13,7 @@
 - **[Executive Summary](./Executive_Summary.md)** - High-level overview, strategic objectives, and 2026 roadmap
 - **[Risks & Mitigations](./Risks_and_Mitigations.md)** - Cross-project risks and mitigation strategies
 
-### 2026 Projects (37 Total)
+### 2026 Projects (38 Total)
 
 **Note:** Projects are not time-bound. Volunteers pick up work based on priority and availability.
 
@@ -38,6 +38,7 @@
 | [Project 13 - Bulk Email Invites](./Projects/Project_13_Bulk_Email_Invites.md) | Scale email invitations | ✅ Complete |
 | [Project 23 - Parental Consent](./Projects/Project_23_Parental_Consent.md) | Privo.com integration for minors | Planning in Progress |
 | [Project 24 - API v2 Modernization](./Projects/Project_24_API_v2_Modernization.md) | Pagination, error handling, auto-generated clients | Not Started |
+| [Project 38 - Mobile Feature Parity](./Projects/Project_38_Mobile_Feature_Parity.md) | Teams, leaderboards, photos for mobile volunteers | Planning |
 
 #### Medium Priority (Enhancements)
 
@@ -108,6 +109,7 @@
 - [Project 27 - OpenTelemetry Migration](./Projects/Project_27_OpenTelemetry_Migration.md) ✅
 - [Project 29 - Feature Usage Metrics](./Projects/Project_29_Feature_Usage_Metrics.md) ✅
 - [Project 37 - Unit Test Coverage](./Projects/Project_37_Unit_Test_Coverage.md) ✅
+- [Project 38 - Mobile Feature Parity](./Projects/Project_38_Mobile_Feature_Parity.md)
 
 ### Infrastructure & Operations
 - [Project 26 - KeyVault RBAC Migration](./Projects/Project_26_KeyVault_RBAC_Migration.md) ✅
@@ -132,11 +134,11 @@
 | **In Progress** | 4 | Projects 6, 8 (Phase 1-4 Complete), 19 (Phase 2 Complete), 22 (Phase 1-3 Complete) |
 | **Developers Engaged** | 1 | Project 4 |
 | **Ready for Review** | 2 | Projects 2, 5 |
-| **Planning** | 4 | Projects 1, 15, 18, 23 |
+| **Planning** | 5 | Projects 1, 15, 18, 23, 38 |
 | **Not Started** | 7 | Projects 12, 14, 24, 25, 30, 31, 36 |
 | **Deprioritized** | 1 | Project 33 |
 
-**Total:** 37 project specifications documented
+**Total:** 38 project specifications documented
 
 ---
 
