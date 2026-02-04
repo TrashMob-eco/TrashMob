@@ -25,6 +25,7 @@ namespace TrashMob.Models
             EventAttendees = [];
             AdoptionEvents = [];
             AttendeeMetrics = [];
+            EventPhotos = [];
         }
 
         /// <summary>
@@ -161,5 +162,10 @@ namespace TrashMob.Models
         /// Gets or sets the collection of attendee-submitted metrics for this event.
         /// </summary>
         public virtual ICollection<EventAttendeeMetrics> AttendeeMetrics { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of photos uploaded for this event.
+        /// </summary>
+        public virtual ICollection<EventPhoto> EventPhotos { get; set; }
     }
 }
