@@ -35,10 +35,10 @@ Increase engagement and value communication by surfacing dynamic content, highli
 ## Scope
 
 ### Phase 1 - Dynamic Content
-- ? Integrate with CMS for dynamic news/announcements
-- ? Featured entity carousel (teams, communities, partners)
-- ? Impact photo gallery with recent event photos
-- ? Dynamic statistics dashboard
+- ☐ Integrate with CMS for dynamic news/announcements
+- ☐ Featured entity carousel (teams, communities, partners)
+- ☐ Impact photo gallery with recent event/community photos (moved from Project 18)
+- ☐ Dynamic statistics dashboard
 
 ### Phase 2 - Map Enhancements
 - ? New event pin icons (upcoming vs past, with/without summary)
@@ -321,10 +321,11 @@ The following GitHub issues are tracked as part of this project:
 - **[Project 3 - Litter Reporting Web](./Project_03_Litter_Reporting_Web.md)** - Report creation flow
 - **[Project 9 - Teams](./Project_09_Teams.md)** - Team discovery links
 - **[Project 10 - Community Pages](./Project_10_Community_Pages.md)** - Community discovery links
+- **[Project 18 - Before & After Photos](./Project_18_Before_After_Photos.md)** - Photo gallery feature (featured photos moved here)
 
 ---
 
-**Last Updated:** January 31, 2026  
-**Owner:** Web Product Lead + UX Designer  
-**Status:** Ready for Design Review  
+**Last Updated:** February 3, 2026
+**Owner:** Web Product Lead + UX Designer
+**Status:** Ready for Design Review
 **Next Review:** Before implementation begins
