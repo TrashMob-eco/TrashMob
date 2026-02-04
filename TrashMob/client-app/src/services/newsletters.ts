@@ -109,6 +109,26 @@ export const UnsubscribeAllNewsletters = () => ({
         }),
 });
 
+// Process token-based unsubscribe (public - no auth required)
+export type ProcessUnsubscribe_Body = { token: string };
+export type ProcessUnsubscribe_Response = {
+    success: boolean;
+    email?: string;
+    allCategories?: boolean;
+    categoryName?: string;
+    message?: string;
+    errorMessage?: string;
+};
+export const ProcessUnsubscribe = () => ({
+    key: ['/newsletter-preferences', 'unsubscribe'],
+    service: async (body: ProcessUnsubscribe_Body) =>
+        ApiService('public').fetchData<ProcessUnsubscribe_Response, ProcessUnsubscribe_Body>({
+            url: '/newsletter-preferences/unsubscribe',
+            method: 'post',
+            data: body,
+        }),
+});
+
 // ==================== Admin Newsletter Endpoints ====================
 
 // Get all newsletters (admin only)

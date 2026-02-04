@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phase 2 Complete) |
+| **Status** | ✅ Complete |
 | **Priority** | Medium |
 | **Risk** | Low |
 | **Size** | Medium |
@@ -577,7 +577,7 @@ The following GitHub issues are tracked as part of this project:
 
 **Last Updated:** February 3, 2026
 **Owner:** Marketing + Engineering
-**Status:** In Progress (Phase 3 Complete)
+**Status:** ✅ Complete
 **Next Review:** Q1 2026
 
 ---
@@ -636,9 +636,22 @@ The following GitHub issues are tracked as part of this project:
   - Target validation (requires team/community selection when applicable)
 - Added `GetMyPartners` service to `partners.ts`
 
-### Remaining Phases
+### Phase 4 - User Experience (Complete)
 
-**Phase 4 - User Experience:**
-- User settings page for newsletter preferences
-- Unsubscribe page (from email link)
-- Newsletter archive/history view
+**Backend:**
+- `UserNewsletterPreferenceManager.GenerateUnsubscribeToken()` - Generates URL-safe tokens for unsubscribe links
+- `UserNewsletterPreferenceManager.ProcessUnsubscribeTokenAsync()` - Validates and processes unsubscribe tokens
+- `NewsletterPreferencesController.ProcessUnsubscribe()` - Public endpoint for token-based unsubscribe (no auth required)
+- `NewsletterPreferencesController.GetUnsubscribeToken()` - Authenticated endpoint for generating user's unsubscribe token
+
+**Frontend:**
+- `pages/MyDashboard/MyNewsletterPreferencesCard.tsx` - Card showing newsletter preferences with toggle switches
+  - Displays all categories with subscription status
+  - Toggle switches to subscribe/unsubscribe from each category
+  - "Unsubscribe All" button with confirmation dialog
+- `pages/unsubscribe/index.tsx` - Public unsubscribe page
+  - Processes token from URL query parameter
+  - Shows success/error messages
+  - Links to dashboard for further preference management
+- Added unsubscribe route to `App.tsx`
+- Added `ProcessUnsubscribe` service to `newsletters.ts`

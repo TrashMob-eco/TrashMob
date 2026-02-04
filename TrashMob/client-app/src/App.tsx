@@ -101,6 +101,9 @@ import { PartnerSocialAcccountCreate } from './pages/partnerdashboard/$partnerId
 import { PartnerAdmins } from './pages/partnerdashboard/$partnerId/admins';
 import { PartnerAdminInvite } from './pages/partnerdashboard/$partnerId/admins.invite';
 
+/** Unsubscribe */
+import { UnsubscribePage } from './pages/unsubscribe';
+
 /** SiteAdmin */
 import { SiteAdminLayout } from './pages/siteadmin/_layout';
 import { SiteAdminUsers } from './pages/siteadmin/users/page';
@@ -318,6 +321,7 @@ const AppContent: FC = () => {
                             <Route path='/privacypolicy' element={<PrivacyPolicy />} />
                             <Route path='/termsofservice' element={<TermsOfService />} />
                             <Route path='/volunteeropportunities' element={<VolunteerOpportunities />} />
+                            <Route path='/unsubscribe' element={<UnsubscribePage />} />
                             <Route path='/' element={<Home />} />
                         </Route>
                         <Route element={<NoMatch />} />
