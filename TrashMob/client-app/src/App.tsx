@@ -29,6 +29,7 @@ import { Faq } from './pages/faq/page';
 import { AboutUs } from './pages/aboutus/page';
 import { ContactUsWrapper as ContactUs } from './pages/contactus';
 import { GettingStarted } from './pages/gettingstarted/page';
+import { WhatsNew } from './pages/whatsnew/page';
 import { Board } from './pages/board/page';
 
 /** User */
@@ -316,6 +317,7 @@ const AppContent: FC = () => {
                             <Route path='/contactus' element={<ContactUs />} />
                             <Route path='/faq' element={<Faq />} />
                             <Route path='/gettingstarted' element={<GettingStarted />} />
+                            <Route path='/whatsnew' element={<WhatsNew />} />
                             <Route path='/privacypolicy' element={<PrivacyPolicy />} />
                             <Route path='/termsofservice' element={<TermsOfService />} />
                             <Route path='/volunteeropportunities' element={<VolunteerOpportunities />} />

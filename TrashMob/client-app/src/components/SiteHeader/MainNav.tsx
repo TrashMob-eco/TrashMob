@@ -22,6 +22,7 @@ import {
     Building2,
     Trophy,
     Award,
+    Sparkles,
 } from 'lucide-react';
 import React from 'react';
 
@@ -93,43 +94,31 @@ export const MainNav = ({ className, isUserLoaded, ...props }: MainNavProps) => 
         <nav className={cn('flex flex-col flex-1 gap-3 items-start lg:flex-row lg:items-center', className)} {...props}>
             {/* Desktop Navigation */}
             <div className='hidden lg:block'>
-                <NavigationMenu>
+                <NavigationMenu delayDuration={100}>
                     <NavigationMenuList>
-                        {/* Events - Direct Link */}
+                        {/* Explore Dropdown - Events, Teams, Communities, Leaderboards */}
                         <NavigationMenuItem>
-                            <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                                <a href='/#events'>Events</a>
-                            </NavigationMenuLink>
-                        </NavigationMenuItem>
-
-                        {/* Teams - Direct Link */}
-                        <NavigationMenuItem>
-                            <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                                <Link to='/teams'>
-                                    <Users className='h-4 w-4 mr-1' />
-                                    Teams
-                                </Link>
-                            </NavigationMenuLink>
-                        </NavigationMenuItem>
-
-                        {/* Communities - Direct Link */}
-                        <NavigationMenuItem>
-                            <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                                <Link to='/communities'>
-                                    <Building2 className='h-4 w-4 mr-1' />
-                                    Communities
-                                </Link>
-                            </NavigationMenuLink>
-                        </NavigationMenuItem>
-
-                        {/* Leaderboards - Direct Link */}
-                        <NavigationMenuItem>
-                            <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                                <Link to='/leaderboards'>
-                                    <Trophy className='h-4 w-4 mr-1' />
-                                    Leaderboards
-                                </Link>
-                            </NavigationMenuLink>
+                            <NavigationMenuTrigger>Explore</NavigationMenuTrigger>
+                            <NavigationMenuContent>
+                                <ul className='grid w-[320px] gap-1 p-2'>
+                                    <ListItem to='/#events' title='Events' icon={<CalendarPlus className='h-4 w-4' />}>
+                                        Find cleanup events happening near you.
+                                    </ListItem>
+                                    <ListItem to='/teams' title='Teams' icon={<Users className='h-4 w-4' />}>
+                                        Join or create a team to volunteer together.
+                                    </ListItem>
+                                    <ListItem
+                                        to='/communities'
+                                        title='Communities'
+                                        icon={<Building2 className='h-4 w-4' />}
+                                    >
+                                        Discover community programs and partnerships.
+                                    </ListItem>
+                                    <ListItem to='/leaderboards' title='Leaderboards' icon={<Trophy className='h-4 w-4' />}>
+                                        See top volunteers and teams.
+                                    </ListItem>
+                                </ul>
+                            </NavigationMenuContent>
                         </NavigationMenuItem>
 
                         {/* Take Action Dropdown */}
@@ -200,6 +189,13 @@ export const MainNav = ({ className, isUserLoaded, ...props }: MainNavProps) => 
                             <NavigationMenuContent>
                                 <ul className='grid w-[280px] gap-1 p-2'>
                                     <ListItem
+                                        to='/whatsnew'
+                                        title="What's New"
+                                        icon={<Sparkles className='h-4 w-4' />}
+                                    >
+                                        See the latest features and updates.
+                                    </ListItem>
+                                    <ListItem
                                         to='/gettingstarted'
                                         title='Getting Started'
                                         icon={<BookOpen className='h-4 w-4' />}
@@ -235,10 +231,13 @@ export const MainNav = ({ className, isUserLoaded, ...props }: MainNavProps) => 
 
             {/* Mobile Navigation - Flat list */}
             <div className='flex flex-col gap-1 lg:hidden w-full'>
-                <MobileNavItem to='/#events'>Events</MobileNavItem>
-                <MobileNavItem to='/teams'>Teams</MobileNavItem>
-                <MobileNavItem to='/communities'>Communities</MobileNavItem>
-                <MobileNavItem to='/leaderboards'>Leaderboards</MobileNavItem>
+                <div className='border-l-2 border-muted pl-3 ml-2 space-y-1'>
+                    <p className='text-xs text-muted-foreground uppercase tracking-wide pt-1'>Explore</p>
+                    <MobileNavItem to='/#events'>Events</MobileNavItem>
+                    <MobileNavItem to='/teams'>Teams</MobileNavItem>
+                    <MobileNavItem to='/communities'>Communities</MobileNavItem>
+                    <MobileNavItem to='/leaderboards'>Leaderboards</MobileNavItem>
+                </div>
                 <div className='border-l-2 border-muted pl-3 ml-2 space-y-1'>
                     <p className='text-xs text-muted-foreground uppercase tracking-wide pt-1'>Take Action</p>
                     <MobileNavItem to='/litterreports/create'>Report Litter</MobileNavItem>
@@ -255,6 +254,7 @@ export const MainNav = ({ className, isUserLoaded, ...props }: MainNavProps) => 
                 ) : null}
                 <div className='border-l-2 border-muted pl-3 ml-2 space-y-1'>
                     <p className='text-xs text-muted-foreground uppercase tracking-wide pt-1'>About</p>
+                    <MobileNavItem to='/whatsnew'>What's New</MobileNavItem>
                     <MobileNavItem to='/gettingstarted'>Getting Started</MobileNavItem>
                     <MobileNavItem to='/help'>Help & FAQ</MobileNavItem>
                     <MobileNavItem to='/shop'>Shop</MobileNavItem>
