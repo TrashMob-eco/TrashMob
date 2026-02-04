@@ -53,7 +53,7 @@
 | [Project 21 - Event Co-Leads](./Projects/Project_21_Event_Co_Leads.md) | Multiple event admins | ✅ Complete |
 | [Project 22 - Attendee Metrics](./Projects/Project_22_Attendee_Metrics.md) | Per-attendee event statistics | In Progress (Phase 1-3 Complete) |
 | [Project 25 - Automated Testing](./Projects/Project_25_Automated_Testing.md) | E2E tests for web and mobile | Not Started |
-| [Project 37 - Unit Test Coverage](./Projects/Project_37_Unit_Test_Coverage.md) | Improve backend unit test coverage | Not Started |
+| [Project 37 - Unit Test Coverage](./Projects/Project_37_Unit_Test_Coverage.md) | Improve backend unit test coverage | ✅ Complete |
 | [Project 26 - KeyVault RBAC Migration](./Projects/Project_26_KeyVault_RBAC_Migration.md) | Migrate from access policies to RBAC | ✅ Complete |
 | [Project 28 - Photo Moderation](./Projects/Project_28_Photo_Moderation.md) | Admin photo review and flagging | ✅ Complete |
 | [Project 29 - Feature Usage Metrics](./Projects/Project_29_Feature_Usage_Metrics.md) | Track feature usage analytics | ✅ Complete |
@@ -107,7 +107,7 @@
 - [Project 25 - Automated Testing](./Projects/Project_25_Automated_Testing.md)
 - [Project 27 - OpenTelemetry Migration](./Projects/Project_27_OpenTelemetry_Migration.md) ✅
 - [Project 29 - Feature Usage Metrics](./Projects/Project_29_Feature_Usage_Metrics.md) ✅
-- [Project 37 - Unit Test Coverage](./Projects/Project_37_Unit_Test_Coverage.md)
+- [Project 37 - Unit Test Coverage](./Projects/Project_37_Unit_Test_Coverage.md) ✅
 
 ### Infrastructure & Operations
 - [Project 26 - KeyVault RBAC Migration](./Projects/Project_26_KeyVault_RBAC_Migration.md) ✅
@@ -128,12 +128,12 @@
 
 | Status | Count | Projects |
 |--------|-------|----------|
-| ✅ **Complete** | 17 | Projects 3, 7, 9, 10, 11, 13, 16, 17, 20, 21, 26, 27, 28, 29, 32, 34, 35 |
+| ✅ **Complete** | 18 | Projects 3, 7, 9, 10, 11, 13, 16, 17, 20, 21, 26, 27, 28, 29, 32, 34, 35, 37 |
 | **In Progress** | 4 | Projects 6, 8 (Phase 1-4 Complete), 19 (Phase 2 Complete), 22 (Phase 1-3 Complete) |
 | **Developers Engaged** | 1 | Project 4 |
 | **Ready for Review** | 2 | Projects 2, 5 |
 | **Planning** | 4 | Projects 1, 15, 18, 23 |
-| **Not Started** | 8 | Projects 12, 14, 24, 25, 30, 31, 36, 37 |
+| **Not Started** | 7 | Projects 12, 14, 24, 25, 30, 31, 36 |
 | **Deprioritized** | 1 | Project 33 |
 
 **Total:** 37 project specifications documented
