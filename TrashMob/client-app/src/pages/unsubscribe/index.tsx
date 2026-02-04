@@ -89,7 +89,8 @@ export const UnsubscribePage: FC = () => {
                             Email: <span className='font-medium'>{result.email}</span>
                         </p>
                         <p className='text-muted-foreground mt-2'>
-                            Changed your mind? You can manage your newsletter preferences from your dashboard at any time.
+                            Changed your mind? You can manage your newsletter preferences from your dashboard at any
+                            time.
                         </p>
                     </CardContent>
                     <CardFooter className='flex gap-2'>
@@ -121,8 +122,8 @@ export const UnsubscribePage: FC = () => {
                 </CardHeader>
                 <CardContent>
                     <p className='text-muted-foreground'>
-                        This link may have expired or already been used. Please log in to manage your newsletter preferences
-                        directly.
+                        This link may have expired or already been used. Please log in to manage your newsletter
+                        preferences directly.
                     </p>
                 </CardContent>
                 <CardFooter className='flex gap-2'>
