@@ -78,6 +78,20 @@ namespace TrashMob.Controllers
         }
 
         /// <summary>
+        /// Gets all partners (communities) where the current user is an admin.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>List of partners the current user administers.</returns>
+        [HttpGet("my")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [ProducesResponseType(typeof(IEnumerable<Partner>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetMyPartners(CancellationToken cancellationToken)
+        {
+            var partners = await partnerAdminManager.GetPartnersByUserIdAsync(UserId, cancellationToken);
+            return Ok(partners);
+        }
+
+        /// <summary>
         /// Retrieves a specific user associated with a partner.
         /// </summary>
         /// <param name="partnerId">The unique identifier of the partner the user belongs to.</param>
