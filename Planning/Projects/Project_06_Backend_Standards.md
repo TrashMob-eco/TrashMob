@@ -70,7 +70,7 @@ Unify coding patterns across the backend codebase, upgrade to .NET 10, secure al
 ### Phase 6 - Frontend Standards (In Progress)
 - ✓ Create FRONTEND_STANDARDS.md with React best practices
 - ✓ Add ErrorBoundary component for graceful error handling
-- ? Add NotFound page component for 404/route not found handling
+- ✓ Add NotFound page component for 404/route not found handling
 - ? Document component patterns and composition
 - ? Document data fetching with React Query
 - ? Document TypeScript guidelines and strict mode
