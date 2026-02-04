@@ -25,12 +25,25 @@ namespace TrashMobHourlyJobs
 
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
             var userNotificationManager = scope.ServiceProvider.GetRequiredService<IUserNotificationManager>();
+            var newsletterManager = scope.ServiceProvider.GetRequiredService<INewsletterManager>();
 
-            logger.LogInformation("UserNotifier job started at: {Time}", DateTime.UtcNow);
+            logger.LogInformation("Hourly jobs started at: {Time}", DateTime.UtcNow);
 
+            // Run user notifications
+            logger.LogInformation("Running user notifications...");
             await userNotificationManager.RunAllNotifications();
 
-            logger.LogInformation("UserNotifier job completed at: {Time}", DateTime.UtcNow);
+            // Process scheduled newsletters
+            logger.LogInformation("Processing scheduled newsletters...");
+            var scheduledCount = await newsletterManager.ProcessScheduledNewslettersAsync();
+            logger.LogInformation("Started sending {Count} scheduled newsletters", scheduledCount);
+
+            // Process newsletters that are in sending status
+            logger.LogInformation("Processing sending newsletters...");
+            var processedCount = await newsletterManager.ProcessSendingNewslettersAsync();
+            logger.LogInformation("Processed {Count} newsletters for sending", processedCount);
+
+            logger.LogInformation("Hourly jobs completed at: {Time}", DateTime.UtcNow);
         }
 
         private static void ConfigureServices(IServiceCollection services)

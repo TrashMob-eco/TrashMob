@@ -9,6 +9,7 @@ import { GetNewsletters, DeleteNewsletter, SendNewsletter, Newsletter } from '@/
 import { getColumns } from './columns';
 import { NewsletterEditorDialog } from './newsletter-editor-dialog';
 import { ScheduleDialog } from './schedule-dialog';
+import { TestSendDialog } from './test-send-dialog';
 
 const statusFilters = ['All', 'Draft', 'Scheduled', 'Sending', 'Sent'] as const;
 
@@ -19,6 +20,8 @@ export const SiteAdminNewsletters = () => {
     const [editingNewsletter, setEditingNewsletter] = useState<Newsletter | null>(null);
     const [scheduleOpen, setScheduleOpen] = useState(false);
     const [schedulingId, setSchedulingId] = useState<string | null>(null);
+    const [testSendOpen, setTestSendOpen] = useState(false);
+    const [testSendId, setTestSendId] = useState<string | null>(null);
 
     const queryParams = statusFilter === 'All' ? undefined : { status: statusFilter };
 
@@ -75,10 +78,16 @@ export const SiteAdminNewsletters = () => {
         deleteNewsletter.mutateAsync({ id });
     };
 
+    const handleTestSend = (id: string) => {
+        setTestSendId(id);
+        setTestSendOpen(true);
+    };
+
     const columns = getColumns({
         onEdit: handleEdit,
         onSend: handleSend,
         onSchedule: handleSchedule,
+        onTestSend: handleTestSend,
         onDelete: handleDelete,
     });
 
@@ -119,6 +128,8 @@ export const SiteAdminNewsletters = () => {
             <NewsletterEditorDialog open={editorOpen} onOpenChange={setEditorOpen} newsletter={editingNewsletter} />
 
             <ScheduleDialog open={scheduleOpen} onOpenChange={setScheduleOpen} newsletterId={schedulingId} />
+
+            <TestSendDialog open={testSendOpen} onOpenChange={setTestSendOpen} newsletterId={testSendId} />
         </>
     );
 };

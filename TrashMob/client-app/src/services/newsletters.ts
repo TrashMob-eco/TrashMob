@@ -226,3 +226,17 @@ export const GetNewsletterTemplates = () => ({
             method: 'get',
         }),
 });
+
+// Send a test email (admin only)
+export type SendTestEmail_Params = { id: string };
+export type SendTestEmail_Body = { emails: string[] };
+export type SendTestEmail_Response = { message: string };
+export const SendTestEmail = () => ({
+    key: ['/admin/newsletters', 'test'],
+    service: async (params: SendTestEmail_Params, body: SendTestEmail_Body) =>
+        ApiService('protected').fetchData<SendTestEmail_Response, SendTestEmail_Body>({
+            url: `/admin/newsletters/${params.id}/test`,
+            method: 'post',
+            data: body,
+        }),
+});
