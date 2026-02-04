@@ -41,11 +41,9 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description, lin
         </CardHeader>
         <CardContent>
             <CardDescription className='text-sm text-foreground/75'>{description}</CardDescription>
-            {link && (
-                <Button asChild variant='link' className='px-0 mt-2'>
+            {link ? <Button asChild variant='link' className='px-0 mt-2'>
                     <Link to={link}>{linkText || 'Learn more'}</Link>
-                </Button>
-            )}
+                </Button> : null}
         </CardContent>
     </Card>
 );
