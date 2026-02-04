@@ -577,7 +577,7 @@ The following GitHub issues are tracked as part of this project:
 
 **Last Updated:** February 3, 2026
 **Owner:** Marketing + Engineering
-**Status:** In Progress (Phase 2 Complete)
+**Status:** In Progress (Phase 3 Complete)
 **Next Review:** Q1 2026
 
 ---
@@ -623,12 +623,20 @@ The following GitHub issues are tracked as part of this project:
 - `pages/siteadmin/newsletters/test-send-dialog.tsx` - Dialog for sending test emails
 - Updated newsletter columns with "Send Test" action in dropdown menu
 
-### Remaining Phases
+### Phase 3 - Team/Community (Complete)
 
-**Phase 3 - Team/Community:**
-- Team newsletters (team leads can send to members)
-- Community newsletters (community admins can send)
-- Newsletter preview before sending
+**Backend:**
+- `PartnerAdminsController.GetMyPartners()` - New endpoint for getting communities the current user admins
+
+**Frontend:**
+- Updated `newsletter-editor-dialog.tsx` with:
+  - Team selector dropdown (uses `GetTeamsILead` service) when target type is "Team"
+  - Community selector dropdown (uses new `GetMyPartners` service) when target type is "Community"
+  - Preview tab with rendered HTML email preview in iframe
+  - Target validation (requires team/community selection when applicable)
+- Added `GetMyPartners` service to `partners.ts`
+
+### Remaining Phases
 
 **Phase 4 - User Experience:**
 - User settings page for newsletter preferences
