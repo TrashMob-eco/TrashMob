@@ -232,9 +232,7 @@ export const NewsletterEditorDialog = ({ open, onOpenChange, newsletter }: Newsl
                                     <Label htmlFor='targetId'>Select Team *</Label>
                                     <Select
                                         value={formData.targetId || ''}
-                                        onValueChange={(value) =>
-                                            setFormData((prev) => ({ ...prev, targetId: value }))
-                                        }
+                                        onValueChange={(value) => setFormData((prev) => ({ ...prev, targetId: value }))}
                                         disabled={isReadOnly}
                                     >
                                         <SelectTrigger>
@@ -267,9 +265,7 @@ export const NewsletterEditorDialog = ({ open, onOpenChange, newsletter }: Newsl
                                     <Label htmlFor='targetId'>Select Community *</Label>
                                     <Select
                                         value={formData.targetId || ''}
-                                        onValueChange={(value) =>
-                                            setFormData((prev) => ({ ...prev, targetId: value }))
-                                        }
+                                        onValueChange={(value) => setFormData((prev) => ({ ...prev, targetId: value }))}
                                         disabled={isReadOnly}
                                     >
                                         <SelectTrigger>
@@ -414,10 +410,7 @@ export const NewsletterEditorDialog = ({ open, onOpenChange, newsletter }: Newsl
                         {isReadOnly ? 'Close' : 'Cancel'}
                     </Button>
                     {!isReadOnly && (
-                        <Button
-                            onClick={handleSubmit}
-                            disabled={isPending || !formData.subject || isTargetIdMissing}
-                        >
+                        <Button onClick={handleSubmit} disabled={isPending || !formData.subject || isTargetIdMissing}>
                             {isPending ? 'Saving...' : isEditing ? 'Save Changes' : 'Create Draft'}
                         </Button>
                     )}
