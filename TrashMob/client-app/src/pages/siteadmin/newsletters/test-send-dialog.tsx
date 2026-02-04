@@ -25,8 +25,7 @@ export const TestSendDialog = ({ open, onOpenChange, newsletterId }: TestSendDia
 
     const testSendMutation = useMutation({
         mutationKey: SendTestEmail().key,
-        mutationFn: ({ id, emails }: { id: string; emails: string[] }) =>
-            SendTestEmail().service({ id }, { emails }),
+        mutationFn: ({ id, emails }: { id: string; emails: string[] }) => SendTestEmail().service({ id }, { emails }),
         onSuccess: () => {
             onOpenChange(false);
             setTestEmail('');
@@ -65,7 +64,9 @@ export const TestSendDialog = ({ open, onOpenChange, newsletterId }: TestSendDia
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Send Test Email</DialogTitle>
-                    <DialogDescription>Send a test email to verify the newsletter content before sending to all recipients.</DialogDescription>
+                    <DialogDescription>
+                        Send a test email to verify the newsletter content before sending to all recipients.
+                    </DialogDescription>
                 </DialogHeader>
 
                 <div className='grid gap-4 py-4'>
@@ -78,7 +79,9 @@ export const TestSendDialog = ({ open, onOpenChange, newsletterId }: TestSendDia
                             onChange={(e) => setTestEmail(e.target.value)}
                             placeholder='test@example.com'
                         />
-                        <p className='text-xs text-muted-foreground'>Enter one or more email addresses, separated by commas</p>
+                        <p className='text-xs text-muted-foreground'>
+                            Enter one or more email addresses, separated by commas
+                        </p>
                     </div>
                     {error ? <p className='text-sm text-red-600'>{error}</p> : null}
                 </div>

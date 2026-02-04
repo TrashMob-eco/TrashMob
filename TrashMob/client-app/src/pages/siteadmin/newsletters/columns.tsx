@@ -27,7 +27,13 @@ const statusColors: Record<string, string> = {
     Sent: 'bg-green-500',
 };
 
-export const getColumns = ({ onEdit, onSend, onSchedule, onTestSend, onDelete }: GetColumnsProps): ColumnDef<Newsletter>[] => [
+export const getColumns = ({
+    onEdit,
+    onSend,
+    onSchedule,
+    onTestSend,
+    onDelete,
+}: GetColumnsProps): ColumnDef<Newsletter>[] => [
     {
         accessorKey: 'subject',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Subject' />,
