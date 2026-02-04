@@ -564,6 +564,31 @@ namespace TrashMob.Models
         public virtual ICollection<EventPhoto> EventPhotosModerated { get; set; }
 
         /// <summary>
+        /// Gets or sets the collection of partner photos created by this user.
+        /// </summary>
+        public virtual ICollection<PartnerPhoto> PartnerPhotosCreated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of partner photos last updated by this user.
+        /// </summary>
+        public virtual ICollection<PartnerPhoto> PartnerPhotosUpdated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of partner photos uploaded by this user.
+        /// </summary>
+        public virtual ICollection<PartnerPhoto> PartnerPhotosUploaded { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of partner photos flagged for review by this user.
+        /// </summary>
+        public virtual ICollection<PartnerPhoto> PartnerPhotosReviewRequested { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of partner photos moderated by this user.
+        /// </summary>
+        public virtual ICollection<PartnerPhoto> PartnerPhotosModerated { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of photo flags submitted by this user.
         /// </summary>
         public virtual ICollection<PhotoFlag> PhotoFlagsFlagged { get; set; }

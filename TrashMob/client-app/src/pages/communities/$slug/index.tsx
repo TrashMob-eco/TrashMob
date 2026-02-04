@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useParams, Link } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
@@ -24,6 +25,8 @@ import { CommunityContactCard } from '@/components/communities/community-contact
 import { CommunityEventsSection } from '@/components/communities/community-events-section';
 import { CommunityTeamsSection } from '@/components/communities/community-teams-section';
 import { CommunityDetailMap } from '@/components/communities/community-detail-map';
+import { CommunityPhotoGallery } from '@/components/communities/CommunityPhotoGallery';
+import { CommunityPhotoUploader } from '@/components/communities/CommunityPhotoUploader';
 
 const getLocation = (community: CommunityData) => {
     const parts = [community.city, community.region, community.country].filter(Boolean);
@@ -33,6 +36,7 @@ const getLocation = (community: CommunityData) => {
 export const CommunityDetailPage = () => {
     const { slug } = useParams<{ slug: string }>() as { slug: string };
     const { currentUser, isUserLoaded } = useLogin();
+    const [showPhotoUploader, setShowPhotoUploader] = useState(false);
 
     const { data: community, isLoading } = useQuery<AxiosResponse<CommunityData>, unknown, CommunityData>({
         queryKey: GetCommunityBySlug({ slug }).key,
@@ -211,6 +215,14 @@ export const CommunityDetailPage = () => {
 
                         {/* Teams Section */}
                         <CommunityTeamsSection teams={teams} isLoading={teamsLoading} />
+
+                        {/* Photo Gallery Section */}
+                        <CommunityPhotoGallery
+                            slug={slug}
+                            canUpload={isUserLoaded ? !!currentUser.id : null}
+                            canDelete={isUserLoaded ? !!currentUser.id : null}
+                            onUploadClick={() => setShowPhotoUploader(true)}
+                        />
                     </div>
 
                     {/* Sidebar */}
@@ -258,6 +270,11 @@ export const CommunityDetailPage = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Photo Uploader Modal */}
+            {isUserLoaded && currentUser.id ? (
+                <CommunityPhotoUploader slug={slug} open={showPhotoUploader} onOpenChange={setShowPhotoUploader} />
+            ) : null}
         </div>
     );
 };
