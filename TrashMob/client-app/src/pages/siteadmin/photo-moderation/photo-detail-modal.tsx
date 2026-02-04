@@ -131,11 +131,7 @@ export const PhotoDetailModal = ({ photo, open, onOpenChange, tab }: PhotoDetail
                 <DialogHeader>
                     <DialogTitle className='flex items-center gap-2'>
                         Photo Details
-                        <Badge
-                            className={
-                                photoTypeBadge[photo.photoType]?.color || 'bg-gray-500'
-                            }
-                        >
+                        <Badge className={photoTypeBadge[photo.photoType]?.color || 'bg-gray-500'}>
                             {photoTypeBadge[photo.photoType]?.label || photo.photoType}
                         </Badge>
                         {tab === 'moderated' && <Badge className={statusInfo.color}>{statusInfo.label}</Badge>}
