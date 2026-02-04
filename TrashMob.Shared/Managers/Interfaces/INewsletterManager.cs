@@ -66,5 +66,28 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Task.</returns>
         Task UpdateStatisticsAsync(Guid newsletterId, int deliveredCount, int openCount, int clickCount, int bounceCount, int unsubscribeCount, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Sends a test email for a newsletter to specified addresses.
+        /// </summary>
+        /// <param name="newsletterId">The newsletter ID.</param>
+        /// <param name="testEmails">List of email addresses to send test to.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Task.</returns>
+        Task SendTestEmailAsync(Guid newsletterId, IEnumerable<string> testEmails, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Processes newsletters that are in 'Sending' status by actually sending the emails.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Number of newsletters processed.</returns>
+        Task<int> ProcessSendingNewslettersAsync(CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Processes scheduled newsletters that are due to be sent.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Number of newsletters started.</returns>
+        Task<int> ProcessScheduledNewslettersAsync(CancellationToken cancellationToken = default);
     }
 }

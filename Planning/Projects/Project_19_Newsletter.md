@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phase 1 Complete) |
+| **Status** | In Progress (Phase 2 Complete) |
 | **Priority** | Medium |
 | **Risk** | Low |
 | **Size** | Medium |
@@ -577,7 +577,7 @@ The following GitHub issues are tracked as part of this project:
 
 **Last Updated:** February 3, 2026
 **Owner:** Marketing + Engineering
-**Status:** In Progress (Phase 1 Complete)
+**Status:** In Progress (Phase 2 Complete)
 **Next Review:** Q1 2026
 
 ---
@@ -608,13 +608,22 @@ The following GitHub issues are tracked as part of this project:
   - Send now functionality
   - Delete draft newsletters
 
-### Remaining Phases
+### Phase 2 - Sending & Tracking (Complete)
 
-**Phase 2 - Sending & Tracking:**
-- Background job for processing scheduled newsletters
-- SendGrid webhook integration for open/click/bounce tracking
-- Batch sending for large lists
-- Test send functionality
+**Backend:**
+- `NewsletterManager.ProcessScheduledNewslettersAsync()` - Processes due newsletters and marks them for sending
+- `NewsletterManager.ProcessSendingNewslettersAsync()` - Sends newsletter emails in batches of 100
+- `NewsletterManager.SendTestEmailAsync()` - Sends test emails to specified addresses
+- `NewslettersController.SendTestEmail()` - API endpoint for test sends
+- `NewsletterWebhooksController` - Processes SendGrid webhook events for delivery/open/click/bounce tracking
+- Integration with `TrashMobHourlyJobs` - Scheduled and sending newsletters are processed hourly
+
+**Frontend:**
+- `services/newsletters.ts` - Added `SendTestEmail` service
+- `pages/siteadmin/newsletters/test-send-dialog.tsx` - Dialog for sending test emails
+- Updated newsletter columns with "Send Test" action in dropdown menu
+
+### Remaining Phases
 
 **Phase 3 - Team/Community:**
 - Team newsletters (team leads can send to members)

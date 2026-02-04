@@ -1,5 +1,5 @@
 import { ColumnDef } from '@tanstack/react-table';
-import { Ellipsis, Send, Calendar, Trash2, Eye, Edit } from 'lucide-react';
+import { Ellipsis, Send, Calendar, Trash2, Eye, Edit, TestTube } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuTrigger,
@@ -16,6 +16,7 @@ interface GetColumnsProps {
     onEdit: (newsletter: Newsletter) => void;
     onSend: (id: string) => void;
     onSchedule: (id: string) => void;
+    onTestSend: (id: string) => void;
     onDelete: (id: string) => void;
 }
 
@@ -26,7 +27,7 @@ const statusColors: Record<string, string> = {
     Sent: 'bg-green-500',
 };
 
-export const getColumns = ({ onEdit, onSend, onSchedule, onDelete }: GetColumnsProps): ColumnDef<Newsletter>[] => [
+export const getColumns = ({ onEdit, onSend, onSchedule, onTestSend, onDelete }: GetColumnsProps): ColumnDef<Newsletter>[] => [
     {
         accessorKey: 'subject',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Subject' />,
@@ -139,6 +140,10 @@ export const getColumns = ({ onEdit, onSend, onSchedule, onDelete }: GetColumnsP
                         </DropdownMenuItem>
                         {isDraft ? (
                             <>
+                                <DropdownMenuItem onClick={() => onTestSend(newsletter.id)}>
+                                    <TestTube className='mr-2 h-4 w-4' />
+                                    Send Test
+                                </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => onSchedule(newsletter.id)}>
                                     <Calendar className='mr-2 h-4 w-4' />
                                     Schedule

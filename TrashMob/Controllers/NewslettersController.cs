@@ -1,6 +1,7 @@
 namespace TrashMob.Controllers
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -261,6 +262,43 @@ namespace TrashMob.Controllers
         }
 
         /// <summary>
+        /// Sends a test email for a newsletter to specified addresses.
+        /// </summary>
+        /// <param name="id">The newsletter ID.</param>
+        /// <param name="request">The test send request.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Success status.</returns>
+        [HttpPost("{id}/test")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> SendTestEmail(Guid id, [FromBody] TestSendRequest request, CancellationToken cancellationToken = default)
+        {
+            var authResult = await AuthorizationService.AuthorizeAsync(User, null, AuthorizationPolicyConstants.UserIsAdmin);
+            if (!authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            if (request.Emails == null || !request.Emails.Any())
+            {
+                return BadRequest("At least one email address is required.");
+            }
+
+            try
+            {
+                await newsletterManager.SendTestEmailAsync(id, request.Emails, cancellationToken);
+                TrackEvent(nameof(SendTestEmail));
+                return Ok(new { message = $"Test email sent to {request.Emails.Count} addresses." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
         /// Deletes a draft newsletter.
         /// </summary>
         /// <param name="id">The newsletter ID.</param>
@@ -418,5 +456,16 @@ namespace TrashMob.Controllers
         /// Gets or sets the scheduled date.
         /// </summary>
         public DateTimeOffset ScheduledDate { get; set; }
+    }
+
+    /// <summary>
+    /// Request model for sending a test email.
+    /// </summary>
+    public class TestSendRequest
+    {
+        /// <summary>
+        /// Gets or sets the list of email addresses to send the test to.
+        /// </summary>
+        public List<string> Emails { get; set; }
     }
 }
