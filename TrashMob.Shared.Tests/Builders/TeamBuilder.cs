@@ -67,6 +67,25 @@ namespace TrashMob.Shared.Tests.Builders
             return this;
         }
 
+        public TeamBuilder AsPublic()
+        {
+            _team.IsPublic = true;
+            return this;
+        }
+
+        public TeamBuilder AsPrivate()
+        {
+            _team.IsPublic = false;
+            return this;
+        }
+
+        public TeamBuilder WithCoordinates(double latitude, double longitude)
+        {
+            _team.Latitude = latitude;
+            _team.Longitude = longitude;
+            return this;
+        }
+
         public TeamBuilder CreatedBy(Guid userId)
         {
             _team.CreatedByUserId = userId;
