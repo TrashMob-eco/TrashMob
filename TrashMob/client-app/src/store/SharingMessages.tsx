@@ -24,7 +24,7 @@ export function getEventShareMessage(eventToShare: EventData, currUserId: string
     );
 }
 
-export function getCancellationMessage(eventToShare: any, cancellationReason: string) {
+export function getCancellationMessage(eventToShare: EventData, cancellationReason: string) {
     const eventDate = new Date(eventToShare.eventDate).toLocaleDateString('en-us', {
         year: 'numeric',
         month: '2-digit',
@@ -46,7 +46,7 @@ export function getEventSummaryMessage(city: string, numAttendees: number, numBa
     return message;
 }
 
-export function getEventDetailsMessage(eventDate: Date, city: any, createdById: string, currUserId: string) {
+export function getEventDetailsMessage(eventDate: Date, city: string, createdById: string, currUserId: string) {
     const eventDateFormatted = eventDate.toLocaleDateString('en-us', {
         year: 'numeric',
         month: '2-digit',

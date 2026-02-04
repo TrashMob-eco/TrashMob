@@ -6,5 +6,6 @@ export const useGetEvent = (eventId: string) => {
         queryKey: GetEventById({ eventId }).key,
         queryFn: GetEventById({ eventId }).service,
         select: (res) => res.data,
+        staleTime: 60 * 1000, // 1 minute - balance freshness with performance
     });
 };

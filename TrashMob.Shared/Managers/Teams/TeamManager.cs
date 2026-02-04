@@ -109,6 +109,12 @@ namespace TrashMob.Shared.Managers.Teams
 #pragma warning restore CA1862
         }
 
+        /// <inheritdoc />
+        public async Task<IEnumerable<Team>> GetAllTeamsAsync(CancellationToken cancellationToken = default)
+        {
+            return await Repo.Get().ToListAsync(cancellationToken);
+        }
+
         /// <summary>
         /// Calculates the distance between two geographic coordinates using the Haversine formula.
         /// </summary>

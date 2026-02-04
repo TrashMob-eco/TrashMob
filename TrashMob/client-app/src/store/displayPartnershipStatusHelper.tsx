@@ -5,8 +5,8 @@ import { GetPartnerRequestStatuses, GetPartnerStatuses } from '../services/partn
 export function getDisplayPartnershipStatus(
     partnerStatusList: PartnerStatusData[],
     partnerRequestStatusList: PartnerRequestStatusData[],
-    partnerStatusId: any,
-    partnerRequestStatusId: any,
+    partnerStatusId: number,
+    partnerRequestStatusId: number,
 ): string {
     const partnerStatus = partnerStatusList.find((et) => et.id === partnerStatusId);
     const partnerRequestStatus = partnerRequestStatusList.find((et) => et.id === partnerRequestStatusId);
@@ -16,8 +16,8 @@ export function getDisplayPartnershipStatus(
 }
 
 export async function getDisplayPartnershipStatusAsync(
-    partnerStatusId: any,
-    partnerRequestStatusId: any,
+    partnerStatusId: number,
+    partnerRequestStatusId: number,
 ): Promise<string> {
     const partnerStatusList = await getPartnerStatuses();
     const partnerRequestStatusList = await getPartnerRequestStatuses();
@@ -33,7 +33,7 @@ async function getPartnerRequestStatuses(): Promise<PartnerRequestStatusData[]> 
     const result = await GetPartnerRequestStatuses()
         .service()
         .then((res) => res.data)
-        .catch((err) => []);
+        .catch(() => []);
     return result;
 }
 
@@ -41,6 +41,6 @@ async function getPartnerStatuses(): Promise<PartnerStatusData[]> {
     const result = await GetPartnerStatuses()
         .service()
         .then((res) => res.data)
-        .catch((err) => []);
+        .catch(() => []);
     return result;
 }

@@ -3,13 +3,13 @@ import { GetSocialMediaAccountTypes } from '../services/social-media';
 
 export function getSocialMediaAccountType(
     socialMediaAccountTypeList: SocialMediaAccountTypeData[],
-    socialMediaAccountTypeId: any,
+    socialMediaAccountTypeId: number,
 ): string {
     const socialMediaAccountType = socialMediaAccountTypeList.find((et) => et.id === socialMediaAccountTypeId);
     return socialMediaAccountType ? socialMediaAccountType.name : 'Unknown';
 }
 
-export async function getSocialMediaAccountTypeAsync(socialMediaAccountTypeId: any): Promise<string> {
+export async function getSocialMediaAccountTypeAsync(socialMediaAccountTypeId: number): Promise<string> {
     const socialMediaAccountTypeList = await getSocialMediaAccountTypes();
     return getSocialMediaAccountType(socialMediaAccountTypeList, socialMediaAccountTypeId);
 }
@@ -18,6 +18,6 @@ async function getSocialMediaAccountTypes(): Promise<SocialMediaAccountTypeData[
     const result = await GetSocialMediaAccountTypes()
         .service()
         .then((res) => res.data)
-        .catch((err) => []);
+        .catch(() => []);
     return result;
 }

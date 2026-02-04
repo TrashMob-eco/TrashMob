@@ -62,7 +62,7 @@ export const CancelEvent: React.FC = () => {
     const [showModal, setShowSocialsModal] = React.useState<boolean>(false);
 
     // This will handle Cancel button click event.
-    function handleCancel(event: any) {
+    function handleCancel(event: React.MouseEvent<HTMLButtonElement>) {
         event.preventDefault();
         navigate(-1);
     }

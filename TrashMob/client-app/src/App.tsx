@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from '@/components/ui/toaster';
 import { FeedbackWidget } from './components/FeedbackWidget/FeedbackWidget';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 import { initializeMsalClient } from './store/AuthStore';
 import { Shop } from './components/Shop';
@@ -28,6 +29,7 @@ import { Faq } from './pages/faq/page';
 import { AboutUs } from './pages/aboutus/page';
 import { ContactUsWrapper as ContactUs } from './pages/contactus';
 import { GettingStarted } from './pages/gettingstarted/page';
+import { WhatsNew } from './pages/whatsnew/page';
 import { Board } from './pages/board/page';
 
 /** User */
@@ -318,13 +320,14 @@ const AppContent: FC = () => {
                             <Route path='/contactus' element={<ContactUs />} />
                             <Route path='/faq' element={<Faq />} />
                             <Route path='/gettingstarted' element={<GettingStarted />} />
+                            <Route path='/whatsnew' element={<WhatsNew />} />
                             <Route path='/privacypolicy' element={<PrivacyPolicy />} />
                             <Route path='/termsofservice' element={<TermsOfService />} />
                             <Route path='/volunteeropportunities' element={<VolunteerOpportunities />} />
                             <Route path='/unsubscribe' element={<UnsubscribePage />} />
                             <Route path='/' element={<Home />} />
                         </Route>
-                        <Route element={<NoMatch />} />
+                        <Route path='*' element={<NoMatch />} />
                     </Routes>
                 </div>
                 <SiteFooter />
@@ -362,7 +365,9 @@ export const App: FC = () => {
     return (
         <QueryClientProvider client={queryClient}>
             <MsalProvider instance={msalClient}>
-                <AppContent />
+                <ErrorBoundary>
+                    <AppContent />
+                </ErrorBoundary>
             </MsalProvider>
             <Toaster />
             <FeedbackWidget />

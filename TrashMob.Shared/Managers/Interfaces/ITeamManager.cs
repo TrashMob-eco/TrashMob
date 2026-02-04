@@ -57,5 +57,12 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
         /// <returns>The team or null if not found.</returns>
         Task<Team> GetByNameAsync(string name, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets all teams including private and inactive ones. Admin only.
+        /// </summary>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>A collection of all teams.</returns>
+        Task<IEnumerable<Team>> GetAllTeamsAsync(CancellationToken cancellationToken = default);
     }
 }

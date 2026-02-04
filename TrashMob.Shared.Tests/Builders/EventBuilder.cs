@@ -134,6 +134,18 @@ namespace TrashMob.Shared.Tests.Builders
             return this;
         }
 
+        public EventBuilder InRegion(string region)
+        {
+            _event.Region = region;
+            return this;
+        }
+
+        public EventBuilder OnDate(DateTimeOffset date)
+        {
+            _event.EventDate = date;
+            return this;
+        }
+
         public EventBuilder WithCoordinates(double latitude, double longitude)
         {
             _event.Latitude = latitude;
