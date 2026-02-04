@@ -151,6 +151,8 @@
 
         public virtual DbSet<UserAchievement> UserAchievements { get; set; }
 
+        public virtual DbSet<EventPhoto> EventPhotos { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(configuration["TMDBServerConnectionString"], x => x.UseNetTopologySuite());
@@ -2113,6 +2115,67 @@
                     .HasForeignKey(d => d.ModeratedByUserId)
                     .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_TeamPhotos_ModeratedByUser");
+            });
+
+            modelBuilder.Entity<EventPhoto>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.ImageUrl)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.ThumbnailUrl)
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Caption)
+                    .HasMaxLength(500);
+
+                entity.HasOne(d => d.Event)
+                    .WithMany(d => d.EventPhotos)
+                    .HasForeignKey(d => d.EventId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_EventPhotos_Event");
+
+                entity.HasOne(d => d.UploadedByUser)
+                    .WithMany(p => p.EventPhotosUploaded)
+                    .HasForeignKey(d => d.UploadedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventPhotos_UploadedByUser");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.EventPhotosCreated)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventPhotos_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany(p => p.EventPhotosUpdated)
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_EventPhotos_User_LastUpdatedBy");
+
+                entity.Property(e => e.ModerationStatus).HasDefaultValue(PhotoModerationStatus.Pending);
+
+                entity.Property(e => e.InReview).HasDefaultValue(false);
+
+                entity.Property(e => e.ModerationReason).HasMaxLength(500);
+
+                entity.HasOne(d => d.ReviewRequestedByUser)
+                    .WithMany(p => p.EventPhotosReviewRequested)
+                    .HasForeignKey(d => d.ReviewRequestedByUserId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_EventPhotos_ReviewRequestedByUser");
+
+                entity.HasOne(d => d.ModeratedByUser)
+                    .WithMany(p => p.EventPhotosModerated)
+                    .HasForeignKey(d => d.ModeratedByUserId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_EventPhotos_ModeratedByUser");
+
+                entity.HasIndex(e => e.EventId);
+                entity.HasIndex(e => e.ModerationStatus);
+                entity.HasIndex(e => e.PhotoType);
             });
 
             modelBuilder.Entity<UserFeedback>(entity =>

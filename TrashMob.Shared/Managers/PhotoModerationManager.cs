@@ -17,12 +17,13 @@ namespace TrashMob.Shared.Managers
 
     /// <summary>
     /// Manager for photo moderation operations.
-    /// Handles moderation for both LitterImage and TeamPhoto entities.
+    /// Handles moderation for LitterImage, TeamPhoto, and EventPhoto entities.
     /// </summary>
     public class PhotoModerationManager : IPhotoModerationManager
     {
         private const string LitterImageType = "LitterImage";
         private const string TeamPhotoType = "TeamPhoto";
+        private const string EventPhotoType = "EventPhoto";
 
         private readonly MobDbContext _dbContext;
         private readonly IEmailManager _emailManager;
@@ -49,7 +50,14 @@ namespace TrashMob.Shared.Managers
                 .Select(p => MapTeamPhoto(p))
                 .ToListAsync(cancellationToken);
 
-            var allPhotos = litterImages.Concat(teamPhotos)
+            var eventPhotos = await _dbContext.EventPhotos
+                .Include(p => p.Event)
+                .Include(p => p.UploadedByUser)
+                .Where(p => p.ModerationStatus == PhotoModerationStatus.Pending && !p.InReview)
+                .Select(p => MapEventPhoto(p))
+                .ToListAsync(cancellationToken);
+
+            var allPhotos = litterImages.Concat(teamPhotos).Concat(eventPhotos)
                 .OrderByDescending(p => p.UploadedDate)
                 .ToList();
 
@@ -74,7 +82,15 @@ namespace TrashMob.Shared.Managers
                 .Select(p => MapTeamPhoto(p))
                 .ToListAsync(cancellationToken);
 
-            var allPhotos = litterImages.Concat(teamPhotos)
+            var eventPhotos = await _dbContext.EventPhotos
+                .Include(p => p.Event)
+                .Include(p => p.UploadedByUser)
+                .Include(p => p.ReviewRequestedByUser)
+                .Where(p => p.InReview)
+                .Select(p => MapEventPhoto(p))
+                .ToListAsync(cancellationToken);
+
+            var allPhotos = litterImages.Concat(teamPhotos).Concat(eventPhotos)
                 .OrderByDescending(p => p.FlaggedDate)
                 .ToList();
 
@@ -101,7 +117,15 @@ namespace TrashMob.Shared.Managers
                 .Select(p => MapTeamPhoto(p))
                 .ToListAsync(cancellationToken);
 
-            var allPhotos = litterImages.Concat(teamPhotos)
+            var eventPhotos = await _dbContext.EventPhotos
+                .Include(p => p.Event)
+                .Include(p => p.UploadedByUser)
+                .Include(p => p.ModeratedByUser)
+                .Where(p => p.ModerationStatus != PhotoModerationStatus.Pending && p.ModeratedDate >= cutoffDate)
+                .Select(p => MapEventPhoto(p))
+                .ToListAsync(cancellationToken);
+
+            var allPhotos = litterImages.Concat(teamPhotos).Concat(eventPhotos)
                 .OrderByDescending(p => p.ModeratedDate)
                 .ToList();
 
@@ -145,6 +169,23 @@ namespace TrashMob.Shared.Managers
                 photo.LastUpdatedDate = DateTimeOffset.UtcNow;
 
                 result = MapTeamPhoto(photo);
+            }
+            else if (photoType == EventPhotoType)
+            {
+                var photo = await _dbContext.EventPhotos
+                    .Include(p => p.Event)
+                    .Include(p => p.UploadedByUser)
+                    .FirstOrDefaultAsync(p => p.Id == photoId, cancellationToken)
+                    ?? throw new InvalidOperationException($"EventPhoto {photoId} not found");
+
+                photo.ModerationStatus = PhotoModerationStatus.Approved;
+                photo.InReview = false;
+                photo.ModeratedByUserId = adminUserId;
+                photo.ModeratedDate = DateTimeOffset.UtcNow;
+                photo.LastUpdatedByUserId = adminUserId;
+                photo.LastUpdatedDate = DateTimeOffset.UtcNow;
+
+                result = MapEventPhoto(photo);
             }
             else
             {
@@ -202,6 +243,24 @@ namespace TrashMob.Shared.Managers
 
                 result = MapTeamPhoto(photo);
             }
+            else if (photoType == EventPhotoType)
+            {
+                var photo = await _dbContext.EventPhotos
+                    .Include(p => p.Event)
+                    .Include(p => p.UploadedByUser)
+                    .FirstOrDefaultAsync(p => p.Id == photoId, cancellationToken)
+                    ?? throw new InvalidOperationException($"EventPhoto {photoId} not found");
+
+                photo.ModerationStatus = PhotoModerationStatus.Rejected;
+                photo.InReview = false;
+                photo.ModeratedByUserId = adminUserId;
+                photo.ModeratedDate = DateTimeOffset.UtcNow;
+                photo.ModerationReason = reason;
+                photo.LastUpdatedByUserId = adminUserId;
+                photo.LastUpdatedDate = DateTimeOffset.UtcNow;
+
+                result = MapEventPhoto(photo);
+            }
             else
             {
                 throw new ArgumentException($"Unknown photo type: {photoType}");
@@ -253,6 +312,20 @@ namespace TrashMob.Shared.Managers
 
                 result = MapTeamPhoto(photo);
             }
+            else if (photoType == EventPhotoType)
+            {
+                var photo = await _dbContext.EventPhotos
+                    .Include(p => p.Event)
+                    .Include(p => p.UploadedByUser)
+                    .FirstOrDefaultAsync(p => p.Id == photoId, cancellationToken)
+                    ?? throw new InvalidOperationException($"EventPhoto {photoId} not found");
+
+                photo.InReview = false;
+                photo.LastUpdatedByUserId = adminUserId;
+                photo.LastUpdatedDate = DateTimeOffset.UtcNow;
+
+                result = MapEventPhoto(photo);
+            }
             else
             {
                 throw new ArgumentException($"Unknown photo type: {photoType}");
@@ -287,6 +360,17 @@ namespace TrashMob.Shared.Managers
             {
                 var photo = await _dbContext.TeamPhotos.FindAsync(new object[] { photoId }, cancellationToken)
                     ?? throw new InvalidOperationException($"TeamPhoto {photoId} not found");
+
+                photo.InReview = true;
+                photo.ReviewRequestedByUserId = userId;
+                photo.ReviewRequestedDate = DateTimeOffset.UtcNow;
+                photo.LastUpdatedByUserId = userId;
+                photo.LastUpdatedDate = DateTimeOffset.UtcNow;
+            }
+            else if (photoType == EventPhotoType)
+            {
+                var photo = await _dbContext.EventPhotos.FindAsync(new object[] { photoId }, cancellationToken)
+                    ?? throw new InvalidOperationException($"EventPhoto {photoId} not found");
 
                 photo.InReview = true;
                 photo.ReviewRequestedByUserId = userId;
@@ -370,8 +454,9 @@ namespace TrashMob.Shared.Managers
                 return;
             }
 
-            var photoTypeDisplay = photo.PhotoType == LitterImageType ? "Litter Report Image" : "Team Photo";
-            var context = photo.LitterReportName ?? photo.TeamName ?? "Unknown";
+            var photoTypeDisplay = photo.PhotoType == LitterImageType ? "Litter Report Image" :
+                                   photo.PhotoType == TeamPhotoType ? "Team Photo" : "Event Photo";
+            var context = photo.LitterReportName ?? photo.TeamName ?? photo.EventName ?? "Unknown";
 
             var subject = "Your photo has been removed from TrashMob";
 
@@ -441,12 +526,27 @@ namespace TrashMob.Shared.Managers
                     context = photo.Team?.Name ?? "Team";
                 }
             }
+            else if (photoType == EventPhotoType)
+            {
+                var photo = await _dbContext.EventPhotos
+                    .Include(p => p.Event)
+                    .Include(p => p.UploadedByUser)
+                    .FirstOrDefaultAsync(p => p.Id == photoId, cancellationToken);
+
+                if (photo != null)
+                {
+                    uploaderName = photo.UploadedByUser?.UserName ?? "Unknown";
+                    uploaderEmail = photo.UploadedByUser?.Email ?? "Unknown";
+                    context = photo.Event?.Name ?? "Event";
+                }
+            }
 
             // Get flagger's name
             var flagger = await _dbContext.Users.FindAsync(new object[] { flaggedByUserId }, cancellationToken);
             var flaggedByName = flagger?.UserName ?? "Unknown";
 
-            var photoTypeDisplay = photoType == LitterImageType ? "Litter Report Image" : "Team Photo";
+            var photoTypeDisplay = photoType == LitterImageType ? "Litter Report Image" :
+                                   photoType == TeamPhotoType ? "Team Photo" : "Event Photo";
             var subject = "Photo flagged for review on TrashMob";
 
             var message = _emailManager.GetHtmlEmailCopy(NotificationTypeEnum.PhotoFlagged.ToString());
@@ -522,6 +622,35 @@ namespace TrashMob.Shared.Managers
                 LitterReportName = null,
                 TeamId = photo.TeamId,
                 TeamName = photo.Team?.Name,
+                Caption = photo.Caption,
+                ModeratedDate = photo.ModeratedDate,
+                ModeratedByName = photo.ModeratedByUser?.UserName,
+                ModerationReason = photo.ModerationReason
+            };
+        }
+
+        private static PhotoModerationItem MapEventPhoto(EventPhoto photo)
+        {
+            return new PhotoModerationItem
+            {
+                PhotoId = photo.Id,
+                PhotoType = EventPhotoType,
+                ImageUrl = photo.ImageUrl ?? string.Empty,
+                ModerationStatus = photo.ModerationStatus,
+                InReview = photo.InReview,
+                FlaggedDate = photo.ReviewRequestedDate,
+                FlagReason = null, // Would need to query PhotoFlags for this
+                UploadedDate = photo.UploadedDate,
+                UploadedByUserId = photo.UploadedByUserId,
+                UploaderName = photo.UploadedByUser?.UserName,
+                UploaderEmail = photo.UploadedByUser?.Email,
+                LitterReportId = null,
+                LitterReportName = null,
+                TeamId = null,
+                TeamName = null,
+                EventId = photo.EventId,
+                EventName = photo.Event?.Name,
+                EventPhotoTypeValue = photo.PhotoType,
                 Caption = photo.Caption,
                 ModeratedDate = photo.ModeratedDate,
                 ModeratedByName = photo.ModeratedByUser?.UserName,
