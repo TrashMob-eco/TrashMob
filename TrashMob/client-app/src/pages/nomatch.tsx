@@ -56,9 +56,11 @@ export const NoMatch: React.FC<NotFoundProps> = ({
                     <CardDescription className='text-base'>{message}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    {showPath && location.pathname !== '/' ? <p className='text-sm text-muted-foreground'>
+                    {showPath && location.pathname !== '/' ? (
+                        <p className='text-sm text-muted-foreground'>
                             Attempted path: <code className='rounded bg-muted px-2 py-1'>{location.pathname}</code>
-                        </p> : null}
+                        </p>
+                    ) : null}
                 </CardContent>
                 <CardFooter className='flex flex-col gap-3 sm:flex-row sm:justify-center'>
                     <Button variant='outline' onClick={handleGoBack}>
@@ -75,7 +77,10 @@ export const NoMatch: React.FC<NotFoundProps> = ({
                 <div className='border-t px-6 py-4'>
                     <p className='text-sm text-muted-foreground'>
                         Think this is a bug?{' '}
-                        <Link to='/contactus' className='text-primary underline underline-offset-4 hover:text-primary/80'>
+                        <Link
+                            to='/contactus'
+                            className='text-primary underline underline-offset-4 hover:text-primary/80'
+                        >
                             Let us know
                         </Link>
                     </p>
