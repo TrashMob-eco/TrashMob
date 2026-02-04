@@ -17,9 +17,10 @@ import {
     EmailShareButton,
     EmailIcon,
 } from 'react-share';
+import EventData from '../Models/EventData';
 
 interface ShareToSocialDialogProps {
-    eventToShare?: any;
+    eventToShare?: EventData;
     show: boolean;
     handleShow: (value: boolean) => void;
     modalTitle: string;
