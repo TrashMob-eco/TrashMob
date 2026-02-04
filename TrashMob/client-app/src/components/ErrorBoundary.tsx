@@ -86,27 +86,29 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
             // Default error UI
             return (
-                <div className="flex min-h-[400px] items-center justify-center p-4">
-                    <Card className="w-full max-w-md">
+                <div className='flex min-h-[400px] items-center justify-center p-4'>
+                    <Card className='w-full max-w-md'>
                         <CardHeader>
-                            <CardTitle className="text-destructive">Something went wrong</CardTitle>
+                            <CardTitle className='text-destructive'>Something went wrong</CardTitle>
                             <CardDescription>
                                 {errorMessage || 'An unexpected error occurred. Please try again.'}
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            {import.meta.env.DEV && error ? <details className="mt-2">
-                                    <summary className="cursor-pointer text-sm text-muted-foreground">
+                            {import.meta.env.DEV && error ? (
+                                <details className='mt-2'>
+                                    <summary className='cursor-pointer text-sm text-muted-foreground'>
                                         Error details (development only)
                                     </summary>
-                                    <pre className="mt-2 overflow-auto rounded bg-muted p-2 text-xs">
+                                    <pre className='mt-2 overflow-auto rounded bg-muted p-2 text-xs'>
                                         {error.message}
                                         {error.stack ? `\n\n${error.stack}` : null}
                                     </pre>
-                                </details> : null}
+                                </details>
+                            ) : null}
                         </CardContent>
-                        <CardFooter className="flex gap-2">
-                            <Button variant="outline" onClick={this.handleReset}>
+                        <CardFooter className='flex gap-2'>
+                            <Button variant='outline' onClick={this.handleReset}>
                                 Try Again
                             </Button>
                             <Button onClick={this.handleReload}>Reload Page</Button>
