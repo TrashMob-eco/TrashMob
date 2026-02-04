@@ -58,12 +58,13 @@ Unify coding patterns across the full-stack codebase, upgrade to .NET 10, secure
 - ✓ Document common patterns in wiki
 - ✓ Create coding standards guide
 
-### Phase 5 - Unit Test Coverage
-- ✓ Increase test coverage for TrashMob.Shared managers (see Project 37)
-- ? Add tests for repository layer
-- ? Add tests for controller validation logic
-- ✓ Achieve minimum 70% code coverage for business logic (242 tests added)
-- ? Integrate coverage reporting in CI/CD
+### Phase 5 - Unit Test Coverage ✓ (via Project 37)
+- ✓ Increase test coverage for TrashMob.Shared managers (242 tests added)
+- ✓ Achieve minimum 70% code coverage for business logic
+- ✓ Add test data builders and mock fixtures
+- ❌ Repository layer tests (deferred - manager tests sufficient)
+- ❌ Controller validation tests (deferred - manager tests sufficient)
+- ? Integrate coverage reporting in CI/CD (optional enhancement)
 
 ### Phase 6 - Frontend Standards (React)
 - ? Implement Vercel AI SDK for AI-powered features
@@ -237,12 +238,12 @@ Create `CODING_STANDARDS.md`:
 - Write coding standards
 - Create contribution guide
 
-### Phase 5: Unit Test Coverage
-- Add unit tests for managers in TrashMob.Shared
-- Test repository methods with in-memory database
-- Add controller validation tests
-- Configure code coverage reporting (Coverlet)
-- Set up coverage thresholds in CI pipeline
+### Phase 5: Unit Test Coverage ✓
+**Completed via [Project 37](./Project_37_Unit_Test_Coverage.md)**
+- ✓ Added 242 unit tests for managers in TrashMob.Shared
+- ✓ Created test data builders (UserBuilder, EventBuilder, TeamBuilder, etc.)
+- ✓ Created MockRepositoryExtensions with TestAsyncEnumerable
+- ? Optional: Configure code coverage reporting in CI pipeline
 
 ### Phase 6: Frontend Standards (React)
 - Integrate Vercel AI SDK for AI-powered features
