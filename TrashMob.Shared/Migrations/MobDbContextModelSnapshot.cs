@@ -3387,6 +3387,84 @@ namespace TrashMob.Migrations
                     b.ToTable("TeamPhotos");
                 });
 
+            modelBuilder.Entity("TrashMob.Models.PartnerPhoto", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Caption")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("InReview")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<Guid>("LastUpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid?>("ModeratedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("ModeratedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModerationReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("ModerationStatus")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<Guid>("PartnerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ReviewRequestedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("ReviewRequestedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("UploadedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("UploadedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastUpdatedByUserId");
+
+                    b.HasIndex("ModeratedByUserId");
+
+                    b.HasIndex("PartnerId");
+
+                    b.HasIndex("ReviewRequestedByUserId");
+
+                    b.HasIndex("UploadedByUserId");
+
+                    b.ToTable("PartnerPhotos");
+                });
+
             modelBuilder.Entity("TrashMob.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -5458,6 +5536,58 @@ namespace TrashMob.Migrations
                     b.Navigation("UploadedByUser");
                 });
 
+            modelBuilder.Entity("TrashMob.Models.PartnerPhoto", b =>
+                {
+                    b.HasOne("TrashMob.Models.User", "CreatedByUser")
+                        .WithMany("PartnerPhotosCreated")
+                        .HasForeignKey("CreatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_PartnerPhotos_User_CreatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "LastUpdatedByUser")
+                        .WithMany("PartnerPhotosUpdated")
+                        .HasForeignKey("LastUpdatedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_PartnerPhotos_User_LastUpdatedBy");
+
+                    b.HasOne("TrashMob.Models.User", "ModeratedByUser")
+                        .WithMany("PartnerPhotosModerated")
+                        .HasForeignKey("ModeratedByUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasConstraintName("FK_PartnerPhotos_ModeratedByUser");
+
+                    b.HasOne("TrashMob.Models.Partner", "Partner")
+                        .WithMany("Photos")
+                        .HasForeignKey("PartnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_PartnerPhotos_Partner");
+
+                    b.HasOne("TrashMob.Models.User", "ReviewRequestedByUser")
+                        .WithMany("PartnerPhotosReviewRequested")
+                        .HasForeignKey("ReviewRequestedByUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasConstraintName("FK_PartnerPhotos_ReviewRequestedByUser");
+
+                    b.HasOne("TrashMob.Models.User", "UploadedByUser")
+                        .WithMany("PartnerPhotosUploaded")
+                        .HasForeignKey("UploadedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_PartnerPhotos_UploadedByUser");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastUpdatedByUser");
+
+                    b.Navigation("ModeratedByUser");
+
+                    b.Navigation("Partner");
+
+                    b.Navigation("ReviewRequestedByUser");
+
+                    b.Navigation("UploadedByUser");
+                });
+
             modelBuilder.Entity("TrashMob.Models.User", b =>
                 {
                     b.HasOne("TrashMob.Models.User", "CreatedByUser")
@@ -5794,6 +5924,8 @@ namespace TrashMob.Migrations
                     b.Navigation("PartnerLocations");
 
                     b.Navigation("PartnerSocialMediaAccounts");
+
+                    b.Navigation("Photos");
                 });
 
             modelBuilder.Entity("TrashMob.Models.PartnerLocation", b =>
@@ -6008,6 +6140,16 @@ namespace TrashMob.Migrations
                     b.Navigation("TeamPhotosReviewRequested");
 
                     b.Navigation("TeamPhotosUpdated");
+
+                    b.Navigation("PartnerPhotosCreated");
+
+                    b.Navigation("PartnerPhotosModerated");
+
+                    b.Navigation("PartnerPhotosReviewRequested");
+
+                    b.Navigation("PartnerPhotosUpdated");
+
+                    b.Navigation("PartnerPhotosUploaded");
 
                     b.Navigation("TeamsCreated");
 

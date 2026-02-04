@@ -89,6 +89,9 @@
             // Event Photo managers
             services.AddScoped<IEventPhotoManager, EventPhotoManager>();
 
+            // Partner Photo managers
+            services.AddScoped<IPartnerPhotoManager, PartnerPhotoManager>();
+
             // Community managers
             services.AddScoped<ICommunityManager, CommunityManager>();
 
@@ -188,6 +191,9 @@
             services.AddScoped<IKeyedRepository<TeamJoinRequest>, KeyedRepository<TeamJoinRequest>>();
             services.AddScoped<IKeyedRepository<TeamEvent>, KeyedRepository<TeamEvent>>();
             services.AddScoped<IKeyedRepository<TeamPhoto>, KeyedRepository<TeamPhoto>>();
+
+            // Partner Photo repository
+            services.AddScoped<IKeyedRepository<PartnerPhoto>, KeyedRepository<PartnerPhoto>>();
 
             // Adoption repositories
             services.AddScoped<IKeyedRepository<AdoptableArea>, KeyedRepository<AdoptableArea>>();
