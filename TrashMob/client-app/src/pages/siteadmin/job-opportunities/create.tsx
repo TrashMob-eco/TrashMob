@@ -17,7 +17,7 @@ import { CreateJobOpportunity } from '@/services/opportunities';
 import { Checkbox } from '@/components/ui/checkbox';
 import { GetAllJobOpportunities } from '@/services/opportunities';
 import JobOpportunityData from '@/components/Models/JobOpportunityData';
-import { Textarea } from '@/components/ui/textarea';
+import { MarkdownEditor } from '@/components/ui/custom/markdown-editor';
 
 interface FormInputs {
     title: string;
@@ -125,7 +125,7 @@ export const SiteAdminJobOpportunityCreate = () => {
                                 Full Description
                             </FormLabel>
                             <FormControl>
-                                <Textarea {...field} />
+                                <MarkdownEditor {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
