@@ -46,7 +46,7 @@
 |---------|-------------|--------|
 | [Project 6 - Backend Standards](./Projects/Project_06_Backend_Standards.md) | Code standards, .NET 10 upgrades | In Progress |
 | [Project 11 - Adopt-A-Location](./Projects/Project_11_Adopt_A_Location.md) | Location adoption program | ✅ Complete |
-| [Project 14 - Social Media Integration](./Projects/Project_14_Social_Media.md) | Modernize social sharing | Not Started |
+| [Project 14 - Social Media Integration](./Projects/Project_14_Social_Media.md) | Modernize social sharing | ✅ Complete |
 | [Project 15 - Route Tracing](./Projects/Project_15_Route_Tracing.md) | Map route tracing with privacy | Planning in Progress |
 | [Project 16 - Content Management](./Projects/Project_16_Content_Management.md) | Strapi CMS integration | ✅ Complete |
 | [Project 19 - Newsletter Support](./Projects/Project_19_Newsletter.md) | Monthly communication | ✅ Complete |
@@ -131,12 +131,12 @@
 
 | Status | Count | Projects |
 |--------|-------|----------|
-| ✅ **Complete** | 20 | Projects 3, 7, 9, 10, 11, 13, 16, 17, 18, 19, 20, 21, 26, 27, 28, 29, 32, 34, 35, 37 |
+| ✅ **Complete** | 21 | Projects 3, 7, 9, 10, 11, 13, 14, 16, 17, 18, 19, 20, 21, 26, 27, 28, 29, 32, 34, 35, 37 |
 | **In Progress** | 3 | Projects 6, 8 (Phase 1-4 Complete), 22 (Phase 1-3 Complete) |
 | **Developers Engaged** | 1 | Project 4 |
 | **Ready for Review** | 2 | Projects 2, 5 |
 | **Planning** | 4 | Projects 1, 15, 23, 38 |
-| **Not Started** | 7 | Projects 12, 14, 24, 25, 30, 31, 36 |
+| **Not Started** | 6 | Projects 12, 24, 25, 30, 31, 36 |
 | **Deprioritized** | 1 | Project 33 |
 
 **Total:** 38 project specifications documented
@@ -212,6 +212,6 @@ All new features should consider adding feature usage tracking. See [Project 29 
 
 ---
 
-**Last Updated:** February 3, 2026
+**Last Updated:** February 4, 2026
 **Maintained By:** Product & Engineering Team
 **Next Review:** End of Q1 2026
