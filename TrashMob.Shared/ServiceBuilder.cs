@@ -195,6 +195,9 @@
             // Partner Photo repository
             services.AddScoped<IKeyedRepository<PartnerPhoto>, KeyedRepository<PartnerPhoto>>();
 
+            // Event Photo repository
+            services.AddScoped<IKeyedRepository<EventPhoto>, KeyedRepository<EventPhoto>>();
+
             // Adoption repositories
             services.AddScoped<IKeyedRepository<AdoptableArea>, KeyedRepository<AdoptableArea>>();
             services.AddScoped<IKeyedRepository<TeamAdoption>, KeyedRepository<TeamAdoption>>();
