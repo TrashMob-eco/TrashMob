@@ -1,6 +1,7 @@
 import { FC, Suspense, lazy, useEffect, useState } from 'react';
 import { BrowserRouter, Outlet, Route, Routes, useLocation } from 'react-router';
 import { Loader2 } from 'lucide-react';
+import { HelmetProvider } from 'react-helmet-async';
 
 import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
 import { InteractionType, PublicClientApplication } from '@azure/msal-browser';
@@ -9,6 +10,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from '@/components/ui/toaster';
 import { FeedbackWidget } from './components/FeedbackWidget/FeedbackWidget';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { DefaultPageHead } from './components/SEO/PageHead';
 
 import { initializeMsalClient } from './store/AuthStore';
 import { Shop } from './components/Shop';
@@ -307,6 +309,7 @@ const AppContent: FC = () => {
         <div className='flex flex-col h-100'>
             <BrowserRouter>
                 <ScrollToTop />
+                <DefaultPageHead />
                 <SiteHeader currentUser={currentUser} isUserLoaded={isUserLoaded} />
                 <div className='container-fluid px-0'>
                     <Routes>
@@ -493,15 +496,17 @@ export const App: FC = () => {
     }
 
     return (
-        <QueryClientProvider client={queryClient}>
-            <MsalProvider instance={msalClient}>
-                <ErrorBoundary>
-                    <AppContent />
-                </ErrorBoundary>
-            </MsalProvider>
-            <Toaster />
-            <FeedbackWidget />
-            <ReactQueryDevtools initialIsOpen={false} />
-        </QueryClientProvider>
+        <HelmetProvider>
+            <QueryClientProvider client={queryClient}>
+                <MsalProvider instance={msalClient}>
+                    <ErrorBoundary>
+                        <AppContent />
+                    </ErrorBoundary>
+                </MsalProvider>
+                <Toaster />
+                <FeedbackWidget />
+                <ReactQueryDevtools initialIsOpen={false} />
+            </QueryClientProvider>
+        </HelmetProvider>
     );
 };
