@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, Suspense, lazy, useEffect, useState } from 'react';
 import { BrowserRouter, Outlet, Route, Routes, useLocation } from 'react-router';
 import { Loader2 } from 'lucide-react';
 
@@ -68,68 +68,177 @@ import { LeaderboardsPage } from './pages/leaderboards/page';
 /** Achievements */
 import { AchievementsPage } from './pages/achievements/page';
 
-/** Communities */
+/** Communities - Public pages */
 import { CommunitiesPage } from './pages/communities';
 import { CommunityDetailPage } from './pages/communities/$slug';
-import { CommunityAdminLayout } from './pages/communities/$slug/admin/_layout';
-import { CommunityAdminDashboard } from './pages/communities/$slug/admin';
-import { CommunityContentEdit } from './pages/communities/$slug/admin/content';
-import { CommunityAdminInvites } from './pages/communities/$slug/admin/invites';
-import { CommunityAdminInviteDetails } from './pages/communities/$slug/admin/invites/$batchId';
 
-/** Partners */
+/** Partners - Public pages */
 import { Partnerships } from './pages/partnerships/page';
 import { BecomeAPartnerPage } from './pages/_partnerRequest/becomeapartner';
 import { InviteAPartnerPage } from './pages/_partnerRequest/inviteapartner';
 import { PartnerRequestDetails } from './pages/partnerrequestdetails/page';
-import { PartnerIndex } from './pages/partnerdashboard/$partnerId';
-import { PartnerLayout } from './pages/partnerdashboard/$partnerId/_layout';
-import { PartnerEdit } from './pages/partnerdashboard/$partnerId/edit';
-import { PartnerLocations } from './pages/partnerdashboard/$partnerId/locations';
-import { PartnerContacts } from './pages/partnerdashboard/$partnerId/contacts';
-import { PartnerContactEdit } from './pages/partnerdashboard/$partnerId/contacts.$contactId.edit';
-import { PartnerContactCreate } from './pages/partnerdashboard/$partnerId/contacts.create';
-import { PartnerLocationEdit } from './pages/partnerdashboard/$partnerId/locations.$locationId.edit';
-import { PartnerLocationCreate } from './pages/partnerdashboard/$partnerId/locations.create';
-import { PartnerServices } from './pages/partnerdashboard/$partnerId/services';
-import { PartnerServiceEdit } from './pages/partnerdashboard/$partnerId/services.edit';
-import { PartnerServiceEnable } from './pages/partnerdashboard/$partnerId/services.enable';
-import { PartnerDocuments } from './pages/partnerdashboard/$partnerId/documents';
-import { PartnerDocumentEdit } from './pages/partnerdashboard/$partnerId/documents.$documentId.edit';
-import { PartnerDocumentCreate } from './pages/partnerdashboard/$partnerId/documents.create';
-import { PartnerSocialMediaAccounts } from './pages/partnerdashboard/$partnerId/socials';
-import { PartnerSocialAcccountEdit } from './pages/partnerdashboard/$partnerId/socials.$accountId.edit';
-import { PartnerSocialAcccountCreate } from './pages/partnerdashboard/$partnerId/socials.create';
-import { PartnerAdmins } from './pages/partnerdashboard/$partnerId/admins';
-import { PartnerAdminInvite } from './pages/partnerdashboard/$partnerId/admins.invite';
 
 /** Unsubscribe */
 import { UnsubscribePage } from './pages/unsubscribe';
-
-/** SiteAdmin */
-import { SiteAdminLayout } from './pages/siteadmin/_layout';
-import { SiteAdminUsers } from './pages/siteadmin/users/page';
-import { SiteAdminEvents } from './pages/siteadmin/events/page';
-import { SiteAdminPartners } from './pages/siteadmin/partners/page';
-import { SiteAdminTeams } from './pages/siteadmin/teams/page';
-import { SiteAdminPartnerRequests } from './pages/siteadmin/partner-requests/page';
-import { SiteAdminJobOpportunities } from './pages/siteadmin/job-opportunities/page';
-import { SiteAdminJobOpportunityCreate } from './pages/siteadmin/job-opportunities/create';
-import { SiteAdminJobOpportunityEdit } from './pages/siteadmin/job-opportunities/$jobId.edit';
-import { SiteAdminEmailTemplates } from './pages/siteadmin/email-templates';
-import { SiteAdminSendNotification } from './pages/siteadmin/send-notification';
-import { SiteAdminContent } from './pages/siteadmin/content';
-import { SiteAdminLitterReports } from './pages/siteadmin/litter-reports/page';
-import { SiteAdminFeedback } from './pages/siteadmin/feedback/page';
-import { SiteAdminPhotoModeration } from './pages/siteadmin/photo-moderation/page';
-import { SiteAdminWaivers } from './pages/siteadmin/waivers/page';
-import { SiteAdminWaiverCreate } from './pages/siteadmin/waivers/create';
-import { SiteAdminWaiverEdit } from './pages/siteadmin/waivers/$waiverId.edit';
-import { WaiverComplianceDashboard } from './pages/siteadmin/waivers/compliance';
-import { SiteAdminInvites } from './pages/siteadmin/invites/page';
-import { SiteAdminInviteDetails } from './pages/siteadmin/invites/$batchId';
-import { SiteAdminNewsletters } from './pages/siteadmin/newsletters/page';
 import { NoMatch } from './pages/nomatch';
+
+// Lazy loading fallback component
+const LazyLoadingFallback = () => (
+    <div className='flex justify-center items-center py-16'>
+        <Loader2 className='animate-spin mr-2' /> Loading...
+    </div>
+);
+
+/** Community Admin - Lazy loaded */
+const CommunityAdminLayout = lazy(() =>
+    import('./pages/communities/$slug/admin/_layout').then((m) => ({ default: m.CommunityAdminLayout })),
+);
+const CommunityAdminDashboard = lazy(() =>
+    import('./pages/communities/$slug/admin').then((m) => ({ default: m.CommunityAdminDashboard })),
+);
+const CommunityContentEdit = lazy(() =>
+    import('./pages/communities/$slug/admin/content').then((m) => ({ default: m.CommunityContentEdit })),
+);
+const CommunityAdminInvites = lazy(() =>
+    import('./pages/communities/$slug/admin/invites').then((m) => ({ default: m.CommunityAdminInvites })),
+);
+const CommunityAdminInviteDetails = lazy(() =>
+    import('./pages/communities/$slug/admin/invites/$batchId').then((m) => ({
+        default: m.CommunityAdminInviteDetails,
+    })),
+);
+
+/** Partner Dashboard - Lazy loaded (partner admin pages) */
+const PartnerIndex = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId').then((m) => ({ default: m.PartnerIndex })),
+);
+const PartnerLayout = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/_layout').then((m) => ({ default: m.PartnerLayout })),
+);
+const PartnerEdit = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/edit').then((m) => ({ default: m.PartnerEdit })),
+);
+const PartnerLocations = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/locations').then((m) => ({ default: m.PartnerLocations })),
+);
+const PartnerContacts = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/contacts').then((m) => ({ default: m.PartnerContacts })),
+);
+const PartnerContactEdit = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/contacts.$contactId.edit').then((m) => ({
+        default: m.PartnerContactEdit,
+    })),
+);
+const PartnerContactCreate = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/contacts.create').then((m) => ({ default: m.PartnerContactCreate })),
+);
+const PartnerLocationEdit = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/locations.$locationId.edit').then((m) => ({
+        default: m.PartnerLocationEdit,
+    })),
+);
+const PartnerLocationCreate = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/locations.create').then((m) => ({ default: m.PartnerLocationCreate })),
+);
+const PartnerServices = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/services').then((m) => ({ default: m.PartnerServices })),
+);
+const PartnerServiceEdit = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/services.edit').then((m) => ({ default: m.PartnerServiceEdit })),
+);
+const PartnerServiceEnable = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/services.enable').then((m) => ({ default: m.PartnerServiceEnable })),
+);
+const PartnerDocuments = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/documents').then((m) => ({ default: m.PartnerDocuments })),
+);
+const PartnerDocumentEdit = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/documents.$documentId.edit').then((m) => ({
+        default: m.PartnerDocumentEdit,
+    })),
+);
+const PartnerDocumentCreate = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/documents.create').then((m) => ({ default: m.PartnerDocumentCreate })),
+);
+const PartnerSocialMediaAccounts = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/socials').then((m) => ({ default: m.PartnerSocialMediaAccounts })),
+);
+const PartnerSocialAcccountEdit = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/socials.$accountId.edit').then((m) => ({
+        default: m.PartnerSocialAcccountEdit,
+    })),
+);
+const PartnerSocialAcccountCreate = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/socials.create').then((m) => ({
+        default: m.PartnerSocialAcccountCreate,
+    })),
+);
+const PartnerAdmins = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/admins').then((m) => ({ default: m.PartnerAdmins })),
+);
+const PartnerAdminInvite = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/admins.invite').then((m) => ({ default: m.PartnerAdminInvite })),
+);
+
+/** SiteAdmin - Lazy loaded (admin-only pages) */
+const SiteAdminLayout = lazy(() => import('./pages/siteadmin/_layout').then((m) => ({ default: m.SiteAdminLayout })));
+const SiteAdminUsers = lazy(() => import('./pages/siteadmin/users/page').then((m) => ({ default: m.SiteAdminUsers })));
+const SiteAdminEvents = lazy(() =>
+    import('./pages/siteadmin/events/page').then((m) => ({ default: m.SiteAdminEvents })),
+);
+const SiteAdminPartners = lazy(() =>
+    import('./pages/siteadmin/partners/page').then((m) => ({ default: m.SiteAdminPartners })),
+);
+const SiteAdminTeams = lazy(() => import('./pages/siteadmin/teams/page').then((m) => ({ default: m.SiteAdminTeams })));
+const SiteAdminPartnerRequests = lazy(() =>
+    import('./pages/siteadmin/partner-requests/page').then((m) => ({ default: m.SiteAdminPartnerRequests })),
+);
+const SiteAdminJobOpportunities = lazy(() =>
+    import('./pages/siteadmin/job-opportunities/page').then((m) => ({ default: m.SiteAdminJobOpportunities })),
+);
+const SiteAdminJobOpportunityCreate = lazy(() =>
+    import('./pages/siteadmin/job-opportunities/create').then((m) => ({ default: m.SiteAdminJobOpportunityCreate })),
+);
+const SiteAdminJobOpportunityEdit = lazy(() =>
+    import('./pages/siteadmin/job-opportunities/$jobId.edit').then((m) => ({ default: m.SiteAdminJobOpportunityEdit })),
+);
+const SiteAdminEmailTemplates = lazy(() =>
+    import('./pages/siteadmin/email-templates').then((m) => ({ default: m.SiteAdminEmailTemplates })),
+);
+const SiteAdminSendNotification = lazy(() =>
+    import('./pages/siteadmin/send-notification').then((m) => ({ default: m.SiteAdminSendNotification })),
+);
+const SiteAdminContent = lazy(() => import('./pages/siteadmin/content').then((m) => ({ default: m.SiteAdminContent })));
+const SiteAdminLitterReports = lazy(() =>
+    import('./pages/siteadmin/litter-reports/page').then((m) => ({ default: m.SiteAdminLitterReports })),
+);
+const SiteAdminFeedback = lazy(() =>
+    import('./pages/siteadmin/feedback/page').then((m) => ({ default: m.SiteAdminFeedback })),
+);
+const SiteAdminPhotoModeration = lazy(() =>
+    import('./pages/siteadmin/photo-moderation/page').then((m) => ({ default: m.SiteAdminPhotoModeration })),
+);
+const SiteAdminWaivers = lazy(() =>
+    import('./pages/siteadmin/waivers/page').then((m) => ({ default: m.SiteAdminWaivers })),
+);
+const SiteAdminWaiverCreate = lazy(() =>
+    import('./pages/siteadmin/waivers/create').then((m) => ({ default: m.SiteAdminWaiverCreate })),
+);
+const SiteAdminWaiverEdit = lazy(() =>
+    import('./pages/siteadmin/waivers/$waiverId.edit').then((m) => ({ default: m.SiteAdminWaiverEdit })),
+);
+const WaiverComplianceDashboard = lazy(() =>
+    import('./pages/siteadmin/waivers/compliance').then((m) => ({ default: m.WaiverComplianceDashboard })),
+);
+const SiteAdminInvites = lazy(() =>
+    import('./pages/siteadmin/invites/page').then((m) => ({ default: m.SiteAdminInvites })),
+);
+const SiteAdminInviteDetails = lazy(() =>
+    import('./pages/siteadmin/invites/$batchId').then((m) => ({ default: m.SiteAdminInviteDetails })),
+);
+const SiteAdminNewsletters = lazy(() =>
+    import('./pages/siteadmin/newsletters/page').then((m) => ({ default: m.SiteAdminNewsletters })),
+);
 
 const queryClient = new QueryClient();
 
@@ -214,7 +323,14 @@ const AppContent: FC = () => {
                             </Route>
                             <Route path='partnerdashboard'>
                                 <Route index element={<div>Partner Dashboard Index</div>} />
-                                <Route path=':partnerId' element={<PartnerLayout />}>
+                                <Route
+                                    path=':partnerId'
+                                    element={
+                                        <Suspense fallback={<LazyLoadingFallback />}>
+                                            <PartnerLayout />
+                                        </Suspense>
+                                    }
+                                >
                                     <Route index element={<PartnerIndex />} />
                                     <Route path='edit' element={<PartnerEdit />} />
                                     <Route path='locations' element={<PartnerLocations />}>
@@ -264,7 +380,14 @@ const AppContent: FC = () => {
                             <Route path='/teams/:teamId/edit' element={<TeamEditPage />} />
                             <Route path='/teams/:teamId/invites' element={<TeamInvitesPage />} />
                             <Route path='/teams/:teamId/invites/:batchId' element={<TeamInviteDetailsPage />} />
-                            <Route path='/communities/:slug/admin' element={<CommunityAdminLayout />}>
+                            <Route
+                                path='/communities/:slug/admin'
+                                element={
+                                    <Suspense fallback={<LazyLoadingFallback />}>
+                                        <CommunityAdminLayout />
+                                    </Suspense>
+                                }
+                            >
                                 <Route index element={<CommunityAdminDashboard />} />
                                 <Route path='content' element={<CommunityContentEdit />} />
                                 <Route path='invites' element={<CommunityAdminInvites />} />
@@ -272,7 +395,14 @@ const AppContent: FC = () => {
                             </Route>
                         </Route>
                         <Route element={<AuthSideAdminLayout />}>
-                            <Route path='/siteadmin' element={<SiteAdminLayout />}>
+                            <Route
+                                path='/siteadmin'
+                                element={
+                                    <Suspense fallback={<LazyLoadingFallback />}>
+                                        <SiteAdminLayout />
+                                    </Suspense>
+                                }
+                            >
                                 <Route path='users' element={<SiteAdminUsers />} />
                                 <Route path='events' element={<SiteAdminEvents />} />
                                 <Route path='partners' element={<SiteAdminPartners />} />
