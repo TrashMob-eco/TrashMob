@@ -5,14 +5,14 @@ import { GetPartnerLocationEventServicesByLocationId } from '@/services/location
 import { useGetPartnerLocations } from '@/hooks/useGetPartnerLocations';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import DisplayPartnerLocationEventServiceData from '@/components/Models/DisplayPartnerLocationEventServiceData';
-import { AxiosResponse } from 'axios';
+import { AxiosResponse, AxiosError } from 'axios';
 import { PartnerEventRequestTable } from '@/components/Partners/partner-event-request-table';
 
 export const PartnerIndex = () => {
     const { partnerId } = useParams<{ partnerId: string }>() as { partnerId: string };
 
-    const { data: locations, isLoading } = useGetPartnerLocations({ partnerId });
-    const eventRequestsByLocation: UseQueryResult<DisplayPartnerLocationEventServiceData[]>[] = useQueries({
+    const { data: locations, isLoading, error: locationsError } = useGetPartnerLocations({ partnerId });
+    const eventRequestsByLocation: UseQueryResult<DisplayPartnerLocationEventServiceData[], AxiosError>[] = useQueries({
         queries: (locations || []).map((location, locIndex) => {
             return {
                 queryKey: GetPartnerLocationEventServicesByLocationId({ locationId: location.id }).key,
@@ -23,6 +23,10 @@ export const PartnerIndex = () => {
     });
 
     const eventRequests = eventRequestsByLocation.map((loc) => loc.data || []).flat();
+    const hasAuthError = eventRequestsByLocation.some(
+        (query) => query.error && (query.error as AxiosError)?.response?.status === 403,
+    );
+    const hasError = locationsError || eventRequestsByLocation.some((query) => query.isError);
 
     return (
         <SidebarLayout
@@ -39,6 +43,8 @@ export const PartnerIndex = () => {
                         <PartnerEventRequestTable
                             isLoading={isLoading || eventRequestsByLocation.some((query) => query.isLoading)}
                             data={eventRequests}
+                            hasError={hasError}
+                            hasAuthError={hasAuthError}
                         />
                     </CardContent>
                 </Card>
