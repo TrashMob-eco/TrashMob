@@ -31,8 +31,8 @@ export class ContactPage {
         this.emailInput = page.locator('input[name="email"], #email');
         this.messageInput = page.locator('textarea[name="message"], #message');
 
-        // Buttons
-        this.submitButton = page.getByRole('button', { name: /send|submit/i });
+        // Buttons - use form context to avoid matching the feedback widget
+        this.submitButton = page.locator('form').getByRole('button', { name: /send|submit/i });
 
         // Feedback
         this.successMessage = page.locator('[data-testid="success-message"], .success-message, [role="status"]');
