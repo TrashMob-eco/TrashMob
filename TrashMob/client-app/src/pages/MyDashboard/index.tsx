@@ -8,6 +8,7 @@ import { Plus, Users } from 'lucide-react';
 import { AxiosResponse } from 'axios';
 
 import { getEventShareableContent, getEventShareMessage } from '@/lib/sharing-messages';
+import { isCompletedEvent } from '@/lib/event-helpers';
 
 import EventData from '@/components/Models/EventData';
 import PickupLocationData from '@/components/Models/PickupLocationData';
@@ -58,8 +59,10 @@ import { MyImpactCard } from '@/pages/MyDashboard/MyImpactCard';
 import { InviteFriendsCard } from '@/pages/MyDashboard/InviteFriendsCard';
 import { MyNewsletterPreferencesCard } from '@/pages/MyDashboard/MyNewsletterPreferencesCard';
 
-const isUpcomingEvent = (event: EventData) => new Date(event.eventDate) >= new Date();
-const isPastEvent = (event: EventData) => new Date(event.eventDate) < new Date();
+// An event is upcoming if it hasn't finished yet (start time + duration > now)
+const isUpcomingEvent = (event: EventData) => !isCompletedEvent(event);
+// An event is past/completed when start time + duration has passed
+const isPastEvent = (event: EventData) => isCompletedEvent(event);
 
 interface MyDashboardProps {}
 
