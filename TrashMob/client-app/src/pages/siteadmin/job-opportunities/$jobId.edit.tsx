@@ -16,7 +16,7 @@ import { GetJobOpportunityById, UpdateJobOpportunity } from '@/services/opportun
 import { Checkbox } from '@/components/ui/checkbox';
 import { GetAllJobOpportunities } from '@/services/opportunities';
 import JobOpportunityData from '@/components/Models/JobOpportunityData';
-import { Textarea } from '@/components/ui/textarea';
+import { MarkdownEditor } from '@/components/ui/custom/markdown-editor';
 
 interface FormInputs {
     title: string;
@@ -142,7 +142,7 @@ export const SiteAdminJobOpportunityEdit = () => {
                                 Full Description
                             </FormLabel>
                             <FormControl>
-                                <Textarea {...field} />
+                                <MarkdownEditor {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -171,7 +171,7 @@ export const SiteAdminJobOpportunityEdit = () => {
                 />
                 <div className='col-span-12 flex justify-end gap-2'>
                     <Button variant='secondary' data-test='cancel' asChild>
-                        <Link to='/siteadmin/job-opportunitie'>Cancel</Link>
+                        <Link to='/siteadmin/job-opportunities'>Cancel</Link>
                     </Button>
                     <Button type='submit' disabled={isSubmitting}>
                         {isSubmitting ? <Loader2 className='animate-spin' /> : null}

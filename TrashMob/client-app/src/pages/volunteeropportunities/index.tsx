@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useQuery } from '@tanstack/react-query';
 import { GetAllJobOpportunities } from '@/services/job-opportunities';
+import { MarkdownContent } from '@/components/ui/custom/markdown-content';
 
 export const VolunteerOpportunities: React.FC = () => {
     const { data: opportunities } = useQuery({
@@ -59,7 +60,7 @@ export const VolunteerOpportunities: React.FC = () => {
                                             <p>{opp.tagLine}</p>
                                             <Collapsible className='group'>
                                                 <CollapsibleContent>
-                                                    <span dangerouslySetInnerHTML={{ __html: opp.fullDescription }} />
+                                                    <MarkdownContent>{opp.fullDescription}</MarkdownContent>
                                                 </CollapsibleContent>
                                                 <CollapsibleTrigger>
                                                     <span className='text-primary group-data-[state=open]:hidden'>
