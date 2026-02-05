@@ -1,6 +1,6 @@
 # TrashMobDailyJobs � AI Assistant Context
 
-> **Note:** This document provides context specific to the TrashMobDailyJobs background processing application. For overall project context, see `/claude.md` at the repository root.
+> **Note:** This document provides context specific to the TrashMobDailyJobs background processing application. For overall project context, see `/CLAUDE.md` at the repository root.
 
 ## Application Overview
 
@@ -587,9 +587,9 @@ SELECT count(*) FROM dbo.Events WHERE eventstatusid != 3;
 ---
 
 **Related Documentation:**
-- Root `/claude.md` � Overall project context
-- `/TrashMob/claude.md` � Web API patterns
-- `/TrashMobHourlyJobs/claude.md` � Hourly job patterns
+- Root `/CLAUDE.md` � Overall project context
+- `/TrashMob/CLAUDE.md` � Web API patterns
+- `/TrashMobHourlyJobs/CLAUDE.md` � Hourly job patterns
 - `/Planning/README.md` � 2026 roadmap
 
 **Last Updated:** January 23, 2026
