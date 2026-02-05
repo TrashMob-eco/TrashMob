@@ -198,9 +198,7 @@ export const PartnerServiceEnable = () => {
                     name='notes'
                     render={({ field }) => (
                         <FormItem className='col-span-12'>
-                            <FormLabel tooltip={ToolTips.PartnerLocationPublicNotes} required>
-                                Notes
-                            </FormLabel>
+                            <FormLabel tooltip={ToolTips.PartnerLocationPublicNotes}>Notes</FormLabel>
                             <FormControl>
                                 <Textarea {...field} maxLength={1000} className='h-24' />
                             </FormControl>
