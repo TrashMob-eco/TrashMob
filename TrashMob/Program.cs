@@ -352,6 +352,18 @@ public class Program
         });
 #pragma warning restore ASP0014
 
+        // Ensure API routes that weren't handled return 404 instead of falling through to SPA
+        // This prevents the SPA middleware from trying to serve index.html for invalid API routes
+        app.Use(async (context, next) =>
+        {
+            if (context.Request.Path.StartsWithSegments("/api"))
+            {
+                context.Response.StatusCode = 404;
+                return;
+            }
+            await next();
+        });
+
         app.UseSpa(spa =>
         {
             if (builder.Environment.IsDevelopment())
