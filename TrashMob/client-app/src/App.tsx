@@ -2,13 +2,6 @@ import { FC, Suspense, lazy, useEffect, useState } from 'react';
 import { BrowserRouter, Outlet, Route, Routes, useLocation } from 'react-router';
 import { Loader2 } from 'lucide-react';
 
-// Lazy loading fallback component
-const LazyLoadingFallback = () => (
-    <div className='flex justify-center items-center py-16'>
-        <Loader2 className='animate-spin mr-2' /> Loading...
-    </div>
-);
-
 import { MsalAuthenticationResult, MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
 import { InteractionType, PublicClientApplication } from '@azure/msal-browser';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -79,6 +72,23 @@ import { AchievementsPage } from './pages/achievements/page';
 import { CommunitiesPage } from './pages/communities';
 import { CommunityDetailPage } from './pages/communities/$slug';
 
+/** Partners - Public pages */
+import { Partnerships } from './pages/partnerships/page';
+import { BecomeAPartnerPage } from './pages/_partnerRequest/becomeapartner';
+import { InviteAPartnerPage } from './pages/_partnerRequest/inviteapartner';
+import { PartnerRequestDetails } from './pages/partnerrequestdetails/page';
+
+/** Unsubscribe */
+import { UnsubscribePage } from './pages/unsubscribe';
+import { NoMatch } from './pages/nomatch';
+
+// Lazy loading fallback component
+const LazyLoadingFallback = () => (
+    <div className='flex justify-center items-center py-16'>
+        <Loader2 className='animate-spin mr-2' /> Loading...
+    </div>
+);
+
 /** Community Admin - Lazy loaded */
 const CommunityAdminLayout = lazy(() =>
     import('./pages/communities/$slug/admin/_layout').then((m) => ({ default: m.CommunityAdminLayout })),
@@ -93,14 +103,10 @@ const CommunityAdminInvites = lazy(() =>
     import('./pages/communities/$slug/admin/invites').then((m) => ({ default: m.CommunityAdminInvites })),
 );
 const CommunityAdminInviteDetails = lazy(() =>
-    import('./pages/communities/$slug/admin/invites/$batchId').then((m) => ({ default: m.CommunityAdminInviteDetails })),
+    import('./pages/communities/$slug/admin/invites/$batchId').then((m) => ({
+        default: m.CommunityAdminInviteDetails,
+    })),
 );
-
-/** Partners - Public pages */
-import { Partnerships } from './pages/partnerships/page';
-import { BecomeAPartnerPage } from './pages/_partnerRequest/becomeapartner';
-import { InviteAPartnerPage } from './pages/_partnerRequest/inviteapartner';
-import { PartnerRequestDetails } from './pages/partnerrequestdetails/page';
 
 /** Partner Dashboard - Lazy loaded (partner admin pages) */
 const PartnerIndex = lazy(() =>
@@ -172,9 +178,6 @@ const PartnerAdminInvite = lazy(() =>
     import('./pages/partnerdashboard/$partnerId/admins.invite').then((m) => ({ default: m.PartnerAdminInvite })),
 );
 
-/** Unsubscribe */
-import { UnsubscribePage } from './pages/unsubscribe';
-
 /** SiteAdmin - Lazy loaded (admin-only pages) */
 const SiteAdminLayout = lazy(() => import('./pages/siteadmin/_layout').then((m) => ({ default: m.SiteAdminLayout })));
 const SiteAdminUsers = lazy(() => import('./pages/siteadmin/users/page').then((m) => ({ default: m.SiteAdminUsers })));
@@ -234,7 +237,6 @@ const SiteAdminInviteDetails = lazy(() =>
 const SiteAdminNewsletters = lazy(() =>
     import('./pages/siteadmin/newsletters/page').then((m) => ({ default: m.SiteAdminNewsletters })),
 );
-import { NoMatch } from './pages/nomatch';
 
 const queryClient = new QueryClient();
 
