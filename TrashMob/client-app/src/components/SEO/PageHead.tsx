@@ -29,15 +29,15 @@ export const PageHead = ({ title, description }: PageHeadProps) => {
             <title>{fullTitle}</title>
 
             {/* Canonical URL - prevents duplicate content issues */}
-            <link rel="canonical" href={canonicalUrl} />
+            <link rel='canonical' href={canonicalUrl} />
 
             {/* Meta Description */}
-            {description ? <meta name="description" content={description} /> : null}
+            {description ? <meta name='description' content={description} /> : null}
 
             {/* Open Graph */}
-            <meta property="og:url" content={canonicalUrl} />
-            {title ? <meta property="og:title" content={fullTitle} /> : null}
-            {description ? <meta property="og:description" content={description} /> : null}
+            <meta property='og:url' content={canonicalUrl} />
+            {title ? <meta property='og:title' content={fullTitle} /> : null}
+            {description ? <meta property='og:description' content={description} /> : null}
         </Helmet>
     );
 };
@@ -52,8 +52,8 @@ export const DefaultPageHead = () => {
 
     return (
         <Helmet>
-            <link rel="canonical" href={canonicalUrl} />
-            <meta property="og:url" content={canonicalUrl} />
+            <link rel='canonical' href={canonicalUrl} />
+            <meta property='og:url' content={canonicalUrl} />
         </Helmet>
     );
 };

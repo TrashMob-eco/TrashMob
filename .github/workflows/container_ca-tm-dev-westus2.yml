@@ -66,7 +66,8 @@ jobs:
           IMAGE_TAG=${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ steps.version_step.outputs.semVer }}
           IMAGE_TAG_LATEST=${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest
 
-          docker build -f TrashMob/Dockerfile -t $IMAGE_TAG -t $IMAGE_TAG_LATEST .
+          # BUILD_ENVIRONMENT=dev blocks search engine crawlers via robots.txt
+          docker build -f TrashMob/Dockerfile --build-arg BUILD_ENVIRONMENT=dev -t $IMAGE_TAG -t $IMAGE_TAG_LATEST .
           docker push $IMAGE_TAG
           docker push $IMAGE_TAG_LATEST
 

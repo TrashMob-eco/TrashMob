@@ -1,5 +1,11 @@
 # Build stage
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+
+# Build argument for environment (dev, pr)
+# dev = development/test environment (blocks search crawlers)
+# pr = production environment (allows search crawlers)
+ARG BUILD_ENVIRONMENT=pr
+
 WORKDIR /src
 
 # Install Node.js for React build
@@ -18,6 +24,14 @@ COPY . .
 WORKDIR "/src/TrashMob/client-app"
 RUN npm install
 RUN npm run build
+
+# Use dev robots.txt for non-production environments (blocks all crawlers)
+RUN if [ "$BUILD_ENVIRONMENT" != "pr" ]; then \
+        echo "Using dev robots.txt to block crawlers"; \
+        cp public/robots-dev.txt build/robots.txt; \
+    else \
+        echo "Using production robots.txt"; \
+    fi
 
 # Build .NET app
 WORKDIR "/src/TrashMob"

@@ -1,0 +1,5 @@
+# Block all crawlers on dev/test environments
+User-agent: *
+Disallow: /
+
+# No sitemap for dev environments
