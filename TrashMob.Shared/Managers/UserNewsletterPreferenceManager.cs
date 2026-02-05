@@ -3,6 +3,7 @@ namespace TrashMob.Shared.Managers
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
@@ -123,6 +124,107 @@ namespace TrashMob.Shared.Managers
                 .Where(p => p.CategoryId == categoryId && p.IsSubscribed)
                 .Select(p => p.UserId)
                 .ToListAsync(cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public string GenerateUnsubscribeToken(Guid userId, int? categoryId = null)
+        {
+            // Token format: userId|categoryId (categoryId is "all" if null)
+            var categoryPart = categoryId.HasValue ? categoryId.Value.ToString() : "all";
+            var payload = $"{userId}|{categoryPart}";
+            return Convert.ToBase64String(Encoding.UTF8.GetBytes(payload))
+                .Replace('+', '-')
+                .Replace('/', '_')
+                .TrimEnd('=');
+        }
+
+        /// <inheritdoc />
+        public async Task<UnsubscribeResult> ProcessUnsubscribeTokenAsync(string token, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                // Decode the token
+                var padded = token.Replace('-', '+').Replace('_', '/');
+                switch (padded.Length % 4)
+                {
+                    case 2: padded += "=="; break;
+                    case 3: padded += "="; break;
+                }
+                var payload = Encoding.UTF8.GetString(Convert.FromBase64String(padded));
+                var parts = payload.Split('|');
+
+                if (parts.Length != 2 || !Guid.TryParse(parts[0], out var userId))
+                {
+                    return new UnsubscribeResult { Success = false, ErrorMessage = "Invalid token format." };
+                }
+
+                // Verify user exists
+                var user = await dbContext.Users.FindAsync(new object[] { userId }, cancellationToken);
+                if (user == null)
+                {
+                    return new UnsubscribeResult { Success = false, ErrorMessage = "User not found." };
+                }
+
+                var isAllCategories = parts[1] == "all";
+
+                if (isAllCategories)
+                {
+                    await UnsubscribeAllAsync(userId, cancellationToken);
+                    return new UnsubscribeResult
+                    {
+                        Success = true,
+                        Email = MaskEmail(user.Email),
+                        AllCategories = true
+                    };
+                }
+                else
+                {
+                    if (!int.TryParse(parts[1], out var categoryId))
+                    {
+                        return new UnsubscribeResult { Success = false, ErrorMessage = "Invalid category in token." };
+                    }
+
+                    var category = await dbContext.NewsletterCategories.FindAsync(new object[] { categoryId }, cancellationToken);
+                    if (category == null)
+                    {
+                        return new UnsubscribeResult { Success = false, ErrorMessage = "Category not found." };
+                    }
+
+                    await UpdatePreferenceAsync(userId, categoryId, false, cancellationToken);
+                    return new UnsubscribeResult
+                    {
+                        Success = true,
+                        Email = MaskEmail(user.Email),
+                        AllCategories = false,
+                        CategoryName = category.Name
+                    };
+                }
+            }
+            catch (Exception)
+            {
+                return new UnsubscribeResult { Success = false, ErrorMessage = "Invalid token." };
+            }
+        }
+
+        /// <summary>
+        /// Masks an email address for privacy (e.g., j***@example.com).
+        /// </summary>
+        private static string MaskEmail(string email)
+        {
+            if (string.IsNullOrEmpty(email) || !email.Contains('@'))
+            {
+                return "***";
+            }
+
+            var parts = email.Split('@');
+            var localPart = parts[0];
+            var domainPart = parts[1];
+
+            var maskedLocal = localPart.Length <= 2
+                ? "***"
+                : localPart[0] + "***" + localPart[^1];
+
+            return $"{maskedLocal}@{domainPart}";
         }
     }
 }

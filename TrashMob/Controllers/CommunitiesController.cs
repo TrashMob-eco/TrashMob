@@ -7,17 +7,23 @@ namespace TrashMob.Controllers
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Identity.Web.Resource;
     using TrashMob.Models;
     using TrashMob.Models.Poco;
     using TrashMob.Security;
+    using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Poco;
 
     /// <summary>
     /// Controller for community discovery and detail pages.
     /// Communities are partners with enabled home pages.
     /// </summary>
     [Route("api/communities")]
-    public class CommunitiesController(ICommunityManager communityManager) : SecureController
+    public class CommunitiesController(
+        ICommunityManager communityManager,
+        IPartnerPhotoManager partnerPhotoManager,
+        IImageManager imageManager) : SecureController
     {
         /// <summary>
         /// Gets all communities with enabled home pages.
@@ -286,5 +292,182 @@ namespace TrashMob.Controllers
 
             return Ok(updated);
         }
+
+        // ============================================================================
+        // Community Photo Gallery Endpoints
+        // ============================================================================
+
+        #region Community Photos
+
+        /// <summary>
+        /// Gets all photos for a community.
+        /// </summary>
+        /// <param name="slug">The community slug.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpGet("{slug}/photos")]
+        [ProducesResponseType(typeof(IEnumerable<PartnerPhoto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetCommunityPhotos(string slug, CancellationToken cancellationToken)
+        {
+            var community = await communityManager.GetBySlugAsync(slug, cancellationToken);
+            if (community == null)
+            {
+                return NotFound();
+            }
+
+            var photos = await partnerPhotoManager.GetByPartnerIdAsync(community.Id, cancellationToken);
+            return Ok(photos);
+        }
+
+        /// <summary>
+        /// Uploads a photo for a community. Only community admins can upload photos.
+        /// </summary>
+        /// <param name="slug">The community slug.</param>
+        /// <param name="imageUpload">The image upload data.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpPost("{slug}/photos")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(PartnerPhoto), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UploadCommunityPhoto(
+            string slug,
+            [FromForm] ImageUpload imageUpload,
+            CancellationToken cancellationToken)
+        {
+            var community = await communityManager.GetBySlugAsync(slug, cancellationToken);
+            if (community == null)
+            {
+                return NotFound();
+            }
+
+            // Authorize: user must be partner admin or site admin
+            var authResult = await AuthorizationService.AuthorizeAsync(
+                User, community, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            // Create the partner photo record
+            var photoId = Guid.NewGuid();
+            var partnerPhoto = new PartnerPhoto
+            {
+                Id = photoId,
+                PartnerId = community.Id,
+                Caption = string.Empty,
+            };
+
+            // Upload to blob storage
+            imageUpload.ParentId = photoId;
+            imageUpload.ImageType = ImageTypeEnum.PartnerPhoto;
+            await imageManager.UploadImage(imageUpload);
+
+            // Get the image URL and save photo record
+            var imageUrl = await imageManager.GetImageUrlAsync(photoId, ImageTypeEnum.PartnerPhoto, ImageSizeEnum.Reduced, cancellationToken);
+            partnerPhoto.ImageUrl = imageUrl;
+            var createdPhoto = await partnerPhotoManager.AddAsync(partnerPhoto, UserId, cancellationToken);
+
+            TrackEvent(nameof(UploadCommunityPhoto));
+            return CreatedAtAction(nameof(GetCommunityPhotos), new { slug }, createdPhoto);
+        }
+
+        /// <summary>
+        /// Deletes a community photo. Only community admins can delete photos.
+        /// </summary>
+        /// <param name="slug">The community slug.</param>
+        /// <param name="photoId">The photo ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpDelete("{slug}/photos/{photoId}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteCommunityPhoto(
+            string slug,
+            Guid photoId,
+            CancellationToken cancellationToken)
+        {
+            var community = await communityManager.GetBySlugAsync(slug, cancellationToken);
+            if (community == null)
+            {
+                return NotFound();
+            }
+
+            // Authorize: user must be partner admin or site admin
+            var authResult = await AuthorizationService.AuthorizeAsync(
+                User, community, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            var photo = await partnerPhotoManager.GetAsync(photoId, cancellationToken);
+            if (photo == null || photo.PartnerId != community.Id)
+            {
+                return NotFound();
+            }
+
+            // HardDelete removes from blob storage and database
+            await partnerPhotoManager.HardDeleteAsync(photoId, cancellationToken);
+            TrackEvent(nameof(DeleteCommunityPhoto));
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Updates a community photo caption. Only community admins can update photos.
+        /// </summary>
+        /// <param name="slug">The community slug.</param>
+        /// <param name="photoId">The photo ID.</param>
+        /// <param name="caption">The new caption.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpPut("{slug}/photos/{photoId}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(PartnerPhoto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateCommunityPhotoCaption(
+            string slug,
+            Guid photoId,
+            [FromBody] string caption,
+            CancellationToken cancellationToken)
+        {
+            var community = await communityManager.GetBySlugAsync(slug, cancellationToken);
+            if (community == null)
+            {
+                return NotFound();
+            }
+
+            // Authorize: user must be partner admin or site admin
+            var authResult = await AuthorizationService.AuthorizeAsync(
+                User, community, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            var photo = await partnerPhotoManager.GetAsync(photoId, cancellationToken);
+            if (photo == null || photo.PartnerId != community.Id)
+            {
+                return NotFound();
+            }
+
+            photo.Caption = caption ?? string.Empty;
+            photo.LastUpdatedByUserId = UserId;
+            photo.LastUpdatedDate = DateTimeOffset.UtcNow;
+
+            var updatedPhoto = await partnerPhotoManager.UpdateAsync(photo, UserId, cancellationToken);
+            TrackEvent(nameof(UpdateCommunityPhotoCaption));
+            return Ok(updatedPhoto);
+        }
+
+        #endregion
     }
 }

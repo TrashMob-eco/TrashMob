@@ -126,6 +126,57 @@ namespace TrashMob.Controllers
             TrackEvent(nameof(UnsubscribeAll));
             return Ok(new { message = "Successfully unsubscribed from all newsletters." });
         }
+
+        /// <summary>
+        /// Gets the user's unsubscribe token for use in email links.
+        /// </summary>
+        /// <param name="categoryId">Optional category ID. If not provided, token is for all categories.</param>
+        /// <returns>The unsubscribe token.</returns>
+        [HttpGet("unsubscribe-token")]
+        public IActionResult GetUnsubscribeToken([FromQuery] int? categoryId = null)
+        {
+            var token = preferenceManager.GenerateUnsubscribeToken(UserId, categoryId);
+            return Ok(new { token });
+        }
+
+        /// <summary>
+        /// Processes an unsubscribe request using a token (no authentication required).
+        /// Used for one-click unsubscribe from email links.
+        /// </summary>
+        /// <param name="request">The unsubscribe request containing the token.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>The result of the unsubscribe operation.</returns>
+        [AllowAnonymous]
+        [HttpPost("unsubscribe")]
+        public async Task<IActionResult> ProcessUnsubscribe([FromBody] UnsubscribeRequest request, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(request?.Token))
+            {
+                return BadRequest(new { success = false, errorMessage = "Token is required." });
+            }
+
+            var result = await preferenceManager.ProcessUnsubscribeTokenAsync(request.Token, cancellationToken);
+
+            if (!result.Success)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    errorMessage = result.ErrorMessage
+                });
+            }
+
+            return Ok(new
+            {
+                success = true,
+                email = result.Email,
+                allCategories = result.AllCategories,
+                categoryName = result.CategoryName,
+                message = result.AllCategories
+                    ? "You have been unsubscribed from all newsletters."
+                    : $"You have been unsubscribed from {result.CategoryName} newsletters."
+            });
+        }
     }
 
     /// <summary>
@@ -142,5 +193,16 @@ namespace TrashMob.Controllers
         /// Gets or sets whether to subscribe or unsubscribe.
         /// </summary>
         public bool IsSubscribed { get; set; }
+    }
+
+    /// <summary>
+    /// Request model for token-based unsubscribe.
+    /// </summary>
+    public class UnsubscribeRequest
+    {
+        /// <summary>
+        /// Gets or sets the unsubscribe token.
+        /// </summary>
+        public string Token { get; set; }
     }
 }

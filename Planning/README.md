@@ -49,7 +49,7 @@
 | [Project 14 - Social Media Integration](./Projects/Project_14_Social_Media.md) | Modernize social sharing | Not Started |
 | [Project 15 - Route Tracing](./Projects/Project_15_Route_Tracing.md) | Map route tracing with privacy | Planning in Progress |
 | [Project 16 - Content Management](./Projects/Project_16_Content_Management.md) | Strapi CMS integration | ✅ Complete |
-| [Project 19 - Newsletter Support](./Projects/Project_19_Newsletter.md) | Monthly communication | In Progress (Phase 3 Complete) |
+| [Project 19 - Newsletter Support](./Projects/Project_19_Newsletter.md) | Monthly communication | ✅ Complete |
 | [Project 20 - Gamification](./Projects/Project_20_Gamification.md) | Leaderboards and achievements | ✅ Complete |
 | [Project 21 - Event Co-Leads](./Projects/Project_21_Event_Co_Leads.md) | Multiple event admins | ✅ Complete |
 | [Project 22 - Attendee Metrics](./Projects/Project_22_Attendee_Metrics.md) | Per-attendee event statistics | In Progress (Phase 1-3 Complete) |
@@ -77,7 +77,7 @@
 |---------|-------------|--------|
 | [Project 12 - In-App Messaging](./Projects/Project_12_In_App_Messaging.md) | Event lead communications | Not Started |
 | [Project 17 - MCP Server](./Projects/Project_17_MCP_Server.md) | AI access via MCP protocol | ✅ Complete |
-| [Project 18 - Before/After Photos](./Projects/Project_18_Before_After_Photos.md) | Event impact photos | In Progress (Phase 2 Complete) |
+| [Project 18 - Before/After Photos](./Projects/Project_18_Before_After_Photos.md) | Event impact photos | ✅ Complete |
 | [Project 27 - OpenTelemetry Migration](./Projects/Project_27_OpenTelemetry_Migration.md) | Vendor-neutral observability | ✅ Complete |
 
 ---
@@ -94,6 +94,7 @@
 - [Project 9 - Teams](./Projects/Project_09_Teams.md) ✅
 - [Project 10 - Community Pages](./Projects/Project_10_Community_Pages.md) ✅
 - [Project 11 - Adopt-A-Location](./Projects/Project_11_Adopt_A_Location.md) ✅
+- [Project 18 - Before/After Photos](./Projects/Project_18_Before_After_Photos.md) ✅
 
 ### Impact Tracking
 - [Project 7 - Event Weights](./Projects/Project_07_Event_Weights.md) ✅
@@ -130,8 +131,8 @@
 
 | Status | Count | Projects |
 |--------|-------|----------|
-| ✅ **Complete** | 18 | Projects 3, 7, 9, 10, 11, 13, 16, 17, 20, 21, 26, 27, 28, 29, 32, 34, 35, 37 |
-| **In Progress** | 5 | Projects 6, 8 (Phase 1-4 Complete), 18 (Phase 2 Complete), 19 (Phase 2 Complete), 22 (Phase 1-3 Complete) |
+| ✅ **Complete** | 20 | Projects 3, 7, 9, 10, 11, 13, 16, 17, 18, 19, 20, 21, 26, 27, 28, 29, 32, 34, 35, 37 |
+| **In Progress** | 3 | Projects 6, 8 (Phase 1-4 Complete), 22 (Phase 1-3 Complete) |
 | **Developers Engaged** | 1 | Project 4 |
 | **Ready for Review** | 2 | Projects 2, 5 |
 | **Planning** | 4 | Projects 1, 15, 23, 38 |

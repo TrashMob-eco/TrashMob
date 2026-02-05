@@ -2,7 +2,7 @@
 
 import { ApiService } from '.';
 
-export type PhotoType = 'LitterImage' | 'TeamPhoto';
+export type PhotoType = 'LitterImage' | 'TeamPhoto' | 'EventPhoto' | 'PartnerPhoto';
 export type ModerationStatus = 'Pending' | 'Approved' | 'Rejected';
 
 export interface PhotoModerationItem {
@@ -21,6 +21,10 @@ export interface PhotoModerationItem {
     litterReportName?: string;
     teamId?: string;
     teamName?: string;
+    eventId?: string;
+    eventName?: string;
+    partnerId?: string;
+    partnerName?: string;
     caption?: string;
     moderatedDate?: string;
     moderatedByName?: string;

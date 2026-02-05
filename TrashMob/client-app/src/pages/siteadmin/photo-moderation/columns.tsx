@@ -29,6 +29,15 @@ const statusColors: Record<number, { label: string; color: string }> = {
 const photoTypeColors: Record<string, string> = {
     LitterImage: 'bg-blue-500',
     TeamPhoto: 'bg-purple-500',
+    EventPhoto: 'bg-green-600',
+    PartnerPhoto: 'bg-orange-500',
+};
+
+const photoTypeLabels: Record<string, string> = {
+    LitterImage: 'Litter',
+    TeamPhoto: 'Team',
+    EventPhoto: 'Event',
+    PartnerPhoto: 'Community',
 };
 
 export const getColumns = ({
@@ -69,7 +78,7 @@ export const getColumns = ({
             const photoType = row.getValue('photoType') as string;
             return (
                 <Badge className={photoTypeColors[photoType] || 'bg-gray-500'}>
-                    {photoType === 'LitterImage' ? 'Litter' : 'Team'}
+                    {photoTypeLabels[photoType] || photoType}
                 </Badge>
             );
         },
@@ -79,17 +88,11 @@ export const getColumns = ({
         header: 'Context',
         cell: ({ row }) => {
             const photo = row.original;
-            if (photo.litterReportName) {
+            const contextName = photo.litterReportName || photo.teamName || photo.eventName || photo.partnerName;
+            if (contextName) {
                 return (
-                    <div className='max-w-xs truncate' title={photo.litterReportName}>
-                        {photo.litterReportName}
-                    </div>
-                );
-            }
-            if (photo.teamName) {
-                return (
-                    <div className='max-w-xs truncate' title={photo.teamName}>
-                        {photo.teamName}
+                    <div className='max-w-xs truncate' title={contextName}>
+                        {contextName}
                     </div>
                 );
             }

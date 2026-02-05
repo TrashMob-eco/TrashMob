@@ -47,6 +47,13 @@ const statusLabels: Record<number, { label: string; color: string }> = {
     2: { label: 'Rejected', color: 'bg-red-500' },
 };
 
+const photoTypeBadge: Record<string, { label: string; color: string }> = {
+    LitterImage: { label: 'Litter Image', color: 'bg-blue-500' },
+    TeamPhoto: { label: 'Team Photo', color: 'bg-purple-500' },
+    EventPhoto: { label: 'Event Photo', color: 'bg-green-600' },
+    PartnerPhoto: { label: 'Community Photo', color: 'bg-orange-500' },
+};
+
 export const PhotoDetailModal = ({ photo, open, onOpenChange, tab }: PhotoDetailModalProps) => {
     const queryClient = useQueryClient();
     const [rejectReason, setRejectReason] = useState<string>('');
@@ -124,8 +131,8 @@ export const PhotoDetailModal = ({ photo, open, onOpenChange, tab }: PhotoDetail
                 <DialogHeader>
                     <DialogTitle className='flex items-center gap-2'>
                         Photo Details
-                        <Badge className={photo.photoType === 'LitterImage' ? 'bg-blue-500' : 'bg-purple-500'}>
-                            {photo.photoType === 'LitterImage' ? 'Litter Image' : 'Team Photo'}
+                        <Badge className={photoTypeBadge[photo.photoType]?.color || 'bg-gray-500'}>
+                            {photoTypeBadge[photo.photoType]?.label || photo.photoType}
                         </Badge>
                         {tab === 'moderated' && <Badge className={statusInfo.color}>{statusInfo.label}</Badge>}
                     </DialogTitle>
@@ -199,6 +206,30 @@ export const PhotoDetailModal = ({ photo, open, onOpenChange, tab }: PhotoDetail
                                         </a>
                                     ) : null}
                                 </p>
+                            </div>
+                        ) : null}
+                        {photo.eventName ? (
+                            <div className='col-span-2'>
+                                <Label className='text-muted-foreground'>Event</Label>
+                                <p className='font-medium flex items-center gap-1'>
+                                    {photo.eventName}
+                                    {photo.eventId ? (
+                                        <a
+                                            href={`/eventdetails/${photo.eventId}`}
+                                            target='_blank'
+                                            rel='noopener noreferrer'
+                                            className='text-primary hover:underline'
+                                        >
+                                            <ExternalLink className='h-3 w-3' />
+                                        </a>
+                                    ) : null}
+                                </p>
+                            </div>
+                        ) : null}
+                        {photo.partnerName ? (
+                            <div className='col-span-2'>
+                                <Label className='text-muted-foreground'>Community</Label>
+                                <p className='font-medium'>{photo.partnerName}</p>
                             </div>
                         ) : null}
 

@@ -56,6 +56,7 @@ import { MyTeamsTable } from '@/pages/MyDashboard/MyTeamsTable';
 import { MyWaiversCard } from '@/pages/MyDashboard/MyWaiversCard';
 import { MyImpactCard } from '@/pages/MyDashboard/MyImpactCard';
 import { InviteFriendsCard } from '@/pages/MyDashboard/InviteFriendsCard';
+import { MyNewsletterPreferencesCard } from '@/pages/MyDashboard/MyNewsletterPreferencesCard';
 
 const isUpcomingEvent = (event: EventData) => new Date(event.eventDate) >= new Date();
 const isPastEvent = (event: EventData) => new Date(event.eventDate) < new Date();
@@ -233,6 +234,9 @@ const MyDashboard: FC<MyDashboardProps> = () => {
             </div>
             <div className='container my-8!'>
                 <MyWaiversCard userId={userId} />
+            </div>
+            <div className='container my-8!'>
+                <MyNewsletterPreferencesCard />
             </div>
             <div className='container my-8!'>
                 <MyImpactCard userId={userId} prefersMetric={currentUser?.prefersMetric ?? false} />

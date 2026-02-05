@@ -27,6 +27,7 @@ namespace TrashMob.Models
             PartnerAdmins = new HashSet<PartnerAdmin>();
             PartnerAdminInvitations = new HashSet<PartnerAdminInvitation>();
             AdoptableAreas = new HashSet<AdoptableArea>();
+            Photos = [];
         }
 
         /// <summary>
@@ -197,5 +198,10 @@ namespace TrashMob.Models
         /// Gets or sets the collection of waivers assigned to this community.
         /// </summary>
         public virtual ICollection<CommunityWaiver> CommunityWaivers { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of photos in this partner's gallery.
+        /// </summary>
+        public virtual ICollection<PartnerPhoto> Photos { get; set; }
     }
 }
