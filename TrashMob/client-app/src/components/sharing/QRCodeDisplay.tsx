@@ -25,13 +25,7 @@ export const QRCodeDisplay = ({ url, title, size = 200 }: QRCodeDisplayProps) =>
     return (
         <div className='flex flex-col items-center gap-4'>
             <div ref={qrRef} className='bg-white p-4 rounded-lg'>
-                <QRCodeCanvas
-                    value={url}
-                    size={size}
-                    level='M'
-                    marginSize={2}
-                    title={`QR code for ${title}`}
-                />
+                <QRCodeCanvas value={url} size={size} level='M' marginSize={2} title={`QR code for ${title}`} />
             </div>
             <p className='text-sm text-muted-foreground text-center max-w-[250px]'>
                 Scan this QR code to share the link

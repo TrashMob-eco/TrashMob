@@ -2,7 +2,20 @@ import { useState } from 'react';
 import { useParams, Link } from 'react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
-import { MapPin, Users, ArrowLeft, Crown, Globe, Lock, Calendar, UserPlus, LogOut, Loader2, Image, Share2 } from 'lucide-react';
+import {
+    MapPin,
+    Users,
+    ArrowLeft,
+    Crown,
+    Globe,
+    Lock,
+    Calendar,
+    UserPlus,
+    LogOut,
+    Loader2,
+    Image,
+    Share2,
+} from 'lucide-react';
 
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -371,11 +384,7 @@ export const TeamDetailPage = () => {
                         {/* Share Card */}
                         <Card>
                             <CardContent className='pt-6'>
-                                <Button
-                                    variant='outline'
-                                    className='w-full'
-                                    onClick={() => setShowShareDialog(true)}
-                                >
+                                <Button variant='outline' className='w-full' onClick={() => setShowShareDialog(true)}>
                                     <Share2 className='h-4 w-4 mr-2' />
                                     Share Team
                                 </Button>

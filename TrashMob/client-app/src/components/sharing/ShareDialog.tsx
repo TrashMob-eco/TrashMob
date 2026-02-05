@@ -112,11 +112,14 @@ export const ShareDialog = ({ content, open, onOpenChange, message, emailSubject
                             {/* Content Preview */}
                             <div className='flex flex-col mb-2'>
                                 <h6 className='font-semibold'>{content.title}</h6>
-                                {content.location ? <div className='flex flex-row items-center text-sm text-muted-foreground mt-1'>
+                                {content.location ? (
+                                    <div className='flex flex-row items-center text-sm text-muted-foreground mt-1'>
                                         <MapPin className='h-4 w-4 mr-2' />
                                         {content.location}
-                                    </div> : null}
-                                {content.date ? <div className='flex flex-row items-center text-sm text-muted-foreground mt-1'>
+                                    </div>
+                                ) : null}
+                                {content.date ? (
+                                    <div className='flex flex-row items-center text-sm text-muted-foreground mt-1'>
                                         <Clock className='h-4 w-4 mr-2' />
                                         {content.date.toLocaleDateString('en-us', {
                                             weekday: 'short',
@@ -126,7 +129,8 @@ export const ShareDialog = ({ content, open, onOpenChange, message, emailSubject
                                             hour: 'numeric',
                                             minute: '2-digit',
                                         })}
-                                    </div> : null}
+                                    </div>
+                                ) : null}
                             </div>
 
                             <hr />
@@ -181,7 +185,12 @@ export const ShareDialog = ({ content, open, onOpenChange, message, emailSubject
                                 <TooltipProvider delayDuration={0}>
                                     <Tooltip open={copiedLink}>
                                         <TooltipTrigger asChild>
-                                            <Button className='shrink-0' size='icon' variant='outline' onClick={handleCopyLink}>
+                                            <Button
+                                                className='shrink-0'
+                                                size='icon'
+                                                variant='outline'
+                                                onClick={handleCopyLink}
+                                            >
                                                 <Copy className='h-4 w-4' />
                                             </Button>
                                         </TooltipTrigger>
