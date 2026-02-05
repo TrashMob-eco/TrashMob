@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Plus, Users } from 'lucide-react';
 import { AxiosResponse } from 'axios';
 
-import * as SharingMessages from '@/store/SharingMessages';
+import { getEventShareableContent, getEventShareMessage } from '@/lib/sharing-messages';
 
 import EventData from '@/components/Models/EventData';
 import PickupLocationData from '@/components/Models/PickupLocationData';
@@ -23,7 +23,7 @@ import calendarclock from '@/components/assets/card/calendarclock.svg';
 import bucketplus from '@/components/assets/card/bucketplus.svg';
 import Weight from '@/components/assets/home/Weight.svg';
 import LitterReportIcon from '@/components/assets/home/LitterReport.svg';
-import { ShareToSocialsDialog } from '@/components/EventManagement/ShareToSocialsDialog';
+import { ShareDialog } from '@/components/sharing';
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { EventsMap } from '@/components/events/event-map';
 import { Button } from '@/components/ui/button';
@@ -201,12 +201,11 @@ const MyDashboard: FC<MyDashboardProps> = () => {
             <HeroSection Title='Dashboard' Description="See how much you've done!" />
             <div className='container mt-12! pb-12!'>
                 {eventToShare ? (
-                    <ShareToSocialsDialog
-                        eventToShare={eventToShare}
-                        show={showModal}
-                        handleShow={setShowSocialsModal}
-                        modalTitle='Share Event'
-                        message={SharingMessages.getEventShareMessage(eventToShare, currentUser.id)}
+                    <ShareDialog
+                        content={getEventShareableContent(eventToShare, currentUser?.id)}
+                        open={showModal}
+                        onOpenChange={setShowSocialsModal}
+                        message={getEventShareMessage(eventToShare, currentUser?.id)}
                     />
                 ) : null}
                 <div className='pt-12! flex flex-row flex-wrap gap-8 justify-center'>

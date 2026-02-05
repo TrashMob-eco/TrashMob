@@ -4,8 +4,8 @@ import type UserData from '@/components/Models/UserData';
 import { useDeleteEventAttendee } from '@/hooks/useDeleteEventAttendee';
 import { getColumns } from './columns';
 import { DataTable } from '@/components/ui/data-table';
-import { ShareToSocialsDialog } from '@/components/EventManagement/ShareToSocialsDialog';
-import * as SharingMessages from '@/store/SharingMessages';
+import { ShareDialog } from '@/components/sharing';
+import { getEventShareableContent, getEventShareMessage } from '@/lib/sharing-messages';
 
 interface EventTableProps {
     currentUser: UserData;
@@ -35,12 +35,11 @@ export const EventsTable = (props: EventTableProps) => {
     return (
         <div className='overflow-auto'>
             {eventToShare ? (
-                <ShareToSocialsDialog
-                    eventToShare={eventToShare}
-                    show={!!eventToShare}
-                    handleShow={() => setEventToShare(null)}
-                    modalTitle='Share Event'
-                    message={SharingMessages.getEventShareMessage(eventToShare, props.currentUser.id)}
+                <ShareDialog
+                    content={getEventShareableContent(eventToShare, currentUser?.id)}
+                    open={!!eventToShare}
+                    onOpenChange={() => setEventToShare(null)}
+                    message={getEventShareMessage(eventToShare, currentUser?.id)}
                 />
             ) : null}
             <DataTable columns={columns} data={events || []} />

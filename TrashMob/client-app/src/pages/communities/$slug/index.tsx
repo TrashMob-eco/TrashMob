@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams, Link } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
-import { MapPin, ArrowLeft, Loader2, ExternalLink, Building2, Settings } from 'lucide-react';
+import { MapPin, ArrowLeft, Loader2, ExternalLink, Building2, Settings, Share2 } from 'lucide-react';
 
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -27,6 +27,8 @@ import { CommunityTeamsSection } from '@/components/communities/community-teams-
 import { CommunityDetailMap } from '@/components/communities/community-detail-map';
 import { CommunityPhotoGallery } from '@/components/communities/CommunityPhotoGallery';
 import { CommunityPhotoUploader } from '@/components/communities/CommunityPhotoUploader';
+import { ShareDialog } from '@/components/sharing';
+import { getCommunityShareableContent, getCommunityShareMessage } from '@/lib/sharing-messages';
 
 const getLocation = (community: CommunityData) => {
     const parts = [community.city, community.region, community.country].filter(Boolean);
@@ -37,6 +39,7 @@ export const CommunityDetailPage = () => {
     const { slug } = useParams<{ slug: string }>() as { slug: string };
     const { currentUser, isUserLoaded } = useLogin();
     const [showPhotoUploader, setShowPhotoUploader] = useState(false);
+    const [showShareDialog, setShowShareDialog] = useState(false);
 
     const { data: community, isLoading } = useQuery<AxiosResponse<CommunityData>, unknown, CommunityData>({
         queryKey: GetCommunityBySlug({ slug }).key,
@@ -145,13 +148,18 @@ export const CommunityDetailPage = () => {
                             <ArrowLeft className='h-4 w-4 mr-2' /> Back to Communities
                         </Link>
                     </Button>
-                    {isUserLoaded && currentUser.id ? (
-                        <Button variant='outline' asChild>
-                            <Link to={`/communities/${slug}/admin`}>
-                                <Settings className='h-4 w-4 mr-2' /> Admin
-                            </Link>
+                    <div className='flex gap-2'>
+                        <Button variant='outline' onClick={() => setShowShareDialog(true)}>
+                            <Share2 className='h-4 w-4 mr-2' /> Share
                         </Button>
-                    ) : null}
+                        {isUserLoaded && currentUser.id ? (
+                            <Button variant='outline' asChild>
+                                <Link to={`/communities/${slug}/admin`}>
+                                    <Settings className='h-4 w-4 mr-2' /> Admin
+                                </Link>
+                            </Button>
+                        ) : null}
+                    </div>
                 </div>
 
                 <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
@@ -275,6 +283,14 @@ export const CommunityDetailPage = () => {
             {isUserLoaded && currentUser.id ? (
                 <CommunityPhotoUploader slug={slug} open={showPhotoUploader} onOpenChange={setShowPhotoUploader} />
             ) : null}
+
+            {/* Share Dialog */}
+            <ShareDialog
+                content={getCommunityShareableContent(community)}
+                open={showShareDialog}
+                onOpenChange={setShowShareDialog}
+                message={getCommunityShareMessage(community)}
+            />
         </div>
     );
 };

@@ -1,7 +1,21 @@
+import { useState } from 'react';
 import { useParams, Link } from 'react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
-import { MapPin, Users, ArrowLeft, Crown, Globe, Lock, Calendar, UserPlus, LogOut, Loader2, Image } from 'lucide-react';
+import {
+    MapPin,
+    Users,
+    ArrowLeft,
+    Crown,
+    Globe,
+    Lock,
+    Calendar,
+    UserPlus,
+    LogOut,
+    Loader2,
+    Image,
+    Share2,
+} from 'lucide-react';
 
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,6 +37,8 @@ import {
 import { useLogin } from '@/hooks/useLogin';
 import { useToast } from '@/hooks/use-toast';
 import { ReportPhotoButton } from '@/components/ReportPhotoButton';
+import { ShareDialog } from '@/components/sharing';
+import { getTeamShareableContent, getTeamShareMessage } from '@/lib/sharing-messages';
 import { ColumnDef } from '@tanstack/react-table';
 import moment from 'moment';
 
@@ -44,6 +60,7 @@ export const TeamDetailPage = () => {
     const queryClient = useQueryClient();
     const { currentUser, isUserLoaded } = useLogin();
     const { toast } = useToast();
+    const [showShareDialog, setShowShareDialog] = useState(false);
 
     const { data: team, isLoading: isLoadingTeam } = useQuery<AxiosResponse<TeamData>, unknown, TeamData>({
         queryKey: GetTeamById({ teamId }).key,
@@ -364,6 +381,16 @@ export const TeamDetailPage = () => {
 
                     {/* Sidebar */}
                     <div className='space-y-6'>
+                        {/* Share Card */}
+                        <Card>
+                            <CardContent className='pt-6'>
+                                <Button variant='outline' className='w-full' onClick={() => setShowShareDialog(true)}>
+                                    <Share2 className='h-4 w-4 mr-2' />
+                                    Share Team
+                                </Button>
+                            </CardContent>
+                        </Card>
+
                         {/* Actions */}
                         {isUserLoaded ? (
                             <Card>
@@ -455,6 +482,14 @@ export const TeamDetailPage = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Share Dialog */}
+            <ShareDialog
+                content={getTeamShareableContent(team)}
+                open={showShareDialog}
+                onOpenChange={setShowShareDialog}
+                message={getTeamShareMessage(team)}
+            />
         </div>
     );
 };

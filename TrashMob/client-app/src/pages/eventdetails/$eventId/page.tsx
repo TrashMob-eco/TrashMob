@@ -4,10 +4,10 @@ import moment from 'moment';
 import { useQuery } from '@tanstack/react-query';
 import * as MapStore from '@/store/MapStore';
 import { MarkerWithInfoWindow, EventInfoWindowContent } from '@/components/Map';
-import { ShareToSocialsDialog } from '@/components/EventManagement/ShareToSocialsDialog';
+import { ShareDialog } from '@/components/sharing';
 import { RegisterBtn } from '@/components/Customization/RegisterBtn';
 import { HeroSection } from '@/components/Customization/HeroSection';
-import * as SharingMessages from '@/store/SharingMessages';
+import { getEventShareableContent, getEventShareMessage } from '@/lib/sharing-messages';
 import { GetAllEventsBeingAttendedByUser, GetEventAttendees, GetEventLeads } from '@/services/events';
 import { useGetEvent } from '@/hooks/useGetEvent';
 import { useGetEventType } from '@/hooks/useGetEventType';
@@ -117,17 +117,11 @@ export const EventDetails: FC<EventDetailsProps> = () => {
             ) : (
                 <>
                     <div className='container mx-auto my-5'>
-                        <ShareToSocialsDialog
-                            eventToShare={event}
-                            show={showModal}
-                            handleShow={setShowSocialsModal}
-                            modalTitle='Share Event'
-                            message={SharingMessages.getEventDetailsMessage(
-                                startDateTime.toDate(),
-                                city,
-                                createdByUserId,
-                                currentUser.id,
-                            )}
+                        <ShareDialog
+                            content={getEventShareableContent(event, currentUser?.id)}
+                            open={showModal}
+                            onOpenChange={setShowSocialsModal}
+                            message={getEventShareMessage(event, currentUser?.id)}
                         />
                         <div className='flex justify-between items-end flex-col md:flex-row'>
                             <h2 className='font-semibold'>{eventName}</h2>
