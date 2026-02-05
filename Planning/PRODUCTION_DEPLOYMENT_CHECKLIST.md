@@ -161,6 +161,23 @@ git push origin release
   - [ ] Contact card displays email/phone/address
   - [ ] Events and Teams sections display nearby data
 
+- [ ] **Job Opportunities Markdown Editor (Issue #2215)**
+  - [ ] Admin can create/edit job opportunities with markdown
+  - [ ] Preview toggle works in admin forms
+  - [ ] **Convert existing job listings to markdown format:**
+    - Go to /siteadmin/job-opportunities
+    - Edit each active job opportunity
+    - Convert HTML to markdown:
+      - `<strong>text</strong>` or `<b>text</b>` → `**text**`
+      - `<em>text</em>` or `<i>text</i>` → `*text*`
+      - `<ul><li>item</li></ul>` → `- item`
+      - `<ol><li>item</li></ol>` → `1. item`
+      - `<h2>heading</h2>` → `## heading`
+      - `<br>` or `<br/>` → blank line
+      - `<p>text</p>` → text with blank line before/after
+    - Use Preview toggle to verify formatting before saving
+  - [ ] Volunteer opportunities page renders markdown correctly
+
 ---
 
 ## Rollback Plan
@@ -209,6 +226,7 @@ Database migrations do NOT have automatic rollback. If critical issues:
 | OpenTelemetry | Project 27 | Migrated from App Insights SDK |
 | KeyVault RBAC | Project 26 | Migrated from access policies |
 | Database Backups | Project 32 | Configured retention policies |
+| Job Opportunities Markdown | Issue #2215 | Markdown editor for job listings admin |
 
 ---
 
