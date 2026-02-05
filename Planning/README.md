@@ -77,7 +77,7 @@
 |---------|-------------|--------|
 | [Project 12 - In-App Messaging](./Projects/Project_12_In_App_Messaging.md) | Event lead communications | Not Started |
 | [Project 17 - MCP Server](./Projects/Project_17_MCP_Server.md) | AI access via MCP protocol | ✅ Complete |
-| [Project 18 - Before/After Photos](./Projects/Project_18_Before_After_Photos.md) | Event impact photos | In Progress (Phase 2 Complete) |
+| [Project 18 - Before/After Photos](./Projects/Project_18_Before_After_Photos.md) | Event impact photos | ✅ Complete |
 | [Project 27 - OpenTelemetry Migration](./Projects/Project_27_OpenTelemetry_Migration.md) | Vendor-neutral observability | ✅ Complete |
 
 ---
@@ -94,6 +94,7 @@
 - [Project 9 - Teams](./Projects/Project_09_Teams.md) ✅
 - [Project 10 - Community Pages](./Projects/Project_10_Community_Pages.md) ✅
 - [Project 11 - Adopt-A-Location](./Projects/Project_11_Adopt_A_Location.md) ✅
+- [Project 18 - Before/After Photos](./Projects/Project_18_Before_After_Photos.md) ✅
 
 ### Impact Tracking
 - [Project 7 - Event Weights](./Projects/Project_07_Event_Weights.md) ✅
@@ -130,7 +131,7 @@
 
 | Status | Count | Projects |
 |--------|-------|----------|
-| ✅ **Complete** | 18 | Projects 3, 7, 9, 10, 11, 13, 16, 17, 19, 20, 21, 26, 27, 28, 29, 32, 34, 35 |
+| ✅ **Complete** | 20 | Projects 3, 7, 9, 10, 11, 13, 16, 17, 18, 19, 20, 21, 26, 27, 28, 29, 32, 34, 35, 37 |
 | **In Progress** | 3 | Projects 6, 8 (Phase 1-4 Complete), 22 (Phase 1-3 Complete) |
 | **Developers Engaged** | 1 | Project 4 |
 | **Ready for Review** | 2 | Projects 2, 5 |

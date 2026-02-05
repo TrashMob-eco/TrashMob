@@ -4,7 +4,7 @@ namespace TrashMob.Models.Poco
 
     /// <summary>
     /// Represents a photo item for the moderation admin interface.
-    /// Provides a unified view of LitterImage, TeamPhoto, and EventPhoto entities.
+    /// Provides a unified view of LitterImage, TeamPhoto, EventPhoto, and PartnerPhoto entities.
     /// </summary>
     public class PhotoModerationItem
     {
@@ -14,7 +14,7 @@ namespace TrashMob.Models.Poco
         public Guid PhotoId { get; set; }
 
         /// <summary>
-        /// Gets or sets the type of photo ("LitterImage", "TeamPhoto", or "EventPhoto").
+        /// Gets or sets the type of photo ("LitterImage", "TeamPhoto", "EventPhoto", or "PartnerPhoto").
         /// </summary>
         public string PhotoType { get; set; } = string.Empty;
 
@@ -99,7 +99,17 @@ namespace TrashMob.Models.Poco
         public EventPhotoType? EventPhotoTypeValue { get; set; }
 
         /// <summary>
-        /// Gets or sets the caption (for TeamPhoto or EventPhoto).
+        /// Gets or sets the partner ID (if this is a PartnerPhoto).
+        /// </summary>
+        public Guid? PartnerId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the partner/community name (if this is a PartnerPhoto).
+        /// </summary>
+        public string? PartnerName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the caption (for TeamPhoto, EventPhoto, or PartnerPhoto).
         /// </summary>
         public string? Caption { get; set; }
 
