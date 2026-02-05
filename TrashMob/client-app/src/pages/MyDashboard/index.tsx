@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import uniqBy from 'lodash/uniqBy';
 import orderBy from 'lodash/orderBy';
 import { Link, useNavigate, useLocation } from 'react-router';
@@ -30,6 +30,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { EventsTable } from './events-table/table';
 
 import { PartnerEventRequestTable } from '@/components/Partners/partner-event-request-table';
@@ -61,6 +62,8 @@ import { MyNewsletterPreferencesCard } from '@/pages/MyDashboard/MyNewsletterPre
 const isUpcomingEvent = (event: EventData) => new Date(event.eventDate) >= new Date();
 const isPastEvent = (event: EventData) => new Date(event.eventDate) < new Date();
 
+type EventFilterType = 'all' | 'created' | 'attending';
+
 interface MyDashboardProps {}
 
 const MyDashboard: FC<MyDashboardProps> = () => {
@@ -72,14 +75,24 @@ const MyDashboard: FC<MyDashboardProps> = () => {
 
     const [upcomingEventsMapView, setUpcomingEventsMapView] = useState<boolean>(false);
     const [pastEventsMapView, setPastEventsMapView] = useState<boolean>(false);
+    const [eventFilter, setEventFilter] = useState<EventFilterType>('all');
     const state = location.state as { newEventCreated: boolean };
     const [eventToShare, setEventToShare] = useState<EventData>();
     const [showModal, setShowSocialsModal] = useState<boolean>(false);
 
     const { data: userEvents } = useGetUserEvents(userId);
     const myEventList = userEvents || [];
-    const upcomingEvents = myEventList.filter(isUpcomingEvent);
-    const pastEvents = orderBy(myEventList.filter(isPastEvent), ['eventDate'], ['desc']);
+
+    // Filter events based on user selection
+    const filteredEvents = useMemo(() => {
+        if (eventFilter === 'all') return myEventList;
+        if (eventFilter === 'created') return myEventList.filter((e) => e.createdByUserId === userId);
+        // 'attending' - events where user is attending but didn't create
+        return myEventList.filter((e) => e.createdByUserId !== userId);
+    }, [myEventList, eventFilter, userId]);
+
+    const upcomingEvents = filteredEvents.filter(isUpcomingEvent);
+    const pastEvents = orderBy(filteredEvents.filter(isPastEvent), ['eventDate'], ['desc']);
 
     const { data: myPartnerRequests } = useQuery<
         AxiosResponse<DisplayPartnershipData[]>,
@@ -246,7 +259,17 @@ const MyDashboard: FC<MyDashboardProps> = () => {
             <div className='container my-12!'>
                 <div className='flex justify-between'>
                     <h4 className='font-bold text-3xl mr-2 pb-2 mt-0 border-b-[3px] border-primary flex items-center w-full'>
-                        <div className='grow'>My Events ({myEventList.length})</div>
+                        <div className='grow'>My Events ({filteredEvents.length})</div>
+                        <Select value={eventFilter} onValueChange={(v) => setEventFilter(v as EventFilterType)}>
+                            <SelectTrigger className='w-[180px] mr-4'>
+                                <SelectValue placeholder='Filter events' />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value='all'>All events</SelectItem>
+                                <SelectItem value='created'>Events I created</SelectItem>
+                                <SelectItem value='attending'>Events I joined</SelectItem>
+                            </SelectContent>
+                        </Select>
                         <Button asChild>
                             <Link to='/events/create'>
                                 <Plus /> Create Event
