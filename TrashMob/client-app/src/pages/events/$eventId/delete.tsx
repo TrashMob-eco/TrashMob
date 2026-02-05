@@ -10,11 +10,11 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { EnhancedFormLabel as FormLabel } from '@/components/ui/custom/form';
 import { Input } from '@/components/ui/input';
-import { ShareToSocialsDialog } from '@/components/EventManagement/ShareToSocialsDialog';
+import { ShareDialog } from '@/components/sharing';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
 import * as ToolTips from '@/store/ToolTips';
-import * as SharingMessages from '@/store/SharingMessages';
+import { getEventCancellationShareableContent, getCancellationMessage } from '@/lib/sharing-messages';
 import { DeleteEvent, GetUserEvents } from '@/services/events';
 import { useGetEvent } from '@/hooks/useGetEvent';
 import { useLogin } from '@/hooks/useLogin';
@@ -78,13 +78,11 @@ export const CancelEvent: React.FC = () => {
     return (
         <div>
             {event ? (
-                <ShareToSocialsDialog
-                    eventToShare={event}
-                    show={showModal}
-                    handleShow={handleShowModal}
-                    modalTitle='Share Event Cancellation'
-                    message={SharingMessages.getCancellationMessage(event, cancellationReason)}
-                    eventLink='https://www.trashmob.eco'
+                <ShareDialog
+                    content={getEventCancellationShareableContent(event, cancellationReason || '')}
+                    open={showModal}
+                    onOpenChange={handleShowModal}
+                    message={getCancellationMessage(event, cancellationReason || '')}
                     emailSubject='TrashMob Event Cancellation'
                 />
             ) : null}
