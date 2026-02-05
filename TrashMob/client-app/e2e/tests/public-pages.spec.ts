@@ -104,7 +104,7 @@ test.describe('Public Pages', () => {
             await page.goto('/help');
             // Title may just be "TrashMob.eco" - check page renders
             await expect(page).toHaveTitle(/trashmob/i);
-            await expect(page.locator('h1')).toBeVisible();
+            await expect(page.locator('h1').first()).toBeVisible();
         });
 
         test('should load Getting Started page', async ({ page }) => {
