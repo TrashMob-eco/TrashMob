@@ -60,10 +60,15 @@
     },
     "scripts": {
         "start": "vite",
+        "dev": "vite",
         "build": "vite build",
         "test": "vitest",
         "lint": "eslint . --fix",
-        "format": "prettier . --write"
+        "format": "prettier . --write",
+        "e2e": "playwright test",
+        "e2e:ui": "playwright test --ui",
+        "e2e:debug": "playwright test --debug",
+        "e2e:report": "playwright show-report"
     },
     "browserslist": {
         "production": [
@@ -78,6 +83,7 @@
         ]
     },
     "devDependencies": {
+        "@playwright/test": "^1.58.1",
         "@tailwindcss/postcss": "^4.1.11",
         "@tailwindcss/typography": "^0.5.16",
         "@tanstack/react-query-devtools": "^4.36.1",

@@ -99,7 +99,12 @@ export const ContactUs = () => {
                                         <FormItem>
                                             <FormLabel required>Name</FormLabel>
                                             <FormControl>
-                                                <Input {...field} placeholder='Enter Name' />
+                                                <Input
+                                                    {...field}
+                                                    placeholder='Enter Name'
+                                                    required
+                                                    aria-required='true'
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -112,7 +117,12 @@ export const ContactUs = () => {
                                         <FormItem>
                                             <FormLabel required>Email</FormLabel>
                                             <FormControl>
-                                                <Input {...field} placeholder='Enter email' />
+                                                <Input
+                                                    {...field}
+                                                    placeholder='Enter email'
+                                                    required
+                                                    aria-required='true'
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -125,7 +135,7 @@ export const ContactUs = () => {
                                         <FormItem>
                                             <FormLabel required>Message</FormLabel>
                                             <FormControl>
-                                                <Textarea {...field} rows={5} />
+                                                <Textarea {...field} rows={5} required aria-required='true' />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>

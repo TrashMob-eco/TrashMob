@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Not Started |
+| **Status** | In Progress (Phase 1 Complete) |
 | **Priority** | Medium |
 | **Risk** | Low |
 | **Size** | Medium |
