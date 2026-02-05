@@ -35,7 +35,11 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
     const { trackAttendance } = useFeatureMetrics();
 
     // Fetch required waivers for this event
-    const { data: requiredWaivers, refetch: refetchWaivers } = useQuery({
+    const {
+        data: requiredWaivers,
+        isLoading: isWaiversLoading,
+        refetch: refetchWaivers,
+    } = useQuery({
         queryKey: GetRequiredWaiversForEvent({ eventId }).key,
         queryFn: GetRequiredWaiversForEvent({ eventId }).service,
         select: (res) => res.data,
@@ -89,6 +93,20 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
                     // After login, this component will re-render with updated data
                     // The user can then click the button again
                 });
+            return;
+        }
+
+        // If waiver data is still loading, wait for it before proceeding
+        // This prevents a race condition where user clicks Attend before waiver check completes
+        if (isWaiversLoading || requiredWaivers === undefined) {
+            refetchWaivers().then((result) => {
+                const waivers = result.data;
+                if (waivers && waivers.length > 0) {
+                    setShowWaiverFlow(true);
+                } else {
+                    addAttendee(eventId);
+                }
+            });
             return;
         }
 
