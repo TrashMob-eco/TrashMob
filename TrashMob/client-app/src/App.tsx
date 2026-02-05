@@ -169,7 +169,9 @@ const PartnerSocialAcccountEdit = lazy(() =>
     })),
 );
 const PartnerSocialAcccountCreate = lazy(() =>
-    import('./pages/partnerdashboard/$partnerId/socials.create').then((m) => ({ default: m.PartnerSocialAcccountCreate })),
+    import('./pages/partnerdashboard/$partnerId/socials.create').then((m) => ({
+        default: m.PartnerSocialAcccountCreate,
+    })),
 );
 const PartnerAdmins = lazy(() =>
     import('./pages/partnerdashboard/$partnerId/admins').then((m) => ({ default: m.PartnerAdmins })),
@@ -181,7 +183,9 @@ const PartnerAdminInvite = lazy(() =>
 /** SiteAdmin - Lazy loaded (admin-only pages) */
 const SiteAdminLayout = lazy(() => import('./pages/siteadmin/_layout').then((m) => ({ default: m.SiteAdminLayout })));
 const SiteAdminUsers = lazy(() => import('./pages/siteadmin/users/page').then((m) => ({ default: m.SiteAdminUsers })));
-const SiteAdminEvents = lazy(() => import('./pages/siteadmin/events/page').then((m) => ({ default: m.SiteAdminEvents })));
+const SiteAdminEvents = lazy(() =>
+    import('./pages/siteadmin/events/page').then((m) => ({ default: m.SiteAdminEvents })),
+);
 const SiteAdminPartners = lazy(() =>
     import('./pages/siteadmin/partners/page').then((m) => ({ default: m.SiteAdminPartners })),
 );
@@ -204,9 +208,7 @@ const SiteAdminEmailTemplates = lazy(() =>
 const SiteAdminSendNotification = lazy(() =>
     import('./pages/siteadmin/send-notification').then((m) => ({ default: m.SiteAdminSendNotification })),
 );
-const SiteAdminContent = lazy(() =>
-    import('./pages/siteadmin/content').then((m) => ({ default: m.SiteAdminContent })),
-);
+const SiteAdminContent = lazy(() => import('./pages/siteadmin/content').then((m) => ({ default: m.SiteAdminContent })));
 const SiteAdminLitterReports = lazy(() =>
     import('./pages/siteadmin/litter-reports/page').then((m) => ({ default: m.SiteAdminLitterReports })),
 );
