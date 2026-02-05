@@ -15,7 +15,8 @@ test.describe('Contact Us Form', () => {
             await expect(contactPage.submitButton).toBeVisible();
         });
 
-        test('should have required field indicators', async ({ page }) => {
+        // TODO: Enable after contact form changes are deployed to dev
+        test.skip('should have required field indicators', async ({ page }) => {
             const contactPage = new ContactPage(page);
             await contactPage.goto();
 
