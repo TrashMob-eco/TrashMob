@@ -62,10 +62,7 @@ export const EventDetailInfoWindowContent = (props: EventDetailInfoWindowContent
                 </p>
             </div>
             <div className='flex justify-between mt-2'>
-                <span className='self-end'>
-                    Created by
-                    {createdByUserName}
-                </span>
+                <span className='self-end'>Created by {createdByUserName}</span>
                 <Button variant='outline' className='mr-0' asChild>
                     <a href={eventDetailUrl}>View Details</a>
                 </Button>

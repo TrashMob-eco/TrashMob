@@ -43,6 +43,7 @@
                     (e.EventStatusId == (int)EventStatusEnum.Active || e.EventStatusId == (int)EventStatusEnum.Full)
                     && e.IsEventPublic
                     && e.EventDate >= DateTimeOffset.UtcNow.AddMinutes(-1 * StandardEventWindowInMinutes))
+                .Include(e => e.CreatedByUser)
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
         }
 
@@ -96,6 +97,7 @@
                                        (filter.Region == null || e.Region == filter.Region) &&
                                        (filter.City == null || e.City == filter.City) &&
                                        (filter.CreatedByUserId == null || e.CreatedByUserId == filter.CreatedByUserId))
+                .Include(e => e.CreatedByUser)
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
         }
 
