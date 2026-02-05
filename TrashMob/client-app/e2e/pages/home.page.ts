@@ -69,29 +69,33 @@ export class HomePage {
     // Navigation helpers
     async openExploreMenu() {
         await this.exploreMenu.click();
+        // Wait for menu content to be visible
+        await this.page.waitForSelector('[data-radix-menu-content], [role="menu"]', { state: 'visible', timeout: 5000 }).catch(() => {});
     }
 
     async openTakeActionMenu() {
         await this.takeActionMenu.click();
+        await this.page.waitForSelector('[data-radix-menu-content], [role="menu"]', { state: 'visible', timeout: 5000 }).catch(() => {});
     }
 
     async openAboutMenu() {
         await this.aboutMenu.click();
+        await this.page.waitForSelector('[data-radix-menu-content], [role="menu"]', { state: 'visible', timeout: 5000 }).catch(() => {});
     }
 
     async navigateToEvents() {
         await this.openExploreMenu();
-        await this.page.getByRole('link', { name: /events/i }).click();
+        await this.page.getByRole('link', { name: /^events$/i }).click();
     }
 
     async navigateToTeams() {
         await this.openExploreMenu();
-        await this.page.getByRole('link', { name: /teams/i }).click();
+        await this.page.getByRole('link', { name: /^teams$/i }).click();
     }
 
     async navigateToCommunities() {
         await this.openExploreMenu();
-        await this.page.getByRole('link', { name: /communities/i }).click();
+        await this.page.getByRole('link', { name: /^communities$/i }).click();
     }
 
     async navigateToCreateEvent() {
@@ -111,7 +115,7 @@ export class HomePage {
 
     async navigateToHelp() {
         await this.openAboutMenu();
-        await this.page.getByRole('link', { name: /help|faq/i }).click();
+        await this.page.getByRole('link', { name: /help.*faq/i }).click();
     }
 
     async clickSignIn() {
