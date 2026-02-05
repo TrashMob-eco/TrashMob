@@ -16,6 +16,7 @@ import {
     Map,
     BookOpen,
     HelpCircle,
+    MessageCircleQuestion,
     ShoppingBag,
     List,
     Users,
@@ -202,8 +203,15 @@ export const MainNav = ({ className, isUserLoaded, ...props }: MainNavProps) => 
                                     >
                                         New to TrashMob? Learn how to get involved.
                                     </ListItem>
-                                    <ListItem to='/help' title='Help & FAQ' icon={<HelpCircle className='h-4 w-4' />}>
-                                        Find answers to common questions.
+                                    <ListItem to='/help' title='Help' icon={<HelpCircle className='h-4 w-4' />}>
+                                        Detailed guides on using TrashMob.
+                                    </ListItem>
+                                    <ListItem
+                                        to='/faq'
+                                        title='FAQ'
+                                        icon={<MessageCircleQuestion className='h-4 w-4' />}
+                                    >
+                                        Frequently asked questions.
                                     </ListItem>
                                     <ListItem to='/shop' title='Shop' icon={<ShoppingBag className='h-4 w-4' />}>
                                         Get TrashMob gear and supplies.
@@ -256,7 +264,8 @@ export const MainNav = ({ className, isUserLoaded, ...props }: MainNavProps) => 
                     <p className='text-xs text-muted-foreground uppercase tracking-wide pt-1'>About</p>
                     <MobileNavItem to='/whatsnew'>What's New</MobileNavItem>
                     <MobileNavItem to='/gettingstarted'>Getting Started</MobileNavItem>
-                    <MobileNavItem to='/help'>Help & FAQ</MobileNavItem>
+                    <MobileNavItem to='/help'>Help</MobileNavItem>
+                    <MobileNavItem to='/faq'>FAQ</MobileNavItem>
                     <MobileNavItem to='/shop'>Shop</MobileNavItem>
                 </div>
                 <MobileNavItem to='https://donate.stripe.com/14k9DN2EnfAog9O3cc' external>

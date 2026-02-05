@@ -5,6 +5,7 @@ import attendees from '@/components/assets/faq/Attendees.svg';
 import volunteer from '@/components/assets/faq/volunteer.svg';
 import teams from '@/components/assets/card/twofigure.svg';
 import communities from '@/components/assets/home/Person.svg';
+import partnerships from '@/components/assets/gloves.svg';
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -143,6 +144,53 @@ const faqs = [
         ],
     },
     {
+        category: 'Partnerships',
+        desc: 'Partner services and support',
+        icon: partnerships,
+        questions: [
+            {
+                question: 'What is a Partner?',
+                answer: 'Partners are organizations that help volunteers by providing services like hauling collected litter, providing disposal dumpsters, supplying trash bags and gloves, or offering complete starter kits. Partners can be local governments, waste management companies, businesses, or nonprofits that want to support community cleanups.',
+            },
+            {
+                question: 'Does it cost anything to become a Partner?',
+                answer: 'No. We ask that you provide services to volunteers, or perhaps supplies or starter kits, but at this time, there is no charge for using the site as a partner. We want to connect volunteers with organizations who can help them clean up their communities.',
+            },
+            {
+                question: 'How do I become a Partner?',
+                answer: 'Sign in to your TrashMob account, go to the <a href="https://www.trashmob.eco/partnerships">Partnerships page</a>, and click "Become a Partner". Complete the application with your organization name, type (government or business), contact information, and location. TrashMob staff will review your application and contact you once approved. For detailed step-by-step instructions, see the <a href="https://www.trashmob.eco/help">Help page</a>!',
+            },
+            {
+                question: 'What services can Partners provide?',
+                answer: '<ul class="list-disc pl-8"><li><strong>Hauling</strong> - Picking up collected litter from cleanup sites</li><li><strong>Disposal</strong> - Providing dumpsters or drop-off locations</li><li><strong>Supplies</strong> - Trash bags, gloves, and other cleanup materials</li><li><strong>Starter Kits</strong> - Complete kits with bucket, grabber, vest, bags, and gloves</li></ul>',
+            },
+            {
+                question: 'Are starter kits available through TrashMob.eco?',
+                answer: 'Not yet. Depending on demand, we will work with vendors to try to get better pricing for the pieces of the starter kits.',
+            },
+            {
+                question: 'What goes into a starter kit?',
+                answer: '<ul class="list-disc pl-8"><li>Litter Grabber</li><li>5 Gallon Bucket</li><li>High Visibility Vest</li><li>Large Trash Bags</li><li>Gloves</li></ul>',
+            },
+            {
+                question: 'What supplies do volunteers need?',
+                answer: 'This will depend on what type of environment they are working in, but here are some suggestions:<ul class="list-disc pl-8"><li>Garbage Bags</li><li>Sharps Container</li><li>Cardboard box for glass</li><li>Litter Pickers ahead traffic sign</li></ul>',
+            },
+            {
+                question: 'How do event organizers request Partner services?',
+                answer: 'After creating an event, event leads can browse available partners in their area and request services. Partners are notified and can accept or decline requests based on availability. If no partners are in your area, you can use the "Invite a Partner" feature to help grow the network.',
+            },
+            {
+                question: 'How do Partners manage service requests?',
+                answer: 'Partners can manage requests through their Partner Dashboard. Go to My Dashboard, find your partnership under "My Partnerships", and click to access the Partner Dashboard. From there you can view pending requests, accept or decline them, and manage your locations and services.',
+            },
+            {
+                question: 'Can Partners auto-approve service requests?',
+                answer: 'Yes! When configuring services for a location, Partners can enable auto-approval. This automatically accepts all service requests without manual review. You can also set whether advance notice is required for your services.',
+            },
+        ],
+    },
+    {
         category: 'TrashMob Organization',
         desc: 'About and volunteering',
         icon: volunteer,
@@ -165,7 +213,7 @@ const faqs = [
             },
             {
                 question: 'Is the TrashMob team looking for support?',
-                answer: 'Yes! We are always looking for new team members to help us improve TrashMob.eco and implement new features. If you or someone you know has any skills in design, back or front-end development, program management, or applicable non-technical skills, please Contact us!',
+                answer: 'Yes! Check out our <a href="https://www.trashmob.eco/volunteeropportunities">Recruiting page</a> for details on open positions at TrashMob.',
             },
             {
                 question: 'Does TrashMob have a mobile app?',
