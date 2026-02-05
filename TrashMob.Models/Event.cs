@@ -2,6 +2,7 @@
 
 namespace TrashMob.Models
 {
+    using System.ComponentModel.DataAnnotations.Schema;
     /// <summary>
     /// Represents a cleanup event organized through TrashMob.
     /// </summary>
@@ -167,5 +168,15 @@ namespace TrashMob.Models
         /// Gets or sets the collection of photos uploaded for this event.
         /// </summary>
         public virtual ICollection<EventPhoto> EventPhotos { get; set; }
+
+        /// <summary>
+        /// Gets the username of the user who created the event.
+        /// </summary>
+        /// <remarks>
+        /// This is a computed property that returns the UserName from the CreatedByUser navigation property.
+        /// It is not mapped to a database column.
+        /// </remarks>
+        [NotMapped]
+        public string CreatedByUserName => CreatedByUser?.UserName;
     }
 }
