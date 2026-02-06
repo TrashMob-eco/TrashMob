@@ -46,5 +46,22 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// <param name="longitude">The longitude of the location.</param>
         /// <returns>The address corresponding to the specified coordinates.</returns>
         Task<Address> GetAddressAsync(double latitude, double longitude);
+
+        /// <summary>
+        /// Searches for addresses matching the given query (typeahead/autocomplete).
+        /// </summary>
+        /// <param name="query">The search query string.</param>
+        /// <param name="entityType">Optional entity type filter (e.g., Municipality, PostalCodeArea).</param>
+        /// <returns>The raw JSON response from Azure Maps Search API.</returns>
+        Task<string> SearchAddressAsync(string query, string entityType = null);
+
+        /// <summary>
+        /// Gets the full address details for a geographic coordinate (reverse geocoding).
+        /// Returns the raw Azure Maps response for client compatibility.
+        /// </summary>
+        /// <param name="latitude">The latitude of the location.</param>
+        /// <param name="longitude">The longitude of the location.</param>
+        /// <returns>The raw JSON response from Azure Maps Reverse Geocoding API.</returns>
+        Task<string> ReverseGeocodeAsync(double latitude, double longitude);
     }
 }

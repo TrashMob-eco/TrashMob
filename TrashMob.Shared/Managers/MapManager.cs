@@ -2,8 +2,13 @@
 {
     using System;
     using System.Net;
+    using System.Net.Http;
+    using System.Net.Http.Headers;
     using System.Text.Json;
+    using System.Threading;
     using System.Threading.Tasks;
+    using Azure.Core;
+    using Azure.Identity;
     using AzureMapsToolkit.Search;
     using AzureMapsToolkit.Spatial;
     using AzureMapsToolkit.Timezone;
@@ -18,12 +23,15 @@
     public class MapManager : IMapManager
     {
         private const string AzureMapKeyName = "AzureMapsKey";
+        private const string AzureMapsClientIdName = "AzureMapsClientId";
         private const string GoogleMapKeyName = "GoogleMapsKey";
+        private const string AzureMapsScope = "https://atlas.microsoft.com/.default";
 
         private const int MetersPerKilometer = 1000;
         private const int MetersPerMile = 1609;
         private readonly IConfiguration configuration;
         private readonly ILogger<MapManager> logger;
+        private readonly TokenCredential tokenCredential;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MapManager"/> class.
@@ -34,6 +42,32 @@
         {
             this.configuration = configuration;
             this.logger = logger;
+            this.tokenCredential = new DefaultAzureCredential();
+        }
+
+        /// <summary>
+        /// Gets the Azure Maps Client ID for managed identity authentication.
+        /// </summary>
+        /// <returns>The Azure Maps Client ID, or null if not configured.</returns>
+        private string GetAzureMapsClientId()
+        {
+            return configuration[AzureMapsClientIdName];
+        }
+
+        /// <summary>
+        /// Determines if managed identity authentication should be used.
+        /// Managed identity is used when AzureMapsClientId is configured.
+        /// </summary>
+        private bool UseManagedIdentity => !string.IsNullOrEmpty(GetAzureMapsClientId());
+
+        /// <summary>
+        /// Gets a bearer token for Azure Maps API authentication using managed identity.
+        /// </summary>
+        private async Task<string> GetBearerTokenAsync(CancellationToken cancellationToken = default)
+        {
+            var tokenRequestContext = new TokenRequestContext(new[] { AzureMapsScope });
+            var token = await tokenCredential.GetTokenAsync(tokenRequestContext, cancellationToken).ConfigureAwait(false);
+            return token.Token;
         }
 
         /// <inheritdoc />
@@ -169,6 +203,87 @@
             };
 
             return address;
+        }
+
+        /// <inheritdoc />
+        public async Task<string> SearchAddressAsync(string query, string entityType = null)
+        {
+            logger.LogInformation("Searching address with query: {Query}, UseManagedIdentity: {UseManagedIdentity}", query, UseManagedIdentity);
+
+            using var httpClient = new HttpClient();
+            string url;
+
+            if (UseManagedIdentity)
+            {
+                // Use managed identity with bearer token authentication
+                url = $"https://atlas.microsoft.com/search/address/json?typeahead=true&api-version=1.0&query={Uri.EscapeDataString(query)}";
+
+                var token = await GetBearerTokenAsync().ConfigureAwait(false);
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                httpClient.DefaultRequestHeaders.Add("x-ms-client-id", GetAzureMapsClientId());
+            }
+            else
+            {
+                // Fall back to subscription key authentication for local development
+                var subscriptionKey = GetMapKey();
+                url = $"https://atlas.microsoft.com/search/address/json?typeahead=true&subscription-key={subscriptionKey}&api-version=1.0&query={Uri.EscapeDataString(query)}";
+            }
+
+            if (!string.IsNullOrEmpty(entityType))
+            {
+                url += $"&entityType={Uri.EscapeDataString(entityType)}";
+            }
+
+            var response = await httpClient.GetAsync(url).ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                logger.LogError("Azure Maps search failed with status code: {StatusCode}", response.StatusCode);
+                throw new Exception($"Azure Maps search failed: {response.StatusCode}");
+            }
+
+            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            logger.LogInformation("Address search completed with {Length} bytes", content.Length);
+
+            return content;
+        }
+
+        /// <inheritdoc />
+        public async Task<string> ReverseGeocodeAsync(double latitude, double longitude)
+        {
+            logger.LogInformation("Reverse geocoding for coordinates: {Lat}, {Lon}, UseManagedIdentity: {UseManagedIdentity}", latitude, longitude, UseManagedIdentity);
+
+            using var httpClient = new HttpClient();
+            string url;
+
+            if (UseManagedIdentity)
+            {
+                // Use managed identity with bearer token authentication
+                url = $"https://atlas.microsoft.com/search/address/reverse/json?api-version=1.0&query={latitude},{longitude}";
+
+                var token = await GetBearerTokenAsync().ConfigureAwait(false);
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                httpClient.DefaultRequestHeaders.Add("x-ms-client-id", GetAzureMapsClientId());
+            }
+            else
+            {
+                // Fall back to subscription key authentication for local development
+                var subscriptionKey = GetMapKey();
+                url = $"https://atlas.microsoft.com/search/address/reverse/json?subscription-key={subscriptionKey}&api-version=1.0&query={latitude},{longitude}";
+            }
+
+            var response = await httpClient.GetAsync(url).ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                logger.LogError("Azure Maps reverse geocode failed with status code: {StatusCode}", response.StatusCode);
+                throw new Exception($"Azure Maps reverse geocode failed: {response.StatusCode}");
+            }
+
+            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            logger.LogInformation("Reverse geocode completed with {Length} bytes", content.Length);
+
+            return content;
         }
     }
 }
