@@ -65,6 +65,15 @@ Restore and modernize CI/CD pipelines to enable reliable, frequent deployments. 
 - ? Implement auto-scaling policies
 - ? Set up budget alerts
 
+### Phase 6 - Security Scanning (Issue #989)
+- ☐ Set up OWASP ZAP for periodic DAST scanning of live site
+- ☐ Enable GitHub CodeQL for SAST analysis on PRs
+- ☐ Add Trivy container image scanning to CI pipeline
+- ☐ Configure dependency vulnerability scanning (npm audit + dotnet)
+- ☐ Set up GitHub secret scanning
+- ☐ Create security scanning dashboard/alerts
+- ☐ Schedule weekly automated security scans
+
 ---
 
 ## Out-of-Scope
@@ -114,6 +123,8 @@ None (this is a foundational project)
 | **Database migration failures** | Low | Critical | Pre-deployment validation; manual rollback procedure |
 | **Cost savings don't materialize** | Medium | Low | Monitor closely; adjust resources; consider reserved instances |
 | **GitHub Actions outage** | Low | High | Have manual deployment procedure documented |
+| **Security scan false positives** | Medium | Low | Configure rule exclusions; regular review of findings |
+| **Security findings backlog** | Medium | Medium | Prioritize by severity; integrate into sprint planning |
 
 ---
 
@@ -412,6 +423,225 @@ jobs:
 - Failed auto-fix attempts are flagged for manual intervention
 - Maintain audit log of all automated merges
 
+### Security Scanning Workflows (Issue #989)
+
+**Goal:** Periodically scan the application for security vulnerabilities using multiple complementary tools.
+
+#### Recommended Tools
+
+| Tool | Type | Cost | Purpose |
+|------|------|------|---------|
+| **OWASP ZAP** | DAST | Free | Dynamic scanning of live web app |
+| **GitHub CodeQL** | SAST | Free for public repos | Static code analysis |
+| **Trivy** | Container | Free | Container image vulnerability scanning |
+| **npm audit** | Dependency | Free | JavaScript dependency vulnerabilities |
+| **dotnet list package --vulnerable** | Dependency | Free | .NET dependency vulnerabilities |
+| **GitHub Secret Scanning** | Secrets | Free | Detect committed secrets |
+| **Gitleaks** | Secrets | Free | Pre-commit secret detection |
+
+#### DAST: OWASP ZAP Baseline Scan
+
+Runs a baseline security scan against the live dev site weekly.
+
+```yaml
+name: Security - OWASP ZAP Scan
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'  # Every Monday at 6 AM UTC
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  zap-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          target: 'https://dev.trashmob.eco'
+          rules_file_name: '.zap/rules.tsv'
+          cmd_options: '-a -j'
+
+      - name: Upload ZAP Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-report
+          path: report_html.html
+
+      - name: Create Issue on High Findings
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'Security Alert: OWASP ZAP found vulnerabilities',
+              body: 'The weekly OWASP ZAP scan found security issues. See the workflow run for details.',
+              labels: ['security', 'automated']
+            })
+```
+
+**ZAP Rules Configuration (.zap/rules.tsv):**
+
+```tsv
+10038	IGNORE	(Content Security Policy - can have false positives)
+10109	WARN	(Modern Web Application - informational)
+```
+
+#### SAST: GitHub CodeQL Analysis
+
+```yaml
+name: Security - CodeQL Analysis
+
+on:
+  push:
+    branches: [main, release]
+  pull_request:
+    branches: [main, release]
+  schedule:
+    - cron: '0 6 * * 1'  # Weekly on Monday
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      matrix:
+        language: ['csharp', 'javascript-typescript']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-extended
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"
+```
+
+#### Container Scanning: Trivy
+
+Add to existing container build workflow:
+
+```yaml
+      - name: Scan Container Image with Trivy
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: '${{ secrets.ACR_NAME }}.azurecr.io/trashmob-web-api:${{ github.sha }}'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy Results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+```
+
+#### Dependency Vulnerability Scanning
+
+```yaml
+name: Security - Dependency Scan
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'  # Weekly
+  pull_request:
+    paths:
+      - '**/package.json'
+      - '**/package-lock.json'
+      - '**/*.csproj'
+
+jobs:
+  npm-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        working-directory: TrashMob/client-app
+        run: npm ci
+
+      - name: Run npm audit
+        working-directory: TrashMob/client-app
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+  dotnet-vuln:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Check for vulnerable packages
+        run: |
+          dotnet restore
+          dotnet list package --vulnerable --include-transitive 2>&1 | tee vuln-report.txt
+          if grep -q "has the following vulnerable packages" vuln-report.txt; then
+            echo "::warning::Vulnerable packages found"
+          fi
+```
+
+#### Secret Scanning: Gitleaks Pre-commit
+
+```yaml
+name: Security - Secret Scanning
+
+on:
+  push:
+    branches: [main, release]
+  pull_request:
+
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Gitleaks Scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+#### Security Dashboard & Alerting
+
+**Recommended Approach:**
+1. Use GitHub Security tab as the central dashboard (aggregates CodeQL, Dependabot, secret scanning)
+2. Configure email alerts for high/critical findings via GitHub notification settings
+3. Create a weekly security review checklist for the team
+
+**Security Alerts Configuration:**
+- High/Critical vulnerabilities: Immediate email + Slack notification
+- Medium vulnerabilities: Weekly digest
+- Low/Informational: Monthly review
+
 ---
 
 ## Implementation Phases
@@ -446,6 +676,13 @@ jobs:
 - Right-size resources
 - Implement auto-scaling
 - Set budget alerts
+
+### Phase 6: Security Scanning (Issue #989)
+- Configure OWASP ZAP for DAST
+- Enable CodeQL for SAST
+- Add container scanning with Trivy
+- Set up dependency vulnerability scanning
+- Configure alerts for findings
 
 **Note:** Pipeline fixes (Phase 1) are prerequisite for all other work.
 
@@ -493,6 +730,7 @@ The following GitHub issues are tracked as part of this project:
 
 - **[#2227](https://github.com/trashmob/TrashMob/issues/2227)** - Project 5: Improve Deployment Pipelines and Infrastructure (tracking issue)
 - **[#1519](https://github.com/trashmob/TrashMob/issues/1519)** - Dependency Dashboard
+- **[#989](https://github.com/trashmob/TrashMob/issues/989)** - Set up periodic web scanning of application (Phase 6)
 
 ---
 
@@ -504,7 +742,7 @@ The following GitHub issues are tracked as part of this project:
 
 ---
 
-**Last Updated:** January 31, 2026
+**Last Updated:** February 5, 2026
 **Owner:** DevOps/Build Engineer
 **Status:** In Progress
 **Next Review:** Regular standups during development
