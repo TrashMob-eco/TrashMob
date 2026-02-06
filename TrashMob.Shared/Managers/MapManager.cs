@@ -2,6 +2,7 @@
 {
     using System;
     using System.Net;
+    using System.Net.Http;
     using System.Text.Json;
     using System.Threading.Tasks;
     using AzureMapsToolkit.Search;
@@ -169,6 +170,57 @@
             };
 
             return address;
+        }
+
+        /// <inheritdoc />
+        public async Task<string> SearchAddressAsync(string query, string entityType = null)
+        {
+            var subscriptionKey = GetMapKey();
+            var url = $"https://atlas.microsoft.com/search/address/json?typeahead=true&subscription-key={subscriptionKey}&api-version=1.0&query={Uri.EscapeDataString(query)}";
+
+            if (!string.IsNullOrEmpty(entityType))
+            {
+                url += $"&entityType={Uri.EscapeDataString(entityType)}";
+            }
+
+            logger.LogInformation("Searching address with query: {Query}", query);
+
+            using var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync(url).ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                logger.LogError("Azure Maps search failed with status code: {StatusCode}", response.StatusCode);
+                throw new Exception($"Azure Maps search failed: {response.StatusCode}");
+            }
+
+            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            logger.LogInformation("Address search completed with {Length} bytes", content.Length);
+
+            return content;
+        }
+
+        /// <inheritdoc />
+        public async Task<string> ReverseGeocodeAsync(double latitude, double longitude)
+        {
+            var subscriptionKey = GetMapKey();
+            var url = $"https://atlas.microsoft.com/search/address/reverse/json?subscription-key={subscriptionKey}&api-version=1.0&query={latitude},{longitude}";
+
+            logger.LogInformation("Reverse geocoding for coordinates: {Lat}, {Lon}", latitude, longitude);
+
+            using var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync(url).ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                logger.LogError("Azure Maps reverse geocode failed with status code: {StatusCode}", response.StatusCode);
+                throw new Exception($"Azure Maps reverse geocode failed: {response.StatusCode}");
+            }
+
+            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            logger.LogInformation("Reverse geocode completed with {Length} bytes", content.Length);
+
+            return content;
         }
     }
 }
