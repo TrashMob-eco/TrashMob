@@ -31,6 +31,14 @@ Reduce regression risk, enable confident releases, and replace manual test scena
 - API contract testing
 - Accessibility testing automation
 
+### Future Improvements
+- **Adversarial/bug-finding unit tests** - Current unit tests verify code does what it does, not what it *should* do. Add:
+  - Property-based testing (generate random inputs, verify invariants)
+  - Mutation testing (verify tests fail when code is deliberately broken)
+  - Edge case coverage (nulls, empty collections, boundary values, concurrent access)
+  - Tests written from specifications before reading implementation
+  - Integration tests with real database/service interactions
+
 ---
 
 ## Scope
