@@ -388,7 +388,7 @@ namespace TrashMob.Shared.Managers
         /// <summary>
         /// Renders inline elements (bold, italic, links, etc.) to the text descriptor.
         /// </summary>
-        private static void RenderInlines(TextDescriptor text, ContainerInline? container)
+        private static void RenderInlines(TextDescriptor text, ContainerInline container)
         {
             if (container == null) return;
 
@@ -401,7 +401,8 @@ namespace TrashMob.Shared.Managers
                         break;
 
                     case EmphasisInline emphasis:
-                        if (emphasis.DelimiterCount == 2) // Bold
+                        // Bold text (double asterisks or underscores)
+                        if (emphasis.DelimiterCount == 2)
                         {
                             foreach (var child in emphasis)
                             {
@@ -411,8 +412,9 @@ namespace TrashMob.Shared.Managers
                                 }
                             }
                         }
-                        else // Italic
+                        else
                         {
+                            // Italic text (single asterisk or underscore)
                             foreach (var child in emphasis)
                             {
                                 if (child is LiteralInline italicLiteral)
