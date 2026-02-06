@@ -56,6 +56,7 @@ import { PartnerAdminInvitationsTable } from '@/pages/MyDashboard/PartnerAdminIn
 import { MyLitterReportsTable } from '@/pages/MyDashboard/MyLitterReportsTable';
 import { NearbyLitterReportsWidget } from '@/pages/MyDashboard/NearbyLitterReportsWidget';
 import { MyTeamsTable } from '@/pages/MyDashboard/MyTeamsTable';
+import { MyRoutesCard } from '@/pages/MyDashboard/MyRoutesCard';
 import { MyWaiversCard } from '@/pages/MyDashboard/MyWaiversCard';
 import { MyImpactCard } from '@/pages/MyDashboard/MyImpactCard';
 import { InviteFriendsCard } from '@/pages/MyDashboard/InviteFriendsCard';
@@ -389,6 +390,8 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                         </div>
                     </CardContent>
                 </Card>
+
+                <MyRoutesCard />
 
                 <Card className='mb-4'>
                     <CardHeader>

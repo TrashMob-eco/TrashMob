@@ -35,6 +35,16 @@
                 EndTime = displayEventAttendeeRoute.EndTime,
                 StartTime = displayEventAttendeeRoute.StartTime,
                 UserPath = userPath,
+                TotalDistanceMeters = displayEventAttendeeRoute.TotalDistanceMeters,
+                DurationMinutes = displayEventAttendeeRoute.DurationMinutes,
+                PrivacyLevel = displayEventAttendeeRoute.PrivacyLevel,
+                IsTrimmed = displayEventAttendeeRoute.IsTrimmed,
+                TrimStartMeters = displayEventAttendeeRoute.TrimStartMeters,
+                TrimEndMeters = displayEventAttendeeRoute.TrimEndMeters,
+                BagsCollected = displayEventAttendeeRoute.BagsCollected,
+                WeightCollected = displayEventAttendeeRoute.WeightCollected,
+                Notes = displayEventAttendeeRoute.Notes,
+                ExpiresDate = displayEventAttendeeRoute.ExpiresDate,
             };
         }
     }

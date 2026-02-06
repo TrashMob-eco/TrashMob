@@ -26,6 +26,8 @@ import { EventContributorsCard } from '@/components/events/EventContributorsCard
 import { EventPhotoGallery } from '@/components/events/EventPhotoGallery';
 import { EventPhotoUploader } from '@/components/events/EventPhotoUploader';
 import { EventPartnersCard } from '@/components/events/EventPartnersCard';
+import { EventRouteStatsCard } from '@/components/events/EventRouteStatsCard';
+import { EventRoutesMap } from '@/components/events/EventRoutesMap';
 
 import { Calendar, Share2, ClipboardList } from 'lucide-react';
 import makeUrls from '@/lib/add-to-calendar';
@@ -201,6 +203,19 @@ export const EventDetails: FC<EventDetailsProps> = () => {
                         <div className='mt-8'>
                             <EventPartnersCard eventId={eventId} />
                         </div>
+                        {isEventCompleted ? (
+                            <div className='mt-8 space-y-4'>
+                                <EventRouteStatsCard eventId={eventId} />
+                                <EventRoutesMap
+                                    eventId={eventId}
+                                    defaultCenter={
+                                        latitude && longitude
+                                            ? { lat: latitude, lng: longitude }
+                                            : undefined
+                                    }
+                                />
+                            </div>
+                        ) : null}
                     </div>
                     {currentUser ? (
                         <div className='container mx-auto mb-16'>
