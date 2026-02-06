@@ -15,6 +15,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import * as ToolTips from '@/store/ToolTips';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { CharacterCounter } from '@/components/ui/character-counter';
+import { MAX_PARTNER_NAME_LENGTH, MAX_PARTNER_NOTES_LENGTH } from '@/components/Models/Constants';
 import { GetPartnerById, GetPartnerStatuses, GetPartnerTypes, UpdatePartner } from '@/services/partners';
 import PartnerData from '@/components/Models/PartnerData';
 import { SidebarLayout } from '../../layouts/_layout.sidebar';
@@ -31,12 +33,19 @@ interface FormInputs {
 }
 
 const formSchema = z.object({
-    name: z.string({ required_error: 'Name cannot be blank.' }),
+    name: z
+        .string({ required_error: 'Name cannot be blank.' })
+        .max(MAX_PARTNER_NAME_LENGTH, `Name must be less than ${MAX_PARTNER_NAME_LENGTH} characters`),
     website: z.string().url({ message: 'Please enter valid website.' }).optional(),
     partnerStatusId: z.number(),
     partnerTypeId: z.number(),
-    publicNotes: z.string({ required_error: 'Notes cannot be empty' }),
-    privateNotes: z.string().optional(),
+    publicNotes: z
+        .string({ required_error: 'Notes cannot be empty' })
+        .max(MAX_PARTNER_NOTES_LENGTH, `Public notes must be less than ${MAX_PARTNER_NOTES_LENGTH} characters`),
+    privateNotes: z
+        .string()
+        .max(MAX_PARTNER_NOTES_LENGTH, `Private notes must be less than ${MAX_PARTNER_NOTES_LENGTH} characters`)
+        .optional(),
 });
 
 const useGetPartnerStatuses = () =>
@@ -97,6 +106,9 @@ export const PartnerEdit = () => {
             privateNotes: currentValues?.privateNotes,
         },
     });
+
+    const publicNotes = form.watch('publicNotes');
+    const privateNotes = form.watch('privateNotes');
 
     useEffect(() => {
         if (currentValues) {
@@ -232,9 +244,12 @@ export const PartnerEdit = () => {
                                     Public Notes
                                 </FormLabel>
                                 <FormControl>
-                                    <Textarea {...field} maxLength={2048} className='h-24' />
+                                    <Textarea {...field} maxLength={MAX_PARTNER_NOTES_LENGTH} className='h-24' />
                                 </FormControl>
-                                <FormMessage />
+                                <CharacterCounter
+                                    currentLength={publicNotes?.length || 0}
+                                    maxLength={MAX_PARTNER_NOTES_LENGTH}
+                                />
                             </FormItem>
                         )}
                     />
@@ -245,9 +260,12 @@ export const PartnerEdit = () => {
                             <FormItem className='col-span-12'>
                                 <FormLabel tooltip={ToolTips.PartnerPrivateNotes}>Private Notes</FormLabel>
                                 <FormControl>
-                                    <Textarea {...field} maxLength={2048} className='h-24' />
+                                    <Textarea {...field} maxLength={MAX_PARTNER_NOTES_LENGTH} className='h-24' />
                                 </FormControl>
-                                <FormMessage />
+                                <CharacterCounter
+                                    currentLength={privateNotes?.length || 0}
+                                    maxLength={MAX_PARTNER_NOTES_LENGTH}
+                                />
                             </FormItem>
                         )}
                     />

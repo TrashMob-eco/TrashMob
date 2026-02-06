@@ -19,6 +19,8 @@ import { ImageUploader, ImageWithLocation } from '@/components/litterreports/ima
 import { ImageLocationEditor } from '@/components/litterreports/image-location-editor';
 import LitterReportData from '@/components/Models/LitterReportData';
 import LitterImageData from '@/components/Models/LitterImageData';
+import { MAX_LITTER_REPORT_NAME_LENGTH, MAX_LITTER_REPORT_DESC_LENGTH } from '@/components/Models/Constants';
+import { CharacterCounter } from '@/components/ui/character-counter';
 import { CreateLitterReport, UploadLitterImage, GetUserLitterReports } from '@/services/litter-report';
 import { useLogin } from '@/hooks/useLogin';
 import { useToast } from '@/hooks/use-toast';
@@ -26,8 +28,15 @@ import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
 import { useFeatureMetrics } from '@/hooks/useFeatureMetrics';
 
 const formSchema = z.object({
-    name: z.string().min(1, 'Report name is required').max(256, 'Name must be less than 256 characters'),
-    description: z.string().max(2048, 'Description must be less than 2048 characters').optional().default(''),
+    name: z
+        .string()
+        .min(1, 'Report name is required')
+        .max(MAX_LITTER_REPORT_NAME_LENGTH, `Name must be less than ${MAX_LITTER_REPORT_NAME_LENGTH} characters`),
+    description: z
+        .string()
+        .max(MAX_LITTER_REPORT_DESC_LENGTH, `Description must be less than ${MAX_LITTER_REPORT_DESC_LENGTH} characters`)
+        .optional()
+        .default(''),
 });
 
 type FormInputs = z.infer<typeof formSchema>;
@@ -50,6 +59,9 @@ const CreateLitterReportPageInner = () => {
             description: '',
         },
     });
+
+    const reportName = form.watch('name');
+    const reportDescription = form.watch('description');
 
     const createMutation = useMutation({
         mutationKey: CreateLitterReport().key,
@@ -208,9 +220,16 @@ const CreateLitterReportPageInner = () => {
                                         <FormItem>
                                             <FormLabel required>Report Name</FormLabel>
                                             <FormControl>
-                                                <Input {...field} placeholder='e.g., Trash pile on Main Street' />
+                                                <Input
+                                                    {...field}
+                                                    placeholder='e.g., Trash pile on Main Street'
+                                                    maxLength={MAX_LITTER_REPORT_NAME_LENGTH}
+                                                />
                                             </FormControl>
-                                            <FormMessage />
+                                            <CharacterCounter
+                                                currentLength={reportName?.length || 0}
+                                                maxLength={MAX_LITTER_REPORT_NAME_LENGTH}
+                                            />
                                         </FormItem>
                                     )}
                                 />
@@ -226,9 +245,13 @@ const CreateLitterReportPageInner = () => {
                                                     {...field}
                                                     placeholder='Describe the litter location and what you observed...'
                                                     rows={4}
+                                                    maxLength={MAX_LITTER_REPORT_DESC_LENGTH}
                                                 />
                                             </FormControl>
-                                            <FormMessage />
+                                            <CharacterCounter
+                                                currentLength={reportDescription?.length || 0}
+                                                maxLength={MAX_LITTER_REPORT_DESC_LENGTH}
+                                            />
                                         </FormItem>
                                     )}
                                 />

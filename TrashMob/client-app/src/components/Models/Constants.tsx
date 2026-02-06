@@ -24,3 +24,20 @@ export const EventStatusInactive = 2;
 
 export const PartnerTypeGovernment = 1;
 export const PartnerTypeBusiness = 2;
+
+// Character limits for form fields (must match backend EF Core constraints)
+export const MAX_EVENT_NAME_LENGTH = 256;
+export const MAX_EVENT_DESC_LENGTH = 2048;
+export const MAX_TEAM_NAME_LENGTH = 200;
+export const MAX_TEAM_DESC_LENGTH = 2048;
+export const MAX_LITTER_REPORT_NAME_LENGTH = 64;
+export const MAX_LITTER_REPORT_DESC_LENGTH = 2048;
+export const MAX_PARTNER_NAME_LENGTH = 128;
+export const MAX_PARTNER_NOTES_LENGTH = 2048;
+export const MAX_PARTNER_REQUEST_NOTES_LENGTH = 2048;
+export const MAX_CONTACT_NAME_LENGTH = 64;
+export const MAX_CONTACT_EMAIL_LENGTH = 64;
+export const MAX_CONTACT_PHONE_LENGTH = 30;
+export const MAX_CONTACT_NOTES_LENGTH = 2000;
+export const MAX_MESSAGE_LENGTH = 2048;
+export const MAX_USER_FEEDBACK_DESC_LENGTH = 4000;
