@@ -78,33 +78,30 @@ export function EventPartnersCard({ eventId }: EventPartnersCardProps) {
             <CardContent>
                 <div className='space-y-4'>
                     {visiblePartners.map((partner) => (
-                        <div
-                            key={`${partner.partnerLocationId}`}
-                            className='border rounded-lg p-4 bg-muted/50'
-                        >
+                        <div key={`${partner.partnerLocationId}`} className='border rounded-lg p-4 bg-muted/50'>
                             <div className='flex items-start justify-between gap-4'>
                                 <div className='flex-1'>
                                     <h4 className='font-semibold text-lg'>{partner.partnerName}</h4>
-                                    {partner.partnerLocationName ? <p className='text-sm text-muted-foreground'>
-                                            {partner.partnerLocationName}
-                                        </p> : null}
+                                    {partner.partnerLocationName ? (
+                                        <p className='text-sm text-muted-foreground'>{partner.partnerLocationName}</p>
+                                    ) : null}
                                 </div>
                                 {getStatusBadge(partner.eventPartnerLocationStatusId)}
                             </div>
 
-                            {partner.partnerServicesEngaged ? <div className='mt-3'>
+                            {partner.partnerServicesEngaged ? (
+                                <div className='mt-3'>
                                     <p className='text-sm font-medium'>Services:</p>
-                                    <p className='text-sm text-muted-foreground'>
-                                        {partner.partnerServicesEngaged}
-                                    </p>
-                                </div> : null}
+                                    <p className='text-sm text-muted-foreground'>{partner.partnerServicesEngaged}</p>
+                                </div>
+                            ) : null}
 
-                            {partner.partnerLocationNotes ? <div className='mt-3'>
+                            {partner.partnerLocationNotes ? (
+                                <div className='mt-3'>
                                     <p className='text-sm font-medium'>Notes:</p>
-                                    <p className='text-sm text-muted-foreground'>
-                                        {partner.partnerLocationNotes}
-                                    </p>
-                                </div> : null}
+                                    <p className='text-sm text-muted-foreground'>{partner.partnerLocationNotes}</p>
+                                </div>
+                            ) : null}
                         </div>
                     ))}
                 </div>
