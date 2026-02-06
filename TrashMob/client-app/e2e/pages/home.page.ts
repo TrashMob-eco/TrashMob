@@ -115,7 +115,13 @@ export class HomePage {
 
     async navigateToHelp() {
         await this.openAboutMenu();
-        await this.page.getByRole('link', { name: /help.*faq/i }).click();
+        await this.page.getByRole('link', { name: 'Help' }).click();
+    }
+
+    async navigateToFaq() {
+        await this.openAboutMenu();
+        // Use more specific locator to avoid footer FAQ link
+        await this.page.getByRole('link', { name: /FAQ.*frequently/i }).click();
     }
 
     async clickSignIn() {
