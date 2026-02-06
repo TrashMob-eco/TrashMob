@@ -30,7 +30,13 @@ export const SiteAdminLitterReports = () => {
                 <CardTitle className='text-primary'>Litter Reports ({len})</CardTitle>
             </CardHeader>
             <CardContent>
-                <DataTable columns={columns} data={litterReports || []} />
+                <DataTable
+                    columns={columns}
+                    data={litterReports || []}
+                    enableSearch
+                    searchPlaceholder='Search litter reports...'
+                    searchColumns={['name', 'description', 'city', 'region']}
+                />
             </CardContent>
         </Card>
     );

@@ -77,7 +77,13 @@ export const SiteAdminPartnerRequests = () => {
                 <CardTitle>Partner Requests ({len})</CardTitle>
             </CardHeader>
             <CardContent>
-                <DataTable columns={columns} data={partnerRequests || []} />
+                <DataTable
+                    columns={columns}
+                    data={partnerRequests || []}
+                    enableSearch
+                    searchPlaceholder='Search partner requests...'
+                    searchColumns={['name', 'email', 'notes']}
+                />
             </CardContent>
         </Card>
     );

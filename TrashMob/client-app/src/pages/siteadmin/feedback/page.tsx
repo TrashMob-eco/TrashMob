@@ -78,7 +78,13 @@ export const SiteAdminFeedback = () => {
                 {isLoading ? (
                     <div className='text-center py-8'>Loading feedback...</div>
                 ) : (
-                    <DataTable columns={columns} data={feedbackList || []} />
+                    <DataTable
+                        columns={columns}
+                        data={feedbackList || []}
+                        enableSearch
+                        searchPlaceholder='Search feedback...'
+                        searchColumns={['userEmail', 'feedbackDescription']}
+                    />
                 )}
             </CardContent>
         </Card>

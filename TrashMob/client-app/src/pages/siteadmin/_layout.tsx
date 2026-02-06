@@ -1,54 +1,71 @@
-import { useCallback } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Outlet } from 'react-router';
+import {
+    Users,
+    Calendar,
+    Building2,
+    UsersRound,
+    Trash2,
+    Handshake,
+    Briefcase,
+    Bell,
+    Mail,
+    FileText,
+    MessageSquare,
+    ImageIcon,
+    ScrollText,
+    Send,
+    Newspaper,
+} from 'lucide-react';
+import { SidebarNav, NavGroup } from '@/components/ui/sidebar-nav';
+
+const pathPrefix = '/siteadmin';
+
+const navGroups: NavGroup[] = [
+    {
+        title: 'Data Management',
+        items: [
+            { name: 'Users', href: `${pathPrefix}/users`, icon: Users },
+            { name: 'Events', href: `${pathPrefix}/events`, icon: Calendar },
+            { name: 'Partners', href: `${pathPrefix}/partners`, icon: Building2 },
+            { name: 'Teams', href: `${pathPrefix}/teams`, icon: UsersRound },
+            { name: 'Litter Reports', href: `${pathPrefix}/litter-reports`, icon: Trash2 },
+            { name: 'Partner Requests', href: `${pathPrefix}/partner-requests`, icon: Handshake },
+            { name: 'Job Opportunities', href: `${pathPrefix}/job-opportunities`, icon: Briefcase },
+        ],
+    },
+    {
+        title: 'Communications',
+        items: [
+            { name: 'Send Notifications', href: `${pathPrefix}/send-notifications`, icon: Bell },
+            { name: 'Email Templates', href: `${pathPrefix}/email-templates`, icon: Mail },
+            { name: 'Newsletters', href: `${pathPrefix}/newsletters`, icon: Newspaper },
+            { name: 'Bulk Invites', href: `${pathPrefix}/invites`, icon: Send },
+        ],
+    },
+    {
+        title: 'Moderation',
+        items: [
+            { name: 'User Feedback', href: `${pathPrefix}/feedback`, icon: MessageSquare },
+            { name: 'Photo Moderation', href: `${pathPrefix}/photo-moderation`, icon: ImageIcon },
+            { name: 'Manage Content', href: `${pathPrefix}/content`, icon: FileText },
+            { name: 'Waivers', href: `${pathPrefix}/waivers`, icon: ScrollText },
+        ],
+    },
+];
 
 export const SiteAdminLayout = () => {
-    const navigate = useNavigate();
-    const location = useLocation();
-
-    const pathPrefix = `/siteadmin`;
-    const navs = [
-        { name: 'Manage Users', value: `${pathPrefix}/users` },
-        { name: 'Manage Events', value: `${pathPrefix}/events` },
-        { name: 'Manage Partners', value: `${pathPrefix}/partners` },
-        { name: 'Manage Teams', value: `${pathPrefix}/teams` },
-        { name: 'Manage Litter Reports', value: `${pathPrefix}/litter-reports` },
-        { name: 'Manage Partner Requests', value: `${pathPrefix}/partner-requests` },
-        { name: 'Manage Job Opportunities', value: `${pathPrefix}/job-opportunities` },
-        // { name: 'View Executive Summary', value: `${pathPrefix}/executive-summary` },
-        { name: 'Send Notifications', value: `${pathPrefix}/send-notifications` },
-        { name: 'View Email Templates', value: `${pathPrefix}/email-templates` },
-        { name: 'Manage Content', value: `${pathPrefix}/content` },
-        { name: 'User Feedback', value: `${pathPrefix}/feedback` },
-        { name: 'Photo Moderation', value: `${pathPrefix}/photo-moderation` },
-        { name: 'Manage Waivers', value: `${pathPrefix}/waivers` },
-        { name: 'Bulk Invites', value: `${pathPrefix}/invites` },
-        { name: 'Newsletters', value: `${pathPrefix}/newsletters` },
-    ];
-
-    const handleValueChange = useCallback(
-        (value: string) => {
-            navigate(value);
-        },
-        [navigate],
-    );
-
     return (
-        <div>
-            <div className='container mx-auto my-4'>
-                <h1 className='scroll-m-20 pb-4 text-3xl font-light tracking-tight first:mt-0'>Site Administration</h1>
-                <Tabs value={location.pathname} onValueChange={handleValueChange}>
-                    <TabsList className='w-full'>
-                        {navs.map((nav, idx) => (
-                            <TabsTrigger className='whitespace-normal' value={nav.value} key={`tab-${idx}`}>
-                                {nav.name}
-                            </TabsTrigger>
-                        ))}
-                    </TabsList>
-                </Tabs>
-            </div>
-            <div className='container mx-auto pb-4'>
-                <Outlet />
+        <div className='container mx-auto py-6'>
+            <h1 className='scroll-m-20 pb-6 text-3xl font-light tracking-tight'>Site Administration</h1>
+            <div className='flex flex-col gap-6 lg:flex-row'>
+                <aside className='w-full shrink-0 lg:w-64'>
+                    <div className='sticky top-4 rounded-lg border bg-card p-4'>
+                        <SidebarNav groups={navGroups} />
+                    </div>
+                </aside>
+                <main className='min-w-0 flex-1'>
+                    <Outlet />
+                </main>
             </div>
         </div>
     );
