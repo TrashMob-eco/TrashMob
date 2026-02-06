@@ -16,6 +16,7 @@ import DisplayPartnershipData from '@/components/Models/DisplayPartnershipData';
 import DisplayPartnerAdminInvitationData from '@/components/Models/DisplayPartnerAdminInvitationData';
 import DisplayPartnerLocationEventData from '@/components/Models/DisplayPartnerLocationEventServiceData';
 import LitterReportData from '@/components/Models/LitterReportData';
+import { LitterReportStatusEnum } from '@/components/Models/LitterReportStatus';
 import TeamData from '@/components/Models/TeamData';
 
 import twofigure from '@/components/assets/card/twofigure.svg';
@@ -63,6 +64,7 @@ const isUpcomingEvent = (event: EventData) => new Date(event.eventDate) >= new D
 const isPastEvent = (event: EventData) => new Date(event.eventDate) < new Date();
 
 type EventFilterType = 'all' | 'created' | 'attending';
+type LitterReportFilterType = 'all' | 'new' | 'assigned' | 'cleaned' | 'cancelled';
 
 interface MyDashboardProps {}
 
@@ -76,6 +78,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
     const [upcomingEventsMapView, setUpcomingEventsMapView] = useState<boolean>(false);
     const [pastEventsMapView, setPastEventsMapView] = useState<boolean>(false);
     const [eventFilter, setEventFilter] = useState<EventFilterType>('all');
+    const [litterReportFilter, setLitterReportFilter] = useState<LitterReportFilterType>('all');
     const state = location.state as { newEventCreated: boolean };
     const [eventToShare, setEventToShare] = useState<EventData>();
     const [showModal, setShowSocialsModal] = useState<boolean>(false);
@@ -157,6 +160,20 @@ const MyDashboard: FC<MyDashboardProps> = () => {
         queryFn: GetTeamsILead().service,
         select: (res) => res.data,
     });
+
+    // Filter litter reports based on user selection
+    const filteredLitterReports = useMemo(() => {
+        const reports = myLitterReports || [];
+        if (litterReportFilter === 'all') return reports;
+        const statusMap: Record<LitterReportFilterType, number> = {
+            all: 0,
+            new: LitterReportStatusEnum.New,
+            assigned: LitterReportStatusEnum.Assigned,
+            cleaned: LitterReportStatusEnum.Cleaned,
+            cancelled: LitterReportStatusEnum.Cancelled,
+        };
+        return reports.filter((r) => r.litterReportStatusId === statusMap[litterReportFilter]);
+    }, [myLitterReports, litterReportFilter]);
 
     // getStatsForUser
     const { data: stats } = useQuery<AxiosResponse<StatsData>, unknown, StatsData>({
@@ -372,10 +389,25 @@ const MyDashboard: FC<MyDashboardProps> = () => {
 
                 <Card className='mb-4'>
                     <CardHeader>
-                        <div className='flex flex-row'>
+                        <div className='flex flex-row flex-wrap gap-2'>
                             <CardTitle className='grow text-primary'>
-                                My Litter Reports ({(myLitterReports || []).length})
+                                My Litter Reports ({filteredLitterReports.length})
                             </CardTitle>
+                            <Select
+                                value={litterReportFilter}
+                                onValueChange={(v) => setLitterReportFilter(v as LitterReportFilterType)}
+                            >
+                                <SelectTrigger className='w-[140px]'>
+                                    <SelectValue placeholder='Filter' />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value='all'>All</SelectItem>
+                                    <SelectItem value='new'>New</SelectItem>
+                                    <SelectItem value='assigned'>Assigned</SelectItem>
+                                    <SelectItem value='cleaned'>Cleaned</SelectItem>
+                                    <SelectItem value='cancelled'>Cancelled</SelectItem>
+                                </SelectContent>
+                            </Select>
                             <Button variant='outline' size='sm' asChild>
                                 <Link to='/litterreports'>View All Reports</Link>
                             </Button>
@@ -383,7 +415,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                     </CardHeader>
                     <CardContent>
                         <div className='overflow-auto'>
-                            <MyLitterReportsTable items={myLitterReports || []} />
+                            <MyLitterReportsTable items={filteredLitterReports} />
                         </div>
                     </CardContent>
                 </Card>
