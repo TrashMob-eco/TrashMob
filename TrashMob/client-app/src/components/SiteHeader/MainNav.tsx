@@ -63,24 +63,20 @@ const ListItem = React.forwardRef<HTMLAnchorElement, ListItemProps>(
 ListItem.displayName = 'ListItem';
 
 // Mobile nav item component for collapsed menu
+// Uses min-h-11 (44px) for touch-friendly tap targets per Google's mobile usability guidelines
 const MobileNavItem = ({ to, children, external }: { to: string; children: React.ReactNode; external?: boolean }) => {
+    const linkClassName =
+        'flex items-center text-sm font-medium text-foreground no-underline transition-colors hover:text-primary min-h-11 py-2';
+
     if (external) {
         return (
-            <a
-                href={to}
-                className='block text-sm font-medium text-foreground no-underline transition-colors hover:text-primary py-2'
-                target='_blank'
-                rel='noopener noreferrer'
-            >
+            <a href={to} className={linkClassName} target='_blank' rel='noopener noreferrer'>
                 {children}
             </a>
         );
     }
     return (
-        <Link
-            to={to}
-            className='block text-sm font-medium text-foreground no-underline transition-colors hover:text-primary py-2'
-        >
+        <Link to={to} className={linkClassName}>
             {children}
         </Link>
     );

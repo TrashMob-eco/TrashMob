@@ -148,7 +148,7 @@ export const GettingStartSection = () => {
         <div className='bg-card'>
             <div className='container'>
                 <div className='flex flex-col items-center py-4'>
-                    <h3 className='font-semibold text-[40px] mt-10 mb-2'>{content.heading}</h3>
+                    <h3 className='font-semibold text-2xl md:text-[40px] mt-10 mb-2'>{content.heading}</h3>
                     <p className='text-2xl text-center mt-6 mb-4'>{content.subheading}</p>
                     <div className='flex flex-col md:flex-row justify-between md:px-32 pb-12 w-full' ref={viewportRef}>
                         {content.requirements.map((req, index) => {

@@ -16,7 +16,9 @@ export const HeroSection: FC<HeroSectionProps> = ({ Title, Description }) => (
             />
             <div className='flex flex-row items-stretch relative'>
                 <div className='flex flex-col justify-center flex-1 pr-12! py-3! xl:py-8! relative z-10 text-center md:text-left!'>
-                    <h1 className='font-bold text-[40px] leading-[50px] mt-10 mb-2'>{Title}</h1>
+                    <h1 className='font-bold text-2xl md:text-[40px] leading-tight md:leading-[50px] mt-10 mb-2'>
+                        {Title}
+                    </h1>
                     <p className='font-bold my-4'>{Description}</p>
                 </div>
             </div>

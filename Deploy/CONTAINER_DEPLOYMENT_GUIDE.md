@@ -316,6 +316,7 @@ After deploying to production, complete these manual steps:
 3. Test user authentication flow
 4. Verify email notifications are working
 5. Check Application Insights for any startup errors
+6. **Review Google Search Console** - Visit [Google Search Console](https://search.google.com/search-console?resource_id=https://www.trashmob.eco/) to check for any remaining site issues (mobile usability, indexing problems, etc.)
 
 ## Additional Resources
 
