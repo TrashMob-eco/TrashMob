@@ -115,7 +115,12 @@ export class HomePage {
 
     async navigateToHelp() {
         await this.openAboutMenu();
-        await this.page.getByRole('link', { name: /help.*faq/i }).click();
+        await this.page.getByRole('link', { name: 'Help' }).click();
+    }
+
+    async navigateToFaq() {
+        await this.openAboutMenu();
+        await this.page.getByRole('link', { name: 'FAQ' }).click();
     }
 
     async clickSignIn() {

@@ -73,6 +73,14 @@ test.describe('Public Pages', () => {
             await homePage.navigateToHelp();
             await expect(page).toHaveURL('/help');
         });
+
+        test('should navigate to FAQ page from About menu', async ({ page }) => {
+            const homePage = new HomePage(page);
+            await homePage.goto();
+
+            await homePage.navigateToFaq();
+            await expect(page).toHaveURL('/faq');
+        });
     });
 
     test.describe('Static Pages', () => {
@@ -104,6 +112,12 @@ test.describe('Public Pages', () => {
             await page.goto('/help');
             // Title may just be "TrashMob.eco" - check page renders
             await expect(page).toHaveTitle(/trashmob/i);
+            await expect(page.locator('h1').first()).toBeVisible();
+        });
+
+        test('should load FAQ page', async ({ page }) => {
+            await page.goto('/faq');
+            await expect(page).toHaveTitle(/faq|trashmob/i);
             await expect(page.locator('h1').first()).toBeVisible();
         });
 
