@@ -70,6 +70,7 @@
 | Project | Description | Status |
 |---------|-------------|--------|
 | [Project 36 - Marketing Materials](./Projects/Project_36_Marketing_Materials.md) | 2026 release marketing, pricing, enrollment | Not Started |
+| [Project 40 - AI Community Sales Agent](./Projects/Project_40_AI_Community_Sales_Agent.md) | AI-powered community discovery, outreach, and onboarding | Not Started |
 
 #### Low Priority (Nice-to-Have)
 
@@ -124,6 +125,7 @@
 - [Project 20 - Gamification](./Projects/Project_20_Gamification.md) ✅
 - [Project 34 - User Feedback](./Projects/Project_34_User_Feedback.md) ✅
 - [Project 36 - Marketing Materials](./Projects/Project_36_Marketing_Materials.md)
+- [Project 40 - AI Community Sales Agent](./Projects/Project_40_AI_Community_Sales_Agent.md)
 
 ---
 
@@ -136,10 +138,10 @@
 | **Developers Engaged** | 1 | Project 4 |
 | **Ready for Review** | 2 | Projects 2, 5 |
 | **Planning** | 3 | Projects 1, 23, 38 |
-| **Not Started** | 4 | Projects 12, 24, 31, 36 |
+| **Not Started** | 5 | Projects 12, 24, 31, 36, 40 |
 | **Deprioritized** | 1 | Project 33 |
 
-**Total:** 38 project specifications documented
+**Total:** 39 project specifications documented
 
 ---
 
