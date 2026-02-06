@@ -20,6 +20,7 @@ import { useMutation } from '@tanstack/react-query';
 import * as ToolTips from '@/store/ToolTips';
 import PartnerRequestData from '@/components/Models/PartnerRequestData';
 import * as Constants from '@/components/Models/Constants';
+import { CharacterCounter } from '@/components/ui/character-counter';
 import * as MapStore from '@/store/MapStore';
 import { CreatePartnerRequest } from '@/services/partners';
 import { GoogleMapWithKey as GoogleMap } from '@/components/Map/GoogleMap';
@@ -56,13 +57,30 @@ interface FormInputs {
 }
 
 const formSchema = z.object({
-    name: z.string({ required_error: 'Name cannot be blank.' }),
+    name: z
+        .string({ required_error: 'Name cannot be blank.' })
+        .max(
+            Constants.MAX_PARTNER_NAME_LENGTH,
+            `Name must be less than ${Constants.MAX_PARTNER_NAME_LENGTH} characters`,
+        ),
     partnerTypeId: z.string(),
     email: z
         .string({ required_error: 'Email cannot be blank.' })
-        .email({ message: 'Please enter valid email address.' }),
+        .email({ message: 'Please enter valid email address.' })
+        .max(
+            Constants.MAX_CONTACT_EMAIL_LENGTH,
+            `Email must be less than ${Constants.MAX_CONTACT_EMAIL_LENGTH} characters`,
+        ),
     website: z.string().url({ message: 'Please enter valid website.' }).optional(),
     phone: z.string().regex(Constants.RegexPhoneNumber, { message: 'Please enter a valid phone number.' }).optional(),
+    notes: z
+        .string()
+        .max(
+            Constants.MAX_PARTNER_REQUEST_NOTES_LENGTH,
+            `Notes must be less than ${Constants.MAX_PARTNER_REQUEST_NOTES_LENGTH} characters`,
+        )
+        .optional()
+        .default(''),
     location: z.object({
         lat: z.number().optional(),
         lng: z.number().optional(),
@@ -136,6 +154,7 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
     );
 
     const location = form.watch('location');
+    const notes = form.watch('notes');
 
     const title =
         mode === PartnerRequestMode.SEND ? 'Send invite to join TrashMob as a partner' : 'Apply to become a partner';
@@ -383,9 +402,16 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
                                                 </TooltipContent>
                                             </Tooltip>
                                             <FormControl>
-                                                <Textarea {...field} maxLength={2048} className='h-24' />
+                                                <Textarea
+                                                    {...field}
+                                                    maxLength={Constants.MAX_PARTNER_REQUEST_NOTES_LENGTH}
+                                                    className='h-24'
+                                                />
                                             </FormControl>
-                                            <FormMessage />
+                                            <CharacterCounter
+                                                currentLength={notes?.length || 0}
+                                                maxLength={Constants.MAX_PARTNER_REQUEST_NOTES_LENGTH}
+                                            />
                                         </FormItem>
                                     )}
                                 />
