@@ -108,6 +108,12 @@ namespace TrashMob.Shared.Tests.Builders
             return this;
         }
 
+        public UserBuilder WithMemberSince(DateTimeOffset date)
+        {
+            _user.MemberSince = date;
+            return this;
+        }
+
         public UserBuilder CreatedBy(Guid userId)
         {
             _user.CreatedByUserId = userId;
