@@ -209,9 +209,7 @@ export const EventDetails: FC<EventDetailsProps> = () => {
                                 <EventRoutesMap
                                     eventId={eventId}
                                     defaultCenter={
-                                        latitude && longitude
-                                            ? { lat: latitude, lng: longitude }
-                                            : undefined
+                                        latitude && longitude ? { lat: latitude, lng: longitude } : undefined
                                     }
                                 />
                             </div>

@@ -1,5 +1,9 @@
 import { ApiService } from '.';
-import { DisplayAnonymizedRoute, DisplayEventRouteStats, DisplayUserRouteHistory } from '../components/Models/RouteData';
+import {
+    DisplayAnonymizedRoute,
+    DisplayEventRouteStats,
+    DisplayUserRouteHistory,
+} from '../components/Models/RouteData';
 
 export type GetEventRoutes_Params = { eventId: string };
 export type GetEventRoutes_Response = DisplayAnonymizedRoute[];

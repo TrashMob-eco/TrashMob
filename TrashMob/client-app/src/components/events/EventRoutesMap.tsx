@@ -6,8 +6,16 @@ import { GetEventRoutes } from '@/services/event-routes';
 import { DisplayAnonymizedRoute } from '@/components/Models/RouteData';
 
 const ROUTE_COLORS = [
-    '#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6',
-    '#EC4899', '#06B6D4', '#F97316', '#6366F1', '#14B8A6',
+    '#3B82F6',
+    '#EF4444',
+    '#10B981',
+    '#F59E0B',
+    '#8B5CF6',
+    '#EC4899',
+    '#06B6D4',
+    '#F97316',
+    '#6366F1',
+    '#14B8A6',
 ];
 
 function getRouteColor(index: number): string {
@@ -94,10 +102,7 @@ export const EventRoutesMap = ({ eventId, defaultCenter }: EventRoutesMapProps) 
 
     return (
         <div className='rounded-lg overflow-hidden'>
-            <GoogleMapWithKey
-                defaultCenter={defaultCenter}
-                style={{ width: '100%', height: '400px' }}
-            >
+            <GoogleMapWithKey defaultCenter={defaultCenter} style={{ width: '100%', height: '400px' }}>
                 <RoutePolylines routes={routeList} />
             </GoogleMapWithKey>
         </div>
