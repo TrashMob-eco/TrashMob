@@ -48,7 +48,12 @@
         {
             var result = await eventAttendeeRouteManager.GetByParentIdAsync(eventId, cancellationToken).ConfigureAwait(false);
 
-            var displayEventAttendeeRoutes = result.Select(x => x.ToDisplayEventAttendeeRoute()).ToList();
+            var currentUserId = User.Identity?.IsAuthenticated == true ? UserId : Guid.Empty;
+
+            var displayEventAttendeeRoutes = result
+                .Where(r => r.PrivacyLevel != "Private" || r.UserId == currentUserId)
+                .Select(x => x.ToDisplayEventAttendeeRoute())
+                .ToList();
 
             TrackEvent(nameof(GetEventAttendeeRoutes));
             return Ok(displayEventAttendeeRoutes);

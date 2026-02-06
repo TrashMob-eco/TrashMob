@@ -33,6 +33,8 @@
 
         public virtual DbSet<EventAttendeeRoute> EventAttendeeRoutes { get; set; }
 
+        public virtual DbSet<RoutePoint> RoutePoints { get; set; }
+
         public virtual DbSet<Event> Events { get; set; }
 
         public virtual DbSet<EventPartnerLocationServiceStatus> EventPartnerLocationServiceStatuses { get; set; }
@@ -443,6 +445,51 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_EventAttendeeRoutes_User_LastUpdatedBy");
+
+                entity.Property(e => e.PrivacyLevel)
+                    .HasMaxLength(20)
+                    .HasDefaultValue("EventOnly");
+
+                entity.Property(e => e.TrimStartMeters)
+                    .HasDefaultValue(100);
+
+                entity.Property(e => e.TrimEndMeters)
+                    .HasDefaultValue(100);
+
+                entity.Property(e => e.Notes)
+                    .HasMaxLength(2000);
+
+                entity.HasMany(e => e.RoutePoints)
+                    .WithOne(rp => rp.Route)
+                    .HasForeignKey(rp => rp.RouteId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_RoutePoints_EventAttendeeRoutes");
+            });
+
+            modelBuilder.Entity<RoutePoint>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id)
+                    .UseIdentityColumn();
+
+                entity.Property(e => e.RouteId)
+                    .IsRequired();
+
+                entity.Property(e => e.Latitude)
+                    .IsRequired();
+
+                entity.Property(e => e.Longitude)
+                    .IsRequired();
+
+                entity.Property(e => e.Timestamp)
+                    .IsRequired();
+
+                entity.HasIndex(e => e.RouteId)
+                    .HasDatabaseName("IX_RoutePoints_RouteId");
+
+                entity.HasIndex(e => new { e.RouteId, e.Timestamp })
+                    .HasDatabaseName("IX_RoutePoints_RouteId_Timestamp");
             });
 
             modelBuilder.Entity<EventPartnerLocationService>(entity =>

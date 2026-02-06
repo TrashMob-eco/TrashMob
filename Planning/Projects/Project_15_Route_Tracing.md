@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Planning in Progress |
+| **Status** | In Progress (Backend & Website Complete) |
 | **Priority** | Medium |
 | **Risk** | High (privacy) |
 | **Size** | Large |
@@ -392,9 +392,11 @@ public class RouteRecordingService
 **Note:** Privacy is critical; extensive testing and user feedback required.
 
 ### Current Implementation State
+- **Backend:** ✅ Complete — Models (EventAttendeeRoute extended, RoutePoint), DbContext, DTOs, manager business logic (privacy filtering, Haversine distance, auto-trim, decay), 3 new API controllers + existing controller updated
+- **Website:** ✅ Complete — TypeScript models, API service, EventRoutesMap (polylines on Google Maps), EventRouteStatsCard, MyRoutesCard (user route history), integrated into event detail page and MyDashboard
+- **Database migration:** ✅ Applied to dev (AddRouteTracingProperties)
 - **Mobile app:** Partial implementation exists but untested due to lack of route simulation
-- **Priority:** Complete mobile app implementation first, then add web read-only views
-- **Web:** Read-only - no route creation or editing (mobile-only feature)
+- **Remaining:** Mobile app recording/upload integration, heat map visualization (Phase 4)
 
 ### Testing Requirements
 - **Route simulation tool** for development/QA testing without physically walking routes
@@ -452,7 +454,7 @@ The following GitHub issues are tracked as part of this project:
 
 ---
 
-**Last Updated:** January 31, 2026
+**Last Updated:** February 6, 2026
 **Owner:** Mobile Team + Backend
-**Status:** Planning in Progress
+**Status:** In Progress (Backend & Website Complete)
 **Next Review:** When Project 4 complete
