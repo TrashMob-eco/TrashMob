@@ -129,6 +129,40 @@ jobs:
             echo "Key Vault Secrets User role already assigned to principal $PRINCIPAL_ID"
           fi
 
+      - name: Grant Azure Maps Access via RBAC
+        run: |
+          echo "Getting Container App managed identity..."
+          PRINCIPAL_ID=$(az containerapp show \
+            --name ${{ env.CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --query identity.principalId \
+            -o tsv)
+          echo "Principal ID: $PRINCIPAL_ID"
+
+          # Deploy Azure Maps bicep to create role assignment and get client ID
+          echo "Deploying Azure Maps role assignment..."
+          DEPLOY_OUTPUT=$(az deployment group create \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --template-file Deploy/azureMaps.bicep \
+            --parameters \
+              environment=pr \
+              region=${{ env.REGION }} \
+              containerAppPrincipalId=$PRINCIPAL_ID \
+            --query "properties.outputs.azureMapsClientId.value" \
+            -o tsv)
+
+          echo "Azure Maps Client ID: $DEPLOY_OUTPUT"
+
+          # Store Azure Maps Client ID in Key Vault
+          echo "Storing Azure Maps Client ID in Key Vault..."
+          az keyvault secret set \
+            --vault-name ${{ env.KEY_VAULT_NAME }} \
+            --name AzureMapsClientId \
+            --value "$DEPLOY_OUTPUT" \
+            --output none
+
+          echo "Azure Maps managed identity access configured successfully"
+
       - name: Restart Container App
         run: |
           echo "Restarting container app to pick up Key Vault permissions..."

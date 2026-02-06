@@ -1,9 +1,8 @@
 param environment string = ''
 param region string = ''
+param containerAppPrincipalId string = ''
 
 // Allowed origins for CORS - restricts which domains can make requests to Azure Maps Data API
-// Note: This only affects the Data API. For Search/Render APIs, consider migrating to Azure AD auth
-// See: https://learn.microsoft.com/en-us/azure/azure-maps/how-to-secure-spa-users
 var allowedOrigins = environment == 'pr' ? [
   'https://www.trashmob.eco'
   'https://trashmob.eco'
@@ -14,6 +13,10 @@ var allowedOrigins = environment == 'pr' ? [
 
 var account_map_name = 'map-tm-${environment}-${region}'
 
+// Azure Maps Data Reader role - allows reading map data
+// https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#azure-maps-data-reader
+var azureMapsDataReaderRoleId = '423170ca-a8f6-4b0f-8487-9e4eb8f49bfa'
+
 resource accounts_map_trashmobdev_name_resource 'Microsoft.Maps/accounts@2023-06-01' = {
   name: account_map_name
   location: 'global'
@@ -22,6 +25,7 @@ resource accounts_map_trashmobdev_name_resource 'Microsoft.Maps/accounts@2023-06
   }
   kind: 'Gen2'
   properties: {
+    // Keep local auth enabled during migration, disable after fully migrated to managed identity
     disableLocalAuth: false
     cors: {
       corsRules: [
@@ -33,12 +37,17 @@ resource accounts_map_trashmobdev_name_resource 'Microsoft.Maps/accounts@2023-06
   }
 }
 
-// Security note (Issue #182):
-// The CORS setting above only restricts Azure Maps Data API access.
-// The subscription key used for Search/Geocoding APIs is still exposed to the browser.
-//
-// For better security, consider:
-// 1. Proxying Azure Maps calls through the backend API (medium effort, high security)
-// 2. Migrating to Azure AD authentication with managed identity (high effort, highest security)
-//
-// Current mitigation: CORS restricts Data API to trashmob.eco domains only.
+// Grant the Container App's managed identity the Azure Maps Data Reader role
+// This allows the app to access Azure Maps using DefaultAzureCredential
+resource azureMapsRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (containerAppPrincipalId != '') {
+  name: guid(accounts_map_trashmobdev_name_resource.id, containerAppPrincipalId, azureMapsDataReaderRoleId)
+  scope: accounts_map_trashmobdev_name_resource
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', azureMapsDataReaderRoleId)
+    principalId: containerAppPrincipalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+// Output the Azure Maps client ID for use with managed identity authentication
+output azureMapsClientId string = accounts_map_trashmobdev_name_resource.properties.uniqueId
