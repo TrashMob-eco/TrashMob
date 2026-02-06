@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import uniqBy from 'lodash/uniqBy';
 import orderBy from 'lodash/orderBy';
 import { Link, useNavigate, useLocation } from 'react-router';
@@ -17,6 +17,7 @@ import DisplayPartnershipData from '@/components/Models/DisplayPartnershipData';
 import DisplayPartnerAdminInvitationData from '@/components/Models/DisplayPartnerAdminInvitationData';
 import DisplayPartnerLocationEventData from '@/components/Models/DisplayPartnerLocationEventServiceData';
 import LitterReportData from '@/components/Models/LitterReportData';
+import { LitterReportStatusEnum } from '@/components/Models/LitterReportStatus';
 import TeamData from '@/components/Models/TeamData';
 
 import twofigure from '@/components/assets/card/twofigure.svg';
@@ -31,6 +32,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { EventsTable } from './events-table/table';
 
 import { PartnerEventRequestTable } from '@/components/Partners/partner-event-request-table';
@@ -64,6 +66,9 @@ const isUpcomingEvent = (event: EventData) => !isCompletedEvent(event);
 // An event is past/completed when start time + duration has passed
 const isPastEvent = (event: EventData) => isCompletedEvent(event);
 
+type EventFilterType = 'all' | 'created' | 'attending';
+type LitterReportFilterType = 'all' | 'new' | 'assigned' | 'cleaned' | 'cancelled';
+
 interface MyDashboardProps {}
 
 const MyDashboard: FC<MyDashboardProps> = () => {
@@ -75,14 +80,25 @@ const MyDashboard: FC<MyDashboardProps> = () => {
 
     const [upcomingEventsMapView, setUpcomingEventsMapView] = useState<boolean>(false);
     const [pastEventsMapView, setPastEventsMapView] = useState<boolean>(false);
+    const [eventFilter, setEventFilter] = useState<EventFilterType>('all');
+    const [litterReportFilter, setLitterReportFilter] = useState<LitterReportFilterType>('all');
     const state = location.state as { newEventCreated: boolean };
     const [eventToShare, setEventToShare] = useState<EventData>();
     const [showModal, setShowSocialsModal] = useState<boolean>(false);
 
     const { data: userEvents } = useGetUserEvents(userId);
     const myEventList = userEvents || [];
-    const upcomingEvents = myEventList.filter(isUpcomingEvent);
-    const pastEvents = orderBy(myEventList.filter(isPastEvent), ['eventDate'], ['desc']);
+
+    // Filter events based on user selection
+    const filteredEvents = useMemo(() => {
+        if (eventFilter === 'all') return myEventList;
+        if (eventFilter === 'created') return myEventList.filter((e) => e.createdByUserId === userId);
+        // 'attending' - events where user is attending but didn't create
+        return myEventList.filter((e) => e.createdByUserId !== userId);
+    }, [myEventList, eventFilter, userId]);
+
+    const upcomingEvents = filteredEvents.filter(isUpcomingEvent);
+    const pastEvents = orderBy(filteredEvents.filter(isPastEvent), ['eventDate'], ['desc']);
 
     const { data: myPartnerRequests } = useQuery<
         AxiosResponse<DisplayPartnershipData[]>,
@@ -147,6 +163,20 @@ const MyDashboard: FC<MyDashboardProps> = () => {
         queryFn: GetTeamsILead().service,
         select: (res) => res.data,
     });
+
+    // Filter litter reports based on user selection
+    const filteredLitterReports = useMemo(() => {
+        const reports = myLitterReports || [];
+        if (litterReportFilter === 'all') return reports;
+        const statusMap: Record<LitterReportFilterType, number> = {
+            all: 0,
+            new: LitterReportStatusEnum.New,
+            assigned: LitterReportStatusEnum.Assigned,
+            cleaned: LitterReportStatusEnum.Cleaned,
+            cancelled: LitterReportStatusEnum.Cancelled,
+        };
+        return reports.filter((r) => r.litterReportStatusId === statusMap[litterReportFilter]);
+    }, [myLitterReports, litterReportFilter]);
 
     // getStatsForUser
     const { data: stats } = useQuery<AxiosResponse<StatsData>, unknown, StatsData>({
@@ -249,7 +279,17 @@ const MyDashboard: FC<MyDashboardProps> = () => {
             <div className='container my-12!'>
                 <div className='flex justify-between'>
                     <h4 className='font-bold text-3xl mr-2 pb-2 mt-0 border-b-[3px] border-primary flex items-center w-full'>
-                        <div className='grow'>My Events ({myEventList.length})</div>
+                        <div className='grow'>My Events ({filteredEvents.length})</div>
+                        <Select value={eventFilter} onValueChange={(v) => setEventFilter(v as EventFilterType)}>
+                            <SelectTrigger className='w-[180px] mr-4'>
+                                <SelectValue placeholder='Filter events' />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value='all'>All events</SelectItem>
+                                <SelectItem value='created'>Events I created</SelectItem>
+                                <SelectItem value='attending'>Events I joined</SelectItem>
+                            </SelectContent>
+                        </Select>
                         <Button asChild>
                             <Link to='/events/create'>
                                 <Plus /> Create Event
@@ -352,10 +392,25 @@ const MyDashboard: FC<MyDashboardProps> = () => {
 
                 <Card className='mb-4'>
                     <CardHeader>
-                        <div className='flex flex-row'>
+                        <div className='flex flex-row flex-wrap gap-2'>
                             <CardTitle className='grow text-primary'>
-                                My Litter Reports ({(myLitterReports || []).length})
+                                My Litter Reports ({filteredLitterReports.length})
                             </CardTitle>
+                            <Select
+                                value={litterReportFilter}
+                                onValueChange={(v) => setLitterReportFilter(v as LitterReportFilterType)}
+                            >
+                                <SelectTrigger className='w-[140px]'>
+                                    <SelectValue placeholder='Filter' />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value='all'>All</SelectItem>
+                                    <SelectItem value='new'>New</SelectItem>
+                                    <SelectItem value='assigned'>Assigned</SelectItem>
+                                    <SelectItem value='cleaned'>Cleaned</SelectItem>
+                                    <SelectItem value='cancelled'>Cancelled</SelectItem>
+                                </SelectContent>
+                            </Select>
                             <Button variant='outline' size='sm' asChild>
                                 <Link to='/litterreports'>View All Reports</Link>
                             </Button>
@@ -363,7 +418,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                     </CardHeader>
                     <CardContent>
                         <div className='overflow-auto'>
-                            <MyLitterReportsTable items={myLitterReports || []} />
+                            <MyLitterReportsTable items={filteredLitterReports} />
                         </div>
                     </CardContent>
                 </Card>
