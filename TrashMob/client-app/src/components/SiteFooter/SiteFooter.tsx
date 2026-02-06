@@ -53,7 +53,16 @@ export const SiteFooter = () => {
                                         Copyright &copy; {new Date().getFullYear()} TRASHMOB.ECO - All rights reserved.
                                     </p>
                                     <p className='my-2 text-xs text-center md:text-start!'>
-                                        TrashMob is a non-profit, 501(c)(3) organization based in Washington State, USA.
+                                        TrashMob is a{' '}
+                                        <a
+                                            href='/img/501c3Approval.png'
+                                            target='_blank'
+                                            rel='noreferrer noopener'
+                                            className='underline hover:text-gray-300'
+                                        >
+                                            non-profit, 501(c)(3) organization
+                                        </a>{' '}
+                                        based in Washington State, USA.
                                     </p>
                                     <p className='my-2 text-xs text-center md:text-start!'>
                                         US Federal Employer Id (EIN): 88-1286026
