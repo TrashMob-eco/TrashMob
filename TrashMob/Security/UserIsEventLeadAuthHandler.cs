@@ -21,16 +21,19 @@ namespace TrashMob.Security
         private readonly ILogger<UserIsEventLeadAuthHandler> logger;
         private readonly IUserManager userManager;
         private readonly IEventAttendeeManager eventAttendeeManager;
+        private readonly IKeyedManager<Event> eventManager;
 
         public UserIsEventLeadAuthHandler(
             IHttpContextAccessor httpContext,
             IUserManager userManager,
             IEventAttendeeManager eventAttendeeManager,
+            IKeyedManager<Event> eventManager,
             ILogger<UserIsEventLeadAuthHandler> logger)
         {
             this.httpContext = httpContext;
             this.userManager = userManager;
             this.eventAttendeeManager = eventAttendeeManager;
+            this.eventManager = eventManager;
             this.logger = logger;
         }
 
@@ -70,14 +73,25 @@ namespace TrashMob.Security
                     return;
                 }
 
-                // Check if user is the event creator
-                if (user.Id == resource.CreatedByUserId)
+                // Look up the actual event from the database to verify ownership
+                // SECURITY: Do not trust CreatedByUserId from the request body
+                var actualEvent = await eventManager.GetAsync(eventId.Value, CancellationToken.None);
+
+                if (actualEvent == null)
+                {
+                    AuthorizationFailure.Failed(new List<AuthorizationFailureReason>
+                        { new(this, $"Event with ID '{eventId.Value}' not found.") });
+                    return;
+                }
+
+                // Check if user is the event creator (verified against database)
+                if (user.Id == actualEvent.CreatedByUserId)
                 {
                     context.Succeed(requirement);
                     return;
                 }
 
-                // Check if user is an event lead
+                // Check if user is an event lead (co-lead)
                 var isEventLead = await eventAttendeeManager.IsEventLeadAsync(eventId.Value, user.Id, CancellationToken.None);
 
                 if (isEventLead)
