@@ -317,6 +317,7 @@ After deploying to production, complete these manual steps:
 4. Verify email notifications are working
 5. Check Application Insights for any startup errors
 6. **Review Google Search Console** - Visit [Google Search Console](https://search.google.com/search-console?resource_id=https://www.trashmob.eco/) to check for any remaining site issues (mobile usability, indexing problems, etc.)
+7. **Check Job Logs for Daily Summary Report** - Review the Container App Job logs to verify the daily summary report is still being generated. Run: `az containerapp job execution list --name caj-tm-pr-westus2 --resource-group rg-trashmob-pr-westus2` to see recent executions, then check the logs for any errors.
 
 ## Additional Resources
 
