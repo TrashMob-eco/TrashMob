@@ -90,6 +90,10 @@ az deployment group create --template-file ".\containerRegistry.bicep" -g $rgNam
 Write-Host "Deploying Container Apps Environment..." -ForegroundColor Green
 az deployment group create --template-file ".\containerAppsEnvironment.bicep" -g $rgName --parameters containerAppsEnvironmentName=$containerAppsEnvironmentName region=$region logAnalyticsWorkspaceName=$logAnalyticsWorkspaceName environment=$environment
 
+# Deploy Billing Alerts and Budget Caps
+Write-Host "Deploying Billing Alerts..." -ForegroundColor Green
+az deployment group create --template-file ".\billingAlerts.bicep" -g $rgName --parameters environment=$environment region=$region
+
 # Note: Container App and Container App Job deployments will be done via GitHub Actions with actual container images
 # Uncomment the following lines after container images are built and pushed to the registry
 # Write-Host "Deploying Container App for Web Application..." -ForegroundColor Green

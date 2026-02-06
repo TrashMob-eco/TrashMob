@@ -65,7 +65,22 @@ az deployment group create \
   --parameters environment=pr region=westus2
 ```
 
-#### 2.3 KeyVault RBAC (Already Completed)
+#### 2.3 Billing Alerts & Budget Caps (Project 30)
+```bash
+az deployment group create \
+  --resource-group rg-trashmob-pr-westus2 \
+  --template-file Deploy/billingAlerts.bicep \
+  --parameters environment=pr region=westus2
+```
+
+**Manual steps after deployment (one-time setup):**
+
+- [ ] **SendGrid alerts:** Log into https://app.sendgrid.com > Settings > Billing > Add alerts at 75% and 90% of monthly email limit (recipient: joe@trashmob.eco)
+- [ ] **Google Maps API alerts:** Log into https://console.cloud.google.com > Billing > Budgets & alerts > Create budget "TrashMob Maps API" at $100/month with 50%, 90%, 100% thresholds
+
+See `Deploy/COST_ALERT_RUNBOOK.md` for full response procedures and monthly review checklist.
+
+#### 2.4 KeyVault RBAC (Already Completed)
 PR #2482 migrated KeyVault from access policies to RBAC. Verify this is working correctly.
 
 ### 3. Strapi CMS (Optional)
@@ -226,6 +241,7 @@ Database migrations do NOT have automatic rollback. If critical issues:
 | OpenTelemetry | Project 27 | Migrated from App Insights SDK |
 | KeyVault RBAC | Project 26 | Migrated from access policies |
 | Database Backups | Project 32 | Configured retention policies |
+| Billing Alerts | Project 30 | Azure budget caps, grant monitor, cost runbook |
 | Job Opportunities Markdown | Issue #2215 | Markdown editor for job listings admin |
 
 ---

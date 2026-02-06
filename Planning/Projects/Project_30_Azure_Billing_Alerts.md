@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Not Started |
+| **Status** | In Progress |
 | **Priority** | Medium |
 | **Risk** | Low |
 | **Size** | Small |
@@ -244,7 +244,7 @@ gcloud services api-keys update KEY_ID \
 
 **Last Updated:** January 31, 2026
 **Owner:** Engineering Lead
-**Status:** Not Started
+**Status:** In Progress
 **Next Review:** When volunteer available
 
 ---
@@ -254,3 +254,4 @@ gcloud services api-keys update KEY_ID \
 - **2026-01-31:** Added $500 hard spending cap requirement
 - **2026-01-31:** Added $1/year threshold alert for Microsoft nonprofit grant expiration detection
 - **2026-01-31:** Converted open questions to decisions; confirmed all scope items
+- **2026-02-06:** Phase 1 implemented: billingAlerts.bicep, deployInfra.ps1 updated, COST_ALERT_RUNBOOK.md created
