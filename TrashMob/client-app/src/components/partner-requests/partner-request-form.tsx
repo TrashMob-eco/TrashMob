@@ -59,17 +59,26 @@ interface FormInputs {
 const formSchema = z.object({
     name: z
         .string({ required_error: 'Name cannot be blank.' })
-        .max(Constants.MAX_PARTNER_NAME_LENGTH, `Name must be less than ${Constants.MAX_PARTNER_NAME_LENGTH} characters`),
+        .max(
+            Constants.MAX_PARTNER_NAME_LENGTH,
+            `Name must be less than ${Constants.MAX_PARTNER_NAME_LENGTH} characters`,
+        ),
     partnerTypeId: z.string(),
     email: z
         .string({ required_error: 'Email cannot be blank.' })
         .email({ message: 'Please enter valid email address.' })
-        .max(Constants.MAX_CONTACT_EMAIL_LENGTH, `Email must be less than ${Constants.MAX_CONTACT_EMAIL_LENGTH} characters`),
+        .max(
+            Constants.MAX_CONTACT_EMAIL_LENGTH,
+            `Email must be less than ${Constants.MAX_CONTACT_EMAIL_LENGTH} characters`,
+        ),
     website: z.string().url({ message: 'Please enter valid website.' }).optional(),
     phone: z.string().regex(Constants.RegexPhoneNumber, { message: 'Please enter a valid phone number.' }).optional(),
     notes: z
         .string()
-        .max(Constants.MAX_PARTNER_REQUEST_NOTES_LENGTH, `Notes must be less than ${Constants.MAX_PARTNER_REQUEST_NOTES_LENGTH} characters`)
+        .max(
+            Constants.MAX_PARTNER_REQUEST_NOTES_LENGTH,
+            `Notes must be less than ${Constants.MAX_PARTNER_REQUEST_NOTES_LENGTH} characters`,
+        )
         .optional()
         .default(''),
     location: z.object({

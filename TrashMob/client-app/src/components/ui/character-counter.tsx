@@ -36,9 +36,11 @@ export function CharacterCounter({
 
     return (
         <div className={cn('flex justify-between', className)}>
-            {showFormMessage ? <div className='grow'>
+            {showFormMessage ? (
+                <div className='grow'>
                     <FormMessage />
-                </div> : null}
+                </div>
+            ) : null}
             <FormDescription
                 className={cn('text-right', {
                     'text-destructive': isOverLimit,
