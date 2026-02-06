@@ -2,6 +2,39 @@
 
 This runbook covers how to respond to billing alerts and perform monthly cost reviews for TrashMob's Azure infrastructure.
 
+## Initial Setup (Manual — One-Time)
+
+Azure budget APIs do not support Microsoft Sponsorship subscriptions (MS-AZR-0036P). Budgets must be created manually in the Azure Portal. The action group is deployed via Bicep (`Deploy/billingAlerts.bicep`).
+
+### Create Monthly Budget
+
+1. Azure Portal > Cost Management > Budgets > **+ Add**
+2. Name: `budget-tm-{env}-{region}-monthly` (e.g., `budget-tm-dev-westus2-monthly`)
+3. Reset period: **Monthly**
+4. Amount: **$500**
+5. Add alert conditions:
+   - 50% of budget (Actual) — recipient: joe@trashmob.eco
+   - 75% of budget (Actual) — recipient: joe@trashmob.eco
+   - 90% of budget (Actual) — recipient: joe@trashmob.eco
+   - 100% of budget (Actual) — recipient: joe@trashmob.eco
+6. Action group: select `ag-tm-{env}-{region}-billing`
+7. Click **Create**
+
+### Create Grant Expiration Monitor
+
+1. Azure Portal > Cost Management > Budgets > **+ Add**
+2. Name: `budget-tm-{env}-{region}-grant` (e.g., `budget-tm-dev-westus2-grant`)
+3. Reset period: **Annually**
+4. Amount: **$1**
+5. Add alert condition:
+   - 100% of budget (Actual) — recipient: joe@trashmob.eco
+6. Action group: select `ag-tm-{env}-{region}-billing`
+7. Click **Create**
+
+Repeat for both environments (dev, pr).
+
+---
+
 ## Alert Types
 
 | Alert | Trigger | Urgency | Meaning |

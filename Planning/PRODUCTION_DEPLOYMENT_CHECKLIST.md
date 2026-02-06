@@ -66,6 +66,8 @@ az deployment group create \
 ```
 
 #### 2.3 Billing Alerts & Budget Caps (Project 30)
+
+**a. Deploy action group (Bicep):**
 ```bash
 az deployment group create \
   --resource-group rg-trashmob-pr-westus2 \
@@ -73,8 +75,11 @@ az deployment group create \
   --parameters environment=pr region=westus2
 ```
 
-**Manual steps after deployment (one-time setup):**
+**b. Manual steps (one-time — budget APIs don't support sponsorship subscriptions):**
 
+- [ ] **Azure budgets:** Create budgets manually in Azure Portal > Cost Management > Budgets (see `Deploy/COST_ALERT_RUNBOOK.md` for step-by-step):
+  - Monthly budget ($500) with alerts at 50%, 75%, 90%, 100%
+  - Annual grant monitor ($1) to detect grant expiration
 - [ ] **SendGrid alerts:** Log into https://app.sendgrid.com > Settings > Billing > Add alerts at 75% and 90% of monthly email limit (recipient: joe@trashmob.eco)
 - [ ] **Google Maps API alerts:** Log into https://console.cloud.google.com > Billing > Budgets & alerts > Create budget "TrashMob Maps API" at $100/month with 50%, 90%, 100% thresholds
 
