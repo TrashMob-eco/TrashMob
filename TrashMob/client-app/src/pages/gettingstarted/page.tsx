@@ -13,7 +13,7 @@ export const GettingStarted: React.FC = () => {
         <div>
             <HeroSection Title='Getting Started' Description='Tips and tricks to get you out there.' />
             <section className='bg-card py-5! px-4!'>
-                <h2 className='font-semibold text-center text-[40px] mt-10 mb-2'>The Basics</h2>
+                <h2 className='font-semibold text-center text-2xl md:text-[40px] mt-10 mb-2'>The Basics</h2>
                 <div className='flex flex-col md:flex-row'>
                     <div className='basis-full md:basis-1/4'>
                         <div className='flex flex-col w-full max-w-[300px] mx-auto mb-5 text-center'>

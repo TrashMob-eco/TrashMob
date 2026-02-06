@@ -2,8 +2,10 @@ import { Link } from 'react-router';
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/Logo';
 
-const navClassName = 'text-center md:text-start! text-white text-[13px] uppercase font-medium';
-const socialClassName = 'w-7 h-7 bg-white rounded-md! flex justify-center items-center';
+// Mobile-friendly text size (min 14px for readability)
+const navClassName = 'text-center md:text-start! text-white text-sm uppercase font-medium py-1';
+// Touch-friendly social icons (min 44px for tap targets)
+const socialClassName = 'w-11 h-11 bg-white rounded-md! flex justify-center items-center';
 
 export const SiteFooter = () => {
     const footerNavs = [
@@ -59,7 +61,7 @@ export const SiteFooter = () => {
                                 </div>
                             </div>
                             <div className='basis-1/4'>
-                                <div className='flex flex-row justify-start md:justify-end mt-4! gap-2'>
+                                <div className='flex flex-row justify-center md:justify-end mt-4! gap-3'>
                                     <a
                                         href='https://www.instagram.com/trashmobinfo'
                                         target='_blank'

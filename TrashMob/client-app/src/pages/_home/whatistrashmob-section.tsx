@@ -38,7 +38,7 @@ export const WhatIsTrashmobSection = () => {
                     <div className='col-span-12 md:col-span-3'>
                         <h3
                             className={cn(
-                                'mt-0! mb-8! text-[40px] font-semibold',
+                                'mt-0! mb-8! text-2xl md:text-[40px] font-semibold',
                                 'transition-all duration-1000 delay-300 ease-out',
                                 {
                                     'opacity-100 translate-y-0': isInViewPort,
