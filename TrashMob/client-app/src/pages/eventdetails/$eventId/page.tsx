@@ -25,6 +25,7 @@ import { AttendeeMetricsForm } from '@/components/events/AttendeeMetricsForm';
 import { EventContributorsCard } from '@/components/events/EventContributorsCard';
 import { EventPhotoGallery } from '@/components/events/EventPhotoGallery';
 import { EventPhotoUploader } from '@/components/events/EventPhotoUploader';
+import { EventPartnersCard } from '@/components/events/EventPartnersCard';
 
 import { Calendar, Share2, ClipboardList } from 'lucide-react';
 import makeUrls from '@/lib/add-to-calendar';
@@ -197,6 +198,9 @@ export const EventDetails: FC<EventDetailsProps> = () => {
                                 />
                             </GoogleMap>
                         ) : null}
+                        <div className='mt-8'>
+                            <EventPartnersCard eventId={eventId} />
+                        </div>
                     </div>
                     {currentUser ? (
                         <div className='container mx-auto mb-16'>
