@@ -71,7 +71,13 @@ export const SiteAdminTeams = () => {
                 <CardTitle>Teams ({len})</CardTitle>
             </CardHeader>
             <CardContent>
-                <DataTable columns={columns} data={teams || []} />
+                <DataTable
+                    columns={columns}
+                    data={teams || []}
+                    enableSearch
+                    searchPlaceholder='Search teams...'
+                    searchColumns={['name', 'description']}
+                />
             </CardContent>
         </Card>
     );

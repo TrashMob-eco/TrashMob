@@ -241,7 +241,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                         message={getEventShareMessage(eventToShare, currentUser?.id)}
                     />
                 ) : null}
-                <div className='pt-12! flex flex-row flex-wrap gap-8 justify-center'>
+                <div className='pt-12! flex flex-row flex-wrap gap-4 justify-center'>
                     {[
                         { name: 'Events', value: totalEvents, img: twofigure },
                         { name: 'Hours', value: totalHours, img: calendarclock },
@@ -250,15 +250,15 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                         { name: 'Litter Reports', value: totalLitterReports, img: LitterReportIcon },
                     ].map((stat) => (
                         <div
-                            className='basis-full md:basis-[200px] md:max-w-[255px] md:grow bg-card px-7! relative rounded-lg'
+                            className='basis-full sm:basis-[calc(50%-8px)] lg:basis-[170px] lg:max-w-[200px] lg:grow bg-card px-4! relative rounded-lg'
                             key={stat.name}
                         >
-                            <p className='text-[25px] font-medium mt-6! mb-3!'>{stat.name}</p>
-                            <p className='text-primary mt-0! text-[46px]'>{stat.value}</p>
+                            <p className='text-lg font-medium mt-4! mb-2!'>{stat.name}</p>
+                            <p className='text-primary mt-0! text-4xl'>{stat.value}</p>
                             <img
                                 src={stat.img}
                                 alt={stat.name}
-                                className='absolute right-8 bottom-0 w-[95px] h-[95px]'
+                                className='absolute right-4 bottom-0 w-[70px] h-[70px]'
                             />
                         </div>
                     ))}

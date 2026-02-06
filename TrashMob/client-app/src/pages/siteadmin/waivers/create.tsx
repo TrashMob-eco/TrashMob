@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { MarkdownEditor } from '@/components/ui/custom/markdown-editor';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useLogin } from '@/hooks/useLogin';
 import { CreateWaiverVersion, GetAllWaiverVersions } from '@/services/waiver-admin';
@@ -157,9 +157,13 @@ export const SiteAdminWaiverCreate = () => {
                     name='waiverText'
                     render={({ field }) => (
                         <FormItem className='col-span-12'>
-                            <FormLabel required>Waiver Text</FormLabel>
+                            <FormLabel required>Waiver Text (Markdown supported)</FormLabel>
                             <FormControl>
-                                <Textarea {...field} rows={10} placeholder='Enter the full waiver text here...' />
+                                <MarkdownEditor
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                    placeholder='Enter the full waiver text here. You can use Markdown formatting.'
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { MarkdownContent } from '@/components/ui/custom/markdown-content';
 import { WaiverVersionData, AcceptWaiverRequest } from '@/components/Models/WaiverVersionData';
 import { AcceptWaiver } from '@/services/user-waivers';
 
@@ -98,10 +99,7 @@ export const WaiverSigningDialog: React.FC<WaiverSigningDialogProps> = ({
                     onScroll={handleScroll}
                     className='flex-1 overflow-y-auto border rounded-md p-4 max-h-[40vh] bg-muted/20'
                 >
-                    <div
-                        className='prose prose-sm max-w-none'
-                        dangerouslySetInnerHTML={{ __html: waiver.waiverText }}
-                    />
+                    <MarkdownContent>{waiver.waiverText}</MarkdownContent>
                 </div>
 
                 {/* Scroll indicator */}

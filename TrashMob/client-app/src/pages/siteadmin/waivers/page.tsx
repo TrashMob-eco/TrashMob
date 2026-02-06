@@ -52,7 +52,13 @@ export const SiteAdminWaivers = () => {
                 </Button>
             </CardHeader>
             <CardContent>
-                <DataTable columns={columns} data={waivers || []} />
+                <DataTable
+                    columns={columns}
+                    data={waivers || []}
+                    enableSearch
+                    searchPlaceholder='Search waivers...'
+                    searchColumns={['name', 'version']}
+                />
                 <Button variant='ghost' className='w-full' asChild>
                     <Link to='create'>
                         <Plus /> Add Waiver Version
