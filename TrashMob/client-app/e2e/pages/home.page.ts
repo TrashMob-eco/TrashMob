@@ -120,7 +120,8 @@ export class HomePage {
 
     async navigateToFaq() {
         await this.openAboutMenu();
-        await this.page.getByRole('link', { name: 'FAQ' }).click();
+        // Use more specific locator to avoid footer FAQ link
+        await this.page.getByRole('link', { name: /FAQ.*frequently/i }).click();
     }
 
     async clickSignIn() {
