@@ -32,13 +32,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: TrashMob/client-app/package-lock.json
 
       - name: Install dependencies
         run: |
           cd TrashMob/client-app
-          npm ci
+          # Remove lockfile to regenerate for Linux platform (handles cross-platform native deps like rollup)
+          rm -f package-lock.json
+          npm install
 
       - name: Install Playwright browsers
         run: |
