@@ -23,9 +23,7 @@ public partial class EditEventPartnerLocationServicesViewModel(
 
     public async Task Init(Guid eventId, Guid partnerLocationId)
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             var serviceTypes = await serviceTypeRestService.GetServiceTypesAsync();
             var serviceStatuses =
@@ -55,14 +53,6 @@ public partial class EditEventPartnerLocationServicesViewModel(
 
                 EventPartnerLocationServices.Add(eventPartnerLocationServiceViewModel);
             }
-
-            IsBusy = false;
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError($"An error has occurred while loading the event partner location services. Please wait and try again in a moment.");
-        }
+        }, "An error has occurred while loading the event partner location services. Please wait and try again in a moment.");
     }
 }
