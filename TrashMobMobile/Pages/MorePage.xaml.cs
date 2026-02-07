@@ -5,6 +5,7 @@ public partial class MorePage : ContentPage
     public MorePage()
     {
         InitializeComponent();
+        VersionLabel.Text = $"Version {AppInfo.Current.VersionString} ({AppInfo.Current.BuildString})";
     }
 
     private async void OnPrivacyPolicyClicked(object sender, EventArgs e)

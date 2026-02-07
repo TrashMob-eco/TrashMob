@@ -115,9 +115,7 @@ public static class MauiProgram
         builder.Logging.AddDebug();
         builder.Services.AddSingleton<ILoggingService, DebugLoggingService>();
 #else
-		builder.Services.AddSingleton<ILoggingService, DebugLoggingService>();
-		// use the following for Sentry builds
-		//builder.Services.AddSingleton<ILoggingService, LoggingService>();
+        builder.Services.AddSingleton<ILoggingService, LoggingService>();
 #endif
 
         return builder.Build();
