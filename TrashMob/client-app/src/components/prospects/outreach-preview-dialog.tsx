@@ -2,13 +2,7 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-    Dialog,
-    DialogContent,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -134,12 +128,14 @@ export function OutreachPreviewDialog({ prospectId, open, onOpenChange }: Outrea
                     <Button variant='outline' onClick={generatePreview} disabled={loading}>
                         Regenerate
                     </Button>
-                    {preview && preview.cadenceStep <= 4 && !preview.subject.includes('complete') ? <Button
+                    {preview && preview.cadenceStep <= 4 && !preview.subject.includes('complete') ? (
+                        <Button
                             onClick={() => sendOutreach.mutate({ id: prospectId })}
                             disabled={sendOutreach.isPending}
                         >
                             <Send className='mr-2 h-4 w-4' /> Send
-                        </Button> : null}
+                        </Button>
+                    ) : null}
                 </DialogFooter>
             </DialogContent>
         </Dialog>

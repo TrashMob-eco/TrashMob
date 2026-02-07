@@ -197,7 +197,8 @@ export const SiteAdminProspectDetail = () => {
                 <CardHeader className='flex flex-row items-center justify-between'>
                     <div>
                         <CardTitle>Outreach</CardTitle>
-                        {outreachSettings ? <div className='mt-1'>
+                        {outreachSettings ? (
+                            <div className='mt-1'>
                                 {!outreachSettings.outreachEnabled ? (
                                     <Badge variant='destructive'>Outreach Disabled</Badge>
                                 ) : outreachSettings.testMode ? (
@@ -207,7 +208,8 @@ export const SiteAdminProspectDetail = () => {
                                 ) : (
                                     <Badge className='bg-green-600 text-white'>Live Mode</Badge>
                                 )}
-                            </div> : null}
+                            </div>
+                        ) : null}
                     </div>
                     <Button onClick={() => setOutreachDialogOpen(true)}>
                         <Send className='mr-2 h-4 w-4' /> Preview & Send
@@ -234,11 +236,15 @@ export const SiteAdminProspectDetail = () => {
                                             {email.status}
                                         </Badge>
                                         <span className='text-xs text-muted-foreground'>
-                                            {email.sentDate ? moment(email.sentDate).format('MMM D, YYYY h:mm A') : 'Not sent'}
+                                            {email.sentDate
+                                                ? moment(email.sentDate).format('MMM D, YYYY h:mm A')
+                                                : 'Not sent'}
                                         </span>
                                     </div>
                                     <p className='text-sm font-medium mt-1'>{email.subject}</p>
-                                    {email.errorMessage ? <p className='text-sm text-destructive mt-1'>{email.errorMessage}</p> : null}
+                                    {email.errorMessage ? (
+                                        <p className='text-sm text-destructive mt-1'>{email.errorMessage}</p>
+                                    ) : null}
                                 </div>
                             ))}
                         </div>
