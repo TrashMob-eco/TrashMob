@@ -399,7 +399,7 @@
     <!-- <x:String x:Key="IconCommentText">&#xf0188;</x:String> -->
     <!-- <x:String x:Key="IconCommentTextOutline">&#xf0189;</x:String> -->
     <!-- <x:String x:Key="IconCompare">&#xf018a;</x:String> -->
-    <!-- <x:String x:Key="IconCompass">&#xf018b;</x:String> -->
+    <x:String x:Key="IconCompass">&#xf018b;</x:String>
     <!-- <x:String x:Key="IconCompassOutline">&#xf018c;</x:String> -->
     <!-- <x:String x:Key="IconConsole">&#xf018d;</x:String> -->
     <!-- <x:String x:Key="IconCardAccountMail">&#xf018e;</x:String> -->
@@ -1050,7 +1050,7 @@
     <!-- <x:String x:Key="IconSonyPlaystation">&#xf0414;</x:String> -->
     <!-- <x:String x:Key="IconPlus">&#xf0415;</x:String> -->
     <!-- <x:String x:Key="IconPlusBox">&#xf0416;</x:String> -->
-    <!-- <x:String x:Key="IconPlusCircle">&#xf0417;</x:String> -->
+    <x:String x:Key="IconPlusCircle">&#xf0417;</x:String>
     <!-- <x:String x:Key="IconPlusCircleMultipleOutline">&#xf0418;</x:String> -->
     <!-- <x:String x:Key="IconPlusCircleOutline">&#xf0419;</x:String> -->
     <!-- <x:String x:Key="IconPlusNetwork">&#xf041a;</x:String> -->
@@ -1337,7 +1337,7 @@
     <!-- <x:String x:Key="IconTrendingUp">&#xf0535;</x:String> -->
     <!-- <x:String x:Key="IconTriangle">&#xf0536;</x:String> -->
     <!-- <x:String x:Key="IconTriangleOutline">&#xf0537;</x:String> -->
-    <!-- <x:String x:Key="IconTrophy">&#xf0538;</x:String> -->
+    <x:String x:Key="IconTrophy">&#xf0538;</x:String>
     <!-- <x:String x:Key="IconTrophyAward">&#xf0539;</x:String> -->
     <!-- <x:String x:Key="IconTrophyOutline">&#xf053a;</x:String> -->
     <!-- <x:String x:Key="IconTrophyVariant">&#xf053b;</x:String> -->
