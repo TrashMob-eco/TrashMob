@@ -241,6 +241,18 @@ const SiteAdminInviteDetails = lazy(() =>
 const SiteAdminNewsletters = lazy(() =>
     import('./pages/siteadmin/newsletters/page').then((m) => ({ default: m.SiteAdminNewsletters })),
 );
+const SiteAdminProspects = lazy(() =>
+    import('./pages/siteadmin/prospects/page').then((m) => ({ default: m.SiteAdminProspects })),
+);
+const SiteAdminProspectCreate = lazy(() =>
+    import('./pages/siteadmin/prospects/create').then((m) => ({ default: m.SiteAdminProspectCreate })),
+);
+const SiteAdminProspectEdit = lazy(() =>
+    import('./pages/siteadmin/prospects/$prospectId.edit').then((m) => ({ default: m.SiteAdminProspectEdit })),
+);
+const SiteAdminProspectDetail = lazy(() =>
+    import('./pages/siteadmin/prospects/$prospectId').then((m) => ({ default: m.SiteAdminProspectDetail })),
+);
 
 const queryClient = new QueryClient();
 
@@ -429,6 +441,10 @@ const AppContent: FC = () => {
                                 <Route path='invites' element={<SiteAdminInvites />} />
                                 <Route path='invites/:batchId' element={<SiteAdminInviteDetails />} />
                                 <Route path='newsletters' element={<SiteAdminNewsletters />} />
+                                <Route path='prospects' element={<SiteAdminProspects />} />
+                                <Route path='prospects/create' element={<SiteAdminProspectCreate />} />
+                                <Route path='prospects/:prospectId' element={<SiteAdminProspectDetail />} />
+                                <Route path='prospects/:prospectId/edit' element={<SiteAdminProspectEdit />} />
                             </Route>
                         </Route>
                         <Route>

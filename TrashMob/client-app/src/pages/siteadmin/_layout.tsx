@@ -15,6 +15,7 @@ import {
     ScrollText,
     Send,
     Newspaper,
+    Target,
 } from 'lucide-react';
 import { SidebarNav, NavGroup } from '@/components/ui/sidebar-nav';
 
@@ -31,6 +32,7 @@ const navGroups: NavGroup[] = [
             { name: 'Litter Reports', href: `${pathPrefix}/litter-reports`, icon: Trash2 },
             { name: 'Partner Requests', href: `${pathPrefix}/partner-requests`, icon: Handshake },
             { name: 'Job Opportunities', href: `${pathPrefix}/job-opportunities`, icon: Briefcase },
+            { name: 'Prospects', href: `${pathPrefix}/prospects`, icon: Target },
         ],
     },
     {

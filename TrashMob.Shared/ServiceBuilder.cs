@@ -12,6 +12,7 @@
     using TrashMob.Shared.Managers.Communities;
     using TrashMob.Shared.Managers.Adoptions;
     using TrashMob.Shared.Managers.Gamification;
+    using TrashMob.Shared.Managers.Prospects;
     using TrashMob.Shared.Persistence;
     using TrashMob.Shared.Persistence.Interfaces;
     using TrashMob.Shared.Services;
@@ -121,6 +122,10 @@
             services.AddScoped<ILeaderboardManager, LeaderboardManager>();
             services.AddScoped<IAchievementManager, AchievementManager>();
 
+            // Community Prospects
+            services.AddScoped<ICommunityProspectManager, CommunityProspectManager>();
+            services.AddScoped<IProspectActivityManager, ProspectActivityManager>();
+
             // Newsletter
             services.AddScoped<INewsletterManager, NewsletterManager>();
             services.AddScoped<IUserNewsletterPreferenceManager, UserNewsletterPreferenceManager>();
@@ -214,6 +219,10 @@
             // Email Invite repositories
             services.AddScoped<IKeyedRepository<EmailInviteBatch>, KeyedRepository<EmailInviteBatch>>();
             services.AddScoped<IKeyedRepository<EmailInvite>, KeyedRepository<EmailInvite>>();
+
+            // Community Prospect repositories
+            services.AddScoped<IKeyedRepository<CommunityProspect>, KeyedRepository<CommunityProspect>>();
+            services.AddScoped<IKeyedRepository<ProspectActivity>, KeyedRepository<ProspectActivity>>();
 
             // Newsletter repositories
             services.AddScoped<IKeyedRepository<Newsletter>, KeyedRepository<Newsletter>>();
