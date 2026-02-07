@@ -1,10 +1,15 @@
 import { ApiService } from '.';
+import BatchOutreachResultData from '../components/Models/BatchOutreachResultData';
+import { OutreachSendResultData } from '../components/Models/BatchOutreachResultData';
 import CommunityProspectData from '../components/Models/CommunityProspectData';
 import CsvImportResultData from '../components/Models/CsvImportResultData';
 import DiscoveryResultData from '../components/Models/DiscoveryResultData';
 import FitScoreBreakdownData from '../components/Models/FitScoreBreakdownData';
 import GeographicGapData from '../components/Models/GeographicGapData';
+import OutreachPreviewData from '../components/Models/OutreachPreviewData';
+import OutreachSettingsData from '../components/Models/OutreachSettingsData';
 import ProspectActivityData from '../components/Models/ProspectActivityData';
+import ProspectOutreachEmailData from '../components/Models/ProspectOutreachEmailData';
 
 export type GetCommunityProspects_Params = { stage?: number; search?: string };
 export type GetCommunityProspects_Response = CommunityProspectData[];
@@ -169,4 +174,61 @@ export const ImportProspectsCsv = () => ({
             data: formData,
         });
     },
+});
+
+// --- Phase 3: Outreach & Communication ---
+
+export type PreviewOutreach_Params = { id: string };
+export type PreviewOutreach_Response = OutreachPreviewData;
+export const PreviewOutreach = (params: PreviewOutreach_Params) => ({
+    key: ['/communityprospects', params.id, 'outreach', 'preview'],
+    service: async () =>
+        ApiService('protected').fetchData<PreviewOutreach_Response>({
+            url: `/communityprospects/${params.id}/outreach/preview`,
+            method: 'post',
+        }),
+});
+
+export type SendOutreach_Params = { id: string };
+export type SendOutreach_Response = OutreachSendResultData;
+export const SendOutreach = () => ({
+    key: ['/communityprospects', 'outreach', 'send'],
+    service: async (params: SendOutreach_Params) =>
+        ApiService('protected').fetchData<SendOutreach_Response>({
+            url: `/communityprospects/${params.id}/outreach`,
+            method: 'post',
+        }),
+});
+
+export type GetOutreachHistory_Params = { id: string };
+export type GetOutreachHistory_Response = ProspectOutreachEmailData[];
+export const GetOutreachHistory = (params: GetOutreachHistory_Params) => ({
+    key: ['/communityprospects', params.id, 'outreach', 'history'],
+    service: async () =>
+        ApiService('protected').fetchData<GetOutreachHistory_Response>({
+            url: `/communityprospects/${params.id}/outreach/history`,
+            method: 'get',
+        }),
+});
+
+export type SendBatchOutreach_Body = { prospectIds: string[] };
+export type SendBatchOutreach_Response = BatchOutreachResultData;
+export const SendBatchOutreach = () => ({
+    key: ['/communityprospects', 'outreach', 'batch'],
+    service: async (body: SendBatchOutreach_Body) =>
+        ApiService('protected').fetchData<SendBatchOutreach_Response, SendBatchOutreach_Body>({
+            url: '/communityprospects/outreach/batch',
+            method: 'post',
+            data: body,
+        }),
+});
+
+export type GetOutreachSettings_Response = OutreachSettingsData;
+export const GetOutreachSettings = () => ({
+    key: ['/communityprospects', 'outreach', 'settings'],
+    service: async () =>
+        ApiService('protected').fetchData<GetOutreachSettings_Response>({
+            url: '/communityprospects/outreach/settings',
+            method: 'get',
+        }),
 });

@@ -161,6 +161,8 @@
 
         public virtual DbSet<ProspectActivity> ProspectActivities { get; set; }
 
+        public virtual DbSet<ProspectOutreachEmail> ProspectOutreachEmails { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(configuration["TMDBServerConnectionString"], x => x.UseNetTopologySuite());
@@ -3015,6 +3017,42 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ProspectActivities_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<ProspectOutreachEmail>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Subject)
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Status)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.ErrorMessage)
+                    .HasMaxLength(2000);
+
+                entity.HasIndex(e => e.ProspectId);
+                entity.HasIndex(e => e.Status);
+
+                entity.HasOne(d => d.Prospect)
+                    .WithMany(p => p.OutreachEmails)
+                    .HasForeignKey(d => d.ProspectId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_ProspectOutreachEmails_CommunityProspect");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ProspectOutreachEmails_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ProspectOutreachEmails_User_LastUpdatedBy");
             });
         }
     }

@@ -43,6 +43,12 @@ namespace TrashMobHourlyJobs
             var processedCount = await newsletterManager.ProcessSendingNewslettersAsync();
             logger.LogInformation("Processed {Count} newsletters for sending", processedCount);
 
+            // Process due outreach follow-ups
+            logger.LogInformation("Processing prospect outreach follow-ups...");
+            var outreachManager = scope.ServiceProvider.GetRequiredService<IProspectOutreachManager>();
+            var followUpCount = await outreachManager.ProcessDueFollowUpsAsync();
+            logger.LogInformation("Processed {Count} outreach follow-up emails", followUpCount);
+
             logger.LogInformation("Hourly jobs completed at: {Time}", DateTime.UtcNow);
         }
 

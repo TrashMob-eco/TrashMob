@@ -26,7 +26,8 @@ namespace TrashMob.Controllers
         IProspectActivityManager prospectActivityManager,
         IClaudeDiscoveryService claudeDiscoveryService,
         IProspectScoringManager prospectScoringManager,
-        ICsvImportManager csvImportManager)
+        ICsvImportManager csvImportManager,
+        IProspectOutreachManager prospectOutreachManager)
         : SecureController
     {
         /// <summary>
@@ -249,6 +250,68 @@ namespace TrashMob.Controllers
             using var stream = file.OpenReadStream();
             var result = await csvImportManager.ImportProspectsAsync(stream, UserId, cancellationToken);
             return Ok(result);
+        }
+        /// <summary>
+        /// Generates a preview of the next outreach email for a prospect without sending.
+        /// </summary>
+        /// <param name="id">The prospect ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpPost("{id}/outreach/preview")]
+        [ProducesResponseType(typeof(OutreachPreview), StatusCodes.Status200OK)]
+        public async Task<IActionResult> PreviewOutreach(Guid id, CancellationToken cancellationToken)
+        {
+            var preview = await prospectOutreachManager.PreviewOutreachAsync(id, cancellationToken);
+            return Ok(preview);
+        }
+
+        /// <summary>
+        /// Sends an outreach email to a prospect.
+        /// </summary>
+        /// <param name="id">The prospect ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpPost("{id}/outreach")]
+        [ProducesResponseType(typeof(OutreachSendResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> SendOutreach(Guid id, CancellationToken cancellationToken)
+        {
+            var result = await prospectOutreachManager.SendOutreachAsync(id, UserId, cancellationToken);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Gets the outreach email history for a prospect.
+        /// </summary>
+        /// <param name="id">The prospect ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpGet("{id}/outreach/history")]
+        [ProducesResponseType(typeof(IEnumerable<ProspectOutreachEmail>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetOutreachHistory(Guid id, CancellationToken cancellationToken)
+        {
+            var history = await prospectOutreachManager.GetOutreachHistoryAsync(id, cancellationToken);
+            return Ok(history);
+        }
+
+        /// <summary>
+        /// Sends outreach emails to multiple prospects.
+        /// </summary>
+        /// <param name="request">The batch outreach request.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpPost("outreach/batch")]
+        [ProducesResponseType(typeof(BatchOutreachResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> SendBatchOutreach(BatchOutreachRequest request, CancellationToken cancellationToken)
+        {
+            var result = await prospectOutreachManager.SendBatchOutreachAsync(request.ProspectIds, UserId, cancellationToken);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Gets the current outreach configuration settings.
+        /// </summary>
+        [HttpGet("outreach/settings")]
+        [ProducesResponseType(typeof(OutreachSettings), StatusCodes.Status200OK)]
+        public IActionResult GetOutreachSettings()
+        {
+            var settings = prospectOutreachManager.GetOutreachSettings();
+            return Ok(settings);
         }
     }
 

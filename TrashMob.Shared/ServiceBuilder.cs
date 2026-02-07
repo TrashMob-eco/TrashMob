@@ -128,6 +128,8 @@
             services.AddScoped<IClaudeDiscoveryService, ClaudeDiscoveryService>();
             services.AddScoped<IProspectScoringManager, ProspectScoringManager>();
             services.AddScoped<ICsvImportManager, CsvImportManager>();
+            services.AddScoped<IOutreachContentService, OutreachContentService>();
+            services.AddScoped<IProspectOutreachManager, ProspectOutreachManager>();
 
             // Newsletter
             services.AddScoped<INewsletterManager, NewsletterManager>();
@@ -226,6 +228,7 @@
             // Community Prospect repositories
             services.AddScoped<IKeyedRepository<CommunityProspect>, KeyedRepository<CommunityProspect>>();
             services.AddScoped<IKeyedRepository<ProspectActivity>, KeyedRepository<ProspectActivity>>();
+            services.AddScoped<IKeyedRepository<ProspectOutreachEmail>, KeyedRepository<ProspectOutreachEmail>>();
 
             // Newsletter repositories
             services.AddScoped<IKeyedRepository<Newsletter>, KeyedRepository<Newsletter>>();

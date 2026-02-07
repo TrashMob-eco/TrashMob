@@ -44,5 +44,7 @@ namespace TrashMob.Models
         public Guid? ConvertedPartnerId { get; set; }
 
         public virtual ICollection<ProspectActivity> Activities { get; set; } = [];
+
+        public virtual ICollection<ProspectOutreachEmail> OutreachEmails { get; set; } = [];
     }
 }

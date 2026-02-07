@@ -199,5 +199,25 @@
         /// Invitation sent to potential volunteers to join a specific team.
         /// </summary>
         InviteToJoinTeam = 39,
+
+        /// <summary>
+        /// Initial outreach email sent to a community prospect introducing TrashMob.
+        /// </summary>
+        ProspectOutreachInitial = 40,
+
+        /// <summary>
+        /// Follow-up outreach email sent to a community prospect.
+        /// </summary>
+        ProspectOutreachFollowUp = 41,
+
+        /// <summary>
+        /// Value-add outreach email sharing stats and impact data with a community prospect.
+        /// </summary>
+        ProspectOutreachValueAdd = 42,
+
+        /// <summary>
+        /// Final gentle follow-up outreach email sent to a community prospect.
+        /// </summary>
+        ProspectOutreachFinal = 43,
     }
 }

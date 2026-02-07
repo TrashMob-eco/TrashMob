@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
-import { Edit, Plus, Globe, Mail, User, MapPin } from 'lucide-react';
+import { Edit, Plus, Globe, Mail, User, MapPin, Send } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -17,8 +17,11 @@ import {
     GetProspectActivities,
     CreateProspectActivity,
     GetProspectScoreBreakdown,
+    GetOutreachHistory,
+    GetOutreachSettings,
 } from '@/services/community-prospects';
 import { PipelineStageBadge, ACTIVITY_TYPES } from '@/components/prospects/pipeline-stage-badge';
+import { OutreachPreviewDialog } from '@/components/prospects/outreach-preview-dialog';
 import ProspectActivityData from '@/components/Models/ProspectActivityData';
 
 export const SiteAdminProspectDetail = () => {
@@ -26,6 +29,7 @@ export const SiteAdminProspectDetail = () => {
     const { toast } = useToast();
     const queryClient = useQueryClient();
     const [activityDialogOpen, setActivityDialogOpen] = useState(false);
+    const [outreachDialogOpen, setOutreachDialogOpen] = useState(false);
     const [activityType, setActivityType] = useState('Note');
     const [activitySubject, setActivitySubject] = useState('');
     const [activityDetails, setActivityDetails] = useState('');
@@ -49,6 +53,19 @@ export const SiteAdminProspectDetail = () => {
         queryFn: GetProspectScoreBreakdown({ id: prospectId }).service,
         select: (res) => res.data,
         enabled: !!prospectId,
+    });
+
+    const { data: outreachHistory } = useQuery({
+        queryKey: GetOutreachHistory({ id: prospectId }).key,
+        queryFn: GetOutreachHistory({ id: prospectId }).service,
+        select: (res) => res.data,
+        enabled: !!prospectId,
+    });
+
+    const { data: outreachSettings } = useQuery({
+        queryKey: GetOutreachSettings().key,
+        queryFn: GetOutreachSettings().service,
+        select: (res) => res.data,
     });
 
     const createActivity = useMutation({
@@ -175,6 +192,65 @@ export const SiteAdminProspectDetail = () => {
                     </CardContent>
                 </Card>
             ) : null}
+
+            <Card>
+                <CardHeader className='flex flex-row items-center justify-between'>
+                    <div>
+                        <CardTitle>Outreach</CardTitle>
+                        {outreachSettings ? <div className='mt-1'>
+                                {!outreachSettings.outreachEnabled ? (
+                                    <Badge variant='destructive'>Outreach Disabled</Badge>
+                                ) : outreachSettings.testMode ? (
+                                    <Badge className='bg-yellow-500 text-white'>
+                                        Test Mode — emails go to {outreachSettings.testRecipientEmail}
+                                    </Badge>
+                                ) : (
+                                    <Badge className='bg-green-600 text-white'>Live Mode</Badge>
+                                )}
+                            </div> : null}
+                    </div>
+                    <Button onClick={() => setOutreachDialogOpen(true)}>
+                        <Send className='mr-2 h-4 w-4' /> Preview & Send
+                    </Button>
+                </CardHeader>
+                <CardContent>
+                    {(outreachHistory || []).length === 0 ? (
+                        <p className='text-muted-foreground text-sm'>No outreach emails sent yet.</p>
+                    ) : (
+                        <div className='space-y-3'>
+                            {(outreachHistory || []).map((email) => (
+                                <div key={email.id} className='border-l-2 border-muted pl-4 pb-2'>
+                                    <div className='flex items-center gap-2'>
+                                        <Badge variant='outline'>Step {email.cadenceStep}</Badge>
+                                        <Badge
+                                            variant={
+                                                email.status === 'Sent' || email.status === 'Delivered'
+                                                    ? 'secondary'
+                                                    : email.status === 'Failed' || email.status === 'Bounced'
+                                                      ? 'destructive'
+                                                      : 'outline'
+                                            }
+                                        >
+                                            {email.status}
+                                        </Badge>
+                                        <span className='text-xs text-muted-foreground'>
+                                            {email.sentDate ? moment(email.sentDate).format('MMM D, YYYY h:mm A') : 'Not sent'}
+                                        </span>
+                                    </div>
+                                    <p className='text-sm font-medium mt-1'>{email.subject}</p>
+                                    {email.errorMessage ? <p className='text-sm text-destructive mt-1'>{email.errorMessage}</p> : null}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+
+            <OutreachPreviewDialog
+                prospectId={prospectId}
+                open={outreachDialogOpen}
+                onOpenChange={setOutreachDialogOpen}
+            />
 
             <Card>
                 <CardHeader className='flex flex-row items-center justify-between'>
