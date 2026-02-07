@@ -125,6 +125,9 @@
             // Community Prospects
             services.AddScoped<ICommunityProspectManager, CommunityProspectManager>();
             services.AddScoped<IProspectActivityManager, ProspectActivityManager>();
+            services.AddScoped<IClaudeDiscoveryService, ClaudeDiscoveryService>();
+            services.AddScoped<IProspectScoringManager, ProspectScoringManager>();
+            services.AddScoped<ICsvImportManager, CsvImportManager>();
 
             // Newsletter
             services.AddScoped<INewsletterManager, NewsletterManager>();

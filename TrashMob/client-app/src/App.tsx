@@ -253,6 +253,12 @@ const SiteAdminProspectEdit = lazy(() =>
 const SiteAdminProspectDetail = lazy(() =>
     import('./pages/siteadmin/prospects/$prospectId').then((m) => ({ default: m.SiteAdminProspectDetail })),
 );
+const SiteAdminProspectDiscovery = lazy(() =>
+    import('./pages/siteadmin/prospects/discovery').then((m) => ({ default: m.SiteAdminProspectDiscovery })),
+);
+const SiteAdminProspectImport = lazy(() =>
+    import('./pages/siteadmin/prospects/import').then((m) => ({ default: m.SiteAdminProspectImport })),
+);
 
 const queryClient = new QueryClient();
 
@@ -443,6 +449,8 @@ const AppContent: FC = () => {
                                 <Route path='newsletters' element={<SiteAdminNewsletters />} />
                                 <Route path='prospects' element={<SiteAdminProspects />} />
                                 <Route path='prospects/create' element={<SiteAdminProspectCreate />} />
+                                <Route path='prospects/discovery' element={<SiteAdminProspectDiscovery />} />
+                                <Route path='prospects/import' element={<SiteAdminProspectImport />} />
                                 <Route path='prospects/:prospectId' element={<SiteAdminProspectDetail />} />
                                 <Route path='prospects/:prospectId/edit' element={<SiteAdminProspectEdit />} />
                             </Route>

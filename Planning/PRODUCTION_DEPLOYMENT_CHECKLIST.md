@@ -16,6 +16,11 @@ Ensure required secrets exist before deployments:
 # Strapi database password (required for Strapi Azure SQL)
 az keyvault secret show --vault-name kv-tm-dev-westus2 --name strapi-db-password || \
   az keyvault secret set --vault-name kv-tm-dev-westus2 --name strapi-db-password --value "$(openssl rand -base64 32)"
+
+# Anthropic API key (required for AI prospect discovery - Project 40 Phase 2)
+# Get key from https://console.anthropic.com/settings/keys
+az keyvault secret show --vault-name kv-tm-dev-westus2 --name AnthropicApiKey || \
+  az keyvault secret set --vault-name kv-tm-dev-westus2 --name AnthropicApiKey --value "<your-anthropic-api-key>"
 ```
 
 **Production environment:**
@@ -23,6 +28,11 @@ az keyvault secret show --vault-name kv-tm-dev-westus2 --name strapi-db-password
 # Strapi database password (required for Strapi Azure SQL)
 az keyvault secret show --vault-name kv-tm-pr-westus2 --name strapi-db-password || \
   az keyvault secret set --vault-name kv-tm-pr-westus2 --name strapi-db-password --value "$(openssl rand -base64 32)"
+
+# Anthropic API key (required for AI prospect discovery - Project 40 Phase 2)
+# Get key from https://console.anthropic.com/settings/keys
+az keyvault secret show --vault-name kv-tm-pr-westus2 --name AnthropicApiKey || \
+  az keyvault secret set --vault-name kv-tm-pr-westus2 --name AnthropicApiKey --value "<your-anthropic-api-key>"
 ```
 
 ### 1. Database Migrations (REQUIRED)
