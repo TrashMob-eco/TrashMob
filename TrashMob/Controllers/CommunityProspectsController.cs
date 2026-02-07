@@ -9,8 +9,10 @@ namespace TrashMob.Controllers
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Models;
+    using TrashMob.Models.Poco;
     using TrashMob.Security;
     using TrashMob.Shared;
+    using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Managers.Prospects;
 
     /// <summary>
@@ -21,7 +23,10 @@ namespace TrashMob.Controllers
     [RequiredScope(Constants.TrashMobWriteScope)]
     public class CommunityProspectsController(
         ICommunityProspectManager communityProspectManager,
-        IProspectActivityManager prospectActivityManager)
+        IProspectActivityManager prospectActivityManager,
+        IClaudeDiscoveryService claudeDiscoveryService,
+        IProspectScoringManager prospectScoringManager,
+        ICsvImportManager csvImportManager)
         : SecureController
     {
         /// <summary>
@@ -161,6 +166,88 @@ namespace TrashMob.Controllers
         {
             activity.ProspectId = id;
             var result = await prospectActivityManager.AddAsync(activity, UserId, cancellationToken);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Discovers new community prospects using AI.
+        /// </summary>
+        /// <param name="request">The discovery request with optional prompt or location.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpPost("discover")]
+        [ProducesResponseType(typeof(DiscoveryResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> Discover(DiscoveryRequest request, CancellationToken cancellationToken)
+        {
+            var result = await claudeDiscoveryService.DiscoverProspectsAsync(request, cancellationToken);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Gets the FitScore breakdown for a specific prospect.
+        /// </summary>
+        /// <param name="id">The prospect ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpGet("{id}/score")]
+        [ProducesResponseType(typeof(FitScoreBreakdown), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetScoreBreakdown(Guid id, CancellationToken cancellationToken)
+        {
+            var breakdown = await prospectScoringManager.CalculateFitScoreAsync(id, cancellationToken);
+
+            if (breakdown == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(breakdown);
+        }
+
+        /// <summary>
+        /// Recalculates FitScores for all prospects.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpPost("rescore")]
+        [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
+        public async Task<IActionResult> RescoreAll(CancellationToken cancellationToken)
+        {
+            var count = await prospectScoringManager.RecalculateAllScoresAsync(UserId, cancellationToken);
+            return Ok(count);
+        }
+
+        /// <summary>
+        /// Gets geographic areas with events but no active community partner.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpGet("gaps")]
+        [ProducesResponseType(typeof(IEnumerable<GeographicGap>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetGeographicGaps(CancellationToken cancellationToken)
+        {
+            var gaps = await prospectScoringManager.GetGeographicGapsAsync(cancellationToken);
+            return Ok(gaps);
+        }
+
+        /// <summary>
+        /// Imports community prospects from a CSV file.
+        /// </summary>
+        /// <param name="file">The CSV file to import.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpPost("import")]
+        [ProducesResponseType(typeof(CsvImportResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ImportCsv(IFormFile file, CancellationToken cancellationToken)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file provided.");
+            }
+
+            if (!file.FileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
+            {
+                return BadRequest("Only .csv files are supported.");
+            }
+
+            using var stream = file.OpenReadStream();
+            var result = await csvImportManager.ImportProspectsAsync(stream, UserId, cancellationToken);
             return Ok(result);
         }
     }

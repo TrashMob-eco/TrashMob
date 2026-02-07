@@ -1,5 +1,9 @@
 import { ApiService } from '.';
 import CommunityProspectData from '../components/Models/CommunityProspectData';
+import CsvImportResultData from '../components/Models/CsvImportResultData';
+import DiscoveryResultData from '../components/Models/DiscoveryResultData';
+import FitScoreBreakdownData from '../components/Models/FitScoreBreakdownData';
+import GeographicGapData from '../components/Models/GeographicGapData';
 import ProspectActivityData from '../components/Models/ProspectActivityData';
 
 export type GetCommunityProspects_Params = { stage?: number; search?: string };
@@ -100,4 +104,69 @@ export const CreateProspectActivity = (params: CreateProspectActivity_Params) =>
             method: 'post',
             data: body,
         }),
+});
+
+// --- Phase 2: AI Discovery, Scoring, and Import ---
+
+export type DiscoverProspects_Body = {
+    prompt?: string;
+    city?: string;
+    region?: string;
+    country?: string;
+    maxResults: number;
+};
+export type DiscoverProspects_Response = DiscoveryResultData;
+export const DiscoverProspects = () => ({
+    key: ['/communityprospects', 'discover'],
+    service: async (body: DiscoverProspects_Body) =>
+        ApiService('protected').fetchData<DiscoverProspects_Response, DiscoverProspects_Body>({
+            url: '/communityprospects/discover',
+            method: 'post',
+            data: body,
+        }),
+});
+
+export type GetProspectScoreBreakdown_Params = { id: string };
+export type GetProspectScoreBreakdown_Response = FitScoreBreakdownData;
+export const GetProspectScoreBreakdown = (params: GetProspectScoreBreakdown_Params) => ({
+    key: ['/communityprospects', params.id, 'score'],
+    service: async () =>
+        ApiService('protected').fetchData<GetProspectScoreBreakdown_Response>({
+            url: `/communityprospects/${params.id}/score`,
+            method: 'get',
+        }),
+});
+
+export type RescoreAllProspects_Response = number;
+export const RescoreAllProspects = () => ({
+    key: ['/communityprospects', 'rescore'],
+    service: async () =>
+        ApiService('protected').fetchData<RescoreAllProspects_Response>({
+            url: '/communityprospects/rescore',
+            method: 'post',
+        }),
+});
+
+export type GetGeographicGaps_Response = GeographicGapData[];
+export const GetGeographicGaps = () => ({
+    key: ['/communityprospects', 'gaps'],
+    service: async () =>
+        ApiService('protected').fetchData<GetGeographicGaps_Response>({
+            url: '/communityprospects/gaps',
+            method: 'get',
+        }),
+});
+
+export type ImportProspectsCsv_Response = CsvImportResultData;
+export const ImportProspectsCsv = () => ({
+    key: ['/communityprospects', 'import'],
+    service: async (file: File) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        return ApiService('protected').fetchData<ImportProspectsCsv_Response>({
+            url: '/communityprospects/import',
+            method: 'post',
+            data: formData,
+        });
+    },
 });

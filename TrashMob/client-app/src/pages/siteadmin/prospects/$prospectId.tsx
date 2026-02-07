@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -15,6 +16,7 @@ import {
     GetCommunityProspectById,
     GetProspectActivities,
     CreateProspectActivity,
+    GetProspectScoreBreakdown,
 } from '@/services/community-prospects';
 import { PipelineStageBadge, ACTIVITY_TYPES } from '@/components/prospects/pipeline-stage-badge';
 import ProspectActivityData from '@/components/Models/ProspectActivityData';
@@ -38,6 +40,13 @@ export const SiteAdminProspectDetail = () => {
     const { data: activities } = useQuery({
         queryKey: GetProspectActivities({ id: prospectId }).key,
         queryFn: GetProspectActivities({ id: prospectId }).service,
+        select: (res) => res.data,
+        enabled: !!prospectId,
+    });
+
+    const { data: scoreBreakdown } = useQuery({
+        queryKey: GetProspectScoreBreakdown({ id: prospectId }).key,
+        queryFn: GetProspectScoreBreakdown({ id: prospectId }).service,
         select: (res) => res.data,
         enabled: !!prospectId,
     });
@@ -144,6 +153,29 @@ export const SiteAdminProspectDetail = () => {
                 </CardContent>
             </Card>
 
+            {scoreBreakdown ? (
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Score Breakdown (FitScore: {scoreBreakdown.totalScore})</CardTitle>
+                    </CardHeader>
+                    <CardContent className='space-y-4'>
+                        <ScoreBar label='Event Density' value={scoreBreakdown.eventDensityScore} max={30} />
+                        <ScoreBar label='Population' value={scoreBreakdown.populationScore} max={25} />
+                        <ScoreBar label='Geographic Gap' value={scoreBreakdown.geographicGapScore} max={30} />
+                        <ScoreBar label='Community Type' value={scoreBreakdown.communityTypeFitScore} max={15} />
+                        <div className='grid grid-cols-2 gap-4 pt-2 text-sm text-muted-foreground'>
+                            <p>Nearby Events: {scoreBreakdown.nearbyEventCount}</p>
+                            <p>
+                                Nearest Partner:{' '}
+                                {scoreBreakdown.nearestPartnerDistanceMiles !== null
+                                    ? `${scoreBreakdown.nearestPartnerDistanceMiles} mi`
+                                    : 'None'}
+                            </p>
+                        </div>
+                    </CardContent>
+                </Card>
+            ) : null}
+
             <Card>
                 <CardHeader className='flex flex-row items-center justify-between'>
                     <CardTitle>Activity ({(activities || []).length})</CardTitle>
@@ -230,3 +262,18 @@ export const SiteAdminProspectDetail = () => {
         </div>
     );
 };
+
+function ScoreBar({ label, value, max }: { label: string; value: number; max: number }) {
+    const pct = max > 0 ? (value / max) * 100 : 0;
+    return (
+        <div className='space-y-1'>
+            <div className='flex justify-between text-sm'>
+                <span>{label}</span>
+                <span className='text-muted-foreground'>
+                    {value}/{max}
+                </span>
+            </div>
+            <Progress value={pct} className='h-2' />
+        </div>
+    );
+}

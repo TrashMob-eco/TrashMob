@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Plus } from 'lucide-react';
+import { Plus, Sparkles, Upload } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -45,11 +45,23 @@ export const SiteAdminProspects = () => {
         <Card>
             <CardHeader className='flex flex-row items-center justify-between'>
                 <CardTitle>Prospects ({len})</CardTitle>
-                <Button asChild>
-                    <Link to='/siteadmin/prospects/create'>
-                        <Plus className='mr-2 h-4 w-4' /> Add Prospect
-                    </Link>
-                </Button>
+                <div className='flex gap-2'>
+                    <Button variant='outline' asChild>
+                        <Link to='/siteadmin/prospects/discovery'>
+                            <Sparkles className='mr-2 h-4 w-4' /> AI Discovery
+                        </Link>
+                    </Button>
+                    <Button variant='outline' asChild>
+                        <Link to='/siteadmin/prospects/import'>
+                            <Upload className='mr-2 h-4 w-4' /> Import CSV
+                        </Link>
+                    </Button>
+                    <Button asChild>
+                        <Link to='/siteadmin/prospects/create'>
+                            <Plus className='mr-2 h-4 w-4' /> Add Prospect
+                        </Link>
+                    </Button>
+                </div>
             </CardHeader>
             <CardContent>
                 <Tabs
