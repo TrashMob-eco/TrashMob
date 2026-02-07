@@ -21,7 +21,7 @@
                         HorizontalOptions="Center" />
                     <Button Text="Take Photo" Clicked="TakePhoto_Clicked" Grid.Row="1" Margin="10" />
                     <VerticalStackLayout Grid.Row="2">
-                        <Label Text="Name" Style="{StaticResource FieldLabel}" />
+                        <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Name" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
                         <controls:TMEntry Text="{Binding PickupLocationViewModel.Name}">
                             <controls:TMEntry.Behaviors>
                                 <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5"
@@ -30,7 +30,7 @@
                         </controls:TMEntry>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="3">
-                        <Label Text="Description" Style="{StaticResource FieldLabel}" />
+                        <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Description" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
                         <controls:TMEditor Text="{Binding PickupLocationViewModel.Notes}">
                             <controls:TMEditor.Behaviors>
                                     <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="10"

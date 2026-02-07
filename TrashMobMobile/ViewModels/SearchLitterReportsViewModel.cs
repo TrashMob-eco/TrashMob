@@ -26,6 +26,7 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
     [ObservableProperty]
     private AddressViewModel? userLocation;
 
+    private IEnumerable<LitterReport> AllLitterReports { get; set; } = [];
     private IEnumerable<LitterReport> RawLitterReports { get; set; } = [];
 
     public ObservableCollection<LitterImageViewModel> LitterImages { get; set; } = [];
@@ -160,9 +161,7 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
 
     public async Task Init()
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             IsMapSelected = true;
             IsListSelected = false;
@@ -179,15 +178,8 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
 
             SelectedCreatedDateRange = DateRanges.LastMonth;
 
-            IsBusy = false;
             await NotificationService.Notify("Litter Report list has been refreshed.");
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("Failed to initialize Litter Report search page.");
-        }
+        }, "Failed to initialize Litter Report search page.");
     }
 
     private async void PerformNavigation(Guid litterReportId)
@@ -243,7 +235,8 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
             litterReportFilter.LitterReportStatusId = (int)LitterReportStatusEnum.Cleaned;
         }
 
-        RawLitterReports = await litterReportManager.GetLitterReportsAsync(litterReportFilter, ImageSizeEnum.Thumb, true);
+        AllLitterReports = (await litterReportManager.GetLitterReportsAsync(litterReportFilter, ImageSizeEnum.Thumb, true)).ToList();
+        RawLitterReports = AllLitterReports;
 
         UpdateLitterReportViewModels();
     }
@@ -261,12 +254,12 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
     {
         IsBusy = true;
 
-        if (selectedCountry != null)
-        {
-            RawLitterReports = RawLitterReports.Where(l => l.LitterImages.Any(i => i.Country == SelectedCountry));
-        }
+        selectedRegion = null;
+        OnPropertyChanged(nameof(SelectedRegion));
+        selectedCity = null;
+        OnPropertyChanged(nameof(SelectedCity));
 
-        UpdateLitterReportViewModels();
+        ApplyLocationFilters();
 
         RefreshRegionList();
 
@@ -292,12 +285,10 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
     {
         IsBusy = true;
 
-        if (!string.IsNullOrEmpty(selectedRegion))
-        {
-            RawLitterReports = RawLitterReports.Where(l => l.LitterImages.Any(i => i.Region == selectedRegion));
-        }
+        selectedCity = null;
+        OnPropertyChanged(nameof(SelectedCity));
 
-        UpdateLitterReportViewModels();
+        ApplyLocationFilters();
 
         RefreshCityList();
 
@@ -324,14 +315,32 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
     {
         IsBusy = true;
 
-        if (!string.IsNullOrEmpty(selectedCity))
-        {
-            RawLitterReports = RawLitterReports.Where(l => l.LitterImages.Any(i => i.City == selectedCity));
-        }
-
-        UpdateLitterReportViewModels();
+        ApplyLocationFilters();
 
         IsBusy = false;
+    }
+
+    private void ApplyLocationFilters()
+    {
+        IEnumerable<LitterReport> filtered = AllLitterReports;
+
+        if (!string.IsNullOrEmpty(selectedCountry))
+        {
+            filtered = filtered.Where(l => l.LitterImages.Any(i => i.Country == selectedCountry));
+        }
+
+        if (!string.IsNullOrEmpty(selectedRegion))
+        {
+            filtered = filtered.Where(l => l.LitterImages.Any(i => i.Region == selectedRegion));
+        }
+
+        if (!string.IsNullOrEmpty(selectedCity))
+        {
+            filtered = filtered.Where(l => l.LitterImages.Any(i => i.City == selectedCity));
+        }
+
+        RawLitterReports = filtered;
+        UpdateLitterReportViewModels();
     }
 
     private void UpdateLitterReportViewModels()

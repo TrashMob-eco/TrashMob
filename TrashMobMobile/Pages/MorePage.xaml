@@ -31,6 +31,11 @@
                     Clicked="OnLogoutClicked"
                     Text="Sign out"
                     ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconLogout}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />
+            <Label x:Name="VersionLabel"
+                   Margin="0,20,0,0"
+                   HorizontalTextAlignment="Center"
+                   FontSize="Micro"
+                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

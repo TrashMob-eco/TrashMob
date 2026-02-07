@@ -66,9 +66,7 @@ public partial class EditLitterReportViewModel(ILitterReportManager litterReport
 
     public async Task Init(Guid litterReportId)
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             litterReport = await litterReportManager.GetLitterReportAsync(litterReportId, ImageSizeEnum.Thumb);
 
@@ -88,15 +86,7 @@ public partial class EditLitterReportViewModel(ILitterReportManager litterReport
                     LitterImageViewModels.Add(litterImageViewModel);
                 }
             }
-
-            IsBusy = false;
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error has occurred while loading the litter report. Please wait and try again in a moment.");
-        }
+        }, "An error has occurred while loading the litter report. Please wait and try again in a moment.");
     }
 
     public async Task AddImageToCollection()
@@ -168,13 +158,10 @@ public partial class EditLitterReportViewModel(ILitterReportManager litterReport
     [RelayCommand]
     private async Task SaveLitterReport()
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             if (!ReportIsValid)
             {
-                IsBusy = false;
                 return;
             }
 
@@ -208,18 +195,10 @@ public partial class EditLitterReportViewModel(ILitterReportManager litterReport
 
             var updatedLitterReport = await litterReportManager.UpdateLitterReportAsync(litterReport);
 
-            IsBusy = false;
-
             await NotificationService.Notify("Litter Report has been updated.");
 
             await Navigation.PopAsync();
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error has occurred while saving the litter report. Please wait and try again in a moment.");
-        }
+        }, "An error has occurred while saving the litter report. Please wait and try again in a moment.");
     }
 
     public void ValidateReport()

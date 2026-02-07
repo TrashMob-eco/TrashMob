@@ -51,9 +51,7 @@ public partial class ManageEventPartnersViewModel(IMobEventManager mobEventManag
 
     public async Task Init(Guid eventId)
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             var eventPartnerLocations = await eventPartnerLocationServiceRestService.GetEventPartnerLocationsAsync(eventId);
 
@@ -76,14 +74,6 @@ public partial class ManageEventPartnersViewModel(IMobEventManager mobEventManag
             MobEvent = await mobEventManager.GetEventAsync(eventId);
 
             EventViewModel = MobEvent.ToEventViewModel(userManager.CurrentUser.Id);
-
-            IsBusy = false;
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error has occurred while loading the event partners. Please wait and try again in a moment.");
-        }
+        }, "An error has occurred while loading the event partners. Please wait and try again in a moment.");
     }
 }

@@ -26,6 +26,7 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
     [ObservableProperty]
     private AddressViewModel userLocation = new();
 
+    private IEnumerable<Event> AllEvents { get; set; } = [];
     private IEnumerable<Event> RawEvents { get; set; } = [];
 
     public ObservableCollection<EventViewModel> Events { get; set; } = [];
@@ -154,9 +155,7 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
 
     public async Task Init()
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             IsMapSelected = true;
             IsListSelected = false;
@@ -178,16 +177,8 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
 
             SelectedCompletedDateRange = DateRanges.LastMonth;
 
-            IsBusy = false;
-
             await NotificationService.Notify("Event list has been refreshed.");
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error has occurred while loading the events. Please try again in a few moments.");
-        }
+        }, "An error has occurred while loading the events. Please try again in a few moments.");
     }
 
     private async void PerformNavigation(EventViewModel eventViewModel)
@@ -248,12 +239,14 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
 
         if (IsUpcomingSelected)
         {
-            RawEvents = events.Where(e => !e.IsCompleted());
+            AllEvents = events.Where(e => !e.IsCompleted()).ToList();
         }
         else
         {
-            RawEvents = events.Where(e => e.IsCompleted());
+            AllEvents = events.Where(e => e.IsCompleted()).ToList();
         }
+
+        RawEvents = AllEvents;
 
         if (!RawEvents.Any())
         {
@@ -293,12 +286,12 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
     {
         IsBusy = true;
 
-        if (selectedCountry != null)
-        {
-            RawEvents = RawEvents.Where(l => l.Country == SelectedCountry);
-        }
+        selectedRegion = null;
+        OnPropertyChanged(nameof(SelectedRegion));
+        selectedCity = null;
+        OnPropertyChanged(nameof(SelectedCity));
 
-        UpdateEventReportViewModels();
+        ApplyLocationFilters();
 
         RefreshRegionList();
 
@@ -329,12 +322,10 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
     {
         IsBusy = true;
 
-        if (!string.IsNullOrEmpty(selectedRegion))
-        {
-            RawEvents = RawEvents.Where(l => l.Region == selectedRegion);
-        }
+        selectedCity = null;
+        OnPropertyChanged(nameof(SelectedCity));
 
-        UpdateEventReportViewModels();
+        ApplyLocationFilters();
 
         RefreshCityList();
 
@@ -366,14 +357,32 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
     {
         IsBusy = true;
 
-        if (!string.IsNullOrEmpty(selectedCity))
-        {
-            RawEvents = RawEvents.Where(l => l.City == selectedCity);
-        }
-
-        UpdateEventReportViewModels();
+        ApplyLocationFilters();
 
         IsBusy = false;
+    }
+
+    private void ApplyLocationFilters()
+    {
+        IEnumerable<Event> filtered = AllEvents;
+
+        if (!string.IsNullOrEmpty(selectedCountry))
+        {
+            filtered = filtered.Where(e => e.Country == selectedCountry);
+        }
+
+        if (!string.IsNullOrEmpty(selectedRegion))
+        {
+            filtered = filtered.Where(e => e.Region == selectedRegion);
+        }
+
+        if (!string.IsNullOrEmpty(selectedCity))
+        {
+            filtered = filtered.Where(e => e.City == selectedCity);
+        }
+
+        RawEvents = filtered;
+        UpdateEventReportViewModels();
     }
 
     private void UpdateEventReportViewModels()

@@ -32,9 +32,7 @@ public partial class CreatePickupLocationViewModel(IPickupLocationManager pickup
 
     public async Task Init(Guid eventId)
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             var mobEvent = await mobEventManager.GetEventAsync(eventId);
 
@@ -48,15 +46,7 @@ public partial class CreatePickupLocationViewModel(IPickupLocationManager pickup
             };
 
             await PickupLocationViewModel.Init(eventId);
-
-            IsBusy = false;
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError($"An error has occurred while loading the event. Please wait and try again in a moment.");
-        }
+        }, "An error has occurred while loading the event. Please wait and try again in a moment.");
     }
 
     public async Task UpdateLocation()
@@ -120,9 +110,7 @@ public partial class CreatePickupLocationViewModel(IPickupLocationManager pickup
     [RelayCommand]
     private async Task SavePickupLocation()
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             var pickupLocation = new PickupLocation
             {
@@ -145,16 +133,8 @@ public partial class CreatePickupLocationViewModel(IPickupLocationManager pickup
             await pickupLocationManager.AddPickupLocationImageAsync(updatedPickupLocation.EventId, updatedPickupLocation.Id,
                 LocalFilePath);
 
-            IsBusy = false;
-
             await NotificationService.Notify("Pickup Location has been saved.");
             await Navigation.PopAsync();
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError($"An error has occurred while saving the pickup location. Please wait and try again in a moment.");
-        }
+        }, "An error has occurred while saving the pickup location. Please wait and try again in a moment.");
     }
 }

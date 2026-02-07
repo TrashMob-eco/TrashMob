@@ -26,9 +26,7 @@ public partial class EditPickupLocationViewModel(IPickupLocationManager pickupLo
 
     public async Task Init(Guid eventId, Guid pickupLocationId)
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             var mobEvent = await mobEventManager.GetEventAsync(eventId);
 
@@ -43,39 +41,21 @@ public partial class EditPickupLocationViewModel(IPickupLocationManager pickupLo
             };
 
             await PickupLocationViewModel.Init(eventId);
-            
-            IsBusy = false;
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError($"An error has occurred while loading the event. Please wait and try again in a moment.");
-        }
+        }, "An error has occurred while loading the event. Please wait and try again in a moment.");
     }
 
     [RelayCommand]
     private async Task SavePickupLocation()
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             pickupLocation.Notes = PickupLocationViewModel.Notes;
             pickupLocation.Name = PickupLocationViewModel.Name;
 
             var updatedPickupLocation = await pickupLocationManager.UpdatePickupLocationAsync(pickupLocation);
 
-            IsBusy = false;
-
             await NotificationService.Notify("Pickup Location has been saved.");
             await Navigation.PopAsync();
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error has occurred while saving the Pickup Location. Please wait and try again in a moment.");
-        }
+        }, "An error has occurred while saving the Pickup Location. Please wait and try again in a moment.");
     }
 }
