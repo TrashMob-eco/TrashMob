@@ -347,6 +347,30 @@
 	  </MauiXaml>
 	</ItemGroup>
 
+  <!-- Inject Google Maps API key into the intermediate AndroidManifest.xml at build time.
+       The key is fetched from Azure Key Vault (dev environment) during local builds.
+       CI uses GitHub secrets to replace the placeholder instead.
+       Override: set GOOGLE_MAPS_API_KEY env var to skip the Key Vault lookup. -->
+  <Target Name="InjectGoogleMapsKey" AfterTargets="_ManifestMerger" BeforeTargets="_CreateBaseApk"
+          Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <!-- If GOOGLE_MAPS_API_KEY is already set (env var or MSBuild property), use it directly -->
+    <!-- Otherwise, fetch from Azure Key Vault (requires 'az login') -->
+    <Exec Command="az keyvault secret show --vault-name kv-tm-dev-westus2 --name Android-Google-ApiKey-Dev --query value -o tsv"
+          ConsoleToMsBuild="true"
+          Condition="'$(GOOGLE_MAPS_API_KEY)' == ''"
+          ContinueOnError="true"
+          StandardOutputImportance="low">
+      <Output TaskParameter="ConsoleOutput" PropertyName="GOOGLE_MAPS_API_KEY" />
+    </Exec>
+    <XmlPoke Condition="'$(GOOGLE_MAPS_API_KEY)' != ''"
+             XmlInputPath="$(IntermediateOutputPath)android\AndroidManifest.xml"
+             Namespaces="&lt;Namespace Prefix='android' Uri='http://schemas.android.com/apk/res/android' /&gt;"
+             Query="/manifest/application/meta-data[@android:name='com.google.android.geo.API_KEY']/@android:value"
+             Value="$(GOOGLE_MAPS_API_KEY)" />
+    <Message Condition="'$(GOOGLE_MAPS_API_KEY)' != ''" Text="Google Maps API key injected successfully" Importance="high" />
+    <Warning Condition="'$(GOOGLE_MAPS_API_KEY)' == ''" Text="Google Maps API key not found. Maps will not work. Set GOOGLE_MAPS_API_KEY env var or run 'az login' with Key Vault access." />
+  </Target>
+
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
     <BundleResource Include="Platforms\iOS\PrivacyInfo.xcprivacy" LogicalName="PrivacyInfo.xcprivacy" />
   </ItemGroup>
