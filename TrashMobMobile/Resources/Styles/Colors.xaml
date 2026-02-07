@@ -9,32 +9,29 @@
     <!--Light mode-->
     <Color x:Key="Primary">#005B4C</Color>
     <Color x:Key="PrimaryText">#005B4C</Color>
-    <Color x:Key="PrimaryReverseText">#F8FBF9</Color>
-    <Color x:Key="ContentPrimary">#1E2225</Color>
-    <Color x:Key="Secondary">#F8FBF9</Color>
-    <Color x:Key="SecondaryText">#005B4C</Color>
-    <Color x:Key="SecondaryReverseText">#F8FBF9</Color>
+    <Color x:Key="PrimaryReverseText">#FFFFFF</Color>
+    <Color x:Key="ContentPrimary">#222832</Color>
+    <Color x:Key="Secondary">#F4F4F5</Color>
+    <Color x:Key="SecondaryText">#18181B</Color>
+    <Color x:Key="SecondaryReverseText">#F4F4F5</Color>
     <Color x:Key="Disabled">#C8C8C8</Color>
     <Color x:Key="DisabledText">#A1A1AA</Color>
-    <Color x:Key="Tertiary">#610777</Color>
- 
+    <Color x:Key="Destructive">#EF4444</Color>
+
     <!--Dark mode-->
-    <Color x:Key="PrimaryDark">White</Color>
+    <Color x:Key="PrimaryDark">#5EBD00</Color>
     <Color x:Key="PrimaryDarkText">White</Color>
-    <Color x:Key="PrimaryDarkReverseText">#549187</Color>
-    <Color x:Key="ContentPrimaryDark">#000000</Color>
-    <Color x:Key="SecondaryDark">#c7d762</Color>
-    <Color x:Key="SecondaryDarkText">#c7d762</Color>
-    <Color x:Key="SecondaryDarkReverseText">#549187</Color>
+    <Color x:Key="PrimaryDarkReverseText">#171717</Color>
+    <Color x:Key="ContentPrimaryDark">#FAFAFA</Color>
+    <Color x:Key="SecondaryDark">#262626</Color>
+    <Color x:Key="SecondaryDarkText">#FAFAFA</Color>
+    <Color x:Key="SecondaryDarkReverseText">#262626</Color>
     <Color x:Key="DisabledDark">#404040</Color>
     <Color x:Key="DisabledDarkText">#71717A</Color>
-    <Color x:Key="TertiaryDark">#9559a4</Color>
+    <Color x:Key="DestructiveDark">#7F1D1D</Color>
 
     <Color x:Key="White">White</Color>
     <Color x:Key="Black">Black</Color>
-    <Color x:Key="Magenta">#D600AA</Color>
-    <Color x:Key="MidnightBlue">#190649</Color>
-    <Color x:Key="OffBlack">#1f1f1f</Color>
 
     <Color x:Key="Gray100">#E1E1E1</Color>
     <Color x:Key="Gray200">#C8C8C8</Color>
@@ -47,7 +44,7 @@
 
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}" />
     <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}" />
-    <SolidColorBrush x:Key="TertiaryBrush" Color="{StaticResource Tertiary}" />
+    <SolidColorBrush x:Key="DestructiveBrush" Color="{StaticResource Destructive}" />
     <SolidColorBrush x:Key="WhiteBrush" Color="{StaticResource White}" />
     <SolidColorBrush x:Key="BlackBrush" Color="{StaticResource Black}" />
 
@@ -60,8 +57,17 @@
     <SolidColorBrush x:Key="Gray900Brush" Color="{StaticResource Gray900}" />
     <SolidColorBrush x:Key="Gray950Brush" Color="{StaticResource Gray950}" />
 
-    <Color x:Key="PageBackgroundLight">White</Color>
-    <Color x:Key="PageBackgroundDark">#1F1F1F</Color>
+    <Color x:Key="PageBackgroundLight">#F5F6F8</Color>
+    <Color x:Key="PageBackgroundDark">#0A0A0A</Color>
+
+    <Color x:Key="CardLight">#FFFFFF</Color>
+    <Color x:Key="CardDark">#0A0A0A</Color>
+    <Color x:Key="BorderLight">#E5E5E5</Color>
+    <Color x:Key="BorderDark">#262626</Color>
+    <Color x:Key="MutedLight">#E3E5E8</Color>
+    <Color x:Key="MutedForegroundLight">#737373</Color>
+    <Color x:Key="MutedDark">#262626</Color>
+    <Color x:Key="MutedForegroundDark">#A3A3A3</Color>
 
     <Color x:Key="TransparentBlack">#50000000</Color>
 
