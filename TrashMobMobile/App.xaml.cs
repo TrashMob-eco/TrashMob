@@ -18,9 +18,10 @@ public partial class App : Application
             this.loggingService.LogError(exception);
         };
 
-        AppDomain.CurrentDomain.FirstChanceException += (sender, args) =>
+        TaskScheduler.UnobservedTaskException += (sender, args) =>
         {
             this.loggingService.LogError(args.Exception);
+            args.SetObserved();
         };
 
         MainPage = new AppShell();
