@@ -6,6 +6,19 @@
             "type": "coreclr",
             "request": "attach",
             "processId": "${command:azureFunctions.pickProcess}"
+        },
+        {
+            "name": "MAUI Android (Debug)",
+            "type": "dotnet",
+            "request": "launch",
+            "preLaunchTask": "build-maui-android",
+            "project": "${workspaceFolder}/TrashMobMobile/TrashMobMobile.csproj",
+            "configuration": "Debug",
+            "framework": "net10.0-android",
+            "env": {
+                "ANDROID_HOME": "D:\\Android\\android-sdk",
+                "JAVA_HOME": "C:\\Program Files\\Microsoft\\jdk-17.0.18.8-hotspot"
+            }
         }
     ]
 }

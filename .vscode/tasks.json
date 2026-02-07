@@ -76,6 +76,26 @@
 			"command": "host start",
 			"isBackground": true,
 			"problemMatcher": "$func-dotnet-watch"
+		},
+		{
+			"label": "build-maui-android",
+			"command": "dotnet",
+			"args": [
+				"build",
+				"${workspaceFolder}/TrashMobMobile/TrashMobMobile.csproj",
+				"-f",
+				"net10.0-android",
+				"/property:GenerateFullPaths=true",
+				"/consoleloggerparameters:NoSummary"
+			],
+			"type": "process",
+			"problemMatcher": "$msCompile",
+			"options": {
+				"env": {
+					"ANDROID_HOME": "D:\\Android\\android-sdk",
+					"JAVA_HOME": "C:\\Program Files\\Microsoft\\jdk-17.0.18.8-hotspot"
+				}
+			}
 		}
 	]
 }
