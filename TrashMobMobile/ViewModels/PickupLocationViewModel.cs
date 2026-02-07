@@ -43,42 +43,26 @@ public partial class PickupLocationViewModel(IPickupLocationManager pickupLocati
 
     public async Task Init(Guid eventId)
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             mobEvent = await mobEventManager.GetEventAsync(eventId);
 
             CanDeletePickupLocation = mobEvent.IsEventLead(userManager.CurrentUser.Id);
             CanEditPickupLocation = mobEvent.IsEventLead(userManager.CurrentUser.Id);
-
-            IsBusy = false;
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error has occurred while loading the event. Please wait and try again in a moment.");
-        }
+        }, "An error has occurred while loading the event. Please wait and try again in a moment.");
     }
 
     [RelayCommand]
     private async Task DeletePickupLocation()
     {
-        try
+        await ExecuteAsync(async () =>
         {
             await pickupLocationManager.DeletePickupLocationAsync(PickupLocation);
 
             await NotificationService.Notify("Pickup location has been removed.");
 
             await Navigation.PopAsync();
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error has occurred while deleting the pickup location. Please wait and try again in a moment.");
-        }
+        }, "An error has occurred while deleting the pickup location. Please wait and try again in a moment.");
     }
 
     [RelayCommand]

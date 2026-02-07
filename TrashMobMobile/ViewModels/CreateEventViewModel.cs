@@ -410,8 +410,6 @@ public partial class CreateEventViewModel : BaseViewModel
 
     public async Task Init(Guid? litterReportId)
     {
-        IsBusy = true;
-
         initialLitterReport = litterReportId;
 
         SetCurrentView();
@@ -422,7 +420,7 @@ public partial class CreateEventViewModel : BaseViewModel
                 step.ViewModel = this;
         }
 
-        try
+        await ExecuteAsync(async () =>
         {
             if (!await waiverManager.HasUserSignedTrashMobWaiverAsync())
             {
@@ -492,16 +490,7 @@ public partial class CreateEventViewModel : BaseViewModel
             // We need to subscribe to both eventViewmodel and creatEventViewmodel propertyChanged to validate step
             EventViewModel.PropertyChanged += ValidateCurrentStep;
             PropertyChanged += ValidateCurrentStep;
-
-            IsBusy = false;
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError(
-                $"An error has occurred while loading the page. Please wait and try again in a moment.");
-        }
+        }, "An error has occurred while loading the page. Please wait and try again in a moment.");
     }
 
     private void UpdateDates(TimeSpan eventStartTime, TimeSpan eventEndTime)
@@ -518,13 +507,10 @@ public partial class CreateEventViewModel : BaseViewModel
     [RelayCommand]
     private async Task<bool> SaveEvent()
     {
-        IsBusy = true;
-
-        try
+        var result = await ExecuteAsync<bool>(async () =>
         {
             if (!await Validate())
             {
-                IsBusy = false;
                 return false;
             }
 
@@ -555,20 +541,12 @@ public partial class CreateEventViewModel : BaseViewModel
                 });
             }
 
-            IsBusy = false;
-
             await notificationService.Notify("Event has been saved.");
 
             return true;
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError(
-                $"An error has occurred while saving the event. Please wait and try again in a moment.");
-            return false;
-        }
+        }, "An error has occurred while saving the event. Please wait and try again in a moment.");
+
+        return result;
     }
 
     private async Task LoadPartners()

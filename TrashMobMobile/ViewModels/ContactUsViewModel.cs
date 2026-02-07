@@ -24,30 +24,18 @@ public partial class ContactUsViewModel(IContactRequestManager contactRequestMan
     [RelayCommand]
     private async Task SubmitMessage()
     {
-        IsBusy = true;
-
-        var contactRequest = new ContactRequest
+        await ExecuteAsync(async () =>
         {
-            Name = Name,
-            Email = Email,
-            Message = Message,
-        };
+            var contactRequest = new ContactRequest
+            {
+                Name = Name,
+                Email = Email,
+                Message = Message,
+            };
 
-        try
-        {
             await contactRequestManager.AddContactRequestAsync(contactRequest);
-
-            IsBusy = false;
-
             await NotificationService.Notify("Message sent successfully!");
-
             await Navigation.PopToRootAsync();
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error has occurred while sending the message. Please wait and try again in a moment.");
-        }
+        }, "An error has occurred while sending the message. Please wait and try again in a moment.");
     }
 }

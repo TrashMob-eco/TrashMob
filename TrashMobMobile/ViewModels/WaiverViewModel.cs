@@ -11,11 +11,9 @@ public partial class WaiverViewModel(INotificationService notificationService, I
     [RelayCommand]
     private async Task SignWaiver()
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
-            var user = await userManager.GetUserAsync(App.CurrentUser.Id.ToString()); 
+            var user = await userManager.GetUserAsync(App.CurrentUser.Id.ToString());
             if (user == null)
             {
                 throw new Exception("User not found.");
@@ -25,18 +23,8 @@ public partial class WaiverViewModel(INotificationService notificationService, I
             user.TrashMobWaiverVersion = Settings.CurrentTrashMobWaiverVersion.VersionId;
 
             await userManager.UpdateUserAsync(user);
-            
             App.CurrentUser = user;
-            
             await Navigation.PopAsync();
-
-            IsBusy = false;
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error occurred while opening the waiver page. Please try again.");
-        }
+        }, "An error occurred while signing the waiver. Please try again.");
     }
 }

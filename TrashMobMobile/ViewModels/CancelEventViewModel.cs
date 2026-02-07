@@ -20,49 +20,27 @@ public partial class CancelEventViewModel(IMobEventManager mobEventManager,
 
     public async Task Init(Guid eventId)
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             var mobEvent = await mobEventManager.GetEventAsync(eventId);
-
             EventViewModel = mobEvent.ToEventViewModel(userManager.CurrentUser.Id);
-
-            IsBusy = false;
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError($"An error has occurred while loading the event. Please wait and try again in a moment.");
-        }
+        }, "An error has occurred while loading the event. Please wait and try again in a moment.");
     }
 
     [RelayCommand]
     private async Task CancelEvent()
     {
-        IsBusy = true;
-
-        var cancellationRequest = new EventCancellationRequest
+        await ExecuteAsync(async () =>
         {
-            CancellationReason = EventViewModel.CancellationReason,
-            EventId = EventViewModel.Id,
-        };
+            var cancellationRequest = new EventCancellationRequest
+            {
+                CancellationReason = EventViewModel.CancellationReason,
+                EventId = EventViewModel.Id,
+            };
 
-        try
-        {
             await mobEventManager.DeleteEventAsync(cancellationRequest);
-
-            IsBusy = false;
-
             await notificationService.Notify("The event has been cancelled.");
-
             await Navigation.PopAsync();
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            await NotificationService.NotifyError($"An error has occurred while cancelling the event. Please wait and try again in a moment.");
-        }
+        }, "An error has occurred while cancelling the event. Please wait and try again in a moment.");
     }
 }

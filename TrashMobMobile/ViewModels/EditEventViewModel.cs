@@ -94,15 +94,13 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
 
     public async Task Init(Guid eventId)
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             UserLocation = userManager.CurrentUser.GetAddress();
             EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
 
             MobEvent = await mobEventManager.GetEventAsync(eventId);
-            
+
             foreach (var eventType in EventTypes)
             {
                 ETypes.Add(eventType.Name);
@@ -111,20 +109,12 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
             SelectedEventType = EventTypes.First(et => et.Id == MobEvent.EventTypeId).Name;
 
             EventViewModel = MobEvent.ToEventViewModel(userManager.CurrentUser.Id);
-            
+
             await LoadPartners();
             await LoadLitterReports();
 
             Events.Add(EventViewModel);
-            
-            IsBusy = false;
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error has occurred while loading the event. Please wait and try again in a moment.");
-        }
+        }, "An error has occurred while loading the event. Please wait and try again in a moment.");
     }
 
     public async Task UpdateLitterAssignment(Guid litterReportId)
@@ -158,13 +148,10 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
     [RelayCommand]
     private async Task SaveEvent()
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             if (!await Validate())
             {
-                IsBusy = false;
                 return;
             }
 
@@ -201,16 +188,9 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
             Events.Clear();
             Events.Add(EventViewModel);
 
-            IsBusy = false;
-
             await NotificationService.Notify("Event has been saved.");
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error has occurred while saving the event. Please wait and try again in a moment.");
-        }
+            await Shell.Current.GoToAsync("..");
+        }, "An error has occurred while saving the event. Please wait and try again in a moment.");
     }
 
     public async Task ChangeLocation(Microsoft.Maui.Devices.Sensors.Location location)

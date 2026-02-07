@@ -47,9 +47,7 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
 
     public async Task Init(Guid litterReportId)
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             LitterReport = await litterReportManager.GetLitterReportAsync(litterReportId, ImageSizeEnum.Reduced);
 
@@ -63,7 +61,7 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
                 IsAssignedToEvent = true;
                 IsNotAssignedToEvent = false;
                 var eventLitterReport = await eventLitterReportManager.GetEventLitterReportByLitterReportIdAsync(litterReportId);
-                
+
                 if (eventLitterReport != null)
                 {
                     EventIdAssignedTo = eventLitterReport.EventId;
@@ -114,15 +112,7 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
                     LitterImageViewModels.Add(litterImageViewModel);
                 }
             }
-
-            IsBusy = false;
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error occurred while loading this litter report. Please try again.");
-        }
+        }, "An error occurred while loading this litter report. Please try again.");
     }
 
     [RelayCommand]
@@ -153,22 +143,13 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
     [RelayCommand]
     private async Task MarkLitterReportCleaned()
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             LitterReport.LitterReportStatusId = CleanedLitterReportStatus;
             var tempLitterReport = LitterReport;
             tempLitterReport.LitterImages.Clear();
             await litterReportManager.UpdateLitterReportAsync(tempLitterReport);
-            IsBusy = false;
             await Navigation.PopAsync();
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error occurred while updating the status of this litter report. Please try again.");
-        }
+        }, "An error occurred while updating the status of this litter report. Please try again.");
     }
 }

@@ -67,11 +67,9 @@ public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager,
 
     public async Task Init(Guid eventId, Action updRoutes)
     {
-        IsBusy = true;
-
         UpdateRoutes = updRoutes;
 
-        try
+        await ExecuteAsync(async () =>
         {
             IsMapSelected = true;
             IsListSelected = false;
@@ -97,7 +95,7 @@ public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager,
 
             EnableEditEventSummary = mobEvent.IsEventLead(userManager.CurrentUser.Id);
             EnableAddPickupLocation = mobEvent.IsEventLead(userManager.CurrentUser.Id);
-            
+
             var pickupLocations = await pickupLocationManager.GetPickupLocationsAsync(eventId, ImageSizeEnum.Thumb);
 
             PickupLocations.Clear();
@@ -139,15 +137,7 @@ public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager,
             }
 
             UpdateRoutes();
-
-            IsBusy = false;
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error occurred while loading the event summary. Please try again.");
-        }
+        }, "An error occurred while loading the event summary. Please try again.");
     }
 
     [RelayCommand]

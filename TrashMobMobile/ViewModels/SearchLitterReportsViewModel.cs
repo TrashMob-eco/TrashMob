@@ -161,9 +161,7 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
 
     public async Task Init()
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             IsMapSelected = true;
             IsListSelected = false;
@@ -180,15 +178,8 @@ public partial class SearchLitterReportsViewModel(ILitterReportManager litterRep
 
             SelectedCreatedDateRange = DateRanges.LastMonth;
 
-            IsBusy = false;
             await NotificationService.Notify("Litter Report list has been refreshed.");
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("Failed to initialize Litter Report search page.");
-        }
+        }, "Failed to initialize Litter Report search page.");
     }
 
     private async void PerformNavigation(Guid litterReportId)

@@ -30,9 +30,7 @@ public partial class EditEventSummaryViewModel(IMobEventManager mobEventManager,
 
     public async Task Init(string eventId)
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             EventSummary = await mobEventManager.GetEventSummaryAsync(new Guid(eventId));
 
@@ -66,23 +64,13 @@ public partial class EditEventSummaryViewModel(IMobEventManager mobEventManager,
             }
 
             EnableSaveEventSummary = true;
-
-            IsBusy = false;
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError($"An error has occurred while loading the event summary. Please wait and try again in a moment.");
-        }
+        }, "An error has occurred while loading the event summary. Please wait and try again in a moment.");
     }
 
     [RelayCommand]
     private async Task SaveEventSummary()
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             EventSummary.ActualNumberOfAttendees = EventSummaryViewModel.ActualNumberOfAttendees;
             EventSummary.NumberOfBags = EventSummaryViewModel.NumberOfBags;
@@ -101,15 +89,8 @@ public partial class EditEventSummaryViewModel(IMobEventManager mobEventManager,
                 await mobEventManager.UpdateEventSummaryAsync(EventSummary);
             }
 
-            IsBusy = false;
-
             await NotificationService.Notify("Event Summary has been updated.");
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError($"An error has occurred while saving the event summary. Please wait and try again in a moment.");
-        }
+            await Shell.Current.GoToAsync("..");
+        }, "An error has occurred while saving the event summary. Please wait and try again in a moment.");
     }
 }

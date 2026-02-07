@@ -82,7 +82,7 @@
                     <CollectionView x:Name="PickupLocationCollection"
                                     ItemsSource="{Binding PickupLocations}"
                                     SelectedItem="{Binding SelectedPickupLocation}"
-                                    IsVisible="{Binding Source={x:Reference viewList}, Path=IsChecked}"
+                                    IsVisible="{Binding IsListSelected}"
                                     SelectionMode="Single"
                                     Grid.Row="4"
                                     Grid.ColumnSpan="2">
@@ -115,7 +115,7 @@
 
                     <controls:CustomMap x:Name="pickupLocationsMap"
                               ItemsSource="{Binding PickupLocations}"
-                              IsVisible="{Binding Source={x:Reference viewMap}, Path=IsChecked}"
+                              IsVisible="{Binding IsMapSelected}"
                               Grid.Row="4"
                               Grid.ColumnSpan="2">
                         <maps:Map.ItemTemplate>

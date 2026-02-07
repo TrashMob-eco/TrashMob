@@ -84,7 +84,7 @@ public partial class MainViewModel(IAuthService authService,
 
     public async Task Init()
     {
-        try
+        await ExecuteAsync(async () =>
         {
             var signedIn = await authService.SignInSilentAsync();
 
@@ -127,12 +127,7 @@ public partial class MainViewModel(IAuthService authService,
             }
 
             await RefreshStatistics();
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            await NotificationService.NotifyError($"An error occurred while initializing the application. Please wait and try again in a moment.");
-        }
+        }, "An error occurred while initializing the application. Please wait and try again in a moment.");
     }
 
     private async Task RefreshStatistics()

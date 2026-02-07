@@ -155,9 +155,7 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
 
     public async Task Init()
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             IsMapSelected = true;
             IsListSelected = false;
@@ -179,16 +177,8 @@ public partial class SearchEventsViewModel(IMobEventManager mobEventManager,
 
             SelectedCompletedDateRange = DateRanges.LastMonth;
 
-            IsBusy = false;
-
             await NotificationService.Notify("Event list has been refreshed.");
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error has occurred while loading the events. Please try again in a few moments.");
-        }
+        }, "An error has occurred while loading the events. Please try again in a few moments.");
     }
 
     private async void PerformNavigation(EventViewModel eventViewModel)

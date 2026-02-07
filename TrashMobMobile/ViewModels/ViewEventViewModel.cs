@@ -121,9 +121,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
     public async Task Init(Guid eventId, Action updRoutes)
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             UpdateRoutes = updRoutes;
 
@@ -162,15 +160,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             }
 
             UpdateRoutes();
-
-            IsBusy = false;
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error occurred while loading the event. Please try again.");
-        }
+        }, "An error occurred while loading the event. Please try again.");
     }
     
     [RelayCommand]
@@ -351,7 +341,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 
     private async Task SaveRoute()
     {
-        try
+        await ExecuteAsync(async () =>
         {
             // If there are no locations, then there is nothing to save.
             if (Locations.Count == 0)
@@ -373,13 +363,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
                 StartTime = RouteStartTime,
                 EndTime = RouteEndTime,
             });
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error occurred while saving your route.");
-        }
+        }, "An error occurred while saving your route.");
     }
 
     private List<SortableLocation> GetSortableLocations()
@@ -410,9 +394,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     [RelayCommand]
     private async Task Register()
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             if (!await waiverManager.HasUserSignedTrashMobWaiverAsync())
             {
@@ -430,24 +412,14 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             await SetRegistrationOptions();
             await GetAttendeeCount();
 
-            IsBusy = false;
-
             await NotificationService.Notify("You have been registered for this event.");
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error occurred while registering you for this event. Please try again.");
-        }
+        }, "An error occurred while registering you for this event. Please try again.");
     }
 
     [RelayCommand]
     private async Task Unregister()
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             var eventAttendee = new EventAttendee
             {
@@ -460,16 +432,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             await SetRegistrationOptions();
             await GetAttendeeCount();
 
-            IsBusy = false;
-
             await NotificationService.Notify("You have been unregistered for this event.");
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error occurred while unregistering you for this event. Please try again.");
-        }
+        }, "An error occurred while unregistering you for this event. Please try again.");
     }
 
     private async Task SetRegistrationOptions()
@@ -488,23 +452,12 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             return;
         }
 
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             await eventAttendeeRestService.PromoteToLeadAsync(attendee.EventId, attendee.AttendeeId);
             await GetAttendeeCount();
             await NotificationService.Notify($"{attendee.UserName} has been promoted to co-lead.");
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            await NotificationService.NotifyError("An error occurred while promoting the attendee. Please try again.");
-        }
-        finally
-        {
-            IsBusy = false;
-        }
+        }, "An error occurred while promoting the attendee. Please try again.");
     }
 
     [RelayCommand]
@@ -515,22 +468,11 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             return;
         }
 
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             await eventAttendeeRestService.DemoteFromLeadAsync(attendee.EventId, attendee.AttendeeId);
             await GetAttendeeCount();
             await NotificationService.Notify($"{attendee.UserName} has been demoted from co-lead.");
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            await NotificationService.NotifyError("An error occurred while demoting the co-lead. Please try again.");
-        }
-        finally
-        {
-            IsBusy = false;
-        }
+        }, "An error occurred while demoting the co-lead. Please try again.");
     }
 }
