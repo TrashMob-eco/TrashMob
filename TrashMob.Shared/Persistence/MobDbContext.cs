@@ -157,6 +157,10 @@
 
         public virtual DbSet<EventPhoto> EventPhotos { get; set; }
 
+        public virtual DbSet<CommunityProspect> CommunityProspects { get; set; }
+
+        public virtual DbSet<ProspectActivity> ProspectActivities { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(configuration["TMDBServerConnectionString"], x => x.UseNetTopologySuite());
@@ -2916,6 +2920,101 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_UserAchievements_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<CommunityProspect>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.Type)
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.City)
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.Region)
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.Country)
+                    .HasMaxLength(64);
+
+                entity.Property(e => e.Website)
+                    .HasMaxLength(2048);
+
+                entity.Property(e => e.ContactEmail)
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.ContactName)
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.ContactTitle)
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.Notes)
+                    .HasMaxLength(2000);
+
+                entity.Property(e => e.PipelineStage)
+                    .HasDefaultValue(0);
+
+                entity.Property(e => e.FitScore)
+                    .HasDefaultValue(0);
+
+                entity.HasOne<Partner>()
+                    .WithMany()
+                    .HasForeignKey(d => d.ConvertedPartnerId)
+                    .OnDelete(DeleteBehavior.SetNull)
+                    .HasConstraintName("FK_CommunityProspects_Partner");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CommunityProspects_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CommunityProspects_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<ProspectActivity>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.ActivityType)
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Subject)
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.Details)
+                    .HasMaxLength(4000);
+
+                entity.Property(e => e.SentimentScore)
+                    .HasMaxLength(20);
+
+                entity.HasOne(d => d.Prospect)
+                    .WithMany(p => p.Activities)
+                    .HasForeignKey(d => d.ProspectId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_ProspectActivities_CommunityProspect");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ProspectActivities_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ProspectActivities_User_LastUpdatedBy");
             });
         }
     }
