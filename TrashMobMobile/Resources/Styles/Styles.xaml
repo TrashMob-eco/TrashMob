@@ -26,10 +26,12 @@
 
     <Style x:Key="RoundBorder" TargetType="Border">
         <Setter Property="Stroke"
-                Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
-        <Setter Property="StrokeShape" Value="RoundRectangle 15" />
+                Value="{AppThemeBinding Light={StaticResource BorderLight}, Dark={StaticResource BorderDark}}" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 8" />
         <Setter Property="StrokeThickness" Value="1" />
-        <Setter Property="Padding" Value="10" />
+        <Setter Property="BackgroundColor"
+                Value="{AppThemeBinding Light={StaticResource CardLight}, Dark={StaticResource CardDark}}" />
+        <Setter Property="Padding" Value="12" />
         <Setter Property="Margin" Value="5,0,5,0" />
     </Style>
 
@@ -55,7 +57,7 @@
         <Setter Property="Padding" Value="14,10" />
         <Setter Property="MinimumHeightRequest" Value="44" />
         <Setter Property="MinimumWidthRequest" Value="44" />
-        <Setter Property="Margin" Value="10" />
+        <Setter Property="Margin" Value="8" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
@@ -92,7 +94,7 @@
             </VisualStateGroupList>
         </Setter>
         <Setter Property="HeightRequest" Value="48" />
-        <Setter Property="CornerRadius" Value="20" />
+        <Setter Property="CornerRadius" Value="8" />
     </Style>
 
     <Style x:Key="SecondaryLargeButton" TargetType="Button">
@@ -113,13 +115,13 @@
             </VisualStateGroupList>
         </Setter>
         <Setter Property="HeightRequest" Value="48" />
-        <Setter Property="CornerRadius" Value="20" />
+        <Setter Property="CornerRadius" Value="8" />
     </Style>
 
     <Style x:Key="PrimarySmallButton" TargetType="Button">
         <Setter Property="HeightRequest" Value="40" />
         <Setter Property="Padding" Value="5,5" />
-        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="CornerRadius" Value="6" />
         <Setter Property="FontSize" Value="Micro" />
         <Setter Property="LineBreakMode" Value="WordWrap" />
         <Setter Property="Margin" Value="5" />
@@ -132,7 +134,7 @@
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource SecondaryText}, Dark={StaticResource SecondaryDarkText}}" />
         <Setter Property="HeightRequest" Value="40" />
         <Setter Property="Padding" Value="5,5" />
-        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="CornerRadius" Value="6" />
         <Setter Property="LineBreakMode" Value="WordWrap" />
         <Setter Property="Margin" Value="5" />
         <Setter Property="FontSize" Value="Micro" />
@@ -482,10 +484,10 @@
     </Style>
 
     <Style TargetType="Shadow">
-        <Setter Property="Radius" Value="15" />
-        <Setter Property="Opacity" Value="0.5" />
-        <Setter Property="Brush" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource White}}" />
-        <Setter Property="Offset" Value="10,10" />
+        <Setter Property="Radius" Value="4" />
+        <Setter Property="Opacity" Value="0.08" />
+        <Setter Property="Brush" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
+        <Setter Property="Offset" Value="0,2" />
     </Style>
 
     <Style TargetType="Slider">
@@ -596,11 +598,11 @@
                 Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray200}}" />
         <Setter Property="Shell.NavBarHasShadow" Value="False" />
         <Setter Property="Shell.TabBarBackgroundColor"
-                Value="{AppThemeBinding Light={StaticResource DarkTextBase}, Dark={StaticResource LightTextBase}}" />
+                Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource LightTextBase}}" />
         <Setter Property="Shell.TabBarForegroundColor"
-                Value="{AppThemeBinding Light={StaticResource Magenta}, Dark={StaticResource White}}" />
+                Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
         <Setter Property="Shell.TabBarTitleColor"
-                Value="{AppThemeBinding Light={StaticResource Magenta}, Dark={StaticResource White}}" />
+                Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
         <Setter Property="Shell.TabBarUnselectedColor"
                 Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray200}}" />
     </Style>
@@ -609,16 +611,16 @@
         <Setter Property="BarBackgroundColor"
                 Value="{AppThemeBinding Light={StaticResource PageBackgroundLight}, Dark={StaticResource PageBackgroundDark}}" />
         <Setter Property="BarTextColor"
-                Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource White}}" />
+                Value="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource White}}" />
         <Setter Property="IconColor"
-                Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource White}}" />
+                Value="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource White}}" />
     </Style>
 
     <Style TargetType="TabbedPage">
         <Setter Property="BarBackgroundColor"
                 Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}" />
         <Setter Property="BarTextColor"
-                Value="{AppThemeBinding Light={StaticResource Magenta}, Dark={StaticResource White}}" />
+                Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
         <Setter Property="UnselectedTabColor"
                 Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray950}}" />
         <Setter Property="SelectedTabColor"
@@ -627,7 +629,7 @@
 
     <Style TargetType="VerticalStackLayout">
         <Setter Property="Spacing" Value="5" />
-        <Setter Property="Margin" Value="10" />
+        <Setter Property="Margin" Value="8" />
     </Style>
 
     <Style x:Key="OuterVerticalStack" TargetType="VerticalStackLayout">
