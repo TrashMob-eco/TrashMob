@@ -175,9 +175,7 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
 
     public async Task Init()
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             foreach (var date in DateRanges.UpcomingRangeDictionary)
             {
@@ -200,20 +198,8 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
 
             SelectedCreatedDateRange = DateRanges.LastMonth;
 
-            var task1 = RefreshEvents();
-            var task2 = RefreshStatistics();
-            var task3 = RefreshLitterReports();
-
-            await Task.WhenAll(task1, task2, task3);
-
-            IsBusy = false;
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error has occurred while loading the dashboard. Please wait and try again in a moment.");
-        }
+            await Task.WhenAll(RefreshEvents(), RefreshStatistics(), RefreshLitterReports());
+        }, "An error has occurred while loading the dashboard. Please wait and try again in a moment.");
     }
 
     private async void PerformEventNavigation(EventViewModel eventViewModel)
@@ -330,28 +316,16 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
 
     private async void HandleUpcomingDateRangeSelected()
     {
-        IsBusy = true;
-
-        await RefreshEvents();
-
-        IsBusy = false;
+        await ExecuteAsync(RefreshEvents, "Failed to refresh events. Please try again.");
     }
 
     private async void HandleCompletedDateRangeSelected()
     {
-        IsBusy = true;
-
-        await RefreshEvents();
-
-        IsBusy = false;
+        await ExecuteAsync(RefreshEvents, "Failed to refresh events. Please try again.");
     }
 
     private async void HandleCreatedDateRangeSelected()
     {
-        IsBusy = true;
-
-        await RefreshLitterReports();
-
-        IsBusy = false;
+        await ExecuteAsync(RefreshLitterReports, "Failed to refresh litter reports. Please try again.");
     }
 }

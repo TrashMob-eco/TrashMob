@@ -15,9 +15,7 @@ public partial class WelcomeViewModel(IAuthService authService, IStatsRestServic
 
     public async Task Init()
     {
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             var stats = await statsRestService.GetStatsAsync();
 
@@ -27,15 +25,7 @@ public partial class WelcomeViewModel(IAuthService authService, IStatsRestServic
             StatisticsViewModel.TotalHours = stats.TotalHours;
             StatisticsViewModel.TotalLitterReportsSubmitted = stats.TotalLitterReportsSubmitted;
             StatisticsViewModel.TotalLitterReportsClosed = stats.TotalLitterReportsClosed;
-
-            IsBusy = false;
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-            IsBusy = false;
-            await NotificationService.NotifyError("An error occurred while loading this page. Please try again.");
-        }
+        }, "An error occurred while loading this page. Please try again.");
     }
 
     [RelayCommand]
