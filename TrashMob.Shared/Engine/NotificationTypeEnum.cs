@@ -219,5 +219,10 @@
         /// Final gentle follow-up outreach email sent to a community prospect.
         /// </summary>
         ProspectOutreachFinal = 43,
+
+        /// <summary>
+        /// Welcome email sent to a community partner after prospect-to-partner conversion.
+        /// </summary>
+        CommunityWelcome = 44,
     }
 }
