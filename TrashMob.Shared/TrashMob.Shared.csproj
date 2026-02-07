@@ -96,6 +96,7 @@
     <EmbeddedResource Include="Engine\EmailCopy\ProspectOutreachFollowUp.html" />
     <EmbeddedResource Include="Engine\EmailCopy\ProspectOutreachValueAdd.html" />
     <EmbeddedResource Include="Engine\EmailCopy\ProspectOutreachFinal.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\CommunityWelcome.html" />
   </ItemGroup>
 
   <ItemGroup>

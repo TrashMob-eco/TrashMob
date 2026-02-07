@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
-import { Edit, Plus, Globe, Mail, User, MapPin, Send } from 'lucide-react';
+import { Edit, Plus, Globe, Mail, User, MapPin, Send, ArrowRightLeft } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -22,6 +22,7 @@ import {
 } from '@/services/community-prospects';
 import { PipelineStageBadge, ACTIVITY_TYPES } from '@/components/prospects/pipeline-stage-badge';
 import { OutreachPreviewDialog } from '@/components/prospects/outreach-preview-dialog';
+import { ConvertToPartnerDialog } from '@/components/prospects/convert-to-partner-dialog';
 import ProspectActivityData from '@/components/Models/ProspectActivityData';
 
 export const SiteAdminProspectDetail = () => {
@@ -30,6 +31,7 @@ export const SiteAdminProspectDetail = () => {
     const queryClient = useQueryClient();
     const [activityDialogOpen, setActivityDialogOpen] = useState(false);
     const [outreachDialogOpen, setOutreachDialogOpen] = useState(false);
+    const [convertDialogOpen, setConvertDialogOpen] = useState(false);
     const [activityType, setActivityType] = useState('Note');
     const [activitySubject, setActivitySubject] = useState('');
     const [activityDetails, setActivityDetails] = useState('');
@@ -101,12 +103,28 @@ export const SiteAdminProspectDetail = () => {
         <div className='space-y-6'>
             <Card>
                 <CardHeader className='flex flex-row items-center justify-between'>
-                    <CardTitle>{prospect.name}</CardTitle>
-                    <Button variant='outline' asChild>
-                        <Link to={`/siteadmin/prospects/${prospectId}/edit`}>
-                            <Edit className='mr-2 h-4 w-4' /> Edit
-                        </Link>
-                    </Button>
+                    <div className='flex items-center gap-3'>
+                        <CardTitle>{prospect.name}</CardTitle>
+                        {prospect.convertedPartnerId ? (
+                            <Badge className='bg-green-100 text-green-700'>
+                                <Link to='/siteadmin/partners' className='hover:underline'>
+                                    Converted
+                                </Link>
+                            </Badge>
+                        ) : null}
+                    </div>
+                    <div className='flex items-center gap-2'>
+                        {!prospect.convertedPartnerId && prospect.pipelineStage >= 3 ? (
+                            <Button variant='outline' onClick={() => setConvertDialogOpen(true)}>
+                                <ArrowRightLeft className='mr-2 h-4 w-4' /> Convert to Partner
+                            </Button>
+                        ) : null}
+                        <Button variant='outline' asChild>
+                            <Link to={`/siteadmin/prospects/${prospectId}/edit`}>
+                                <Edit className='mr-2 h-4 w-4' /> Edit
+                            </Link>
+                        </Button>
+                    </div>
                 </CardHeader>
                 <CardContent>
                     <div className='grid grid-cols-12 gap-4'>
@@ -258,6 +276,13 @@ export const SiteAdminProspectDetail = () => {
                 onOpenChange={setOutreachDialogOpen}
             />
 
+            <ConvertToPartnerDialog
+                prospectId={prospectId}
+                prospectName={prospect.name}
+                open={convertDialogOpen}
+                onOpenChange={setConvertDialogOpen}
+            />
+
             <Card>
                 <CardHeader className='flex flex-row items-center justify-between'>
                     <CardTitle>Activity ({(activities || []).length})</CardTitle>
@@ -325,6 +350,19 @@ export const SiteAdminProspectDetail = () => {
                                 <div key={activity.id} className='border-l-2 border-muted pl-4 pb-2'>
                                     <div className='flex items-center gap-2'>
                                         <Badge variant='outline'>{activity.activityType}</Badge>
+                                        {activity.sentimentScore ? (
+                                            <Badge
+                                                className={
+                                                    activity.sentimentScore === 'Positive'
+                                                        ? 'bg-green-100 text-green-700'
+                                                        : activity.sentimentScore === 'Negative'
+                                                          ? 'bg-red-100 text-red-700'
+                                                          : 'bg-gray-100 text-gray-700'
+                                                }
+                                            >
+                                                {activity.sentimentScore}
+                                            </Badge>
+                                        ) : null}
                                         <span className='text-xs text-muted-foreground'>
                                             {moment(activity.createdDate).format('MMM D, YYYY h:mm A')}
                                         </span>
