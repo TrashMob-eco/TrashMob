@@ -46,6 +46,10 @@
     <None Remove="Engine\EmailCopy\InviteToJoinTrashMob.html" />
     <None Remove="Engine\EmailCopy\InviteToJoinCommunity.html" />
     <None Remove="Engine\EmailCopy\InviteToJoinTeam.html" />
+    <None Remove="Engine\EmailCopy\ProspectOutreachInitial.html" />
+    <None Remove="Engine\EmailCopy\ProspectOutreachFollowUp.html" />
+    <None Remove="Engine\EmailCopy\ProspectOutreachValueAdd.html" />
+    <None Remove="Engine\EmailCopy\ProspectOutreachFinal.html" />
   </ItemGroup>
 
   <ItemGroup>
@@ -88,6 +92,10 @@
     <EmbeddedResource Include="Engine\EmailCopy\InviteToJoinTrashMob.html" />
     <EmbeddedResource Include="Engine\EmailCopy\InviteToJoinCommunity.html" />
     <EmbeddedResource Include="Engine\EmailCopy\InviteToJoinTeam.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\ProspectOutreachInitial.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\ProspectOutreachFollowUp.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\ProspectOutreachValueAdd.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\ProspectOutreachFinal.html" />
   </ItemGroup>
 
   <ItemGroup>
