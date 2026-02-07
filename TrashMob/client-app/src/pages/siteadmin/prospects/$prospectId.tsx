@@ -107,7 +107,7 @@ export const SiteAdminProspectDetail = () => {
                         <CardTitle>{prospect.name}</CardTitle>
                         {prospect.convertedPartnerId ? (
                             <Badge className='bg-green-100 text-green-700'>
-                                <Link to="/siteadmin/partners" className='hover:underline'>
+                                <Link to='/siteadmin/partners' className='hover:underline'>
                                     Converted
                                 </Link>
                             </Badge>

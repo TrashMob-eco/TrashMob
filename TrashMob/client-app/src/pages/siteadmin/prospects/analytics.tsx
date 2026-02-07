@@ -61,9 +61,7 @@ export const SiteAdminProspectAnalytics = () => {
                         <BarChart3 className='h-4 w-4 text-amber-500' />
                     </CardHeader>
                     <CardContent>
-                        <div className='text-2xl font-bold'>
-                            {analytics?.averageDaysInPipeline?.toFixed(0) ?? '-'}
-                        </div>
+                        <div className='text-2xl font-bold'>{analytics?.averageDaysInPipeline?.toFixed(0) ?? '-'}</div>
                         <p className='text-xs text-muted-foreground'>From prospect to partner</p>
                     </CardContent>
                 </Card>

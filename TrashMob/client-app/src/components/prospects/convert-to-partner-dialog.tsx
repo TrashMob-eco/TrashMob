@@ -1,6 +1,13 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -14,7 +21,12 @@ interface ConvertToPartnerDialogProps {
     onOpenChange: (open: boolean) => void;
 }
 
-export const ConvertToPartnerDialog = ({ prospectId, prospectName, open, onOpenChange }: ConvertToPartnerDialogProps) => {
+export const ConvertToPartnerDialog = ({
+    prospectId,
+    prospectName,
+    open,
+    onOpenChange,
+}: ConvertToPartnerDialogProps) => {
     const { toast } = useToast();
     const queryClient = useQueryClient();
     const [partnerTypeId, setPartnerTypeId] = useState(1);
