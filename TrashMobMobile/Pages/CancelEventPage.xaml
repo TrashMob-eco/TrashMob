@@ -28,14 +28,14 @@
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="2">
-                        <Label Text="Event Date" Style="{StaticResource FieldLabel}" />
+                        <Label Text="Event Time" Style="{StaticResource FieldLabel}" />
                         <Border Style="{x:StaticResource RoundBorder}">
                             <Label Text="{Binding EventViewModel.DisplayTime}" FontSize="Small" />
                         </Border>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="2">
-                        <Label Text="Cancellation Reason" Style="{StaticResource FieldLabel}" />
+                        <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Cancellation Reason" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
                         <Border Style="{x:StaticResource RoundBorder}">
                             <controls:TMEditor Text="{Binding EventViewModel.CancellationReason}">
                                 <controls:TMEditor.Behaviors>

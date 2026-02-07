@@ -15,12 +15,12 @@
 
                 <Grid RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="*, *">
                     <VerticalStackLayout Grid.Row="0" Grid.ColumnSpan="2">
-                        <Label Text="Name" Style="{StaticResource FieldLabel}" />
+                        <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Name" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
                         <controls:TMEntry Text="{Binding Name}" />
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="1" Grid.ColumnSpan="2">
-                        <Label Text="Description" Style="{StaticResource FieldLabel}" />
+                        <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Description" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
                         <controls:TMEditor Text="{Binding Description}" HeightRequest="100"/>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="2" Grid.ColumnSpan="2">
