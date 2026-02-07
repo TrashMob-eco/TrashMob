@@ -9,14 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import {
-    Dialog,
-    DialogContent,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import {
     GetCommunityProspectById,
@@ -95,31 +88,40 @@ export const SiteAdminProspectDetail = () => {
                             <div className='flex items-center gap-2'>
                                 <Badge variant='outline'>{prospect.type}</Badge>
                                 <PipelineStageBadge stage={prospect.pipelineStage} />
-                                {prospect.fitScore > 0 && (
-                                    <Badge variant='secondary'>Fit: {prospect.fitScore}</Badge>
-                                )}
+                                {prospect.fitScore > 0 && <Badge variant='secondary'>Fit: {prospect.fitScore}</Badge>}
                             </div>
-                            {(prospect.city || prospect.region) ? <div className='flex items-center gap-2 text-muted-foreground'>
+                            {prospect.city || prospect.region ? (
+                                <div className='flex items-center gap-2 text-muted-foreground'>
                                     <MapPin className='h-4 w-4' />
                                     {[prospect.city, prospect.region, prospect.country].filter(Boolean).join(', ')}
-                                </div> : null}
-                            {prospect.population ? <p className='text-sm text-muted-foreground'>
+                                </div>
+                            ) : null}
+                            {prospect.population ? (
+                                <p className='text-sm text-muted-foreground'>
                                     Population: {prospect.population.toLocaleString()}
-                                </p> : null}
+                                </p>
+                            ) : null}
                         </div>
                         <div className='col-span-12 md:col-span-6 space-y-3'>
-                            {prospect.contactName ? <div className='flex items-center gap-2 text-sm'>
+                            {prospect.contactName ? (
+                                <div className='flex items-center gap-2 text-sm'>
                                     <User className='h-4 w-4 text-muted-foreground' />
                                     {prospect.contactName}
-                                    {prospect.contactTitle ? <span className='text-muted-foreground'>({prospect.contactTitle})</span> : null}
-                                </div> : null}
-                            {prospect.contactEmail ? <div className='flex items-center gap-2 text-sm'>
+                                    {prospect.contactTitle ? (
+                                        <span className='text-muted-foreground'>({prospect.contactTitle})</span>
+                                    ) : null}
+                                </div>
+                            ) : null}
+                            {prospect.contactEmail ? (
+                                <div className='flex items-center gap-2 text-sm'>
                                     <Mail className='h-4 w-4 text-muted-foreground' />
                                     <a href={`mailto:${prospect.contactEmail}`} className='hover:underline'>
                                         {prospect.contactEmail}
                                     </a>
-                                </div> : null}
-                            {prospect.website ? <div className='flex items-center gap-2 text-sm'>
+                                </div>
+                            ) : null}
+                            {prospect.website ? (
+                                <div className='flex items-center gap-2 text-sm'>
                                     <Globe className='h-4 w-4 text-muted-foreground' />
                                     <a
                                         href={prospect.website}
@@ -129,12 +131,15 @@ export const SiteAdminProspectDetail = () => {
                                     >
                                         {prospect.website}
                                     </a>
-                                </div> : null}
+                                </div>
+                            ) : null}
                         </div>
-                        {prospect.notes ? <div className='col-span-12'>
+                        {prospect.notes ? (
+                            <div className='col-span-12'>
                                 <h4 className='text-sm font-medium mb-1'>Notes</h4>
                                 <p className='text-sm text-muted-foreground whitespace-pre-wrap'>{prospect.notes}</p>
-                            </div> : null}
+                            </div>
+                        ) : null}
                     </div>
                 </CardContent>
             </Card>
@@ -210,8 +215,12 @@ export const SiteAdminProspectDetail = () => {
                                             {moment(activity.createdDate).format('MMM D, YYYY h:mm A')}
                                         </span>
                                     </div>
-                                    {activity.subject ? <p className='text-sm font-medium mt-1'>{activity.subject}</p> : null}
-                                    {activity.details ? <p className='text-sm text-muted-foreground mt-1'>{activity.details}</p> : null}
+                                    {activity.subject ? (
+                                        <p className='text-sm font-medium mt-1'>{activity.subject}</p>
+                                    ) : null}
+                                    {activity.details ? (
+                                        <p className='text-sm text-muted-foreground mt-1'>{activity.details}</p>
+                                    ) : null}
                                 </div>
                             ))}
                         </div>
