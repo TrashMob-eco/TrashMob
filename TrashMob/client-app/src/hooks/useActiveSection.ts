@@ -5,10 +5,7 @@ interface UseActiveSectionOptions {
     rootMargin?: string;
 }
 
-export function useActiveSection({
-    sectionIds,
-    rootMargin = '-80px 0px -60% 0px',
-}: UseActiveSectionOptions) {
+export function useActiveSection({ sectionIds, rootMargin = '-80px 0px -60% 0px' }: UseActiveSectionOptions) {
     const [activeId, setActiveId] = useState<string>('');
     const observerRef = useRef<IntersectionObserver | null>(null);
 

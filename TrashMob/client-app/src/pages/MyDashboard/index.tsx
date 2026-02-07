@@ -540,9 +540,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                                         </CardTitle>
                                         <Select
                                             value={litterReportFilter}
-                                            onValueChange={(v) =>
-                                                setLitterReportFilter(v as LitterReportFilterType)
-                                            }
+                                            onValueChange={(v) => setLitterReportFilter(v as LitterReportFilterType)}
                                         >
                                             <SelectTrigger className='w-[140px]'>
                                                 <SelectValue placeholder='Filter' />
@@ -591,8 +589,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                         <div>
                             <div className='flex flex-col'>
                                 <h4 className='font-semibold text-3xl mr-2 mt-0 pb-2 border-b-[3px] border-primary'>
-                                    My Partnerships (
-                                    {(myPartnerRequests || []).length + (myPartners || []).length})
+                                    My Partnerships ({(myPartnerRequests || []).length + (myPartners || []).length})
                                 </h4>
                                 <div className='flex flex-row flex-wrap gap-4 my-4!'>
                                     <Button variant='outline' asChild>
@@ -626,8 +623,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                             <Card>
                                 <CardHeader>
                                     <CardTitle className='text-primary'>
-                                        Partner Requests and Invitations Sent (
-                                        {(myPartnerRequests || []).length})
+                                        Partner Requests and Invitations Sent ({(myPartnerRequests || []).length})
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
@@ -661,10 +657,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                                 </CardHeader>
                                 <CardContent>
                                     <div className='overflow-auto'>
-                                        <MyPickupRequestsTable
-                                            userId={currentUser.id}
-                                            items={myPickupRequests || []}
-                                        />
+                                        <MyPickupRequestsTable userId={currentUser.id} items={myPickupRequests || []} />
                                     </div>
                                 </CardContent>
                             </Card>
@@ -674,8 +667,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                             <Card>
                                 <CardHeader>
                                     <CardTitle className='text-primary'>
-                                        Partner Admin Invitations Pending (
-                                        {(myPartnerAdminInvitations || []).length})
+                                        Partner Admin Invitations Pending ({(myPartnerAdminInvitations || []).length})
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
