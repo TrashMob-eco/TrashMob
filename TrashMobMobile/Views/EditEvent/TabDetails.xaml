@@ -7,39 +7,39 @@
     <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="*, *, *, *" MaximumWidthRequest="400">
 
         <VerticalStackLayout Grid.Row="0" Grid.ColumnSpan="4">
-            <Label Text="Name" Style="{StaticResource FieldLabel}" />
+            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Name" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
             <controls:TMEntry Text="{Binding EventViewModel.Name}" />
 
         </VerticalStackLayout>
 
         <VerticalStackLayout Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
-            <Label Text="Event Date" Style="{StaticResource FieldLabel}" />
+            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Event Date" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
             <controls:TMDatePicker Date="{Binding EventViewModel.EventDateOnly, Mode=TwoWay}" />
         </VerticalStackLayout>
 
         <VerticalStackLayout Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2">
-            <Label Text="Event Time" Style="{StaticResource FieldLabel}" />
+            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Event Time" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
             <controls:TMTimePicker Time="{Binding EventViewModel.EventTime, Mode=TwoWay}" />
         </VerticalStackLayout>
 
         <VerticalStackLayout Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
-            <Label Text="Duration Hours" Style="{StaticResource FieldLabel}" />
+            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Duration Hours" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
             <controls:TMEntry Keyboard="Numeric" Text="{Binding EventViewModel.DurationHours}" />
         </VerticalStackLayout>
 
         <VerticalStackLayout Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2">
-            <Label Text="Duration Minutes" Style="{StaticResource FieldLabel}" />
+            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Duration Minutes" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
             <controls:TMEntry Keyboard="Numeric" Text="{Binding EventViewModel.DurationMinutes}" />
         </VerticalStackLayout>
 
         <VerticalStackLayout Grid.Row="3" Grid.ColumnSpan="4">
-            <Label Text="Description" Style="{StaticResource FieldLabel}" />
+            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Description" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
             <controls:TMEditor Text="{Binding EventViewModel.Description}" />
         </VerticalStackLayout>
 
 
         <VerticalStackLayout Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
-            <Label Text="Event Type" Style="{StaticResource FieldLabel}" />
+            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Event Type" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
             <controls:TMPicker Title="Event Type" ItemsSource="{Binding ETypes}"
                                     SelectedItem="{Binding SelectedEventType, Mode=TwoWay}" />
         </VerticalStackLayout>

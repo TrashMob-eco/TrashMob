@@ -14,7 +14,7 @@
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
                 <Grid RowDefinitions="Auto, Auto, *, Auto">
                     <VerticalStackLayout Grid.Row="0">
-                        <Label Text="Name" Style="{StaticResource FieldLabel}" />
+                        <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Name" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
 
                         <controls:TMEntry Text="{Binding Name}" >
                             <controls:TMEntry.Behaviors>
@@ -25,7 +25,7 @@
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="1">
-                        <Label Text="Email" Style="{StaticResource FieldLabel}" />
+                        <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Email" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
 
                         <controls:TMEntry
                                 Text="{Binding Email}"
@@ -43,7 +43,7 @@
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Grid.Row="2">
-                        <Label Text="Message" Style="{StaticResource FieldLabel}" />
+                        <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Message" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
 
                         <controls:TMEditor
                                 Text="{Binding Message}"

@@ -14,7 +14,7 @@
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
                 <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*">
                     <VerticalStackLayout Grid.Row="0">
-                        <Label Text="Name" Style="{StaticResource FieldLabel}" />
+                        <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Name" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
                         <Border Style="{x:StaticResource RoundBorder}">
                             <controls:TMEntry Text="{Binding PickupLocationViewModel.Name}">
                                 <controls:TMEntry.Behaviors>
@@ -25,7 +25,7 @@
                         </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="1">
-                        <Label Text="Description" Style="{StaticResource FieldLabel}" />
+                        <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Description" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
                         <Border Style="{x:StaticResource RoundBorder}">
                             <controls:TMEditor Text="{Binding PickupLocationViewModel.Notes}">
                                 <controls:TMEditor.Behaviors>
