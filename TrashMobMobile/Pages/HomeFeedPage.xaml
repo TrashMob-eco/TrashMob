@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             x:DataType="viewModels:HomeFeedViewModel"
+             x:Class="TrashMobMobile.Pages.HomeFeedPage"
+             Title="Home">
+
+    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+        <ScrollView>
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
+
+                <!-- Welcome Header -->
+                <Label Text="{Binding WelcomeMessage}"
+                       FontFamily="LexendSemibold"
+                       FontSize="Title"
+                       Margin="10,15,10,5" />
+
+                <!-- Upcoming Events Near You -->
+                <Label Text="Upcoming Events"
+                       FontFamily="LexendSemibold"
+                       FontSize="Medium"
+                       Margin="10,15,10,5" />
+
+                <Label Text="No upcoming events found"
+                       IsVisible="{Binding AreNoEventsFound}"
+                       FontSize="Small"
+                       Margin="10,5"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+
+                <CollectionView ItemsSource="{Binding UpcomingEvents}"
+                                SelectionMode="None"
+                                IsVisible="{Binding AreEventsFound}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="viewModels:EventViewModel">
+                            <Border Style="{x:StaticResource RoundBorder}" Margin="5,3">
+                                <Grid ColumnDefinitions="*, Auto" Padding="10,10">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                        <Label Text="{Binding Name}"
+                                               FontFamily="LexendSemibold"
+                                               FontSize="Small" />
+                                        <HorizontalStackLayout Spacing="8">
+                                            <Image MaximumWidthRequest="16" MaximumHeightRequest="16">
+                                                <Image.Source>
+                                                    <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                                     Glyph="{StaticResource IconCalendarCheck}"
+                                                                     Size="16"
+                                                                     Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                                </Image.Source>
+                                            </Image>
+                                            <Label Text="{Binding DisplayDate}" FontSize="Micro"
+                                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                        </HorizontalStackLayout>
+                                        <Label Text="{Binding Address.DisplayAddress}" FontSize="Micro"
+                                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:HomeFeedViewModel}}, Path=ViewEventCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- Nearby Litter Reports -->
+                <Label Text="Recent Litter Reports"
+                       FontFamily="LexendSemibold"
+                       FontSize="Medium"
+                       Margin="10,15,10,5" />
+
+                <Label Text="No recent litter reports"
+                       IsVisible="{Binding AreNoLitterReportsFound}"
+                       FontSize="Small"
+                       Margin="10,5"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+
+                <CollectionView ItemsSource="{Binding NearbyLitterReports}"
+                                SelectionMode="None"
+                                IsVisible="{Binding AreLitterReportsFound}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="viewModels:LitterReportViewModel">
+                            <Border Style="{x:StaticResource RoundBorder}" Margin="5,3">
+                                <VerticalStackLayout Padding="10,8" Spacing="2">
+                                    <Label Text="{Binding Name}" FontFamily="LexendSemibold" FontSize="Small" />
+                                    <Label Text="{Binding LitterReportStatus}" FontSize="Micro"
+                                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                    <Label Text="{Binding Description}" FontSize="Micro" MaxLines="2"
+                                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                </VerticalStackLayout>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:HomeFeedViewModel}}, Path=ViewLitterReportCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+</ContentPage>

@@ -12,15 +12,20 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(CreateEventPage), typeof(CreateEventPage));
         Routing.RegisterRoute(nameof(CreateLitterReportPage), typeof(CreateLitterReportPage));
         Routing.RegisterRoute(nameof(EditEventPage), typeof(EditEventPage));
+        Routing.RegisterRoute(nameof(ExplorePage), typeof(ExplorePage));
+        Routing.RegisterRoute(nameof(HomeFeedPage), typeof(HomeFeedPage));
         Routing.RegisterRoute(nameof(EditEventPartnerLocationServicesPage),
             typeof(EditEventPartnerLocationServicesPage));
         Routing.RegisterRoute(nameof(EditEventSummaryPage), typeof(EditEventSummaryPage));
         Routing.RegisterRoute(nameof(EditLitterReportPage), typeof(EditLitterReportPage));
         Routing.RegisterRoute(nameof(EditPickupLocationPage), typeof(EditPickupLocationPage));
+        Routing.RegisterRoute(nameof(ImpactPage), typeof(ImpactPage));
         Routing.RegisterRoute(nameof(LogoutPage), typeof(LogoutPage));
         Routing.RegisterRoute(nameof(ManageEventPartnersPage), typeof(ManageEventPartnersPage));
         Routing.RegisterRoute(nameof(MainTabsPage), typeof(MainTabsPage));
         Routing.RegisterRoute(nameof(MyDashboardPage), typeof(MyDashboardPage));
+        Routing.RegisterRoute(nameof(ProfilePage), typeof(ProfilePage));
+        Routing.RegisterRoute(nameof(QuickActionPlaceholderPage), typeof(QuickActionPlaceholderPage));
         Routing.RegisterRoute(nameof(MorePage), typeof(MorePage));
         Routing.RegisterRoute(nameof(SearchEventsPage), typeof(SearchEventsPage));
         Routing.RegisterRoute(nameof(SearchLitterReportsPage), typeof(SearchLitterReportsPage));
