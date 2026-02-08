@@ -36,4 +36,5 @@ internal class LogoutPage { }
 internal class AchievementsPage { }
 internal class BrowseTeamsPage { }
 internal class LeaderboardsPage { }
+internal class NewsletterPreferencesPage { }
 internal class ViewTeamPage { }

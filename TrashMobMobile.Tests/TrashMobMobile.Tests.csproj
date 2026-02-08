@@ -78,6 +78,8 @@
     <Compile Include="..\TrashMobMobile\Models\UserRankResponse.cs" Link="LinkedSource\Models\UserRankResponse.cs" />
     <Compile Include="..\TrashMobMobile\Models\AchievementDto.cs" Link="LinkedSource\Models\AchievementDto.cs" />
     <Compile Include="..\TrashMobMobile\Models\UserAchievementsResponse.cs" Link="LinkedSource\Models\UserAchievementsResponse.cs" />
+    <Compile Include="..\TrashMobMobile\Models\NewsletterCategoryDto.cs" Link="LinkedSource\Models\NewsletterCategoryDto.cs" />
+    <Compile Include="..\TrashMobMobile\Models\NewsletterPreferenceDto.cs" Link="LinkedSource\Models\NewsletterPreferenceDto.cs" />
   </ItemGroup>
 
   <!-- Link global usings and MAUI page base class -->

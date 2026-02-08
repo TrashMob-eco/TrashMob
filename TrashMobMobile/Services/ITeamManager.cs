@@ -19,4 +19,8 @@ public interface ITeamManager
     Task<IEnumerable<Event>> GetUpcomingTeamEventsAsync(Guid teamId, CancellationToken cancellationToken = default);
 
     Task<IEnumerable<Event>> GetPastTeamEventsAsync(Guid teamId, CancellationToken cancellationToken = default);
+
+    Task LinkEventAsync(Guid teamId, Guid eventId, CancellationToken cancellationToken = default);
+
+    Task UnlinkEventAsync(Guid teamId, Guid eventId, CancellationToken cancellationToken = default);
 }

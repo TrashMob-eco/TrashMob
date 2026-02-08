@@ -4011,7 +4011,7 @@
     <!-- <x:String x:Key="IconCreditCardRemove">&#xf0fae;</x:String> -->
     <!-- <x:String x:Key="IconCreditCardRemoveOutline">&#xf0faf;</x:String> -->
     <!-- <x:String x:Key="IconDevices">&#xf0fb0;</x:String> -->
-    <!-- <x:String x:Key="IconEmailNewsletter">&#xf0fb1;</x:String> -->
+    <x:String x:Key="IconEmailNewsletter">&#xf0fb1;</x:String>
     <!-- <x:String x:Key="IconExpansionCardVariant">&#xf0fb2;</x:String> -->
     <!-- <x:String x:Key="IconPowerSocketCh">&#xf0fb3;</x:String> -->
     <!-- <x:String x:Key="IconFileSwap">&#xf0fb4;</x:String> -->
