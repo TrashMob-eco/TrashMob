@@ -166,9 +166,7 @@ export const PartnerCommunityAreas = () => {
                                 Create your first adoptable area to allow teams to adopt and care for locations in your
                                 community.
                             </p>
-                            <Button
-                                onClick={() => navigate(`/partnerdashboard/${partnerId}/community/areas/create`)}
-                            >
+                            <Button onClick={() => navigate(`/partnerdashboard/${partnerId}/community/areas/create`)}>
                                 <Plus className='h-4 w-4 mr-2' />
                                 Create First Area
                             </Button>

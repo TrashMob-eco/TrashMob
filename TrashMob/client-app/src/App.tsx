@@ -417,10 +417,7 @@ const AppContent: FC = () => {
                                     <Route path='community/content' element={<PartnerCommunityContent />} />
                                     <Route path='community/areas' element={<PartnerCommunityAreas />} />
                                     <Route path='community/areas/create' element={<PartnerCommunityAreaCreate />} />
-                                    <Route
-                                        path='community/areas/:areaId/edit'
-                                        element={<PartnerCommunityAreaEdit />}
-                                    />
+                                    <Route path='community/areas/:areaId/edit' element={<PartnerCommunityAreaEdit />} />
                                     <Route path='community/adoptions' element={<PartnerCommunityAdoptions />} />
                                     <Route path='community/invites' element={<PartnerCommunityInvites />} />
                                     <Route
