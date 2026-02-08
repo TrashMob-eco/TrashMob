@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using TrashMob.Shared.Persistence;
@@ -12,9 +13,11 @@ using TrashMob.Shared.Persistence;
 namespace TrashMob.Migrations
 {
     [DbContext(typeof(MobDbContext))]
-    partial class MobDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260208182003_AddPartnerDocumentStorage")]
+    partial class AddPartnerDocumentStorage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2042,18 +2045,6 @@ namespace TrashMob.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<double?>("BoundsEast")
-                        .HasColumnType("float");
-
-                    b.Property<double?>("BoundsNorth")
-                        .HasColumnType("float");
-
-                    b.Property<double?>("BoundsSouth")
-                        .HasColumnType("float");
-
-                    b.Property<double?>("BoundsWest")
-                        .HasColumnType("float");
-
                     b.Property<string>("BrandingPrimaryColor")
                         .HasMaxLength(7)
                         .HasColumnType("nvarchar(7)");
@@ -2077,10 +2068,6 @@ namespace TrashMob.Migrations
                     b.Property<string>("Country")
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
-
-                    b.Property<string>("CountyName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
 
                     b.Property<Guid>("CreatedByUserId")
                         .HasColumnType("uniqueidentifier");
@@ -2142,9 +2129,6 @@ namespace TrashMob.Migrations
                     b.Property<string>("Region")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
-
-                    b.Property<int?>("RegionType")
-                        .HasColumnType("int");
 
                     b.Property<string>("Slug")
                         .HasMaxLength(100)

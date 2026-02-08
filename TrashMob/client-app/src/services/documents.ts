@@ -47,6 +47,43 @@ export const UpdatePartnerDocument = () => ({
         }),
 });
 
+export type UploadPartnerDocument_Params = {
+    partnerId: string;
+    name: string;
+    documentTypeId: number;
+    expirationDate?: string;
+    file: File;
+};
+export type UploadPartnerDocument_Response = PartnerDocumentData;
+export const UploadPartnerDocument = () => ({
+    key: ['/partnerdocuments', 'upload'],
+    service: async (params: UploadPartnerDocument_Params) => {
+        const formData = new FormData();
+        formData.append('partnerId', params.partnerId);
+        formData.append('name', params.name);
+        formData.append('documentTypeId', params.documentTypeId.toString());
+        if (params.expirationDate) formData.append('expirationDate', params.expirationDate);
+        formData.append('formFile', params.file);
+        return ApiService('protected').fetchData<UploadPartnerDocument_Response>({
+            url: '/partnerdocuments/upload',
+            method: 'post',
+            data: formData,
+            headers: { 'Content-Type': 'multipart/form-data' },
+        });
+    },
+});
+
+export type DownloadPartnerDocument_Params = { documentId: string };
+export type DownloadPartnerDocument_Response = { downloadUrl: string };
+export const DownloadPartnerDocument = (params: DownloadPartnerDocument_Params) => ({
+    key: ['/partnerdocuments', params.documentId, 'download'],
+    service: async () =>
+        ApiService('protected').fetchData<DownloadPartnerDocument_Response>({
+            url: `/partnerdocuments/${params.documentId}/download`,
+            method: 'get',
+        }),
+});
+
 export type DeletePartnerDocumentByDocuemntId_Params = { documentId: string };
 export type DeletePartnerDocumentByDocuemntId_Response = unknown;
 export const DeletePartnerDocumentByDocuemntId = () => ({

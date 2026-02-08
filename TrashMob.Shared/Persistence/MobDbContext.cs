@@ -226,8 +226,20 @@
                     .IsRequired();
 
                 entity.Property(e => e.Url)
-                    .HasMaxLength(2048)
-                    .IsRequired();
+                    .HasMaxLength(2048);
+
+                entity.Property(e => e.BlobStoragePath)
+                    .HasMaxLength(1024);
+
+                entity.Property(e => e.ContentType)
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.FileSizeBytes);
+
+                entity.Property(e => e.DocumentTypeId)
+                    .HasDefaultValue(0);
+
+                entity.Property(e => e.ExpirationDate);
 
                 entity.Property(e => e.CreatedByUserId);
 
