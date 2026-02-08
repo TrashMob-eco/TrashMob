@@ -157,6 +157,47 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
+            <!-- My Teams Section -->
+            <Grid ColumnDefinitions="*, Auto" Margin="5,15,5,5">
+                <Label Text="My Teams"
+                       FontFamily="LexendSemibold"
+                       FontSize="Medium"
+                       Grid.Column="0" />
+                <Button Text="Browse Teams"
+                        Command="{Binding BrowseTeamsCommand}"
+                        Style="{StaticResource SecondarySmallButton}"
+                        Grid.Column="1" />
+            </Grid>
+
+            <Label Text="You haven't joined any teams yet"
+                   IsVisible="{Binding AreNoTeamsFound}"
+                   FontSize="Small"
+                   Margin="10,5"
+                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+            <CollectionView ItemsSource="{Binding MyTeams}"
+                            SelectionMode="None"
+                            IsVisible="{Binding AreTeamsFound}"
+                            MaximumHeightRequest="250">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="viewModels:TeamViewModel">
+                        <Border Style="{x:StaticResource RoundBorder}" Margin="5,3">
+                            <VerticalStackLayout Padding="10,8" Spacing="2">
+                                <Label Text="{Binding Name}" FontFamily="LexendSemibold" FontSize="Small" />
+                                <Label Text="{Binding Location}" FontSize="Micro"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                <Label Text="{Binding MemberCountDisplay}" FontSize="Micro"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                            </VerticalStackLayout>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ProfileViewModel}}, Path=ViewTeamCommand}"
+                                    CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
             <!-- Settings Section -->
             <Label Text="Settings"
                    FontFamily="LexendSemibold"

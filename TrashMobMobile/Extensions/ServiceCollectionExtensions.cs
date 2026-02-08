@@ -37,6 +37,8 @@
             services.AddSingleton<IPickupLocationRestService, PickupLocationRestService>();
             services.AddSingleton<IServiceTypeRestService, ServiceTypeRestService>();
             services.AddSingleton<IStatsRestService, StatsRestService>();
+            services.AddSingleton<ITeamManager, TeamManager>();
+            services.AddSingleton<ITeamRestService, TeamRestService>();
             services.AddSingleton<IUserManager, UserManager>();
             services.AddSingleton<IUserRestService, UserRestService>();
             services.AddSingleton<IWaiverManager, WaiverManager>();
