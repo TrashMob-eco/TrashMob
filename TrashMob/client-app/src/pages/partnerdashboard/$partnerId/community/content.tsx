@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { useParams } from 'react-router';
+import { Link, useParams } from 'react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -166,7 +166,10 @@ export const PartnerCommunityContent = () => {
                             <CardHeader>
                                 <CardTitle>Community Coverage</CardTitle>
                                 <CardDescription>
-                                    Your community&apos;s geographic scope. Contact support to change these settings.
+                                    Your community&apos;s geographic scope.{' '}
+                                    <Link to='../community/regional-settings' className='text-primary hover:underline'>
+                                        Edit regional settings
+                                    </Link>
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
