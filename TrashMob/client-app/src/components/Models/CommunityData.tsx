@@ -55,6 +55,14 @@ class CommunityData {
 
     physicalAddress: string = '';
 
+    defaultCleanupFrequencyDays: number | null = null;
+
+    defaultMinEventsPerYear: number | null = null;
+
+    defaultSafetyRequirements: string = '';
+
+    defaultAllowCoAdoption: boolean | null = null;
+
     partnerStatusId: number = 0;
 
     createdByUserId: string = Guid.EMPTY;

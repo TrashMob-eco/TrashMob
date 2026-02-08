@@ -1,24 +1,20 @@
-// Azure billing alerts and budget caps for cost management
+// Azure billing alerts — action group for resource-level metric alerts
 // See Project 30 (Azure Billing Caps & Alerts) for details
+//
+// TENANT ARCHITECTURE:
+//   - Resource tenant (this deployment): Contains Container Apps, SQL, etc.
+//   - Billing tenant (c0459473-d4ce-4472-b23c-dd1218a33a7b): Manages nonprofit grant and billing
+//
+// This template deploys an action group in the RESOURCE tenant for resource-level
+// metric alerts (e.g., DTU usage, Container App scaling). It does NOT create budget
+// alerts — those must be created manually in the BILLING tenant.
 //
 // IMPORTANT: Azure budget APIs (Microsoft.Consumption and Microsoft.CostManagement)
 // do not support Microsoft Sponsorship subscriptions (MS-AZR-0036P).
-// This template deploys the action group for email notifications only.
-// Budgets must be created manually in Azure Portal:
-//   Azure Portal > Cost Management > Budgets > + Add
+// Budget alerts must be created manually in the billing tenant's Azure Portal.
+// Use direct email contacts on budget alerts (no action group needed in billing tenant).
 //
-// Manual budget configuration:
-//   1. Monthly budget: "budget-tm-{env}-{region}-monthly"
-//      - Amount: $500, Reset: Monthly
-//      - Alert thresholds: 50%, 75%, 90%, 100% (Actual)
-//      - Action group: ag-tm-{env}-{region}-billing
-//      - Contact: joe@trashmob.eco
-//
-//   2. Grant monitor: "budget-tm-{env}-{region}-grant"
-//      - Amount: $1, Reset: Annually
-//      - Alert threshold: 100% (Actual)
-//      - Action group: ag-tm-{env}-{region}-billing
-//      - Contact: joe@trashmob.eco
+// See Deploy/COST_ALERT_RUNBOOK.md for full setup instructions.
 
 @description('Environment identifier (dev, pr)')
 param environment string

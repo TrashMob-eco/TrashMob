@@ -882,6 +882,9 @@
                 entity.Property(e => e.ContactPhone).HasMaxLength(50);
                 entity.Property(e => e.PhysicalAddress).HasMaxLength(500);
 
+                // Adoptable Area Defaults
+                entity.Property(e => e.DefaultSafetyRequirements).HasMaxLength(4000);
+
                 entity.HasOne(d => d.CreatedByUser)
                     .WithMany(p => p.PartnersCreated)
                     .HasForeignKey(d => d.CreatedByUserId)

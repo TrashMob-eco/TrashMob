@@ -1,6 +1,7 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { AxiosResponse } from 'axios';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -16,7 +17,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import AdoptableAreaData, { AdoptableAreaType } from '@/components/Models/AdoptableAreaData';
+import CommunityData from '@/components/Models/CommunityData';
 import { CreateAdoptableArea, GetAdoptableAreas } from '@/services/adoptable-areas';
+import { GetCommunityForAdmin } from '@/services/communities';
 
 const areaTypes: AdoptableAreaType[] = ['Highway', 'Park', 'Trail', 'Waterway', 'Street', 'Spot'];
 
@@ -47,6 +50,22 @@ export const PartnerCommunityAreaCreate = () => {
     const queryClient = useQueryClient();
     const { partnerId } = useParams<{ partnerId: string }>() as { partnerId: string };
     const { toast } = useToast();
+
+    const { data: community } = useQuery<AxiosResponse<CommunityData>, unknown, CommunityData>({
+        queryKey: GetCommunityForAdmin({ communityId: partnerId }).key,
+        queryFn: GetCommunityForAdmin({ communityId: partnerId }).service,
+        select: (res) => res.data,
+        enabled: !!partnerId,
+    });
+
+    const hasDefaults = useMemo(
+        () =>
+            community?.defaultCleanupFrequencyDays != null ||
+            community?.defaultMinEventsPerYear != null ||
+            community?.defaultSafetyRequirements != null ||
+            community?.defaultAllowCoAdoption != null,
+        [community],
+    );
 
     const { mutate, isPending: isSubmitting } = useMutation({
         mutationKey: CreateAdoptableArea().key,
@@ -202,9 +221,25 @@ export const PartnerCommunityAreaCreate = () => {
 
                     {/* Requirements */}
                     <Card>
-                        <CardHeader>
-                            <CardTitle>Requirements</CardTitle>
-                            <CardDescription>Set expectations for teams adopting this area.</CardDescription>
+                        <CardHeader className='flex flex-row items-center justify-between'>
+                            <div>
+                                <CardTitle>Requirements</CardTitle>
+                                <CardDescription>Set expectations for teams adopting this area.</CardDescription>
+                            </div>
+                            <Button
+                                type='button'
+                                variant='outline'
+                                size='sm'
+                                disabled={!hasDefaults}
+                                onClick={() => {
+                                    form.setValue('cleanupFrequencyDays', community?.defaultCleanupFrequencyDays ?? 90);
+                                    form.setValue('minEventsPerYear', community?.defaultMinEventsPerYear ?? 4);
+                                    form.setValue('safetyRequirements', community?.defaultSafetyRequirements ?? '');
+                                    form.setValue('allowCoAdoption', community?.defaultAllowCoAdoption ?? false);
+                                }}
+                            >
+                                Use Community Defaults
+                            </Button>
                         </CardHeader>
                         <CardContent className='space-y-4'>
                             <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>

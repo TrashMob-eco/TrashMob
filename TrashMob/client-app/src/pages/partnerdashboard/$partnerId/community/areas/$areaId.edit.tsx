@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
@@ -17,7 +17,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import AdoptableAreaData, { AdoptableAreaType, AdoptableAreaStatus } from '@/components/Models/AdoptableAreaData';
+import CommunityData from '@/components/Models/CommunityData';
 import { GetAdoptableArea, UpdateAdoptableArea, GetAdoptableAreas } from '@/services/adoptable-areas';
+import { GetCommunityForAdmin } from '@/services/communities';
 
 const areaTypes: AdoptableAreaType[] = ['Highway', 'Park', 'Trail', 'Waterway', 'Street', 'Spot'];
 const areaStatuses: AdoptableAreaStatus[] = ['Available', 'Adopted', 'Unavailable'];
@@ -67,6 +69,22 @@ export const PartnerCommunityAreaEdit = () => {
         select: (res) => res.data,
         enabled: !!partnerId && !!areaId,
     });
+
+    const { data: community } = useQuery<AxiosResponse<CommunityData>, unknown, CommunityData>({
+        queryKey: GetCommunityForAdmin({ communityId: partnerId }).key,
+        queryFn: GetCommunityForAdmin({ communityId: partnerId }).service,
+        select: (res) => res.data,
+        enabled: !!partnerId,
+    });
+
+    const hasDefaults = useMemo(
+        () =>
+            community?.defaultCleanupFrequencyDays != null ||
+            community?.defaultMinEventsPerYear != null ||
+            community?.defaultSafetyRequirements != null ||
+            community?.defaultAllowCoAdoption != null,
+        [community],
+    );
 
     const { mutate, isPending: isSubmitting } = useMutation({
         mutationKey: UpdateAdoptableArea().key,
@@ -272,9 +290,25 @@ export const PartnerCommunityAreaEdit = () => {
 
                     {/* Requirements */}
                     <Card>
-                        <CardHeader>
-                            <CardTitle>Requirements</CardTitle>
-                            <CardDescription>Set expectations for teams adopting this area.</CardDescription>
+                        <CardHeader className='flex flex-row items-center justify-between'>
+                            <div>
+                                <CardTitle>Requirements</CardTitle>
+                                <CardDescription>Set expectations for teams adopting this area.</CardDescription>
+                            </div>
+                            <Button
+                                type='button'
+                                variant='outline'
+                                size='sm'
+                                disabled={!hasDefaults}
+                                onClick={() => {
+                                    form.setValue('cleanupFrequencyDays', community?.defaultCleanupFrequencyDays ?? 90);
+                                    form.setValue('minEventsPerYear', community?.defaultMinEventsPerYear ?? 4);
+                                    form.setValue('safetyRequirements', community?.defaultSafetyRequirements ?? '');
+                                    form.setValue('allowCoAdoption', community?.defaultAllowCoAdoption ?? false);
+                                }}
+                            >
+                                Use Community Defaults
+                            </Button>
                         </CardHeader>
                         <CardContent className='space-y-4'>
                             <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>

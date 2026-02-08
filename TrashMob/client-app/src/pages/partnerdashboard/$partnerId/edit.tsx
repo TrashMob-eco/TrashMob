@@ -40,8 +40,9 @@ const formSchema = z.object({
     partnerStatusId: z.number(),
     partnerTypeId: z.number(),
     publicNotes: z
-        .string({ required_error: 'Notes cannot be empty' })
-        .max(MAX_PARTNER_NOTES_LENGTH, `Public notes must be less than ${MAX_PARTNER_NOTES_LENGTH} characters`),
+        .string()
+        .max(MAX_PARTNER_NOTES_LENGTH, `Public notes must be less than ${MAX_PARTNER_NOTES_LENGTH} characters`)
+        .optional(),
     privateNotes: z
         .string()
         .max(MAX_PARTNER_NOTES_LENGTH, `Private notes must be less than ${MAX_PARTNER_NOTES_LENGTH} characters`)
@@ -240,9 +241,7 @@ export const PartnerEdit = () => {
                         name='publicNotes'
                         render={({ field }) => (
                             <FormItem className='col-span-12'>
-                                <FormLabel tooltip={ToolTips.PartnerPublicNotes} required>
-                                    Public Notes
-                                </FormLabel>
+                                <FormLabel tooltip={ToolTips.PartnerPublicNotes}>Public Notes</FormLabel>
                                 <FormControl>
                                     <Textarea {...field} maxLength={MAX_PARTNER_NOTES_LENGTH} className='h-24' />
                                 </FormControl>
