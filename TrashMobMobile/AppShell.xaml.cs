@@ -13,6 +13,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(CreateLitterReportPage), typeof(CreateLitterReportPage));
         Routing.RegisterRoute(nameof(EditEventPage), typeof(EditEventPage));
         Routing.RegisterRoute(nameof(ExplorePage), typeof(ExplorePage));
+        Routing.RegisterRoute(nameof(HomeFeedPage), typeof(HomeFeedPage));
         Routing.RegisterRoute(nameof(EditEventPartnerLocationServicesPage),
             typeof(EditEventPartnerLocationServicesPage));
         Routing.RegisterRoute(nameof(EditEventSummaryPage), typeof(EditEventSummaryPage));
