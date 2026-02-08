@@ -84,5 +84,17 @@
                 response.EnsureSuccessStatusCode();
             }
         }
+
+        public async Task<DisplayEventAttendeeRoute> SimulateRouteAsync(Guid eventId, CancellationToken cancellationToken = default)
+        {
+            var requestUri = "routes/simulate/" + eventId;
+
+            using (var response = await AuthorizedHttpClient.PostAsync(requestUri, null, cancellationToken))
+            {
+                response.EnsureSuccessStatusCode();
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                return JsonConvert.DeserializeObject<DisplayEventAttendeeRoute>(content);
+            }
+        }
     }
 }

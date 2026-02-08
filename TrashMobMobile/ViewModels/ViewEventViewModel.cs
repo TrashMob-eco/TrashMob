@@ -119,6 +119,9 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     [ObservableProperty]
     private string photoCountDisplay = string.Empty;
 
+    [ObservableProperty]
+    private bool enableSimulateRoute;
+
     public ObservableCollection<EventPhotoViewModel> EventPhotos { get; set; } = [];
 
     public ObservableCollection<EventPartnerLocationViewModel> AvailablePartners { get; set; } = new();
@@ -167,6 +170,10 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             await LoadPartners();
             await LoadLitterReports();
             await LoadPhotos();
+
+#if USETEST
+            EnableSimulateRoute = true;
+#endif
 
             var routes = await eventAttendeeRouteRestService.GetEventAttendeeRoutesForEventAsync(eventId);
             EventAttendeeRoutes.Clear();
@@ -590,5 +597,19 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             await LoadPhotos();
             await NotificationService.Notify("Photo deleted.");
         }, "An error occurred while deleting the photo. Please try again.");
+    }
+
+    [RelayCommand]
+    private async Task SimulateRoute()
+    {
+        await ExecuteAsync(async () =>
+        {
+            var route = await eventAttendeeRouteRestService.SimulateRouteAsync(EventViewModel.Id);
+
+            EventAttendeeRoutes.Add(route);
+            UpdateRoutes();
+
+            await NotificationService.Notify("Route simulated successfully!");
+        }, "An error occurred while simulating the route. Please try again.");
     }
 }

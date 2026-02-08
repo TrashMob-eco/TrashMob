@@ -391,18 +391,41 @@ public class RouteRecordingService
 
 **Note:** Privacy is critical; extensive testing and user feedback required.
 
+### Phase 5: Route Simulation (Dev/QA Tool)
+
+Enable testing the full route pipeline without physically walking routes. The simulation endpoint lives in the backend but is gated to non-production environments. The mobile app gets a dev-only "Simulate Route" button.
+
+**Backend — `POST /api/routes/simulate` (dev/local only):**
+- Gated by environment check (`IHostEnvironment.IsProduction()` → 404)
+- Accepts: `eventId`, `distanceMeters` (default 1000), `durationMinutes` (default 30), `pointCount` (default 50), `gpsJitterMeters` (default 3)
+- Generates realistic GPS waypoints in a loop/path radiating from the event's lat/lon
+- Creates a full `EventAttendeeRoute` with `RoutePoints`, auto-calculated metrics, default privacy
+- Returns the created `DisplayEventAttendeeRoute`
+
+**Mobile app — "Simulate Route" button (debug builds only):**
+- Visible on ViewEventPage only when `Settings.IsDevEnvironment` is true
+- Calls `POST /api/routes/simulate` with event ID and default parameters
+- On success, shows notification and refreshes route display
+- Hidden in release/production builds via `#if DEBUG` or settings check
+
+**Website — no changes needed:**
+- Routes created by simulation appear automatically on EventDetails (map + stats card) and MyDashboard (route history)
+
+**Testing enabled by simulation:**
+- Mobile route upload pipeline (without GPS hardware)
+- Web route map rendering with multiple routes
+- Privacy filtering and trimming behavior
+- Route statistics aggregation
+- Heat map visualization seeding (Phase 4)
+- Various GPS conditions (configurable jitter parameter)
+
 ### Current Implementation State
 - **Backend:** ✅ Complete — Models (EventAttendeeRoute extended, RoutePoint), DbContext, DTOs, manager business logic (privacy filtering, Haversine distance, auto-trim, decay), 3 new API controllers + existing controller updated
 - **Website:** ✅ Complete — TypeScript models, API service, EventRoutesMap (polylines on Google Maps), EventRouteStatsCard, MyRoutesCard (user route history), integrated into event detail page and MyDashboard
 - **Database migration:** ✅ Applied to dev (AddRouteTracingProperties)
-- **Mobile app:** Partial implementation exists but untested due to lack of route simulation
-- **Remaining:** Mobile app recording/upload integration, heat map visualization (Phase 4)
-
-### Testing Requirements
-- **Route simulation tool** for development/QA testing without physically walking routes
-- Generate synthetic routes with configurable parameters (distance, duration, accuracy)
-- Simulate various GPS conditions (urban canyons, tunnels, poor signal)
-- Seed test data for heat map visualization
+- **Route simulation:** ✅ Complete — `RouteSimulationController` (backend, production-gated), mobile "Simulate Route" button (`#if USETEST` gated), REST service method
+- **Mobile app:** REST service layer complete; route recording/upload exists but untested on device
+- **Remaining:** Mobile app recording/upload device testing, heat map visualization (Phase 4)
 
 ---
 
@@ -454,7 +477,7 @@ The following GitHub issues are tracked as part of this project:
 
 ---
 
-**Last Updated:** February 6, 2026
+**Last Updated:** February 8, 2026
 **Owner:** Mobile Team + Backend
-**Status:** In Progress (Backend & Website Complete)
-**Next Review:** When Project 4 complete
+**Status:** In Progress (Backend, Website & Route Simulation Complete)
+**Next Step:** Mobile device testing, heat map visualization (Phase 4)
