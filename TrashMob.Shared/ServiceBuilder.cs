@@ -130,6 +130,9 @@
             services.AddScoped<ICsvImportManager, CsvImportManager>();
             services.AddScoped<IOutreachContentService, OutreachContentService>();
             services.AddScoped<IProspectOutreachManager, ProspectOutreachManager>();
+            services.AddScoped<IPipelineAnalyticsManager, PipelineAnalyticsManager>();
+            services.AddScoped<ISentimentAnalysisService, SentimentAnalysisService>();
+            services.AddScoped<IProspectConversionManager, ProspectConversionManager>();
 
             // Newsletter
             services.AddScoped<INewsletterManager, NewsletterManager>();

@@ -27,7 +27,9 @@ namespace TrashMob.Controllers
         IClaudeDiscoveryService claudeDiscoveryService,
         IProspectScoringManager prospectScoringManager,
         ICsvImportManager csvImportManager,
-        IProspectOutreachManager prospectOutreachManager)
+        IProspectOutreachManager prospectOutreachManager,
+        IPipelineAnalyticsManager pipelineAnalyticsManager,
+        IProspectConversionManager prospectConversionManager)
         : SecureController
     {
         /// <summary>
@@ -312,6 +314,40 @@ namespace TrashMob.Controllers
         {
             var settings = prospectOutreachManager.GetOutreachSettings();
             return Ok(settings);
+        }
+
+        /// <summary>
+        /// Gets pipeline analytics including funnel metrics, outreach effectiveness, and conversion rates.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpGet("analytics")]
+        [ProducesResponseType(typeof(PipelineAnalytics), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAnalytics(CancellationToken cancellationToken)
+        {
+            var analytics = await pipelineAnalyticsManager.GetAnalyticsAsync(cancellationToken);
+            return Ok(analytics);
+        }
+
+        /// <summary>
+        /// Converts a prospect to a partner organization.
+        /// </summary>
+        /// <param name="id">The prospect ID.</param>
+        /// <param name="request">The conversion request with partner type and email options.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpPost("{id}/convert")]
+        [ProducesResponseType(typeof(ProspectConversionResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ConvertToPartner(Guid id, [FromBody] ProspectConversionRequest request, CancellationToken cancellationToken)
+        {
+            request.ProspectId = id;
+            var result = await prospectConversionManager.ConvertToPartnerAsync(request, UserId, cancellationToken);
+
+            if (!result.Success && result.ErrorMessage?.Contains("not found") == true)
+            {
+                return NotFound();
+            }
+
+            return Ok(result);
         }
     }
 

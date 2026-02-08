@@ -8,6 +8,8 @@ import FitScoreBreakdownData from '../components/Models/FitScoreBreakdownData';
 import GeographicGapData from '../components/Models/GeographicGapData';
 import OutreachPreviewData from '../components/Models/OutreachPreviewData';
 import OutreachSettingsData from '../components/Models/OutreachSettingsData';
+import PipelineAnalyticsData from '../components/Models/PipelineAnalyticsData';
+import ProspectConversionResultData from '../components/Models/ProspectConversionResultData';
 import ProspectActivityData from '../components/Models/ProspectActivityData';
 import ProspectOutreachEmailData from '../components/Models/ProspectOutreachEmailData';
 
@@ -230,5 +232,37 @@ export const GetOutreachSettings = () => ({
         ApiService('protected').fetchData<GetOutreachSettings_Response>({
             url: '/communityprospects/outreach/settings',
             method: 'get',
+        }),
+});
+
+// --- Phase 4: Analytics & Conversion ---
+
+export type GetPipelineAnalytics_Response = PipelineAnalyticsData;
+export const GetPipelineAnalytics = () => ({
+    key: ['/communityprospects', 'analytics'],
+    service: async () =>
+        ApiService('protected').fetchData<GetPipelineAnalytics_Response>({
+            url: '/communityprospects/analytics',
+            method: 'get',
+        }),
+});
+
+export type ConvertProspectToPartner_Params = {
+    id: string;
+    partnerTypeId?: number;
+    sendWelcomeEmail?: boolean;
+};
+export type ConvertProspectToPartner_Response = ProspectConversionResultData;
+export const ConvertProspectToPartner = () => ({
+    key: ['/communityprospects', 'convert'],
+    service: async (params: ConvertProspectToPartner_Params) =>
+        ApiService('protected').fetchData<ConvertProspectToPartner_Response>({
+            url: `/communityprospects/${params.id}/convert`,
+            method: 'post',
+            data: {
+                prospectId: params.id,
+                partnerTypeId: params.partnerTypeId ?? 1,
+                sendWelcomeEmail: params.sendWelcomeEmail ?? true,
+            },
         }),
 });

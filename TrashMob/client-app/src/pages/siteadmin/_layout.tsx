@@ -18,6 +18,7 @@ import {
     Search,
     Target,
     Upload,
+    BarChart3,
 } from 'lucide-react';
 import { SidebarNav, NavGroup } from '@/components/ui/sidebar-nav';
 
@@ -37,6 +38,7 @@ const navGroups: NavGroup[] = [
             { name: 'Prospects', href: `${pathPrefix}/prospects`, icon: Target },
             { name: 'Discovery', href: `${pathPrefix}/prospects/discovery`, icon: Search },
             { name: 'Import CSV', href: `${pathPrefix}/prospects/import`, icon: Upload },
+            { name: 'Pipeline Analytics', href: `${pathPrefix}/prospects/analytics`, icon: BarChart3 },
         ],
     },
     {
