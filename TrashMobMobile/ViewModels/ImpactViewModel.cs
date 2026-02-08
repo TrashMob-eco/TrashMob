@@ -1,6 +1,7 @@
 namespace TrashMobMobile.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using TrashMobMobile.Services;
 
 public partial class ImpactViewModel(
@@ -36,6 +37,18 @@ public partial class ImpactViewModel(
             TotalLitterReportsSubmitted = stats.TotalLitterReportsSubmitted,
             TotalLitterReportsClosed = stats.TotalLitterReportsClosed,
         };
+    }
+
+    [RelayCommand]
+    private async Task ViewLeaderboards()
+    {
+        await Shell.Current.GoToAsync(nameof(LeaderboardsPage));
+    }
+
+    [RelayCommand]
+    private async Task ViewAchievements()
+    {
+        await Shell.Current.GoToAsync(nameof(AchievementsPage));
     }
 
     private async Task RefreshCommunityStats()

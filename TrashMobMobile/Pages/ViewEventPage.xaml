@@ -32,6 +32,8 @@
 
                 <tabs:BottomTabItem Label="Litter Reports" SelectedTabColor="{StaticResource Primary}" />
 
+                <tabs:BottomTabItem Label="Photos" SelectedTabColor="{StaticResource Primary}" />
+
             </tabs:TabHostView>
 
             <tabs:ViewSwitcher x:Name="Switcher"
@@ -50,6 +52,10 @@
                         Animate="True"
                         UseActivityIndicator="True" />
                 <tabs:DelayedView x:TypeArguments="views:TabLitterReports"
+                        AccentColor="{StaticResource Primary}"
+                        Animate="True"
+                        UseActivityIndicator="True" />
+                <tabs:DelayedView x:TypeArguments="views:TabPhotos"
                         AccentColor="{StaticResource Primary}"
                         Animate="True"
                         UseActivityIndicator="True" />

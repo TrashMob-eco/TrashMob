@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             x:DataType="viewModels:AchievementsViewModel"
+             x:Class="TrashMobMobile.Pages.AchievementsPage"
+             Title="Achievements">
+
+    <ScrollView>
+        <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
+
+            <!-- Summary Header -->
+            <Border Style="{x:StaticResource RoundBorder}" Margin="5,10,5,5">
+                <Grid ColumnDefinitions="*, *" Padding="10,8">
+                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                        <Label Text="Progress"
+                               FontFamily="LexendSemibold"
+                               FontSize="Small" />
+                        <Label Text="{Binding ProgressDisplay}"
+                               FontSize="Micro"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1" Spacing="2">
+                        <Label Text="Total Points"
+                               FontFamily="LexendSemibold"
+                               FontSize="Small" />
+                        <Label Text="{Binding TotalPointsDisplay}"
+                               FontSize="Micro"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
+
+            <!-- Empty state -->
+            <Label Text="No achievements available yet"
+                   IsVisible="{Binding AreNoAchievementsFound}"
+                   FontSize="Small"
+                   Margin="10,10"
+                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+
+            <!-- Achievement grid -->
+            <CollectionView ItemsSource="{Binding Achievements}"
+                            SelectionMode="None"
+                            IsVisible="{Binding AreAchievementsFound}">
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical" Span="3" HorizontalItemSpacing="4" VerticalItemSpacing="4" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="viewModels:AchievementViewModel">
+                        <Border Style="{x:StaticResource RoundBorder}" Margin="4"
+                                Opacity="{Binding Opacity}">
+                            <VerticalStackLayout Spacing="2" Padding="6">
+                                <Image Source="{Binding IconUrl}"
+                                       HeightRequest="48"
+                                       WidthRequest="48"
+                                       HorizontalOptions="Center"
+                                       Aspect="AspectFit" />
+                                <Label Text="{Binding DisplayName}"
+                                       FontFamily="LexendSemibold"
+                                       FontSize="Micro"
+                                       HorizontalTextAlignment="Center"
+                                       MaxLines="2"
+                                       LineBreakMode="TailTruncation" />
+                                <Label Text="{Binding PointsDisplay}"
+                                       FontSize="Micro"
+                                       HorizontalTextAlignment="Center"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                <Label Text="{Binding EarnedDateDisplay}"
+                                       FontSize="Micro"
+                                       HorizontalTextAlignment="Center"
+                                       IsVisible="{Binding IsEarned}"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Loading -->
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             x:DataType="viewModels:LeaderboardsViewModel"
+             x:Class="TrashMobMobile.Pages.LeaderboardsPage"
+             Title="Leaderboards">
+
+    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+        <ScrollView>
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
+
+                <!-- Users/Teams Toggle -->
+                <HorizontalStackLayout Spacing="8" Margin="5,10,5,5">
+                    <Button Text="Users"
+                            Command="{Binding ShowUserLeaderboardCommand}"
+                            Style="{StaticResource PrimarySmallButton}" />
+                    <Button Text="Teams"
+                            Command="{Binding ShowTeamLeaderboardCommand}"
+                            Style="{StaticResource SecondarySmallButton}" />
+                </HorizontalStackLayout>
+
+                <!-- Filters -->
+                <Grid ColumnDefinitions="*, *" Margin="5,5">
+                    <Picker Grid.Column="0"
+                            Title="Type"
+                            ItemsSource="{Binding LeaderboardTypes}"
+                            SelectedItem="{Binding SelectedType}" />
+                    <Picker Grid.Column="1"
+                            Title="Time Range"
+                            ItemsSource="{Binding TimeRanges}"
+                            SelectedItem="{Binding SelectedTimeRange}" />
+                </Grid>
+
+                <!-- My Rank Card -->
+                <Border Style="{x:StaticResource RoundBorder}" Margin="5,5"
+                        IsVisible="{Binding IsMyRankVisible}">
+                    <VerticalStackLayout Padding="10,8" Spacing="2">
+                        <Label Text="{Binding MyRankDisplay}"
+                               FontFamily="LexendSemibold"
+                               FontSize="Small" />
+                        <Label Text="{Binding MyScoreDisplay}"
+                               FontSize="Micro"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Total count -->
+                <Label Text="{Binding TotalEntriesDisplay}"
+                       FontSize="Micro"
+                       Margin="10,5,10,0"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+
+                <!-- Empty state -->
+                <Label Text="No leaderboard entries found"
+                       IsVisible="{Binding AreNoEntriesFound}"
+                       FontSize="Small"
+                       Margin="10,10"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+
+                <!-- Leaderboard entries -->
+                <CollectionView ItemsSource="{Binding Entries}"
+                                SelectionMode="None"
+                                IsVisible="{Binding AreEntriesFound}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="viewModels:LeaderboardEntryViewModel">
+                            <Border Style="{x:StaticResource RoundBorder}" Margin="5,3">
+                                <Grid ColumnDefinitions="60, *, Auto" Padding="10,8">
+                                    <Label Grid.Column="0"
+                                           Text="{Binding RankDisplay}"
+                                           FontFamily="LexendSemibold"
+                                           FontSize="Medium"
+                                           VerticalOptions="Center" />
+                                    <Label Grid.Column="1"
+                                           Text="{Binding EntityName}"
+                                           FontSize="Small"
+                                           VerticalOptions="Center" />
+                                    <Label Grid.Column="2"
+                                           Text="{Binding FormattedScore}"
+                                           FontSize="Small"
+                                           VerticalOptions="Center"
+                                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- Loading -->
+                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+</ContentPage>
