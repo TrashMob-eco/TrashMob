@@ -9,6 +9,16 @@ class PartnerDocumentData {
 
     url: string = '';
 
+    blobStoragePath: string = '';
+
+    contentType: string = '';
+
+    fileSizeBytes: number | null = null;
+
+    documentTypeId: number = 0;
+
+    expirationDate: Date | null = null;
+
     createdByUserId: string = Guid.EMPTY;
 
     createdDate: Date = new Date();

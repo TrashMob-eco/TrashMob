@@ -93,6 +93,9 @@
             // Partner Photo managers
             services.AddScoped<IPartnerPhotoManager, PartnerPhotoManager>();
 
+            // Partner Document Storage manager
+            services.AddScoped<IPartnerDocumentStorageManager, PartnerDocumentStorageManager>();
+
             // Community managers
             services.AddScoped<ICommunityManager, CommunityManager>();
 

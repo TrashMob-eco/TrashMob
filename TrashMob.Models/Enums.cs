@@ -306,4 +306,40 @@ namespace TrashMob.Models
         /// </summary>
         Kilogram = 2,
     }
+
+    /// <summary>
+    /// Represents the type of a partner document.
+    /// </summary>
+    public enum PartnerDocumentTypeEnum
+    {
+        /// <summary>
+        /// Other or unspecified document type.
+        /// </summary>
+        Other = 0,
+
+        /// <summary>
+        /// Partnership or volunteer agreement.
+        /// </summary>
+        Agreement = 1,
+
+        /// <summary>
+        /// Formal contract.
+        /// </summary>
+        Contract = 2,
+
+        /// <summary>
+        /// Report or summary document.
+        /// </summary>
+        Report = 3,
+
+        /// <summary>
+        /// Insurance certificate or policy.
+        /// </summary>
+        Insurance = 4,
+
+        /// <summary>
+        /// Certification or compliance document.
+        /// </summary>
+        Certificate = 5,
+    }
 }

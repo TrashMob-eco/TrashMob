@@ -1,15 +1,16 @@
 import { useCallback, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
-import { useMutation, useQuery, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormMessage, FormDescription } from '@/components/ui/form';
 import { EnhancedFormLabel as FormLabel } from '@/components/ui/custom/form';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { FileUp, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import * as ToolTips from '@/store/ToolTips';
 import { useLogin } from '@/hooks/useLogin';
 import {
@@ -20,14 +21,27 @@ import {
 
 import PartnerDocumentData from '@/components/Models/PartnerDocumentData';
 
+const documentTypeOptions = [
+    { value: '0', label: 'Other' },
+    { value: '1', label: 'Agreement' },
+    { value: '2', label: 'Contract' },
+    { value: '3', label: 'Report' },
+    { value: '4', label: 'Insurance' },
+    { value: '5', label: 'Certificate' },
+];
+
 interface FormInputs {
     name: string;
     url: string;
+    documentTypeId: string;
+    expirationDate: string;
 }
 
 const formSchema = z.object({
     name: z.string({ required_error: 'Name cannot be blank.' }),
-    url: z.string().url(),
+    url: z.string().url().or(z.literal('')),
+    documentTypeId: z.string(),
+    expirationDate: z.string().optional(),
 });
 
 export const PartnerDocumentEdit = () => {
@@ -67,17 +81,30 @@ export const PartnerDocumentEdit = () => {
         onSuccess: onUpdateSuccess,
     });
 
+    const isUploaded = !!currentValues?.blobStoragePath;
+
     const form = useForm<FormInputs>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            name: currentValues?.name,
-            url: currentValues?.url,
+            name: currentValues?.name ?? '',
+            url: currentValues?.url ?? '',
+            documentTypeId: String(currentValues?.documentTypeId ?? 0),
+            expirationDate: currentValues?.expirationDate
+                ? new Date(currentValues.expirationDate).toISOString().split('T')[0]
+                : '',
         },
     });
 
     useEffect(() => {
         if (currentValues) {
-            form.reset(currentValues);
+            form.reset({
+                name: currentValues.name ?? '',
+                url: currentValues.url ?? '',
+                documentTypeId: String(currentValues.documentTypeId ?? 0),
+                expirationDate: currentValues.expirationDate
+                    ? new Date(currentValues.expirationDate).toISOString().split('T')[0]
+                    : '',
+            });
         }
     }, [currentValues]);
 
@@ -90,13 +117,19 @@ export const PartnerDocumentEdit = () => {
             body.partnerId = partnerId;
             body.name = formValues.name ?? '';
             body.url = formValues.url ?? '';
+            body.documentTypeId = parseInt(formValues.documentTypeId, 10);
+            body.expirationDate = formValues.expirationDate ? new Date(formValues.expirationDate) : null;
+            body.blobStoragePath = currentValues.blobStoragePath ?? '';
+            body.contentType = currentValues.contentType ?? '';
+            body.fileSizeBytes = currentValues.fileSizeBytes ?? null;
+            body.createdByUserId = currentValues.createdByUserId;
             body.lastUpdatedByUserId = currentUser.id;
             updatePartnerDocument.mutate(body);
         },
-        [currentValues, partnerId],
+        [currentValues, partnerId, documentId, currentUser.id, updatePartnerDocument],
     );
 
-    const isSubmitting = updatePartnerDocument.isLoading;
+    const isSubmitting = updatePartnerDocument.isPending;
 
     if (isLoading) {
         return <Loader2 className='animate-spin mx-auto my-10' />;
@@ -120,17 +153,69 @@ export const PartnerDocumentEdit = () => {
                         </FormItem>
                     )}
                 />
+                {isUploaded ? (
+                    <div className='col-span-12'>
+                        <FormLabel>Uploaded File</FormLabel>
+                        <div className='mt-1 flex items-center gap-2 rounded-md border bg-muted/50 p-3'>
+                            <FileUp className='h-4 w-4 shrink-0 text-muted-foreground' />
+                            <p className='text-sm text-muted-foreground'>
+                                Uploaded file — use the Download button from the document list to access.
+                            </p>
+                        </div>
+                    </div>
+                ) : (
+                    <FormField
+                        control={form.control}
+                        name='url'
+                        render={({ field }) => (
+                            <FormItem className='col-span-12'>
+                                <FormLabel tooltip={ToolTips.PartnerDocumentUrl} required>
+                                    Document URL
+                                </FormLabel>
+                                <FormControl>
+                                    <Input {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                )}
                 <FormField
                     control={form.control}
-                    name='url'
+                    name='documentTypeId'
                     render={({ field }) => (
                         <FormItem className='col-span-12'>
-                            <FormLabel tooltip={ToolTips.PartnerDocumentUrl} required>
-                                Document Url
-                            </FormLabel>
+                            <FormLabel>Document Type</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder='Select type' />
+                                    </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    {documentTypeOptions.map((opt) => (
+                                        <SelectItem key={opt.value} value={opt.value}>
+                                            {opt.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name='expirationDate'
+                    render={({ field }) => (
+                        <FormItem className='col-span-12'>
+                            <FormLabel>Expiration Date (optional)</FormLabel>
                             <FormControl>
-                                <Input {...field} />
+                                <Input type='date' {...field} />
                             </FormControl>
+                            <FormDescription>
+                                Set a date when this document expires (e.g., insurance renewal).
+                            </FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}
