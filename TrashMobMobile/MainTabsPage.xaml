@@ -9,19 +9,23 @@
     <TabBar>
         <Tab Title="Home"
              Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconHome}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
-            <ShellContent ContentTemplate="{DataTemplate local:MainPage}" Route="MainPage" />
+            <ShellContent ContentTemplate="{DataTemplate pages:HomeFeedPage}" Route="HomeFeedPage" />
         </Tab>
-        <Tab Title="Dashboard"
-             Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconHeartPulse}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
-            <ShellContent ContentTemplate="{DataTemplate pages:MyDashboardPage}" Route="MyDashboardPage" />
+        <Tab Title="Explore"
+             Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconCompass}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
+            <ShellContent ContentTemplate="{DataTemplate pages:ExplorePage}" Route="ExplorePage" />
         </Tab>
-        <Tab Title="Location"
-             Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconHomeMapMarker}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
-            <ShellContent ContentTemplate="{DataTemplate pages:SetUserLocationPreferencePage}" Route="SetUserLocationPreferencePage" />
+        <Tab Title=" "
+             Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconPlusCircle}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}">
+            <ShellContent ContentTemplate="{DataTemplate pages:QuickActionPlaceholderPage}" Route="QuickActionPlaceholderPage" />
         </Tab>
-        <Tab Title="More"
-             Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconViewList}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
-            <ShellContent ContentTemplate="{DataTemplate pages:MorePage}" Route="MorePage" />
+        <Tab Title="Impact"
+             Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconTrophy}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
+            <ShellContent ContentTemplate="{DataTemplate pages:ImpactPage}" Route="ImpactPage" />
+        </Tab>
+        <Tab Title="Profile"
+             Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconAccount}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
+            <ShellContent ContentTemplate="{DataTemplate pages:ProfilePage}" Route="ProfilePage" />
         </Tab>
     </TabBar>
 </Shell>

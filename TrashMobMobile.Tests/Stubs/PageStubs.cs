@@ -31,3 +31,5 @@ internal class CreatePickupLocationPage { }
 internal class EditPickupLocationPage { }
 internal class ViewPickupLocationPage { }
 internal class MainTabsPage { }
+internal class ContactUsPage { }
+internal class LogoutPage { }

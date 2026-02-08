@@ -78,6 +78,7 @@ public static class MauiProgram
         builder.Services.AddTransient<ManageEventPartnersPage>();
         builder.Services.AddTransient<MyDashboardPage>();
         builder.Services.AddTransient<ProfilePage>();
+        builder.Services.AddTransient<QuickActionPlaceholderPage>();
         builder.Services.AddTransient<SearchEventsPage>();
         builder.Services.AddTransient<SearchLitterReportsPage>();
         builder.Services.AddTransient<SetUserLocationPreferencePage>();

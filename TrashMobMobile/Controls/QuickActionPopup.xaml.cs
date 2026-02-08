@@ -1,33 +1,33 @@
 namespace TrashMobMobile.Controls;
 
-using CommunityToolkit.Maui.Views;
-
-public partial class QuickActionPopup : Popup
+public partial class QuickActionPopup : ContentView
 {
     public const string CreateEvent = "CreateEvent";
     public const string ReportLitter = "ReportLitter";
 
     public string? SelectedAction { get; private set; }
 
+    public event EventHandler? ActionSelected;
+
     public QuickActionPopup()
     {
         InitializeComponent();
     }
 
-    private async void OnCreateEventClicked(object? sender, EventArgs e)
+    private void OnCreateEventClicked(object? sender, EventArgs e)
     {
         SelectedAction = CreateEvent;
-        await CloseAsync();
+        ActionSelected?.Invoke(this, EventArgs.Empty);
     }
 
-    private async void OnReportLitterClicked(object? sender, EventArgs e)
+    private void OnReportLitterClicked(object? sender, EventArgs e)
     {
         SelectedAction = ReportLitter;
-        await CloseAsync();
+        ActionSelected?.Invoke(this, EventArgs.Empty);
     }
 
-    private async void OnCancelClicked(object? sender, EventArgs e)
+    private void OnCancelClicked(object? sender, EventArgs e)
     {
-        await CloseAsync();
+        ActionSelected?.Invoke(this, EventArgs.Empty);
     }
 }
