@@ -248,9 +248,7 @@ export const PartnerLocationEditForm = (props: PartnerLocationEditFormProps) => 
                     name='publicNotes'
                     render={({ field }) => (
                         <FormItem className='col-span-12'>
-                            <FormLabel tooltip={ToolTips.PartnerLocationPublicNotes}>
-                                Public Notes
-                            </FormLabel>
+                            <FormLabel tooltip={ToolTips.PartnerLocationPublicNotes}>Public Notes</FormLabel>
                             <FormControl>
                                 <Textarea {...field} maxLength={1000} className='h-24' />
                             </FormControl>
