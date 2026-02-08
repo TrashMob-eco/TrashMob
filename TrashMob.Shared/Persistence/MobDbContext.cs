@@ -123,6 +123,16 @@
 
         public virtual DbSet<TeamAdoptionEvent> TeamAdoptionEvents { get; set; }
 
+        public virtual DbSet<Sponsor> Sponsors { get; set; }
+
+        public virtual DbSet<ProfessionalCompany> ProfessionalCompanies { get; set; }
+
+        public virtual DbSet<ProfessionalCompanyUser> ProfessionalCompanyUsers { get; set; }
+
+        public virtual DbSet<SponsoredAdoption> SponsoredAdoptions { get; set; }
+
+        public virtual DbSet<ProfessionalCleanupLog> ProfessionalCleanupLogs { get; set; }
+
         public virtual DbSet<TeamEvent> TeamEvents { get; set; }
 
         public virtual DbSet<TeamPhoto> TeamPhotos { get; set; }
@@ -2024,6 +2034,225 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_TeamAdoptionEvents_User_LastUpdatedBy");
+            });
+
+            // Sponsored Adoptions
+
+            modelBuilder.Entity<Sponsor>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.ContactEmail)
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.ContactPhone)
+                    .HasMaxLength(30);
+
+                entity.Property(e => e.LogoUrl)
+                    .HasMaxLength(2048);
+
+                entity.Property(e => e.IsActive)
+                    .HasDefaultValue(true);
+
+                entity.Property(e => e.ShowOnPublicMap)
+                    .HasDefaultValue(true);
+
+                entity.HasIndex(e => e.PartnerId)
+                    .HasDatabaseName("IX_Sponsors_PartnerId");
+
+                entity.HasOne(e => e.Partner)
+                    .WithMany(p => p.Sponsors)
+                    .HasForeignKey(e => e.PartnerId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_Sponsors_Partners");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Sponsors_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Sponsors_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<ProfessionalCompany>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.ContactEmail)
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.ContactPhone)
+                    .HasMaxLength(30);
+
+                entity.Property(e => e.IsActive)
+                    .HasDefaultValue(true);
+
+                entity.HasIndex(e => e.PartnerId)
+                    .HasDatabaseName("IX_ProfessionalCompanies_PartnerId");
+
+                entity.HasOne(e => e.Partner)
+                    .WithMany(p => p.ProfessionalCompanies)
+                    .HasForeignKey(e => e.PartnerId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_ProfessionalCompanies_Partners");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ProfessionalCompanies_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ProfessionalCompanies_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<ProfessionalCompanyUser>(entity =>
+            {
+                entity.HasKey(e => new { e.ProfessionalCompanyId, e.UserId });
+
+                entity.HasOne(d => d.ProfessionalCompany)
+                    .WithMany(d => d.CompanyUsers)
+                    .HasForeignKey(d => d.ProfessionalCompanyId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_ProfessionalCompanyUsers_ProfessionalCompany");
+
+                entity.HasOne(d => d.User)
+                    .WithMany()
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ProfessionalCompanyUsers_User");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ProfessionalCompanyUsers_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ProfessionalCompanyUsers_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<SponsoredAdoption>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Status)
+                    .IsRequired()
+                    .HasMaxLength(20)
+                    .HasDefaultValue("Active");
+
+                entity.Property(e => e.CleanupFrequencyDays)
+                    .HasDefaultValue(14);
+
+                entity.HasIndex(e => e.AdoptableAreaId)
+                    .HasDatabaseName("IX_SponsoredAdoptions_AdoptableAreaId");
+
+                entity.HasIndex(e => e.SponsorId)
+                    .HasDatabaseName("IX_SponsoredAdoptions_SponsorId");
+
+                entity.HasIndex(e => e.ProfessionalCompanyId)
+                    .HasDatabaseName("IX_SponsoredAdoptions_ProfessionalCompanyId");
+
+                entity.HasIndex(e => e.Status)
+                    .HasDatabaseName("IX_SponsoredAdoptions_Status");
+
+                entity.HasOne(d => d.AdoptableArea)
+                    .WithMany(d => d.SponsoredAdoptions)
+                    .HasForeignKey(d => d.AdoptableAreaId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_SponsoredAdoptions_AdoptableArea");
+
+                entity.HasOne(d => d.Sponsor)
+                    .WithMany(d => d.SponsoredAdoptions)
+                    .HasForeignKey(d => d.SponsorId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_SponsoredAdoptions_Sponsor");
+
+                entity.HasOne(d => d.ProfessionalCompany)
+                    .WithMany(d => d.SponsoredAdoptions)
+                    .HasForeignKey(d => d.ProfessionalCompanyId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_SponsoredAdoptions_ProfessionalCompany");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SponsoredAdoptions_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SponsoredAdoptions_User_LastUpdatedBy");
+            });
+
+            modelBuilder.Entity<ProfessionalCleanupLog>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.CleanupDate).IsRequired();
+
+                entity.Property(e => e.WeightInPounds)
+                    .HasPrecision(10, 2);
+
+                entity.Property(e => e.WeightInKilograms)
+                    .HasPrecision(10, 2);
+
+                entity.Property(e => e.Notes)
+                    .HasMaxLength(4000);
+
+                entity.HasIndex(e => e.SponsoredAdoptionId)
+                    .HasDatabaseName("IX_ProfessionalCleanupLogs_SponsoredAdoptionId");
+
+                entity.HasIndex(e => e.ProfessionalCompanyId)
+                    .HasDatabaseName("IX_ProfessionalCleanupLogs_ProfessionalCompanyId");
+
+                entity.HasIndex(e => e.CleanupDate)
+                    .HasDatabaseName("IX_ProfessionalCleanupLogs_CleanupDate");
+
+                entity.HasOne(d => d.SponsoredAdoption)
+                    .WithMany(d => d.CleanupLogs)
+                    .HasForeignKey(d => d.SponsoredAdoptionId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_ProfessionalCleanupLogs_SponsoredAdoption");
+
+                entity.HasOne(d => d.ProfessionalCompany)
+                    .WithMany(d => d.CleanupLogs)
+                    .HasForeignKey(d => d.ProfessionalCompanyId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_ProfessionalCleanupLogs_ProfessionalCompany");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ProfessionalCleanupLogs_User_CreatedBy");
+
+                entity.HasOne(d => d.LastUpdatedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.LastUpdatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ProfessionalCleanupLogs_User_LastUpdatedBy");
             });
 
             modelBuilder.Entity<EventAttendeeMetrics>(entity =>

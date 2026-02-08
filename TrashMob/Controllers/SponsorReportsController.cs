@@ -1,0 +1,129 @@
+namespace TrashMob.Controllers
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Identity.Web.Resource;
+    using TrashMob.Models;
+    using TrashMob.Security;
+    using TrashMob.Shared;
+    using TrashMob.Shared.Managers.Interfaces;
+
+    /// <summary>
+    /// Controller for sponsor adoption reports and cleanup log summaries.
+    /// </summary>
+    [Route("api/sponsors/{sponsorId}/adoptions")]
+    [ApiController]
+    public class SponsorReportsController : SecureController
+    {
+        private readonly ISponsoredAdoptionManager adoptionManager;
+        private readonly IProfessionalCleanupLogManager logManager;
+        private readonly ISponsorManager sponsorManager;
+        private readonly IKeyedManager<Partner> partnerManager;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SponsorReportsController"/> class.
+        /// </summary>
+        /// <param name="adoptionManager">The sponsored adoption manager.</param>
+        /// <param name="logManager">The cleanup log manager.</param>
+        /// <param name="sponsorManager">The sponsor manager.</param>
+        /// <param name="partnerManager">The partner manager.</param>
+        public SponsorReportsController(
+            ISponsoredAdoptionManager adoptionManager,
+            IProfessionalCleanupLogManager logManager,
+            ISponsorManager sponsorManager,
+            IKeyedManager<Partner> partnerManager)
+        {
+            this.adoptionManager = adoptionManager;
+            this.logManager = logManager;
+            this.sponsorManager = sponsorManager;
+            this.partnerManager = partnerManager;
+        }
+
+        /// <summary>
+        /// Gets all sponsored adoptions for a specific sponsor.
+        /// </summary>
+        /// <param name="sponsorId">The sponsor ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpGet]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobReadScope)]
+        [ProducesResponseType(typeof(IEnumerable<SponsoredAdoption>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetAdoptions(Guid sponsorId, CancellationToken cancellationToken)
+        {
+            var sponsor = await sponsorManager.GetAsync(sponsorId, cancellationToken);
+            if (sponsor == null)
+            {
+                return NotFound();
+            }
+
+            var partner = await partnerManager.GetAsync(sponsor.PartnerId, cancellationToken);
+            if (partner == null)
+            {
+                return NotFound();
+            }
+
+            var authResult = await AuthorizationService.AuthorizeAsync(
+                User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+            if (!authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            var adoptions = await adoptionManager.GetBySponsorIdAsync(sponsorId, cancellationToken);
+            return Ok(adoptions);
+        }
+
+        /// <summary>
+        /// Gets cleanup logs for a specific sponsored adoption under a sponsor.
+        /// </summary>
+        /// <param name="sponsorId">The sponsor ID.</param>
+        /// <param name="adoptionId">The sponsored adoption ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpGet("{adoptionId}/reports")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobReadScope)]
+        [ProducesResponseType(typeof(IEnumerable<ProfessionalCleanupLog>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetAdoptionReports(
+            Guid sponsorId,
+            Guid adoptionId,
+            CancellationToken cancellationToken)
+        {
+            var sponsor = await sponsorManager.GetAsync(sponsorId, cancellationToken);
+            if (sponsor == null)
+            {
+                return NotFound();
+            }
+
+            var partner = await partnerManager.GetAsync(sponsor.PartnerId, cancellationToken);
+            if (partner == null)
+            {
+                return NotFound();
+            }
+
+            var authResult = await AuthorizationService.AuthorizeAsync(
+                User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+            if (!authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            var adoption = await adoptionManager.GetAsync(adoptionId, cancellationToken);
+            if (adoption == null || adoption.SponsorId != sponsorId)
+            {
+                return NotFound();
+            }
+
+            var logs = await logManager.GetBySponsoredAdoptionIdAsync(adoptionId, cancellationToken);
+            return Ok(logs);
+        }
+    }
+}

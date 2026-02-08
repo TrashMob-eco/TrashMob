@@ -16,6 +16,8 @@
 
         public const string ValidUser = "ValidUser";
 
+        public const string UserIsProfessionalCompanyUserOrIsAdmin = "UserIsProfessionalCompanyUserOrIsAdmin";
+
         public const string IftttServiceKey = "IftttServiceKey";
     }
 }

@@ -13,6 +13,7 @@
     using TrashMob.Shared.Managers.Adoptions;
     using TrashMob.Shared.Managers.Gamification;
     using TrashMob.Shared.Managers.Prospects;
+    using TrashMob.Shared.Managers.SponsoredAdoptions;
     using TrashMob.Shared.Persistence;
     using TrashMob.Shared.Persistence.Interfaces;
     using TrashMob.Shared.Services;
@@ -103,6 +104,13 @@
             services.AddScoped<IAdoptableAreaManager, AdoptableAreaManager>();
             services.AddScoped<ITeamAdoptionManager, TeamAdoptionManager>();
             services.AddScoped<ITeamAdoptionEventManager, TeamAdoptionEventManager>();
+
+            // Sponsored adoption managers
+            services.AddScoped<ISponsorManager, SponsorManager>();
+            services.AddScoped<IProfessionalCompanyManager, ProfessionalCompanyManager>();
+            services.AddScoped<IProfessionalCompanyUserManager, ProfessionalCompanyUserManager>();
+            services.AddScoped<ISponsoredAdoptionManager, SponsoredAdoptionManager>();
+            services.AddScoped<IProfessionalCleanupLogManager, ProfessionalCleanupLogManager>();
 
             // User Feedback
             services.AddScoped<IUserFeedbackManager, UserFeedbackManager>();
@@ -218,6 +226,13 @@
             services.AddScoped<IKeyedRepository<AdoptableArea>, KeyedRepository<AdoptableArea>>();
             services.AddScoped<IKeyedRepository<TeamAdoption>, KeyedRepository<TeamAdoption>>();
             services.AddScoped<IKeyedRepository<TeamAdoptionEvent>, KeyedRepository<TeamAdoptionEvent>>();
+
+            // Sponsored adoption repositories
+            services.AddScoped<IKeyedRepository<Sponsor>, KeyedRepository<Sponsor>>();
+            services.AddScoped<IKeyedRepository<ProfessionalCompany>, KeyedRepository<ProfessionalCompany>>();
+            services.AddScoped<IBaseRepository<ProfessionalCompanyUser>, BaseRepository<ProfessionalCompanyUser>>();
+            services.AddScoped<IKeyedRepository<SponsoredAdoption>, KeyedRepository<SponsoredAdoption>>();
+            services.AddScoped<IKeyedRepository<ProfessionalCleanupLog>, KeyedRepository<ProfessionalCleanupLog>>();
 
             // User Feedback repository
             services.AddScoped<IKeyedRepository<UserFeedback>, KeyedRepository<UserFeedback>>();
