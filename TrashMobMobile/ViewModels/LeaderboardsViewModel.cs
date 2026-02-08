@@ -76,16 +76,14 @@ public partial class LeaderboardsViewModel(
         await LoadLeaderboard();
     }
 
-    [RelayCommand]
-    private async Task TypeChanged()
+    partial void OnSelectedTypeChanged(string value)
     {
-        await LoadLeaderboard();
+        _ = LoadLeaderboard();
     }
 
-    [RelayCommand]
-    private async Task TimeRangeChanged()
+    partial void OnSelectedTimeRangeChanged(string value)
     {
-        await LoadLeaderboard();
+        _ = LoadLeaderboard();
     }
 
     private async Task LoadLeaderboard()

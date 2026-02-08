@@ -26,21 +26,11 @@
                     <Picker Grid.Column="0"
                             Title="Type"
                             ItemsSource="{Binding LeaderboardTypes}"
-                            SelectedItem="{Binding SelectedType}">
-                        <Picker.Behaviors>
-                            <EventToCommandBehavior EventName="SelectedIndexChanged"
-                                                     Command="{Binding TypeChangedCommand}" />
-                        </Picker.Behaviors>
-                    </Picker>
+                            SelectedItem="{Binding SelectedType}" />
                     <Picker Grid.Column="1"
                             Title="Time Range"
                             ItemsSource="{Binding TimeRanges}"
-                            SelectedItem="{Binding SelectedTimeRange}">
-                        <Picker.Behaviors>
-                            <EventToCommandBehavior EventName="SelectedIndexChanged"
-                                                     Command="{Binding TimeRangeChangedCommand}" />
-                        </Picker.Behaviors>
-                    </Picker>
+                            SelectedItem="{Binding SelectedTimeRange}" />
                 </Grid>
 
                 <!-- My Rank Card -->
