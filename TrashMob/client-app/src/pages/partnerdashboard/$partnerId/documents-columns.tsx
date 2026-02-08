@@ -49,9 +49,7 @@ export const getColumns = ({ onDownload, onDelete }: GetColumnsProps): ColumnDef
         accessorKey: 'documentTypeId',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Type' />,
         cell: ({ row }) => (
-            <Badge variant='outline'>
-                {documentTypeLabels[row.getValue('documentTypeId') as number] ?? 'Other'}
-            </Badge>
+            <Badge variant='outline'>{documentTypeLabels[row.getValue('documentTypeId') as number] ?? 'Other'}</Badge>
         ),
     },
     {
