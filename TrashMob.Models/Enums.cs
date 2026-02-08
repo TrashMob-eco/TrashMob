@@ -306,4 +306,17 @@ namespace TrashMob.Models
         /// </summary>
         Kilogram = 2,
     }
+
+    /// <summary>
+    /// The type of geographic region a community covers.
+    /// </summary>
+    public enum RegionTypeEnum
+    {
+        City = 0,
+        County = 1,
+        State = 2,
+        Province = 3,
+        Region = 4,
+        Country = 5,
+    }
 }

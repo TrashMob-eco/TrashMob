@@ -127,6 +127,31 @@ namespace TrashMob.Shared.Tests.Builders
             return this;
         }
 
+        public PartnerBuilder AsCountyCommunity(string countyName, string state, double south, double north, double west, double east)
+        {
+            _partner.RegionType = (int)RegionTypeEnum.County;
+            _partner.CountyName = countyName;
+            _partner.Region = state;
+            _partner.City = null;
+            _partner.BoundsSouth = south;
+            _partner.BoundsNorth = north;
+            _partner.BoundsWest = west;
+            _partner.BoundsEast = east;
+            return this;
+        }
+
+        public PartnerBuilder AsStateCommunity(string state, double south, double north, double west, double east)
+        {
+            _partner.RegionType = (int)RegionTypeEnum.State;
+            _partner.Region = state;
+            _partner.City = null;
+            _partner.BoundsSouth = south;
+            _partner.BoundsNorth = north;
+            _partner.BoundsWest = west;
+            _partner.BoundsEast = east;
+            return this;
+        }
+
         public Partner Build() => _partner;
     }
 }

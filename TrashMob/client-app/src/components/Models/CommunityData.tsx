@@ -35,6 +35,18 @@ class CommunityData {
 
     country: string = '';
 
+    regionType: number | null = null;
+
+    countyName: string = '';
+
+    boundsNorth: number | null = null;
+
+    boundsSouth: number | null = null;
+
+    boundsEast: number | null = null;
+
+    boundsWest: number | null = null;
+
     logoUrl: string = '';
 
     contactEmail: string = '';

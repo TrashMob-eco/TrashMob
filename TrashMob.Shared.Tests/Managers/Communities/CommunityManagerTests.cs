@@ -527,6 +527,166 @@ namespace TrashMob.Shared.Tests.Managers.Communities
 
         #endregion
 
+        #region Regional Community Filtering
+
+        [Fact]
+        public async Task GetCommunityEventsAsync_CountyCommunity_ReturnsEventsWithinBounds()
+        {
+            // Arrange - King County bounding box (roughly)
+            var community = new PartnerBuilder()
+                .WithName("King County")
+                .WithSlug("king-county-wa")
+                .WithHomePageEnabled()
+                .AsActive()
+                .AsCountyCommunity("King County", "WA", 47.0, 48.0, -122.5, -121.5)
+                .WithCoordinates(47.5, -122.0)
+                .Build();
+
+            // Event inside King County bounds
+            var insideEvent = new EventBuilder()
+                .WithName("Inside Event")
+                .WithCoordinates(47.5, -122.0)
+                .InCity("Bellevue")
+                .InRegion("WA")
+                .OnDate(DateTimeOffset.UtcNow.AddDays(7))
+                .AsActive()
+                .Build();
+
+            // Event outside bounds (Portland area)
+            var outsideEvent = new EventBuilder()
+                .WithName("Outside Event")
+                .WithCoordinates(45.5, -122.6)
+                .InCity("Portland")
+                .InRegion("OR")
+                .OnDate(DateTimeOffset.UtcNow.AddDays(7))
+                .AsActive()
+                .Build();
+
+            _partnerRepository.SetupGet(new List<Partner> { community });
+            _eventRepository.SetupGet(new List<Event> { insideEvent, outsideEvent });
+
+            // Act
+            var result = await _sut.GetCommunityEventsAsync("king-county-wa");
+
+            // Assert
+            var resultList = result.ToList();
+            Assert.Single(resultList);
+            Assert.Equal("Inside Event", resultList[0].Name);
+        }
+
+        [Fact]
+        public async Task GetCommunityEventsAsync_CountyCommunityWithNullCity_StillWorks()
+        {
+            // Arrange - County community has null City (set by AsCountyCommunity)
+            var community = new PartnerBuilder()
+                .WithName("King County")
+                .WithSlug("king-county-wa")
+                .WithHomePageEnabled()
+                .AsActive()
+                .AsCountyCommunity("King County", "WA", 47.0, 48.0, -122.5, -121.5)
+                .WithCoordinates(47.5, -122.0)
+                .Build();
+
+            var insideEvent = new EventBuilder()
+                .WithName("County Event")
+                .WithCoordinates(47.5, -122.0)
+                .OnDate(DateTimeOffset.UtcNow.AddDays(7))
+                .AsActive()
+                .Build();
+
+            _partnerRepository.SetupGet(new List<Partner> { community });
+            _eventRepository.SetupGet(new List<Event> { insideEvent });
+
+            // Act - Should not return empty despite null City
+            var result = await _sut.GetCommunityEventsAsync("king-county-wa");
+
+            // Assert
+            Assert.Single(result);
+        }
+
+        [Fact]
+        public async Task GetCommunityEventsAsync_CityCommunitiesWithNullRegionType_UseExactMatch()
+        {
+            // Arrange - Existing city community (null RegionType = backward compat)
+            var community = new PartnerBuilder()
+                .WithName("Seattle Community")
+                .WithSlug("seattle-wa")
+                .WithLocation("Seattle", "WA", "United States")
+                .WithHomePageEnabled()
+                .AsActive()
+                .Build();
+
+            // Verify RegionType is null (backward compat)
+            Assert.Null(community.RegionType);
+
+            var seattleEvent = new EventBuilder()
+                .WithName("Seattle Event")
+                .InCity("Seattle")
+                .InRegion("WA")
+                .OnDate(DateTimeOffset.UtcNow.AddDays(7))
+                .AsActive()
+                .Build();
+
+            var bellevueEvent = new EventBuilder()
+                .WithName("Bellevue Event")
+                .InCity("Bellevue")
+                .InRegion("WA")
+                .OnDate(DateTimeOffset.UtcNow.AddDays(7))
+                .AsActive()
+                .Build();
+
+            _partnerRepository.SetupGet(new List<Partner> { community });
+            _eventRepository.SetupGet(new List<Event> { seattleEvent, bellevueEvent });
+
+            // Act
+            var result = await _sut.GetCommunityEventsAsync("seattle-wa");
+
+            // Assert - Only exact city match, not Bellevue
+            var resultList = result.ToList();
+            Assert.Single(resultList);
+            Assert.Equal("Seattle Event", resultList[0].Name);
+        }
+
+        [Fact]
+        public async Task GetCommunityStatsAsync_CountyCommunity_CalculatesStatsWithinBounds()
+        {
+            // Arrange
+            var community = new PartnerBuilder()
+                .WithName("King County")
+                .WithSlug("king-county-wa")
+                .WithHomePageEnabled()
+                .AsActive()
+                .AsCountyCommunity("King County", "WA", 47.0, 48.0, -122.5, -121.5)
+                .WithCoordinates(47.5, -122.0)
+                .Build();
+
+            var insideEvent = new EventBuilder()
+                .WithName("Inside Event")
+                .WithCoordinates(47.5, -122.0)
+                .AsActive()
+                .Build();
+
+            var outsideEvent = new EventBuilder()
+                .WithName("Outside Event")
+                .WithCoordinates(45.5, -122.6)
+                .AsActive()
+                .Build();
+
+            _partnerRepository.SetupGet(new List<Partner> { community });
+            _eventRepository.SetupGet(new List<Event> { insideEvent, outsideEvent });
+            _eventSummaryRepository.SetupGet(new List<EventSummary>());
+            _litterImageRepository.SetupGet(new List<LitterImage>());
+            _litterReportRepository.SetupGet(new List<LitterReport>());
+
+            // Act
+            var result = await _sut.GetCommunityStatsAsync("king-county-wa");
+
+            // Assert - Only the inside event should be counted
+            Assert.Equal(1, result.TotalEvents);
+        }
+
+        #endregion
+
         #region UpdateCommunityContentAsync
 
         [Fact]
