@@ -132,8 +132,8 @@ export const PartnerCommunityAreaDefaults = () => {
                         <CardHeader>
                             <CardTitle>Area Defaults</CardTitle>
                             <CardDescription>
-                                Set default requirement values for new adoptable areas. When creating or editing an area,
-                                you can apply these defaults with a single click.
+                                Set default requirement values for new adoptable areas. When creating or editing an
+                                area, you can apply these defaults with a single click.
                             </CardDescription>
                         </CardHeader>
                         <CardContent className='space-y-4'>

@@ -234,10 +234,7 @@ export const PartnerCommunityAreaCreate = () => {
                                 onClick={() => {
                                     form.setValue('cleanupFrequencyDays', community?.defaultCleanupFrequencyDays ?? 90);
                                     form.setValue('minEventsPerYear', community?.defaultMinEventsPerYear ?? 4);
-                                    form.setValue(
-                                        'safetyRequirements',
-                                        community?.defaultSafetyRequirements ?? '',
-                                    );
+                                    form.setValue('safetyRequirements', community?.defaultSafetyRequirements ?? '');
                                     form.setValue('allowCoAdoption', community?.defaultAllowCoAdoption ?? false);
                                 }}
                             >

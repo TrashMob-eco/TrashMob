@@ -241,9 +241,7 @@ export const PartnerEdit = () => {
                         name='publicNotes'
                         render={({ field }) => (
                             <FormItem className='col-span-12'>
-                                <FormLabel tooltip={ToolTips.PartnerPublicNotes}>
-                                    Public Notes
-                                </FormLabel>
+                                <FormLabel tooltip={ToolTips.PartnerPublicNotes}>Public Notes</FormLabel>
                                 <FormControl>
                                     <Textarea {...field} maxLength={MAX_PARTNER_NOTES_LENGTH} className='h-24' />
                                 </FormControl>
