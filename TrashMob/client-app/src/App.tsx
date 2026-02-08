@@ -91,22 +91,48 @@ const LazyLoadingFallback = () => (
     </div>
 );
 
-/** Community Admin - Lazy loaded */
-const CommunityAdminLayout = lazy(() =>
-    import('./pages/communities/$slug/admin/_layout').then((m) => ({ default: m.CommunityAdminLayout })),
+/** Community Admin - Redirect from old URLs */
+const CommunityAdminRedirect = lazy(() =>
+    import('./pages/communities/$slug/admin/redirect').then((m) => ({ default: m.CommunityAdminRedirect })),
 );
-const CommunityAdminDashboard = lazy(() =>
-    import('./pages/communities/$slug/admin').then((m) => ({ default: m.CommunityAdminDashboard })),
+
+/** Partner Community Admin - Lazy loaded */
+const PartnerCommunityDashboard = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/community').then((m) => ({ default: m.PartnerCommunityDashboard })),
 );
-const CommunityContentEdit = lazy(() =>
-    import('./pages/communities/$slug/admin/content').then((m) => ({ default: m.CommunityContentEdit })),
+const PartnerCommunityContent = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/community/content').then((m) => ({
+        default: m.PartnerCommunityContent,
+    })),
 );
-const CommunityAdminInvites = lazy(() =>
-    import('./pages/communities/$slug/admin/invites').then((m) => ({ default: m.CommunityAdminInvites })),
+const PartnerCommunityAreas = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/community/areas').then((m) => ({
+        default: m.PartnerCommunityAreas,
+    })),
 );
-const CommunityAdminInviteDetails = lazy(() =>
-    import('./pages/communities/$slug/admin/invites/$batchId').then((m) => ({
-        default: m.CommunityAdminInviteDetails,
+const PartnerCommunityAreaCreate = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/community/areas/create').then((m) => ({
+        default: m.PartnerCommunityAreaCreate,
+    })),
+);
+const PartnerCommunityAreaEdit = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/community/areas/$areaId.edit').then((m) => ({
+        default: m.PartnerCommunityAreaEdit,
+    })),
+);
+const PartnerCommunityAdoptions = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/community/adoptions').then((m) => ({
+        default: m.PartnerCommunityAdoptions,
+    })),
+);
+const PartnerCommunityInvites = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/community/invites').then((m) => ({
+        default: m.PartnerCommunityInvites,
+    })),
+);
+const PartnerCommunityInviteDetails = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/community/invites/$batchId').then((m) => ({
+        default: m.PartnerCommunityInviteDetails,
     })),
 );
 
@@ -387,6 +413,20 @@ const AppContent: FC = () => {
                                         <Route path=':accountId/edit' element={<PartnerSocialAcccountEdit />} />
                                         <Route path='create' element={<PartnerSocialAcccountCreate />} />
                                     </Route>
+                                    <Route path='community' element={<PartnerCommunityDashboard />} />
+                                    <Route path='community/content' element={<PartnerCommunityContent />} />
+                                    <Route path='community/areas' element={<PartnerCommunityAreas />} />
+                                    <Route path='community/areas/create' element={<PartnerCommunityAreaCreate />} />
+                                    <Route
+                                        path='community/areas/:areaId/edit'
+                                        element={<PartnerCommunityAreaEdit />}
+                                    />
+                                    <Route path='community/adoptions' element={<PartnerCommunityAdoptions />} />
+                                    <Route path='community/invites' element={<PartnerCommunityInvites />} />
+                                    <Route
+                                        path='community/invites/:batchId'
+                                        element={<PartnerCommunityInviteDetails />}
+                                    />
                                 </Route>
                             </Route>
 
@@ -405,18 +445,13 @@ const AppContent: FC = () => {
                             <Route path='/teams/:teamId/invites' element={<TeamInvitesPage />} />
                             <Route path='/teams/:teamId/invites/:batchId' element={<TeamInviteDetailsPage />} />
                             <Route
-                                path='/communities/:slug/admin'
+                                path='/communities/:slug/admin/*'
                                 element={
                                     <Suspense fallback={<LazyLoadingFallback />}>
-                                        <CommunityAdminLayout />
+                                        <CommunityAdminRedirect />
                                     </Suspense>
                                 }
-                            >
-                                <Route index element={<CommunityAdminDashboard />} />
-                                <Route path='content' element={<CommunityContentEdit />} />
-                                <Route path='invites' element={<CommunityAdminInvites />} />
-                                <Route path='invites/:batchId' element={<CommunityAdminInviteDetails />} />
-                            </Route>
+                            />
                         </Route>
                         <Route element={<AuthSideAdminLayout />}>
                             <Route
