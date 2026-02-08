@@ -69,8 +69,7 @@ export const CommunityDetailMap = (props: CommunityDetailMapProps) => {
         ...rest
     } = props;
 
-    const hasBounds =
-        boundsNorth != null && boundsSouth != null && boundsEast != null && boundsWest != null;
+    const hasBounds = boundsNorth != null && boundsSouth != null && boundsEast != null && boundsWest != null;
 
     const [showEvents, setShowEvents] = useState(true);
     const [showTeams, setShowTeams] = useState(true);
