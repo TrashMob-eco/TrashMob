@@ -78,10 +78,20 @@
             </CollectionView>
 
             <!-- Upcoming Events Section -->
-            <Label Text="Upcoming Events"
-                   FontFamily="LexendSemibold"
-                   FontSize="Medium"
-                   Margin="10,15,10,5" />
+            <Grid ColumnDefinitions="*, Auto" Margin="10,15,10,5">
+                <Label Grid.Column="0"
+                       Text="Upcoming Events"
+                       FontFamily="LexendSemibold"
+                       FontSize="Medium" />
+                <Button Grid.Column="1"
+                        Text="Link Event"
+                        Command="{Binding LinkEventCommand}"
+                        IsVisible="{Binding IsTeamLead}"
+                        Style="{StaticResource SecondarySmallButton}"
+                        FontSize="Micro"
+                        HeightRequest="32"
+                        Padding="10,0" />
+            </Grid>
 
             <Label Text="No upcoming events"
                    IsVisible="{Binding AreNoUpcomingEventsFound}"
@@ -107,6 +117,16 @@
                                            FontSize="Micro"
                                            TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
                                 </VerticalStackLayout>
+                                <Button Grid.Column="1"
+                                        Text="Unlink"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ViewTeamViewModel}}, Path=UnlinkEventCommand}"
+                                        CommandParameter="{Binding .}"
+                                        IsVisible="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ViewTeamViewModel}}, Path=IsTeamLead}"
+                                        Style="{StaticResource SecondarySmallButton}"
+                                        FontSize="Micro"
+                                        HeightRequest="30"
+                                        Padding="8,0"
+                                        VerticalOptions="Center" />
                             </Grid>
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer

@@ -225,6 +225,11 @@
                         Style="{StaticResource SecondaryLargeButton}"
                         ContentLayout="Left, 12"
                         ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconEmail}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" />
+                <Button Text="Newsletter Preferences"
+                        Command="{Binding ManageNewsletterPreferencesCommand}"
+                        Style="{StaticResource SecondaryLargeButton}"
+                        ContentLayout="Left, 12"
+                        ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconEmailNewsletter}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" />
             </VerticalStackLayout>
 
             <!-- Sign Out -->

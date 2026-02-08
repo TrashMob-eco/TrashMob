@@ -45,4 +45,14 @@ public class TeamManager(ITeamRestService service) : ITeamManager
     {
         return teamRestService.GetPastTeamEventsAsync(teamId, cancellationToken);
     }
+
+    public Task LinkEventAsync(Guid teamId, Guid eventId, CancellationToken cancellationToken = default)
+    {
+        return teamRestService.LinkEventAsync(teamId, eventId, cancellationToken);
+    }
+
+    public Task UnlinkEventAsync(Guid teamId, Guid eventId, CancellationToken cancellationToken = default)
+    {
+        return teamRestService.UnlinkEventAsync(teamId, eventId, cancellationToken);
+    }
 }
