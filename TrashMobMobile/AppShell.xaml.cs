@@ -30,7 +30,9 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(SearchEventsPage), typeof(SearchEventsPage));
         Routing.RegisterRoute(nameof(SearchLitterReportsPage), typeof(SearchLitterReportsPage));
         Routing.RegisterRoute(nameof(SetUserLocationPreferencePage), typeof(SetUserLocationPreferencePage));
+        Routing.RegisterRoute(nameof(AchievementsPage), typeof(AchievementsPage));
         Routing.RegisterRoute(nameof(BrowseTeamsPage), typeof(BrowseTeamsPage));
+        Routing.RegisterRoute(nameof(LeaderboardsPage), typeof(LeaderboardsPage));
         Routing.RegisterRoute(nameof(ViewEventPage), typeof(ViewEventPage));
         Routing.RegisterRoute(nameof(ViewEventSummaryPage), typeof(ViewEventSummaryPage));
         Routing.RegisterRoute(nameof(ViewLitterReportPage), typeof(ViewLitterReportPage));
