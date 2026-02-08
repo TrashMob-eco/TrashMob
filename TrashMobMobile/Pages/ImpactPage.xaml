@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             x:DataType="viewModels:ImpactViewModel"
+             x:Class="TrashMobMobile.Pages.ImpactPage"
+             Title="Impact">
+
+    <ScrollView>
+        <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
+
+            <!-- Your Impact -->
+            <Label Text="Your Impact"
+                   FontFamily="LexendSemibold"
+                   FontSize="Medium"
+                   Margin="5,10,5,0" />
+
+            <Border Style="{x:StaticResource RoundBorder}" Margin="5,5">
+                <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="*, *, *, *">
+                    <Image Grid.Row="0" Grid.Column="0" MaximumWidthRequest="40">
+                        <Image.Source>
+                            <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconCalendarCheck}"
+                                             Size="50"
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                        </Image.Source>
+                    </Image>
+                    <Label Grid.Row="1" Grid.Column="0" Text="{Binding PersonalStats.TotalEvents}"
+                           FontSize="Micro" HorizontalTextAlignment="Center" />
+                    <Label Grid.Row="2" Grid.Column="0" Text="Events"
+                           FontSize="Micro" HorizontalTextAlignment="Center" />
+
+                    <Image Grid.Row="0" Grid.Column="1" MaximumWidthRequest="40">
+                        <Image.Source>
+                            <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconTrashCanOutline}"
+                                             Size="50"
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                        </Image.Source>
+                    </Image>
+                    <Label Grid.Row="1" Grid.Column="1" Text="{Binding PersonalStats.TotalBags}"
+                           FontSize="Micro" HorizontalTextAlignment="Center" />
+                    <Label Grid.Row="2" Grid.Column="1" Text="Bags"
+                           FontSize="Micro" HorizontalTextAlignment="Center" />
+
+                    <Image Grid.Row="0" Grid.Column="2" MaximumWidthRequest="40">
+                        <Image.Source>
+                            <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconClockOutline}"
+                                             Size="50"
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                        </Image.Source>
+                    </Image>
+                    <Label Grid.Row="1" Grid.Column="2" Text="{Binding PersonalStats.TotalHours}"
+                           FontSize="Micro" HorizontalTextAlignment="Center" />
+                    <Label Grid.Row="2" Grid.Column="2" Text="Hours"
+                           FontSize="Micro" HorizontalTextAlignment="Center" />
+
+                    <Image Grid.Row="0" Grid.Column="3" MaximumWidthRequest="40">
+                        <Image.Source>
+                            <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconClipboardText}"
+                                             Size="50"
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                        </Image.Source>
+                    </Image>
+                    <Label Grid.Row="1" Grid.Column="3" Text="{Binding PersonalStats.TotalLitterReportsSubmitted}"
+                           FontSize="Micro" HorizontalTextAlignment="Center" />
+                    <Label Grid.Row="2" Grid.Column="3" Text="Litter Reports"
+                           FontSize="Micro" HorizontalTextAlignment="Center" />
+                </Grid>
+            </Border>
+
+            <!-- Community Impact -->
+            <Label Text="Community Impact"
+                   FontFamily="LexendSemibold"
+                   FontSize="Medium"
+                   Margin="5,15,5,0" />
+
+            <Border Style="{x:StaticResource RoundBorder}" Margin="5,5">
+                <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="*, *, *, *, *">
+                    <Image Grid.Row="0" Grid.Column="0" MaximumWidthRequest="40">
+                        <Image.Source>
+                            <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconCalendarCheck}"
+                                             Size="50"
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                        </Image.Source>
+                    </Image>
+                    <Label Grid.Row="1" Grid.Column="0" Text="{Binding CommunityStats.TotalEvents}"
+                           FontSize="Micro" HorizontalTextAlignment="Center" />
+                    <Label Grid.Row="2" Grid.Column="0" Text="Events"
+                           FontSize="Micro" HorizontalTextAlignment="Center" />
+
+                    <Image Grid.Row="0" Grid.Column="1" MaximumWidthRequest="40">
+                        <Image.Source>
+                            <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconAccount}"
+                                             Size="50"
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                        </Image.Source>
+                    </Image>
+                    <Label Grid.Row="1" Grid.Column="1" Text="{Binding CommunityStats.TotalAttendees}"
+                           FontSize="Micro" HorizontalTextAlignment="Center" />
+                    <Label Grid.Row="2" Grid.Column="1" Text="Participants"
+                           FontSize="Micro" HorizontalTextAlignment="Center" />
+
+                    <Image Grid.Row="0" Grid.Column="2" MaximumWidthRequest="40">
+                        <Image.Source>
+                            <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconTrashCanOutline}"
+                                             Size="50"
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                        </Image.Source>
+                    </Image>
+                    <Label Grid.Row="1" Grid.Column="2" Text="{Binding CommunityStats.TotalBags}"
+                           FontSize="Micro" HorizontalTextAlignment="Center" />
+                    <Label Grid.Row="2" Grid.Column="2" Text="Bags"
+                           FontSize="Micro" HorizontalTextAlignment="Center" />
+
+                    <Image Grid.Row="0" Grid.Column="3" MaximumWidthRequest="40">
+                        <Image.Source>
+                            <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconClockOutline}"
+                                             Size="50"
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                        </Image.Source>
+                    </Image>
+                    <Label Grid.Row="1" Grid.Column="3" Text="{Binding CommunityStats.TotalHours}"
+                           FontSize="Micro" HorizontalTextAlignment="Center" />
+                    <Label Grid.Row="2" Grid.Column="3" Text="Hours"
+                           FontSize="Micro" HorizontalTextAlignment="Center" />
+
+                    <Image Grid.Row="0" Grid.Column="4" MaximumWidthRequest="40">
+                        <Image.Source>
+                            <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconClipboardText}"
+                                             Size="50"
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                        </Image.Source>
+                    </Image>
+                    <Label Grid.Row="1" Grid.Column="4" Text="{Binding CommunityStats.TotalLitterReportsSubmitted}"
+                           FontSize="Micro" HorizontalTextAlignment="Center" />
+                    <Label Grid.Row="2" Grid.Column="4" Text="Litter Reports"
+                           FontSize="Micro" HorizontalTextAlignment="Center" />
+                </Grid>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
