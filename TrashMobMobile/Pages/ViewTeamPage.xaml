@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             x:DataType="viewModels:ViewTeamViewModel"
+             x:Class="TrashMobMobile.Pages.ViewTeamPage"
+             Title="Team Details">
+
+    <ScrollView>
+        <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
+
+            <!-- Team Header -->
+            <VerticalStackLayout Padding="10,15" Spacing="4">
+                <Label Text="{Binding Team.Name}"
+                       FontFamily="LexendSemibold"
+                       FontSize="Title" />
+                <Label Text="{Binding Team.Description}"
+                       FontSize="Small"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                <Label Text="{Binding Team.Location}"
+                       FontSize="Micro"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                <Label Text="{Binding Team.MemberCountDisplay}"
+                       FontSize="Micro"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+            </VerticalStackLayout>
+
+            <!-- Join Button -->
+            <Button Text="{Binding JoinButtonText}"
+                    Command="{Binding JoinTeamCommand}"
+                    IsVisible="{Binding CanJoin}"
+                    Style="{StaticResource PrimaryButton}"
+                    Margin="10,5" />
+
+            <Label Text="You are a member of this team"
+                   IsVisible="{Binding IsUserMember}"
+                   FontSize="Small"
+                   FontAttributes="Bold"
+                   Margin="10,5"
+                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+
+            <!-- Members Section -->
+            <Label Text="Members"
+                   FontFamily="LexendSemibold"
+                   FontSize="Medium"
+                   Margin="10,15,10,5" />
+
+            <Label Text="No members found"
+                   IsVisible="{Binding AreNoMembersFound}"
+                   FontSize="Small"
+                   Margin="10,5"
+                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+
+            <CollectionView ItemsSource="{Binding Members}"
+                            SelectionMode="None"
+                            IsVisible="{Binding AreMembersFound}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="viewModels:TeamMemberViewModel">
+                        <Border Style="{x:StaticResource RoundBorder}" Margin="5,3">
+                            <HorizontalStackLayout Padding="10,8" Spacing="8">
+                                <Label Text="{Binding UserName}"
+                                       FontFamily="LexendSemibold"
+                                       FontSize="Small"
+                                       VerticalOptions="Center" />
+                                <Label Text="{Binding Role}"
+                                       FontSize="Micro"
+                                       VerticalOptions="Center"
+                                       TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                <Label Text="{Binding JoinedDate, StringFormat='Joined {0}'}"
+                                       FontSize="Micro"
+                                       VerticalOptions="Center"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                            </HorizontalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Upcoming Events Section -->
+            <Label Text="Upcoming Events"
+                   FontFamily="LexendSemibold"
+                   FontSize="Medium"
+                   Margin="10,15,10,5" />
+
+            <Label Text="No upcoming events"
+                   IsVisible="{Binding AreNoUpcomingEventsFound}"
+                   FontSize="Small"
+                   Margin="10,5"
+                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+
+            <CollectionView ItemsSource="{Binding UpcomingEvents}"
+                            SelectionMode="None"
+                            IsVisible="{Binding AreUpcomingEventsFound}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="viewModels:EventViewModel">
+                        <Border Style="{x:StaticResource RoundBorder}" Margin="5,3">
+                            <Grid ColumnDefinitions="*, Auto" Padding="10,10">
+                                <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                    <Label Text="{Binding Name}"
+                                           FontFamily="LexendSemibold"
+                                           FontSize="Small" />
+                                    <Label Text="{Binding DisplayDate}"
+                                           FontSize="Micro"
+                                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                    <Label Text="{Binding Address.DisplayAddress}"
+                                           FontSize="Micro"
+                                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                </VerticalStackLayout>
+                            </Grid>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ViewTeamViewModel}}, Path=ViewEventCommand}"
+                                    CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Margin="0,20" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -33,3 +33,5 @@ internal class ViewPickupLocationPage { }
 internal class MainTabsPage { }
 internal class ContactUsPage { }
 internal class LogoutPage { }
+internal class BrowseTeamsPage { }
+internal class ViewTeamPage { }
