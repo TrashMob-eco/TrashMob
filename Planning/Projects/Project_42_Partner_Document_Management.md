@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Not Started |
+| **Status** | ✅ Complete |
 | **Priority** | Medium |
 | **Risk** | Low |
 | **Size** | Medium |
@@ -36,31 +36,31 @@ Building out this feature with direct file upload to Azure Blob Storage transfor
 ## Scope
 
 ### Phase 1 — File Upload & Storage (Backend)
-- ? Add Azure Blob Storage container for partner documents
-- ? Extend `PartnerDocument` model with: `FileSize`, `ContentType`, `BlobStorageUrl`, `DocumentType` (enum), `ExpirationDate`
-- ? Create upload endpoint that accepts multipart file upload and stores to Azure Blob Storage
-- ? Create download endpoint that generates time-limited SAS URLs for authorized users
-- ? Add file size limit validation (e.g., 25 MB per file, 500 MB per partner)
-- ? Add content type validation (PDF, DOCX, XLSX, PNG, JPG)
-- ? Update existing CRUD endpoints to handle new fields
-- ? Add migration for schema changes
+- ✅ Add Azure Blob Storage container for partner documents
+- ✅ Extend `PartnerDocument` model with: `FileSize`, `ContentType`, `BlobStorageUrl`, `DocumentType` (enum), `ExpirationDate`
+- ✅ Create upload endpoint that accepts multipart file upload and stores to Azure Blob Storage
+- ✅ Create download endpoint that generates time-limited SAS URLs for authorized users
+- ✅ Add file size limit validation (e.g., 25 MB per file, 500 MB per partner)
+- ✅ Add content type validation (PDF, DOCX, XLSX, PNG, JPG)
+- ✅ Update existing CRUD endpoints to handle new fields
+- ✅ Add migration for schema changes
 
 ### Phase 2 — Upload UI & Document Types
-- ? Replace URL text input with file upload component (drag-and-drop zone)
-- ? Add document type selector (Agreement, Contract, Report, Insurance, Certificate, Other)
-- ? Add optional expiration date field
-- ? Show file size and type in document list
-- ? Add download button to document list
-- ? Keep backward compatibility with existing URL-only documents
-- ? Update document list table with new columns (Type, Size, Expiration)
+- ✅ Replace URL text input with file upload component (drag-and-drop zone)
+- ✅ Add document type selector (Agreement, Contract, Report, Insurance, Certificate, Other)
+- ✅ Add optional expiration date field
+- ✅ Show file size and type in document list
+- ✅ Add download button to document list
+- ✅ Keep backward compatibility with existing URL-only documents
+- ✅ Update document list table with new columns (Type, Size, Expiration)
 
 ### Phase 3 — Polish & Administration
-- ? Add document expiration badge (expired, expiring soon, active)
-- ? Add filtering by document type
-- ? Add sorting by name, date, type, expiration
-- ? Add storage usage indicator per partner
-- ? Site admin view of documents across all partners
-- ? Add feature usage tracking (upload counts, download counts)
+- ✅ Add document expiration badge (expired, expiring soon, active)
+- ✅ Add filtering by document type
+- ✅ Add sorting by name, date, type, expiration
+- ✅ Add storage usage indicator per partner
+- ✅ Site admin view of documents across all partners
+- ✅ Add feature usage tracking (upload counts, download counts)
 
 ## Out-of-Scope
 
@@ -185,5 +185,5 @@ public class PartnerDocument : KeyedModel
 
 **Last Updated:** February 8, 2026
 **Owner:** Product & Engineering Team
-**Status:** Not Started
-**Next Review:** When a volunteer picks up the project
+**Status:** ✅ Complete
+**Completed:** February 8, 2026 (Phase 1: PR #2605, Phase 3: PR #2610)

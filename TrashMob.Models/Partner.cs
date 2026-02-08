@@ -180,6 +180,30 @@ namespace TrashMob.Models
 
         #endregion
 
+        #region Adoptable Area Defaults
+
+        /// <summary>
+        /// Gets or sets the default cleanup frequency (in days) for new adoptable areas.
+        /// </summary>
+        public int? DefaultCleanupFrequencyDays { get; set; }
+
+        /// <summary>
+        /// Gets or sets the default minimum events per year for new adoptable areas.
+        /// </summary>
+        public int? DefaultMinEventsPerYear { get; set; }
+
+        /// <summary>
+        /// Gets or sets the default safety requirements for new adoptable areas.
+        /// </summary>
+        public string DefaultSafetyRequirements { get; set; }
+
+        /// <summary>
+        /// Gets or sets the default co-adoption setting for new adoptable areas.
+        /// </summary>
+        public bool? DefaultAllowCoAdoption { get; set; }
+
+        #endregion
+
         /// <summary>
         /// Gets or sets the collection of contacts for the partner.
         /// </summary>

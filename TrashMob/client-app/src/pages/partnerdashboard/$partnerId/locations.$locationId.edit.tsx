@@ -50,7 +50,7 @@ const formSchema = z.object({
     partnerId: z.string(),
     name: z.string({ required_error: 'Location Name cannot be empty.' }),
     isActive: z.boolean(),
-    publicNotes: z.string({ required_error: 'Public notes cannot be empty.' }),
+    publicNotes: z.string().optional(),
     privateNotes: z.string().optional(),
     location: z.object({
         lat: z.number().optional(),
@@ -248,7 +248,7 @@ export const PartnerLocationEditForm = (props: PartnerLocationEditFormProps) => 
                     name='publicNotes'
                     render={({ field }) => (
                         <FormItem className='col-span-12'>
-                            <FormLabel tooltip={ToolTips.PartnerLocationPublicNotes} required>
+                            <FormLabel tooltip={ToolTips.PartnerLocationPublicNotes}>
                                 Public Notes
                             </FormLabel>
                             <FormControl>

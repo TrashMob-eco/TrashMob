@@ -265,7 +265,7 @@ export const PartnerCommunityContent = () => {
                                             <FormControl>
                                                 <Input {...field} placeholder='https://example.com/banner.jpg' />
                                             </FormControl>
-                                            <FormDescription>Wide image for the page header.</FormDescription>
+                                            <FormDescription>Wide image for the page header. Recommended size: 1200 x 300 pixels.</FormDescription>
                                             <FormMessage />
                                         </FormItem>
                                     )}

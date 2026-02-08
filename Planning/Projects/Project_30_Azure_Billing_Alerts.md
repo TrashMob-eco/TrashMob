@@ -16,6 +16,8 @@ As a nonprofit, TrashMob must carefully manage cloud costs. Unexpected spikes in
 
 **Critical Context:** TrashMob receives an annual Microsoft nonprofit grant that covers Azure costs. This grant often hides actual costs in billing. **An alert at $1/year is essential** - any charge above this threshold may indicate the grant has expired or is not being applied correctly.
 
+**Tenant Note:** Billing is managed in a separate Azure tenant (`c0459473-d4ce-4472-b23c-dd1218a33a7b`), not the resource tenant where Container Apps and databases run. All budget alerts and cost reviews must be created/performed in the billing tenant. See `Deploy/COST_ALERT_RUNBOOK.md` for detailed instructions.
+
 This project directly mitigates **SR-5 (Cost Spikes)** identified in the Risks & Mitigations document.
 
 ---
@@ -101,59 +103,20 @@ This project directly mitigates **SR-5 (Cost Spikes)** identified in the Risks &
 
 **Principle:** Use vendor APIs for configuration where available. API-based setup is preferred over manual portal configuration to ensure consistency and repeatability. Where APIs are not available, explicit step-by-step manual instructions are documented.
 
-### Azure Cost Management (API Available ✅)
+### Azure Cost Management (Manual — Billing Tenant)
 
-**Preferred: Azure CLI / Bicep**
-```bash
-# Create budget with alerts via Azure CLI
-az consumption budget create \
-  --budget-name "TrashMob-Prod-Monthly" \
-  --amount 500 \
-  --time-grain Monthly \
-  --start-date 2026-02-01 \
-  --end-date 2027-01-31 \
-  --resource-group rg-trashmob-pr-westus2 \
-  --notifications '{
-    "Actual_GreaterThan_1": {
-      "enabled": true,
-      "operator": "GreaterThan",
-      "threshold": 1,
-      "contactEmails": ["joe@trashmob.eco"],
-      "thresholdType": "Actual"
-    },
-    "Actual_GreaterThan_500": {
-      "enabled": true,
-      "operator": "GreaterThan",
-      "threshold": 500,
-      "contactEmails": ["joe@trashmob.eco"],
-      "thresholdType": "Actual"
-    }
-  }'
+Budget APIs (`Microsoft.Consumption`) do not support Microsoft Sponsorship subscriptions (MS-AZR-0036P). Budgets must be created manually in the Azure Portal **within the billing tenant** (`c0459473-d4ce-4472-b23c-dd1218a33a7b`). Email contacts are used directly on budget alerts — no action group is needed in the billing tenant.
 
-# Create $1/year grant expiration alert
-az consumption budget create \
-  --budget-name "TrashMob-Grant-Monitor" \
-  --amount 1 \
-  --time-grain Annually \
-  --resource-group rg-trashmob-pr-westus2 \
-  --notifications '{
-    "Grant_Expired": {
-      "enabled": true,
-      "operator": "GreaterThan",
-      "threshold": 100,
-      "contactEmails": ["joe@trashmob.eco"],
-      "thresholdType": "Actual"
-    }
-  }'
-```
+**Manual Portal Steps (in billing tenant)**
+1. Switch to billing tenant in Azure Portal (gear icon > Directories + subscriptions)
+2. Cost Management > Budgets > **+ Add**
+3. Scope: select the sponsorship subscription
+4. Create monthly budget: `budget-tm-monthly`, Amount: $500, Reset: Monthly
+5. Add alert conditions: 50%, 75%, 90%, 100% (Actual), email: joe@trashmob.eco
+6. Create grant monitor: `budget-tm-grant-monitor`, Amount: $1, Reset: Annually
+7. Add alert condition: 100% (Actual), email: joe@trashmob.eco
 
-**Fallback: Manual Portal Steps**
-1. Azure Portal > Cost Management + Billing > Budgets
-2. Click "+ Add"
-3. Name: "TrashMob-Prod-Monthly", Amount: $500, Reset: Monthly
-4. Add alert conditions: 50%, 75%, 90%, 100%
-5. Recipients: joe@trashmob.eco
-6. Repeat for $1/year grant expiration monitor
+See `Deploy/COST_ALERT_RUNBOOK.md` for full step-by-step instructions.
 
 ### SendGrid (API Available ✅)
 
@@ -255,3 +218,4 @@ gcloud services api-keys update KEY_ID \
 - **2026-01-31:** Added $1/year threshold alert for Microsoft nonprofit grant expiration detection
 - **2026-01-31:** Converted open questions to decisions; confirmed all scope items
 - **2026-02-06:** Phase 1 implemented: billingAlerts.bicep, deployInfra.ps1 updated, COST_ALERT_RUNBOOK.md created
+- **2026-02-08:** Updated for billing tenant separation — budgets must be created in tenant `c0459473-d4ce-4472-b23c-dd1218a33a7b`, not the resource tenant
