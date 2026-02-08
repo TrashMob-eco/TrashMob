@@ -128,6 +128,37 @@ namespace TrashMob.Models
         public string Country { get; set; }
 
         /// <summary>
+        /// Gets or sets the type of geographic region this community covers (City, County, State, etc.).
+        /// Null defaults to City for backward compatibility.
+        /// </summary>
+        public int? RegionType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the county name for county-level communities (e.g., "King County").
+        /// </summary>
+        public string CountyName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the northern latitude bound for bounding-box event filtering.
+        /// </summary>
+        public double? BoundsNorth { get; set; }
+
+        /// <summary>
+        /// Gets or sets the southern latitude bound for bounding-box event filtering.
+        /// </summary>
+        public double? BoundsSouth { get; set; }
+
+        /// <summary>
+        /// Gets or sets the eastern longitude bound for bounding-box event filtering.
+        /// </summary>
+        public double? BoundsEast { get; set; }
+
+        /// <summary>
+        /// Gets or sets the western longitude bound for bounding-box event filtering.
+        /// </summary>
+        public double? BoundsWest { get; set; }
+
+        /// <summary>
         /// Gets or sets the URL of the community logo (200x200).
         /// </summary>
         public string LogoUrl { get; set; }
