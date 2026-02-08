@@ -213,30 +213,25 @@ public enum RegionType
 
 ## Open Questions
 
-1. **How do we handle events that span multiple regions?**
-   **Recommendation:** Events belong to one community; can be discovered from neighboring regions via search
-   **Owner:** Product
-   **Due:** Before Phase 2
+1. ~~**How do we handle events that span multiple regions?**~~
+   **Decision:** Events belong to one community; can be discovered from neighboring regions via search.
+   **Resolved:** February 8, 2026
 
-2. **Should county/regional communities require government verification?**
-   **Recommendation:** Yes, add verification flag and manual approval for RegionType >= County
-   **Owner:** Product + Legal
-   **Due:** Before launch
+2. ~~**Should county/regional communities require government verification?**~~
+   **Decision:** Yes, add verification flag and manual approval for RegionType >= County.
+   **Resolved:** February 8, 2026
 
-3. **How do we prevent slug conflicts (e.g., "minnesota" city vs state, or multiple "Washington County" in different states)?**
-   **Recommendation:** County slugs include state abbreviation: `/communities/king-county-wa`. State slugs use abbreviation: `/communities/mn`.
-   **Owner:** Engineering
-   **Due:** Phase 1
+3. ~~**How do we prevent slug conflicts (e.g., "minnesota" city vs state, or multiple "Washington County" in different states)?**~~
+   **Decision:** County slugs include state abbreviation: `/communities/king-county-wa`. State slugs use abbreviation: `/communities/mn`.
+   **Resolved:** February 8, 2026
 
-5. **Can counties define custom adoption zones or do they use pre-set boundaries?**
-   **Recommendation:** Start with county bounding boxes from census data; allow manual adjustment. Custom polygon boundaries deferred to v2.
-   **Owner:** Engineering
-   **Due:** Phase 2
+4. ~~**Can counties define custom adoption zones or do they use pre-set boundaries?**~~
+   **Decision:** Start with county bounding boxes from census data; allow manual adjustment. Custom polygon boundaries deferred to v2.
+   **Resolved:** February 8, 2026
 
-4. **Should we support custom polygon boundaries?**
-   **Recommendation:** Not for v1; bounding box is sufficient. Add polygon support if needed for coastal/watershed programs
-   **Owner:** Engineering
-   **Due:** Future consideration
+5. ~~**Should we support custom polygon boundaries?**~~
+   **Decision:** Not for v1; bounding box is sufficient. Add polygon support if needed for coastal/watershed programs.
+   **Resolved:** February 8, 2026
 
 ---
 

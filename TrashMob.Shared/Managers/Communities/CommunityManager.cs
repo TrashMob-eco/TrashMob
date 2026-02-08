@@ -138,20 +138,52 @@ namespace TrashMob.Shared.Managers.Communities
             return degrees * Math.PI / 180;
         }
 
+        /// <summary>
+        /// Determines whether a community uses bounding-box filtering instead of exact city/region match.
+        /// County, state, and regional communities with defined bounds use bounding-box filtering.
+        /// </summary>
+        private static bool UsesBoundingBoxFilter(Partner community)
+        {
+            return community.RegionType.HasValue
+                && community.RegionType.Value != (int)RegionTypeEnum.City
+                && community.BoundsNorth.HasValue && community.BoundsSouth.HasValue
+                && community.BoundsEast.HasValue && community.BoundsWest.HasValue;
+        }
+
         /// <inheritdoc />
         public async Task<IEnumerable<Event>> GetCommunityEventsAsync(string slug, bool upcomingOnly = true, CancellationToken cancellationToken = default)
         {
             var community = await GetBySlugAsync(slug, cancellationToken);
-            if (community == null || string.IsNullOrWhiteSpace(community.City) || string.IsNullOrWhiteSpace(community.Region))
+            if (community == null)
             {
                 return Enumerable.Empty<Event>();
             }
 
+            IQueryable<Event> query;
+
+            if (UsesBoundingBoxFilter(community))
+            {
+                query = eventRepository.Get()
+                    .Where(e => e.Latitude >= community.BoundsSouth.Value
+                        && e.Latitude <= community.BoundsNorth.Value
+                        && e.Longitude >= community.BoundsWest.Value
+                        && e.Longitude <= community.BoundsEast.Value
+                        && e.EventStatusId != CancelledEventStatusId);
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(community.City) || string.IsNullOrWhiteSpace(community.Region))
+                {
+                    return Enumerable.Empty<Event>();
+                }
+
+                query = eventRepository.Get()
+                    .Where(e => e.City == community.City
+                        && e.Region == community.Region
+                        && e.EventStatusId != CancelledEventStatusId);
+            }
+
             var now = DateTimeOffset.UtcNow;
-            var query = eventRepository.Get()
-                .Where(e => e.City == community.City
-                    && e.Region == community.Region
-                    && e.EventStatusId != CancelledEventStatusId);
 
             if (upcomingOnly)
             {
@@ -188,11 +220,27 @@ namespace TrashMob.Shared.Managers.Communities
                 return Enumerable.Empty<LitterReport>();
             }
 
-            // Get litter reports by matching city/region from the litter images
-            var litterImages = await litterImageRepository.Get()
-                .Include(li => li.LitterReport)
-                .Where(li => li.City == community.City && li.Region == community.Region && !li.IsCancelled)
-                .ToListAsync(cancellationToken);
+            IQueryable<LitterImage> litterImageQuery;
+
+            if (UsesBoundingBoxFilter(community))
+            {
+                litterImageQuery = litterImageRepository.Get()
+                    .Include(li => li.LitterReport)
+                    .Where(li => li.Latitude.HasValue && li.Longitude.HasValue
+                        && li.Latitude.Value >= community.BoundsSouth.Value
+                        && li.Latitude.Value <= community.BoundsNorth.Value
+                        && li.Longitude.Value >= community.BoundsWest.Value
+                        && li.Longitude.Value <= community.BoundsEast.Value
+                        && !li.IsCancelled);
+            }
+            else
+            {
+                litterImageQuery = litterImageRepository.Get()
+                    .Include(li => li.LitterReport)
+                    .Where(li => li.City == community.City && li.Region == community.Region && !li.IsCancelled);
+            }
+
+            var litterImages = await litterImageQuery.ToListAsync(cancellationToken);
 
             // Get unique litter reports from the images
             var litterReportIds = litterImages
@@ -213,17 +261,37 @@ namespace TrashMob.Shared.Managers.Communities
             var stats = new Stats();
 
             var community = await GetBySlugAsync(slug, cancellationToken);
-            if (community == null || string.IsNullOrWhiteSpace(community.City) || string.IsNullOrWhiteSpace(community.Region))
+            if (community == null)
             {
                 return stats;
             }
 
+            IQueryable<Event> eventQuery;
+
+            if (UsesBoundingBoxFilter(community))
+            {
+                eventQuery = eventRepository.Get()
+                    .Where(e => e.Latitude >= community.BoundsSouth.Value
+                        && e.Latitude <= community.BoundsNorth.Value
+                        && e.Longitude >= community.BoundsWest.Value
+                        && e.Longitude <= community.BoundsEast.Value
+                        && e.EventStatusId != CancelledEventStatusId);
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(community.City) || string.IsNullOrWhiteSpace(community.Region))
+                {
+                    return stats;
+                }
+
+                eventQuery = eventRepository.Get()
+                    .Where(e => e.City == community.City
+                        && e.Region == community.Region
+                        && e.EventStatusId != CancelledEventStatusId);
+            }
+
             // Get events in this community
-            var events = await eventRepository.Get()
-                .Where(e => e.City == community.City
-                    && e.Region == community.Region
-                    && e.EventStatusId != CancelledEventStatusId)
-                .ToListAsync(cancellationToken);
+            var events = await eventQuery.ToListAsync(cancellationToken);
 
             stats.TotalEvents = events.Count;
 
@@ -275,6 +343,12 @@ namespace TrashMob.Shared.Managers.Communities
             existing.ContactPhone = community.ContactPhone;
             existing.PhysicalAddress = community.PhysicalAddress;
             existing.Website = community.Website;
+            existing.RegionType = community.RegionType;
+            existing.CountyName = community.CountyName;
+            existing.BoundsNorth = community.BoundsNorth;
+            existing.BoundsSouth = community.BoundsSouth;
+            existing.BoundsEast = community.BoundsEast;
+            existing.BoundsWest = community.BoundsWest;
             existing.LastUpdatedByUserId = userId;
             existing.LastUpdatedDate = DateTimeOffset.UtcNow;
 
@@ -306,29 +380,44 @@ namespace TrashMob.Shared.Managers.Communities
             }
 
             // Get events in this community
-            if (!string.IsNullOrWhiteSpace(community.City) && !string.IsNullOrWhiteSpace(community.Region))
+            var hasBoundsFilter = UsesBoundingBoxFilter(community);
+            var hasCityFilter = !string.IsNullOrWhiteSpace(community.City) && !string.IsNullOrWhiteSpace(community.Region);
+
+            if (hasBoundsFilter || hasCityFilter)
             {
                 var now = DateTimeOffset.UtcNow;
                 var thirtyDaysAgo = now.AddDays(-30);
 
+                IQueryable<Event> baseEventQuery;
+
+                if (hasBoundsFilter)
+                {
+                    baseEventQuery = eventRepository.Get()
+                        .Where(e => e.Latitude >= community.BoundsSouth.Value
+                            && e.Latitude <= community.BoundsNorth.Value
+                            && e.Longitude >= community.BoundsWest.Value
+                            && e.Longitude <= community.BoundsEast.Value
+                            && e.EventStatusId != CancelledEventStatusId);
+                }
+                else
+                {
+                    baseEventQuery = eventRepository.Get()
+                        .Where(e => e.City == community.City
+                            && e.Region == community.Region
+                            && e.EventStatusId != CancelledEventStatusId);
+                }
+
                 // Upcoming events
-                var upcomingEvents = await eventRepository.Get()
-                    .Where(e => e.City == community.City
-                        && e.Region == community.Region
-                        && e.EventStatusId != CancelledEventStatusId
-                        && e.EventDate >= now)
+                var upcomingEvents = await baseEventQuery
+                    .Where(e => e.EventDate >= now)
                     .OrderBy(e => e.EventDate)
                     .Take(5)
                     .ToListAsync(cancellationToken);
                 dashboard.UpcomingEvents = upcomingEvents;
 
                 // Recent events (completed in last 30 days)
-                var recentEvents = await eventRepository.Get()
-                    .Where(e => e.City == community.City
-                        && e.Region == community.Region
-                        && e.EventStatusId != CancelledEventStatusId
-                        && e.EventDate < now
-                        && e.EventDate >= thirtyDaysAgo)
+                var recentEvents = await baseEventQuery
+                    .Where(e => e.EventDate < now && e.EventDate >= thirtyDaysAgo)
                     .OrderByDescending(e => e.EventDate)
                     .Take(5)
                     .ToListAsync(cancellationToken);
@@ -362,12 +451,29 @@ namespace TrashMob.Shared.Managers.Communities
             }
 
             // Get open litter reports count
-            if (!string.IsNullOrWhiteSpace(community.City) && !string.IsNullOrWhiteSpace(community.Region))
+            if (hasBoundsFilter || hasCityFilter)
             {
-                var litterImages = await litterImageRepository.Get()
-                    .Include(li => li.LitterReport)
-                    .Where(li => li.City == community.City && li.Region == community.Region && !li.IsCancelled)
-                    .ToListAsync(cancellationToken);
+                IQueryable<LitterImage> litterQuery;
+
+                if (hasBoundsFilter)
+                {
+                    litterQuery = litterImageRepository.Get()
+                        .Include(li => li.LitterReport)
+                        .Where(li => li.Latitude.HasValue && li.Longitude.HasValue
+                            && li.Latitude.Value >= community.BoundsSouth.Value
+                            && li.Latitude.Value <= community.BoundsNorth.Value
+                            && li.Longitude.Value >= community.BoundsWest.Value
+                            && li.Longitude.Value <= community.BoundsEast.Value
+                            && !li.IsCancelled);
+                }
+                else
+                {
+                    litterQuery = litterImageRepository.Get()
+                        .Include(li => li.LitterReport)
+                        .Where(li => li.City == community.City && li.Region == community.Region && !li.IsCancelled);
+                }
+
+                var litterImages = await litterQuery.ToListAsync(cancellationToken);
 
                 var openLitterReportIds = litterImages
                     .Where(li => li.LitterReport != null && li.LitterReport.LitterReportStatusId == (int)LitterReportStatusEnum.New)

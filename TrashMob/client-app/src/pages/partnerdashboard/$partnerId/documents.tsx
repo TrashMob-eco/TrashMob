@@ -95,7 +95,11 @@ export const PartnerDocuments = () => {
                 const { downloadUrl } = response.data;
                 window.open(downloadUrl, '_blank');
             } catch {
-                toast({ variant: 'destructive', title: 'Download failed', description: 'Could not generate download link.' });
+                toast({
+                    variant: 'destructive',
+                    title: 'Download failed',
+                    description: 'Could not generate download link.',
+                });
             }
         } else if (doc.url) {
             window.open(doc.url, '_blank');
@@ -123,9 +127,7 @@ export const PartnerDocuments = () => {
                             <TableRow key={row.id} className={isDeletingId === row.id ? 'opacity-20' : ''}>
                                 <TableCell>{row.name}</TableCell>
                                 <TableCell>
-                                    <Badge variant='outline'>
-                                        {documentTypeLabels[row.documentTypeId] ?? 'Other'}
-                                    </Badge>
+                                    <Badge variant='outline'>{documentTypeLabels[row.documentTypeId] ?? 'Other'}</Badge>
                                 </TableCell>
                                 <TableCell>{formatFileSize(row.fileSizeBytes)}</TableCell>
                                 <TableCell>{formatDate(row.expirationDate)}</TableCell>
@@ -137,7 +139,8 @@ export const PartnerDocuments = () => {
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent className='w-56'>
-                                            {(row.blobStoragePath || row.url) ? <DropdownMenuItem onClick={() => handleDownload(row)}>
+                                            {row.blobStoragePath || row.url ? (
+                                                <DropdownMenuItem onClick={() => handleDownload(row)}>
                                                     {row.blobStoragePath ? (
                                                         <>
                                                             <Download />
@@ -149,7 +152,8 @@ export const PartnerDocuments = () => {
                                                             Open Link
                                                         </>
                                                     )}
-                                                </DropdownMenuItem> : null}
+                                                </DropdownMenuItem>
+                                            ) : null}
                                             <DropdownMenuItem asChild>
                                                 <Link to={`${row.id}/edit`}>
                                                     <Pencil />

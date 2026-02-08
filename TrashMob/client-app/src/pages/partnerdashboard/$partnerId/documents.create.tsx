@@ -14,11 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import * as ToolTips from '@/store/ToolTips';
 import { useLogin } from '@/hooks/useLogin';
-import {
-    CreatePartnerDocument,
-    GetPartnerDocumentsByPartnerId,
-    UploadPartnerDocument,
-} from '@/services/documents';
+import { CreatePartnerDocument, GetPartnerDocumentsByPartnerId, UploadPartnerDocument } from '@/services/documents';
 
 import PartnerDocumentData from '@/components/Models/PartnerDocumentData';
 
