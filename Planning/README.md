@@ -13,7 +13,7 @@
 - **[Executive Summary](./Executive_Summary.md)** - High-level overview, strategic objectives, and 2026 roadmap
 - **[Risks & Mitigations](./Risks_and_Mitigations.md)** - Cross-project risks and mitigation strategies
 
-### 2026 Projects (38 Total)
+### 2026 Projects (41 Total)
 
 **Note:** Projects are not time-bound. Volunteers pick up work based on priority and availability.
 
@@ -64,6 +64,8 @@
 | [Project 33 - Localization](./Projects/Project_33_Localization.md) | Multi-language support | Deprioritized |
 | [Project 34 - User Feedback](./Projects/Project_34_User_Feedback.md) | In-app feedback widget | ✅ Complete |
 | [Project 35 - Partner Location Map](./Projects/Project_35_Partner_Location_Map.md) | Partner locations on map | ✅ Complete |
+| [Project 39 - Regional Communities](./Projects/Project_39_Regional_Communities.md) | County/state community pages and adoption programs | Not Started |
+| [Project 41 - Sponsored Adoptions](./Projects/Project_41_Sponsored_Adoptions.md) | Sponsor-funded professional cleanup tracking | Not Started |
 
 #### High Priority (Marketing & Growth)
 
@@ -96,6 +98,8 @@
 - [Project 10 - Community Pages](./Projects/Project_10_Community_Pages.md) ✅
 - [Project 11 - Adopt-A-Location](./Projects/Project_11_Adopt_A_Location.md) ✅
 - [Project 18 - Before/After Photos](./Projects/Project_18_Before_After_Photos.md) ✅
+- [Project 39 - Regional Communities](./Projects/Project_39_Regional_Communities.md)
+- [Project 41 - Sponsored Adoptions](./Projects/Project_41_Sponsored_Adoptions.md)
 
 ### Impact Tracking
 - [Project 7 - Event Weights](./Projects/Project_07_Event_Weights.md) ✅
@@ -138,10 +142,10 @@
 | **Developers Engaged** | 1 | Project 4 |
 | **Ready for Review** | 2 | Projects 2, 5 |
 | **Planning** | 3 | Projects 1, 23, 38 |
-| **Not Started** | 5 | Projects 12, 24, 31, 36, 40 |
+| **Not Started** | 7 | Projects 12, 24, 31, 36, 39, 40, 41 |
 | **Deprioritized** | 1 | Project 33 |
 
-**Total:** 39 project specifications documented
+**Total:** 41 project specifications documented
 
 ---
 
@@ -214,6 +218,6 @@ All new features should consider adding feature usage tracking. See [Project 29 
 
 ---
 
-**Last Updated:** February 6, 2026
+**Last Updated:** February 8, 2026
 **Maintained By:** Product & Engineering Team
 **Next Review:** End of Q1 2026
