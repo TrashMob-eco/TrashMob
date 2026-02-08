@@ -166,14 +166,14 @@ public class PartnerDocument : KeyedModel
 - Site admin cross-partner document view
 - Feature usage metrics
 
-## Open Questions
+## Resolved Questions
 
-| Question | Recommendation | Owner | Due |
-|----------|----------------|-------|-----|
-| Maximum file size per upload? | 25 MB — covers most PDFs and scanned docs | Engineering | Before Phase 1 |
-| Maximum total storage per partner? | 500 MB — generous for document storage | Engineering | Before Phase 1 |
-| Should expired documents be auto-deleted? | No — flag as expired, let admins decide | Product | Before Phase 3 |
-| Should we support document sharing between partner and TrashMob admin? | Yes — both partner admins and site admins should have access | Product | Before Phase 1 |
+| Question | Decision |
+|----------|----------|
+| Maximum file size per upload? | **25 MB** — covers most PDFs and scanned docs |
+| Maximum total storage per partner? | **500 MB** — generous for document storage |
+| Should expired documents be auto-deleted? | **No** — flag as expired, let admins decide |
+| Should we support document sharing between partner and TrashMob admin? | **Yes** — both partner admins and site admins should have access |
 
 ## Related Documents
 
