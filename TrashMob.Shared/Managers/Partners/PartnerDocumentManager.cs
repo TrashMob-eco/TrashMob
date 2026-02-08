@@ -39,5 +39,13 @@
             return (await Repository.Get().Where(p => p.PartnerId == parentId).ToListAsync(cancellationToken))
                 .AsEnumerable();
         }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<PartnerDocument>> GetAllWithPartnerAsync(CancellationToken cancellationToken)
+        {
+            return await Repository.Get()
+                .Include(d => d.Partner)
+                .ToListAsync(cancellationToken);
+        }
     }
 }

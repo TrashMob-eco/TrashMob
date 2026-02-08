@@ -288,6 +288,9 @@ const SiteAdminProspectImport = lazy(() =>
 const SiteAdminProspectAnalytics = lazy(() =>
     import('./pages/siteadmin/prospects/analytics').then((m) => ({ default: m.SiteAdminProspectAnalytics })),
 );
+const SiteAdminDocuments = lazy(() =>
+    import('./pages/siteadmin/documents/page').then((m) => ({ default: m.SiteAdminDocuments })),
+);
 
 const queryClient = new QueryClient();
 
@@ -462,6 +465,7 @@ const AppContent: FC = () => {
                                 <Route path='users' element={<SiteAdminUsers />} />
                                 <Route path='events' element={<SiteAdminEvents />} />
                                 <Route path='partners' element={<SiteAdminPartners />} />
+                                <Route path='documents' element={<SiteAdminDocuments />} />
                                 <Route path='teams' element={<SiteAdminTeams />} />
                                 <Route path='litter-reports' element={<SiteAdminLitterReports />} />
                                 <Route path='partner-requests' element={<SiteAdminPartnerRequests />} />

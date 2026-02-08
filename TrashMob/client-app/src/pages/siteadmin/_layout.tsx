@@ -31,6 +31,7 @@ const navGroups: NavGroup[] = [
             { name: 'Users', href: `${pathPrefix}/users`, icon: Users },
             { name: 'Events', href: `${pathPrefix}/events`, icon: Calendar },
             { name: 'Partners', href: `${pathPrefix}/partners`, icon: Building2 },
+            { name: 'Documents', href: `${pathPrefix}/documents`, icon: FileText },
             { name: 'Teams', href: `${pathPrefix}/teams`, icon: UsersRound },
             { name: 'Litter Reports', href: `${pathPrefix}/litter-reports`, icon: Trash2 },
             { name: 'Partner Requests', href: `${pathPrefix}/partner-requests`, icon: Handshake },
