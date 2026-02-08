@@ -13,7 +13,7 @@
 - **[Executive Summary](./Executive_Summary.md)** - High-level overview, strategic objectives, and 2026 roadmap
 - **[Risks & Mitigations](./Risks_and_Mitigations.md)** - Cross-project risks and mitigation strategies
 
-### 2026 Projects (41 Total)
+### 2026 Projects (42 Total)
 
 **Note:** Projects are not time-bound. Volunteers pick up work based on priority and availability.
 
@@ -66,13 +66,14 @@
 | [Project 35 - Partner Location Map](./Projects/Project_35_Partner_Location_Map.md) | Partner locations on map | ✅ Complete |
 | [Project 39 - Regional Communities](./Projects/Project_39_Regional_Communities.md) | County/state community pages and adoption programs | Not Started |
 | [Project 41 - Sponsored Adoptions](./Projects/Project_41_Sponsored_Adoptions.md) | Sponsor-funded professional cleanup tracking | Not Started |
+| [Project 42 - Partner Document Management](./Projects/Project_42_Partner_Document_Management.md) | File upload & storage for partner documents | Not Started |
 
 #### High Priority (Marketing & Growth)
 
 | Project | Description | Status |
 |---------|-------------|--------|
 | [Project 36 - Marketing Materials](./Projects/Project_36_Marketing_Materials.md) | 2026 release marketing, pricing, enrollment | Not Started |
-| [Project 40 - AI Community Sales Agent](./Projects/Project_40_AI_Community_Sales_Agent.md) | AI-powered community discovery, outreach, and onboarding | Not Started |
+| [Project 40 - AI Community Sales Agent](./Projects/Project_40_AI_Community_Sales_Agent.md) | AI-powered community discovery, outreach, and onboarding | ✅ Complete |
 
 #### Low Priority (Nice-to-Have)
 
@@ -100,6 +101,7 @@
 - [Project 18 - Before/After Photos](./Projects/Project_18_Before_After_Photos.md) ✅
 - [Project 39 - Regional Communities](./Projects/Project_39_Regional_Communities.md)
 - [Project 41 - Sponsored Adoptions](./Projects/Project_41_Sponsored_Adoptions.md)
+- [Project 42 - Partner Document Management](./Projects/Project_42_Partner_Document_Management.md)
 
 ### Impact Tracking
 - [Project 7 - Event Weights](./Projects/Project_07_Event_Weights.md) ✅
@@ -137,15 +139,15 @@
 
 | Status | Count | Projects |
 |--------|-------|----------|
-| ✅ **Complete** | 21 | Projects 3, 7, 9, 10, 11, 13, 14, 16, 17, 18, 19, 20, 21, 26, 27, 28, 29, 32, 34, 35, 37 |
+| ✅ **Complete** | 22 | Projects 3, 7, 9, 10, 11, 13, 14, 16, 17, 18, 19, 20, 21, 26, 27, 28, 29, 32, 34, 35, 37, 40 |
 | **In Progress** | 6 | Projects 6, 8 (Phase 1-4 Complete), 15 (Backend & Website Complete), 22 (Phase 1-3 Complete), 25 (Phase 1 Complete), 30 |
 | **Developers Engaged** | 1 | Project 4 |
 | **Ready for Review** | 2 | Projects 2, 5 |
 | **Planning** | 3 | Projects 1, 23, 38 |
-| **Not Started** | 7 | Projects 12, 24, 31, 36, 39, 40, 41 |
+| **Not Started** | 7 | Projects 12, 24, 31, 36, 39, 41, 42 |
 | **Deprioritized** | 1 | Project 33 |
 
-**Total:** 41 project specifications documented
+**Total:** 42 project specifications documented
 
 ---
 
