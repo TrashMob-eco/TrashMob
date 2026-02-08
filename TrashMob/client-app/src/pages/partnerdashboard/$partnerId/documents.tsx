@@ -58,19 +58,17 @@ export const PartnerDocuments = () => {
         )
             return;
 
-        deletePartnerDocumentByDocuemntId
-            .mutateAsync({ documentId })
-            .then(async () => {
-                track({ category: 'Partner', action: 'Delete', target: 'Document' });
-                await queryClient.invalidateQueries({
-                    queryKey: GetPartnerDocumentsByPartnerId({ partnerId }).key,
-                    refetchType: 'all',
-                });
-                await queryClient.invalidateQueries({
-                    queryKey: GetPartnerStorageUsage({ partnerId }).key,
-                    refetchType: 'all',
-                });
+        deletePartnerDocumentByDocuemntId.mutateAsync({ documentId }).then(async () => {
+            track({ category: 'Partner', action: 'Delete', target: 'Document' });
+            await queryClient.invalidateQueries({
+                queryKey: GetPartnerDocumentsByPartnerId({ partnerId }).key,
+                refetchType: 'all',
             });
+            await queryClient.invalidateQueries({
+                queryKey: GetPartnerStorageUsage({ partnerId }).key,
+                refetchType: 'all',
+            });
+        });
     };
 
     const handleDownload = async (doc: PartnerDocumentData) => {
@@ -98,10 +96,7 @@ export const PartnerDocuments = () => {
         return documents.filter((d) => d.documentTypeId === Number(typeFilter));
     }, [documents, typeFilter]);
 
-    const columns = useMemo(
-        () => getColumns({ onDownload: handleDownload, onDelete: removeDocument }),
-        [partnerId],
-    );
+    const columns = useMemo(() => getColumns({ onDownload: handleDownload, onDelete: removeDocument }), [partnerId]);
 
     const storagePercent =
         storageUsage && storageUsage.limitBytes > 0
@@ -160,10 +155,7 @@ export const PartnerDocuments = () => {
                 />
 
                 {/* Edit dialog */}
-                <Dialog
-                    open={!!isEdit}
-                    onOpenChange={() => navigate(`/partnerdashboard/${partnerId}/documents`)}
-                >
+                <Dialog open={!!isEdit} onOpenChange={() => navigate(`/partnerdashboard/${partnerId}/documents`)}>
                     <DialogContent
                         className='sm:max-w-[600px] overflow-y-scroll max-h-screen'
                         onOpenAutoFocus={(e) => e.preventDefault()}
@@ -178,10 +170,7 @@ export const PartnerDocuments = () => {
                 </Dialog>
 
                 {/* Create dialog */}
-                <Dialog
-                    open={!!isCreate}
-                    onOpenChange={() => navigate(`/partnerdashboard/${partnerId}/documents`)}
-                >
+                <Dialog open={!!isCreate} onOpenChange={() => navigate(`/partnerdashboard/${partnerId}/documents`)}>
                     <DialogContent
                         className='sm:max-w-[600px] overflow-y-scroll max-h-screen'
                         onOpenAutoFocus={(e) => e.preventDefault()}
