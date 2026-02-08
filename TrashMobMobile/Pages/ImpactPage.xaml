@@ -147,6 +147,25 @@
                 </Grid>
             </Border>
 
+            <!-- Explore More -->
+            <Label Text="Explore More"
+                   FontFamily="LexendSemibold"
+                   FontSize="Medium"
+                   Margin="5,15,5,5" />
+
+            <VerticalStackLayout Spacing="8" Margin="5,0,5,20">
+                <Button Text="Leaderboards"
+                        Command="{Binding ViewLeaderboardsCommand}"
+                        Style="{StaticResource SecondaryLargeButton}"
+                        ContentLayout="Left, 12"
+                        ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconTrophy}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" />
+                <Button Text="Achievements"
+                        Command="{Binding ViewAchievementsCommand}"
+                        Style="{StaticResource SecondaryLargeButton}"
+                        ContentLayout="Left, 12"
+                        ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconMedal}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" />
+            </VerticalStackLayout>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

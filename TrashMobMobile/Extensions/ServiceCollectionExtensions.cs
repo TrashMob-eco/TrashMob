@@ -16,6 +16,8 @@
             
             services.AddSingleton<INotificationService, NotificationService>();
 
+            services.AddSingleton<IAchievementManager, AchievementManager>();
+            services.AddSingleton<IAchievementRestService, AchievementRestService>();
             services.AddSingleton<IContactRequestManager, ContactRequestManager>();
             services.AddSingleton<IContactRequestRestService, ContactRequestRestService>();
             services.AddSingleton<IEventAttendeeRestService, EventAttendeeRestService>();
@@ -30,6 +32,8 @@
                     EventPartnerLocationServiceStatusRestService>();
             services.AddSingleton<IEventSummaryRestService, EventSummaryRestService>();
             services.AddSingleton<IEventTypeRestService, EventTypeRestService>();
+            services.AddSingleton<ILeaderboardManager, LeaderboardManager>();
+            services.AddSingleton<ILeaderboardRestService, LeaderboardRestService>();
             services.AddSingleton<ILitterReportManager, LitterReportManager>();
             services.AddSingleton<ILitterReportRestService, LitterReportRestService>();
             services.AddSingleton<IMapRestService, MapRestService>();
