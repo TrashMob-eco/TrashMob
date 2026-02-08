@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Not Started |
+| **Status** | Complete |
 | **Priority** | Medium |
 | **Risk** | Low |
 | **Size** | Medium |
@@ -42,45 +42,47 @@ Enable larger government entities (counties, states, provinces, regions) with ex
 
 ## Scope
 
-### Phase 1 - Data Model & API
-- [ ] Make Partner.City optional (nullable)
-- [ ] Add Partner.RegionType enum (City, County, State, Province, Region, Country)
-- [ ] Add Partner.CountyName field for county-level communities
-- [ ] Add Partner.GeoBounds field (bounding box for map centering)
-- [ ] Add Partner.CenterLatitude/CenterLongitude for map default position
-- [ ] Update Partner validation to require either City OR RegionType (County/State/etc.)
-- [ ] Update community slug generation to handle county and region partners
-- [ ] Extend Adopt-a-Location to support county-scoped adoption areas (roads, parks, trails)
+### Phase 1 - Data Model & API (Complete — PR #2607)
+- [x] Add Community.RegionType enum (City, County, State, Province, Region, Country)
+- [x] Add Community.CountyName field for county-level communities
+- [x] Add Community bounding box fields (BoundsNorth/South/East/West)
+- [x] Add bounding-box event filtering to GetCommunityEvents API
+- [x] Update community slug generation to handle county and region partners
+- [x] Fix ToPartner() to copy location fields from PartnerRequest on approval
 
-### Phase 2 - County & State Community Pages
-- [ ] Update community page to display county/region name instead of city
-- [ ] Allow counties to list adoptable locations within their boundaries
-- [ ] County adoption dashboard — manage adopted segments, track volunteer compliance
-- [ ] Adapt "Events near [location]" messaging for counties and regions
-- [ ] Update partner registration flow with county/region selection
-- [ ] Add county/region search and filter on community discovery page
+### Phase 2 - County & State Community Page UI (Complete — PR #2609)
+- [x] Extract shared `getLocation()` and `getRegionTypeLabel()` utilities
+- [x] Add region type badges to community list and detail pages
+- [x] Adapt map to use bounding box zoom for regional communities
+- [x] Add read-only "Community Coverage" card to content edit pages
 
-### Phase 3 - Map Enhancements
-- [ ] Calculate appropriate zoom level based on RegionType
-- [ ] Center map on GeoBounds or Center coordinates
-- [ ] Show events within geographic bounds (not just city radius)
-- [ ] Update event filtering to work with county/regional boundaries
-- [ ] Show adoptable locations on county community map
+### Phase 3 - Regional Configuration UI (Complete — PR #2611)
+- [x] Create Regional Settings form page in partner dashboard
+- [x] Create bounds preview map component with rectangle overlay
+- [x] Add Regional Settings nav item to partner dashboard sidebar
+- [x] Fix ToPartner() to copy location fields (City, Region, Country, Lat/Lng, Website, PartnerTypeId)
+- [x] Link content edit page to regional settings
 
-### Phase 4 - Sub-Regions (Future)
-- [ ] Parent/child relationship for communities (e.g., Minnesota -> Hennepin County -> City of Minneapolis)
-- [ ] Hierarchical event aggregation (county rolls up to state)
-- [ ] Delegated administration for sub-regions
+---
+
+### Phase 4 - Sub-Regions (Out of Scope)
+- Parent/child relationship for communities (e.g., Minnesota -> Hennepin County -> City of Minneapolis)
+- Hierarchical event aggregation (county rolls up to state)
+- Delegated administration for sub-regions
 
 ---
 
 ## Out-of-Scope
 
+- Sub-region hierarchies (Phase 4 above)
 - Multi-country support (international programs)
 - Automatic boundary detection from government APIs
 - Integration with specific DOT systems
 - Volunteer background check integration
 - Government procurement/contracting workflows
+- Draggable/resizable bounding box editor (map preview is read-only)
+- Partner registration flow with region type selection (registration stays city-based; admins upgrade after)
+- County/region search filter on community discovery page
 
 ---
 
@@ -245,5 +247,5 @@ public enum RegionType
 
 **Last Updated:** February 8, 2026
 **Owner:** Product Team
-**Status:** Not Started
-**Next Review:** When government partnership opportunities are identified
+**Status:** Complete
+**Completed:** February 8, 2026 (Phases 1-3)
