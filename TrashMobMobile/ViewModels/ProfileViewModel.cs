@@ -11,11 +11,13 @@ using TrashMobMobile.Services;
 public partial class ProfileViewModel(
     IMobEventManager mobEventManager,
     ILitterReportManager litterReportManager,
+    ITeamManager teamManager,
     INotificationService notificationService,
     IUserManager userManager) : BaseViewModel(notificationService)
 {
     private readonly IMobEventManager mobEventManager = mobEventManager;
     private readonly ILitterReportManager litterReportManager = litterReportManager;
+    private readonly ITeamManager teamManager = teamManager;
     private readonly IUserManager userManager = userManager;
 
     [ObservableProperty]
@@ -54,11 +56,19 @@ public partial class ProfileViewModel(
     [ObservableProperty]
     private bool areNoLitterReportsFound = true;
 
+    [ObservableProperty]
+    private bool areTeamsFound;
+
+    [ObservableProperty]
+    private bool areNoTeamsFound = true;
+
     public ObservableCollection<EventViewModel> UpcomingEvents { get; } = [];
 
     public ObservableCollection<EventViewModel> CompletedEvents { get; } = [];
 
     public ObservableCollection<LitterReportViewModel> LitterReports { get; } = [];
+
+    public ObservableCollection<TeamViewModel> MyTeams { get; } = [];
 
     public async Task Init()
     {
@@ -94,7 +104,8 @@ public partial class ProfileViewModel(
             await Task.WhenAll(
                 RefreshUpcomingEvents(),
                 RefreshCompletedEvents(),
-                RefreshLitterReports());
+                RefreshLitterReports(),
+                RefreshMyTeams());
         }, "Failed to load profile. Please try again.");
     }
 
@@ -134,6 +145,24 @@ public partial class ProfileViewModel(
 
         await Shell.Current.GoToAsync(
             $"{nameof(ViewLitterReportPage)}?LitterReportId={reportVm.Id}");
+    }
+
+    [RelayCommand]
+    private async Task ViewTeam(TeamViewModel? teamVm)
+    {
+        if (teamVm == null)
+        {
+            return;
+        }
+
+        await Shell.Current.GoToAsync(
+            $"{nameof(ViewTeamPage)}?TeamId={teamVm.Id}");
+    }
+
+    [RelayCommand]
+    private async Task BrowseTeams()
+    {
+        await Shell.Current.GoToAsync(nameof(BrowseTeamsPage));
     }
 
     [RelayCommand]
@@ -230,5 +259,20 @@ public partial class ProfileViewModel(
 
         AreLitterReportsFound = LitterReports.Count > 0;
         AreNoLitterReportsFound = !AreLitterReportsFound;
+    }
+
+    private async Task RefreshMyTeams()
+    {
+        var teams = await teamManager.GetMyTeamsAsync();
+
+        MyTeams.Clear();
+        foreach (var team in teams.Where(t => t.IsActive))
+        {
+            var memberCount = team.Members?.Count ?? 0;
+            MyTeams.Add(team.ToTeamViewModel(memberCount, isUserMember: true));
+        }
+
+        AreTeamsFound = MyTeams.Count > 0;
+        AreNoTeamsFound = !AreTeamsFound;
     }
 }

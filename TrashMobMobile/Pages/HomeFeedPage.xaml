@@ -101,6 +101,29 @@
                     </CollectionView.ItemTemplate>
                 </CollectionView>
 
+                <!-- Teams Discovery -->
+                <Label Text="Teams"
+                       FontFamily="LexendSemibold"
+                       FontSize="Medium"
+                       Margin="10,15,10,5" />
+
+                <Border Style="{x:StaticResource RoundBorder}" Margin="5,3">
+                    <Grid ColumnDefinitions="*, Auto" Padding="10,10">
+                        <VerticalStackLayout Grid.Column="0" Spacing="4">
+                            <Label Text="Find a Team"
+                                   FontFamily="LexendSemibold"
+                                   FontSize="Small" />
+                            <Label Text="Join a cleanup team near you and make a bigger impact together."
+                                   FontSize="Micro"
+                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                        </VerticalStackLayout>
+                        <Button Grid.Column="1"
+                                Text="Browse"
+                                Command="{Binding BrowseTeamsCommand}"
+                                Style="{StaticResource SecondarySmallButton}" />
+                    </Grid>
+                </Border>
+
             </VerticalStackLayout>
         </ScrollView>
     </RefreshView>
