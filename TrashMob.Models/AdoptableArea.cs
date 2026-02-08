@@ -18,6 +18,7 @@ namespace TrashMob.Models
         public AdoptableArea()
         {
             Adoptions = [];
+            SponsoredAdoptions = [];
         }
 
         /// <summary>
@@ -121,6 +122,11 @@ namespace TrashMob.Models
         /// Gets or sets the collection of team adoptions for this area.
         /// </summary>
         public virtual ICollection<TeamAdoption> Adoptions { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of sponsored adoptions for this area.
+        /// </summary>
+        public virtual ICollection<SponsoredAdoption> SponsoredAdoptions { get; set; }
 
         #endregion
     }

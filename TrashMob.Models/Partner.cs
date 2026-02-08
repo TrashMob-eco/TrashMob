@@ -28,6 +28,8 @@ namespace TrashMob.Models
             PartnerAdminInvitations = new HashSet<PartnerAdminInvitation>();
             AdoptableAreas = new HashSet<AdoptableArea>();
             Photos = [];
+            Sponsors = [];
+            ProfessionalCompanies = [];
         }
 
         /// <summary>
@@ -258,5 +260,15 @@ namespace TrashMob.Models
         /// Gets or sets the collection of photos in this partner's gallery.
         /// </summary>
         public virtual ICollection<PartnerPhoto> Photos { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of sponsors for this community.
+        /// </summary>
+        public virtual ICollection<Sponsor> Sponsors { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of professional companies assigned to this community.
+        /// </summary>
+        public virtual ICollection<ProfessionalCompany> ProfessionalCompanies { get; set; }
     }
 }
