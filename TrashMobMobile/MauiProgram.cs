@@ -66,6 +66,9 @@ public static class MauiProgram
         builder.Services.AddTransient<CreateEventPage>();
         builder.Services.AddTransient<CreateLitterReportPage>();
         builder.Services.AddTransient<EditEventPage>();
+        builder.Services.AddTransient<ExplorePage>();
+        builder.Services.AddTransient<HomeFeedPage>();
+        builder.Services.AddTransient<ImpactPage>();
         builder.Services.AddTransient<EditEventPartnerLocationServicesPage>();
         builder.Services.AddTransient<EditEventSummaryPage>();
         builder.Services.AddTransient<EditLitterReportPage>();
@@ -74,6 +77,8 @@ public static class MauiProgram
         builder.Services.AddTransient<MainPage>();
         builder.Services.AddTransient<ManageEventPartnersPage>();
         builder.Services.AddTransient<MyDashboardPage>();
+        builder.Services.AddTransient<ProfilePage>();
+        builder.Services.AddTransient<QuickActionPlaceholderPage>();
         builder.Services.AddTransient<SearchEventsPage>();
         builder.Services.AddTransient<SearchLitterReportsPage>();
         builder.Services.AddTransient<SetUserLocationPreferencePage>();
@@ -96,10 +101,14 @@ public static class MauiProgram
         builder.Services.AddTransient<EditLitterReportViewModel>();
         builder.Services.AddTransient<EditPickupLocationViewModel>();
         builder.Services.AddTransient<EventSummaryViewModel>();
+        builder.Services.AddTransient<ExploreViewModel>();
+        builder.Services.AddTransient<HomeFeedViewModel>();
+        builder.Services.AddTransient<ImpactViewModel>();
         builder.Services.AddTransient<LogoutViewModel>();
         builder.Services.AddTransient<MainViewModel>();
         builder.Services.AddTransient<ManageEventPartnersViewModel>();
         builder.Services.AddTransient<MyDashboardViewModel>();
+        builder.Services.AddTransient<ProfileViewModel>();
         builder.Services.AddTransient<SearchEventsViewModel>();
         builder.Services.AddTransient<SearchLitterReportsViewModel>();
         builder.Services.AddTransient<SocialMediaShareViewModel>();

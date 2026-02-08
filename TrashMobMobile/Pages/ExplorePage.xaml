@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             xmlns:controls="clr-namespace:TrashMobMobile.Controls"
+             x:DataType="viewModels:ExploreViewModel"
+             x:Class="TrashMobMobile.Pages.ExplorePage"
+             Title="Explore">
+
+    <Grid RowDefinitions="Auto, Auto, Auto, *">
+
+        <!-- Layer Toggle Chips -->
+        <HorizontalStackLayout Grid.Row="0" Spacing="8" Margin="10,10,10,5">
+            <Button Text="Events"
+                    Command="{Binding ToggleEventsCommand}"
+                    Style="{StaticResource PrimarySmallButton}" />
+            <Button Text="Litter Reports"
+                    Command="{Binding ToggleLitterReportsCommand}"
+                    Style="{StaticResource SecondarySmallButton}" />
+        </HorizontalStackLayout>
+
+        <!-- Filter Bar -->
+        <Grid Grid.Row="1" ColumnDefinitions="*, *, *, Auto" Margin="5,0">
+            <controls:TMPicker Grid.Column="0" Title="Country"
+                               ItemsSource="{Binding CountryCollection}"
+                               SelectedItem="{Binding SelectedCountry, Mode=TwoWay}" />
+            <controls:TMPicker Grid.Column="1" Title="Region"
+                               ItemsSource="{Binding RegionCollection}"
+                               SelectedItem="{Binding SelectedRegion, Mode=TwoWay}" />
+            <controls:TMPicker Grid.Column="2" Title="City"
+                               ItemsSource="{Binding CityCollection}"
+                               SelectedItem="{Binding SelectedCity, Mode=TwoWay}" />
+            <ImageButton Grid.Column="3"
+                         HeightRequest="24"
+                         WidthRequest="24"
+                         Command="{Binding ClearSelectionsCommand}"
+                         Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconClose}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" />
+        </Grid>
+
+        <!-- Map/List Toggle -->
+        <Grid Grid.Row="2" ColumnDefinitions="6*, *, *" Margin="5">
+            <Label Grid.Column="0" />
+            <ImageButton Grid.Column="1"
+                         HeightRequest="24"
+                         Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconMap}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}"
+                         Command="{Binding MapSelectedCommand}" />
+            <ImageButton Grid.Column="2"
+                         HeightRequest="24"
+                         Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconViewList}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}"
+                         Command="{Binding ListSelectedCommand}" />
+        </Grid>
+
+        <!-- Map View -->
+        <controls:CustomMap Grid.Row="3"
+                            x:Name="exploreMap"
+                            ItemsSource="{Binding Addresses}"
+                            IsVisible="{Binding IsMapSelected}">
+            <maps:Map.ItemTemplate>
+                <DataTemplate x:DataType="viewModels:AddressViewModel">
+                    <controls:CustomPin Location="{Binding Location}"
+                                        Address="{Binding StreetAddress}"
+                                        Label="{Binding DisplayName}"
+                                        AutomationId="{Binding AutomationId}"
+                                        ImageSource="{Binding IconFile}"
+                                        InfoWindowClicked="Pin_InfoWindowClicked" />
+                </DataTemplate>
+            </maps:Map.ItemTemplate>
+        </controls:CustomMap>
+
+        <!-- List View -->
+        <ScrollView Grid.Row="3" IsVisible="{Binding IsListSelected}">
+            <VerticalStackLayout>
+                <Label Text="No results found"
+                       IsVisible="{Binding AreNoItemsFound}"
+                       FontSize="Small"
+                       Margin="10,20"
+                       HorizontalTextAlignment="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+
+                <!-- Events List -->
+                <VerticalStackLayout IsVisible="{Binding ShowEvents}">
+                    <Label Text="Events"
+                           FontFamily="LexendSemibold"
+                           FontSize="Small"
+                           Margin="10,10,10,5"
+                           IsVisible="{Binding ShowLitterReports}" />
+                    <CollectionView ItemsSource="{Binding Events}"
+                                    SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="viewModels:EventViewModel">
+                                <Border Style="{x:StaticResource RoundBorder}" Margin="5,3">
+                                    <VerticalStackLayout Padding="10,8" Spacing="2">
+                                        <Label Text="{Binding Name}" FontFamily="LexendSemibold" FontSize="Small" />
+                                        <Label Text="{Binding DisplayDate}" FontSize="Micro"
+                                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                        <Label Text="{Binding Address.DisplayAddress}" FontSize="Micro"
+                                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                    </VerticalStackLayout>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ExploreViewModel}}, Path=ViewEventCommand}"
+                                            CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+
+                <!-- Litter Reports List -->
+                <VerticalStackLayout IsVisible="{Binding ShowLitterReports}">
+                    <Label Text="Litter Reports"
+                           FontFamily="LexendSemibold"
+                           FontSize="Small"
+                           Margin="10,10,10,5"
+                           IsVisible="{Binding ShowEvents}" />
+                    <CollectionView ItemsSource="{Binding LitterReports}"
+                                    SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="viewModels:LitterReportViewModel">
+                                <Border Style="{x:StaticResource RoundBorder}" Margin="5,3">
+                                    <VerticalStackLayout Padding="10,8" Spacing="2">
+                                        <Label Text="{Binding Name}" FontFamily="LexendSemibold" FontSize="Small" />
+                                        <Label Text="{Binding LitterReportStatus}" FontSize="Micro"
+                                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                        <Label Text="{Binding Description}" FontSize="Micro" MaxLines="2"
+                                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                    </VerticalStackLayout>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ExploreViewModel}}, Path=ViewLitterReportCommand}"
+                                            CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Loading Overlay -->
+        <BoxView Grid.Row="3"
+                 BackgroundColor="{StaticResource TransparentBlack}"
+                 IsVisible="{Binding IsBusy}" />
+        <ActivityIndicator Grid.Row="3"
+                           IsRunning="{Binding IsBusy}"
+                           IsVisible="{Binding IsBusy}"
+                           VerticalOptions="Center"
+                           HorizontalOptions="Center" />
+    </Grid>
+</ContentPage>
