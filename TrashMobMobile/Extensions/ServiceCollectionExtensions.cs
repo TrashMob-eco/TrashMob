@@ -22,6 +22,8 @@
             services.AddSingleton<IEventAttendeeRouteRestService, EventAttendeeRouteRestService>();
             services.AddSingleton<IEventLitterReportManager, EventLitterReportManager>();
             services.AddSingleton<IEventLitterReportRestService, EventLitterReportRestService>();
+            services.AddSingleton<IEventPhotoManager, EventPhotoManager>();
+            services.AddSingleton<IEventPhotoRestService, EventPhotoRestService>();
             services.AddSingleton<IEventPartnerLocationServiceRestService, EventPartnerLocationServiceRestService>();
             services
                 .AddSingleton<IEventPartnerLocationServiceStatusRestService,

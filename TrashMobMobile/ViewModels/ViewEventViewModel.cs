@@ -19,7 +19,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     IEventLitterReportManager eventLitterReportManager,
     IUserManager userManager,
     IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService,
-    ILitterReportManager litterReportManager) : BaseViewModel(notificationService)
+    ILitterReportManager litterReportManager,
+    IEventPhotoManager eventPhotoManager) : BaseViewModel(notificationService)
 {
     private readonly IEventAttendeeRestService eventAttendeeRestService = eventAttendeeRestService;
     private readonly IEventLitterReportManager eventLitterReportManager = eventLitterReportManager;
@@ -29,6 +30,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     private readonly IEventTypeRestService eventTypeRestService = eventTypeRestService;
     private readonly IMobEventManager mobEventManager = mobEventManager;
     private readonly IWaiverManager waiverManager = waiverManager;
+    private readonly IEventPhotoManager eventPhotoManager = eventPhotoManager;
  
     [ObservableProperty]
     private string attendeeCount = string.Empty;
@@ -105,6 +107,20 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     [ObservableProperty]
     private DateTimeOffset routeEndTime;
 
+    [ObservableProperty]
+    private bool arePhotosFound;
+
+    [ObservableProperty]
+    private bool areNoPhotosFound = true;
+
+    [ObservableProperty]
+    private bool canUploadPhoto;
+
+    [ObservableProperty]
+    private string photoCountDisplay = string.Empty;
+
+    public ObservableCollection<EventPhotoViewModel> EventPhotos { get; set; } = [];
+
     public ObservableCollection<EventPartnerLocationViewModel> AvailablePartners { get; set; } = new();
 
     public ObservableCollection<EventViewModel> Events { get; set; } = [];
@@ -150,6 +166,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             await GetAttendeeCount();
             await LoadPartners();
             await LoadLitterReports();
+            await LoadPhotos();
 
             var routes = await eventAttendeeRouteRestService.GetEventAttendeeRoutesForEventAsync(eventId);
             EventAttendeeRoutes.Clear();
@@ -474,5 +491,104 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             await GetAttendeeCount();
             await NotificationService.Notify($"{attendee.UserName} has been demoted from co-lead.");
         }, "An error occurred while demoting the co-lead. Please try again.");
+    }
+
+    private async Task LoadPhotos()
+    {
+        ArePhotosFound = false;
+        AreNoPhotosFound = true;
+
+        var photos = await eventPhotoManager.GetEventPhotosAsync(EventViewModel.Id);
+
+        EventPhotos.Clear();
+
+        var currentUserId = userManager.CurrentUser.Id;
+        var isLead = mobEvent.IsEventLead(currentUserId);
+
+        foreach (var photo in photos.OrderByDescending(p => p.UploadedDate))
+        {
+            EventPhotos.Add(new EventPhotoViewModel
+            {
+                Id = photo.Id,
+                EventId = photo.EventId,
+                ImageUrl = photo.ImageUrl ?? string.Empty,
+                ThumbnailUrl = photo.ThumbnailUrl ?? string.Empty,
+                PhotoType = photo.PhotoType,
+                Caption = photo.Caption ?? string.Empty,
+                UploadedDate = photo.UploadedDate,
+                UploadedByUserId = photo.UploadedByUserId,
+                CanDelete = photo.UploadedByUserId == currentUserId || isLead,
+            });
+        }
+
+        ArePhotosFound = EventPhotos.Count > 0;
+        AreNoPhotosFound = !ArePhotosFound;
+        PhotoCountDisplay = EventPhotos.Count == 1 ? "1 photo" : $"{EventPhotos.Count} photos";
+
+        var isAttending = await mobEventManager.IsUserAttendingAsync(mobEvent.Id, currentUserId);
+        CanUploadPhoto = isLead || isAttending;
+    }
+
+    [RelayCommand]
+    private async Task PickPhoto()
+    {
+        await ExecuteAsync(async () =>
+        {
+            var result = await MediaPicker.Default.PickPhotoAsync(new MediaPickerOptions
+            {
+                Title = "Select a photo",
+            });
+
+            if (result == null)
+            {
+                return;
+            }
+
+            var photoType = await Shell.Current.DisplayActionSheet(
+                "When was this photo taken?", "Cancel", null, "Before", "During", "After");
+
+            if (photoType == null || photoType == "Cancel")
+            {
+                return;
+            }
+
+            var eventPhotoType = photoType switch
+            {
+                "Before" => EventPhotoType.Before,
+                "After" => EventPhotoType.After,
+                _ => EventPhotoType.During,
+            };
+
+            await eventPhotoManager.UploadPhotoAsync(
+                EventViewModel.Id, result.FullPath, eventPhotoType, string.Empty);
+
+            await LoadPhotos();
+
+            await NotificationService.Notify("Photo uploaded successfully.");
+        }, "An error occurred while uploading the photo. Please try again.");
+    }
+
+    [RelayCommand]
+    private async Task DeletePhoto(EventPhotoViewModel? photoVm)
+    {
+        if (photoVm == null)
+        {
+            return;
+        }
+
+        var confirm = await Shell.Current.DisplayAlert(
+            "Delete Photo", "Are you sure you want to delete this photo?", "Delete", "Cancel");
+
+        if (!confirm)
+        {
+            return;
+        }
+
+        await ExecuteAsync(async () =>
+        {
+            await eventPhotoManager.DeletePhotoAsync(photoVm.EventId, photoVm.Id);
+            await LoadPhotos();
+            await NotificationService.Notify("Photo deleted.");
+        }, "An error occurred while deleting the photo. Please try again.");
     }
 }
