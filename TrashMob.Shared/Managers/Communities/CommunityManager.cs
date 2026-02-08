@@ -349,6 +349,10 @@ namespace TrashMob.Shared.Managers.Communities
             existing.BoundsSouth = community.BoundsSouth;
             existing.BoundsEast = community.BoundsEast;
             existing.BoundsWest = community.BoundsWest;
+            existing.DefaultCleanupFrequencyDays = community.DefaultCleanupFrequencyDays;
+            existing.DefaultMinEventsPerYear = community.DefaultMinEventsPerYear;
+            existing.DefaultSafetyRequirements = community.DefaultSafetyRequirements;
+            existing.DefaultAllowCoAdoption = community.DefaultAllowCoAdoption;
             existing.LastUpdatedByUserId = userId;
             existing.LastUpdatedDate = DateTimeOffset.UtcNow;
 

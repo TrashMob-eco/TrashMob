@@ -366,7 +366,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                                     },
                                 ].map((stat) => (
                                     <div
-                                        className='basis-full sm:basis-[calc(50%-8px)] lg:basis-[140px] lg:max-w-[200px] lg:grow bg-card pl-4! pr-[90px]! relative rounded-lg'
+                                        className='basis-full sm:basis-[calc(50%-8px)] lg:basis-0 lg:grow bg-card pl-4! pr-[90px]! relative rounded-lg'
                                         key={stat.name}
                                     >
                                         <p className='text-lg font-medium mt-4! mb-2!'>{stat.name}</p>
