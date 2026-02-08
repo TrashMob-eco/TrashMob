@@ -7,6 +7,7 @@ import { MapPin, ArrowLeft, Loader2, ExternalLink, Building2, Settings, Share2 }
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { useLogin } from '@/hooks/useLogin';
 import CommunityData from '@/components/Models/CommunityData';
 import EventData from '@/components/Models/EventData';
@@ -29,11 +30,7 @@ import { CommunityPhotoGallery } from '@/components/communities/CommunityPhotoGa
 import { CommunityPhotoUploader } from '@/components/communities/CommunityPhotoUploader';
 import { ShareDialog } from '@/components/sharing';
 import { getCommunityShareableContent, getCommunityShareMessage } from '@/lib/sharing-messages';
-
-const getLocation = (community: CommunityData) => {
-    const parts = [community.city, community.region, community.country].filter(Boolean);
-    return parts.join(', ') || 'Location not specified';
-};
+import { getLocation, getRegionTypeLabel } from '@/lib/community-utils';
 
 export const CommunityDetailPage = () => {
     const { slug } = useParams<{ slug: string }>() as { slug: string };
@@ -202,6 +199,11 @@ export const CommunityDetailPage = () => {
                                     <div className='flex items-center gap-2 text-muted-foreground'>
                                         <MapPin className='h-4 w-4' />
                                         <span>{getLocation(community)}</span>
+                                        {getRegionTypeLabel(community.regionType) ? (
+                                            <Badge variant='secondary'>
+                                                {getRegionTypeLabel(community.regionType)} Community
+                                            </Badge>
+                                        ) : null}
                                     </div>
                                 </div>
                             </CardContent>
@@ -215,6 +217,10 @@ export const CommunityDetailPage = () => {
                                 litterReports={litterReports}
                                 centerLat={community.latitude!}
                                 centerLng={community.longitude!}
+                                boundsNorth={community.boundsNorth}
+                                boundsSouth={community.boundsSouth}
+                                boundsEast={community.boundsEast}
+                                boundsWest={community.boundsWest}
                             />
                         ) : null}
 
