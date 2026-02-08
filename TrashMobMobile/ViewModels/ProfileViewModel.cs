@@ -196,6 +196,12 @@ public partial class ProfileViewModel(
     }
 
     [RelayCommand]
+    private async Task ManageNewsletterPreferences()
+    {
+        await Shell.Current.GoToAsync(nameof(NewsletterPreferencesPage));
+    }
+
+    [RelayCommand]
     private async Task SignOut()
     {
         await Shell.Current.GoToAsync(nameof(LogoutPage));

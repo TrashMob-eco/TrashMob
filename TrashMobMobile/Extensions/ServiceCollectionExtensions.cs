@@ -34,6 +34,8 @@
             services.AddSingleton<IEventTypeRestService, EventTypeRestService>();
             services.AddSingleton<ILeaderboardManager, LeaderboardManager>();
             services.AddSingleton<ILeaderboardRestService, LeaderboardRestService>();
+            services.AddSingleton<INewsletterPreferenceManager, NewsletterPreferenceManager>();
+            services.AddSingleton<INewsletterPreferenceRestService, NewsletterPreferenceRestService>();
             services.AddSingleton<ILitterReportManager, LitterReportManager>();
             services.AddSingleton<ILitterReportRestService, LitterReportRestService>();
             services.AddSingleton<IMapRestService, MapRestService>();

@@ -101,4 +101,18 @@ public class TeamRestService(IHttpClientFactory httpClientFactory) : RestService
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
         return JsonConvert.DeserializeObject<List<Event>>(content) ?? [];
     }
+
+    public async Task LinkEventAsync(Guid teamId, Guid eventId, CancellationToken cancellationToken = default)
+    {
+        var requestUri = $"{Controller}/{teamId}/events/{eventId}";
+        using var response = await AuthorizedHttpClient.PostAsync(requestUri, null, cancellationToken);
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task UnlinkEventAsync(Guid teamId, Guid eventId, CancellationToken cancellationToken = default)
+    {
+        var requestUri = $"{Controller}/{teamId}/events/{eventId}";
+        using var response = await AuthorizedHttpClient.DeleteAsync(requestUri, cancellationToken);
+        response.EnsureSuccessStatusCode();
+    }
 }
