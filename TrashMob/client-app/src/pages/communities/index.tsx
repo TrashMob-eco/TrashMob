@@ -9,16 +9,13 @@ import { HeroSection } from '@/components/Customization/HeroSection';
 import { Card, CardContent } from '@/components/ui/card';
 import { DataTable, DataTableColumnHeader } from '@/components/ui/data-table';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { CommunitiesMap } from '@/components/communities/communities-map';
 import CommunityData from '@/components/Models/CommunityData';
 import { GetCommunities } from '@/services/communities';
+import { getLocation, getRegionTypeLabel } from '@/lib/community-utils';
 
 type ViewMode = 'list' | 'map';
-
-const getLocation = (community: CommunityData) => {
-    const parts = [community.city, community.region, community.country].filter(Boolean);
-    return parts.join(', ') || '-';
-};
 
 const columns: ColumnDef<CommunityData>[] = [
     {
@@ -48,9 +45,14 @@ const columns: ColumnDef<CommunityData>[] = [
         id: 'location',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Location' />,
         cell: ({ row }) => (
-            <div className='flex items-center gap-1'>
+            <div className='flex items-center gap-2'>
                 <MapPin className='h-4 w-4 text-muted-foreground' />
                 <span>{getLocation(row.original)}</span>
+                {getRegionTypeLabel(row.original.regionType) ? (
+                    <Badge variant='outline' className='text-xs'>
+                        {getRegionTypeLabel(row.original.regionType)}
+                    </Badge>
+                ) : null}
             </div>
         ),
     },

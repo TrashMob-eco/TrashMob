@@ -17,6 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import CommunityData from '@/components/Models/CommunityData';
 import { GetCommunityForAdmin, UpdateCommunityContent } from '@/services/communities';
 import { GetPartnerById } from '@/services/partners';
+import { getLocation, getRegionTypeLabel } from '@/lib/community-utils';
 
 interface FormInputs {
     publicNotes: string;
@@ -159,6 +160,32 @@ export const PartnerCommunityContent = () => {
         <div className='py-8'>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+                    {/* Community Coverage (read-only, only for regional communities) */}
+                    {currentValues && getRegionTypeLabel(currentValues.regionType) ? (
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Community Coverage</CardTitle>
+                                <CardDescription>
+                                    Your community&apos;s geographic scope. Contact support to change these settings.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                                    <div>
+                                        <p className='text-sm font-medium text-muted-foreground'>Type</p>
+                                        <p className='text-sm'>
+                                            {getRegionTypeLabel(currentValues.regionType)} Community
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p className='text-sm font-medium text-muted-foreground'>Location</p>
+                                        <p className='text-sm'>{getLocation(currentValues)}</p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ) : null}
+
                     {/* About Section */}
                     <Card>
                         <CardHeader>

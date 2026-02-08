@@ -47,10 +47,30 @@ interface CommunityDetailMapProps extends MapProps {
     litterReports: LitterReportData[];
     centerLat: number;
     centerLng: number;
+    boundsNorth?: number | null;
+    boundsSouth?: number | null;
+    boundsEast?: number | null;
+    boundsWest?: number | null;
 }
 
 export const CommunityDetailMap = (props: CommunityDetailMapProps) => {
-    const { id, events, teams, litterReports, centerLat, centerLng, gestureHandling, ...rest } = props;
+    const {
+        id,
+        events,
+        teams,
+        litterReports,
+        centerLat,
+        centerLng,
+        boundsNorth,
+        boundsSouth,
+        boundsEast,
+        boundsWest,
+        gestureHandling,
+        ...rest
+    } = props;
+
+    const hasBounds =
+        boundsNorth != null && boundsSouth != null && boundsEast != null && boundsWest != null;
 
     const [showEvents, setShowEvents] = useState(true);
     const [showTeams, setShowTeams] = useState(true);
@@ -160,7 +180,16 @@ export const CommunityDetailMap = (props: CommunityDetailMapProps) => {
                         id={id}
                         gestureHandling={gestureHandling || 'cooperative'}
                         defaultCenter={{ lat: centerLat, lng: centerLng }}
-                        defaultZoom={11}
+                        {...(hasBounds
+                            ? {
+                                  defaultBounds: {
+                                      north: boundsNorth!,
+                                      south: boundsSouth!,
+                                      east: boundsEast!,
+                                      west: boundsWest!,
+                                  },
+                              }
+                            : { defaultZoom: 11 })}
                         {...rest}
                     >
                         {/* Event Markers */}

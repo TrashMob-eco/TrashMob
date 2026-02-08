@@ -2,6 +2,7 @@ import { Link } from 'react-router';
 import { MapPin, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import CommunityData from '@/components/Models/CommunityData';
+import { getLocation } from '@/lib/community-utils';
 
 interface CommunityInfoWindowHeaderProps {
     name: string;
@@ -24,11 +25,6 @@ export const CommunityInfoWindowHeader = ({ name, bannerUrl }: CommunityInfoWind
 interface CommunityInfoWindowContentProps {
     community: CommunityData;
 }
-
-const getLocation = (community: CommunityData) => {
-    const parts = [community.city, community.region, community.country].filter(Boolean);
-    return parts.join(', ') || 'Location not specified';
-};
 
 export const CommunityInfoWindowContent = ({ community }: CommunityInfoWindowContentProps) => {
     return (
