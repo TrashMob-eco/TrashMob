@@ -210,6 +210,27 @@
         }
 
         /// <summary>
+        /// Gets storage usage in bytes for a partner, including the total limit.
+        /// </summary>
+        /// <param name="partnerId">The partner ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpGet("storageusage/{partnerId}")]
+        public async Task<IActionResult> GetStorageUsage(Guid partnerId, CancellationToken cancellationToken)
+        {
+            var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
+            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
+                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            var usageBytes = await storageManager.GetPartnerStorageUsageBytesAsync(partnerId, cancellationToken);
+            return Ok(new { usageBytes, limitBytes = MaxPartnerStorageBytes });
+        }
+
+        /// <summary>
         /// Updates an existing partner document.
         /// </summary>
         /// <param name="partnerDocument">The partner document to update.</param>

@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import * as ToolTips from '@/store/ToolTips';
 import { useLogin } from '@/hooks/useLogin';
+import { useFeatureMetrics } from '@/hooks/useFeatureMetrics';
 import { CreatePartnerDocument, GetPartnerDocumentsByPartnerId, UploadPartnerDocument } from '@/services/documents';
 
 import PartnerDocumentData from '@/components/Models/PartnerDocumentData';
@@ -57,6 +58,7 @@ export const PartnerDocumentCreate = () => {
     };
     const { currentUser } = useLogin();
     const { toast } = useToast();
+    const { track } = useFeatureMetrics();
     const queryClient = useQueryClient();
     const navigate = useNavigate();
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -66,13 +68,14 @@ export const PartnerDocumentCreate = () => {
     const [fileError, setFileError] = useState('');
 
     const onSuccess = useCallback(() => {
+        track({ category: 'Partner', action: 'Create', target: 'Document', properties: { mode } });
         toast({ variant: 'primary', title: 'Document added!', description: '' });
         queryClient.invalidateQueries({
             queryKey: GetPartnerDocumentsByPartnerId({ partnerId }).key,
             refetchType: 'all',
         });
         navigate(`/partnerdashboard/${partnerId}/documents`);
-    }, [partnerId, toast, queryClient, navigate]);
+    }, [partnerId, mode, toast, track, queryClient, navigate]);
 
     const uploadMutation = useMutation({
         mutationKey: UploadPartnerDocument().key,

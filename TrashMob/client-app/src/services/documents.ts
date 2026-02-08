@@ -84,6 +84,28 @@ export const DownloadPartnerDocument = (params: DownloadPartnerDocument_Params) 
         }),
 });
 
+export type GetPartnerStorageUsage_Params = { partnerId: string };
+export type GetPartnerStorageUsage_Response = { usageBytes: number; limitBytes: number };
+export const GetPartnerStorageUsage = (params: GetPartnerStorageUsage_Params) => ({
+    key: ['/partnerdocuments/storageusage/', params.partnerId],
+    service: async () =>
+        ApiService('protected').fetchData<GetPartnerStorageUsage_Response>({
+            url: `/partnerdocuments/storageusage/${params.partnerId}`,
+            method: 'get',
+        }),
+});
+
+export type AdminPartnerDocumentData = PartnerDocumentData & { partner?: { name: string } };
+export type GetAllPartnerDocuments_Response = AdminPartnerDocumentData[];
+export const GetAllPartnerDocuments = () => ({
+    key: ['/admin/partnerdocuments'],
+    service: async () =>
+        ApiService('protected').fetchData<GetAllPartnerDocuments_Response>({
+            url: '/admin/partnerdocuments',
+            method: 'get',
+        }),
+});
+
 export type DeletePartnerDocumentByDocuemntId_Params = { documentId: string };
 export type DeletePartnerDocumentByDocuemntId_Response = unknown;
 export const DeletePartnerDocumentByDocuemntId = () => ({
