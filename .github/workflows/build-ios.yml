@@ -115,7 +115,7 @@ jobs:
             p12-password: ${{ secrets.ios_signing_certificate_password }}
 
         - name: Download Apple Provisioning Profiles
-          uses: Apple-Actions/download-provisioning-profiles@v3
+          uses: Apple-Actions/download-provisioning-profiles@v5
           with:
             bundle-id: ${{ inputs.bundle_id }}
             profile-type: ${{ inputs.ios_provisioning_profile_type }}
