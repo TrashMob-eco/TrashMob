@@ -21,7 +21,7 @@
 
 | Project | Description | Status |
 |---------|-------------|--------|
-| [Project 1 - Auth Revamp](./Projects/Project_01_Auth_Revamp.md) | Azure B2C → Entra External ID migration | In Progress (Phase 0) |
+| [Project 1 - Auth Revamp](./Projects/Project_01_Auth_Revamp.md) | Azure B2C → Entra External ID migration | In Progress (Phase 0 — code complete, portal setup remaining) |
 | [Project 4 - Mobile Robustness](./Projects/Project_04_Mobile_Robustness.md) | Stabilize MAUI apps, error handling | Developers Engaged |
 | [Project 5 - Deployment Pipelines](./Projects/Project_05_Deployment_Pipelines.md) | CI/CD modernization, Docker | Ready for Dev Review |
 
@@ -140,7 +140,7 @@
 | Status | Count | Projects |
 |--------|-------|----------|
 | ✅ **Complete** | 24 | Projects 3, 7, 9, 10, 11, 13, 14, 16, 17, 18, 19, 20, 21, 26, 27, 28, 29, 32, 34, 35, 37, 39, 40, 42 |
-| **In Progress** | 8 | Projects 1 (Phase 0), 6, 8 (Phase 1-4 Complete), 15 (Backend & Website Complete), 22 (Phase 1-3 Complete), 25 (Phase 1 Complete), 30, 38 (Phases 1-4, 6-7 Complete) |
+| **In Progress** | 8 | Projects 1 (Phase 0 — code complete, portal remaining), 6, 8 (Phase 1-4 Complete), 15 (Backend & Website Complete), 22 (Phase 1-3 Complete), 25 (Phase 1 Complete), 30, 38 (Phases 1-4, 6-7 Complete) |
 | **Developers Engaged** | 1 | Project 4 |
 | **Ready for Review** | 2 | Projects 2, 5 |
 | **Planning** | 1 | Project 23 (combined with Project 1) |
@@ -220,6 +220,6 @@ All new features should consider adding feature usage tracking. See [Project 29 
 
 ---
 
-**Last Updated:** February 8, 2026
+**Last Updated:** February 9, 2026
 **Maintained By:** Product & Engineering Team
 **Next Review:** End of Q1 2026
