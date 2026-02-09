@@ -75,6 +75,12 @@ public partial class HomeFeedViewModel(
     }
 
     [RelayCommand]
+    private async Task BrowseCommunities()
+    {
+        await Shell.Current.GoToAsync(nameof(BrowseCommunitiesPage));
+    }
+
+    [RelayCommand]
     private async Task ViewLitterReport(LitterReportViewModel? reportVm)
     {
         if (reportVm == null)

@@ -124,6 +124,29 @@
                     </Grid>
                 </Border>
 
+                <!-- Communities Discovery -->
+                <Label Text="Communities"
+                       FontFamily="LexendSemibold"
+                       FontSize="Medium"
+                       Margin="10,15,10,5" />
+
+                <Border Style="{x:StaticResource RoundBorder}" Margin="5,3">
+                    <Grid ColumnDefinitions="*, Auto" Padding="10,10">
+                        <VerticalStackLayout Grid.Column="0" Spacing="4">
+                            <Label Text="Explore Communities"
+                                   FontFamily="LexendSemibold"
+                                   FontSize="Small" />
+                            <Label Text="Discover local cleanup communities and see their impact."
+                                   FontSize="Micro"
+                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                        </VerticalStackLayout>
+                        <Button Grid.Column="1"
+                                Text="Browse"
+                                Command="{Binding BrowseCommunitiesCommand}"
+                                Style="{StaticResource SecondarySmallButton}" />
+                    </Grid>
+                </Border>
+
             </VerticalStackLayout>
         </ScrollView>
     </RefreshView>

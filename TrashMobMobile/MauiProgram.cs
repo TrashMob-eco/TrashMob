@@ -83,6 +83,7 @@ public static class MauiProgram
         builder.Services.AddTransient<SearchLitterReportsPage>();
         builder.Services.AddTransient<SetUserLocationPreferencePage>();
         builder.Services.AddTransient<AchievementsPage>();
+        builder.Services.AddTransient<BrowseCommunitiesPage>();
         builder.Services.AddTransient<BrowseTeamsPage>();
         builder.Services.AddTransient<LeaderboardsPage>();
         builder.Services.AddTransient<NewsletterPreferencesPage>();
@@ -90,6 +91,7 @@ public static class MauiProgram
         builder.Services.AddTransient<ViewEventSummaryPage>();
         builder.Services.AddTransient<ViewLitterReportPage>();
         builder.Services.AddTransient<ViewPickupLocationPage>();
+        builder.Services.AddTransient<ViewCommunityPage>();
         builder.Services.AddTransient<ViewTeamPage>();
         builder.Services.AddTransient<WaiverPage>();
         builder.Services.AddTransient<WelcomePage>();
@@ -119,6 +121,7 @@ public static class MauiProgram
         builder.Services.AddTransient<SocialMediaShareViewModel>();
         builder.Services.AddTransient<UserLocationPreferenceViewModel>();
         builder.Services.AddTransient<AchievementsViewModel>();
+        builder.Services.AddTransient<BrowseCommunitiesViewModel>();
         builder.Services.AddTransient<BrowseTeamsViewModel>();
         builder.Services.AddTransient<LeaderboardsViewModel>();
         builder.Services.AddTransient<NewsletterPreferencesViewModel>();
@@ -126,6 +129,7 @@ public static class MauiProgram
         builder.Services.AddTransient<ViewEventSummaryViewModel>();
         builder.Services.AddTransient<ViewLitterReportViewModel>();
         builder.Services.AddTransient<ViewPickupLocationViewModel>();
+        builder.Services.AddTransient<ViewCommunityViewModel>();
         builder.Services.AddTransient<ViewTeamViewModel>();
         builder.Services.AddTransient<WaiverViewModel>();
         builder.Services.AddTransient<WelcomeViewModel>();
