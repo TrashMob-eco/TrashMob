@@ -3,8 +3,8 @@ namespace TrashMobMCP;
 using Azure.Identity;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using ModelContextProtocol.AspNetCore;
 using ModelContextProtocol.Server;
 using TrashMob.Shared;
 using TrashMob.Shared.Managers;
@@ -13,23 +13,24 @@ using TrashMob.Shared.Persistence;
 
 public class Program
 {
-    public static async Task Main(string[] args)
+    public static void Main(string[] args)
     {
-        var builder = Host.CreateApplicationBuilder(args);
+        var builder = WebApplication.CreateBuilder(args);
 
         ConfigureServices(builder.Services);
 
-        // Add MCP server with stdio transport
+        // Add MCP server with HTTP transport (SSE + Streamable HTTP)
         builder.Services
             .AddMcpServer()
-            .WithStdioServerTransport()
+            .WithHttpTransport()
             .WithToolsFromAssembly();
 
         builder.Logging.AddConsole();
         builder.Logging.SetMinimumLevel(LogLevel.Information);
 
-        var host = builder.Build();
-        await host.RunAsync();
+        var app = builder.Build();
+        app.MapMcp();
+        app.Run();
     }
 
     private static void ConfigureServices(IServiceCollection services)
