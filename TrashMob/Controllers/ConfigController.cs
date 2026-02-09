@@ -36,15 +36,23 @@ namespace TrashMob.Controllers
                 }
             }
 
-            // Azure AD B2C settings for frontend MSAL authentication
-            // These are public configuration values, not secrets
+            var useEntraExternalId = configuration.GetValue<bool>("UseEntraExternalId");
+
+            if (useEntraExternalId)
+            {
+                return Ok(BuildEntraConfig(instrumentationKey));
+            }
+
+            return Ok(BuildB2CConfig(instrumentationKey));
+        }
+
+        private object BuildB2CConfig(string instrumentationKey)
+        {
             var b2cInstance = configuration["AzureAdB2C:Instance"]?.TrimEnd('/');
             var b2cDomain = configuration["AzureAdB2C:Domain"];
             var b2cFrontendClientId = configuration["AzureAdB2C:FrontendClientId"];
             var b2cSignUpSignInPolicyId = configuration["AzureAdB2C:SignUpSignInPolicyId"];
 
-            // Build B2C authority URLs for MSAL
-            // Format: https://{tenant}.b2clogin.com/{tenant}.onmicrosoft.com/{policy}
             string signUpSignInAuthority = null;
             string deleteUserAuthority = null;
             string profileEditAuthority = null;
@@ -57,40 +65,84 @@ namespace TrashMob.Controllers
                 deleteUserAuthority = $"{baseAuthority}/B2C_1A_TM_DEREGISTER";
                 profileEditAuthority = $"{baseAuthority}/B2C_1A_TM_PROFILEEDIT";
 
-                // Extract authority domain from instance (e.g., "trashmob.b2clogin.com" from "https://trashmob.b2clogin.com")
                 if (b2cInstance.StartsWith("https://"))
                 {
                     authorityDomain = b2cInstance.Substring("https://".Length);
                 }
             }
 
-            return Ok(new
+            return new
             {
                 applicationInsightsKey = instrumentationKey,
+                authProvider = "b2c",
                 azureAdB2C = new
                 {
                     clientId = b2cFrontendClientId,
-                    authorityDomain = authorityDomain,
+                    authorityDomain,
                     policies = new
                     {
                         signUpSignIn = b2cSignUpSignInPolicyId,
                         deleteUser = "B2C_1A_TM_DEREGISTER",
-                        profileEdit = "B2C_1A_TM_PROFILEEDIT"
+                        profileEdit = "B2C_1A_TM_PROFILEEDIT",
                     },
                     authorities = new
                     {
                         signUpSignIn = signUpSignInAuthority,
                         deleteUser = deleteUserAuthority,
-                        profileEdit = profileEditAuthority
+                        profileEdit = profileEditAuthority,
                     },
-                    scopes = b2cDomain != null ? new[]
-                    {
-                        $"https://{b2cDomain}/api/TrashMob.Read",
-                        $"https://{b2cDomain}/api/TrashMob.Writes",
-                        "email"
-                    } : null
+                    scopes = b2cDomain != null
+                        ? new[]
+                        {
+                            $"https://{b2cDomain}/api/TrashMob.Read",
+                            $"https://{b2cDomain}/api/TrashMob.Writes",
+                            "email",
+                        }
+                        : null,
+                },
+            };
+        }
+
+        private object BuildEntraConfig(string instrumentationKey)
+        {
+            var entraInstance = configuration["AzureAdEntra:Instance"]?.TrimEnd('/');
+            var entraDomain = configuration["AzureAdEntra:Domain"];
+            var entraFrontendClientId = configuration["AzureAdEntra:FrontendClientId"];
+            var entraTenantId = configuration["AzureAdEntra:TenantId"];
+
+            string authority = null;
+            string authorityDomain = null;
+
+            if (!string.IsNullOrEmpty(entraInstance) && !string.IsNullOrEmpty(entraTenantId))
+            {
+                // Entra External ID authority: https://{tenant}.ciamlogin.com/{tenantId}
+                authority = $"{entraInstance}/{entraTenantId}";
+
+                if (entraInstance.StartsWith("https://"))
+                {
+                    authorityDomain = entraInstance.Substring("https://".Length);
                 }
-            });
+            }
+
+            return new
+            {
+                applicationInsightsKey = instrumentationKey,
+                authProvider = "entra",
+                azureAdEntra = new
+                {
+                    clientId = entraFrontendClientId,
+                    authorityDomain,
+                    authority,
+                    scopes = entraDomain != null
+                        ? new[]
+                        {
+                            $"https://{entraDomain}/api/TrashMob.Read",
+                            $"https://{entraDomain}/api/TrashMob.Writes",
+                            "email",
+                        }
+                        : null,
+                },
+            };
         }
     }
 }

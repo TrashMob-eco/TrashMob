@@ -112,10 +112,13 @@ public class Program
             }
         });
 
+        var useEntraExternalId = builder.Configuration.GetValue<bool>("UseEntraExternalId");
+        var authConfigSection = useEntraExternalId ? "AzureAdEntra" : "AzureAdB2C";
+
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddMicrosoftIdentityWebApi(options =>
             {
-                builder.Configuration.Bind("AzureAdB2C", options);
+                builder.Configuration.Bind(authConfigSection, options);
 
                 options.TokenValidationParameters.NameClaimType = "name";
                 options.TokenValidationParameters.ValidateLifetime = true;
@@ -149,7 +152,7 @@ public class Program
                     },
                 };
             },
-                options => { builder.Configuration.Bind("AzureAdB2C", options); });
+                options => { builder.Configuration.Bind(authConfigSection, options); });
 
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy(AuthorizationPolicyConstants.ValidUser,

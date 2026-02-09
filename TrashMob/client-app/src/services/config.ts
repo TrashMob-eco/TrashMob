@@ -16,9 +16,20 @@ export interface B2CConfig {
     scopes: string[];
 }
 
+export interface EntraConfig {
+    clientId: string;
+    authorityDomain: string;
+    authority: string;
+    scopes: string[];
+}
+
+export type AuthProvider = 'b2c' | 'entra';
+
 export interface AppConfig {
     applicationInsightsKey: string | null;
-    azureAdB2C: B2CConfig | null;
+    authProvider?: AuthProvider;
+    azureAdB2C?: B2CConfig | null;
+    azureAdEntra?: EntraConfig | null;
 }
 
 let cachedConfig: AppConfig | null = null;
@@ -52,6 +63,7 @@ export async function getAppConfig(): Promise<AppConfig> {
             // Return a default config that will cause auth to fail gracefully
             const defaultConfig: AppConfig = {
                 applicationInsightsKey: null,
+                authProvider: 'b2c',
                 azureAdB2C: null,
             };
             cachedConfig = defaultConfig;
