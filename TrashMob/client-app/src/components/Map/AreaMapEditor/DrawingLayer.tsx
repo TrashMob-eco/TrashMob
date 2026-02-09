@@ -11,6 +11,7 @@ import {
     computeBoundingBox,
     AreaBoundingBox,
 } from '@/lib/geojson';
+import { formatMeasurement } from '@/lib/area-measurement';
 
 const SHAPE_STYLE = {
     strokeColor: '#10B981',
@@ -27,6 +28,7 @@ interface DrawingLayerProps {
     onGeometryChange: (geoJson: string, centroid: { lat: number; lng: number }, bbox: AreaBoundingBox | null) => void;
     onGeometryCleared: () => void;
     onShapePresenceChange: (hasShape: boolean) => void;
+    onMeasurementChange?: (measurement: string | null) => void;
 }
 
 export const DrawingLayer = ({
@@ -36,9 +38,11 @@ export const DrawingLayer = ({
     onGeometryChange,
     onGeometryCleared,
     onShapePresenceChange,
+    onMeasurementChange,
 }: DrawingLayerProps) => {
     const map = useMap(mapId);
     const drawing = useMapsLibrary('drawing');
+    const geometry = useMapsLibrary('geometry');
 
     const drawingManagerRef = useRef<google.maps.drawing.DrawingManager | null>(null);
     const currentShapeRef = useRef<google.maps.Polygon | google.maps.Polyline | null>(null);
@@ -73,8 +77,12 @@ export const DrawingLayer = ({
             }
 
             onGeometryChange(geoJson, computeCentroid(path), computeBoundingBox(path));
+
+            if (geometry && onMeasurementChange) {
+                onMeasurementChange(formatMeasurement(type, path));
+            }
         },
-        [onGeometryChange],
+        [onGeometryChange, geometry, onMeasurementChange],
     );
 
     const attachPathListeners = useCallback(
@@ -224,6 +232,10 @@ export const DrawingLayer = ({
         shapeTypeRef.current = type;
         onShapePresenceChange(true);
 
+        if (geometry && onMeasurementChange) {
+            onMeasurementChange(formatMeasurement(type, path));
+        }
+
         // Fit map to shape bounds
         const bounds = new google.maps.LatLngBounds();
         path.forEach((p) => bounds.extend(p));
@@ -232,15 +244,16 @@ export const DrawingLayer = ({
         }
 
         initializedRef.current = true;
-    }, [map, initialGeoJson, onShapePresenceChange]);
+    }, [map, initialGeoJson, onShapePresenceChange, geometry, onMeasurementChange]);
 
     // Expose delete for parent
     useEffect(() => {
         if (drawingMode === 'delete') {
             removeCurrentShape();
             onGeometryCleared();
+            onMeasurementChange?.(null);
         }
-    }, [drawingMode, removeCurrentShape, onGeometryCleared]);
+    }, [drawingMode, removeCurrentShape, onGeometryCleared, onMeasurementChange]);
 
     return null;
 };

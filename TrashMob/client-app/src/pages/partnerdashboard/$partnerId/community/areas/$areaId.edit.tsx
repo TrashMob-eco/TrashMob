@@ -18,7 +18,12 @@ import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import AdoptableAreaData, { AdoptableAreaType, AdoptableAreaStatus } from '@/components/Models/AdoptableAreaData';
 import CommunityData from '@/components/Models/CommunityData';
-import { GetAdoptableArea, UpdateAdoptableArea, GetAdoptableAreas } from '@/services/adoptable-areas';
+import {
+    GetAdoptableArea,
+    UpdateAdoptableArea,
+    GetAdoptableAreas,
+    GetAdoptableAreas_Response,
+} from '@/services/adoptable-areas';
 import { GetCommunityForAdmin } from '@/services/communities';
 import { AreaMapEditor } from '@/components/Map/AreaMapEditor';
 import { AreaBoundingBox } from '@/lib/geojson';
@@ -76,6 +81,13 @@ export const PartnerCommunityAreaEdit = () => {
     const { data: community } = useQuery<AxiosResponse<CommunityData>, unknown, CommunityData>({
         queryKey: GetCommunityForAdmin({ communityId: partnerId }).key,
         queryFn: GetCommunityForAdmin({ communityId: partnerId }).service,
+        select: (res) => res.data,
+        enabled: !!partnerId,
+    });
+
+    const { data: existingAreas } = useQuery<AxiosResponse<GetAdoptableAreas_Response>, unknown, AdoptableAreaData[]>({
+        queryKey: GetAdoptableAreas({ partnerId }).key,
+        queryFn: GetAdoptableAreas({ partnerId }).service,
         select: (res) => res.data,
         enabled: !!partnerId,
     });
@@ -439,6 +451,8 @@ export const PartnerCommunityAreaEdit = () => {
                                                         ? { lat: community.latitude, lng: community.longitude }
                                                         : null
                                                 }
+                                                existingAreas={existingAreas}
+                                                currentAreaId={areaId}
                                             />
                                         </FormControl>
                                         <FormMessage />
