@@ -45,10 +45,7 @@ export const PartnerCommunitySponsoredAdoptions = () => {
         enabled: !!partnerId,
     });
 
-    const activeAdoptions = useMemo(
-        () => adoptions?.filter((a) => a.status === 'Active') ?? [],
-        [adoptions],
-    );
+    const activeAdoptions = useMemo(() => adoptions?.filter((a) => a.status === 'Active') ?? [], [adoptions]);
 
     const overdueCount = complianceStats?.adoptionsOverdue ?? 0;
 
@@ -75,12 +72,8 @@ export const PartnerCommunitySponsoredAdoptions = () => {
                             <Users className='h-4 w-4 text-muted-foreground' />
                         </CardHeader>
                         <CardContent>
-                            <div className='text-2xl font-bold'>
-                                {complianceStats.totalSponsoredAdoptions}
-                            </div>
-                            <p className='text-xs text-muted-foreground'>
-                                {complianceStats.activeAdoptions} active
-                            </p>
+                            <div className='text-2xl font-bold'>{complianceStats.totalSponsoredAdoptions}</div>
+                            <p className='text-xs text-muted-foreground'>{complianceStats.activeAdoptions} active</p>
                         </CardContent>
                     </Card>
                     <Card>
@@ -89,9 +82,7 @@ export const PartnerCommunitySponsoredAdoptions = () => {
                             <ClipboardCheck className='h-4 w-4 text-muted-foreground' />
                         </CardHeader>
                         <CardContent>
-                            <div className='text-2xl font-bold'>
-                                {complianceStats.activeAdoptions}
-                            </div>
+                            <div className='text-2xl font-bold'>{complianceStats.activeAdoptions}</div>
                             <p className='text-xs text-muted-foreground'>
                                 {complianceStats.adoptionsOnSchedule} on schedule
                             </p>
@@ -103,9 +94,7 @@ export const PartnerCommunitySponsoredAdoptions = () => {
                             <TrendingUp className='h-4 w-4 text-muted-foreground' />
                         </CardHeader>
                         <CardContent>
-                            <div className='text-2xl font-bold'>
-                                {complianceStats.complianceRate.toFixed(0)}%
-                            </div>
+                            <div className='text-2xl font-bold'>{complianceStats.complianceRate.toFixed(0)}%</div>
                             <p className='text-xs text-muted-foreground'>
                                 {complianceStats.totalCleanupLogs} cleanup logs
                             </p>
@@ -117,9 +106,7 @@ export const PartnerCommunitySponsoredAdoptions = () => {
                             <AlertTriangle className='h-4 w-4 text-red-500' />
                         </CardHeader>
                         <CardContent>
-                            <div className='text-2xl font-bold text-red-600'>
-                                {complianceStats.adoptionsOverdue}
-                            </div>
+                            <div className='text-2xl font-bold text-red-600'>{complianceStats.adoptionsOverdue}</div>
                             <p className='text-xs text-muted-foreground'>Need follow-up</p>
                         </CardContent>
                     </Card>
@@ -140,9 +127,7 @@ export const PartnerCommunitySponsoredAdoptions = () => {
                         </div>
                         <Button
                             onClick={() =>
-                                navigate(
-                                    `/partnerdashboard/${partnerId}/community/sponsored-adoptions/create`,
-                                )
+                                navigate(`/partnerdashboard/${partnerId}/community/sponsored-adoptions/create`)
                             }
                         >
                             <Plus className='h-4 w-4 mr-2' />
@@ -153,9 +138,7 @@ export const PartnerCommunitySponsoredAdoptions = () => {
                 <CardContent>
                     <Tabs defaultValue='active'>
                         <TabsList className='mb-4'>
-                            <TabsTrigger value='active'>
-                                Active ({activeAdoptions.length})
-                            </TabsTrigger>
+                            <TabsTrigger value='active'>Active ({activeAdoptions.length})</TabsTrigger>
                             <TabsTrigger value='overdue' className={overdueCount > 0 ? 'text-red-600' : ''}>
                                 Overdue ({overdueCount})
                             </TabsTrigger>
@@ -219,11 +202,7 @@ const AdoptionTable = ({
                 <ClipboardCheck className='h-12 w-12 mx-auto text-muted-foreground mb-4' />
                 <h3 className='text-lg font-medium mb-2'>{emptyMessage}</h3>
                 <p className='text-muted-foreground mb-4'>{emptyDescription}</p>
-                <Button
-                    onClick={() =>
-                        navigate(`/partnerdashboard/${partnerId}/community/sponsored-adoptions/create`)
-                    }
-                >
+                <Button onClick={() => navigate(`/partnerdashboard/${partnerId}/community/sponsored-adoptions/create`)}>
                     <Plus className='h-4 w-4 mr-2' />
                     Create Sponsored Adoption
                 </Button>
@@ -247,19 +226,13 @@ const AdoptionTable = ({
             <TableBody>
                 {adoptions.map((adoption) => (
                     <TableRow key={adoption.id}>
-                        <TableCell className='font-medium'>
-                            {adoption.adoptableArea?.name || 'Unknown Area'}
-                        </TableCell>
+                        <TableCell className='font-medium'>{adoption.adoptableArea?.name || 'Unknown Area'}</TableCell>
                         <TableCell>{adoption.sponsor?.name || 'Unknown Sponsor'}</TableCell>
-                        <TableCell>
-                            {adoption.professionalCompany?.name || 'Unknown Company'}
-                        </TableCell>
+                        <TableCell>{adoption.professionalCompany?.name || 'Unknown Company'}</TableCell>
                         <TableCell>{formatDate(adoption.startDate)}</TableCell>
                         <TableCell>{adoption.cleanupFrequencyDays} days</TableCell>
                         <TableCell>
-                            <Badge className={statusColors[adoption.status]}>
-                                {adoption.status}
-                            </Badge>
+                            <Badge className={statusColors[adoption.status]}>{adoption.status}</Badge>
                         </TableCell>
                         <TableCell className='text-right'>
                             <Button variant='outline' size='sm' asChild>

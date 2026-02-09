@@ -46,9 +46,7 @@ export const PartnerCommunityCompanies = () => {
                             Manage companies that perform professional cleanup services for sponsored adoptions.
                         </CardDescription>
                     </div>
-                    <Button
-                        onClick={() => navigate(`/partnerdashboard/${partnerId}/community/companies/create`)}
-                    >
+                    <Button onClick={() => navigate(`/partnerdashboard/${partnerId}/community/companies/create`)}>
                         <Plus className='h-4 w-4 mr-2' />
                         Add Company
                     </Button>
@@ -100,13 +98,11 @@ export const PartnerCommunityCompanies = () => {
                             <Briefcase className='h-12 w-12 mx-auto text-muted-foreground mb-4' />
                             <h3 className='text-lg font-medium mb-2'>No professional companies yet</h3>
                             <p className='text-muted-foreground mb-4'>
-                                Add your first professional cleanup company to start managing sponsored
-                                adoption services.
+                                Add your first professional cleanup company to start managing sponsored adoption
+                                services.
                             </p>
                             <Button
-                                onClick={() =>
-                                    navigate(`/partnerdashboard/${partnerId}/community/companies/create`)
-                                }
+                                onClick={() => navigate(`/partnerdashboard/${partnerId}/community/companies/create`)}
                             >
                                 <Plus className='h-4 w-4 mr-2' />
                                 Add First Company

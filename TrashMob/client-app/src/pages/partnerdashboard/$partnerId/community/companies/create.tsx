@@ -124,11 +124,7 @@ export const PartnerCommunityCompanyCreate = () => {
                                         <FormItem>
                                             <FormLabel>Contact Email</FormLabel>
                                             <FormControl>
-                                                <Input
-                                                    {...field}
-                                                    type='email'
-                                                    placeholder='contact@company.com'
-                                                />
+                                                <Input {...field} type='email' placeholder='contact@company.com' />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>

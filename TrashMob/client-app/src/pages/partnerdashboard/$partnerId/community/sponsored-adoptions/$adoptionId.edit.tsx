@@ -87,11 +87,7 @@ export const PartnerCommunitySponsoredAdoptionEdit = () => {
         enabled: !!partnerId,
     });
 
-    const { data: companies } = useQuery<
-        AxiosResponse<ProfessionalCompanyData[]>,
-        unknown,
-        ProfessionalCompanyData[]
-    >({
+    const { data: companies } = useQuery<AxiosResponse<ProfessionalCompanyData[]>, unknown, ProfessionalCompanyData[]>({
         queryKey: GetProfessionalCompanies({ partnerId }).key,
         queryFn: GetProfessionalCompanies({ partnerId }).service,
         select: (res) => res.data,
@@ -254,10 +250,7 @@ export const PartnerCommunitySponsoredAdoptionEdit = () => {
                                                 </FormControl>
                                                 <SelectContent>
                                                     {sponsors?.map((sponsor) => (
-                                                        <SelectItem
-                                                            key={sponsor.id}
-                                                            value={sponsor.id}
-                                                        >
+                                                        <SelectItem key={sponsor.id} value={sponsor.id}>
                                                             {sponsor.name}
                                                         </SelectItem>
                                                     ))}
@@ -281,10 +274,7 @@ export const PartnerCommunitySponsoredAdoptionEdit = () => {
                                                 </FormControl>
                                                 <SelectContent>
                                                     {companies?.map((company) => (
-                                                        <SelectItem
-                                                            key={company.id}
-                                                            value={company.id}
-                                                        >
+                                                        <SelectItem key={company.id} value={company.id}>
                                                             {company.name}
                                                         </SelectItem>
                                                     ))}
@@ -368,9 +358,7 @@ export const PartnerCommunitySponsoredAdoptionEdit = () => {
                         <Button
                             type='button'
                             variant='outline'
-                            onClick={() =>
-                                navigate(`/partnerdashboard/${partnerId}/community/sponsored-adoptions`)
-                            }
+                            onClick={() => navigate(`/partnerdashboard/${partnerId}/community/sponsored-adoptions`)}
                         >
                             Cancel
                         </Button>
@@ -388,9 +376,7 @@ export const PartnerCommunitySponsoredAdoptionEdit = () => {
                         <ClipboardList className='h-5 w-5' />
                         Cleanup Logs
                     </CardTitle>
-                    <CardDescription>
-                        Professional cleanup activity logs for this sponsored adoption.
-                    </CardDescription>
+                    <CardDescription>Professional cleanup activity logs for this sponsored adoption.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     {logsLoading ? (
@@ -417,9 +403,7 @@ export const PartnerCommunitySponsoredAdoptionEdit = () => {
                                         <TableCell>
                                             {log.weightInPounds != null ? log.weightInPounds.toFixed(1) : '-'}
                                         </TableCell>
-                                        <TableCell className='max-w-xs truncate'>
-                                            {log.notes || '-'}
-                                        </TableCell>
+                                        <TableCell className='max-w-xs truncate'>{log.notes || '-'}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>

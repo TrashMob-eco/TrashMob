@@ -257,11 +257,7 @@ export const PartnerCommunityCompanyEdit = () => {
                                         <FormItem>
                                             <FormLabel>Contact Email</FormLabel>
                                             <FormControl>
-                                                <Input
-                                                    {...field}
-                                                    type='email'
-                                                    placeholder='contact@company.com'
-                                                />
+                                                <Input {...field} type='email' placeholder='contact@company.com' />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -386,11 +382,7 @@ export const PartnerCommunityCompanyEdit = () => {
                                         <TableCell className='text-right'>
                                             <AlertDialog>
                                                 <AlertDialogTrigger asChild>
-                                                    <Button
-                                                        variant='outline'
-                                                        size='sm'
-                                                        disabled={isRemoving}
-                                                    >
+                                                    <Button variant='outline' size='sm' disabled={isRemoving}>
                                                         <Trash2 className='h-4 w-4' />
                                                     </Button>
                                                 </AlertDialogTrigger>
@@ -399,15 +391,13 @@ export const PartnerCommunityCompanyEdit = () => {
                                                         <AlertDialogTitle>Remove User</AlertDialogTitle>
                                                         <AlertDialogDescription>
                                                             Are you sure you want to remove &quot;
-                                                            {user.userName}&quot; from this company? They will no
-                                                            longer be able to log cleanup activities.
+                                                            {user.userName}&quot; from this company? They will no longer
+                                                            be able to log cleanup activities.
                                                         </AlertDialogDescription>
                                                     </AlertDialogHeader>
                                                     <AlertDialogFooter>
                                                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                        <AlertDialogAction
-                                                            onClick={() => handleRemoveUser(user.id)}
-                                                        >
+                                                        <AlertDialogAction onClick={() => handleRemoveUser(user.id)}>
                                                             Remove
                                                         </AlertDialogAction>
                                                     </AlertDialogFooter>

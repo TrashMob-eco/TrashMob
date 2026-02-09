@@ -208,10 +208,7 @@ export const PartnerCommunitySponsoredAdoptionCreate = () => {
                                                     {sponsors
                                                         ?.filter((s) => s.isActive)
                                                         .map((sponsor) => (
-                                                            <SelectItem
-                                                                key={sponsor.id}
-                                                                value={sponsor.id}
-                                                            >
+                                                            <SelectItem key={sponsor.id} value={sponsor.id}>
                                                                 {sponsor.name}
                                                             </SelectItem>
                                                         ))}
@@ -237,10 +234,7 @@ export const PartnerCommunitySponsoredAdoptionCreate = () => {
                                                     {companies
                                                         ?.filter((c) => c.isActive)
                                                         .map((company) => (
-                                                            <SelectItem
-                                                                key={company.id}
-                                                                value={company.id}
-                                                            >
+                                                            <SelectItem key={company.id} value={company.id}>
                                                                 {company.name}
                                                             </SelectItem>
                                                         ))}
@@ -301,9 +295,7 @@ export const PartnerCommunitySponsoredAdoptionCreate = () => {
                         <Button
                             type='button'
                             variant='outline'
-                            onClick={() =>
-                                navigate(`/partnerdashboard/${partnerId}/community/sponsored-adoptions`)
-                            }
+                            onClick={() => navigate(`/partnerdashboard/${partnerId}/community/sponsored-adoptions`)}
                         >
                             Cancel
                         </Button>

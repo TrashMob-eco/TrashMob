@@ -142,7 +142,8 @@ export const PartnerCommunitySponsors = () => {
                                                         <Pencil className='h-4 w-4' />
                                                     </Link>
                                                 </Button>
-                                                {sponsor.isActive ? <AlertDialog>
+                                                {sponsor.isActive ? (
+                                                    <AlertDialog>
                                                         <AlertDialogTrigger asChild>
                                                             <Button
                                                                 variant='outline'
@@ -170,7 +171,8 @@ export const PartnerCommunitySponsors = () => {
                                                                 </AlertDialogAction>
                                                             </AlertDialogFooter>
                                                         </AlertDialogContent>
-                                                    </AlertDialog> : null}
+                                                    </AlertDialog>
+                                                ) : null}
                                             </div>
                                         </TableCell>
                                     </TableRow>

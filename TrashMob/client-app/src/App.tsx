@@ -479,7 +479,10 @@ const AppContent: FC = () => {
                                         element={<PartnerCommunityInviteDetails />}
                                     />
                                     <Route path='community/sponsors' element={<PartnerCommunitySponsors />} />
-                                    <Route path='community/sponsors/create' element={<PartnerCommunitySponsorCreate />} />
+                                    <Route
+                                        path='community/sponsors/create'
+                                        element={<PartnerCommunitySponsorCreate />}
+                                    />
                                     <Route
                                         path='community/sponsors/:sponsorId/edit'
                                         element={<PartnerCommunitySponsorEdit />}
