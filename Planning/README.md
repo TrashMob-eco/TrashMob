@@ -13,7 +13,7 @@
 - **[Executive Summary](./Executive_Summary.md)** - High-level overview, strategic objectives, and 2026 roadmap
 - **[Risks & Mitigations](./Risks_and_Mitigations.md)** - Cross-project risks and mitigation strategies
 
-### 2026 Projects (42 Total)
+### 2026 Projects (43 Total)
 
 **Note:** Projects are not time-bound. Volunteers pick up work based on priority and availability.
 
@@ -83,6 +83,7 @@
 | [Project 17 - MCP Server](./Projects/Project_17_MCP_Server.md) | AI access via MCP protocol | ✅ Complete |
 | [Project 18 - Before/After Photos](./Projects/Project_18_Before_After_Photos.md) | Event impact photos | ✅ Complete |
 | [Project 27 - OpenTelemetry Migration](./Projects/Project_27_OpenTelemetry_Migration.md) | Vendor-neutral observability | ✅ Complete |
+| [Project 43 - Sign Management](./Projects/Project_43_Sign_Management.md) | Track adoption sign lifecycle, location, and text | Not Started |
 
 ---
 
@@ -102,6 +103,7 @@
 - [Project 39 - Regional Communities](./Projects/Project_39_Regional_Communities.md) ✅
 - [Project 41 - Sponsored Adoptions](./Projects/Project_41_Sponsored_Adoptions.md)
 - [Project 42 - Partner Document Management](./Projects/Project_42_Partner_Document_Management.md)
+- [Project 43 - Sign Management](./Projects/Project_43_Sign_Management.md)
 
 ### Impact Tracking
 - [Project 7 - Event Weights](./Projects/Project_07_Event_Weights.md) ✅
@@ -144,10 +146,10 @@
 | **Developers Engaged** | 1 | Project 4 |
 | **Ready for Review** | 2 | Projects 2, 5 |
 | **Planning** | 1 | Project 23 (combined with Project 1) |
-| **Not Started** | 5 | Projects 12, 24, 31, 36, 41 |
+| **Not Started** | 6 | Projects 12, 24, 31, 36, 41, 43 |
 | **Deprioritized** | 1 | Project 33 |
 
-**Total:** 42 project specifications documented
+**Total:** 43 project specifications documented
 
 ---
 
