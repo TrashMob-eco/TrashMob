@@ -4,6 +4,7 @@ import events from '@/components/assets/faq/Event.svg';
 import gloves from '@/components/assets/gloves.svg';
 import teams from '@/components/assets/card/twofigure.svg';
 import communities from '@/components/assets/home/Person.svg';
+import ai from '@/components/assets/faq/volunteer.svg';
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -355,6 +356,84 @@ const tabContents = [
                         <li>Connection with active volunteer teams</li>
                         <li>Tools to promote cleanup initiatives</li>
                     </ul>
+                `,
+            },
+        ],
+    },
+    {
+        category: 'AI Integration',
+        desc: 'Use AI assistants with TrashMob data',
+        icon: ai,
+        questions: [
+            {
+                question: 'What is MCP?',
+                answer: `
+                    <p>TrashMob provides an <strong>MCP (Model Context Protocol) server</strong> that lets AI assistants access TrashMob data through natural language.</p>
+                    <p>MCP is an open protocol that allows AI tools like Claude, ChatGPT, and others to connect to external data sources. With the TrashMob MCP server, you can ask questions like:</p>
+                    <ul class="list-disc pl-8">
+                        <li>"Find cleanup events near Seattle this weekend"</li>
+                        <li>"Who are the top volunteers this month?"</li>
+                        <li>"What achievement badges can I earn?"</li>
+                        <li>"Show me communities in Washington"</li>
+                        <li>"What are the route stats for this event?"</li>
+                    </ul>
+                    <p>The server provides <strong>read-only access to public data</strong> only — no private information is ever exposed.</p>
+                `,
+            },
+            {
+                question: 'Available Tools',
+                answer: `
+                    <p>The MCP server exposes 9 tools that AI assistants can use:</p>
+                    <ul class="list-disc pl-8">
+                        <li><strong>Search Events</strong> - Find cleanup events by location, date, and status</li>
+                        <li><strong>Get Stats</strong> - View platform-wide impact statistics</li>
+                        <li><strong>Search Teams</strong> - Find volunteer teams by location or name</li>
+                        <li><strong>Search Communities</strong> - Discover community pages near you</li>
+                        <li><strong>Search Litter Reports</strong> - Find litter reports by location and status</li>
+                        <li><strong>Search Partner Locations</strong> - Find partners offering hauling, disposal, or supplies</li>
+                        <li><strong>Get Leaderboard</strong> - View volunteer and team rankings</li>
+                        <li><strong>Get Achievement Types</strong> - See available badges and milestones</li>
+                        <li><strong>Get Event Route Stats</strong> - View route tracking data for events</li>
+                    </ul>
+                `,
+            },
+            {
+                question: 'Connecting from Claude Desktop',
+                answer: `
+                    <p>To use TrashMob with Claude Desktop:</p>
+                    <ol class="list-decimal pl-8">
+                        <li>Open Claude Desktop and go to <strong>Settings</strong></li>
+                        <li>Navigate to the <strong>MCP Servers</strong> section</li>
+                        <li>Click <strong>"Add Server"</strong></li>
+                        <li>Enter the TrashMob MCP server URL</li>
+                        <li>Save and restart Claude Desktop</li>
+                    </ol>
+                    <p>Once connected, you can ask Claude natural language questions about TrashMob events, teams, communities, and more.</p>
+                `,
+            },
+            {
+                question: 'Connecting from Claude Code',
+                answer: `
+                    <p>To use TrashMob with Claude Code (CLI):</p>
+                    <ol class="list-decimal pl-8">
+                        <li>Open your Claude Code settings file</li>
+                        <li>Add the TrashMob MCP server to your configuration</li>
+                        <li>Restart Claude Code</li>
+                    </ol>
+                    <p>Claude Code will automatically discover the available tools and you can use them in your conversations.</p>
+                `,
+            },
+            {
+                question: 'Privacy & Security',
+                answer: `
+                    <p>The TrashMob MCP server is designed with privacy as a priority:</p>
+                    <ul class="list-disc pl-8">
+                        <li><strong>Read-only</strong> - The server cannot create, modify, or delete any data</li>
+                        <li><strong>Public data only</strong> - Only information already visible on the TrashMob website is accessible</li>
+                        <li><strong>No personal information</strong> - User emails, phone numbers, and other private data are never exposed</li>
+                        <li><strong>Anonymized statistics</strong> - Route data and metrics are aggregated, not individual</li>
+                    </ul>
+                    <p>The MCP server follows the same privacy standards as the public TrashMob website.</p>
                 `,
             },
         ],
