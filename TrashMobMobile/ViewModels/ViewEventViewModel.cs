@@ -122,6 +122,26 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     [ObservableProperty]
     private bool enableSimulateRoute;
 
+    [ObservableProperty]
+    private bool areRoutesFound;
+
+    [ObservableProperty]
+    private bool areNoRoutesFound = true;
+
+    [ObservableProperty]
+    private string routeCountDisplay = "No routes";
+
+    [ObservableProperty]
+    private string totalDistanceDisplay = "0 m";
+
+    [ObservableProperty]
+    private string totalDurationDisplay = "0 min";
+
+    [ObservableProperty]
+    private string totalBagsDisplay = "0";
+
+    public List<string> PrivacyOptions { get; } = ["Private", "EventOnly", "Public"];
+
     public ObservableCollection<EventPhotoViewModel> EventPhotos { get; set; } = [];
 
     public ObservableCollection<EventPartnerLocationViewModel> AvailablePartners { get; set; } = new();
@@ -137,6 +157,8 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     public ObservableCollection<EventAttendeeViewModel> EventAttendees { get; set; } = [];
 
     public ObservableCollection<DisplayEventAttendeeRoute> EventAttendeeRoutes { get; set; } = [];
+
+    public ObservableCollection<EventAttendeeRouteViewModel> EventAttendeeRouteViewModels { get; set; } = [];
 
     public async Task Init(Guid eventId, Action updRoutes)
     {
@@ -176,14 +198,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
 #endif
 
             var routes = await eventAttendeeRouteRestService.GetEventAttendeeRoutesForEventAsync(eventId);
-            EventAttendeeRoutes.Clear();
-
-            foreach (var eventAttendeeRoute in routes)
-            {
-                EventAttendeeRoutes.Add(eventAttendeeRoute);
-            }
-
-            UpdateRoutes();
+            LoadRouteViewModels(routes);
         }, "An error occurred while loading the event. Please try again.");
     }
     
@@ -607,9 +622,112 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             var route = await eventAttendeeRouteRestService.SimulateRouteAsync(EventViewModel.Id);
 
             EventAttendeeRoutes.Add(route);
+            EventAttendeeRouteViewModels.Add(
+                EventAttendeeRouteViewModel.FromRoute(route, userManager.CurrentUser.Id));
+            UpdateRouteStats();
             UpdateRoutes();
 
             await NotificationService.Notify("Route simulated successfully!");
         }, "An error occurred while simulating the route. Please try again.");
+    }
+
+    [RelayCommand]
+    private async Task DeleteRoute(EventAttendeeRouteViewModel? routeVm)
+    {
+        if (routeVm == null)
+        {
+            return;
+        }
+
+        var confirm = await Shell.Current.DisplayAlert(
+            "Delete Route", "Are you sure you want to delete this route?", "Delete", "Cancel");
+
+        if (!confirm)
+        {
+            return;
+        }
+
+        await ExecuteAsync(async () =>
+        {
+            await eventAttendeeRouteRestService.DeleteEventAttendeeRouteAsync(routeVm.Id);
+
+            var rawRoute = EventAttendeeRoutes.FirstOrDefault(r => r.Id == routeVm.Id);
+            if (rawRoute != null)
+            {
+                EventAttendeeRoutes.Remove(rawRoute);
+            }
+
+            EventAttendeeRouteViewModels.Remove(routeVm);
+            UpdateRouteStats();
+            UpdateRoutes();
+
+            await NotificationService.Notify("Route deleted.");
+        }, "An error occurred while deleting the route. Please try again.");
+    }
+
+    [RelayCommand]
+    private async Task ChangeRoutePrivacy(EventAttendeeRouteViewModel? routeVm)
+    {
+        if (routeVm == null)
+        {
+            return;
+        }
+
+        await ExecuteAsync(async () =>
+        {
+            var request = new UpdateRouteMetadataRequest
+            {
+                PrivacyLevel = routeVm.PrivacyLevel,
+            };
+
+            var updated = await eventAttendeeRouteRestService.UpdateRouteMetadataAsync(routeVm.Id, request);
+
+            var rawRoute = EventAttendeeRoutes.FirstOrDefault(r => r.Id == routeVm.Id);
+            if (rawRoute != null)
+            {
+                rawRoute.PrivacyLevel = updated.PrivacyLevel;
+            }
+
+            await NotificationService.Notify("Privacy updated.");
+        }, "An error occurred while updating privacy. Please try again.");
+    }
+
+    private void LoadRouteViewModels(IEnumerable<DisplayEventAttendeeRoute> routes)
+    {
+        EventAttendeeRoutes.Clear();
+        EventAttendeeRouteViewModels.Clear();
+
+        var currentUserId = userManager.CurrentUser.Id;
+
+        foreach (var route in routes)
+        {
+            EventAttendeeRoutes.Add(route);
+            EventAttendeeRouteViewModels.Add(
+                EventAttendeeRouteViewModel.FromRoute(route, currentUserId));
+        }
+
+        UpdateRouteStats();
+        UpdateRoutes();
+    }
+
+    private void UpdateRouteStats()
+    {
+        var count = EventAttendeeRoutes.Count;
+        AreRoutesFound = count > 0;
+        AreNoRoutesFound = !AreRoutesFound;
+        RouteCountDisplay = count == 1 ? "1 route" : $"{count} routes";
+
+        var totalMeters = EventAttendeeRoutes.Sum(r => r.TotalDistanceMeters);
+        TotalDistanceDisplay = totalMeters >= 1000
+            ? $"{totalMeters / 1000.0:F1} km"
+            : $"{totalMeters} m";
+
+        var totalMinutes = EventAttendeeRoutes.Sum(r => r.DurationMinutes);
+        TotalDurationDisplay = totalMinutes >= 60
+            ? $"{totalMinutes / 60} hr {totalMinutes % 60} min"
+            : $"{totalMinutes} min";
+
+        var totalBags = EventAttendeeRoutes.Sum(r => r.BagsCollected ?? 0);
+        TotalBagsDisplay = totalBags.ToString();
     }
 }

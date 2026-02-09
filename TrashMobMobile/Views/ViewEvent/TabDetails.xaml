@@ -84,13 +84,6 @@
                             IsVisible="{Binding EnableStopTrackEventRoute}"
                             Text="Stop Tracking"
                             Style="{StaticResource SecondarySmallButton}" />-->
-            <Button Margin="5"
-                            Grid.Row="0"
-                            Grid.Column="2"
-                            Command="{Binding SimulateRouteCommand}"
-                            IsVisible="{Binding EnableSimulateRoute}"
-                            Text="Simulate Route"
-                            Style="{StaticResource SecondarySmallButton}" />
         </Grid>
     </Grid>
 </ContentView>
