@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             x:DataType="viewModels:BrowseCommunitiesViewModel"
+             x:Class="TrashMobMobile.Pages.BrowseCommunitiesPage"
+             Title="Communities Near You">
+
+    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+        <ScrollView>
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
+
+                <Label Text="Communities Near You"
+                       FontFamily="LexendSemibold"
+                       FontSize="Title"
+                       Margin="10,15,10,5" />
+
+                <Label Text="No communities found nearby"
+                       IsVisible="{Binding AreNoCommunitiesFound}"
+                       FontSize="Small"
+                       Margin="10,5"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+
+                <CollectionView ItemsSource="{Binding Communities}"
+                                SelectionMode="None"
+                                IsVisible="{Binding AreCommunitiesFound}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="viewModels:CommunityViewModel">
+                            <Border Style="{x:StaticResource RoundBorder}" Margin="5,3">
+                                <VerticalStackLayout Padding="10,10" Spacing="4">
+                                    <Label Text="{Binding Name}"
+                                           FontFamily="LexendSemibold"
+                                           FontSize="Small" />
+                                    <Label Text="{Binding Tagline}"
+                                           FontSize="Micro"
+                                           MaxLines="2"
+                                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                    <HorizontalStackLayout Spacing="8">
+                                        <Label Text="{Binding Location}"
+                                               FontSize="Micro"
+                                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                        <Label Text="{Binding RegionTypeDisplay}"
+                                               FontSize="Micro"
+                                               FontAttributes="Bold"
+                                               IsVisible="{Binding HasRegionType}"
+                                               TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:BrowseCommunitiesViewModel}}, Path=ViewCommunityCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+</ContentPage>

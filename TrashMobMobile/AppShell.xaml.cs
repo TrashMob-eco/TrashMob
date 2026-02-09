@@ -31,6 +31,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(SearchLitterReportsPage), typeof(SearchLitterReportsPage));
         Routing.RegisterRoute(nameof(SetUserLocationPreferencePage), typeof(SetUserLocationPreferencePage));
         Routing.RegisterRoute(nameof(AchievementsPage), typeof(AchievementsPage));
+        Routing.RegisterRoute(nameof(BrowseCommunitiesPage), typeof(BrowseCommunitiesPage));
         Routing.RegisterRoute(nameof(BrowseTeamsPage), typeof(BrowseTeamsPage));
         Routing.RegisterRoute(nameof(LeaderboardsPage), typeof(LeaderboardsPage));
         Routing.RegisterRoute(nameof(NewsletterPreferencesPage), typeof(NewsletterPreferencesPage));
@@ -38,6 +39,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(ViewEventSummaryPage), typeof(ViewEventSummaryPage));
         Routing.RegisterRoute(nameof(ViewLitterReportPage), typeof(ViewLitterReportPage));
         Routing.RegisterRoute(nameof(ViewPickupLocationPage), typeof(ViewPickupLocationPage));
+        Routing.RegisterRoute(nameof(ViewCommunityPage), typeof(ViewCommunityPage));
         Routing.RegisterRoute(nameof(ViewTeamPage), typeof(ViewTeamPage));
         Routing.RegisterRoute(nameof(WaiverPage), typeof(WaiverPage));
         Routing.RegisterRoute(nameof(WelcomePage), typeof(WelcomePage));

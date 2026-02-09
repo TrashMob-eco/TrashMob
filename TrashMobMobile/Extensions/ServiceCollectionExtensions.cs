@@ -18,6 +18,8 @@
 
             services.AddSingleton<IAchievementManager, AchievementManager>();
             services.AddSingleton<IAchievementRestService, AchievementRestService>();
+            services.AddSingleton<ICommunityManager, CommunityManager>();
+            services.AddSingleton<ICommunityRestService, CommunityRestService>();
             services.AddSingleton<IContactRequestManager, ContactRequestManager>();
             services.AddSingleton<IContactRequestRestService, ContactRequestRestService>();
             services.AddSingleton<IEventAttendeeRestService, EventAttendeeRestService>();
