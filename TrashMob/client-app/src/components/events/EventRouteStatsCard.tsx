@@ -18,6 +18,15 @@ function formatDuration(minutes: number): string {
     return `${minutes}m`;
 }
 
+function formatArea(sqMeters: number): string {
+    const sqMetersPerAcre = 4046.86;
+    if (sqMeters >= sqMetersPerAcre) {
+        return `${(sqMeters / sqMetersPerAcre).toFixed(1)} acres`;
+    }
+    const sqFeet = sqMeters * 10.7639;
+    return `${Math.round(sqFeet).toLocaleString()} sq ft`;
+}
+
 interface EventRouteStatsCardProps {
     eventId: string;
 }
@@ -61,6 +70,12 @@ export const EventRouteStatsCard = ({ eventId }: EventRouteStatsCardProps) => {
                         <p className='text-2xl font-bold'>{stats.uniqueContributors}</p>
                         <p className='text-sm text-muted-foreground'>Contributors</p>
                     </div>
+                    {stats.coverageAreaSquareMeters > 0 && (
+                        <div className='text-center'>
+                            <p className='text-2xl font-bold'>{formatArea(stats.coverageAreaSquareMeters)}</p>
+                            <p className='text-sm text-muted-foreground'>Area Covered</p>
+                        </div>
+                    )}
                 </div>
                 {(stats.totalBagsCollected > 0 || stats.totalWeightCollected > 0) && (
                     <div className='grid grid-cols-2 gap-4 mt-4 pt-4 border-t'>

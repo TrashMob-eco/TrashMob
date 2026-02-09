@@ -100,6 +100,7 @@
                 UniqueContributors = routes.Select(r => r.UserId).Distinct().Count(),
                 TotalBagsCollected = routes.Sum(r => r.BagsCollected ?? 0),
                 TotalWeightCollected = routes.Sum(r => r.WeightCollected ?? 0),
+                CoverageAreaSquareMeters = CalculateCoverageArea(routes),
             };
         }
 
@@ -175,6 +176,32 @@
 
             var updated = await Repository.UpdateAsync(route);
             return ServiceResult<EventAttendeeRoute>.Success(updated);
+        }
+
+        private const double GridCellSizeMeters = 25.0;
+        private const double MetersPerDegreeLatitude = 111_000.0;
+
+        private static double CalculateCoverageArea(List<EventAttendeeRoute> routes)
+        {
+            var uniqueCells = new HashSet<(int, int)>();
+
+            foreach (var route in routes)
+            {
+                if (route.UserPath is not LineString lineString)
+                {
+                    continue;
+                }
+
+                foreach (var coord in lineString.Coordinates)
+                {
+                    var latMeters = coord.Y * MetersPerDegreeLatitude;
+                    var lonMeters = coord.X * MetersPerDegreeLatitude * Math.Cos(coord.Y * Math.PI / 180);
+                    var cellKey = ((int)Math.Floor(latMeters / GridCellSizeMeters), (int)Math.Floor(lonMeters / GridCellSizeMeters));
+                    uniqueCells.Add(cellKey);
+                }
+            }
+
+            return uniqueCells.Count * GridCellSizeMeters * GridCellSizeMeters;
         }
 
         private static void CalculateRouteMetrics(EventAttendeeRoute route)
