@@ -140,6 +140,51 @@ const PartnerCommunityInviteDetails = lazy(() =>
         default: m.PartnerCommunityInviteDetails,
     })),
 );
+const PartnerCommunitySponsors = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/community/sponsors').then((m) => ({
+        default: m.PartnerCommunitySponsors,
+    })),
+);
+const PartnerCommunitySponsorCreate = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/community/sponsors/create').then((m) => ({
+        default: m.PartnerCommunitySponsorCreate,
+    })),
+);
+const PartnerCommunitySponsorEdit = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/community/sponsors/$sponsorId.edit').then((m) => ({
+        default: m.PartnerCommunitySponsorEdit,
+    })),
+);
+const PartnerCommunityCompanies = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/community/companies').then((m) => ({
+        default: m.PartnerCommunityCompanies,
+    })),
+);
+const PartnerCommunityCompanyCreate = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/community/companies/create').then((m) => ({
+        default: m.PartnerCommunityCompanyCreate,
+    })),
+);
+const PartnerCommunityCompanyEdit = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/community/companies/$companyId.edit').then((m) => ({
+        default: m.PartnerCommunityCompanyEdit,
+    })),
+);
+const PartnerCommunitySponsoredAdoptions = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/community/sponsored-adoptions').then((m) => ({
+        default: m.PartnerCommunitySponsoredAdoptions,
+    })),
+);
+const PartnerCommunitySponsoredAdoptionCreate = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/community/sponsored-adoptions/create').then((m) => ({
+        default: m.PartnerCommunitySponsoredAdoptionCreate,
+    })),
+);
+const PartnerCommunitySponsoredAdoptionEdit = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/community/sponsored-adoptions/$adoptionId.edit').then((m) => ({
+        default: m.PartnerCommunitySponsoredAdoptionEdit,
+    })),
+);
 
 /** Partner Dashboard - Lazy loaded (partner admin pages) */
 const PartnerIndex = lazy(() =>
@@ -432,6 +477,36 @@ const AppContent: FC = () => {
                                     <Route
                                         path='community/invites/:batchId'
                                         element={<PartnerCommunityInviteDetails />}
+                                    />
+                                    <Route path='community/sponsors' element={<PartnerCommunitySponsors />} />
+                                    <Route
+                                        path='community/sponsors/create'
+                                        element={<PartnerCommunitySponsorCreate />}
+                                    />
+                                    <Route
+                                        path='community/sponsors/:sponsorId/edit'
+                                        element={<PartnerCommunitySponsorEdit />}
+                                    />
+                                    <Route path='community/companies' element={<PartnerCommunityCompanies />} />
+                                    <Route
+                                        path='community/companies/create'
+                                        element={<PartnerCommunityCompanyCreate />}
+                                    />
+                                    <Route
+                                        path='community/companies/:companyId/edit'
+                                        element={<PartnerCommunityCompanyEdit />}
+                                    />
+                                    <Route
+                                        path='community/sponsored-adoptions'
+                                        element={<PartnerCommunitySponsoredAdoptions />}
+                                    />
+                                    <Route
+                                        path='community/sponsored-adoptions/create'
+                                        element={<PartnerCommunitySponsoredAdoptionCreate />}
+                                    />
+                                    <Route
+                                        path='community/sponsored-adoptions/:adoptionId/edit'
+                                        element={<PartnerCommunitySponsoredAdoptionEdit />}
                                     />
                                 </Route>
                             </Route>
