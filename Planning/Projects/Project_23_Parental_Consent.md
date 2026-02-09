@@ -2,11 +2,11 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Planning in Progress (legal & Privo.com integration) |
+| **Status** | Planning in Progress (combined with Project 1) |
 | **Priority** | High |
 | **Risk** | High |
 | **Size** | Large |
-| **Dependencies** | Project 1 (Auth Revamp), Legal Review |
+| **Dependencies** | Project 1 (Auth Revamp — Phases 3 & 7), Legal Review, Privo.com Contract |
 
 ---
 
@@ -14,18 +14,35 @@
 
 Support parent-managed dependents or direct minor registration with age verification and protections. Expanding to minors (13+) significantly increases the volunteer base while maintaining safety and legal compliance.
 
+**Privo Sponsorship:** TrashMob is the first organization to integrate Microsoft Entra External ID with Privo.com. Privo is sponsoring the integration and asking TrashMob to generate documentation on the process for sharing with their other customers. This documentation is a key deliverable alongside the technical integration.
+
+---
+
+## Combined Approach with Project 1
+
+The Privo/parental consent work is implemented as part of the [Project 1 — Auth Revamp](./Project_01_Auth_Revamp.md) phased rollout:
+
+| Project 23 Phase | Implemented In | Description |
+|-----------------|----------------|-------------|
+| Phase 1 (Age Verification) | **Project 1, Phase 3** | Custom Authentication Extension for age gate via Privo API |
+| Phase 2 (Parental Consent) | **Project 1, Phase 3** | Privo VPC workflow, consent tracking, pending account limitations |
+| Phase 3 (Minor Protections) | **Project 1, Phase 7** | Communication restrictions, limited profile visibility, adult presence enforcement |
+| Phase 4 (Family Features) | **Deferred** | Parent dashboard, multiple minor management (future project) |
+
+This combined approach minimizes risk by building Privo integration directly into the new Entra External ID auth system rather than retrofitting it into B2C.
+
 ---
 
 ## Objectives
 
 ### Primary Goals
-- **Parent-managed dependents flow** for families
-- **Direct minor registration** with age verification
-- **Enhanced protections** (no DMs, adult presence requirements)
-- **COPPA compliance** via Privo.com integration
+- **Direct minor registration** with age verification via Privo.com
+- **COPPA compliance** via Privo.com Verifiable Parental Consent (VPC)
+- **Enhanced protections** (no DMs, limited profile visibility, adult presence requirements)
+- **Document** the Entra External ID + Privo integration process (sponsorship deliverable)
 
 ### Secondary Goals
-- Family accounts
+- Parent-managed dependents flow for families
 - Minor activity reports for parents
 - School/youth group integration
 - Parental dashboard
@@ -34,29 +51,34 @@ Support parent-managed dependents or direct minor registration with age verifica
 
 ## Scope
 
-### Phase 1 - Age Verification
-- ✅ Age gate during registration
-- ✅ Privo.com integration for verification
-- ✅ Under-13 block with explanation
-- ✅ 13-17 minor flow trigger
+### Phase 1 — Age Verification (→ Project 1, Phase 3)
+- [ ] Build Custom Authentication Extension (Azure Function) for age gate
+- [ ] Integrate with Privo API on `OnAttributeCollectionSubmit` event
+- [ ] Under-13 block with explanation
+- [ ] 13-17 minor flow trigger
+- [ ] 18+ standard flow (no Privo interaction)
+- [ ] Document Custom Authentication Extension setup (sponsorship deliverable)
 
-### Phase 2 - Parental Consent
-- ✅ Verifiable Parental Consent (VPC) via Privo
-- ✅ Parent notification workflow
-- ✅ Consent status tracking
-- ✅ Consent artifact retention
+### Phase 2 — Parental Consent (→ Project 1, Phase 3)
+- [ ] Implement Privo VPC (Verifiable Parental Consent) webhook
+- [ ] Parent notification workflow via Privo
+- [ ] Consent status tracking in database (ParentalConsent entity)
+- [ ] Pending account limitations for minors awaiting consent
+- [ ] Consent artifact retention per COPPA requirements
+- [ ] Document Privo VPC integration (sponsorship deliverable)
 
-### Phase 3 - Minor Protections
-- ✅ No direct messaging for minors
-- ✅ Adult presence enforcement at events
-- ✅ Limited profile visibility
-- ✅ Parent view of minor activity
+### Phase 3 — Minor Protections (→ Project 1, Phase 7)
+- [ ] Communication restrictions for minors (no direct messaging)
+- [ ] Limited profile visibility (first name + last initial)
+- [ ] Adult presence enforcement at events
+- [ ] Parent notification system
+- [ ] Complete Privo documentation package (sponsorship deliverable)
 
-### Phase 4 - Family Features (Deferred)
-- ❌ Parent can manage multiple minors (future)
-- ❌ Family registration flow (future)
-- ❌ Parent approval for event registration (future)
-- ❌ Parent notification of event participation (future)
+### Phase 4 — Family Features (Deferred)
+- Parent can manage multiple minors (future)
+- Family registration flow (future)
+- Parent approval for event registration (future)
+- Parent notification of event participation (future)
 
 > **Note:** Phase 4 deferred to a future project. Focus on Phases 1-3 for initial minor support.
 
@@ -64,10 +86,10 @@ Support parent-managed dependents or direct minor registration with age verifica
 
 ## Out-of-Scope
 
-- ❌ Under-13 registration (COPPA restriction)
-- ❌ Minor-only events
-- ❌ School/organization bulk registration
-- ❌ Payment processing for families
+- Under-13 registration (COPPA restriction)
+- Minor-only events
+- School/organization bulk registration
+- Payment processing for families
 
 ---
 
@@ -116,10 +138,16 @@ Support parent-managed dependents or direct minor registration with age verifica
 
 ## Privo.com Integration
 
+### Integration Architecture
+
+The Privo integration uses **Entra External ID Custom Authentication Extensions** — Azure Functions triggered during the sign-up user flow. This replaces the B2C IEF custom policy approach and is the first-ever implementation of Entra External ID + Privo.
+
+**Key Integration Point:** `OnAttributeCollectionSubmit` event in the sign-up user flow triggers an Azure Function that calls the Privo API for age verification. The function returns actions to block, continue, or trigger the minor consent flow.
+
 ### Services Used
 
 **Age Verification:**
-- Age gate with Privo verification
+- Age gate with Privo verification (via Custom Authentication Extension)
 - Under-13 detection and block
 - 13-17 minor identification
 - Adult (18+) standard flow
@@ -138,7 +166,18 @@ Support parent-managed dependents or direct minor registration with age verifica
 ### Integration Points
 
 ```csharp
-// Privo service integration
+// Custom Authentication Extension (Azure Function)
+// Triggered by OnAttributeCollectionSubmit during sign-up
+public class AgeVerificationExtension
+{
+    // Receives: birthDate, email from sign-up form
+    // Calls: Privo API for age verification
+    // Returns: ContinueWithDefaultBehavior (18+),
+    //          ShowBlockPage (under 13),
+    //          ModifyAttributeValues (13-17, set IsMinor flag)
+}
+
+// Privo service integration (backend)
 public interface IPrivoService
 {
     Task<AgeVerificationResult> VerifyAgeAsync(string birthDate, Guid userId);
@@ -698,22 +737,26 @@ Parents without TrashMob accounts still receive critical notifications via email
 
 ## Implementation Phases
 
-### Phase 1: Age Gate
-- Privo integration setup
-- Age verification during signup
-- Under-13 blocking
+> **Note:** Phases 1-2 are implemented as Project 1 Phase 3, and Phase 3 is implemented as Project 1 Phase 7. See [Project 1 — Auth Revamp](./Project_01_Auth_Revamp.md) for the full implementation timeline.
+
+### Phase 1: Age Gate (→ Project 1, Phase 3)
+- Custom Authentication Extension (Azure Function) setup
+- Privo API integration on `OnAttributeCollectionSubmit`
+- Age verification during Entra External ID sign-up flow
+- Under-13 blocking with explanation page
 - Minor flag in database
 
-### Phase 2: Parental Consent
-- VPC workflow implementation
-- Parent notification
-- Consent status tracking
+### Phase 2: Parental Consent (→ Project 1, Phase 3)
+- Privo VPC workflow implementation
+- Parent notification via Privo
+- Consent status tracking (ParentalConsent entity)
 - Pending account limitations
+- Privo webhook for consent status updates
 
-### Phase 3: Minor Protections
-- Communication restrictions
-- Profile visibility limits
-- Adult presence tracking
+### Phase 3: Minor Protections (→ Project 1, Phase 7)
+- Communication restrictions (no DMs for minors)
+- Profile visibility limits (first name + last initial)
+- Adult presence enforcement at events
 - Parent notification system
 
 ### Phase 4: Family Features (Deferred)
@@ -723,6 +766,15 @@ Parents without TrashMob accounts still receive critical notifications via email
 - Activity reporting (future project)
 
 **Note:** Legal sign-off required before Phase 1 deployment. Phase 4 deferred to focus on core minor safety features first.
+
+### Sponsorship Documentation Deliverables
+
+The following documentation must be produced as part of the Privo sponsorship agreement:
+
+1. **Entra External ID tenant setup guide** — How to create and configure an external tenant for Privo integration (Project 1, Phase 0)
+2. **Custom Authentication Extension guide** — How to build the Azure Function and wire it to the sign-up user flow (Phase 1)
+3. **Privo VPC integration guide** — How to implement the Verifiable Parental Consent webhook and consent tracking (Phase 2)
+4. **Complete integration package** — End-to-end guide combining all of the above (Phase 3)
 
 ---
 
@@ -742,10 +794,14 @@ Parents without TrashMob accounts still receive critical notifications via email
 
 ## Open Questions
 
-1. **Privo.com cost structure and timeline?**
-   **Status:** Pending contract negotiation
-   **Owner:** Business Team
-   **Due:** Before Phase 1
+1. ~~**Privo.com cost structure and timeline?**~~
+   **Decision:** Privo is sponsoring the integration — TrashMob is the first Entra External ID + Privo partner. Cost covered by sponsorship agreement.
+   **Status:** ✅ Resolved (February 2026)
+
+2. **When will Privo provide their API documentation and test environment?**
+   **Status:** Pending — awaiting onboarding requirements completion
+   **Owner:** Engineering + Privo
+   **Due:** Before Project 1 Phase 3
 
 ---
 
@@ -759,14 +815,14 @@ The following GitHub issues are tracked as part of this project:
 
 ## Related Documents
 
+- **[Project 1 - Auth Revamp](./Project_01_Auth_Revamp.md)** - Auth migration (Phases 3 & 7 implement this project's work)
 - **[Privo Integration Package](./Project_23_Privo_Integration_Package.md)** - Document to send to Privo
-- **[Project 1 - Auth Revamp](./Project_01_Auth_Revamp.md)** - Authentication integration
 - **[Project 8 - Waivers V3](./Project_08_Waivers_V3.md)** - Minor waiver handling
 - **[Privo.com](https://privo.com)** - Vendor documentation
 
 ---
 
-**Last Updated:** January 31, 2026
+**Last Updated:** February 8, 2026
 **Owner:** Product Lead + Legal + Engineering
-**Status:** Planning in Progress
-**Next Review:** After Privo contract finalization
+**Status:** Planning in Progress (combined with Project 1)
+**Next Review:** After Project 1 Phase 0 (tenant setup) is complete
