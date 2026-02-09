@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
@@ -20,6 +20,8 @@ import AdoptableAreaData, { AdoptableAreaType, AdoptableAreaStatus } from '@/com
 import CommunityData from '@/components/Models/CommunityData';
 import { GetAdoptableArea, UpdateAdoptableArea, GetAdoptableAreas } from '@/services/adoptable-areas';
 import { GetCommunityForAdmin } from '@/services/communities';
+import { AreaMapEditor } from '@/components/Map/AreaMapEditor';
+import { AreaBoundingBox } from '@/lib/geojson';
 
 const areaTypes: AdoptableAreaType[] = ['Highway', 'Park', 'Trail', 'Waterway', 'Street', 'Spot'];
 const areaStatuses: AdoptableAreaStatus[] = ['Available', 'Adopted', 'Unavailable'];
@@ -58,6 +60,7 @@ export const PartnerCommunityAreaEdit = () => {
         areaId: string;
     };
     const { toast } = useToast();
+    const [areaBbox, setAreaBbox] = useState<AreaBoundingBox | null>(null);
 
     const { data: area, isLoading: areaLoading } = useQuery<
         AxiosResponse<AdoptableAreaData>,
@@ -156,6 +159,10 @@ export const PartnerCommunityAreaEdit = () => {
                 areaType: formValues.areaType,
                 status: formValues.status,
                 geoJson: formValues.geoJson,
+                startLatitude: areaBbox?.startLatitude ?? area.startLatitude,
+                startLongitude: areaBbox?.startLongitude ?? area.startLongitude,
+                endLatitude: areaBbox?.endLatitude ?? area.endLatitude,
+                endLongitude: areaBbox?.endLongitude ?? area.endLongitude,
                 cleanupFrequencyDays: formValues.cleanupFrequencyDays,
                 minEventsPerYear: formValues.minEventsPerYear,
                 safetyRequirements: formValues.safetyRequirements,
@@ -405,27 +412,24 @@ export const PartnerCommunityAreaEdit = () => {
                         <CardHeader>
                             <CardTitle>Geographic Definition</CardTitle>
                             <CardDescription>
-                                Define the boundaries of this area using GeoJSON (advanced).
+                                Draw the area boundary on the map, or paste raw GeoJSON.
                             </CardDescription>
                         </CardHeader>
-                        <CardContent className='space-y-4'>
+                        <CardContent>
                             <FormField
                                 control={form.control}
                                 name='geoJson'
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>GeoJSON (Optional)</FormLabel>
                                         <FormControl>
-                                            <Textarea
-                                                {...field}
-                                                placeholder='{"type": "Polygon", "coordinates": [...]}'
-                                                className='h-32 font-mono text-sm'
+                                            <AreaMapEditor
+                                                value={field.value}
+                                                onChange={field.onChange}
+                                                onBoundsChange={setAreaBbox}
+                                                communityBounds={community ? { boundsNorth: community.boundsNorth, boundsSouth: community.boundsSouth, boundsEast: community.boundsEast, boundsWest: community.boundsWest } : undefined}
+                                                communityCenter={community?.latitude != null && community?.longitude != null ? { lat: community.latitude, lng: community.longitude } : null}
                                             />
                                         </FormControl>
-                                        <FormDescription>
-                                            Paste GeoJSON polygon or linestring to define the area boundaries. Map-based
-                                            editing will be available in a future update.
-                                        </FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}
