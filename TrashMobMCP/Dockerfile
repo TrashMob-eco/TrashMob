@@ -20,5 +20,6 @@ RUN dotnet publish "TrashMobMCP.csproj" -c Release -o /app/publish /p:UseAppHost
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
+EXPOSE 8080
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "TrashMobMCP.dll"]

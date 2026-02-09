@@ -53,6 +53,14 @@ Provide safe, privacy-aware AI access to events/metrics via Model Context Protoc
 - ✅ Event route statistics - `GetEventRouteStatsTool`
 - ⬜ Adoptable areas search (deferred - requires authentication)
 
+### Phase 2.75 - HTTP Transport ✅
+- ✅ Convert from stdio to HTTP transport (SSE + Streamable HTTP)
+- ✅ Upgrade MCP SDK from 0.2.0-preview.1 to 0.8.0-preview.1
+- ✅ Add `ModelContextProtocol.AspNetCore` package
+- ✅ Convert from generic host to ASP.NET Core web host
+- ✅ Map MCP endpoints via `app.MapMcp()` (exposes `/sse` and `/messages`)
+- Container app deployment already configured (`containerAppMCP.bicep`)
+
 ### Phase 3 - AI Features
 - ⬜ Event recommendations based on user location/history
 - ⬜ Impact summaries (event, community, sitewide)
@@ -425,5 +433,5 @@ The following GitHub issues are tracked as part of this project:
 
 **Last Updated:** February 8, 2026
 **Owner:** Engineering Team
-**Status:** In Progress (Phase 2.5 Complete — 9 tools)
+**Status:** In Progress (Phase 2.75 Complete — 9 tools, HTTP transport)
 **Next Review:** When AI integration becomes priority
