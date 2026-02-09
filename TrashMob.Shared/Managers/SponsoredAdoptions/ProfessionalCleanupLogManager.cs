@@ -48,6 +48,19 @@ namespace TrashMob.Shared.Managers.SponsoredAdoptions
         }
 
         /// <inheritdoc />
+        public async Task<IEnumerable<ProfessionalCleanupLog>> GetBySponsorIdAsync(
+            Guid sponsorId,
+            CancellationToken cancellationToken = default)
+        {
+            return await Repo.Get()
+                .Include(l => l.SponsoredAdoption)
+                    .ThenInclude(sa => sa.AdoptableArea)
+                .Where(l => l.SponsoredAdoption.SponsorId == sponsorId)
+                .OrderByDescending(l => l.CleanupDate)
+                .ToListAsync(cancellationToken);
+        }
+
+        /// <inheritdoc />
         public async Task<IEnumerable<ProfessionalCleanupLog>> GetBySponsoredAdoptionIdAsync(
             Guid sponsoredAdoptionId,
             CancellationToken cancellationToken = default)

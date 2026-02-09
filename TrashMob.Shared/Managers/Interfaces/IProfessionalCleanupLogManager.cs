@@ -21,6 +21,14 @@ namespace TrashMob.Shared.Managers.Interfaces
         Task<IEnumerable<ProfessionalCleanupLog>> GetByCompanyIdAsync(Guid companyId, CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Gets all cleanup logs across all adoptions for a specific sponsor.
+        /// </summary>
+        /// <param name="sponsorId">The sponsor ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A collection of cleanup logs with navigation properties.</returns>
+        Task<IEnumerable<ProfessionalCleanupLog>> GetBySponsorIdAsync(Guid sponsorId, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Gets all cleanup logs for a specific sponsored adoption.
         /// </summary>
         /// <param name="sponsoredAdoptionId">The sponsored adoption ID.</param>

@@ -23,6 +23,7 @@ import {
     ClipboardList,
     Truck,
     Briefcase,
+    Heart,
 } from 'lucide-react';
 import { AxiosResponse } from 'axios';
 
@@ -39,6 +40,7 @@ import LitterReportData from '@/components/Models/LitterReportData';
 import { LitterReportStatusEnum } from '@/components/Models/LitterReportStatus';
 import TeamData from '@/components/Models/TeamData';
 import ProfessionalCompanyData from '@/components/Models/ProfessionalCompanyData';
+import SponsorData from '@/components/Models/SponsorData';
 
 import twofigure from '@/components/assets/card/twofigure.svg';
 import calendarclock from '@/components/assets/card/calendarclock.svg';
@@ -65,6 +67,7 @@ import { GetEventPickupLocationsByUser, GetPartnerLocationEventServicesByUserId 
 import { GetUserLitterReports } from '@/services/litter-report';
 import { GetMyTeams, GetTeamsILead } from '@/services/teams';
 import { GetMyCompanies } from '@/services/professional-company-portal';
+import { GetMySponsors } from '@/services/sponsor-portal';
 
 import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
 import { useGetUserEvents } from '@/hooks/useGetUserEvents';
@@ -82,6 +85,7 @@ import { MyRoutesCard } from '@/pages/MyDashboard/MyRoutesCard';
 import { MyWaiversCard } from '@/pages/MyDashboard/MyWaiversCard';
 import { MyImpactCard } from '@/pages/MyDashboard/MyImpactCard';
 import { MyCompaniesTable } from '@/pages/MyDashboard/MyCompaniesTable';
+import { MySponsorsTable } from '@/pages/MyDashboard/MySponsorsTable';
 import { InviteFriendsCard } from '@/pages/MyDashboard/InviteFriendsCard';
 import { MyNewsletterPreferencesCard } from '@/pages/MyDashboard/MyNewsletterPreferencesCard';
 import { DashboardScrollNav, DashboardNavGroup } from './DashboardScrollNav';
@@ -113,6 +117,7 @@ const SECTION_IDS = [
     'pickup-requests',
     'partner-admin-invitations',
     'my-companies',
+    'my-sponsors',
 ];
 
 const navGroups: DashboardNavGroup[] = [
@@ -164,6 +169,10 @@ const navGroups: DashboardNavGroup[] = [
     {
         title: 'Professional Companies',
         items: [{ id: 'my-companies', label: 'My Companies', icon: Briefcase }],
+    },
+    {
+        title: 'Sponsors',
+        items: [{ id: 'my-sponsors', label: 'My Sponsors', icon: Heart }],
     },
 ];
 
@@ -274,6 +283,13 @@ const MyDashboard: FC<MyDashboardProps> = () => {
     >({
         queryKey: GetMyCompanies().key,
         queryFn: GetMyCompanies().service,
+        select: (res) => res.data,
+    });
+
+    // Sponsors user has access to (via partner admin memberships)
+    const { data: mySponsors } = useQuery<AxiosResponse<SponsorData[]>, unknown, SponsorData[]>({
+        queryKey: GetMySponsors().key,
+        queryFn: GetMySponsors().service,
         select: (res) => res.data,
     });
 
@@ -714,6 +730,25 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                                     <CardContent>
                                         <div className='overflow-auto'>
                                             <MyCompaniesTable items={myCompanies} />
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </section>
+                        ) : null}
+
+                        {/* Sponsors */}
+                        {mySponsors && mySponsors.length > 0 ? (
+                            <section id='my-sponsors' className='scroll-mt-20'>
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className='text-primary'>
+                                            <Heart className='inline-block h-5 w-5 mr-2' />
+                                            My Sponsors ({mySponsors.length})
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className='overflow-auto'>
+                                            <MySponsorsTable items={mySponsors} />
                                         </div>
                                     </CardContent>
                                 </Card>
