@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
@@ -20,6 +20,8 @@ import AdoptableAreaData, { AdoptableAreaType } from '@/components/Models/Adopta
 import CommunityData from '@/components/Models/CommunityData';
 import { CreateAdoptableArea, GetAdoptableAreas } from '@/services/adoptable-areas';
 import { GetCommunityForAdmin } from '@/services/communities';
+import { AreaMapEditor } from '@/components/Map/AreaMapEditor';
+import { AreaBoundingBox } from '@/lib/geojson';
 
 const areaTypes: AdoptableAreaType[] = ['Highway', 'Park', 'Trail', 'Waterway', 'Street', 'Spot'];
 
@@ -50,6 +52,7 @@ export const PartnerCommunityAreaCreate = () => {
     const queryClient = useQueryClient();
     const { partnerId } = useParams<{ partnerId: string }>() as { partnerId: string };
     const { toast } = useToast();
+    const [areaBbox, setAreaBbox] = useState<AreaBoundingBox | null>(null);
 
     const { data: community } = useQuery<AxiosResponse<CommunityData>, unknown, CommunityData>({
         queryKey: GetCommunityForAdmin({ communityId: partnerId }).key,
@@ -116,10 +119,10 @@ export const PartnerCommunityAreaCreate = () => {
                 areaType: formValues.areaType,
                 status: 'Available',
                 geoJson: formValues.geoJson,
-                startLatitude: null,
-                startLongitude: null,
-                endLatitude: null,
-                endLongitude: null,
+                startLatitude: areaBbox?.startLatitude ?? null,
+                startLongitude: areaBbox?.startLongitude ?? null,
+                endLatitude: areaBbox?.endLatitude ?? null,
+                endLongitude: areaBbox?.endLongitude ?? null,
                 cleanupFrequencyDays: formValues.cleanupFrequencyDays,
                 minEventsPerYear: formValues.minEventsPerYear,
                 safetyRequirements: formValues.safetyRequirements,
@@ -318,28 +321,36 @@ export const PartnerCommunityAreaCreate = () => {
                     <Card>
                         <CardHeader>
                             <CardTitle>Geographic Definition</CardTitle>
-                            <CardDescription>
-                                Define the boundaries of this area using GeoJSON (advanced).
-                            </CardDescription>
+                            <CardDescription>Draw the area boundary on the map, or paste raw GeoJSON.</CardDescription>
                         </CardHeader>
-                        <CardContent className='space-y-4'>
+                        <CardContent>
                             <FormField
                                 control={form.control}
                                 name='geoJson'
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>GeoJSON (Optional)</FormLabel>
                                         <FormControl>
-                                            <Textarea
-                                                {...field}
-                                                placeholder='{"type": "Polygon", "coordinates": [...]}'
-                                                className='h-32 font-mono text-sm'
+                                            <AreaMapEditor
+                                                value={field.value}
+                                                onChange={field.onChange}
+                                                onBoundsChange={setAreaBbox}
+                                                communityBounds={
+                                                    community
+                                                        ? {
+                                                              boundsNorth: community.boundsNorth,
+                                                              boundsSouth: community.boundsSouth,
+                                                              boundsEast: community.boundsEast,
+                                                              boundsWest: community.boundsWest,
+                                                          }
+                                                        : undefined
+                                                }
+                                                communityCenter={
+                                                    community?.latitude != null && community?.longitude != null
+                                                        ? { lat: community.latitude, lng: community.longitude }
+                                                        : null
+                                                }
                                             />
                                         </FormControl>
-                                        <FormDescription>
-                                            Paste GeoJSON polygon or linestring to define the area boundaries. Map-based
-                                            editing will be available in a future update.
-                                        </FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}
