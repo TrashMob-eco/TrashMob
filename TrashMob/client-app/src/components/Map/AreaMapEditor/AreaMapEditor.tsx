@@ -31,6 +31,8 @@ interface AreaMapEditorProps {
     currentAreaId?: string;
 }
 
+const EMPTY_AREAS: AdoptableAreaData[] = [];
+
 function useOverlapDetection(currentGeoJson: string, existingAreas: AdoptableAreaData[], excludeId?: string) {
     return useMemo(() => {
         if (!currentGeoJson || !existingAreas.length) return [];
@@ -41,40 +43,30 @@ function useOverlapDetection(currentGeoJson: string, existingAreas: AdoptableAre
         const currentPath = polygonCoordsToPath(parsed.coordinates);
         if (currentPath.length < 3) return [];
 
-        // Check if any vertex of the current polygon is inside an existing polygon (or vice versa)
-        const overlapping: string[] = [];
+        if (typeof google === 'undefined' || !google.maps?.geometry?.poly?.containsLocation) return [];
 
-        for (const area of existingAreas) {
-            if (area.id === excludeId || !area.geoJson) continue;
+        const currentPoly = new google.maps.Polygon({ paths: currentPath });
 
-            const areaParsed = parseGeoJson(area.geoJson);
-            if (!areaParsed || areaParsed.type !== 'Polygon') continue;
+        return existingAreas
+            .filter((area) => {
+                if (area.id === excludeId || !area.geoJson) return false;
+                const areaParsed = parseGeoJson(area.geoJson);
+                if (!areaParsed || areaParsed.type !== 'Polygon') return false;
+                const areaPath = polygonCoordsToPath(areaParsed.coordinates);
+                if (areaPath.length < 3) return false;
 
-            const areaPath = polygonCoordsToPath(areaParsed.coordinates);
-            if (areaPath.length < 3) continue;
-
-            // Use google.maps.geometry.poly.containsLocation if available
-            if (typeof google !== 'undefined' && google.maps?.geometry?.poly?.containsLocation) {
                 const existingPoly = new google.maps.Polygon({ paths: areaPath });
-                const currentPoly = new google.maps.Polygon({ paths: currentPath });
 
-                // Check if any vertex of current shape is inside existing area
                 const currentInExisting = currentPath.some((pt) =>
                     google.maps.geometry.poly.containsLocation(new google.maps.LatLng(pt.lat, pt.lng), existingPoly),
                 );
-
-                // Check if any vertex of existing area is inside current shape
                 const existingInCurrent = areaPath.some((pt) =>
                     google.maps.geometry.poly.containsLocation(new google.maps.LatLng(pt.lat, pt.lng), currentPoly),
                 );
 
-                if (currentInExisting || existingInCurrent) {
-                    overlapping.push(area.name);
-                }
-            }
-        }
-
-        return overlapping;
+                return currentInExisting || existingInCurrent;
+            })
+            .map((area) => area.name);
     }, [currentGeoJson, existingAreas, excludeId]);
 }
 
@@ -84,7 +76,7 @@ export const AreaMapEditor = ({
     onBoundsChange,
     communityBounds,
     communityCenter,
-    existingAreas = [],
+    existingAreas = EMPTY_AREAS,
     currentAreaId,
 }: AreaMapEditorProps) => {
     const [drawingMode, setDrawingMode] = useState<DrawingMode>(null);

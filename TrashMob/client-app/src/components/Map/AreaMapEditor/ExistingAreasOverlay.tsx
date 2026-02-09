@@ -32,15 +32,26 @@ export const ExistingAreasOverlay = ({ mapId, areas, excludeAreaId }: ExistingAr
 
         const filtered = areas.filter((a) => a.id !== excludeAreaId && a.geoJson);
 
-        for (const area of filtered) {
+        const showInfoWindow = (area: AdoptableAreaData, e: google.maps.MapMouseEvent) => {
+            if (!infoWindowRef.current) {
+                infoWindowRef.current = new google.maps.InfoWindow();
+            }
+            infoWindowRef.current.setContent(
+                `<div style="font-size:13px"><strong>${area.name}</strong><br/><span style="color:#666">${area.status} &middot; ${area.areaType}</span></div>`,
+            );
+            infoWindowRef.current.setPosition(e.latLng);
+            infoWindowRef.current.open(map);
+        };
+
+        filtered.forEach((area) => {
             const parsed = parseGeoJson(area.geoJson);
-            if (!parsed) continue;
+            if (!parsed) return;
 
             const style = STATUS_STYLES[area.status] ?? STATUS_STYLES.Available;
 
             if (parsed.type === 'Polygon') {
                 const path = polygonCoordsToPath(parsed.coordinates);
-                if (path.length < 3) continue;
+                if (path.length < 3) return;
 
                 const poly = new google.maps.Polygon({
                     map,
@@ -54,21 +65,11 @@ export const ExistingAreasOverlay = ({ mapId, areas, excludeAreaId }: ExistingAr
                     zIndex: 1,
                 });
 
-                poly.addListener('click', (e: google.maps.MapMouseEvent) => {
-                    if (!infoWindowRef.current) {
-                        infoWindowRef.current = new google.maps.InfoWindow();
-                    }
-                    infoWindowRef.current.setContent(
-                        `<div style="font-size:13px"><strong>${area.name}</strong><br/><span style="color:#666">${area.status} &middot; ${area.areaType}</span></div>`,
-                    );
-                    infoWindowRef.current.setPosition(e.latLng);
-                    infoWindowRef.current.open(map);
-                });
-
+                poly.addListener('click', (e: google.maps.MapMouseEvent) => showInfoWindow(area, e));
                 overlaysRef.current.push(poly);
             } else if (parsed.type === 'LineString') {
                 const path = lineStringCoordsToPath(parsed.coordinates);
-                if (path.length < 2) continue;
+                if (path.length < 2) return;
 
                 const line = new google.maps.Polyline({
                     map,
@@ -80,20 +81,10 @@ export const ExistingAreasOverlay = ({ mapId, areas, excludeAreaId }: ExistingAr
                     zIndex: 1,
                 });
 
-                line.addListener('click', (e: google.maps.MapMouseEvent) => {
-                    if (!infoWindowRef.current) {
-                        infoWindowRef.current = new google.maps.InfoWindow();
-                    }
-                    infoWindowRef.current.setContent(
-                        `<div style="font-size:13px"><strong>${area.name}</strong><br/><span style="color:#666">${area.status} &middot; ${area.areaType}</span></div>`,
-                    );
-                    infoWindowRef.current.setPosition(e.latLng);
-                    infoWindowRef.current.open(map);
-                });
-
+                line.addListener('click', (e: google.maps.MapMouseEvent) => showInfoWindow(area, e));
                 overlaysRef.current.push(line);
             }
-        }
+        });
 
         return () => {
             overlaysRef.current.forEach((o) => o.setMap(null));
