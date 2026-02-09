@@ -13,7 +13,7 @@
 - **[Executive Summary](./Executive_Summary.md)** - High-level overview, strategic objectives, and 2026 roadmap
 - **[Risks & Mitigations](./Risks_and_Mitigations.md)** - Cross-project risks and mitigation strategies
 
-### 2026 Projects (43 Total)
+### 2026 Projects (44 Total)
 
 **Note:** Projects are not time-bound. Volunteers pick up work based on priority and availability.
 
@@ -39,6 +39,7 @@
 | [Project 23 - Parental Consent](./Projects/Project_23_Parental_Consent.md) | Privo.com integration for minors (combined with Project 1) | Planning (combined with Project 1) |
 | [Project 24 - API v2 Modernization](./Projects/Project_24_API_v2_Modernization.md) | Pagination, error handling, auto-generated clients | Not Started |
 | [Project 38 - Mobile Feature Parity](./Projects/Project_38_Mobile_Feature_Parity.md) | Teams, leaderboards, photos for mobile volunteers | In Progress (Phases 1-4, 6-7 Complete) |
+| [Project 44 - Area Map Editor](./Projects/Project_44_Area_Map_Editor.md) | Interactive map editor, AI area suggestions, bulk import | Not Started |
 
 #### Medium Priority (Enhancements)
 
@@ -104,6 +105,7 @@
 - [Project 41 - Sponsored Adoptions](./Projects/Project_41_Sponsored_Adoptions.md)
 - [Project 42 - Partner Document Management](./Projects/Project_42_Partner_Document_Management.md)
 - [Project 43 - Sign Management](./Projects/Project_43_Sign_Management.md)
+- [Project 44 - Area Map Editor](./Projects/Project_44_Area_Map_Editor.md)
 
 ### Impact Tracking
 - [Project 7 - Event Weights](./Projects/Project_07_Event_Weights.md) ✅
@@ -146,10 +148,10 @@
 | **Developers Engaged** | 1 | Project 4 |
 | **Ready for Review** | 2 | Projects 2, 5 |
 | **Planning** | 1 | Project 23 (combined with Project 1) |
-| **Not Started** | 6 | Projects 12, 24, 31, 36, 41, 43 |
+| **Not Started** | 7 | Projects 12, 24, 31, 36, 41, 43, 44 |
 | **Deprioritized** | 1 | Project 33 |
 
-**Total:** 43 project specifications documented
+**Total:** 44 project specifications documented
 
 ---
 
