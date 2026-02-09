@@ -23,8 +23,15 @@
                 {
                     foreach (var litterImage in litterReport.LitterImages)
                     {
-                        litterImage.AzureBlobURL =
-                            await litterReportRestService.GetLitterImageUrlAsync(litterImage.Id, imageSize, cancellationToken);
+                        try
+                        {
+                            litterImage.AzureBlobURL =
+                                await litterReportRestService.GetLitterImageUrlAsync(litterImage.Id, imageSize, cancellationToken);
+                        }
+                        catch (Exception)
+                        {
+                            litterImage.AzureBlobURL = string.Empty;
+                        }
                     }
                 }
             }
@@ -45,8 +52,15 @@
 
             foreach (var litterImage in litterReport.LitterImages)
             {
-                litterImage.AzureBlobURL =
-                    await litterReportRestService.GetLitterImageUrlAsync(litterImage.Id, imageSize, cancellationToken);
+                try
+                {
+                    litterImage.AzureBlobURL =
+                        await litterReportRestService.GetLitterImageUrlAsync(litterImage.Id, imageSize, cancellationToken);
+                }
+                catch (Exception)
+                {
+                    litterImage.AzureBlobURL = string.Empty;
+                }
             }
 
             return litterReport;

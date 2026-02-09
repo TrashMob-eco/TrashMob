@@ -31,9 +31,19 @@
 
             using (var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken))
             {
-                response.EnsureSuccessStatusCode();
+                if (!response.IsSuccessStatusCode || response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                {
+                    return string.Empty;
+                }
+
                 var result = await response.Content.ReadAsStringAsync(cancellationToken);
-                return JsonConvert.DeserializeObject<string>(result);
+
+                if (string.IsNullOrWhiteSpace(result))
+                {
+                    return string.Empty;
+                }
+
+                return JsonConvert.DeserializeObject<string>(result) ?? string.Empty;
             }
         }
 
