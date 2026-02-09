@@ -125,6 +125,18 @@ const completedFeatures = [
         link: '/litterreports/create',
         linkText: 'Report Litter',
     },
+    {
+        icon: <Route className='h-5 w-5' />,
+        title: 'Route Tracing & Heat Maps',
+        description:
+            'Track the routes you walk during cleanups and see them on the map. View heat maps showing where volunteers covered ground, track area coverage, and manage route privacy settings.',
+    },
+    {
+        icon: <Newspaper className='h-5 w-5' />,
+        title: 'Newsletter Preferences',
+        description:
+            'Stay connected with TrashMob news delivered to your inbox. Manage your newsletter subscription preferences directly from the app.',
+    },
 ];
 
 const upcomingFeatures = [
@@ -133,13 +145,6 @@ const upcomingFeatures = [
         title: 'Enhanced Waivers',
         description:
             'Community-specific waivers, improved minor coverage, and streamlined signing process. Better protection for volunteers and partners.',
-        status: 'In Progress',
-    },
-    {
-        icon: <Newspaper className='h-5 w-5' />,
-        title: 'Monthly Newsletter',
-        description:
-            'Stay connected with TrashMob news, featured events, and volunteer spotlights delivered to your inbox.',
         status: 'In Progress',
     },
     {
@@ -154,13 +159,6 @@ const upcomingFeatures = [
         title: 'Modern Authentication',
         description:
             'Migrating to Microsoft Entra External ID for improved security, SSO support, and better partner integrations.',
-        status: 'Planning',
-    },
-    {
-        icon: <Route className='h-5 w-5' />,
-        title: 'Route Tracing',
-        description:
-            'Track the routes you walk during cleanups. Visualize coverage, avoid duplicate efforts, and see area completion over time.',
         status: 'Planning',
     },
     {
