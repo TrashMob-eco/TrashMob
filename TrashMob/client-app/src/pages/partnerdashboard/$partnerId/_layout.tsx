@@ -17,6 +17,8 @@ import {
     Mail,
     Settings,
     Globe,
+    HandCoins,
+    Briefcase,
 } from 'lucide-react';
 import { SidebarNav, NavGroup } from '@/components/ui/sidebar-nav';
 import { GetPartnerById } from '@/services/partners';
@@ -60,6 +62,13 @@ export const PartnerLayout = () => {
                     { name: 'Adoptable Areas', href: `${pathPrefix}/community/areas`, icon: Map },
                     { name: 'Area Defaults', href: `${pathPrefix}/community/area-defaults`, icon: Settings },
                     { name: 'Adoptions', href: `${pathPrefix}/community/adoptions`, icon: ClipboardCheck },
+                    { name: 'Sponsors', href: `${pathPrefix}/community/sponsors`, icon: HandCoins },
+                    { name: 'Pro Companies', href: `${pathPrefix}/community/companies`, icon: Briefcase },
+                    {
+                        name: 'Sponsored Adoptions',
+                        href: `${pathPrefix}/community/sponsored-adoptions`,
+                        icon: ClipboardCheck,
+                    },
                     { name: 'Invites', href: `${pathPrefix}/community/invites`, icon: Mail },
                 ],
             });
