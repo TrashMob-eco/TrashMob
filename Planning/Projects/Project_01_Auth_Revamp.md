@@ -75,21 +75,34 @@ Custom CSS is **not available** — Entra External ID restricted custom CSS to t
 ## Scope
 
 ### Phase 0 — Tenant & Groundwork
-- [ ] Create Entra External ID external tenant (dev)
-- [ ] Register app registrations (web, mobile, backend) for dev
-- [ ] Configure social identity providers (Google, Microsoft, Apple, Facebook)
-- [ ] Configure built-in branding (logo, colors, background)
+
+#### Completed (Code — PR #2620)
+- [x] Add `GivenName`, `Surname`, `DateOfBirth`, `ProfilePhotoUrl` to User model + EF migration
+- [x] Add fields to frontend `UserData` model
+- [x] Display profile photos in UserNav when available
+- [x] Add `UseEntraExternalId` feature flag + `AzureAdEntra` config section
+- [x] Update `Program.cs` for feature-flag-aware auth config binding
+- [x] Split `ConfigController` into B2C and Entra config builders
+- [x] Update frontend `AuthStore` and config types for dual auth
+- [x] Add Entra guards in UserNav and DeleteMyData
+- [x] Document Phase 0 CLI commands in Auth_Migration.md
+
+#### Remaining (Manual — Azure Portal)
+- [ ] Create Entra External ID external tenant (dev) — see [Step-by-Step: Tenant Setup](#step-by-step-tenant-setup)
+- [ ] Register app registrations (web, mobile, backend) for dev — see [Step-by-Step: App Registrations](#step-by-step-app-registrations)
+- [ ] Configure social identity providers (Google, Microsoft, Apple, Facebook) — see [Step-by-Step: Social IDPs](#step-by-step-social-identity-providers)
+- [ ] Create sign-up/sign-in user flow with custom attributes — see [Step-by-Step: User Flow](#step-by-step-user-flow)
+- [ ] Configure built-in branding (logo, colors, background) — see [Step-by-Step: Branding](#step-by-step-branding)
 - [ ] Request custom CSS exception from Microsoft (given Privo sponsorship)
+- [ ] Fill in `AzureAdEntra` config values in appsettings and Key Vault
+- [ ] Test sign-in with `UseEntraExternalId: true` on dev
 - [ ] Document tenant setup process (Privo documentation deliverable)
 
 ### Phase 1 — Sign-Up/Sign-In + Profile Photos
-- [ ] Set up sign-up/sign-in user flow with custom attributes
 - [ ] Configure MSAL on web (React) to point to new tenant
 - [ ] Update backend JWT validation (authority URL, audience)
 - [ ] Auto-populate `ProfilePhotoUrl` from social provider `picture` claim on sign-up
-- [ ] Add `ProfilePhotoUrl` to User model (migration)
-- [ ] Display profile photos in UserNav, event attendees, leaderboards
-- [ ] Update `/api/config` endpoint with new tenant details
+- [ ] Display profile photos in event attendees, leaderboards
 - [ ] Document sign-up flow for Privo
 
 ### Phase 2 — In-App Profile Edit + Photo Upload
@@ -199,27 +212,33 @@ Custom CSS is **not available** — Entra External ID restricted custom CSS to t
 
 ## Implementation Plan
 
-### Data Model Changes
+### Data Model Changes (Phase 0 — Complete)
 - **User table additions:**
-  - `ProfilePhotoUrl` (string, nullable) — auto-populated from social IDP `picture` claim
+  - `GivenName` (string, nullable, max 64) — first name for display and minor protections
+  - `Surname` (string, nullable, max 64) — last name for display and minor protections
+  - `DateOfBirth` (DateTimeOffset, nullable) — used for Privo age verification
+  - `ProfilePhotoUrl` (string, nullable, max 500) — auto-populated from social IDP `picture` claim
 
 ### API Changes
-- **Config endpoint:** Update `/api/config` with new Entra External ID tenant details
-- **Auth endpoints:** Update JWT validation (authority URL, audience, claims mapping)
-- **Profile photo:** `/api/auth/profile-photo` — Upload/delete profile photo (Phase 2)
-- **Profile edit:** In-app profile update via Microsoft Graph API (Phase 2)
-- **Account deletion:** In-app via Graph API (replaces B2C deregister policy)
+- **Config endpoint (Phase 0 — Complete):** `/api/config` returns B2C or Entra config based on `UseEntraExternalId` flag
+- **Auth binding (Phase 0 — Complete):** `Program.cs` binds to `AzureAdB2C` or `AzureAdEntra` based on feature flag
+- **Auth endpoints:** Update JWT validation (authority URL, audience, claims mapping) — Phase 1
+- **Profile photo:** `/api/auth/profile-photo` — Upload/delete profile photo — Phase 2
+- **Profile edit:** In-app profile update via Microsoft Graph API — Phase 2
+- **Account deletion:** In-app via Graph API (replaces B2C deregister policy) — Phase 2
 
 ### Web UX Changes
-- **Sign-in page:** Uses Entra External ID built-in branding (logo, colors, background)
-- **Profile photos:** Display in UserNav, event attendees, leaderboards (Phase 1)
-- **Profile edit page:** New in-app page replacing broken B2C policy (Phase 2)
-- **Photo upload:** Azure Blob Storage upload with avatar cropping (Phase 2)
+- **Profile photos (Phase 0 — Complete):** Display in UserNav trigger button and hover card
+- **Auth guards (Phase 0 — Complete):** UserNav profile edit and DeleteMyData guarded for Entra mode
+- **Sign-in page:** Uses Entra External ID built-in branding (logo, colors, background) — Phase 1
+- **Profile photos in lists:** Event attendees, leaderboards — Phase 1
+- **Profile edit page:** New in-app page replacing broken B2C policy — Phase 2
+- **Photo upload:** Azure Blob Storage upload with avatar cropping — Phase 2
 
 ### Mobile App Changes
-- Update MAUI MSAL config (`AuthConstants.cs`) for new Entra External ID tenant
-- Handle profile photo display in app
-- Coordinate app store updates with web cutover
+- Update MAUI MSAL config (`AuthConstants.cs`) for new Entra External ID tenant — Phase 6
+- Handle profile photo display in app — Phase 6
+- Coordinate app store updates with web cutover — Phase 6
 
 ---
 
@@ -233,9 +252,9 @@ Custom CSS is **not available** — Entra External ID restricted custom CSS to t
    **Decision:** Entra External ID — B2C is maintenance-mode, multiple B2C policies are broken, and Privo sponsorship specifically targets Entra External ID.
    **Status:** ✅ Resolved (February 2026)
 
-3. **Can we grandfather existing users or require re-consent for ToS?**
-   **Owner:** Product team with legal review
-   **Due:** Before Phase 4 (migration)
+3. ~~**Can we grandfather existing users or require re-consent for ToS?**~~
+   **Decision:** No grandfathering — new ToS will be required anyway, so all users must re-consent during or after migration.
+   **Status:** ✅ Resolved (February 2026)
 
 4. ~~**Do we need multi-factor auth for admins?**~~
    **Decision:** Not for initial launch — can be added later as Entra External ID supports MFA natively.
@@ -245,10 +264,9 @@ Custom CSS is **not available** — Entra External ID restricted custom CSS to t
    **Decision:** Not a concern — traffic volume is low enough that session disruption during migration is acceptable.
    **Status:** ✅ Resolved
 
-6. **What is the strategy for users with duplicate accounts across identity providers?**
-   **Recommendation:** Detect during migration; prompt users to link accounts or choose primary; preserve data from both.
-   **Owner:** Product Lead + Engineering
-   **Due:** Before Phase 4 (migration)
+6. ~~**What is the strategy for users with duplicate accounts across identity providers?**~~
+   **Decision:** Detect during migration; prompt users to link accounts or choose primary; preserve data from both.
+   **Status:** ✅ Resolved (February 2026)
 
 7. ~~**How will auth changes impact API authentication for potential third-party integrations?**~~
    **Decision:** Not a concern — there are no third-party consumer apps using the API.
@@ -291,11 +309,143 @@ The following GitHub issues are tracked as part of this project:
 - **[Project 23 - Parental Consent](./Project_23_Parental_Consent.md)** - Age verification and minor protections (Phases 3 & 7 of this project)
 - **[Project 10 - Community Pages](./Project_10_Community_Pages.md)** - Partner SSO (nice-to-have)
 - **[Project 8 - Waivers V3](./Project_08_Waivers_V3.md)** - Minor waiver handling
-- **[Auth Migration Technical Design](../TechnicalDesigns/Auth_Migration.md)** - (To be created)
+- **[Auth Migration Technical Design](../TechnicalDesigns/Auth_Migration.md)** - B2C → Entra External ID migration guide (Privo deliverable)
 
 ---
 
-**Last Updated:** February 8, 2026
+## Step-by-Step: Manual Portal Setup
+
+### Step-by-Step: Tenant Setup
+
+1. Go to [Azure Portal](https://portal.azure.com) → **Microsoft Entra External ID**
+2. Click **+ Create a tenant** → select **Customer** tenant type
+3. Configure:
+   - **Tenant name:** `trashmobdev` (dev) or `trashmob` (prod)
+   - **Domain name:** `trashmobdev.onmicrosoft.com`
+   - **Location:** United States
+4. Click **Create** — this takes 2-3 minutes
+5. Record:
+   - **Tenant ID** (GUID from Overview page)
+   - **Primary domain** (e.g., `trashmobdev.onmicrosoft.com`)
+   - **CIAM domain** (e.g., `trashmobdev.ciamlogin.com`)
+
+### Step-by-Step: App Registrations
+
+Create three app registrations in the new external tenant:
+
+#### 1. Web SPA (Frontend)
+1. Go to **App registrations** → **+ New registration**
+2. **Name:** `TrashMob Web Dev`
+3. **Supported account types:** Accounts in this organizational directory only
+4. **Redirect URI:** Single-page application (SPA)
+   - `http://localhost:3000` (local dev)
+   - `https://dev.trashmob.eco` (dev environment)
+5. Click **Register**
+6. Go to **Authentication** → under **Implicit grant and hybrid flows**:
+   - Check **ID tokens**
+   - Uncheck **Access tokens**
+7. Record the **Application (client) ID** — this is the `FrontendClientId`
+
+#### 2. Backend API
+1. **Name:** `TrashMob API Dev`
+2. **Supported account types:** Accounts in this organizational directory only
+3. **Redirect URI:** Leave blank (API doesn't redirect)
+4. Click **Register**
+5. Go to **Expose an API**:
+   - Click **+ Add a scope**
+   - Set **Application ID URI** to `api://<client-id>`
+   - Add scope: `TrashMob.Read` (Admins and users)
+   - Add scope: `TrashMob.Writes` (Admins and users)
+6. Record the **Application (client) ID** — this is the `ClientId` in appsettings
+
+#### 3. Mobile App
+1. **Name:** `TrashMob Mobile Dev`
+2. **Supported account types:** Accounts in this organizational directory only
+3. **Redirect URI:** Public client/native (mobile & desktop)
+   - `eco.trashmob.trashmobmobile://auth`
+4. Click **Register**
+5. Record the **Application (client) ID**
+
+#### Grant API Permissions
+For both the Web SPA and Mobile app registrations:
+1. Go to **API permissions** → **+ Add a permission**
+2. Select **My APIs** → select `TrashMob API Dev`
+3. Check both `TrashMob.Read` and `TrashMob.Writes`
+4. Click **Grant admin consent**
+
+#### Update Config Values
+After all registrations are complete, update the config:
+- **`appsettings.Development.json`** → fill in `AzureAdEntra` section:
+  - `Instance`: `https://trashmobdev.ciamlogin.com/`
+  - `ClientId`: API app registration client ID
+  - `FrontendClientId`: Web SPA app registration client ID
+  - `Domain`: `trashmobdev.onmicrosoft.com`
+  - `TenantId`: Tenant ID from Overview page
+- **Key Vault** (`kv-tm-dev-westus2`): Store the same values as secrets for production use
+
+### Step-by-Step: Social Identity Providers
+
+For each provider (Google, Microsoft, Apple, Facebook):
+
+#### Google
+1. Go to [Google Cloud Console](https://console.cloud.google.com) → **APIs & Services** → **Credentials**
+2. Create or use existing **OAuth 2.0 Client ID**
+3. Add authorized redirect URI: `https://trashmobdev.ciamlogin.com/trashmobdev.onmicrosoft.com/federation/oauth2`
+4. In Azure Portal → External tenant → **External Identities** → **All identity providers**
+5. Click **+ Google** → enter Client ID and Client secret from Google
+
+#### Microsoft
+1. In Azure Portal → External tenant → **External Identities** → **All identity providers**
+2. Microsoft account is available by default — just enable it
+
+#### Apple
+1. Go to [Apple Developer](https://developer.apple.com) → **Certificates, Identifiers & Profiles**
+2. Create a **Services ID** for Sign in with Apple
+3. Configure the return URL: `https://trashmobdev.ciamlogin.com/trashmobdev.onmicrosoft.com/federation/oauth2`
+4. In Azure Portal → **External Identities** → **All identity providers** → **+ Apple**
+5. Enter Apple Service ID, Team ID, Key ID, and private key
+
+#### Facebook
+1. Go to [Facebook Developers](https://developers.facebook.com) → create or use existing app
+2. Under **Facebook Login** → **Settings**, add valid OAuth redirect URI:
+   `https://trashmobdev.ciamlogin.com/trashmobdev.onmicrosoft.com/federation/oauth2`
+3. In Azure Portal → **External Identities** → **All identity providers** → **+ Facebook**
+4. Enter App ID and App secret from Facebook
+
+### Step-by-Step: User Flow
+
+1. Go to External tenant → **User flows** → **+ New user flow**
+2. Select **Sign up and sign in**
+3. **Name:** `SignUpSignIn` (the full name will be `B2C_1_SignUpSignIn`)
+4. **Identity providers:** Select all configured providers (Google, Microsoft, Apple, Facebook, Email)
+5. **User attributes to collect during sign-up:**
+   - Email Address (required)
+   - Given Name (required)
+   - Surname (required)
+   - Display Name (optional — maps to UserName)
+6. **Custom attributes** (create if not present):
+   - `dateOfBirth` (String) — collected during sign-up for age verification
+7. Click **Create**
+8. After creation, go to **Properties** → configure:
+   - Token lifetime: 1 hour (access token), 24 hours (refresh token)
+   - Session behavior: match current B2C settings
+
+### Step-by-Step: Branding
+
+1. Go to External tenant → **Company branding** → **Default sign-in experience**
+2. Configure:
+   - **Banner logo:** Upload TrashMob logo (260x36 px recommended, PNG/SVG)
+   - **Background image:** Upload TrashMob hero image (1920x1080 px)
+   - **Background color:** `#96ba00` (TrashMob green) as fallback
+   - **Sign-in page text:** "Welcome to TrashMob.eco — Join the movement to clean up the planet!"
+3. Under **Layout**:
+   - Select **Full-screen background** template
+4. Click **Save**
+5. Test by navigating to the sign-in URL in an incognito browser
+
+---
+
+**Last Updated:** February 9, 2026
 **Owner:** Security Engineer + Product Lead
-**Status:** In Progress (Phase 0)
+**Status:** In Progress (Phase 0 — code complete, portal setup remaining)
 **Next Review:** After Phase 0 tenant setup
