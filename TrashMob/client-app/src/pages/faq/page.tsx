@@ -219,6 +219,10 @@ const faqs = [
                 question: 'Does TrashMob have a mobile app?',
                 answer: 'Yes! The TrashMob app is available for both iOS and Android devices. Download it from the <a href="https://apps.apple.com/app/trashmob/id1599983258" target="_blank" rel="noopener noreferrer">App Store</a> or <a href="https://play.google.com/store/apps/details?id=eco.trashmob.trashmobmobileapp" target="_blank" rel="noopener noreferrer">Google Play</a> to find events, report litter, and track your impact on the go!',
             },
+            {
+                question: 'Can I use AI to find events on TrashMob?',
+                answer: 'Yes! TrashMob provides an MCP (Model Context Protocol) server that lets AI assistants like Claude, ChatGPT, and others search for events, view leaderboards, explore communities, and more. See the <a href="https://www.trashmob.eco/help">Help page</a> for setup instructions.',
+            },
         ],
     },
 ];
