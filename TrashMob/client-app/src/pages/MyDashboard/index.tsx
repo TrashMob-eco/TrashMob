@@ -22,6 +22,7 @@ import {
     Handshake,
     ClipboardList,
     Truck,
+    Briefcase,
 } from 'lucide-react';
 import { AxiosResponse } from 'axios';
 
@@ -37,6 +38,7 @@ import DisplayPartnerLocationEventData from '@/components/Models/DisplayPartnerL
 import LitterReportData from '@/components/Models/LitterReportData';
 import { LitterReportStatusEnum } from '@/components/Models/LitterReportStatus';
 import TeamData from '@/components/Models/TeamData';
+import ProfessionalCompanyData from '@/components/Models/ProfessionalCompanyData';
 
 import twofigure from '@/components/assets/card/twofigure.svg';
 import calendarclock from '@/components/assets/card/calendarclock.svg';
@@ -62,6 +64,7 @@ import { GetPartnerAdminInvitationsByUser } from '@/services/invitations';
 import { GetEventPickupLocationsByUser, GetPartnerLocationEventServicesByUserId } from '@/services/locations';
 import { GetUserLitterReports } from '@/services/litter-report';
 import { GetMyTeams, GetTeamsILead } from '@/services/teams';
+import { GetMyCompanies } from '@/services/professional-company-portal';
 
 import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
 import { useGetUserEvents } from '@/hooks/useGetUserEvents';
@@ -78,6 +81,7 @@ import { MyTeamsTable } from '@/pages/MyDashboard/MyTeamsTable';
 import { MyRoutesCard } from '@/pages/MyDashboard/MyRoutesCard';
 import { MyWaiversCard } from '@/pages/MyDashboard/MyWaiversCard';
 import { MyImpactCard } from '@/pages/MyDashboard/MyImpactCard';
+import { MyCompaniesTable } from '@/pages/MyDashboard/MyCompaniesTable';
 import { InviteFriendsCard } from '@/pages/MyDashboard/InviteFriendsCard';
 import { MyNewsletterPreferencesCard } from '@/pages/MyDashboard/MyNewsletterPreferencesCard';
 import { DashboardScrollNav, DashboardNavGroup } from './DashboardScrollNav';
@@ -108,6 +112,7 @@ const SECTION_IDS = [
     'partner-event-requests',
     'pickup-requests',
     'partner-admin-invitations',
+    'my-companies',
 ];
 
 const navGroups: DashboardNavGroup[] = [
@@ -155,6 +160,10 @@ const navGroups: DashboardNavGroup[] = [
             { id: 'pickup-requests', label: 'Pickup Requests', icon: Truck },
             { id: 'partner-admin-invitations', label: 'Admin Invitations', icon: UserPlus },
         ],
+    },
+    {
+        title: 'Professional Companies',
+        items: [{ id: 'my-companies', label: 'My Companies', icon: Briefcase }],
     },
 ];
 
@@ -254,6 +263,17 @@ const MyDashboard: FC<MyDashboardProps> = () => {
     const { data: teamsILead } = useQuery<AxiosResponse<TeamData[]>, unknown, TeamData[]>({
         queryKey: GetTeamsILead().key,
         queryFn: GetTeamsILead().service,
+        select: (res) => res.data,
+    });
+
+    // Professional companies user belongs to
+    const { data: myCompanies } = useQuery<
+        AxiosResponse<ProfessionalCompanyData[]>,
+        unknown,
+        ProfessionalCompanyData[]
+    >({
+        queryKey: GetMyCompanies().key,
+        queryFn: GetMyCompanies().service,
         select: (res) => res.data,
     });
 
@@ -680,6 +700,25 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                                 </CardContent>
                             </Card>
                         </section>
+
+                        {/* Professional Companies */}
+                        {myCompanies && myCompanies.length > 0 ? (
+                            <section id='my-companies' className='scroll-mt-20'>
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className='text-primary'>
+                                            <Briefcase className='inline-block h-5 w-5 mr-2' />
+                                            My Professional Companies ({myCompanies.length})
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className='overflow-auto'>
+                                            <MyCompaniesTable items={myCompanies} />
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </section>
+                        ) : null}
                     </main>
                 </div>
             </div>

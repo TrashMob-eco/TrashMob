@@ -186,6 +186,20 @@ const PartnerCommunitySponsoredAdoptionEdit = lazy(() =>
     })),
 );
 
+/** Company Dashboard - Lazy loaded (professional company portal) */
+const CompanyDashboardLayout = lazy(() =>
+    import('./pages/companydashboard/$companyId/_layout').then((m) => ({ default: m.CompanyDashboardLayout })),
+);
+const CompanyDashboard = lazy(() =>
+    import('./pages/companydashboard/$companyId').then((m) => ({ default: m.CompanyDashboard })),
+);
+const CompanyLogCleanup = lazy(() =>
+    import('./pages/companydashboard/$companyId/log-cleanup').then((m) => ({ default: m.CompanyLogCleanup })),
+);
+const CompanyCleanupHistory = lazy(() =>
+    import('./pages/companydashboard/$companyId/history').then((m) => ({ default: m.CompanyCleanupHistory })),
+);
+
 /** Partner Dashboard - Lazy loaded (partner admin pages) */
 const PartnerIndex = lazy(() =>
     import('./pages/partnerdashboard/$partnerId').then((m) => ({ default: m.PartnerIndex })),
@@ -509,6 +523,18 @@ const AppContent: FC = () => {
                                         element={<PartnerCommunitySponsoredAdoptionEdit />}
                                     />
                                 </Route>
+                            </Route>
+                            <Route
+                                path='companydashboard/:companyId'
+                                element={
+                                    <Suspense fallback={<LazyLoadingFallback />}>
+                                        <CompanyDashboardLayout />
+                                    </Suspense>
+                                }
+                            >
+                                <Route index element={<CompanyDashboard />} />
+                                <Route path='log-cleanup' element={<CompanyLogCleanup />} />
+                                <Route path='history' element={<CompanyCleanupHistory />} />
                             </Route>
 
                             <Route path='/cancelevent/:eventId' element={<CancelEvent />} />
