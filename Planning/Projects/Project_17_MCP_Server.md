@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phase 2 Complete) |
+| **Status** | In Progress (Phase 2.5 Complete) |
 | **Priority** | Low |
 | **Risk** | Moderate |
 | **Size** | Medium |
@@ -46,6 +46,12 @@ Provide safe, privacy-aware AI access to events/metrics via Model Context Protoc
 - ✅ Litter report discovery - `SearchLitterReportsTool`
 - ✅ Partner/location search - `SearchPartnerLocationsTool`
 - ✅ Community search - `SearchCommunitiesTool`
+
+### Phase 2.5 - Feature Catch-Up Tools ✅
+- ✅ Leaderboard query (user & team rankings) - `GetLeaderboardTool`
+- ✅ Achievement types listing - `GetAchievementTypesTool`
+- ✅ Event route statistics - `GetEventRouteStatsTool`
+- ⬜ Adoptable areas search (deferred - requires authentication)
 
 ### Phase 3 - AI Features
 - ⬜ Event recommendations based on user location/history
@@ -108,15 +114,26 @@ None - can use existing API
 
 ```
 TrashMobMCP/
-├── Program.cs                 # MCP server entry point
+├── Program.cs                       # MCP server entry point
 ├── Tools/
-│   ├── EventSearchTool.cs    # Search events by criteria
-│   ├── StatsTool.cs          # Get platform/community stats
-│   ├── TeamSearchTool.cs     # Find teams
-│   ├── CommunityTool.cs      # Community information
-│   └── LitterReportTool.cs   # Litter report lookup
-├── Resources/
-│   └── EventResource.cs      # Event data resource
+│   ├── SearchEventsTool.cs          # Search events by criteria
+│   ├── GetStatsTool.cs              # Get platform/community stats
+│   ├── SearchTeamsTool.cs           # Find teams
+│   ├── SearchCommunitiesTool.cs     # Community information
+│   ├── SearchLitterReportsTool.cs   # Litter report lookup
+│   ├── SearchPartnerLocationsTool.cs # Partner location search
+│   ├── GetLeaderboardTool.cs        # Volunteer/team rankings
+│   ├── GetAchievementTypesTool.cs   # Available achievement badges
+│   └── GetEventRouteStatsTool.cs    # Event route tracking stats
+├── Dtos/
+│   ├── EventDto.cs
+│   ├── CommunityDto.cs
+│   ├── LitterReportDto.cs
+│   ├── PartnerLocationDto.cs
+│   ├── StatsDto.cs
+│   ├── TeamDto.cs
+│   ├── LeaderboardEntryDto.cs
+│   └── AchievementTypeDto.cs
 └── appsettings.json
 ```
 
@@ -406,7 +423,7 @@ The following GitHub issues are tracked as part of this project:
 
 ---
 
-**Last Updated:** January 31, 2026
+**Last Updated:** February 8, 2026
 **Owner:** Engineering Team
-**Status:** Not Started
+**Status:** In Progress (Phase 2.5 Complete — 9 tools)
 **Next Review:** When AI integration becomes priority
