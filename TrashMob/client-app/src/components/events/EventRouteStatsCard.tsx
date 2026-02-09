@@ -72,9 +72,7 @@ export const EventRouteStatsCard = ({ eventId }: EventRouteStatsCardProps) => {
                     </div>
                     {stats.coverageAreaSquareMeters > 0 && (
                         <div className='text-center'>
-                            <p className='text-2xl font-bold'>
-                                {formatArea(stats.coverageAreaSquareMeters)}
-                            </p>
+                            <p className='text-2xl font-bold'>{formatArea(stats.coverageAreaSquareMeters)}</p>
                             <p className='text-sm text-muted-foreground'>Area Covered</p>
                         </div>
                     )}

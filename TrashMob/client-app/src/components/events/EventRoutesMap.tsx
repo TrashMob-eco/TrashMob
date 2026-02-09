@@ -168,11 +168,7 @@ export const EventRoutesMap = ({ eventId, defaultCenter }: EventRoutesMapProps) 
                 </button>
             </div>
             <GoogleMapWithKey defaultCenter={defaultCenter} style={{ width: '100%', height: '400px' }}>
-                {viewMode === 'routes' ? (
-                    <RoutePolylines routes={routeList} />
-                ) : (
-                    <HeatmapOverlay routes={routeList} />
-                )}
+                {viewMode === 'routes' ? <RoutePolylines routes={routeList} /> : <HeatmapOverlay routes={routeList} />}
             </GoogleMapWithKey>
         </div>
     );
