@@ -19,6 +19,14 @@ class ProfessionalCleanupLogData {
 
     notes: string = '';
 
+    sponsoredAdoption?: {
+        id: string;
+        adoptableArea?: {
+            id: string;
+            name: string;
+        };
+    };
+
     createdByUserId: string = Guid.EMPTY;
 
     createdDate: Date = new Date();
