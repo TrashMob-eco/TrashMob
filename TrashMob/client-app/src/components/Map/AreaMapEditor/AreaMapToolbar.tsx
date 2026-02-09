@@ -1,5 +1,6 @@
 import { Pentagon, Route, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { AddressSearchInput } from './AddressSearchInput';
 
 export type DrawingMode = 'polygon' | 'polyline' | 'edit' | null;
 
@@ -8,9 +9,16 @@ interface AreaMapToolbarProps {
     hasShape: boolean;
     onModeChange: (mode: DrawingMode) => void;
     onDelete: () => void;
+    onAddressSearch?: (lat: number, lng: number) => void;
 }
 
-export const AreaMapToolbar = ({ activeMode, hasShape, onModeChange, onDelete }: AreaMapToolbarProps) => {
+export const AreaMapToolbar = ({
+    activeMode,
+    hasShape,
+    onModeChange,
+    onDelete,
+    onAddressSearch,
+}: AreaMapToolbarProps) => {
     const toggle = (mode: 'polygon' | 'polyline' | 'edit') => {
         onModeChange(activeMode === mode ? null : mode);
     };
@@ -76,6 +84,7 @@ export const AreaMapToolbar = ({ activeMode, hasShape, onModeChange, onDelete }:
                 <Trash2 className='h-4 w-4 mr-1' />
                 Delete
             </Button>
+            {onAddressSearch ? <AddressSearchInput onLocationSelected={onAddressSearch} /> : null}
         </div>
     );
 };

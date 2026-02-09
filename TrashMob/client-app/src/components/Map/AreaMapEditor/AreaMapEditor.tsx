@@ -1,12 +1,16 @@
-import { useState, useCallback } from 'react';
-import { ChevronDown, ChevronUp, MapPin } from 'lucide-react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
+import { ChevronDown, ChevronUp, MapPin, AlertTriangle } from 'lucide-react';
+import { useMap } from '@vis.gl/react-google-maps';
 import { GoogleMapWithKey as GoogleMap } from '@/components/Map/GoogleMap';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { AreaMapToolbar, DrawingMode } from './AreaMapToolbar';
 import { DrawingLayer } from './DrawingLayer';
 import { CommunityBoundsOverlay } from './CommunityBoundsOverlay';
-import { AreaBoundingBox } from '@/lib/geojson';
+import { ExistingAreasOverlay } from './ExistingAreasOverlay';
+import { AreaStatusLegend } from './AreaStatusLegend';
+import { AreaBoundingBox, parseGeoJson, polygonCoordsToPath } from '@/lib/geojson';
+import AdoptableAreaData from '@/components/Models/AdoptableAreaData';
 
 const MAP_ID = 'areaMapEditor';
 
@@ -23,6 +27,55 @@ interface AreaMapEditorProps {
     onBoundsChange?: (bbox: AreaBoundingBox | null) => void;
     communityBounds?: CommunityBounds;
     communityCenter?: { lat: number; lng: number } | null;
+    existingAreas?: AdoptableAreaData[];
+    currentAreaId?: string;
+}
+
+function useOverlapDetection(currentGeoJson: string, existingAreas: AdoptableAreaData[], excludeId?: string) {
+    return useMemo(() => {
+        if (!currentGeoJson || !existingAreas.length) return [];
+
+        const parsed = parseGeoJson(currentGeoJson);
+        if (!parsed || parsed.type !== 'Polygon') return [];
+
+        const currentPath = polygonCoordsToPath(parsed.coordinates);
+        if (currentPath.length < 3) return [];
+
+        // Check if any vertex of the current polygon is inside an existing polygon (or vice versa)
+        const overlapping: string[] = [];
+
+        for (const area of existingAreas) {
+            if (area.id === excludeId || !area.geoJson) continue;
+
+            const areaParsed = parseGeoJson(area.geoJson);
+            if (!areaParsed || areaParsed.type !== 'Polygon') continue;
+
+            const areaPath = polygonCoordsToPath(areaParsed.coordinates);
+            if (areaPath.length < 3) continue;
+
+            // Use google.maps.geometry.poly.containsLocation if available
+            if (typeof google !== 'undefined' && google.maps?.geometry?.poly?.containsLocation) {
+                const existingPoly = new google.maps.Polygon({ paths: areaPath });
+                const currentPoly = new google.maps.Polygon({ paths: currentPath });
+
+                // Check if any vertex of current shape is inside existing area
+                const currentInExisting = currentPath.some((pt) =>
+                    google.maps.geometry.poly.containsLocation(new google.maps.LatLng(pt.lat, pt.lng), existingPoly),
+                );
+
+                // Check if any vertex of existing area is inside current shape
+                const existingInCurrent = areaPath.some((pt) =>
+                    google.maps.geometry.poly.containsLocation(new google.maps.LatLng(pt.lat, pt.lng), currentPoly),
+                );
+
+                if (currentInExisting || existingInCurrent) {
+                    overlapping.push(area.name);
+                }
+            }
+        }
+
+        return overlapping;
+    }, [currentGeoJson, existingAreas, excludeId]);
 }
 
 export const AreaMapEditor = ({
@@ -31,10 +84,13 @@ export const AreaMapEditor = ({
     onBoundsChange,
     communityBounds,
     communityCenter,
+    existingAreas = [],
+    currentAreaId,
 }: AreaMapEditorProps) => {
     const [drawingMode, setDrawingMode] = useState<DrawingMode>(null);
     const [hasShape, setHasShape] = useState(false);
     const [showRawGeoJson, setShowRawGeoJson] = useState(false);
+    const [measurement, setMeasurement] = useState<string | null>(null);
 
     const hasCommunityBounds =
         communityBounds?.boundsNorth != null &&
@@ -43,6 +99,8 @@ export const AreaMapEditor = ({
         communityBounds?.boundsWest != null;
 
     const defaultCenter = communityCenter ?? { lat: 47.6062, lng: -122.3321 };
+
+    const overlappingNames = useOverlapDetection(value, existingAreas, currentAreaId);
 
     const handleGeometryChange = useCallback(
         (geoJson: string, _centroid: { lat: number; lng: number }, bbox: AreaBoundingBox | null) => {
@@ -74,6 +132,10 @@ export const AreaMapEditor = ({
                 hasShape={hasShape}
                 onModeChange={handleModeChange}
                 onDelete={handleDelete}
+                onAddressSearch={(lat, lng) => {
+                    // We dispatch a custom event that the MapPanHandler picks up
+                    window.dispatchEvent(new CustomEvent('areamap:panto', { detail: { lat, lng } }));
+                }}
             />
             <div className='h-[400px] overflow-hidden'>
                 <GoogleMap
@@ -102,6 +164,9 @@ export const AreaMapEditor = ({
                             boundsWest={communityBounds!.boundsWest!}
                         />
                     ) : null}
+                    {existingAreas.length > 0 ? (
+                        <ExistingAreasOverlay mapId={MAP_ID} areas={existingAreas} excludeAreaId={currentAreaId} />
+                    ) : null}
                     <DrawingLayer
                         mapId={MAP_ID}
                         initialGeoJson={value}
@@ -109,24 +174,45 @@ export const AreaMapEditor = ({
                         onGeometryChange={handleGeometryChange}
                         onGeometryCleared={handleGeometryCleared}
                         onShapePresenceChange={setHasShape}
+                        onMeasurementChange={setMeasurement}
                     />
+                    <MapPanHandler mapId={MAP_ID} />
                 </GoogleMap>
             </div>
+            {overlappingNames.length > 0 ? (
+                <div className='flex items-center gap-2 px-3 py-2 bg-yellow-50 border-x border-yellow-200 text-yellow-800 text-sm'>
+                    <AlertTriangle className='h-4 w-4 shrink-0' />
+                    <span>
+                        Overlaps with: <strong>{overlappingNames.join(', ')}</strong>
+                    </span>
+                </div>
+            ) : null}
             <div className='flex items-center justify-between p-2 bg-muted rounded-b-lg'>
                 <span className='text-sm text-muted-foreground flex items-center gap-1'>
                     <MapPin className='h-3.5 w-3.5' />
-                    {hasShape ? 'Geometry defined' : 'No geometry — draw a shape above'}
+                    {hasShape && measurement
+                        ? measurement
+                        : hasShape
+                          ? 'Geometry defined'
+                          : 'No geometry — draw a shape above'}
                 </span>
-                <Button
-                    type='button'
-                    variant='ghost'
-                    size='sm'
-                    className='text-xs'
-                    onClick={() => setShowRawGeoJson(!showRawGeoJson)}
-                >
-                    {showRawGeoJson ? <ChevronUp className='h-3 w-3 mr-1' /> : <ChevronDown className='h-3 w-3 mr-1' />}
-                    {showRawGeoJson ? 'Hide' : 'Show'} raw GeoJSON
-                </Button>
+                <div className='flex items-center gap-3'>
+                    {existingAreas.length > 0 ? <AreaStatusLegend /> : null}
+                    <Button
+                        type='button'
+                        variant='ghost'
+                        size='sm'
+                        className='text-xs'
+                        onClick={() => setShowRawGeoJson(!showRawGeoJson)}
+                    >
+                        {showRawGeoJson ? (
+                            <ChevronUp className='h-3 w-3 mr-1' />
+                        ) : (
+                            <ChevronDown className='h-3 w-3 mr-1' />
+                        )}
+                        {showRawGeoJson ? 'Hide' : 'Show'} raw GeoJSON
+                    </Button>
+                </div>
             </div>
             {showRawGeoJson ? (
                 <Textarea
@@ -138,4 +224,23 @@ export const AreaMapEditor = ({
             ) : null}
         </div>
     );
+};
+
+/** Listens for custom pan-to events and moves the map */
+const MapPanHandler = ({ mapId }: { mapId: string }) => {
+    const map = useMap(mapId);
+
+    useEffect(() => {
+        const handler = (e: Event) => {
+            const { lat, lng } = (e as CustomEvent<{ lat: number; lng: number }>).detail;
+            if (map) {
+                map.panTo({ lat, lng });
+                map.setZoom(17);
+            }
+        };
+        window.addEventListener('areamap:panto', handler);
+        return () => window.removeEventListener('areamap:panto', handler);
+    }, [map]);
+
+    return null;
 };
