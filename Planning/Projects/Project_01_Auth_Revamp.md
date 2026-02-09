@@ -233,9 +233,9 @@ Custom CSS is **not available** — Entra External ID restricted custom CSS to t
    **Decision:** Entra External ID — B2C is maintenance-mode, multiple B2C policies are broken, and Privo sponsorship specifically targets Entra External ID.
    **Status:** ✅ Resolved (February 2026)
 
-3. **Can we grandfather existing users or require re-consent for ToS?**
-   **Owner:** Product team with legal review
-   **Due:** Before Phase 4 (migration)
+3. ~~**Can we grandfather existing users or require re-consent for ToS?**~~
+   **Decision:** No grandfathering — new ToS will be required anyway, so all users must re-consent during or after migration.
+   **Status:** ✅ Resolved (February 2026)
 
 4. ~~**Do we need multi-factor auth for admins?**~~
    **Decision:** Not for initial launch — can be added later as Entra External ID supports MFA natively.
@@ -245,10 +245,9 @@ Custom CSS is **not available** — Entra External ID restricted custom CSS to t
    **Decision:** Not a concern — traffic volume is low enough that session disruption during migration is acceptable.
    **Status:** ✅ Resolved
 
-6. **What is the strategy for users with duplicate accounts across identity providers?**
-   **Recommendation:** Detect during migration; prompt users to link accounts or choose primary; preserve data from both.
-   **Owner:** Product Lead + Engineering
-   **Due:** Before Phase 4 (migration)
+6. ~~**What is the strategy for users with duplicate accounts across identity providers?**~~
+   **Decision:** Detect during migration; prompt users to link accounts or choose primary; preserve data from both.
+   **Status:** ✅ Resolved (February 2026)
 
 7. ~~**How will auth changes impact API authentication for potential third-party integrations?**~~
    **Decision:** Not a concern — there are no third-party consumer apps using the API.
