@@ -22,7 +22,11 @@ export const AreaMapToolbar = ({ activeMode, hasShape, onModeChange, onDelete }:
                 variant='outline'
                 size='sm'
                 disabled={hasShape}
-                className={activeMode === 'polygon' ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground' : ''}
+                className={
+                    activeMode === 'polygon'
+                        ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground'
+                        : ''
+                }
                 onClick={() => toggle('polygon')}
                 title='Draw polygon'
             >
@@ -34,7 +38,11 @@ export const AreaMapToolbar = ({ activeMode, hasShape, onModeChange, onDelete }:
                 variant='outline'
                 size='sm'
                 disabled={hasShape}
-                className={activeMode === 'polyline' ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground' : ''}
+                className={
+                    activeMode === 'polyline'
+                        ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground'
+                        : ''
+                }
                 onClick={() => toggle('polyline')}
                 title='Draw line'
             >
@@ -46,14 +54,25 @@ export const AreaMapToolbar = ({ activeMode, hasShape, onModeChange, onDelete }:
                 variant='outline'
                 size='sm'
                 disabled={!hasShape}
-                className={activeMode === 'edit' ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground' : ''}
+                className={
+                    activeMode === 'edit'
+                        ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground'
+                        : ''
+                }
                 onClick={() => toggle('edit')}
                 title='Edit vertices'
             >
                 <Pencil className='h-4 w-4 mr-1' />
                 Edit
             </Button>
-            <Button type='button' variant='outline' size='sm' disabled={!hasShape} onClick={onDelete} title='Delete shape'>
+            <Button
+                type='button'
+                variant='outline'
+                size='sm'
+                disabled={!hasShape}
+                onClick={onDelete}
+                title='Delete shape'
+            >
                 <Trash2 className='h-4 w-4 mr-1' />
                 Delete
             </Button>

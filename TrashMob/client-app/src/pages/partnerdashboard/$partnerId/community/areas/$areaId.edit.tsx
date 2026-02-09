@@ -411,9 +411,7 @@ export const PartnerCommunityAreaEdit = () => {
                     <Card>
                         <CardHeader>
                             <CardTitle>Geographic Definition</CardTitle>
-                            <CardDescription>
-                                Draw the area boundary on the map, or paste raw GeoJSON.
-                            </CardDescription>
+                            <CardDescription>Draw the area boundary on the map, or paste raw GeoJSON.</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <FormField
@@ -426,8 +424,21 @@ export const PartnerCommunityAreaEdit = () => {
                                                 value={field.value}
                                                 onChange={field.onChange}
                                                 onBoundsChange={setAreaBbox}
-                                                communityBounds={community ? { boundsNorth: community.boundsNorth, boundsSouth: community.boundsSouth, boundsEast: community.boundsEast, boundsWest: community.boundsWest } : undefined}
-                                                communityCenter={community?.latitude != null && community?.longitude != null ? { lat: community.latitude, lng: community.longitude } : null}
+                                                communityBounds={
+                                                    community
+                                                        ? {
+                                                              boundsNorth: community.boundsNorth,
+                                                              boundsSouth: community.boundsSouth,
+                                                              boundsEast: community.boundsEast,
+                                                              boundsWest: community.boundsWest,
+                                                          }
+                                                        : undefined
+                                                }
+                                                communityCenter={
+                                                    community?.latitude != null && community?.longitude != null
+                                                        ? { lat: community.latitude, lng: community.longitude }
+                                                        : null
+                                                }
                                             />
                                         </FormControl>
                                         <FormMessage />

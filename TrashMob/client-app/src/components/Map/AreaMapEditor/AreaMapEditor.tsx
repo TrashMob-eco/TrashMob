@@ -25,7 +25,13 @@ interface AreaMapEditorProps {
     communityCenter?: { lat: number; lng: number } | null;
 }
 
-export const AreaMapEditor = ({ value, onChange, onBoundsChange, communityBounds, communityCenter }: AreaMapEditorProps) => {
+export const AreaMapEditor = ({
+    value,
+    onChange,
+    onBoundsChange,
+    communityBounds,
+    communityCenter,
+}: AreaMapEditorProps) => {
     const [drawingMode, setDrawingMode] = useState<DrawingMode>(null);
     const [hasShape, setHasShape] = useState(false);
     const [showRawGeoJson, setShowRawGeoJson] = useState(false);
@@ -63,7 +69,12 @@ export const AreaMapEditor = ({ value, onChange, onBoundsChange, communityBounds
 
     return (
         <div className='space-y-0'>
-            <AreaMapToolbar activeMode={drawingMode} hasShape={hasShape} onModeChange={handleModeChange} onDelete={handleDelete} />
+            <AreaMapToolbar
+                activeMode={drawingMode}
+                hasShape={hasShape}
+                onModeChange={handleModeChange}
+                onDelete={handleDelete}
+            />
             <div className='h-[400px] overflow-hidden'>
                 <GoogleMap
                     id={MAP_ID}

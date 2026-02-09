@@ -9,7 +9,13 @@ interface CommunityBoundsOverlayProps {
     mapId: string;
 }
 
-export const CommunityBoundsOverlay = ({ boundsNorth, boundsSouth, boundsEast, boundsWest, mapId }: CommunityBoundsOverlayProps) => {
+export const CommunityBoundsOverlay = ({
+    boundsNorth,
+    boundsSouth,
+    boundsEast,
+    boundsWest,
+    mapId,
+}: CommunityBoundsOverlayProps) => {
     const map = useMap(mapId);
     const rectangleRef = useRef<google.maps.Rectangle | null>(null);
 

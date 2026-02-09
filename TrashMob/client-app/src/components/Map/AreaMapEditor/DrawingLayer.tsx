@@ -121,7 +121,12 @@ export const DrawingLayer = ({
                 drawingMode: null,
                 drawingControl: false,
                 polygonOptions: { ...SHAPE_STYLE, editable: false, draggable: false },
-                polylineOptions: { strokeColor: SHAPE_STYLE.strokeColor, strokeOpacity: SHAPE_STYLE.strokeOpacity, strokeWeight: 3, editable: false },
+                polylineOptions: {
+                    strokeColor: SHAPE_STYLE.strokeColor,
+                    strokeOpacity: SHAPE_STYLE.strokeOpacity,
+                    strokeWeight: 3,
+                    editable: false,
+                },
             });
 
             google.maps.event.addListener(dm, 'overlaycomplete', (e: google.maps.drawing.OverlayCompleteEvent) => {
