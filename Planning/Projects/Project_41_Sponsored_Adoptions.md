@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Not Started |
+| **Status** | In Progress (Phases 1-4 Complete) |
 | **Priority** | Medium |
 | **Risk** | Medium |
 | **Size** | Large |
@@ -47,40 +47,46 @@ The professional companies need to log their work (pickup dates, weight removed,
 
 ## Scope
 
-### Phase 1 — Data Model & Roles
+### Phase 1 — Data Model & Roles ✅ (PR #2616)
 
-- [ ] Add `AdoptionType` enum: `Volunteer`, `Sponsored`
-- [ ] Add `Sponsor` entity (name, contact, logo, linked adoptable areas)
-- [ ] Add `ProfessionalCompany` entity (name, contact, assigned segments)
-- [ ] Add `ProfessionalCleanupLog` entity (date, segment, company, weight collected, bags, duration, photos, notes)
-- [ ] New role: **Professional Company User** — can log cleanup activity on assigned segments only
-- [ ] New role: **Sponsor Viewer** — read-only access to reports for their sponsored segments
-- [ ] Flag on adoption records: `isSponsoredAdoption` to distinguish from volunteer adoptions
-- [ ] Ensure professional cleanup logs are excluded from volunteer stats aggregation (StatsData, leaderboards, SiteMetrics)
+- [x] Add `Sponsor` entity (name, contact, logo, linked to partner/community)
+- [x] Add `ProfessionalCompany` entity (name, contact, linked to partner/community)
+- [x] Add `ProfessionalCompanyUser` join entity (user ↔ company membership)
+- [x] Add `SponsoredAdoption` entity (area, sponsor, company, frequency, status)
+- [x] Add `ProfessionalCleanupLog` entity (date, segment, company, weight, bags, duration, notes)
+- [x] EF Core migration with proper indexes and relationships
+- [x] Managers: Sponsor, ProfessionalCompany, ProfessionalCompanyUser, SponsoredAdoption, ProfessionalCleanupLog
+- [x] Controllers: CommunitySponsors, CommunityProfessionalCompanies, CommunitySponsoredAdoptions, ProfessionalCleanupLogs, SponsorReports
+- [x] Authorization policies: `UserIsProfessionalCompanyUserOrIsAdmin`, `UserIsPartnerUserOrIsAdmin`
+- [x] Professional cleanup logs stored in separate table — excluded from volunteer stats by design
 
-### Phase 2 — Community Admin Tools
+### Phase 2 — Community Admin Tools ✅ (PR #2618)
 
-- [ ] Community admins can mark an adoptable area as "Sponsored"
-- [ ] Assign a sponsor to a sponsored area
-- [ ] Assign a professional company to service sponsored areas
-- [ ] Set cleanup schedule/frequency requirements for professional companies
-- [ ] Compliance dashboard: which sponsored segments are overdue for cleanup
-- [ ] View professional cleanup logs with photos and metrics
+- [x] Community admins manage sponsors (CRUD) via partner dashboard
+- [x] Community admins manage professional companies (CRUD) with user assignment
+- [x] Create/edit sponsored adoptions: assign area, sponsor, company, frequency
+- [x] Compliance dashboard: on-schedule vs overdue stats, tabbed adoption views
+- [x] View professional cleanup logs per adoption
+- [x] CSV export of adoption data for signage updates
 
-### Phase 3 — Professional Company Portal
+### Phase 3 — Professional Company Portal ✅ (PR #2621)
 
-- [ ] Professional company users can view their assigned segments
-- [ ] Log a cleanup: date, segment, weight collected, bags, duration, before/after photos
-- [ ] View their cleanup history and upcoming schedule
-- [ ] Receive reminders for upcoming scheduled cleanups
-- [ ] Mobile-friendly data entry (companies work in the field)
+- [x] `GET /api/professional-companies/mine` — users discover their companies
+- [x] Company dashboard at `/companydashboard/:companyId` with sidebar nav
+- [x] View assigned segments with schedule status (on-schedule/overdue badges)
+- [x] Log a cleanup: mobile-friendly form with large touch targets
+- [x] View cleanup history with summary stats (total cleanups, bags, weight)
+- [x] MyDashboard integration: "My Professional Companies" section
 
-### Phase 4 — Sponsor Portal
+### Phase 4 — Sponsor Portal ✅ (PR #2629)
 
-- [ ] Sponsors can view their adopted segments on a map
-- [ ] See cleanup history and compliance status
-- [ ] Download reports (PDF) for their records or marketing
-- [ ] Sponsor recognition on community page (optional, community-controlled)
+- [x] `GET /api/sponsors/mine` — users discover sponsors via partner admin chain
+- [x] `GET /api/sponsors/{id}/cleanup-logs` — aggregated logs across all adoptions
+- [x] Sponsor dashboard at `/sponsordashboard/:sponsorId` with sidebar nav
+- [x] View adopted segments with compliance status (on-schedule/overdue badges)
+- [x] Cleanup history with summary stats
+- [x] Download cleanup logs as CSV
+- [x] MyDashboard integration: "My Sponsors" section
 
 ### Phase 5 — Reporting & Analytics (Future)
 
@@ -267,7 +273,7 @@ GET    /api/sponsors/{id}/adoptions/{adoptionId}/reports
 
 ---
 
-**Last Updated:** February 8, 2026
+**Last Updated:** February 9, 2026
 **Owner:** Product Team
-**Status:** Not Started
-**Next Review:** When county/state adoption partnerships are in progress
+**Status:** In Progress (Phases 1-4 Complete, Phase 5 Future)
+**Next Review:** When real adoption data is available for analytics
