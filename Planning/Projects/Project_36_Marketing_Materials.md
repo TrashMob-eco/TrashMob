@@ -58,12 +58,12 @@ With the completion of major features in early 2026, TrashMob needs professional
   - **Newsletter Support** (Project 19) - Monthly newsletter with subscriber preferences and team event linking
   - **Social Media Integration** (Project 14) - Modernized social sharing across platforms
   - **User Feedback** (Project 34) - In-app feedback collection widget
-  - **AI Community Sales Agent** (Project 40) - AI-powered community discovery, prospect scoring, outreach, and conversion tracking
 
-  **Analytics & Administration:**
+  **Analytics & Site Administration:**
   - **Attendee Metrics** (Project 22) - Per-attendee statistics and tracking
   - **Photo Moderation** (Project 28) - Admin review and flagging system
   - **Feature Usage Metrics** (Project 29) - Analytics and reporting dashboards
+  - **AI Community Sales Agent** (Project 40) - Site admin tool for AI-powered community discovery, prospect scoring, outreach, and conversion tracking
 
   **Platform & Technical:**
   - **Route Tracing** (Project 15) - GPS route recording during cleanups with heat maps and coverage statistics
@@ -78,7 +78,7 @@ With the completion of major features in early 2026, TrashMob needs professional
 - ? Define community tier pricing structure
 - ? Document what's included at each tier:
   - **Free Tier:** Event creation, co-leads, volunteer registration, teams, leaderboards, achievements, litter reporting, route tracing, before/after photos, event weights
-  - **Community Tier:** Everything in Free, plus branded pages, regional hierarchy, adopt-a-location, sponsored adoptions, custom waivers, bulk invites, newsletters, analytics dashboards, heat maps, partner documents, AI sales agent, MCP integration, priority support
+  - **Community Tier:** Everything in Free, plus branded pages, regional hierarchy, adopt-a-location, sponsored adoptions, custom waivers, bulk invites, newsletters, analytics dashboards, heat maps, partner documents, MCP integration, priority support
 - ? Create step-by-step enrollment guide
 - ? Document community admin onboarding process
 - ? Create FAQ for prospective communities
@@ -182,11 +182,6 @@ grant applications and impact reporting.
 Upload and manage agreements, contracts, insurance certificates,
 and compliance documents directly within the partner dashboard.
 
-## AI-Powered Community Growth
-AI agent discovers prospective communities, scores engagement
-potential, and automates outreach campaigns with sentiment analysis
-and conversion tracking.
-
 ## Mobile App Improvements
 Teams, leaderboards, event photos, and achievements now on mobile.
 Improved navigation, error handling, and Sentry crash reporting
@@ -218,7 +213,6 @@ for building custom integrations, dashboards, and analysis tools.
 | Newsletter management | - | ✓ |
 | Analytics dashboards & heat maps | - | ✓ |
 | Partner document management | - | ✓ |
-| AI community sales agent | - | ✓ |
 | MCP/AI data integration | - | ✓ |
 | Priority support | - | ✓ |
 
