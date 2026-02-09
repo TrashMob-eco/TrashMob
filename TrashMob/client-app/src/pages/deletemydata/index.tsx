@@ -12,7 +12,9 @@ export const DeleteMyData: FC<DeleteMyDataProps> = (props) => {
 
         // TODO: Phase 2 — in-app account deletion via Graph API when using Entra External ID
         if (getAuthProvider() === 'entra') {
-            console.warn('Account deletion via B2C policy not available in Entra mode. In-app deletion coming in Phase 2.');
+            console.warn(
+                'Account deletion via B2C policy not available in Entra mode. In-app deletion coming in Phase 2.',
+            );
             return;
         }
 

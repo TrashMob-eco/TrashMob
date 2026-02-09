@@ -1,11 +1,5 @@
 import * as msal from '@azure/msal-browser';
-import {
-    getAppConfig,
-    getCachedConfig,
-    type AuthProvider,
-    type B2CConfig,
-    type EntraConfig,
-} from '../services/config';
+import { getAppConfig, getCachedConfig, type AuthProvider, type B2CConfig, type EntraConfig } from '../services/config';
 
 // Fallback B2C configuration for when config cannot be loaded
 // Uses dev settings as fallback since they're safer for testing
