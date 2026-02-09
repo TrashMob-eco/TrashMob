@@ -76,7 +76,7 @@ export const MyPartnersTable = ({ items }: MyPartnersTableProps) => {
                                                 <>
                                                     <DropdownMenuSeparator />
                                                     <DropdownMenuItem asChild>
-                                                        <Link to={`/communities/${displayPartner.slug}/admin`}>
+                                                        <Link to={`/partnerdashboard/${displayPartner.id}/community`}>
                                                             <Globe />
                                                             <span>Manage Community Page</span>
                                                         </Link>

@@ -91,11 +91,6 @@ const LazyLoadingFallback = () => (
     </div>
 );
 
-/** Community Admin - Redirect from old URLs */
-const CommunityAdminRedirect = lazy(() =>
-    import('./pages/communities/$slug/admin/redirect').then((m) => ({ default: m.CommunityAdminRedirect })),
-);
-
 /** Partner Community Admin - Lazy loaded */
 const PartnerCommunityDashboard = lazy(() =>
     import('./pages/partnerdashboard/$partnerId/community').then((m) => ({ default: m.PartnerCommunityDashboard })),
@@ -577,14 +572,6 @@ const AppContent: FC = () => {
                             <Route path='/teams/:teamId/edit' element={<TeamEditPage />} />
                             <Route path='/teams/:teamId/invites' element={<TeamInvitesPage />} />
                             <Route path='/teams/:teamId/invites/:batchId' element={<TeamInviteDetailsPage />} />
-                            <Route
-                                path='/communities/:slug/admin/*'
-                                element={
-                                    <Suspense fallback={<LazyLoadingFallback />}>
-                                        <CommunityAdminRedirect />
-                                    </Suspense>
-                                }
-                            />
                         </Route>
                         <Route element={<AuthSideAdminLayout />}>
                             <Route
