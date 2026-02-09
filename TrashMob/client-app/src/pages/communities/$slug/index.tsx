@@ -151,7 +151,7 @@ export const CommunityDetailPage = () => {
                         </Button>
                         {isUserLoaded && currentUser.id ? (
                             <Button variant='outline' asChild>
-                                <Link to={`/communities/${slug}/admin`}>
+                                <Link to={`/partnerdashboard/${community?.id}/community`}>
                                     <Settings className='h-4 w-4 mr-2' /> Admin
                                 </Link>
                             </Button>
