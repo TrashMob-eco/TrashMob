@@ -1470,6 +1470,12 @@
 
                 entity.Property(e => e.TrashMobWaiverVersion).HasMaxLength(50);
 
+                entity.Property(e => e.GivenName).HasMaxLength(64);
+
+                entity.Property(e => e.Surname).HasMaxLength(64);
+
+                entity.Property(e => e.ProfilePhotoUrl).HasMaxLength(500);
+
                 entity.HasData(
                     new User
                     {

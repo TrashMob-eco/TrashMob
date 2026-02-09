@@ -1,5 +1,5 @@
 import { FC, FormEvent } from 'react';
-import { getApiConfig, getB2CPolicies, getMsalClientInstance } from '@/store/AuthStore';
+import { getApiConfig, getAuthProvider, getB2CPolicies, getMsalClientInstance } from '@/store/AuthStore';
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,6 +9,12 @@ interface DeleteMyDataProps {}
 export const DeleteMyData: FC<DeleteMyDataProps> = (props) => {
     const handleDelete = (event: FormEvent<HTMLElement>) => {
         event.preventDefault();
+
+        // TODO: Phase 2 — in-app account deletion via Graph API when using Entra External ID
+        if (getAuthProvider() === 'entra') {
+            console.warn('Account deletion via B2C policy not available in Entra mode. In-app deletion coming in Phase 2.');
+            return;
+        }
 
         const account = getMsalClientInstance().getAllAccounts()[0];
         const policy = getB2CPolicies();

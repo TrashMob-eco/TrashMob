@@ -11,7 +11,7 @@ import { CircleUserRound, IdCard, LogOut, MapPin, User, UserRoundX } from 'lucid
 import { Link } from 'react-router';
 import { cn } from '@/lib/utils';
 import UserData from '../Models/UserData';
-import { getApiConfig, getB2CPolicies, getMsalClientInstance } from '@/store/AuthStore';
+import { getApiConfig, getAuthProvider, getB2CPolicies, getMsalClientInstance } from '@/store/AuthStore';
 import React from 'react';
 
 interface UserNavProps {
@@ -44,6 +44,12 @@ export const UserNav = (props: UserNavProps) => {
     function profileEdit(e: React.MouseEvent) {
         e.preventDefault();
 
+        // TODO: Phase 2 — in-app profile edit via Graph API when using Entra External ID
+        if (getAuthProvider() === 'entra') {
+            console.warn('Profile edit via B2C policy not available in Entra mode. In-app edit coming in Phase 2.');
+            return;
+        }
+
         const account = getMsalClientInstance().getAllAccounts()[0];
         const policy = getB2CPolicies();
         const scopes = getApiConfig();
@@ -75,14 +81,32 @@ export const UserNav = (props: UserNavProps) => {
                                     className='rounded-full h-10 w-10'
                                     aria-label={`Account menu for ${currentUser.userName}`}
                                 >
-                                    <CircleUserRound size={24} />
+                                    {currentUser.profilePhotoUrl ? (
+                                        <img
+                                            src={currentUser.profilePhotoUrl}
+                                            alt={currentUser.userName}
+                                            className='h-6 w-6 rounded-full object-cover'
+                                            referrerPolicy='no-referrer'
+                                        />
+                                    ) : (
+                                        <CircleUserRound size={24} />
+                                    )}
                                 </Button>
                             </DropdownMenuTrigger>
                         </HoverCardTrigger>
                         <HoverCardContent align='end' className='w-72'>
                             <div className='flex flex-col gap-2'>
                                 <div className='flex items-center gap-3'>
-                                    <CircleUserRound size={40} className='text-muted-foreground' />
+                                    {currentUser.profilePhotoUrl ? (
+                                        <img
+                                            src={currentUser.profilePhotoUrl}
+                                            alt={currentUser.userName}
+                                            className='h-10 w-10 rounded-full object-cover'
+                                            referrerPolicy='no-referrer'
+                                        />
+                                    ) : (
+                                        <CircleUserRound size={40} className='text-muted-foreground' />
+                                    )}
                                     <div className='flex flex-col overflow-hidden'>
                                         <span className='font-semibold truncate'>
                                             {currentUser.userName || 'Welcome'}

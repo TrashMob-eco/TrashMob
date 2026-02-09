@@ -127,6 +127,26 @@ namespace TrashMob.Models
         public string TrashMobWaiverVersion { get; set; }
 
         /// <summary>
+        /// Gets or sets the user's given (first) name.
+        /// </summary>
+        public string GivenName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user's surname (last name).
+        /// </summary>
+        public string Surname { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user's date of birth (used for age verification).
+        /// </summary>
+        public DateTimeOffset? DateOfBirth { get; set; }
+
+        /// <summary>
+        /// Gets or sets the URL of the user's profile photo (auto-populated from social IDP or uploaded).
+        /// </summary>
+        public string ProfilePhotoUrl { get; set; }
+
+        /// <summary>
         /// Gets or sets the date when the user became a member.
         /// </summary>
         public DateTimeOffset? MemberSince { get; set; }

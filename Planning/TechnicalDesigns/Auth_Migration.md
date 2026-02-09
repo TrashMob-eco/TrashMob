@@ -541,6 +541,71 @@ Minor account upgraded from limited to full access
 
 ---
 
-**Last Updated:** February 8, 2026
+## Phase 0 Setup Commands
+
+### Tenant Creation
+
+Tenant creation is **portal-only** — Azure CLI does not support creating Entra External ID tenants.
+
+1. Go to [Azure Portal → Microsoft Entra External ID](https://portal.azure.com/#view/Microsoft_AAD_IAM/CompanyBrandingBlade)
+2. Create new external tenant
+3. Record tenant name, domain, and tenant ID
+
+### App Registrations (CLI)
+
+After the tenant is created, app registrations can be created via Azure CLI:
+
+```bash
+# Switch to the new external tenant
+az login --tenant <tenant-id>
+
+# Web SPA app registration (dev)
+az ad app create \
+  --display-name "TrashMob Web Dev" \
+  --sign-in-audience AzureADandPersonalMicrosoftAccount \
+  --web-redirect-uris "http://localhost:3000" "https://dev.trashmob.eco" \
+  --enable-id-token-issuance true \
+  --enable-access-token-issuance false
+
+# Backend API app registration (dev)
+az ad app create \
+  --display-name "TrashMob API Dev" \
+  --sign-in-audience AzureADandPersonalMicrosoftAccount \
+  --identifier-uris "api://<api-client-id>"
+
+# Mobile app registration (dev)
+az ad app create \
+  --display-name "TrashMob Mobile Dev" \
+  --sign-in-audience AzureADandPersonalMicrosoftAccount \
+  --public-client-redirect-uris "eco.trashmob.trashmobmobile://auth"
+```
+
+### Social IDP Configuration
+
+Social identity provider configuration (Google, Microsoft, Apple, Facebook) is **portal-only**:
+
+1. Go to External ID tenant → External Identities → All identity providers
+2. Add each social provider with client ID and secret from their developer consoles
+3. Configure user flow to include social providers
+
+### User Flow Configuration
+
+User flow creation and configuration is **portal-only**:
+
+1. Go to External ID tenant → User flows
+2. Create sign-up/sign-in user flow
+3. Configure custom attributes (givenName, surname, dateOfBirth)
+4. Add Custom Authentication Extension for Privo age verification (Phase 3)
+
+### Branding Configuration
+
+Built-in branding (logo, colors, background image) is **portal-only**:
+
+1. Go to External ID tenant → Company branding
+2. Upload TrashMob logo, configure colors, set background image
+
+---
+
+**Last Updated:** February 9, 2026
 **Status:** Living document — updated as migration progresses
 **Next Update:** After Phase 0 completion
