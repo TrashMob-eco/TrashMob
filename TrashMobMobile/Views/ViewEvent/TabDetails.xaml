@@ -69,20 +69,20 @@
                             IsVisible="{Binding EnableViewEventSummary}"
                             Style="{StaticResource SecondarySmallButton}" />
             <!--<Button Margin="5"
-                            Grid.Row="0" 
-                            Grid.Column="2" 
-                            Command="{Binding RealTimeLocationTrackerCommand}" 
+                            Grid.Row="0"
+                            Grid.Column="2"
+                            Command="{Binding RealTimeLocationTrackerCommand}"
                             IsVisible="{Binding EnableStartTrackEventRoute}"
                             IsEnabled="{Binding EnableStartTrackEventRoute}"
-                            Text="Start Tracking" 
+                            Text="Start Tracking"
                             Style="{StaticResource SecondarySmallButton}" />
             <Button Margin="5"
-                            Grid.Row="0" 
-                            Grid.Column="2" 
-                            Command="{Binding RealTimeLocationTrackerCancelCommand}" 
+                            Grid.Row="0"
+                            Grid.Column="2"
+                            Command="{Binding RealTimeLocationTrackerCancelCommand}"
                             IsEnabled="{Binding EnableStopTrackEventRoute}"
                             IsVisible="{Binding EnableStopTrackEventRoute}"
-                            Text="Stop Tracking" 
+                            Text="Stop Tracking"
                             Style="{StaticResource SecondarySmallButton}" />-->
         </Grid>
     </Grid>

@@ -84,5 +84,30 @@
                 response.EnsureSuccessStatusCode();
             }
         }
+
+        public async Task<DisplayEventAttendeeRoute> SimulateRouteAsync(Guid eventId, CancellationToken cancellationToken = default)
+        {
+            var requestUri = "routes/simulate/" + eventId;
+
+            using (var response = await AuthorizedHttpClient.PostAsync(requestUri, null, cancellationToken))
+            {
+                response.EnsureSuccessStatusCode();
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                return JsonConvert.DeserializeObject<DisplayEventAttendeeRoute>(content);
+            }
+        }
+
+        public async Task<DisplayEventAttendeeRoute> UpdateRouteMetadataAsync(Guid routeId, UpdateRouteMetadataRequest request, CancellationToken cancellationToken = default)
+        {
+            var requestUri = "routes/" + routeId;
+            var content = JsonContent.Create(request, typeof(UpdateRouteMetadataRequest), null, SerializerOptions);
+
+            using (var response = await AuthorizedHttpClient.PutAsync(requestUri, content, cancellationToken))
+            {
+                response.EnsureSuccessStatusCode();
+                var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
+                return JsonConvert.DeserializeObject<DisplayEventAttendeeRoute>(responseContent);
+            }
+        }
     }
 }

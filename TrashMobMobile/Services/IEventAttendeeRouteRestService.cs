@@ -21,5 +21,9 @@
             CancellationToken cancellationToken = default);
 
         Task DeleteEventAttendeeRouteAsync(Guid id, CancellationToken cancellationToken = default);
+
+        Task<DisplayEventAttendeeRoute> SimulateRouteAsync(Guid eventId, CancellationToken cancellationToken = default);
+
+        Task<DisplayEventAttendeeRoute> UpdateRouteMetadataAsync(Guid routeId, UpdateRouteMetadataRequest request, CancellationToken cancellationToken = default);
     }
 }
