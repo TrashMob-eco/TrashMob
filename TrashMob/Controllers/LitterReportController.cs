@@ -369,14 +369,21 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetImage(Guid litterImageId, ImageSizeEnum imageSize,
             CancellationToken cancellationToken)
         {
-            var url = await imageManager.GetImageUrlAsync(litterImageId, ImageTypeEnum.LitterImage, imageSize, cancellationToken);
+            try
+            {
+                var url = await imageManager.GetImageUrlAsync(litterImageId, ImageTypeEnum.LitterImage, imageSize, cancellationToken);
 
-            if (string.IsNullOrEmpty(url))
+                if (string.IsNullOrEmpty(url))
+                {
+                    return NoContent();
+                }
+
+                return Ok(url);
+            }
+            catch (Exception)
             {
                 return NoContent();
             }
-
-            return Ok(url);
         }
     }
 }
