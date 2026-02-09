@@ -12,6 +12,7 @@ namespace TrashMob.Controllers
     using TrashMob.Models;
     using TrashMob.Models.Extensions;
     using TrashMob.Models.Poco;
+    using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
 
@@ -138,7 +139,7 @@ namespace TrashMob.Controllers
             return coordinates;
         }
 
-        private static (double lat, double lon) OffsetLatLon(double lat, double lon, double bearingDeg, double distanceMeters)
+        private static (double Lat, double Lon) OffsetLatLon(double lat, double lon, double bearingDeg, double distanceMeters)
         {
             var latRad = lat * Math.PI / 180;
             var lonRad = lon * Math.PI / 180;
