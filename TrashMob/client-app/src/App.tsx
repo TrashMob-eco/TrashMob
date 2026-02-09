@@ -200,6 +200,20 @@ const CompanyCleanupHistory = lazy(() =>
     import('./pages/companydashboard/$companyId/history').then((m) => ({ default: m.CompanyCleanupHistory })),
 );
 
+/** Sponsor Dashboard - Lazy loaded (sponsor portal) */
+const SponsorDashboardLayout = lazy(() =>
+    import('./pages/sponsordashboard/$sponsorId/_layout').then((m) => ({ default: m.SponsorDashboardLayout })),
+);
+const SponsorDashboard = lazy(() =>
+    import('./pages/sponsordashboard/$sponsorId').then((m) => ({ default: m.SponsorDashboard })),
+);
+const SponsorCleanupHistory = lazy(() =>
+    import('./pages/sponsordashboard/$sponsorId/history').then((m) => ({ default: m.SponsorCleanupHistory })),
+);
+const SponsorReports = lazy(() =>
+    import('./pages/sponsordashboard/$sponsorId/reports').then((m) => ({ default: m.SponsorReports })),
+);
+
 /** Partner Dashboard - Lazy loaded (partner admin pages) */
 const PartnerIndex = lazy(() =>
     import('./pages/partnerdashboard/$partnerId').then((m) => ({ default: m.PartnerIndex })),
@@ -535,6 +549,18 @@ const AppContent: FC = () => {
                                 <Route index element={<CompanyDashboard />} />
                                 <Route path='log-cleanup' element={<CompanyLogCleanup />} />
                                 <Route path='history' element={<CompanyCleanupHistory />} />
+                            </Route>
+                            <Route
+                                path='sponsordashboard/:sponsorId'
+                                element={
+                                    <Suspense fallback={<LazyLoadingFallback />}>
+                                        <SponsorDashboardLayout />
+                                    </Suspense>
+                                }
+                            >
+                                <Route index element={<SponsorDashboard />} />
+                                <Route path='history' element={<SponsorCleanupHistory />} />
+                                <Route path='reports' element={<SponsorReports />} />
                             </Route>
 
                             <Route path='/cancelevent/:eventId' element={<CancelEvent />} />
