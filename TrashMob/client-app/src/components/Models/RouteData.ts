@@ -24,6 +24,7 @@ export interface DisplayEventRouteStats {
     uniqueContributors: number;
     totalBagsCollected: number;
     totalWeightCollected: number;
+    coverageAreaSquareMeters: number;
 }
 
 export interface DisplayUserRouteHistory {

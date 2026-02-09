@@ -425,8 +425,9 @@ Enable testing the full route pipeline without physically walking routes. The si
 - **Database migration:** ✅ Applied to dev (AddRouteTracingProperties)
 - **Route simulation:** ✅ Complete — `RouteSimulationController` (backend, production-gated), mobile "Simulate Route" button (`#if USETEST` gated), REST service method
 - **Mobile route sharing (Phase 3):** ✅ Complete — TabRoutes view with route map (polylines), aggregate stats (distance/duration/bags), per-route cards with privacy picker, delete button, route metadata update REST service (`UpdateRouteMetadataAsync`), `EventAttendeeRouteViewModel` display model, 6th tab on ViewEventPage
+- **Heat map & coverage (Phase 4):** ✅ Complete — Google Maps HeatmapLayer toggle on EventRoutesMap (client-side from existing anonymized routes), 25m grid coverage area calculation in route manager, coverage stat in EventRouteStatsCard
 - **Mobile app:** REST service layer complete; route recording/upload exists but untested on device
-- **Remaining:** Mobile app recording/upload device testing, heat map visualization (Phase 4)
+- **Remaining:** Mobile app recording/upload device testing
 
 ---
 
@@ -480,5 +481,5 @@ The following GitHub issues are tracked as part of this project:
 
 **Last Updated:** February 8, 2026
 **Owner:** Mobile Team + Backend
-**Status:** In Progress (Backend, Website, Route Simulation & Mobile Route Sharing Complete)
-**Next Step:** Mobile device testing, heat map visualization (Phase 4)
+**Status:** In Progress (Backend, Website, Route Simulation, Mobile Route Sharing & Heat Map Complete)
+**Next Step:** Mobile device testing (route recording/upload)

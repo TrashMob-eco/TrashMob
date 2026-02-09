@@ -39,5 +39,10 @@
         /// Gets or sets the total weight collected in pounds.
         /// </summary>
         public decimal TotalWeightCollected { get; set; }
+
+        /// <summary>
+        /// Gets or sets the estimated area covered in square meters, based on 25m grid cell aggregation.
+        /// </summary>
+        public double CoverageAreaSquareMeters { get; set; }
     }
 }
