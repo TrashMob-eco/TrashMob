@@ -47,7 +47,7 @@
 | [Project 6 - Backend Standards](./Projects/Project_06_Backend_Standards.md) | Code standards, .NET 10 upgrades | In Progress |
 | [Project 11 - Adopt-A-Location](./Projects/Project_11_Adopt_A_Location.md) | Location adoption program | ✅ Complete |
 | [Project 14 - Social Media Integration](./Projects/Project_14_Social_Media.md) | Modernize social sharing | ✅ Complete |
-| [Project 15 - Route Tracing](./Projects/Project_15_Route_Tracing.md) | Map route tracing with privacy | In Progress (Backend & Website Complete) |
+| [Project 15 - Route Tracing](./Projects/Project_15_Route_Tracing.md) | Map route tracing with privacy | In Progress (Phases 1-5 Complete, Mobile Device Testing Remaining) |
 | [Project 16 - Content Management](./Projects/Project_16_Content_Management.md) | Strapi CMS integration | ✅ Complete |
 | [Project 19 - Newsletter Support](./Projects/Project_19_Newsletter.md) | Monthly communication | ✅ Complete |
 | [Project 20 - Gamification](./Projects/Project_20_Gamification.md) | Leaderboards and achievements | ✅ Complete |
