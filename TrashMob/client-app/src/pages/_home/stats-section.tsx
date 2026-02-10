@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { CountUp } from 'use-count-up';
 import { GetStats } from '@/services/stats';
+import { GetCommunityPublicStats } from '@/services/communities';
 import { Services } from '@/config/services.config';
 import StatsData from '@/components/Models/StatsData';
 
@@ -10,6 +11,7 @@ import Person from '@/components/assets/home/Person.svg';
 import Clock from '@/components/assets/home/Clock.svg';
 import LitterReport from '@/components/assets/home/LitterReport.svg';
 import Weight from '@/components/assets/home/Weight.svg';
+import CommunityIcon from '@/components/assets/home/Community.svg';
 import { useIsInViewport } from '@/hooks/useIsInViewport';
 import { useLogin } from '@/hooks/useLogin';
 
@@ -42,12 +44,20 @@ export const StatsSection = () => {
     } = stats;
     const { currentUser } = useLogin();
 
+    const { data: communityStats } = useQuery({
+        queryKey: GetCommunityPublicStats().key,
+        queryFn: GetCommunityPublicStats().service,
+        staleTime: Services.CACHE.DISABLE,
+    });
+
     const { ref: viewportRef, isInViewPort } = useIsInViewport<HTMLDivElement>();
 
     // Use user's weight preference (default to imperial/lbs for anonymous users)
     const prefersMetric = currentUser?.prefersMetric ?? false;
     const weightValue = Math.round(prefersMetric ? totalWeightInKilograms : totalWeightInPounds);
     const weightLabel = prefersMetric ? 'Total Weight (kg)' : 'Total Weight (lbs)';
+
+    const showCommunities = communityStats && communityStats.totalCommunities > 3;
 
     const statItems = [
         {
@@ -92,6 +102,17 @@ export const StatsSection = () => {
             icon: Weight,
             alt: 'Total weight',
         },
+        ...(showCommunities
+            ? [
+                  {
+                      id: 6,
+                      title: 'Communities',
+                      value: communityStats.totalCommunities,
+                      icon: CommunityIcon,
+                      alt: 'Communities',
+                  },
+              ]
+            : []),
     ];
 
     return (
