@@ -65,6 +65,7 @@ Create a new public page at `/for-communities` that serves as the primary conver
   - Brief testimonial quote from community admin
 - ? **Enrollment CTA** — "Start Your Community" button linking to `/becomeapartner?type=community`:
   - Reuses the existing partner request form, pre-selecting the new "Community" partner type
+  - Form shows community-specific intro text and descriptions (see Partner Type Selection UX below)
   - No new form needed — the existing Name, Email, Website, Phone, Notes, Location fields work as-is
   - Backend already creates partner requests that admins review and approve
 - ? **FAQ Section** — Common questions about communities:
@@ -165,7 +166,9 @@ Create a new public page at `/for-communities` that serves as the primary conver
 
 **Frontend:**
 - New page: `src/pages/for-communities/page.tsx` — Community-focused landing page with value prop, features, pricing, success stories
-- Modify: `src/components/partner-requests/partner-request-form.tsx` — Add "Community" to the partner type radio group; show community-specific intro text when `type=community` query param is present
+- Modify: `src/components/partner-requests/partner-request-form.tsx` — Enhance partner type selection with clear descriptions (see UX details below)
+- Modify: `src/enums/PartnerType.ts` — Add `COMMUNITY = '3'`
+- Modify: `src/store/ToolTips.tsx` — Update `PartnerType` tooltip and add per-type descriptions
 - Modify: `src/pages/_home/index.tsx` — Add community CTA and featured communities section
 - Modify: `src/components/SiteHeader/MainNav.tsx` — Add "For Communities" navigation item
 - Modify: `src/pages/partnerships/page.tsx` — Add "Looking to start a community?" section with link to `/for-communities`
@@ -174,6 +177,40 @@ Create a new public page at `/for-communities` that serves as the primary conver
 - Add `Community = 3` to `PartnerTypeEnum` in `TrashMob.Models/Enums.cs`
 - Modify: `PartnerRequest` processing to recognize community type and optionally create AI Sales Agent prospect
 - New endpoint: `GET /api/communities/public-stats` — Aggregate stats (community count, events, volunteers) for the landing page
+
+### Partner Type Selection UX
+
+The current form shows bare radio buttons ("Government" / "Business") with no descriptions. Adding "Community" as a third option requires clear guidance so users know which to select. The radio group should be redesigned as a card-style selector with descriptions:
+
+```
+Partner Type:
+
+  ○ Government
+    City, county, or state agency providing waste management,
+    hauling, or disposal services for cleanup events.
+
+  ○ Business
+    Commercial company offering recycling, hauling, disposal,
+    or other cleanup-related services.
+
+  ○ Community                                        ← NEW
+    City, county, nonprofit, or organization that wants a
+    branded TrashMob community page with volunteer engagement
+    tools, adoption programs, and analytics.
+```
+
+**Behavior when arriving from `/for-communities`:**
+- Pre-select "Community" via `?type=community` query param
+- Show community-specific intro text instead of the current government-focused paragraph:
+  > "Start your TrashMob community! Tell us about your organization and the area you'd like to cover. Our team will review your request and set up your branded community page."
+- The government-focused helper text ("If connecting with a government partner, the department responsible for managing waste...") should only display when Government is selected
+
+**Behavior for existing `/becomeapartner` flow (no query param):**
+- Default to Government (current behavior preserved)
+- Show current intro text
+- All three options available
+
+**Tooltip update:** Change `PartnerType` tooltip from "The type of the partner" to "Select the type of partnership you're looking for. Government and Business partners provide services for events. Community partners get a branded page with volunteer and adoption tools."
 
 ### Wireframes
 
