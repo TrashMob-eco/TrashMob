@@ -2,6 +2,7 @@ namespace TrashMob.Controllers
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
@@ -9,6 +10,7 @@ namespace TrashMob.Controllers
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Models;
+    using TrashMob.Models.Poco;
     using TrashMob.Security;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Areas;
@@ -24,6 +26,7 @@ namespace TrashMob.Controllers
         private readonly IAdoptableAreaManager areaManager;
         private readonly IKeyedManager<Partner> partnerManager;
         private readonly IAreaSuggestionService areaSuggestionService;
+        private readonly IAreaFileParser areaFileParser;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AdoptableAreasController"/> class.
@@ -31,14 +34,17 @@ namespace TrashMob.Controllers
         /// <param name="areaManager">The adoptable area manager.</param>
         /// <param name="partnerManager">The partner manager.</param>
         /// <param name="areaSuggestionService">The AI area suggestion service.</param>
+        /// <param name="areaFileParser">The area file parser for bulk import.</param>
         public AdoptableAreasController(
             IAdoptableAreaManager areaManager,
             IKeyedManager<Partner> partnerManager,
-            IAreaSuggestionService areaSuggestionService)
+            IAreaSuggestionService areaSuggestionService,
+            IAreaFileParser areaFileParser)
         {
             this.areaManager = areaManager;
             this.partnerManager = partnerManager;
             this.areaSuggestionService = areaSuggestionService;
+            this.areaFileParser = areaFileParser;
         }
 
         /// <summary>
@@ -292,6 +298,101 @@ namespace TrashMob.Controllers
 
             var updatedArea = await areaManager.UpdateAsync(existingArea, UserId, cancellationToken);
             return Ok(updatedArea);
+        }
+
+        /// <summary>
+        /// Parses an uploaded area file (GeoJSON, KML, KMZ, or Shapefile) and returns normalized features.
+        /// </summary>
+        /// <param name="partnerId">The community (partner) ID.</param>
+        /// <param name="file">The uploaded file.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpPost("import/parse")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [RequestSizeLimit(10 * 1024 * 1024)]
+        [ProducesResponseType(typeof(AreaImportParseResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ParseImportFile(
+            Guid partnerId,
+            IFormFile file,
+            CancellationToken cancellationToken)
+        {
+            var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
+            if (partner == null)
+            {
+                return NotFound();
+            }
+
+            var authResult = await AuthorizationService.AuthorizeAsync(
+                User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+            if (!authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("A file is required.");
+            }
+
+            var allowedExtensions = new[] { ".geojson", ".json", ".kml", ".kmz", ".zip" };
+            var extension = System.IO.Path.GetExtension(file.FileName).ToLowerInvariant();
+            if (!allowedExtensions.Contains(extension))
+            {
+                return BadRequest(
+                    $"Unsupported file format: {extension}. Accepted formats: .geojson, .json, .kml, .kmz, .zip (Shapefile)");
+            }
+
+            using var stream = file.OpenReadStream();
+            var result = await areaFileParser.ParseFileAsync(stream, file.FileName, cancellationToken);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Bulk imports areas into a community. Only community admins can import areas.
+        /// </summary>
+        /// <param name="partnerId">The community (partner) ID.</param>
+        /// <param name="areas">The areas to import.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpPost("import")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(AreaBulkImportResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> BulkImportAreas(
+            Guid partnerId,
+            [FromBody] List<AdoptableArea> areas,
+            CancellationToken cancellationToken)
+        {
+            var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
+            if (partner == null)
+            {
+                return NotFound();
+            }
+
+            var authResult = await AuthorizationService.AuthorizeAsync(
+                User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+            if (!authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            if (areas == null || areas.Count == 0)
+            {
+                return BadRequest("At least one area is required.");
+            }
+
+            if (areas.Count > 500)
+            {
+                return BadRequest("Maximum 500 areas per import. Please split into smaller batches.");
+            }
+
+            var result = await areaManager.BulkCreateAsync(partnerId, UserId, areas, cancellationToken);
+            return Ok(result);
         }
 
         /// <summary>

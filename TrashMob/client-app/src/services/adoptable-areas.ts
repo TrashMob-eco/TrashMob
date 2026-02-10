@@ -118,3 +118,52 @@ export const SuggestArea = () => ({
             data: body,
         }),
 });
+
+// ============================================================================
+// Bulk Import
+// ============================================================================
+
+export type ParseImportFile_Params = { partnerId: string };
+export type ParseImportFile_Response = {
+    features: Array<{
+        geoJson: string;
+        geometryType: string;
+        properties: Record<string, string>;
+        isValid: boolean;
+        validationErrors: string[];
+    }>;
+    propertyKeys: string[];
+    totalFeatures: number;
+    validFeatures: number;
+    warnings: string[];
+    error: string | null;
+};
+export const ParseImportFile = () => ({
+    key: ['/communities/areas', 'import-parse'],
+    service: async (params: ParseImportFile_Params, formData: FormData) =>
+        ApiService('protected').fetchData<ParseImportFile_Response>({
+            url: `/communities/${params.partnerId}/areas/import/parse`,
+            method: 'post',
+            data: formData,
+            headers: { 'Content-Type': 'multipart/form-data' },
+        }),
+});
+
+export type BulkImportAreas_Params = { partnerId: string };
+export type BulkImportAreas_Body = AdoptableAreaData[];
+export type BulkImportAreas_Response = {
+    createdCount: number;
+    skippedDuplicateCount: number;
+    errorCount: number;
+    errors: Array<{ featureIndex: number; featureName: string; message: string }>;
+    totalProcessed: number;
+};
+export const BulkImportAreas = () => ({
+    key: ['/communities/areas', 'bulk-import'],
+    service: async (params: BulkImportAreas_Params, body: BulkImportAreas_Body) =>
+        ApiService('protected').fetchData<BulkImportAreas_Response>({
+            url: `/communities/${params.partnerId}/areas/import`,
+            method: 'post',
+            data: body,
+        }),
+});

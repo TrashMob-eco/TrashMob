@@ -5,6 +5,7 @@ namespace TrashMob.Shared.Managers.Interfaces
     using System.Threading;
     using System.Threading.Tasks;
     using TrashMob.Models;
+    using TrashMob.Models.Poco;
 
     /// <summary>
     /// Defines operations for managing adoptable areas within a community.
@@ -43,6 +44,20 @@ namespace TrashMob.Shared.Managers.Interfaces
             Guid partnerId,
             string name,
             Guid? excludeAreaId = null,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Creates multiple areas in bulk with deduplication and error tracking.
+        /// </summary>
+        /// <param name="partnerId">The community (partner) ID.</param>
+        /// <param name="userId">The ID of the user performing the import.</param>
+        /// <param name="areas">The areas to create.</param>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>A result containing success, skip, and error counts.</returns>
+        Task<AreaBulkImportResult> BulkCreateAsync(
+            Guid partnerId,
+            Guid userId,
+            IEnumerable<AdoptableArea> areas,
             CancellationToken cancellationToken = default);
     }
 }
