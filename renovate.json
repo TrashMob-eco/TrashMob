@@ -8,5 +8,15 @@
   "labels": ["dependencies"],
   "automergeStrategy": "merge-commit",
   "prHourlyLimit": 2,
-  "dependencyDashboard": true
+  "dependencyDashboard": true,
+  "minimumReleaseAge": "21 days",
+  "internalChecksFilter": "strict",
+  "packageRules": [
+    {
+      "description": "Allow critical security fixes immediately regardless of age",
+      "matchUpdateTypes": ["patch", "minor", "major"],
+      "matchCategories": ["security"],
+      "minimumReleaseAge": "0 days"
+    }
+  ]
 }
