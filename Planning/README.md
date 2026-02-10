@@ -13,7 +13,7 @@
 - **[Executive Summary](./Executive_Summary.md)** - High-level overview, strategic objectives, and 2026 roadmap
 - **[Risks & Mitigations](./Risks_and_Mitigations.md)** - Cross-project risks and mitigation strategies
 
-### 2026 Projects (45 Total)
+### 2026 Projects (46 Total)
 
 **Note:** Projects are not time-bound. Volunteers pick up work based on priority and availability.
 
@@ -76,6 +76,7 @@
 | [Project 36 - Marketing Materials](./Projects/Project_36_Marketing_Materials.md) | 2026 release marketing, pricing, enrollment | Not Started |
 | [Project 40 - AI Community Sales Agent](./Projects/Project_40_AI_Community_Sales_Agent.md) | AI-powered community discovery, outreach, and onboarding | ✅ Complete |
 | [Project 45 - Community Showcase](./Projects/Project_45_Community_Showcase.md) | "For Communities" landing page, home page CTAs, enrollment funnel | In Progress (Phases 1+4 Complete) |
+| [Project 46 - Product Support](./Projects/Project_46_Product_Support.md) | Define product support role, channels, onboarding, and knowledge base | Not Started |
 
 #### Low Priority (Nice-to-Have)
 
@@ -138,6 +139,7 @@
 - [Project 36 - Marketing Materials](./Projects/Project_36_Marketing_Materials.md)
 - [Project 40 - AI Community Sales Agent](./Projects/Project_40_AI_Community_Sales_Agent.md)
 - [Project 45 - Community Showcase](./Projects/Project_45_Community_Showcase.md)
+- [Project 46 - Product Support](./Projects/Project_46_Product_Support.md)
 
 ---
 
@@ -149,10 +151,10 @@
 | **In Progress** | 12 | Projects 1 (Phase 0 — code complete, portal remaining), 4 (Phases 1-2 Complete), 6, 8 (Phase 1-4 Complete), 15 (Backend & Website Complete), 22 (Phase 1-3 Complete), 25 (Phase 1 Complete), 30, 38 (Phases 1-4, 6-7 Complete), 41 (Phases 1-4 Complete), 44 (Phases 1-4 Complete), 45 (Phases 1+4 Complete) |
 | **Ready for Review** | 2 | Projects 2, 5 |
 | **Planning** | 1 | Project 23 (combined with Project 1) |
-| **Not Started** | 5 | Projects 12, 24, 31, 36, 43 |
+| **Not Started** | 6 | Projects 12, 24, 31, 36, 43, 46 |
 | **Deprioritized** | 1 | Project 33 |
 
-**Total:** 45 project specifications documented
+**Total:** 46 project specifications documented
 
 ---
 
