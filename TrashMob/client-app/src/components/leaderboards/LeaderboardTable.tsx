@@ -1,4 +1,4 @@
-import { Trophy, Medal, Award } from 'lucide-react';
+import { Trophy, Medal, Award, CircleUserRound } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { LeaderboardEntry } from '@/components/Models/LeaderboardData';
 
@@ -75,7 +75,21 @@ export const LeaderboardTable = ({ entries, isLoading, entityType = 'users' }: L
                                 </span>
                             </div>
                         </TableCell>
-                        <TableCell className='font-medium'>{entry.entityName}</TableCell>
+                        <TableCell className='font-medium'>
+                            <span className='flex items-center gap-2'>
+                                {entry.profilePhotoUrl ? (
+                                    <img
+                                        src={entry.profilePhotoUrl}
+                                        alt={entry.entityName}
+                                        className='h-6 w-6 rounded-full object-cover'
+                                        referrerPolicy='no-referrer'
+                                    />
+                                ) : (
+                                    <CircleUserRound className='h-6 w-6 text-muted-foreground' />
+                                )}
+                                {entry.entityName}
+                            </span>
+                        </TableCell>
                         <TableCell className='hidden sm:table-cell text-muted-foreground'>
                             {entry.city && entry.region
                                 ? `${entry.city}, ${entry.region}`

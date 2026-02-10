@@ -24,6 +24,7 @@
                 Id = user.Id,
                 MemberSince = user.MemberSince,
                 Region = user.Region,
+                ProfilePhotoUrl = user.ProfilePhotoUrl,
             };
         }
 

@@ -9,6 +9,7 @@ export interface LeaderboardEntry {
     formattedScore: string;
     region?: string;
     city?: string;
+    profilePhotoUrl?: string;
 }
 
 export interface LeaderboardResponse {

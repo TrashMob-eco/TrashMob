@@ -41,5 +41,10 @@
         /// Gets or sets the date when the user became a member.
         /// </summary>
         public DateTimeOffset? MemberSince { get; set; }
+
+        /// <summary>
+        /// Gets or sets the URL of the user's profile photo.
+        /// </summary>
+        public string ProfilePhotoUrl { get; set; } = string.Empty;
     }
 }

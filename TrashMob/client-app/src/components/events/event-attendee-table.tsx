@@ -17,7 +17,7 @@ import { GetEventAttendeeWaiverStatus } from '@/services/user-waivers';
 import { PaperWaiverUploadDialog } from '@/components/Waivers';
 import UserData from '../Models/UserData';
 import EventData from '../Models/EventData';
-import { ChevronUp, ChevronDown, MoreHorizontal, FileText, Upload } from 'lucide-react';
+import { ChevronUp, ChevronDown, MoreHorizontal, FileText, Upload, CircleUserRound } from 'lucide-react';
 
 interface EventAttendeeTableProps {
     users: UserData[];
@@ -143,6 +143,16 @@ export const EventAttendeeTable = (props: EventAttendeeTableProps) => {
                                 <TableRow key={user.id.toString()}>
                                     <TableCell>
                                         <span className='flex items-center gap-2'>
+                                            {user.profilePhotoUrl ? (
+                                                <img
+                                                    src={user.profilePhotoUrl}
+                                                    alt={user.userName}
+                                                    className='h-6 w-6 rounded-full object-cover'
+                                                    referrerPolicy='no-referrer'
+                                                />
+                                            ) : (
+                                                <CircleUserRound className='h-6 w-6 text-muted-foreground' />
+                                            )}
                                             {user.userName}
                                             {userIsLead ? (
                                                 <Badge variant='secondary' className='text-xs'>
