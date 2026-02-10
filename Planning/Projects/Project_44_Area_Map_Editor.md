@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phases 1-3 Complete) |
+| **Status** | In Progress (Phases 1-4 Complete) |
 | **Priority** | High |
 | **Risk** | Medium |
 | **Size** | Large |
@@ -60,15 +60,15 @@ This project replaces the GeoJSON textarea with an interactive map editor, adds 
 - [x] AI can suggest area names based on geography
 - [ ] Batch AI suggestions: "All blocks along Main Street between 1st and 10th"
 
-### Phase 4 — Bulk Import
-- [ ] GeoJSON file upload with drag-and-drop
-- [ ] KML/KMZ file upload with server-side conversion to GeoJSON
-- [ ] Shapefile (.zip containing .shp/.dbf/.shx/.prj) upload with server-side conversion
-- [ ] Import preview: show all areas on map before committing
-- [ ] Field mapping UI: map source properties to TrashMob fields (name, areaType, description, etc.)
-- [ ] Validation report: missing required fields, invalid geometries, duplicate names, overlaps
-- [ ] Batch create with progress indicator
-- [ ] Import history log (who imported, when, how many areas)
+### Phase 4 — Bulk Import ✅
+- [x] GeoJSON file upload with drag-and-drop
+- [x] KML/KMZ file upload with server-side conversion to GeoJSON
+- [x] Shapefile (.zip containing .shp/.dbf/.shx/.prj) upload with server-side conversion
+- [x] Import preview: show all areas on map before committing
+- [x] Field mapping UI: map source properties to TrashMob fields (name, areaType, description, etc.)
+- [x] Validation report: missing required fields, invalid geometries, duplicate names, overlaps
+- [x] Batch create with progress indicator
+- [x] Import history log (who imported, when, how many areas)
 
 ### Phase 5 — Export
 - [ ] Export community areas to GeoJSON FeatureCollection
@@ -314,5 +314,5 @@ GET    /api/communities/{partnerId}/areas/nearby?lat=&lng=&radius= — Get nearb
 
 **Last Updated:** February 9, 2026
 **Owner:** Product & Engineering Team
-**Status:** In Progress (Phases 1-3 Complete)
+**Status:** In Progress (Phases 1-4 Complete)
 **Next Review:** When volunteer picks up work
