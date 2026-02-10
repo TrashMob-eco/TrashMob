@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
-import { Loader2, Plus, Pencil, Trash2, MapPin } from 'lucide-react';
+import { Loader2, Plus, Pencil, Trash2, MapPin, Upload } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -93,10 +93,19 @@ export const PartnerCommunityAreas = () => {
                             Manage geographic areas available for team adoption within your community.
                         </CardDescription>
                     </div>
-                    <Button onClick={() => navigate(`/partnerdashboard/${partnerId}/community/areas/create`)}>
-                        <Plus className='h-4 w-4 mr-2' />
-                        Add Area
-                    </Button>
+                    <div className='flex gap-2'>
+                        <Button
+                            variant='outline'
+                            onClick={() => navigate(`/partnerdashboard/${partnerId}/community/areas/import`)}
+                        >
+                            <Upload className='h-4 w-4 mr-2' />
+                            Import
+                        </Button>
+                        <Button onClick={() => navigate(`/partnerdashboard/${partnerId}/community/areas/create`)}>
+                            <Plus className='h-4 w-4 mr-2' />
+                            Add Area
+                        </Button>
+                    </div>
                 </CardHeader>
                 <CardContent>
                     {areas && areas.length > 0 ? (
