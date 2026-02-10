@@ -101,8 +101,7 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
 
     // Pre-select Community type when arriving from /for-communities
     const typeParam = searchParams.get('type');
-    const defaultPartnerType =
-        typeParam === 'community' ? PartnerType.COMMUNITY : PartnerType.GOVERNMENT;
+    const defaultPartnerType = typeParam === 'community' ? PartnerType.COMMUNITY : PartnerType.GOVERNMENT;
     const userPreferredLocation =
         currentUser.latitude && currentUser.longitude
             ? { lat: currentUser.latitude, lng: currentUser.longitude }
