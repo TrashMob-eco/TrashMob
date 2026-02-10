@@ -18,6 +18,8 @@ Today, the home page CTA is "Join us today" — entirely volunteer-focused. Comm
 
 This project creates a clear funnel: **Discover → Understand → Enroll** for prospective communities.
 
+**Key design decision:** Rather than building a completely separate enrollment system, this project reuses the existing partner request pipeline (`/becomeapartner` form and `PartnerRequest` backend). A new "Community" partner type option is added, and a community-focused landing page provides the value proposition context before funneling users to the existing form.
+
 ---
 
 ## Objectives
@@ -25,7 +27,7 @@ This project creates a clear funnel: **Discover → Understand → Enroll** for 
 ### Primary Goals
 - **Dedicated "For Communities" landing page** showcasing the community feature set with clear value propositions
 - **Home page community CTA** — prominent call-to-action alongside the existing volunteer CTA
-- **Self-service interest form** — simple enrollment inquiry that feeds into the AI Sales Agent pipeline (Project 40)
+- **Self-service enrollment** — enhance existing partner request form with "Community" type, linked from the landing page
 - **Community success stories** — showcase existing communities with metrics and testimonials
 
 ### Secondary Goals
@@ -61,11 +63,10 @@ Create a new public page at `/for-communities` that serves as the primary conver
   - Community name, logo, and branded page screenshot
   - Key metrics (events held, volunteers engaged, bags collected)
   - Brief testimonial quote from community admin
-- ? **Enrollment CTA** — "Start Your Community" form:
-  - Organization name, type (city/county/nonprofit/HOA), contact name, email, website
-  - Estimated volunteer base size
-  - Geographic area of interest
-  - Submits to backend and creates a prospect in the AI Sales Agent pipeline
+- ? **Enrollment CTA** — "Start Your Community" button linking to `/becomeapartner?type=community`:
+  - Reuses the existing partner request form, pre-selecting the new "Community" partner type
+  - No new form needed — the existing Name, Email, Website, Phone, Notes, Location fields work as-is
+  - Backend already creates partner requests that admins review and approve
 - ? **FAQ Section** — Common questions about communities:
   - What is a TrashMob community?
   - How much does it cost?
@@ -92,17 +93,18 @@ Create a new public page at `/for-communities` that serves as the primary conver
 
 ### Phase 4 — Backend & Integration
 
-- ? **Community interest form API endpoint** — `POST /api/community-interest`:
-  - Accepts form submission (name, type, contact, email, website, size, area)
-  - Creates a prospect record in the AI Sales Agent pipeline (Project 40)
-  - Sends confirmation email to the submitter
-  - Sends notification to site admins
+- ? **Add "Community" partner type** — Add `Community = 3` to `PartnerTypeEnum` as a new third type (not replacing Government). The three types represent different relationships:
+  - **Government (= 1):** Service-providing agencies (waste management, hauling, disposal)
+  - **Business (= 2):** Commercial service partners (recycling firms, safety kit providers)
+  - **Community (= 3):** Geographic entities (cities, counties, nonprofits) wanting branded presence, volunteer tools, and analytics
+  - Note: A city government could be both a Government service partner AND a Community partner — the types are not mutually exclusive
 - ? **Community metrics API** — `GET /api/communities/public-stats`:
   - Total active communities
   - Total community events
   - Total community volunteers
   - Geographic coverage summary
 - ? **Featured communities configuration** — Admin ability to mark communities as "featured" for the home page carousel (could be a flag on the Partner/Community model, or managed via Strapi CMS)
+- ? **AI Sales Agent integration** — When a partner request with type "Community" is created, optionally create a prospect in the AI Sales Agent pipeline (Project 40)
 
 ---
 
@@ -110,6 +112,7 @@ Create a new public page at `/for-communities` that serves as the primary conver
 
 - ? Automated community self-provisioning (communities are still set up by admins after enrollment)
 - ? Payment processing or subscription management (handled offline for now)
+- ? Separate enrollment form or backend pipeline (reuse existing partner request flow)
 - ? Community comparison or directory features beyond existing communities list page
 - ? Redesign of existing community detail pages (Project 10 already handles this)
 - ? Video testimonials or production content (Project 36 handles marketing collateral)
@@ -161,17 +164,16 @@ Create a new public page at `/for-communities` that serves as the primary conver
 ### Technical Architecture
 
 **Frontend:**
-- New page: `src/pages/for-communities/page.tsx` — Main landing page
-- New component: `src/components/CommunityShowcase/` — Reusable feature showcase cards
-- New component: `src/components/CommunityInterestForm/` — Enrollment form with validation
-- Modify: `src/pages/_home/index.tsx` — Add community CTA and featured communities
-- Modify: `src/components/SiteHeader/MainNav.tsx` — Add navigation item
-- New service: `src/services/community-interest.ts` — Form submission API
+- New page: `src/pages/for-communities/page.tsx` — Community-focused landing page with value prop, features, pricing, success stories
+- Modify: `src/components/partner-requests/partner-request-form.tsx` — Add "Community" to the partner type radio group; show community-specific intro text when `type=community` query param is present
+- Modify: `src/pages/_home/index.tsx` — Add community CTA and featured communities section
+- Modify: `src/components/SiteHeader/MainNav.tsx` — Add "For Communities" navigation item
+- Modify: `src/pages/partnerships/page.tsx` — Add "Looking to start a community?" section with link to `/for-communities`
 
 **Backend:**
-- New controller: `CommunityInterestController.cs` — Form submission + public stats
-- New model: `CommunityInterestSubmission` — Form data entity
-- Integration: Create prospect in AI Sales Agent pipeline on submission
+- Add `Community = 3` to `PartnerTypeEnum` in `TrashMob.Models/Enums.cs`
+- Modify: `PartnerRequest` processing to recognize community type and optionally create AI Sales Agent prospect
+- New endpoint: `GET /api/communities/public-stats` — Aggregate stats (community count, events, volunteers) for the landing page
 
 ### Wireframes
 
