@@ -144,6 +144,19 @@ export const Partnerships: FC<any> = () => {
                     </div>
                 </div>
             </section>
+            <section className='bg-muted py-12'>
+                <div className='container text-center'>
+                    <h2 className='font-semibold text-3xl mb-4'>Looking to start a community?</h2>
+                    <p className='max-w-2xl mx-auto mb-6'>
+                        Community partners are cities, counties, and nonprofits that want a branded TrashMob page with
+                        volunteer engagement tools, adoption programs, and impact analytics — different from service
+                        partners who provide supplies and hauling for events.
+                    </p>
+                    <Button asChild>
+                        <Link to='/for-communities'>Learn about Communities</Link>
+                    </Button>
+                </div>
+            </section>
         </div>
     );
 };

@@ -24,6 +24,7 @@ import {
     Trophy,
     Award,
     Sparkles,
+    Landmark,
 } from 'lucide-react';
 import React from 'react';
 
@@ -199,6 +200,13 @@ export const MainNav = ({ className, isUserLoaded, ...props }: MainNavProps) => 
                                     >
                                         New to TrashMob? Learn how to get involved.
                                     </ListItem>
+                                    <ListItem
+                                        to='/for-communities'
+                                        title='For Communities'
+                                        icon={<Landmark className='h-4 w-4' />}
+                                    >
+                                        Start a branded community page for your city or organization.
+                                    </ListItem>
                                     <ListItem to='/help' title='Help' icon={<HelpCircle className='h-4 w-4' />}>
                                         Detailed guides on using TrashMob.
                                     </ListItem>
@@ -260,6 +268,7 @@ export const MainNav = ({ className, isUserLoaded, ...props }: MainNavProps) => 
                     <p className='text-xs text-muted-foreground uppercase tracking-wide pt-1'>About</p>
                     <MobileNavItem to='/whatsnew'>What's New</MobileNavItem>
                     <MobileNavItem to='/gettingstarted'>Getting Started</MobileNavItem>
+                    <MobileNavItem to='/for-communities'>For Communities</MobileNavItem>
                     <MobileNavItem to='/help'>Help</MobileNavItem>
                     <MobileNavItem to='/faq'>FAQ</MobileNavItem>
                     <MobileNavItem to='/shop'>Shop</MobileNavItem>

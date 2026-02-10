@@ -219,9 +219,14 @@ export const GettingStarted: React.FC = () => {
                                 <li>View community impact statistics</li>
                                 <li>Connect with community organizers</li>
                             </ul>
-                            <Button asChild className='mt-4'>
-                                <Link to='/communities'>Browse Communities</Link>
-                            </Button>
+                            <div className='flex flex-col sm:flex-row gap-3 mt-4'>
+                                <Button asChild>
+                                    <Link to='/communities'>Browse Communities</Link>
+                                </Button>
+                                <Button variant='outline' asChild>
+                                    <Link to='/for-communities'>Start a Community</Link>
+                                </Button>
+                            </div>
                         </div>
                     </div>
                 </div>

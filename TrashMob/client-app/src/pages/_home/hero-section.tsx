@@ -71,6 +71,9 @@ export const HeroSection = () => {
                                 <Link to={content.secondaryButtonLink}>{content.secondaryButtonText}</Link>
                             </Button>
                         ) : null}
+                        <Button size='lg' variant='outline' className='border-primary/30 hover:bg-primary/5' asChild>
+                            <Link to='/for-communities'>For Communities</Link>
+                        </Button>
                     </div>
                     <div
                         className={cn(
