@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | Not Started |
+| **Status** | In Progress (Phases 1+4 Complete) |
 | **Priority** | High |
 | **Risk** | Low |
 | **Size** | Medium |
@@ -45,31 +45,31 @@ This project creates a clear funnel: **Discover → Understand → Enroll** for 
 Create a new public page at `/for-communities` that serves as the primary conversion page for prospective communities.
 
 **Page Sections:**
-- ? **Hero** — "Bring TrashMob to Your Community" with compelling imagery and primary CTA
-- ? **Value Proposition Cards** — 3-4 cards highlighting key benefits:
+- ✅ **Hero** — "Bring TrashMob to Your Community" with compelling imagery and primary CTA
+- ✅ **Value Proposition Cards** — 3-4 cards highlighting key benefits:
   - Branded community page with your identity
   - Volunteer recruitment and engagement tools
   - Impact tracking and grant-ready reporting
   - Professional adoption and sponsor programs
-- ? **Feature Showcase** — Visual walkthrough of community features:
+- ✅ **Feature Showcase** — Visual walkthrough of community features:
   - Community pages with custom branding
   - Adopt-a-location with area maps
   - Analytics dashboards and heat maps
   - Bulk invites and newsletter management
   - Event management with co-leads
   - Sponsored adoption compliance tracking
-- ? **Pricing Overview** — Free vs Community tier comparison table (from Project 36)
-- ? **Community Success Stories** — 2-3 featured communities with:
+- ✅ **Pricing Overview** — Free vs Community tier comparison table (from Project 36)
+- ✅ **Community Success Stories** — 2-3 featured communities with:
   - Community name, logo, and branded page screenshot
   - Key metrics (events held, volunteers engaged, bags collected)
   - Brief testimonial quote from community admin
   - **Initial launch:** No communities exist yet, so this section shows placeholder/aspirational content (e.g. "Be one of the first communities to join TrashMob" with illustrative mockup imagery). Once real communities are onboarded and marked as featured by site admins, placeholder content is replaced automatically.
-- ? **Enrollment CTA** — "Start Your Community" button linking to `/becomeapartner?type=community`:
+- ✅ **Enrollment CTA** — "Start Your Community" button linking to `/becomeapartner?type=community`:
   - Reuses the existing partner request form, pre-selecting the new "Community" partner type
   - Form shows community-specific intro text and descriptions (see Partner Type Selection UX below)
   - No new form needed — the existing Name, Email, Website, Phone, Notes, Location fields work as-is
   - Backend already creates partner requests that admins review and approve
-- ? **FAQ Section** — Common questions about communities:
+- ✅ **FAQ Section** — Common questions about communities:
   - What is a TrashMob community?
   - How much does it cost?
   - How long does setup take?
@@ -92,17 +92,17 @@ Create a new public page at `/for-communities` that serves as the primary conver
 
 ### Phase 4 — Backend & Integration
 
-- ? **Add "Community" partner type** — Add `Community = 3` to `PartnerTypeEnum` as a new third type (not replacing Government). The three types represent different relationships:
+- ✅ **Add "Community" partner type** — Add `Community = 3` to `PartnerTypeEnum` as a new third type (not replacing Government). The three types represent different relationships:
   - **Government (= 1):** Service-providing agencies (waste management, hauling, disposal)
   - **Business (= 2):** Commercial service partners (recycling firms, safety kit providers)
   - **Community (= 3):** Geographic entities (cities, counties, nonprofits) wanting branded presence, volunteer tools, and analytics
   - Note: A city government could be both a Government service partner AND a Community partner — the types are not mutually exclusive
-- ? **Community metrics API** — `GET /api/communities/public-stats`:
+- ✅ **Community metrics API** — `GET /api/communities/public-stats`:
   - Total active communities
   - Total community events
   - Total community volunteers
   - Geographic coverage summary
-- ? **Featured communities flag** — Add `IsFeatured` boolean to the Partner model (default `false`). Site admins can toggle this in the admin dashboard to control which communities appear on the landing page and home page. When no communities are featured, the pages show placeholder/aspirational content instead.
+- ✅ **Featured communities flag** — Add `IsFeatured` boolean to the Partner model (default `false`). Site admins can toggle this in the admin dashboard to control which communities appear on the landing page and home page. When no communities are featured, the pages show placeholder/aspirational content instead.
 - ? **AI Sales Agent integration** — When a partner request with type "Community" is created, optionally create a prospect in the AI Sales Agent pipeline (Project 40)
 
 ---
@@ -317,7 +317,7 @@ Partner Type:
 
 The following GitHub issues are tracked as part of this project:
 
-- **TBD** - Create tracking issues when work begins
+- **PR #2652** — Phase 1+4: Add Community partner type, For Communities landing page, and enhanced partner form
 
 ---
 
@@ -333,5 +333,5 @@ The following GitHub issues are tracked as part of this project:
 
 **Last Updated:** February 10, 2026
 **Owner:** Product & Engineering Team
-**Status:** Not Started
-**Next Review:** When Phase 1 design is approved
+**Status:** In Progress (Phases 1+4 Complete)
+**Next Review:** When ready to begin Phase 2 (Home Page Integration)
