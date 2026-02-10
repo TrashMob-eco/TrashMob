@@ -63,6 +63,7 @@ Create a new public page at `/for-communities` that serves as the primary conver
   - Community name, logo, and branded page screenshot
   - Key metrics (events held, volunteers engaged, bags collected)
   - Brief testimonial quote from community admin
+  - **Initial launch:** No communities exist yet, so this section shows placeholder/aspirational content (e.g. "Be one of the first communities to join TrashMob" with illustrative mockup imagery). Once real communities are onboarded and marked as featured by site admins, placeholder content is replaced automatically.
 - ? **Enrollment CTA** — "Start Your Community" button linking to `/becomeapartner?type=community`:
   - Reuses the existing partner request form, pre-selecting the new "Community" partner type
   - Form shows community-specific intro text and descriptions (see Partner Type Selection UX below)
@@ -78,7 +79,7 @@ Create a new public page at `/for-communities` that serves as the primary conver
 ### Phase 2 — Home Page Community Integration
 
 - ? **Add community CTA to hero section** — Second button alongside "Join us today": "Start a Community" or "For Communities" linking to `/for-communities`
-- ? **Featured Communities section** — Carousel or grid showing 3-4 active communities with logos, names, and key metrics, with "View All Communities" link
+- ? **Featured Communities section** — Carousel or grid showing communities marked as featured (via admin `IsFeatured` flag) with logos, names, and key metrics, with "View All Communities" link. Section is hidden or shows a "Start the first community" CTA when no featured communities exist.
 - ? **Update stats section** — Add community-specific stats:
   - Number of active communities
   - Cities/regions covered
@@ -104,7 +105,7 @@ Create a new public page at `/for-communities` that serves as the primary conver
   - Total community events
   - Total community volunteers
   - Geographic coverage summary
-- ? **Featured communities configuration** — Admin ability to mark communities as "featured" for the home page carousel (could be a flag on the Partner/Community model, or managed via Strapi CMS)
+- ? **Featured communities flag** — Add `IsFeatured` boolean to the Partner model (default `false`). Site admins can toggle this in the admin dashboard to control which communities appear on the landing page and home page. When no communities are featured, the pages show placeholder/aspirational content instead.
 - ? **AI Sales Agent integration** — When a partner request with type "Community" is created, optionally create a prospect in the AI Sales Agent pipeline (Project 40)
 
 ---
@@ -175,8 +176,10 @@ Create a new public page at `/for-communities` that serves as the primary conver
 
 **Backend:**
 - Add `Community = 3` to `PartnerTypeEnum` in `TrashMob.Models/Enums.cs`
+- Add `IsFeatured` boolean property to `Partner` model + migration
 - Modify: `PartnerRequest` processing to recognize community type and optionally create AI Sales Agent prospect
 - New endpoint: `GET /api/communities/public-stats` — Aggregate stats (community count, events, volunteers) for the landing page
+- New endpoint: `GET /api/communities/featured` — Return partners where `IsFeatured = true` and partner type is Community
 
 ### Partner Type Selection UX
 
@@ -296,16 +299,16 @@ Partner Type:
 ## Open Questions
 
 1. **Which existing communities should be featured?**
-   **Decision:** Pending
-   **Status:** Need to identify 2-3 active communities willing to be showcased
+   **Decision:** Resolved — use placeholder content initially; add a site-admin "featured" flag on communities
+   **Status:** No communities exist yet, so the landing page and home page will launch with placeholder/aspirational content. Once communities are onboarded, site admins can toggle a "featured" flag to showcase them. See Phase 4 featured communities configuration.
 
 2. **Should "For Communities" be a top-level nav item?**
    **Decision:** Pending
    **Status:** Need UX input — top-level item vs prominent placement in About dropdown
 
 3. **Should the interest form create a full prospect or just send an email?**
-   **Decision:** Pending
-   **Status:** If Project 40 pipeline is active, integrate directly; otherwise start with email notification
+   **Decision:** Resolved — reuse the existing partner request pipeline
+   **Status:** Form creates a `PartnerRequest` with type "Community" (existing admin review flow). Phase 4 optionally creates an AI Sales Agent prospect for Community-type requests.
 
 4. **What community-specific metrics should be shown on the home page?**
    **Decision:** Pending
