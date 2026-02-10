@@ -99,6 +99,7 @@ Custom CSS is **not available** — Entra External ID restricted custom CSS to t
 - [ ] Document tenant setup process (Privo documentation deliverable)
 
 ### Phase 1 — Sign-Up/Sign-In + Profile Photos
+- [ ] Upgrade MSAL packages: `@azure/msal-browser` v2→v5 and `@azure/msal-react` v1→v5 (close Renovate PR #2036)
 - [ ] Configure MSAL on web (React) to point to new tenant
 - [ ] Update backend JWT validation (authority URL, audience)
 - [ ] Auto-populate `ProfilePhotoUrl` from social provider `picture` claim on sign-up
