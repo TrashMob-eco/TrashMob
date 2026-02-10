@@ -294,36 +294,35 @@ export const PartnerCommunityAreasImport = () => {
 
                 // Apply field mapping
                 for (const [sourceKey, targetField] of Object.entries(fieldMapping)) {
-                    if (targetField === 'skip') continue;
                     const val = feature.properties[sourceKey];
-                    if (val === undefined || val === '') continue;
-
-                    switch (targetField) {
-                        case 'name':
-                            area.name = val;
-                            break;
-                        case 'description':
-                            area.description = val;
-                            break;
-                        case 'areaType':
-                            if (VALID_AREA_TYPES.has(val)) area.areaType = val as AdoptableAreaType;
-                            break;
-                        case 'cleanupFrequencyDays': {
-                            const n = parseInt(val, 10);
-                            if (!isNaN(n) && n >= 1 && n <= 365) area.cleanupFrequencyDays = n;
-                            break;
+                    if (targetField !== 'skip' && val !== undefined && val !== '') {
+                        switch (targetField) {
+                            case 'name':
+                                area.name = val;
+                                break;
+                            case 'description':
+                                area.description = val;
+                                break;
+                            case 'areaType':
+                                if (VALID_AREA_TYPES.has(val)) area.areaType = val as AdoptableAreaType;
+                                break;
+                            case 'cleanupFrequencyDays': {
+                                const n = parseInt(val, 10);
+                                if (!isNaN(n) && n >= 1 && n <= 365) area.cleanupFrequencyDays = n;
+                                break;
+                            }
+                            case 'minEventsPerYear': {
+                                const n = parseInt(val, 10);
+                                if (!isNaN(n) && n >= 1 && n <= 52) area.minEventsPerYear = n;
+                                break;
+                            }
+                            case 'safetyRequirements':
+                                area.safetyRequirements = val;
+                                break;
+                            case 'allowCoAdoption':
+                                area.allowCoAdoption = val === 'true' || val === '1' || val === 'yes';
+                                break;
                         }
-                        case 'minEventsPerYear': {
-                            const n = parseInt(val, 10);
-                            if (!isNaN(n) && n >= 1 && n <= 52) area.minEventsPerYear = n;
-                            break;
-                        }
-                        case 'safetyRequirements':
-                            area.safetyRequirements = val;
-                            break;
-                        case 'allowCoAdoption':
-                            area.allowCoAdoption = val === 'true' || val === '1' || val === 'yes';
-                            break;
                     }
                 }
 
@@ -546,9 +545,7 @@ function MappingStep({
                 <Badge variant='outline'>
                     {parseResult.totalFeatures} total feature{parseResult.totalFeatures !== 1 ? 's' : ''}
                 </Badge>
-                <Badge className='bg-green-100 text-green-800'>
-                    {parseResult.validFeatures} valid
-                </Badge>
+                <Badge className='bg-green-100 text-green-800'>{parseResult.validFeatures} valid</Badge>
                 {parseResult.totalFeatures - parseResult.validFeatures > 0 ? (
                     <Badge className='bg-yellow-100 text-yellow-800'>
                         {parseResult.totalFeatures - parseResult.validFeatures} invalid (skipped)
@@ -615,9 +612,7 @@ function MappingStep({
                                         <TableCell>
                                             <Select
                                                 value={fieldMapping[key] || 'skip'}
-                                                onValueChange={(val) =>
-                                                    handleFieldChange(key, val as TrashMobField)
-                                                }
+                                                onValueChange={(val) => handleFieldChange(key, val as TrashMobField)}
                                             >
                                                 <SelectTrigger className='w-48'>
                                                     <SelectValue />
@@ -714,8 +709,8 @@ function MappingStep({
                 <div className='bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-sm'>
                     <div className='flex items-center gap-2 font-medium text-yellow-800 mb-1'>
                         <AlertTriangle className='h-4 w-4' />
-                        {validationIssues.length} feature{validationIssues.length !== 1 ? 's' : ''} missing a name
-                        (will be skipped)
+                        {validationIssues.length} feature{validationIssues.length !== 1 ? 's' : ''} missing a name (will
+                        be skipped)
                     </div>
                 </div>
             ) : null}
