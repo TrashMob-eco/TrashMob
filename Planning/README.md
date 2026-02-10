@@ -75,7 +75,7 @@
 |---------|-------------|--------|
 | [Project 36 - Marketing Materials](./Projects/Project_36_Marketing_Materials.md) | 2026 release marketing, pricing, enrollment | Not Started |
 | [Project 40 - AI Community Sales Agent](./Projects/Project_40_AI_Community_Sales_Agent.md) | AI-powered community discovery, outreach, and onboarding | ✅ Complete |
-| [Project 45 - Community Showcase](./Projects/Project_45_Community_Showcase.md) | "For Communities" landing page, home page CTAs, enrollment funnel | Not Started |
+| [Project 45 - Community Showcase](./Projects/Project_45_Community_Showcase.md) | "For Communities" landing page, home page CTAs, enrollment funnel | In Progress (Phases 1+4 Complete) |
 
 #### Low Priority (Nice-to-Have)
 
