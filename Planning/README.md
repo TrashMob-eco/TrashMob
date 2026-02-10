@@ -13,7 +13,7 @@
 - **[Executive Summary](./Executive_Summary.md)** - High-level overview, strategic objectives, and 2026 roadmap
 - **[Risks & Mitigations](./Risks_and_Mitigations.md)** - Cross-project risks and mitigation strategies
 
-### 2026 Projects (44 Total)
+### 2026 Projects (45 Total)
 
 **Note:** Projects are not time-bound. Volunteers pick up work based on priority and availability.
 
@@ -75,6 +75,7 @@
 |---------|-------------|--------|
 | [Project 36 - Marketing Materials](./Projects/Project_36_Marketing_Materials.md) | 2026 release marketing, pricing, enrollment | Not Started |
 | [Project 40 - AI Community Sales Agent](./Projects/Project_40_AI_Community_Sales_Agent.md) | AI-powered community discovery, outreach, and onboarding | ✅ Complete |
+| [Project 45 - Community Showcase](./Projects/Project_45_Community_Showcase.md) | "For Communities" landing page, home page CTAs, enrollment funnel | Not Started |
 
 #### Low Priority (Nice-to-Have)
 
@@ -136,6 +137,7 @@
 - [Project 34 - User Feedback](./Projects/Project_34_User_Feedback.md) ✅
 - [Project 36 - Marketing Materials](./Projects/Project_36_Marketing_Materials.md)
 - [Project 40 - AI Community Sales Agent](./Projects/Project_40_AI_Community_Sales_Agent.md)
+- [Project 45 - Community Showcase](./Projects/Project_45_Community_Showcase.md)
 
 ---
 
@@ -147,10 +149,10 @@
 | **In Progress** | 10 | Projects 1 (Phase 0 — code complete, portal remaining), 4 (Phases 1-2 Complete), 6, 8 (Phase 1-4 Complete), 15 (Backend & Website Complete), 22 (Phase 1-3 Complete), 25 (Phase 1 Complete), 30, 38 (Phases 1-4, 6-7 Complete), 41 (Phases 1-4 Complete) |
 | **Ready for Review** | 2 | Projects 2, 5 |
 | **Planning** | 1 | Project 23 (combined with Project 1) |
-| **Not Started** | 6 | Projects 12, 24, 31, 36, 43, 44 |
+| **Not Started** | 7 | Projects 12, 24, 31, 36, 43, 44, 45 |
 | **Deprioritized** | 1 | Project 33 |
 
-**Total:** 44 project specifications documented
+**Total:** 45 project specifications documented
 
 ---
 
