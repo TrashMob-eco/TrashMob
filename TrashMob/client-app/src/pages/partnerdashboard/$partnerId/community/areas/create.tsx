@@ -357,6 +357,8 @@ export const PartnerCommunityAreaCreate = () => {
                                                         : null
                                                 }
                                                 existingAreas={existingAreas}
+                                                partnerId={partnerId}
+                                                communityName={community?.name}
                                             />
                                         </FormControl>
                                         <FormMessage />

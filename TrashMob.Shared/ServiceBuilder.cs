@@ -11,6 +11,7 @@
     using TrashMob.Shared.Managers.Teams;
     using TrashMob.Shared.Managers.Communities;
     using TrashMob.Shared.Managers.Adoptions;
+    using TrashMob.Shared.Managers.Areas;
     using TrashMob.Shared.Managers.Gamification;
     using TrashMob.Shared.Managers.Prospects;
     using TrashMob.Shared.Managers.SponsoredAdoptions;
@@ -102,6 +103,7 @@
 
             // Adoption managers
             services.AddScoped<IAdoptableAreaManager, AdoptableAreaManager>();
+            services.AddScoped<IAreaSuggestionService, AreaSuggestionService>();
             services.AddScoped<ITeamAdoptionManager, TeamAdoptionManager>();
             services.AddScoped<ITeamAdoptionEventManager, TeamAdoptionEventManager>();
 

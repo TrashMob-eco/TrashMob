@@ -453,6 +453,8 @@ export const PartnerCommunityAreaEdit = () => {
                                                 }
                                                 existingAreas={existingAreas}
                                                 currentAreaId={areaId}
+                                                partnerId={partnerId}
+                                                communityName={community?.name}
                                             />
                                         </FormControl>
                                         <FormMessage />

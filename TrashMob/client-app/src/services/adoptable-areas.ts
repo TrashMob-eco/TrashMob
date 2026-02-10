@@ -90,3 +90,31 @@ export const DeleteAdoptableArea = () => ({
             method: 'delete',
         }),
 });
+
+// ============================================================================
+// AI Area Suggestion
+// ============================================================================
+
+export type SuggestArea_Params = { partnerId: string };
+export type SuggestArea_Body = {
+    description: string;
+    centerLatitude?: number;
+    centerLongitude?: number;
+    communityName?: string;
+};
+export type SuggestArea_Response = {
+    geoJson: string | null;
+    suggestedName: string | null;
+    suggestedAreaType: string | null;
+    confidence: number;
+    message: string | null;
+};
+export const SuggestArea = () => ({
+    key: ['/communities/areas', 'suggest'],
+    service: async (params: SuggestArea_Params, body: SuggestArea_Body) =>
+        ApiService('protected').fetchData<SuggestArea_Response>({
+            url: `/communities/${params.partnerId}/areas/suggest`,
+            method: 'post',
+            data: body,
+        }),
+});
