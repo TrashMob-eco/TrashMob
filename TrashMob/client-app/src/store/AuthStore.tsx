@@ -112,7 +112,7 @@ export function getApiConfig(): { b2cScopes: string[] } {
     };
 }
 
-export function GetMsalClient(navigateToLoginRequestUrl: boolean): msal.PublicClientApplication {
+export async function GetMsalClient(navigateToLoginRequestUrl: boolean): Promise<msal.PublicClientApplication> {
     const { host } = window.location;
     const { protocol } = window.location;
 
@@ -161,13 +161,15 @@ export function GetMsalClient(navigateToLoginRequestUrl: boolean): msal.PublicCl
         },
     });
 
+    await msalC.initialize();
+
     return msalC;
 }
 
-// Get or create the MSAL client (uses cached instance after first call)
+// Get the cached MSAL client (must be initialized first via initializeMsalClient)
 export function getMsalClientInstance(): msal.PublicClientApplication {
     if (!msalClientInstance) {
-        msalClientInstance = GetMsalClient(true);
+        throw new Error('MSAL client not initialized. Call initializeMsalClient() first.');
     }
     return msalClientInstance;
 }
@@ -175,7 +177,10 @@ export function getMsalClientInstance(): msal.PublicClientApplication {
 // Initialize auth and return the MSAL client
 export async function initializeMsalClient(): Promise<msal.PublicClientApplication> {
     await initializeAuth();
-    return getMsalClientInstance();
+    if (!msalClientInstance) {
+        msalClientInstance = await GetMsalClient(true);
+    }
+    return msalClientInstance;
 }
 
 export function validateToken(idTokenClaims: object): boolean {
