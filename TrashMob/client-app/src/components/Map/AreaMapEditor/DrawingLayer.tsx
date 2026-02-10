@@ -29,6 +29,7 @@ interface DrawingLayerProps {
     onGeometryCleared: () => void;
     onShapePresenceChange: (hasShape: boolean) => void;
     onMeasurementChange?: (measurement: string | null) => void;
+    injectGeoJson?: string | null;
 }
 
 export const DrawingLayer = ({
@@ -39,6 +40,7 @@ export const DrawingLayer = ({
     onGeometryCleared,
     onShapePresenceChange,
     onMeasurementChange,
+    injectGeoJson,
 }: DrawingLayerProps) => {
     const map = useMap(mapId);
     const drawing = useMapsLibrary('drawing');
@@ -245,6 +247,53 @@ export const DrawingLayer = ({
 
         initializedRef.current = true;
     }, [map, initialGeoJson, onShapePresenceChange, geometry, onMeasurementChange]);
+
+    // Inject GeoJSON from AI suggestion (can be called multiple times)
+    useEffect(() => {
+        if (!map || !injectGeoJson) return;
+
+        const parsed = parseGeoJson(injectGeoJson);
+        if (!parsed) return;
+
+        // Remove existing shape first
+        removeCurrentShape();
+
+        let shape: google.maps.Polygon | google.maps.Polyline;
+        let type: 'polygon' | 'polyline';
+        let path: google.maps.LatLngLiteral[];
+
+        if (parsed.type === 'Polygon') {
+            path = polygonCoordsToPath(parsed.coordinates);
+            if (path.length < 3) return;
+            shape = new google.maps.Polygon({ paths: path, map, ...SHAPE_STYLE, editable: false, draggable: false });
+            type = 'polygon';
+        } else {
+            path = lineStringCoordsToPath(parsed.coordinates);
+            if (path.length < 2) return;
+            shape = new google.maps.Polyline({
+                path,
+                map,
+                strokeColor: SHAPE_STYLE.strokeColor,
+                strokeOpacity: SHAPE_STYLE.strokeOpacity,
+                strokeWeight: 3,
+                editable: false,
+            });
+            type = 'polyline';
+        }
+
+        setCurrentShape(shape, type);
+
+        if (geometry && onMeasurementChange) {
+            onMeasurementChange(formatMeasurement(type, path));
+        }
+
+        // Fit map to shape bounds
+        const bounds = new google.maps.LatLngBounds();
+        path.forEach((p) => bounds.extend(p));
+        if (!bounds.isEmpty()) {
+            map.fitBounds(bounds, { top: 50, right: 50, bottom: 50, left: 50 });
+        }
+    }, [map, injectGeoJson, removeCurrentShape, setCurrentShape, geometry, onMeasurementChange]);
 
     // Expose delete for parent
     useEffect(() => {

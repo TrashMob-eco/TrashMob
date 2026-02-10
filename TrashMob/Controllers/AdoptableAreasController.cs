@@ -11,6 +11,7 @@ namespace TrashMob.Controllers
     using TrashMob.Models;
     using TrashMob.Security;
     using TrashMob.Shared;
+    using TrashMob.Shared.Managers.Areas;
     using TrashMob.Shared.Managers.Interfaces;
 
     /// <summary>
@@ -22,18 +23,22 @@ namespace TrashMob.Controllers
     {
         private readonly IAdoptableAreaManager areaManager;
         private readonly IKeyedManager<Partner> partnerManager;
+        private readonly IAreaSuggestionService areaSuggestionService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AdoptableAreasController"/> class.
         /// </summary>
         /// <param name="areaManager">The adoptable area manager.</param>
         /// <param name="partnerManager">The partner manager.</param>
+        /// <param name="areaSuggestionService">The AI area suggestion service.</param>
         public AdoptableAreasController(
             IAdoptableAreaManager areaManager,
-            IKeyedManager<Partner> partnerManager)
+            IKeyedManager<Partner> partnerManager,
+            IAreaSuggestionService areaSuggestionService)
         {
             this.areaManager = areaManager;
             this.partnerManager = partnerManager;
+            this.areaSuggestionService = areaSuggestionService;
         }
 
         /// <summary>
@@ -118,6 +123,46 @@ namespace TrashMob.Controllers
 
             var isAvailable = await areaManager.IsNameAvailableAsync(partnerId, name, excludeAreaId, cancellationToken);
             return Ok(isAvailable);
+        }
+
+        /// <summary>
+        /// Uses AI to suggest an area geometry from a natural language description.
+        /// </summary>
+        /// <param name="partnerId">The community (partner) ID.</param>
+        /// <param name="request">The suggestion request containing the area description.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpPost("suggest")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(AreaSuggestionResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> SuggestArea(
+            Guid partnerId,
+            [FromBody] AreaSuggestionRequest request,
+            CancellationToken cancellationToken)
+        {
+            var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
+            if (partner == null)
+            {
+                return NotFound();
+            }
+
+            var authResult = await AuthorizationService.AuthorizeAsync(
+                User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
+            if (!authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            if (string.IsNullOrWhiteSpace(request.Description))
+            {
+                return BadRequest("A description is required.");
+            }
+
+            var result = await areaSuggestionService.SuggestAreaAsync(request, cancellationToken);
+            return Ok(result);
         }
 
         /// <summary>

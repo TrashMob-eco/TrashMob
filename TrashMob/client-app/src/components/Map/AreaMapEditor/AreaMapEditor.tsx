@@ -9,6 +9,7 @@ import { DrawingLayer } from './DrawingLayer';
 import { CommunityBoundsOverlay } from './CommunityBoundsOverlay';
 import { ExistingAreasOverlay } from './ExistingAreasOverlay';
 import { AreaStatusLegend } from './AreaStatusLegend';
+import { AiSuggestPanel } from './AiSuggestPanel';
 import { AreaBoundingBox, parseGeoJson, polygonCoordsToPath } from '@/lib/geojson';
 import AdoptableAreaData from '@/components/Models/AdoptableAreaData';
 
@@ -29,6 +30,8 @@ interface AreaMapEditorProps {
     communityCenter?: { lat: number; lng: number } | null;
     existingAreas?: AdoptableAreaData[];
     currentAreaId?: string;
+    partnerId?: string;
+    communityName?: string;
 }
 
 const EMPTY_AREAS: AdoptableAreaData[] = [];
@@ -78,11 +81,14 @@ export const AreaMapEditor = ({
     communityCenter,
     existingAreas = EMPTY_AREAS,
     currentAreaId,
+    partnerId,
+    communityName,
 }: AreaMapEditorProps) => {
     const [drawingMode, setDrawingMode] = useState<DrawingMode>(null);
     const [hasShape, setHasShape] = useState(false);
     const [showRawGeoJson, setShowRawGeoJson] = useState(false);
     const [measurement, setMeasurement] = useState<string | null>(null);
+    const [aiPreviewGeoJson, setAiPreviewGeoJson] = useState<string | null>(null);
 
     const hasCommunityBounds =
         communityBounds?.boundsNorth != null &&
@@ -117,8 +123,26 @@ export const AreaMapEditor = ({
         setTimeout(() => setDrawingMode(null), 0);
     }, []);
 
+    const handleSuggestionAccepted = useCallback(
+        (geoJson: string) => {
+            setAiPreviewGeoJson(null);
+            onChange(geoJson);
+        },
+        [onChange],
+    );
+
     return (
         <div className='space-y-0'>
+            {partnerId ? (
+                <AiSuggestPanel
+                    partnerId={partnerId}
+                    communityCenter={communityCenter}
+                    communityName={communityName}
+                    onSuggestionPreview={setAiPreviewGeoJson}
+                    onSuggestionAccepted={handleSuggestionAccepted}
+                    onRequestEditMode={() => setDrawingMode('edit')}
+                />
+            ) : null}
             <AreaMapToolbar
                 activeMode={drawingMode}
                 hasShape={hasShape}
@@ -167,6 +191,7 @@ export const AreaMapEditor = ({
                         onGeometryCleared={handleGeometryCleared}
                         onShapePresenceChange={setHasShape}
                         onMeasurementChange={setMeasurement}
+                        injectGeoJson={aiPreviewGeoJson}
                     />
                     <MapPanHandler mapId={MAP_ID} />
                 </GoogleMap>
