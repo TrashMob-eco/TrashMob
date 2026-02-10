@@ -178,6 +178,30 @@ namespace TrashMob.Controllers
             return Ok(stats);
         }
 
+        /// <summary>
+        /// Gets communities marked as featured for display on landing and home pages.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpGet("featured")]
+        [ProducesResponseType(typeof(IEnumerable<Partner>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetFeaturedCommunities(CancellationToken cancellationToken)
+        {
+            var communities = await communityManager.GetFeaturedCommunitiesAsync(cancellationToken);
+            return Ok(communities);
+        }
+
+        /// <summary>
+        /// Gets aggregate public stats across all active communities.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpGet("public-stats")]
+        [ProducesResponseType(typeof(CommunityPublicStats), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetPublicStats(CancellationToken cancellationToken)
+        {
+            var stats = await communityManager.GetPublicStatsAsync(cancellationToken);
+            return Ok(stats);
+        }
+
         // ============================================================================
         // Admin Endpoints (Require Authentication and Authorization)
         // ============================================================================

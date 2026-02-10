@@ -879,6 +879,7 @@
                     .HasFilter("[Slug] IS NOT NULL")
                     .HasDatabaseName("IX_Partners_Slug");
                 entity.Property(e => e.HomePageEnabled).HasDefaultValue(false);
+                entity.Property(e => e.IsFeatured).HasDefaultValue(false);
                 entity.Property(e => e.BrandingPrimaryColor).HasMaxLength(7);
                 entity.Property(e => e.BrandingSecondaryColor).HasMaxLength(7);
                 entity.Property(e => e.BannerImageUrl).HasMaxLength(500);
@@ -1238,6 +1239,12 @@
                     {
                         Id = (int)PartnerTypeEnum.Business, Name = "Business", Description = "Partner is Business",
                         DisplayOrder = 2, IsActive = true,
+                    },
+                    new PartnerType
+                    {
+                        Id = (int)PartnerTypeEnum.Community, Name = "Community",
+                        Description = "Community organization with branded page and volunteer tools",
+                        DisplayOrder = 3, IsActive = true,
                     });
             });
 

@@ -139,6 +139,11 @@ namespace TrashMob.Models
         /// Business organization.
         /// </summary>
         Business = 2,
+
+        /// <summary>
+        /// Community organization (city, county, nonprofit) with branded community page.
+        /// </summary>
+        Community = 3,
     }
 
     /// <summary>

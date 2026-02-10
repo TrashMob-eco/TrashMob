@@ -84,6 +84,11 @@ import { PartnerRequestDetails } from './pages/partnerrequestdetails/page';
 import { UnsubscribePage } from './pages/unsubscribe';
 import { NoMatch } from './pages/nomatch';
 
+/** For Communities - Landing page (lazy loaded) */
+const ForCommunitiesPage = lazy(() =>
+    import('./pages/for-communities/page').then((m) => ({ default: m.ForCommunitiesPage })),
+);
+
 // Lazy loading fallback component
 const LazyLoadingFallback = () => (
     <div className='flex justify-center items-center py-16'>
@@ -629,6 +634,14 @@ const AppContent: FC = () => {
                             <Route path='/leaderboards' element={<LeaderboardsPage />} />
                             <Route path='/communities' element={<CommunitiesPage />} />
                             <Route path='/communities/:slug' element={<CommunityDetailPage />} />
+                            <Route
+                                path='/for-communities'
+                                element={
+                                    <Suspense fallback={<LazyLoadingFallback />}>
+                                        <ForCommunitiesPage />
+                                    </Suspense>
+                                }
+                            />
                             <Route path='/partnerships' element={<Partnerships />} />
                             <Route path='/shop' element={<Shop />} />
                             <Route path='/help' element={<Help />} />

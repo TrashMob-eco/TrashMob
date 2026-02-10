@@ -110,6 +110,36 @@ export const GetCommunityStats = (params: GetCommunityStats_Params) => ({
 });
 
 // ============================================================================
+// Featured Communities & Public Stats
+// ============================================================================
+
+export type GetFeaturedCommunities_Response = CommunityData[];
+export const GetFeaturedCommunities = () => ({
+    key: ['/communities/featured'],
+    service: async () =>
+        ApiService('public').fetchData<GetFeaturedCommunities_Response>({
+            url: '/communities/featured',
+            method: 'get',
+        }),
+});
+
+export interface CommunityPublicStats {
+    totalCommunities: number;
+    totalCommunityEvents: number;
+    totalCommunityVolunteers: number;
+}
+
+export type GetCommunityPublicStats_Response = CommunityPublicStats;
+export const GetCommunityPublicStats = () => ({
+    key: ['/communities/public-stats'],
+    service: async () =>
+        ApiService('public').fetchData<GetCommunityPublicStats_Response>({
+            url: '/communities/public-stats',
+            method: 'get',
+        }),
+});
+
+// ============================================================================
 // Community Admin Operations (Protected)
 // ============================================================================
 

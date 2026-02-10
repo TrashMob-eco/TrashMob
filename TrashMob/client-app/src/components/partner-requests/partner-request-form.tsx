@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -96,7 +96,12 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
     const { mode } = props;
     const { toast } = useToast();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const { currentUser } = useLogin();
+
+    // Pre-select Community type when arriving from /for-communities
+    const typeParam = searchParams.get('type');
+    const defaultPartnerType = typeParam === 'community' ? PartnerType.COMMUNITY : PartnerType.GOVERNMENT;
     const userPreferredLocation =
         currentUser.latitude && currentUser.longitude
             ? { lat: currentUser.latitude, lng: currentUser.longitude }
@@ -125,7 +130,7 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
     const form = useForm<FormInputs>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            partnerTypeId: PartnerType.GOVERNMENT,
+            partnerTypeId: defaultPartnerType,
         },
     });
 
@@ -155,6 +160,7 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
 
     const location = form.watch('location');
     const notes = form.watch('notes');
+    const selectedPartnerType = form.watch('partnerTypeId');
 
     const title =
         mode === PartnerRequestMode.SEND ? 'Send invite to join TrashMob as a partner' : 'Apply to become a partner';
@@ -240,21 +246,30 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
                             TrashMob.eco Partner!
                         </p>
                     )}
-                    {mode === PartnerRequestMode.REQUEST && (
+                    {mode === PartnerRequestMode.REQUEST && selectedPartnerType === PartnerType.COMMUNITY && (
                         <p>
-                            Use this form to request to become a TrashMob.eco partner. TrashMob.eco site adminsitrators
+                            Start your TrashMob community! Tell us about your organization and the area you'd like to
+                            cover. Our team will review your request and set up your branded community page with
+                            volunteer engagement tools, adoption programs, and analytics.
+                        </p>
+                    )}
+                    {mode === PartnerRequestMode.REQUEST && selectedPartnerType !== PartnerType.COMMUNITY && (
+                        <p>
+                            Use this form to request to become a TrashMob.eco partner. TrashMob.eco site administrators
                             will review your request, and either approve it, or reach out to you for more information.
                             If approved, you will be sent a Welcome email with instructions on how to complete setup of
                             your partnership.
                         </p>
                     )}
-                    <p>
-                        If connecting with a government partner, the department responsible for managing waste and
-                        maintaining cleanliness in a community is often a part of the public works department,
-                        environmental services division, or a similar agency. You can find contact information for these
-                        organizations by searching online or by calling the city's main government phone number and
-                        asking for the appropriate department.
-                    </p>
+                    {selectedPartnerType === PartnerType.GOVERNMENT && (
+                        <p>
+                            If connecting with a government partner, the department responsible for managing waste and
+                            maintaining cleanliness in a community is often a part of the public works department,
+                            environmental services division, or a similar agency. You can find contact information for
+                            these organizations by searching online or by calling the city's main government phone
+                            number and asking for the appropriate department.
+                        </p>
+                    )}
                 </CardContent>
                 <CardContent>
                     <TooltipProvider delayDuration={0}>
@@ -284,12 +299,12 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
                                     control={form.control}
                                     name='partnerTypeId'
                                     render={({ field }) => (
-                                        <FormItem className='col-span-6'>
+                                        <FormItem className='col-span-12'>
                                             <Tooltip>
                                                 <TooltipTrigger>
-                                                    <FormLabel>Type</FormLabel>
+                                                    <FormLabel>Partner Type</FormLabel>
                                                 </TooltipTrigger>
-                                                <TooltipContent className='max-w-64'>
+                                                <TooltipContent className='max-w-80'>
                                                     {ToolTips.PartnerType}
                                                 </TooltipContent>
                                             </Tooltip>
@@ -297,19 +312,46 @@ export const PartnerRequestForm: React.FC<PartnerRequestFormProps> = (props) => 
                                                 <RadioGroup
                                                     onValueChange={field.onChange}
                                                     defaultValue={field.value}
-                                                    className='flex flex-row space-y-1 h-9 items-center'
+                                                    className='grid grid-cols-1 sm:grid-cols-3 gap-3'
                                                 >
-                                                    <FormItem className='flex items-center space-x-3 space-y-0'>
+                                                    <FormItem className='flex items-start space-x-3 space-y-0 rounded-md border p-4 cursor-pointer has-[button[data-state=checked]]:border-primary has-[button[data-state=checked]]:bg-primary/5'>
                                                         <FormControl>
                                                             <RadioGroupItem value={PartnerType.GOVERNMENT} />
                                                         </FormControl>
-                                                        <FormLabel className='font-normal'>Government</FormLabel>
+                                                        <div className='space-y-1'>
+                                                            <FormLabel className='font-medium cursor-pointer'>
+                                                                Government
+                                                            </FormLabel>
+                                                            <p className='text-sm text-muted-foreground'>
+                                                                {ToolTips.PartnerTypeGovernment}
+                                                            </p>
+                                                        </div>
                                                     </FormItem>
-                                                    <FormItem className='flex items-center space-x-3 space-y-0'>
+                                                    <FormItem className='flex items-start space-x-3 space-y-0 rounded-md border p-4 cursor-pointer has-[button[data-state=checked]]:border-primary has-[button[data-state=checked]]:bg-primary/5'>
                                                         <FormControl>
                                                             <RadioGroupItem value={PartnerType.BUSINESS} />
                                                         </FormControl>
-                                                        <FormLabel className='font-normal'>Business</FormLabel>
+                                                        <div className='space-y-1'>
+                                                            <FormLabel className='font-medium cursor-pointer'>
+                                                                Business
+                                                            </FormLabel>
+                                                            <p className='text-sm text-muted-foreground'>
+                                                                {ToolTips.PartnerTypeBusiness}
+                                                            </p>
+                                                        </div>
+                                                    </FormItem>
+                                                    <FormItem className='flex items-start space-x-3 space-y-0 rounded-md border p-4 cursor-pointer has-[button[data-state=checked]]:border-primary has-[button[data-state=checked]]:bg-primary/5'>
+                                                        <FormControl>
+                                                            <RadioGroupItem value={PartnerType.COMMUNITY} />
+                                                        </FormControl>
+                                                        <div className='space-y-1'>
+                                                            <FormLabel className='font-medium cursor-pointer'>
+                                                                Community
+                                                            </FormLabel>
+                                                            <p className='text-sm text-muted-foreground'>
+                                                                {ToolTips.PartnerTypeCommunity}
+                                                            </p>
+                                                        </div>
                                                     </FormItem>
                                                 </RadioGroup>
                                             </FormControl>
