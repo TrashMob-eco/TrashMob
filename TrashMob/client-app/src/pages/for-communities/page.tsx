@@ -213,7 +213,8 @@ export const ForCommunitiesPage: FC = () => {
             </section>
 
             {/* Public Stats (conditional) */}
-            {publicStats && publicStats.totalCommunities > 0 ? <section className='bg-primary text-primary-foreground py-12'>
+            {publicStats && publicStats.totalCommunities > 0 ? (
+                <section className='bg-primary text-primary-foreground py-12'>
                     <div className='container'>
                         <div className='grid grid-cols-1 sm:grid-cols-3 gap-8 text-center'>
                             <div>
@@ -230,7 +231,8 @@ export const ForCommunitiesPage: FC = () => {
                             </div>
                         </div>
                     </div>
-                </section> : null}
+                </section>
+            ) : null}
 
             {/* Feature Showcase */}
             <section className='bg-card py-16'>
@@ -310,18 +312,24 @@ export const ForCommunitiesPage: FC = () => {
                                 {featuredCommunities.map((community) => (
                                     <Card key={community.id}>
                                         <CardHeader className='text-center'>
-                                            {community.logoUrl ? <img
+                                            {community.logoUrl ? (
+                                                <img
                                                     src={community.logoUrl}
                                                     alt={community.name}
                                                     className='h-16 w-16 mx-auto rounded-full object-cover mt-0'
-                                                /> : null}
+                                                />
+                                            ) : null}
                                             <CardTitle>{community.name}</CardTitle>
-                                            {community.city && community.region ? <p className='text-sm text-muted-foreground'>
+                                            {community.city && community.region ? (
+                                                <p className='text-sm text-muted-foreground'>
                                                     {community.city}, {community.region}
-                                                </p> : null}
+                                                </p>
+                                            ) : null}
                                         </CardHeader>
                                         <CardContent className='text-center'>
-                                            {community.tagline ? <p className='text-sm italic mb-4'>"{community.tagline}"</p> : null}
+                                            {community.tagline ? (
+                                                <p className='text-sm italic mb-4'>"{community.tagline}"</p>
+                                            ) : null}
                                             <Button variant='outline' size='sm' asChild>
                                                 <Link to={`/communities/${community.slug}`}>View Community</Link>
                                             </Button>
@@ -333,8 +341,8 @@ export const ForCommunitiesPage: FC = () => {
                     ) : (
                         <div className='text-center max-w-lg mx-auto'>
                             <p className='text-muted-foreground mb-6'>
-                                Be one of the first communities to join TrashMob! Early adopters help shape the
-                                platform and get dedicated onboarding support.
+                                Be one of the first communities to join TrashMob! Early adopters help shape the platform
+                                and get dedicated onboarding support.
                             </p>
                             <Button size='lg' asChild>
                                 <Link to='/becomeapartner?type=community'>Be a Founding Community</Link>
@@ -349,8 +357,8 @@ export const ForCommunitiesPage: FC = () => {
                 <div className='container text-center'>
                     <h2 className='text-3xl font-bold mb-4'>Ready to Start Your Community?</h2>
                     <p className='mb-8 max-w-xl mx-auto text-primary-foreground/90'>
-                        Submit an application and our team will review it within a few business days. We'll work
-                        with you to set up your branded page and get you started.
+                        Submit an application and our team will review it within a few business days. We'll work with
+                        you to set up your branded page and get you started.
                     </p>
                     <Button size='lg' variant='secondary' asChild>
                         <Link to='/becomeapartner?type=community'>Start Your Community</Link>
