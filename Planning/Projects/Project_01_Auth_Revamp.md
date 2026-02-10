@@ -87,16 +87,31 @@ Custom CSS is **not available** — Entra External ID restricted custom CSS to t
 - [x] Add Entra guards in UserNav and DeleteMyData
 - [x] Document Phase 0 CLI commands in Auth_Migration.md
 
-#### Remaining (Manual — Azure Portal)
-- [ ] Create Entra External ID external tenant (dev) — see [Step-by-Step: Tenant Setup](#step-by-step-tenant-setup)
-- [ ] Register app registrations (web, mobile, backend) for dev — see [Step-by-Step: App Registrations](#step-by-step-app-registrations)
-- [ ] Configure social identity providers (Google, Microsoft, Apple, Facebook) — see [Step-by-Step: Social IDPs](#step-by-step-social-identity-providers)
-- [ ] Create sign-up/sign-in user flow with custom attributes — see [Step-by-Step: User Flow](#step-by-step-user-flow)
-- [ ] Configure built-in branding (logo, colors, background) — see [Step-by-Step: Branding](#step-by-step-branding)
+#### Completed (Manual — Azure Portal, Dev)
+- [x] Create Entra External ID external tenant (dev: `TrashMobEcoDev`, domain `trashmobecodev.ciamlogin.com`) — see [Step-by-Step: Tenant Setup](#step-by-step-tenant-setup)
+- [x] Register app registrations (web, mobile, backend) for dev — see [Step-by-Step: App Registrations](#step-by-step-app-registrations)
+- [x] Configure social identity providers: Google, Facebook — see [Step-by-Step: Social IDPs](#step-by-step-social-identity-providers)
+- [x] Create sign-up/sign-in user flow with custom attributes — see [Step-by-Step: User Flow](#step-by-step-user-flow)
+- [x] Configure built-in branding (logo, colors, background) — see [Step-by-Step: Branding](#step-by-step-branding)
+- [x] Fill in `AzureAdEntra` config values in appsettings.Development.json
+- [x] Test sign-in with `UseEntraExternalId: true` on dev — sign-in, sign-up, Google, and Facebook all working
+
+#### Remaining (Manual — Azure Portal, Dev)
+- [ ] Add custom attributes (givenName, surname, dateOfBirth) to user flow attribute collection — currently sign-up only collects email/password
+- [ ] Configure social identity provider: Microsoft account
+- [ ] Configure social identity provider: Apple (requires Apple Developer setup)
+- [ ] Improve banner logo for sign-in page — current logo is hard to read at the small display size (260x36px); consider a simplified/higher-contrast version
 - [ ] Request custom CSS exception from Microsoft (given Privo sponsorship)
-- [ ] Fill in `AzureAdEntra` config values in appsettings and Key Vault
-- [ ] Test sign-in with `UseEntraExternalId: true` on dev
+- [ ] Fill in `AzureAdEntra` config values in Key Vault (for deployed dev environment)
 - [ ] Document tenant setup process (Privo documentation deliverable)
+
+#### Remaining (Manual — Azure Portal, Prod)
+- [ ] Create Entra External ID external tenant (prod: `TrashMobEco`, domain `trashmobeco.ciamlogin.com`)
+- [ ] Register app registrations (web, mobile, backend) for prod
+- [ ] Configure social identity providers: Google, Facebook, Microsoft, Apple
+- [ ] Create sign-up/sign-in user flow with custom attributes
+- [ ] Configure built-in branding (logo, colors, background)
+- [ ] Fill in `AzureAdEntra` config values in Key Vault (for deployed prod environment)
 
 ### Phase 1 — Sign-Up/Sign-In + Profile Photos
 - [ ] Upgrade MSAL packages: `@azure/msal-browser` v2→v5 and `@azure/msal-react` v1→v5 (close Renovate PR #2036)
