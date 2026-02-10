@@ -88,7 +88,7 @@ Create a new public page at `/for-communities` that serves as the primary conver
 
 ### Phase 3 — Navigation & Discovery Improvements
 
-- ? **Add "For Communities" to main navigation** — Either as a top-level nav item or prominently in the About dropdown (not buried in Explore)
+- ? **Add "For Communities" to About dropdown** — Add as a link in the About dropdown menu (not a top-level nav item, not buried in Explore)
 - ? **Update Getting Started page** — Expand the "Explore Your Community" section with a stronger CTA to become a community (not just browse existing ones)
 - ? **Update Partnerships page** — Add a "Looking to start a community?" banner that distinguishes geographic community partners from service partners, linking to `/for-communities`
 - ? **Footer link** — Add "For Communities" to the site footer
@@ -303,8 +303,8 @@ Partner Type:
    **Status:** No communities exist yet, so the landing page and home page will launch with placeholder/aspirational content. Once communities are onboarded, site admins can toggle a "featured" flag to showcase them. See Phase 4 featured communities configuration.
 
 2. **Should "For Communities" be a top-level nav item?**
-   **Decision:** Pending
-   **Status:** Need UX input — top-level item vs prominent placement in About dropdown
+   **Decision:** Resolved — place in the About dropdown menu, plus a prominent CTA on the home page hero
+   **Status:** Not a top-level nav item (avoids nav clutter). Instead: (a) add "For Communities" link in the About dropdown, and (b) add a prominent "For Communities" or "Start a Community" button in the home page hero section alongside the existing "Join us today" CTA.
 
 3. **Should the interest form create a full prospect or just send an email?**
    **Decision:** Resolved — reuse the existing partner request pipeline
