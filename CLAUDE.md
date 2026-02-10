@@ -35,6 +35,8 @@ docker build -f TrashMobDailyJobs/Dockerfile -t trashmob-daily-jobs:latest .
 docker build -f TrashMobHourlyJobs/Dockerfile -t trashmob-hourly-jobs:latest .
 ```
 
+**Important:** Always use case-sensitive paths in Dockerfiles matching the actual filesystem. Verify casing of project names, folder names, and file references before building — case mismatches are a common source of Docker build failures on Linux containers built from Windows.
+
 ### Strapi CMS (Local Development)
 ```bash
 cd Strapi
@@ -170,6 +172,12 @@ npm start
 
 **IMPORTANT: Never push directly to main.** All changes must go through a pull request, even hotfixes. Create a feature branch, push it, and create a PR for review.
 
+## AI Assistant Boundaries
+
+- **Do not make autonomous structural changes** to project plans (e.g., moving features between projects, removing rollout strategies, reorganizing phases) unless explicitly asked. Suggest improvements first and wait for approval.
+- **Scope changes to what's requested.** A bug fix doesn't need surrounding code cleaned up. A planning doc update doesn't need other docs refactored.
+- **When debugging, explain reasoning before trying fixes.** List what you think the problem is and your proposed approach before making changes — especially for unfamiliar frameworks (Strapi, MAUI, Bicep).
+
 ## Coding Standards & Patterns
 
 ### General Principles
@@ -236,13 +244,13 @@ npm start
 
 ## Key 2026 Initiatives
 
-Refer to `Planning/README.md` for detailed roadmap. Priority areas:
+Refer to `Planning/README.md` for detailed roadmap (46 projects). Active priority areas:
 
-1. **Project 1:** Auth migration (Azure B2C → Entra External ID)
+1. **Project 1:** Auth migration (Azure B2C → Entra External ID) — code complete, portal setup remaining
 2. **Project 4:** Mobile stabilization and error handling
-3. **Project 7:** Event weight tracking (Phase 1 & 2)
-4. **Project 9:** Teams feature (MVP)
-5. **Project 10:** Community Pages (MVP)
+3. **Project 8:** Waivers V3 — community waivers, minors coverage
+4. **Project 44:** Area Map Editor — interactive map editor, AI area suggestions, bulk import
+5. **Project 45:** Community Showcase — landing page, enrollment funnel
 
 ## Common Patterns
 
@@ -267,6 +275,16 @@ public async Task<ServiceResult<T>> DoSomethingAsync(...) {
 **Data doesn't load locally:** Check Azure SQL firewall rules - your IP may have changed. Look for actual IP in VS Code debug output.
 
 **Email not sending:** `dotnet user-secrets set "sendGridApiKey" "x"` to disable, or use real key from dev KeyVault.
+
+### Windows Environment
+
+- **ImageMagick `convert.exe`** conflicts with the Windows disk conversion utility (`C:\Windows\System32\convert.exe`). Use PowerShell .NET methods (`System.Drawing`) or specify the full ImageMagick path explicitly.
+- **Android SDK paths:** When setting up MAUI, ensure `cmdline-tools` is in the correct subdirectory (`latest/`) and JDK 17+ is installed. Windows SDK paths differ from macOS/Linux documentation.
+
+### Azure Infrastructure
+
+- **Subscription tier matters:** Azure Sponsorship subscriptions have restricted API support (e.g., budget/billing APIs may not be available). Always confirm the target subscription tier before using budget or consumption APIs in Bicep templates.
+- **Bicep environment naming:** Use the exact environment suffix from our naming convention (`dev`, `pr`) — not alternatives like `test` or `staging`.
 
 ## Testing
 
@@ -588,7 +606,7 @@ az keyvault secret set --vault-name kv-tm-dev-westus2 --name strapi-transfer-tok
 ## Additional Resources
 
 - **2026 Planning:** `Planning/README.md` - Navigation hub for all planning docs
-- **Individual Projects:** `Planning/Projects/` - 25 detailed project specifications
+- **Individual Projects:** `Planning/Projects/` - 46 detailed project specifications
 - **Product Plan:** `Planning/README.md` - Master roadmap document
 - **Domain Model:** `TrashMob.Models/TrashMob.Models.prd` - Entity relationships and business rules
 - **Test Scenarios:** `TestScenarios.md` - Manual test cases (automation planned)
