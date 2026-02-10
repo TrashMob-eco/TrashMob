@@ -39,7 +39,7 @@
 | [Project 23 - Parental Consent](./Projects/Project_23_Parental_Consent.md) | Privo.com integration for minors (combined with Project 1) | Planning (combined with Project 1) |
 | [Project 24 - API v2 Modernization](./Projects/Project_24_API_v2_Modernization.md) | Pagination, error handling, auto-generated clients | Not Started |
 | [Project 38 - Mobile Feature Parity](./Projects/Project_38_Mobile_Feature_Parity.md) | Teams, leaderboards, photos for mobile volunteers | In Progress (Phases 1-4, 6-7 Complete) |
-| [Project 44 - Area Map Editor](./Projects/Project_44_Area_Map_Editor.md) | Interactive map editor, AI area suggestions, bulk import | Not Started |
+| [Project 44 - Area Map Editor](./Projects/Project_44_Area_Map_Editor.md) | Interactive map editor, AI area suggestions, bulk import | In Progress (Phases 1-3 Complete) |
 
 #### Medium Priority (Enhancements)
 
@@ -146,10 +146,10 @@
 | Status | Count | Projects |
 |--------|-------|----------|
 | ✅ **Complete** | 24 | Projects 3, 7, 9, 10, 11, 13, 14, 16, 17, 18, 19, 20, 21, 26, 27, 28, 29, 32, 34, 35, 37, 39, 40, 42 |
-| **In Progress** | 10 | Projects 1 (Phase 0 — code complete, portal remaining), 4 (Phases 1-2 Complete), 6, 8 (Phase 1-4 Complete), 15 (Backend & Website Complete), 22 (Phase 1-3 Complete), 25 (Phase 1 Complete), 30, 38 (Phases 1-4, 6-7 Complete), 41 (Phases 1-4 Complete) |
+| **In Progress** | 11 | Projects 1 (Phase 0 — code complete, portal remaining), 4 (Phases 1-2 Complete), 6, 8 (Phase 1-4 Complete), 15 (Backend & Website Complete), 22 (Phase 1-3 Complete), 25 (Phase 1 Complete), 30, 38 (Phases 1-4, 6-7 Complete), 41 (Phases 1-4 Complete), 44 (Phases 1-3 Complete) |
 | **Ready for Review** | 2 | Projects 2, 5 |
 | **Planning** | 1 | Project 23 (combined with Project 1) |
-| **Not Started** | 7 | Projects 12, 24, 31, 36, 43, 44, 45 |
+| **Not Started** | 6 | Projects 12, 24, 31, 36, 43, 45 |
 | **Deprioritized** | 1 | Project 33 |
 
 **Total:** 45 project specifications documented
