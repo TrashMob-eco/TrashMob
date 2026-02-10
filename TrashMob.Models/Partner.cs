@@ -75,6 +75,11 @@ namespace TrashMob.Models
         public bool HomePageEnabled { get; set; }
 
         /// <summary>
+        /// Gets or sets whether this community is featured on the home page and landing page.
+        /// </summary>
+        public bool IsFeatured { get; set; }
+
+        /// <summary>
         /// Gets or sets when the community home page becomes active.
         /// </summary>
         public DateTimeOffset? HomePageStartDate { get; set; }

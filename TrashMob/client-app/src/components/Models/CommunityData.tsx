@@ -13,6 +13,8 @@ class CommunityData {
 
     homePageEnabled: boolean = false;
 
+    isFeatured: boolean = false;
+
     homePageStartDate: Date | null = null;
 
     homePageEndDate: Date | null = null;

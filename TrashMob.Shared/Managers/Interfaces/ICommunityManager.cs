@@ -97,6 +97,20 @@ namespace TrashMob.Shared.Managers.Interfaces
         Task<Partner> UpdateCommunityContentAsync(Partner community, Guid userId, CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Gets communities that are marked as featured for display on the landing page and home page.
+        /// </summary>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>A collection of featured communities.</returns>
+        Task<IEnumerable<Partner>> GetFeaturedCommunitiesAsync(CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets aggregate public stats across all active communities.
+        /// </summary>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>Aggregate community stats.</returns>
+        Task<CommunityPublicStats> GetPublicStatsAsync(CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Gets admin dashboard data for a community.
         /// </summary>
         /// <param name="partnerId">The partner/community ID.</param>

@@ -64,7 +64,14 @@ export const PartnerContactNotes = 'Enter any notes for the contact.';
 export const PartnerContactCreatedDate = 'Date this record was created.';
 export const PartnerContactLastUpdatedDate = 'Date this record was last updated.';
 export const PartnerStatus = 'The current status of this partner.';
-export const PartnerType = 'The type of the partner.';
+export const PartnerType =
+    'Select the type of partnership you are looking for. Government and Business partners provide services for events. Community partners get a branded page with volunteer and adoption tools.';
+export const PartnerTypeGovernment =
+    'City, county, or state agency providing waste management, hauling, or disposal services for cleanup events.';
+export const PartnerTypeBusiness =
+    'Commercial company offering recycling, hauling, disposal, or other cleanup-related services.';
+export const PartnerTypeCommunity =
+    'City, county, nonprofit, or organization that wants a branded TrashMob community page with volunteer engagement tools, adoption programs, and analytics.';
 export const PartnerLocationName = 'Enter the name of the partner location.';
 export const PartnerLocationStreetAddress =
     'The Street Address will auto-populate when clicking a location on the map.';

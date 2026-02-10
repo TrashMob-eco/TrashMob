@@ -318,6 +318,47 @@ namespace TrashMob.Shared.Managers.Communities
         }
 
         /// <inheritdoc />
+        public async Task<IEnumerable<Partner>> GetFeaturedCommunitiesAsync(CancellationToken cancellationToken = default)
+        {
+            var now = DateTimeOffset.UtcNow;
+
+            return await partnerRepository.Get()
+                .Where(p => p.HomePageEnabled
+                    && p.IsFeatured
+                    && (p.HomePageStartDate == null || p.HomePageStartDate <= now)
+                    && (p.HomePageEndDate == null || p.HomePageEndDate >= now)
+                    && p.PartnerStatusId == (int)PartnerStatusEnum.Active)
+                .ToListAsync(cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public async Task<CommunityPublicStats> GetPublicStatsAsync(CancellationToken cancellationToken = default)
+        {
+            var communities = await GetEnabledCommunitiesAsync(cancellationToken: cancellationToken);
+            var communityList = communities.ToList();
+
+            var stats = new CommunityPublicStats
+            {
+                TotalCommunities = communityList.Count,
+            };
+
+            // Aggregate events and volunteers across all communities
+            foreach (var community in communityList)
+            {
+                if (string.IsNullOrWhiteSpace(community.Slug))
+                {
+                    continue;
+                }
+
+                var communityStats = await GetCommunityStatsAsync(community.Slug, cancellationToken);
+                stats.TotalCommunityEvents += communityStats.TotalEvents;
+                stats.TotalCommunityVolunteers += communityStats.TotalParticipants;
+            }
+
+            return stats;
+        }
+
+        /// <inheritdoc />
         public async Task<Partner> GetByIdAsync(Guid partnerId, CancellationToken cancellationToken = default)
         {
             return await partnerRepository.GetAsync(partnerId, cancellationToken);
