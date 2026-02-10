@@ -80,10 +80,7 @@ Create a new public page at `/for-communities` that serves as the primary conver
 
 - ? **Add community CTA to hero section** — Second button alongside "Join us today": "Start a Community" or "For Communities" linking to `/for-communities`
 - ? **Featured Communities section** — Carousel or grid showing communities marked as featured (via admin `IsFeatured` flag) with logos, names, and key metrics, with "View All Communities" link. Section is hidden or shows a "Start the first community" CTA when no featured communities exist.
-- ? **Update stats section** — Add community-specific stats:
-  - Number of active communities
-  - Cities/regions covered
-  - Community-organized events count
+- ? **Update stats section** — Conditionally add community count to the home page stats section once there are more than 3 active communities (avoids displaying an underwhelming number at launch)
 - ? **Community testimonial** — Brief quote from a community admin in the social proof area
 
 ### Phase 3 — Navigation & Discovery Improvements
@@ -311,8 +308,8 @@ Partner Type:
    **Status:** Form creates a `PartnerRequest` with type "Community" (existing admin review flow). Phase 4 optionally creates an AI Sales Agent prospect for Community-type requests.
 
 4. **What community-specific metrics should be shown on the home page?**
-   **Decision:** Pending
-   **Status:** Need to determine which stats are most compelling (communities count, events, volunteers)
+   **Decision:** Resolved — show community count once there are more than 3 communities
+   **Status:** Don't show community count when the number is too small (looks underwhelming). Once more than 3 communities are active, add the community count to the home page stats section alongside existing metrics. The public stats API already returns the count; the frontend conditionally renders it.
 
 ---
 
