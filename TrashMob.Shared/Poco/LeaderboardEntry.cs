@@ -44,5 +44,10 @@ namespace TrashMob.Shared.Poco
         /// Gets or sets the city for location-based filtering.
         /// </summary>
         public string City { get; set; }
+
+        /// <summary>
+        /// Gets or sets the profile photo URL for the entity.
+        /// </summary>
+        public string ProfilePhotoUrl { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 namespace TrashMob.Shared.Managers.Gamification
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -93,6 +94,8 @@ namespace TrashMob.Shared.Managers.Gamification
                 })
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
+
+            await EnrichWithProfilePhotosAsync(entries, cancellationToken).ConfigureAwait(false);
 
             var computedDate = await query
                 .Select(l => l.ComputedDate)
@@ -326,6 +329,8 @@ namespace TrashMob.Shared.Managers.Gamification
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
 
+            await EnrichWithProfilePhotosAsync(entries, cancellationToken).ConfigureAwait(false);
+
             var computedDate = await query
                 .Select(l => l.ComputedDate)
                 .FirstOrDefaultAsync(cancellationToken)
@@ -447,6 +452,31 @@ namespace TrashMob.Shared.Managers.Gamification
                 TotalRanked = totalRanked,
                 IsEligible = true
             };
+        }
+
+        private async Task EnrichWithProfilePhotosAsync(List<LeaderboardEntry> entries, CancellationToken cancellationToken)
+        {
+            var userEntries = entries.Where(e => e.EntityType == "User").ToList();
+            if (!userEntries.Any())
+            {
+                return;
+            }
+
+            var userIds = userEntries.Select(e => e.EntityId).ToList();
+            var photos = await dbContext.Users
+                .AsNoTracking()
+                .Where(u => userIds.Contains(u.Id))
+                .Select(u => new { u.Id, u.ProfilePhotoUrl })
+                .ToDictionaryAsync(u => u.Id, u => u.ProfilePhotoUrl, cancellationToken)
+                .ConfigureAwait(false);
+
+            foreach (var entry in userEntries)
+            {
+                if (photos.TryGetValue(entry.EntityId, out var photoUrl))
+                {
+                    entry.ProfilePhotoUrl = photoUrl;
+                }
+            }
         }
 
         private async Task<int> GetTeamEventCountAsync(Guid teamId, string timeRange, CancellationToken cancellationToken)
