@@ -241,10 +241,7 @@ export const MyProfile = () => {
                                     <div className='col-span-12 sm:col-span-6'>
                                         <div className='space-y-2'>
                                             <FormLabel>Member Since</FormLabel>
-                                            <Input
-                                                value={new Date(user.memberSince).toLocaleDateString()}
-                                                disabled
-                                            />
+                                            <Input value={new Date(user.memberSince).toLocaleDateString()} disabled />
                                         </div>
                                     </div>
                                 </div>
