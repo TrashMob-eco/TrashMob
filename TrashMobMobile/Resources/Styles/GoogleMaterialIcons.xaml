@@ -814,7 +814,7 @@
     <!-- <x:String x:Key="IconLaunch">&#xf0327;</x:String> -->
     <!-- <x:String x:Key="IconLayers">&#xf0328;</x:String> -->
     <!-- <x:String x:Key="IconLayersOff">&#xf0329;</x:String> -->
-    <!-- <x:String x:Key="IconLeaf">&#xf032a;</x:String> -->
+    <x:String x:Key="IconLeaf">&#xf032a;</x:String>
     <!-- <x:String x:Key="IconLedOff">&#xf032b;</x:String> -->
     <!-- <x:String x:Key="IconLedOn">&#xf032c;</x:String> -->
     <!-- <x:String x:Key="IconLedOutline">&#xf032d;</x:String> -->
@@ -1442,7 +1442,7 @@
     <!-- <x:String x:Key="IconWeatherWindyVariant">&#xf059e;</x:String> -->
     <!-- <x:String x:Key="IconWeb">&#xf059f;</x:String> -->
     <!-- <x:String x:Key="IconWebcam">&#xf05a0;</x:String> -->
-    <!-- <x:String x:Key="IconWeight">&#xf05a1;</x:String> -->
+    <x:String x:Key="IconWeight">&#xf05a1;</x:String>
     <!-- <x:String x:Key="IconWeightKilogram">&#xf05a2;</x:String> -->
     <!-- <x:String x:Key="IconWhatsapp">&#xf05a3;</x:String> -->
     <!-- <x:String x:Key="IconWheelchairAccessibility">&#xf05a4;</x:String> -->
@@ -2119,7 +2119,7 @@
     <!-- <x:String x:Key="IconHumanMaleBoardPoll">&#xf0846;</x:String> -->
     <!-- <x:String x:Key="IconYoutubeStudio">&#xf0847;</x:String> -->
     <!-- <x:String x:Key="IconYoutubeGaming">&#xf0848;</x:String> -->
-    <!-- <x:String x:Key="IconAccountGroup">&#xf0849;</x:String> -->
+    <x:String x:Key="IconAccountGroup">&#xf0849;</x:String>
     <!-- <x:String x:Key="IconCameraSwitchOutline">&#xf084a;</x:String> -->
     <!-- <x:String x:Key="IconAirport">&#xf084b;</x:String> -->
     <!-- <x:String x:Key="IconArrowCollapseHorizontal">&#xf084c;</x:String> -->
@@ -3680,7 +3680,7 @@
     <!-- <x:String x:Key="IconSeedOutline">&#xf0e63;</x:String> -->
     <!-- <x:String x:Key="IconSignalDistanceVariant">&#xf0e64;</x:String> -->
     <!-- <x:String x:Key="IconSpade">&#xf0e65;</x:String> -->
-    <!-- <x:String x:Key="IconSprout">&#xf0e66;</x:String> -->
+    <x:String x:Key="IconSprout">&#xf0e66;</x:String>
     <!-- <x:String x:Key="IconSproutOutline">&#xf0e67;</x:String> -->
     <!-- <x:String x:Key="IconTableTennis">&#xf0e68;</x:String> -->
     <!-- <x:String x:Key="IconTreeOutline">&#xf0e69;</x:String> -->
@@ -4328,7 +4328,7 @@
     <!-- <x:String x:Key="IconGamma">&#xf10ee;</x:String> -->
     <!-- <x:String x:Key="IconHairDryer">&#xf10ef;</x:String> -->
     <!-- <x:String x:Key="IconHairDryerOutline">&#xf10f0;</x:String> -->
-    <!-- <x:String x:Key="IconHandHeart">&#xf10f1;</x:String> -->
+    <x:String x:Key="IconHandHeart">&#xf10f1;</x:String>
     <!-- <x:String x:Key="IconHexagonMultipleOutline">&#xf10f2;</x:String> -->
     <!-- <x:String x:Key="IconHorizontalRotateClockwise">&#xf10f3;</x:String> -->
     <!-- <x:String x:Key="IconHorizontalRotateCounterclockwise">&#xf10f4;</x:String> -->
