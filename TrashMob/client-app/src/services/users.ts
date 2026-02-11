@@ -45,6 +45,17 @@ export const UpdateUser = () => ({
         }),
 });
 
+export type VerifyUniqueUserName_Params = { userId: string; userName: string };
+export const VerifyUniqueUserName = (params: VerifyUniqueUserName_Params) => ({
+    key: ['/users/verifyunique', params],
+    service: async () =>
+        ApiService('protected').fetchData<unknown>({
+            url: `/users/verifyunique/${params.userId}/${encodeURIComponent(params.userName)}`,
+            method: 'get',
+            validateStatus: (status: number) => status === 200 || status === 409,
+        }),
+});
+
 export type DeleteUserById_Params = { id: string };
 export type DeleteUserById_Response = UserData | null;
 export const DeleteUserById = () => ({
