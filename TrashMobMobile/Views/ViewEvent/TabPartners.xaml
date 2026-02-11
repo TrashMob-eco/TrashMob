@@ -11,18 +11,23 @@
                                     SelectionMode="None" 
                                     IsVisible="{Binding ArePartnersAvailable}">
             <CollectionView.ItemTemplate>
-                <DataTemplate 
-                                x:DataType="viewModels:EventPartnerLocationViewModel">
-                    <Border Style="{StaticResource RoundBorder}" Margin="5">
-                        <Grid RowDefinitions="1*, 2*, 1*" ColumnDefinitions="*, *"
-                                          x:Name="PartnerLocationItem">
-                            <Label Text="Partner Name" Style="{StaticResource FieldLabel}" Grid.Row="0" />
-                            <Label Text="{Binding PartnerLocationName}" Grid.Column="1" Grid.Row="0" />
-                            <Label Text="Info" Style="{StaticResource FieldLabel}" Grid.Row="1" />
-                            <Label Text="{Binding PartnerLocationNotes}" Grid.Row="1" Grid.Column="1" />
-                            <Label Text="Services Requested" Style="{StaticResource FieldLabel}" Grid.Row="2" />
-                            <Label Text="{Binding PartnerServicesEngaged}" Grid.Row="2" Grid.Column="1" />
-                        </Grid>
+                <DataTemplate x:DataType="viewModels:EventPartnerLocationViewModel">
+                    <Border Style="{StaticResource RoundBorder}" Margin="5,3">
+                        <VerticalStackLayout Spacing="4" Padding="10,8">
+                            <Label Text="{Binding PartnerLocationName}"
+                                   FontFamily="LexendSemibold"
+                                   FontSize="Small" />
+                            <Label Text="{Binding PartnerLocationNotes}"
+                                   FontSize="Micro"
+                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                            <HorizontalStackLayout Spacing="4">
+                                <Label Text="Services:"
+                                       FontSize="Micro"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                <Label Text="{Binding PartnerServicesEngaged}"
+                                       FontSize="Micro" />
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
                     </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>

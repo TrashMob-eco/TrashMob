@@ -769,7 +769,7 @@
     <!-- <x:String x:Key="IconImport">&#xf02fa;</x:String> -->
     <!-- <x:String x:Key="IconInboxArrowDown">&#xf02fb;</x:String> -->
     <!-- <x:String x:Key="IconInformation">&#xf02fc;</x:String> -->
-    <!-- <x:String x:Key="IconInformationOutline">&#xf02fd;</x:String> -->
+    <x:String x:Key="IconInformationOutline">&#xf02fd;</x:String>
     <!-- <x:String x:Key="IconInstagram">&#xf02fe;</x:String> -->
     <!-- <x:String x:Key="IconPotOutline">&#xf02ff;</x:String> -->
     <!-- <x:String x:Key="IconMicrosoftInternetExplorer">&#xf0300;</x:String> -->
@@ -1275,7 +1275,7 @@
     <!-- <x:String x:Key="IconTablet">&#xf04f6;</x:String> -->
     <!-- <x:String x:Key="IconReceiptOutline">&#xf04f7;</x:String> -->
     <!-- <x:String x:Key="IconTangram">&#xf04f8;</x:String> -->
-    <!-- <x:String x:Key="IconTag">&#xf04f9;</x:String> -->
+    <x:String x:Key="IconTag">&#xf04f9;</x:String>
     <!-- <x:String x:Key="IconTagFaces">&#xf04fa;</x:String> -->
     <!-- <x:String x:Key="IconTagMultiple">&#xf04fb;</x:String> -->
     <!-- <x:String x:Key="IconTagOutline">&#xf04fc;</x:String> -->
@@ -1308,7 +1308,7 @@
     <!-- <x:String x:Key="IconTicketConfirmation">&#xf0518;</x:String> -->
     <!-- <x:String x:Key="IconTie">&#xf0519;</x:String> -->
     <!-- <x:String x:Key="IconTimelapse">&#xf051a;</x:String> -->
-    <!-- <x:String x:Key="IconTimerOutline">&#xf051b;</x:String> -->
+    <x:String x:Key="IconTimerOutline">&#xf051b;</x:String>
     <!-- <x:String x:Key="IconTimer10">&#xf051c;</x:String> -->
     <!-- <x:String x:Key="IconTimer3">&#xf051d;</x:String> -->
     <!-- <x:String x:Key="IconTimerOffOutline">&#xf051e;</x:String> -->
@@ -2007,7 +2007,7 @@
     <!-- <x:String x:Key="IconLedStrip">&#xf07d6;</x:String> -->
     <!-- <x:String x:Key="IconLocker">&#xf07d7;</x:String> -->
     <!-- <x:String x:Key="IconLockerMultiple">&#xf07d8;</x:String> -->
-    <!-- <x:String x:Key="IconMapMarkerOutline">&#xf07d9;</x:String> -->
+    <x:String x:Key="IconMapMarkerOutline">&#xf07d9;</x:String>
     <!-- <x:String x:Key="IconMetronome">&#xf07da;</x:String> -->
     <!-- <x:String x:Key="IconMetronomeTick">&#xf07db;</x:String> -->
     <!-- <x:String x:Key="IconMicroSd">&#xf07dc;</x:String> -->

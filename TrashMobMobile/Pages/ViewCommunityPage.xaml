@@ -26,8 +26,7 @@
             <!-- About Section -->
             <VerticalStackLayout Padding="10,0" IsVisible="{Binding HasPublicNotes}">
                 <Label Text="About"
-                       FontFamily="LexendSemibold"
-                       FontSize="Medium"
+                       Style="{StaticResource SectionHeader}"
                        Margin="0,5,0,5" />
                 <Label Text="{Binding PublicNotes}"
                        FontSize="Small"
@@ -36,8 +35,7 @@
 
             <!-- Impact Stats -->
             <Label Text="Community Impact"
-                   FontFamily="LexendSemibold"
-                   FontSize="Medium"
+                   Style="{StaticResource SectionHeader}"
                    Margin="10,15,10,5" />
 
             <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto" Padding="10,0" ColumnSpacing="8" RowSpacing="8">
@@ -87,8 +85,7 @@
 
             <!-- Upcoming Events Section -->
             <Label Text="Upcoming Events"
-                   FontFamily="LexendSemibold"
-                   FontSize="Medium"
+                   Style="{StaticResource SectionHeader}"
                    Margin="10,15,10,5" />
 
             <Label Text="No upcoming events"
@@ -126,8 +123,7 @@
 
             <!-- Nearby Teams Section -->
             <Label Text="Nearby Teams"
-                   FontFamily="LexendSemibold"
-                   FontSize="Medium"
+                   Style="{StaticResource SectionHeader}"
                    Margin="10,15,10,5" />
 
             <Label Text="No nearby teams"
@@ -165,8 +161,7 @@
 
             <!-- Contact Info Section -->
             <Label Text="Contact"
-                   FontFamily="LexendSemibold"
-                   FontSize="Medium"
+                   Style="{StaticResource SectionHeader}"
                    Margin="10,15,10,5" />
 
             <Border Style="{x:StaticResource RoundBorder}" Margin="5,3" Padding="10,10">

@@ -15,34 +15,37 @@
                                     SelectionMode="None">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="viewModels:EventAttendeeViewModel">
-                    <StackLayout Margin="5">
-                        <Border Style="{StaticResource RoundBorder}" Margin="5">
-                            <Grid ColumnDefinitions="*, *, Auto" RowDefinitions="*, *, *">
-                                <Label Text="User Name" Style="{StaticResource FieldLabel}" Grid.Row="0" />
-                                <Label Text="{Binding UserName}" Grid.Row="0" Grid.Column="1" />
-                                <Label Text="Member Since" Style="{StaticResource FieldLabel}" Grid.Row="1" />
-                                <Label Text="{Binding MemberSince}" Grid.Row="1" Grid.Column="1" />
-                                <Label Text="Event Role" Style="{StaticResource FieldLabel}" Grid.Row="2" />
-                                <Label Text="{Binding Role}" Grid.Row="2" Grid.Column="1"/>
-                                <StackLayout Grid.Row="0" Grid.RowSpan="3" Grid.Column="2" VerticalOptions="Center" Margin="10,0">
-                                    <Button Text="Promote"
-                                            Command="{Binding Source={x:Reference TabAttendeesView}, Path=BindingContext.PromoteToLeadCommand}"
-                                            CommandParameter="{Binding .}"
-                                            IsVisible="{Binding CanPromote}"
-                                            Style="{StaticResource PrimaryButton}"
-                                            Padding="10,5"
-                                            FontSize="12" />
-                                    <Button Text="Demote"
-                                            Command="{Binding Source={x:Reference TabAttendeesView}, Path=BindingContext.DemoteFromLeadCommand}"
-                                            CommandParameter="{Binding .}"
-                                            IsVisible="{Binding CanDemote}"
-                                            Style="{StaticResource SecondaryButton}"
-                                            Padding="10,5"
-                                            FontSize="12" />
-                                </StackLayout>
-                            </Grid>
-                        </Border>
-                    </StackLayout>
+                    <Border Style="{StaticResource RoundBorder}" Margin="5,3">
+                        <HorizontalStackLayout Padding="10,8" Spacing="10">
+                            <VerticalStackLayout Spacing="2" HorizontalOptions="FillAndExpand">
+                                <Label Text="{Binding UserName}"
+                                       FontFamily="LexendSemibold"
+                                       FontSize="Small" />
+                                <Label Text="{Binding MemberSince, StringFormat='Member since {0}'}"
+                                       FontSize="Micro"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                <Label Text="{Binding Role}"
+                                       FontSize="Micro"
+                                       TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </VerticalStackLayout>
+                            <StackLayout VerticalOptions="Center" Spacing="4">
+                                <Button Text="Promote"
+                                        Command="{Binding Source={x:Reference TabAttendeesView}, Path=BindingContext.PromoteToLeadCommand}"
+                                        CommandParameter="{Binding .}"
+                                        IsVisible="{Binding CanPromote}"
+                                        Style="{StaticResource PrimarySmallButton}"
+                                        Padding="10,5"
+                                        FontSize="12" />
+                                <Button Text="Demote"
+                                        Command="{Binding Source={x:Reference TabAttendeesView}, Path=BindingContext.DemoteFromLeadCommand}"
+                                        CommandParameter="{Binding .}"
+                                        IsVisible="{Binding CanDemote}"
+                                        Style="{StaticResource SecondarySmallButton}"
+                                        Padding="10,5"
+                                        FontSize="12" />
+                            </StackLayout>
+                        </HorizontalStackLayout>
+                    </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>

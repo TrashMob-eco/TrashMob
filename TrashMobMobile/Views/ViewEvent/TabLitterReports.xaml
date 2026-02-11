@@ -43,36 +43,36 @@
                                     SelectionMode="None">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="viewModels:EventLitterReportViewModel">
-                        <StackLayout Margin="5">
-                            <Border Style="{StaticResource RoundBorder}" Margin="5">
-                                <Grid ColumnDefinitions="*, *"
-                                              RowDefinitions="*, *, *, *, *, *, *"
-                                              x:Name="LitterReportItem">
-                                    <Label Text="Name" Style="{StaticResource FieldLabel}" Grid.Row="0" />
-                                    <Label Text="{Binding Name}" Grid.Row="0" Grid.Column="1" />
-                                    <Label Text="Date Created" Style="{StaticResource FieldLabel}" Grid.Row="1" />
-                                    <Label Text="{Binding CreatedDate}" Grid.Row="1" Grid.Column="1" />
-                                    <Label Text="Status" Style="{StaticResource FieldLabel}" Grid.Row="2" />
-                                    <Label Text="{Binding Status}" Grid.Row="2" Grid.Column="1"/>
-                                    <Label Text="Description" Style="{StaticResource FieldLabel}" Grid.Row="3" />
-                                    <Label Text="{Binding Description}" Grid.Row="3" Grid.Column="1" />
-                                    <Label Text="Locations" Grid.Row="5" Style="{StaticResource FieldLabel}" />
-                                    <CollectionView ItemsSource="{Binding LitterImageViewModels}" Grid.Row="6"
-                                                            Grid.Column="0" Grid.ColumnSpan="2">
-                                        <CollectionView.ItemTemplate>
-                                            <DataTemplate x:DataType="viewModels:LitterImageViewModel">
-                                                <Border Style="{StaticResource RoundBorder}" Margin="0, 3">
-                                                    <Grid ColumnDefinitions="*, *">
-                                                        <Label Text="{Binding Address.DisplayAddress}" Grid.Column="0" LineBreakMode="WordWrap" FontSize="Micro" />
-                                                        <Image Source="{Binding AzureBlobUrl}" MaximumWidthRequest="60" Grid.Column="1" />
-                                                    </Grid>
-                                                </Border>
-                                            </DataTemplate>
-                                        </CollectionView.ItemTemplate>
-                                    </CollectionView>
-                                </Grid>
-                            </Border>
-                        </StackLayout>
+                        <Border Style="{StaticResource RoundBorder}" Margin="5,3">
+                            <VerticalStackLayout Spacing="4" Padding="10,8">
+                                <Label Text="{Binding Name}"
+                                       FontFamily="LexendSemibold"
+                                       FontSize="Small" />
+                                <Label Text="{Binding CreatedDate}"
+                                       FontSize="Micro"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                <Label Text="{Binding Status}"
+                                       FontSize="Micro"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                <Label Text="{Binding Description}"
+                                       FontSize="Micro"
+                                       MaxLines="2"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                <CollectionView ItemsSource="{Binding LitterImageViewModels}">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate x:DataType="viewModels:LitterImageViewModel">
+                                            <Border Style="{StaticResource RoundBorder}" Margin="0,3">
+                                                <Grid ColumnDefinitions="*, Auto" Padding="8,6">
+                                                    <Label Text="{Binding Address.DisplayAddress}" Grid.Column="0" LineBreakMode="WordWrap" FontSize="Micro"
+                                                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                                    <Image Source="{Binding AzureBlobUrl}" MaximumWidthRequest="60" Grid.Column="1" />
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+                            </VerticalStackLayout>
+                        </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>

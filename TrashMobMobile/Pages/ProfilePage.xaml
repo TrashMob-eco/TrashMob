@@ -45,8 +45,7 @@
 
             <!-- My Events Section -->
             <Label Text="My Events"
-                   FontFamily="LexendSemibold"
-                   FontSize="Medium"
+                   Style="{StaticResource SectionHeader}"
                    Margin="5,15,5,5" />
 
             <HorizontalStackLayout Spacing="8" Margin="5,0">
@@ -124,8 +123,7 @@
 
             <!-- My Litter Reports Section -->
             <Label Text="My Litter Reports"
-                   FontFamily="LexendSemibold"
-                   FontSize="Medium"
+                   Style="{StaticResource SectionHeader}"
                    Margin="5,15,5,5" />
 
             <Label Text="No litter reports"
@@ -162,6 +160,7 @@
                 <Label Text="My Teams"
                        FontFamily="LexendSemibold"
                        FontSize="Medium"
+                       TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
                        Grid.Column="0" />
                 <Button Text="Browse Teams"
                         Command="{Binding BrowseTeamsCommand}"
@@ -200,8 +199,7 @@
 
             <!-- Settings Section -->
             <Label Text="Settings"
-                   FontFamily="LexendSemibold"
-                   FontSize="Medium"
+                   Style="{StaticResource SectionHeader}"
                    Margin="5,15,5,5" />
 
             <VerticalStackLayout Spacing="8" Margin="5,0">

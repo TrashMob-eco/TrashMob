@@ -12,110 +12,81 @@
         <Grid>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
 
-                <Grid RowDefinitions="*, *, *, *">
-                    <Grid RowDefinitions="Auto" ColumnDefinitions="*, *, *, *"
-                      MaximumWidthRequest="400">
-                        <Button Margin="10"
-                            Grid.Row="0" 
-                            Grid.Column="0" 
-                            Command="{Binding EditLitterReportCommand}" 
-                            Text="Edit"
+                <!-- Report Info Card -->
+                <Border Style="{x:StaticResource RoundBorder}" Margin="5,10,5,5">
+                    <VerticalStackLayout Spacing="4" Padding="10,10">
+                        <Label Text="{Binding LitterReportViewModel.Name}"
+                               FontFamily="LexendSemibold"
+                               FontSize="Large" />
+                        <Label Text="{Binding LitterReportStatus}"
+                               FontSize="Small"
+                               TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                        <Label Text="{Binding LitterReportViewModel.Description}"
+                               FontSize="Small"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Action Buttons -->
+                <VerticalStackLayout Spacing="8" Margin="5,5">
+                    <Button Command="{Binding EditLitterReportCommand}"
+                            Text="Edit Report"
                             IsEnabled="{Binding CanEditLitterReport}"
-                            IsVisible="{Binding CanEditLitterReport}" 
-                            Style="{StaticResource PrimarySmallButton}" >
-                        </Button>
-                        <Button Margin="10"
-                            Grid.Row="0" 
-                            Grid.Column="1" 
-                            Command="{Binding MarkLitterReportCleanedCommand}" 
+                            IsVisible="{Binding CanEditLitterReport}"
+                            Style="{StaticResource PrimaryLargeButton}" />
+                    <Button Command="{Binding MarkLitterReportCleanedCommand}"
                             IsEnabled="{Binding CanMarkLitterReportCleaned}"
-                            IsVisible="{Binding CanMarkLitterReportCleaned}" 
-                            Style="{StaticResource SecondarySmallButton}" 
-                            Text="Mark Cleaned">
-                        </Button>
-                        <Button Margin="10"
-                            Grid.Row="0" 
-                            Grid.Column="2" 
-                            Command="{Binding DeleteLitterReportCommand}" 
+                            IsVisible="{Binding CanMarkLitterReportCleaned}"
+                            Style="{StaticResource SecondaryLargeButton}"
+                            Text="Mark as Cleaned" />
+                    <Button Command="{Binding DeleteLitterReportCommand}"
                             IsEnabled="{Binding CanDeleteLitterReport}"
-                            IsVisible="{Binding CanDeleteLitterReport}" 
-                            Style="{StaticResource SecondarySmallButton}" 
-                            Text="Delete">
-                        </Button>
-                        <Button Margin="10"
-                            Grid.Row="0" 
-                            Grid.Column="4" 
-                            Padding="5"
-                            Command="{Binding ViewEventCommand}" 
+                            IsVisible="{Binding CanDeleteLitterReport}"
+                            Style="{StaticResource SecondaryLargeButton}"
+                            Text="Delete Report" />
+                    <Button Command="{Binding ViewEventCommand}"
                             IsEnabled="{Binding IsAssignedToEvent}"
-                            IsVisible="{Binding IsAssignedToEvent}" 
-                            Style="{StaticResource SecondarySmallButton}" 
-                            Text="View Event">
-                        </Button>
-                        <Button Margin="10"
-                            Grid.Row="0" 
-                            Grid.Column="4" 
-                            Padding="5"
-                            Command="{Binding CreateEventCommand}" 
+                            IsVisible="{Binding IsAssignedToEvent}"
+                            Style="{StaticResource SecondaryLargeButton}"
+                            Text="View Event" />
+                    <Button Command="{Binding CreateEventCommand}"
                             IsEnabled="{Binding IsNotAssignedToEvent}"
-                            IsVisible="{Binding IsNotAssignedToEvent}" 
-                            Style="{StaticResource SecondarySmallButton}" 
-                            Text="Create Event">
-                        </Button>
-                    </Grid>
+                            IsVisible="{Binding IsNotAssignedToEvent}"
+                            Style="{StaticResource SecondaryLargeButton}"
+                            Text="Create Event" />
+                </VerticalStackLayout>
 
-                    <VerticalStackLayout Grid.Row="1">
-                        <Label Text="Name" Style="{StaticResource FieldLabel}" />
-                        <Label
-                                Text="{Binding LitterReportViewModel.Name}"
-                                VerticalOptions="Center"
-                                HorizontalOptions="Start"
-                                HorizontalTextAlignment="Center" />
-                    </VerticalStackLayout>
+                <!-- Map -->
+                <Label Text="Locations"
+                       Style="{StaticResource SectionHeader}"
+                       Margin="5,10,5,5" />
 
-                    <VerticalStackLayout Grid.Row="2">
-                        <Label Text="Description" Style="{StaticResource FieldLabel}" />
-                        <Label
-                                Text="{Binding LitterReportViewModel.Description}"
-                                VerticalOptions="Center"
-                                HorizontalOptions="Start"
-                                HorizontalTextAlignment="Center" />
-                    </VerticalStackLayout>
+                <Border Style="{x:StaticResource RoundBorder}" Margin="5,0">
+                    <controls:CustomMap x:Name="litterReportLocationMap" ItemsSource="{Binding LitterImageViewModels}">
+                        <maps:Map.ItemTemplate>
+                            <DataTemplate x:DataType="viewModels:LitterImageViewModel">
+                                <controls:CustomPin Location="{Binding Address.Location}"
+                                          Address="{Binding Address.StreetAddress}"
+                                          ImageSource="{Binding Address.IconFile}"
+                                          Label="Litter Image" />
+                            </DataTemplate>
+                        </maps:Map.ItemTemplate>
+                    </controls:CustomMap>
+                </Border>
 
-                    <VerticalStackLayout Grid.Row="3">
-                        <Label Text="Status" Style="{StaticResource FieldLabel}" />
-                        <Label
-                                Text="{Binding LitterReportStatus}"
-                                VerticalOptions="Center"
-                                HorizontalOptions="Start"
-                                HorizontalTextAlignment="Center" />
-                    </VerticalStackLayout>
-                </Grid>
-
-                <controls:CustomMap x:Name="litterReportLocationMap" ItemsSource="{Binding LitterImageViewModels}">
-                    <maps:Map.ItemTemplate>
-                        <DataTemplate x:DataType="viewModels:LitterImageViewModel">
-                            <controls:CustomPin Location="{Binding Address.Location}"
-                                      Address="{Binding Address.StreetAddress}"
-                                      ImageSource="{Binding Address.IconFile}"
-                                      Label="Litter Image" />
-                        </DataTemplate>
-                    </maps:Map.ItemTemplate>
-                </controls:CustomMap>
-
+                <!-- Litter Images -->
                 <CollectionView x:Name="LitterImagesCollection"
                                 ItemsSource="{Binding LitterImageViewModels}"
-                                SelectionMode="None">
+                                SelectionMode="None"
+                                Margin="0,5">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="viewModels:LitterImageViewModel">
-                            <Border Style="{StaticResource RoundBorder}">
-                                <Grid WidthRequest="400"
-                                      ColumnDefinitions="*, *"
-                                      RowDefinitions="Auto"
-                                      x:Name="LitterImageItem">
-                                    <Image Source="{Binding AzureBlobUrl}" MaximumWidthRequest="100" Grid.Column="0"
-                                           Grid.RowSpan="5" />
-                                    <Label Grid.Row="0" Grid.Column="2" Text="{Binding Address.DisplayAddress }" />
+                            <Border Style="{StaticResource RoundBorder}" Margin="5,3">
+                                <Grid ColumnDefinitions="Auto, *" Padding="8,6" ColumnSpacing="10">
+                                    <Image Source="{Binding AzureBlobUrl}" MaximumWidthRequest="80" Aspect="AspectFill" Grid.Column="0" />
+                                    <Label Text="{Binding Address.DisplayAddress}" Grid.Column="1"
+                                           LineBreakMode="WordWrap" FontSize="Small" VerticalOptions="Center"
+                                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
                                 </Grid>
                             </Border>
                         </DataTemplate>

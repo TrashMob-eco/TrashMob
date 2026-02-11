@@ -59,6 +59,8 @@ public partial class ViewTeamViewModel(
                 RefreshTeam(),
                 RefreshMembers(),
                 RefreshUpcomingEvents());
+
+            UpdateMembershipState();
         }, "Failed to load team details. Please try again.");
     }
 
@@ -74,6 +76,8 @@ public partial class ViewTeamViewModel(
             await Task.WhenAll(
                 RefreshTeam(),
                 RefreshMembers());
+
+            UpdateMembershipState();
         }, "Failed to join team. Please try again.");
     }
 
@@ -157,15 +161,20 @@ public partial class ViewTeamViewModel(
     private async Task RefreshTeam()
     {
         var teamData = await teamManager.GetTeamAsync(teamId);
-        var memberCount = teamData.Members?.Count ?? 0;
 
-        var userId = userManager.CurrentUser.Id;
-        var isMember = teamData.Members?.Any(m => m.UserId == userId) ?? false;
-
-        Team = teamData.ToTeamViewModel(memberCount, isMember);
-        IsUserMember = isMember;
-        CanJoin = !isMember && teamData.IsPublic;
+        Team = teamData.ToTeamViewModel();
         JoinButtonText = teamData.RequiresApproval ? "Request to Join" : "Join Team";
+    }
+
+    private void UpdateMembershipState()
+    {
+        var userId = userManager.CurrentUser.Id;
+        IsUserMember = Members.Any(m => m.UserId == userId);
+        CanJoin = !IsUserMember && Team.IsPublic;
+
+        Team.MemberCount = Members.Count;
+        Team.MemberCountDisplay = Members.Count == 1 ? "1 member" : $"{Members.Count} members";
+        Team.IsUserMember = IsUserMember;
     }
 
     private async Task RefreshMembers()

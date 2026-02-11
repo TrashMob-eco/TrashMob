@@ -37,6 +37,14 @@
                                            MaxLines="2"
                                            TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
                                     <HorizontalStackLayout Spacing="8">
+                                        <Image WidthRequest="14" HeightRequest="14">
+                                            <Image.Source>
+                                                <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                                 Glyph="{StaticResource IconMapMarkerOutline}"
+                                                                 Size="14"
+                                                                 Color="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                            </Image.Source>
+                                        </Image>
                                         <Label Text="{Binding Location}"
                                                FontSize="Micro"
                                                TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />

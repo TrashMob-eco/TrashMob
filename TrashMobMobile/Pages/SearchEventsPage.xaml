@@ -10,8 +10,6 @@
              Title="Search Events">
     <Grid>
         <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
-
             <Grid RowDefinitions="Auto, Auto, *">
                 <Grid RowDefinitions="Auto" ColumnDefinitions="*, *, *, *" Grid.Row="0">
                     <Button Margin="10"
