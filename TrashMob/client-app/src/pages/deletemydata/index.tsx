@@ -1,41 +1,57 @@
-import { FC, FormEvent } from 'react';
-import { getApiConfig, getAuthProvider, getB2CPolicies, getMsalClientInstance } from '@/store/AuthStore';
+import { useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { getMsalClientInstance } from '@/store/AuthStore';
+import { useLogin } from '@/hooks/useLogin';
+import { useToast } from '@/hooks/use-toast';
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { DeleteUserById } from '@/services/users';
+import { Loader2, TriangleAlert } from 'lucide-react';
 
-interface DeleteMyDataProps {}
+export const DeleteMyData = () => {
+    const { currentUser, isUserLoaded } = useLogin();
+    const { toast } = useToast();
+    const [confirmText, setConfirmText] = useState('');
+    const [dialogOpen, setDialogOpen] = useState(false);
 
-export const DeleteMyData: FC<DeleteMyDataProps> = (props) => {
-    const handleDelete = (event: FormEvent<HTMLElement>) => {
-        event.preventDefault();
-
-        // TODO: Phase 2 — in-app account deletion via Graph API when using Entra External ID
-        if (getAuthProvider() === 'entra') {
-            console.warn(
-                'Account deletion via B2C policy not available in Entra mode. In-app deletion coming in Phase 2.',
-            );
-            return;
-        }
-
-        const account = getMsalClientInstance().getAllAccounts()[0];
-        const policy = getB2CPolicies();
-        const scopes = getApiConfig();
-
-        const request = {
-            account,
-            authority: policy.authorities.deleteUser.authority,
-            scopes: scopes.b2cScopes,
-        };
-        getMsalClientInstance()
-            .acquireTokenPopup(request)
-            .then(() => {
-                const logoutRequest = {
-                    account: getMsalClientInstance().getActiveAccount(),
-                };
-                getMsalClientInstance().logoutRedirect(logoutRequest);
+    const { mutate: deleteAccount, isPending } = useMutation({
+        mutationKey: DeleteUserById().key,
+        mutationFn: DeleteUserById().service,
+        onSuccess: () => {
+            const logoutRequest = {
+                account: getMsalClientInstance().getActiveAccount(),
+            };
+            getMsalClientInstance().logoutRedirect(logoutRequest);
+        },
+        onError: () => {
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: 'Failed to delete your account. Please try again or contact support.',
             });
+        },
+    });
+
+    const handleConfirmDelete = () => {
+        if (!currentUser?.id) return;
+        deleteAccount({ id: currentUser.id });
     };
+
+    const isConfirmed = confirmText === 'DELETE';
 
     return (
         <div>
@@ -58,9 +74,66 @@ export const DeleteMyData: FC<DeleteMyDataProps> = (props) => {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Button variant='destructive' onClick={handleDelete}>
-                            Delete Account
-                        </Button>
+                        {isUserLoaded ? (
+                            <AlertDialog
+                                open={dialogOpen}
+                                onOpenChange={(open) => {
+                                    setDialogOpen(open);
+                                    if (!open) setConfirmText('');
+                                }}
+                            >
+                                <AlertDialogTrigger asChild>
+                                    <Button variant='destructive'>Delete Account</Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle className='flex items-center gap-2'>
+                                            <TriangleAlert className='h-5 w-5 text-destructive' />
+                                            Are you absolutely sure?
+                                        </AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            This action cannot be undone. Your account will be permanently deleted and
+                                            all event-related data will be anonymized.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <div className='py-2'>
+                                        <Label htmlFor='confirm-delete'>
+                                            Type <span className='font-mono font-bold'>DELETE</span> to confirm
+                                        </Label>
+                                        <Input
+                                            id='confirm-delete'
+                                            value={confirmText}
+                                            onChange={(e) => setConfirmText(e.target.value)}
+                                            placeholder='DELETE'
+                                            className='mt-2'
+                                            autoComplete='off'
+                                        />
+                                    </div>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction
+                                            disabled={!isConfirmed || isPending}
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                handleConfirmDelete();
+                                            }}
+                                            className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
+                                        >
+                                            {isPending ? (
+                                                <>
+                                                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                                                    Deleting...
+                                                </>
+                                            ) : (
+                                                'Delete my account'
+                                            )}
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        ) : (
+                            <p className='text-muted-foreground'>Please sign in to manage your account.</p>
+                        )}
                     </CardContent>
                 </Card>
             </div>
