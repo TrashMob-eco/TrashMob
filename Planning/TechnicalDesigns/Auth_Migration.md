@@ -484,7 +484,15 @@ Minor account upgraded from limited to full access
 
 ### Phase 0 Lessons
 
-- *(To be documented during implementation)*
+1. **App registrations must be added to the user flow.** After creating app registrations and a sign-up/sign-in user flow in the Entra External ID portal, you must explicitly add each app registration to the user flow. Without this step, the sign-in page will only show email/password sign-in — no sign-up option and no social identity providers will appear.
+
+2. **Tenant naming must avoid existing B2C namespaces.** Our B2C tenants use `trashmobdev` and `trashmob` domain prefixes. Since these are already claimed, the Entra External ID tenants need different names. We used `TrashMobEcoDev` (domain: `trashmobecodev.ciamlogin.com`) for development and `TrashMobEco` (domain: `trashmobeco.ciamlogin.com`) for production.
+
+3. **User flow attribute collection requires explicit configuration.** Custom attributes (e.g., `givenName`, `surname`, `dateOfBirth`) must be explicitly added to the user flow's attribute collection step in the portal. If attributes are not added, the sign-up form will only collect email and password — users won't be prompted for name or birthdate.
+
+4. **Config section is `AzureAdEntra`, not `AzureAd`.** The actual implementation uses a dedicated `AzureAdEntra` config section (see `appsettings.json`) to allow both B2C and Entra configs to coexist during the feature-flag transition period (`UseEntraExternalId`).
+
+5. **Built-in branding logo sizing.** The banner logo on the Entra External ID sign-in page displays at approximately 260x36 pixels. Standard logos may be hard to read at this size — consider creating a simplified or higher-contrast version specifically for the sign-in page.
 
 ### Known Limitations
 
@@ -525,7 +533,7 @@ Minor account upgraded from limited to full access
 | Instance | `https://{b2c}.b2clogin.com/` | `https://{tenant}.ciamlogin.com/` |
 | Domain | `{tenant}.onmicrosoft.com` | `{tenant}.onmicrosoft.com` |
 | Client ID | API app registration client ID | New API app registration client ID |
-| Config section | `AzureAdB2C` | `AzureAd` (or custom) |
+| Config section | `AzureAdB2C` | `AzureAdEntra` |
 
 ### Files That Need to Change
 
@@ -533,7 +541,7 @@ Minor account upgraded from limited to full access
 |------|-------------|
 | `TrashMob/appsettings.json` | Authority URL, client IDs, domain |
 | `TrashMob/appsettings.Development.json` | Dev tenant configuration |
-| `TrashMob/Program.cs` | Config section name (`AzureAdB2C` → `AzureAd`) |
+| `TrashMob/Program.cs` | Config section name (`AzureAdB2C` → `AzureAdEntra`) |
 | `TrashMob/Controllers/ConfigController.cs` | Config response format, remove policy references |
 | `TrashMob/client-app/src/store/AuthStore.tsx` | Authority format, remove policies, update fallback |
 | `TrashMobMobile/Authentication/AuthConstants.cs` | Tenant domain, authority format, client IDs |
@@ -608,4 +616,4 @@ Built-in branding (logo, colors, background image) is **portal-only**:
 
 **Last Updated:** February 9, 2026
 **Status:** Living document — updated as migration progresses
-**Next Update:** After Phase 0 completion
+**Next Update:** After Phase 1 implementation
