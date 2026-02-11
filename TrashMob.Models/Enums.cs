@@ -242,6 +242,11 @@ namespace TrashMob.Models
         /// Image associated with a partner/community photo gallery.
         /// </summary>
         PartnerPhoto = 8,
+
+        /// <summary>
+        /// User profile photo (uploaded or replaced from social IDP).
+        /// </summary>
+        UserProfilePhoto = 9,
     }
 
     /// <summary>
