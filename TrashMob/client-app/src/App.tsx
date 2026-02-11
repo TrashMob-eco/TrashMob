@@ -37,6 +37,7 @@ import { Board } from './pages/board/page';
 /** User */
 import MyDashboard from './pages/MyDashboard';
 import { LocationPreference } from './pages/locationpreference';
+import { MyProfile } from './pages/myprofile';
 import { DeleteMyData } from './pages/deletemydata';
 import Waivers from './pages/waivers/page';
 
@@ -569,6 +570,7 @@ const AppContent: FC = () => {
                             <Route path='/becomeapartner' element={<BecomeAPartnerPage />} />
                             <Route path='/inviteapartner' element={<InviteAPartnerPage />} />
                             <Route path='/locationpreference' element={<LocationPreference />} />
+                            <Route path='/myprofile' element={<MyProfile />} />
                             <Route path='/waivers' element={<Waivers />} />
                             <Route path='/achievements' element={<AchievementsPage />} />
                             <Route path='/litterreports/create' element={<CreateLitterReportPage />} />

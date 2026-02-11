@@ -11,7 +11,7 @@ import { CircleUserRound, IdCard, LogOut, MapPin, User, UserRoundX } from 'lucid
 import { Link } from 'react-router';
 import { cn } from '@/lib/utils';
 import UserData from '../Models/UserData';
-import { getApiConfig, getAuthProvider, getB2CPolicies, getMsalClientInstance } from '@/store/AuthStore';
+import { getApiConfig, getMsalClientInstance } from '@/store/AuthStore';
 import React from 'react';
 
 interface UserNavProps {
@@ -39,28 +39,6 @@ export const UserNav = (props: UserNavProps) => {
         };
 
         getMsalClientInstance().logout(logoutRequest);
-    }
-
-    function profileEdit(e: React.MouseEvent) {
-        e.preventDefault();
-
-        // TODO: Phase 2 — in-app profile edit via Graph API when using Entra External ID
-        if (getAuthProvider() === 'entra') {
-            console.warn('Profile edit via B2C policy not available in Entra mode. In-app edit coming in Phase 2.');
-            return;
-        }
-
-        const account = getMsalClientInstance().getAllAccounts()[0];
-        const policy = getB2CPolicies();
-        const scopes = getApiConfig();
-
-        const request = {
-            account,
-            authority: policy.authorities.profileEdit.authority,
-            scopes: scopes.b2cScopes,
-        };
-
-        getMsalClientInstance().acquireTokenRedirect(request);
     }
 
     return (
@@ -136,9 +114,11 @@ export const UserNav = (props: UserNavProps) => {
                             </div>
                         </HoverCardContent>
                         <DropdownMenuContent align='end'>
-                            <DropdownMenuItem onClick={profileEdit}>
-                                <User />
-                                <span>Update my profile</span>
+                            <DropdownMenuItem asChild>
+                                <Link to='/myprofile'>
+                                    <User />
+                                    <span>Update my profile</span>
+                                </Link>
                             </DropdownMenuItem>
                             {currentUser.isSiteAdmin ? (
                                 <DropdownMenuItem asChild>

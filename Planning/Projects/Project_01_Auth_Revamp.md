@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phase 0) |
+| **Status** | In Progress (Phase 2) |
 | **Priority** | Critical |
 | **Risk** | High |
 | **Size** | Large |
@@ -113,12 +113,12 @@ Custom CSS is **not available** — Entra External ID restricted custom CSS to t
 - [ ] Configure built-in branding (logo, colors, background)
 - [ ] Fill in `AzureAdEntra` config values in Key Vault (for deployed prod environment)
 
-### Phase 1 — Sign-Up/Sign-In + Profile Photos
-- [ ] Upgrade MSAL packages: `@azure/msal-browser` v2→v5 and `@azure/msal-react` v1→v5 (close Renovate PR #2036)
-- [ ] Configure MSAL on web (React) to point to new tenant
-- [ ] Update backend JWT validation (authority URL, audience)
-- [ ] Auto-populate `ProfilePhotoUrl` from social provider `picture` claim on sign-up
-- [ ] Display profile photos in event attendees, leaderboards
+### Phase 1 — Sign-Up/Sign-In + Profile Photos (Complete)
+- [x] Upgrade MSAL packages: `@azure/msal-browser` v2→v4 and `@azure/msal-react` v1→v3 (PR #2669, closed Renovate PR #2036). v5 requires React 19.
+- [x] Configure MSAL on web (React) to point to new tenant (done in Phase 0)
+- [x] Update backend JWT validation (authority URL, audience) (done in Phase 0)
+- [x] Auto-populate `ProfilePhotoUrl`, `GivenName`, `Surname` from social provider claims on login (PR #2670)
+- [x] Display profile photos in event attendees, leaderboards (PR #2672)
 - [ ] Document sign-up flow for Privo
 
 ### Phase 2 — In-App Profile Edit + Photo Upload
@@ -461,7 +461,7 @@ For each provider (Google, Microsoft, Apple, Facebook):
 
 ---
 
-**Last Updated:** February 9, 2026
+**Last Updated:** February 10, 2026
 **Owner:** Security Engineer + Product Lead
-**Status:** In Progress (Phase 0 — code complete, portal setup remaining)
-**Next Review:** After Phase 0 tenant setup
+**Status:** In Progress (Phase 2 — in-app profile edit + account deletion)
+**Next Review:** After Phase 2 implementation
