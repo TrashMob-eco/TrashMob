@@ -98,17 +98,17 @@ Custom CSS is **not available** — Entra External ID restricted custom CSS to t
 
 #### Remaining (Manual — Azure Portal, Dev)
 - [ ] Add custom attributes (givenName, surname, dateOfBirth) to user flow attribute collection — currently sign-up only collects email/password
-- [ ] Configure social identity provider: Microsoft account
+- [x] Configure social identity provider: Microsoft account — **not needed**; Entra External ID supports Microsoft accounts natively (no longer an external IDP like in B2C)
 - [ ] Configure social identity provider: Apple (requires Apple Developer setup)
-- [ ] Improve banner logo for sign-in page — current logo is hard to read at the small display size (260x36px); consider a simplified/higher-contrast version
-- [ ] Request custom CSS exception from Microsoft (given Privo sponsorship)
-- [ ] Fill in `AzureAdEntra` config values in Key Vault (for deployed dev environment)
+- [x] Improve banner logo for sign-in page — created 245x36 version without tagline for better readability
+- [x] Custom CSS branding for sign-in page (`Deploy/entra-signin-branding.css`) — TrashMob teal buttons/links, rounded inputs, light gray background
+- [x] Fill in `AzureAdEntra` config values for deployed dev environment — added to `Deploy/containerApp.bicep` as environment variables (same pattern as B2C; not secrets)
 - [ ] Document tenant setup process (Privo documentation deliverable)
 
 #### Remaining (Manual — Azure Portal, Prod)
 - [ ] Create Entra External ID external tenant (prod: `TrashMobEco`, domain `trashmobeco.ciamlogin.com`)
 - [ ] Register app registrations (web, mobile, backend) for prod
-- [ ] Configure social identity providers: Google, Facebook, Microsoft, Apple
+- [ ] Configure social identity providers: Google, Facebook, Apple (Microsoft accounts work natively — no setup needed)
 - [ ] Create sign-up/sign-in user flow with custom attributes
 - [ ] Configure built-in branding (logo, colors, background)
 - [ ] Fill in `AzureAdEntra` config values in Key Vault (for deployed prod environment)

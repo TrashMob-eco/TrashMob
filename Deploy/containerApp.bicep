@@ -31,6 +31,17 @@ var b2cSignUpSignInPolicyId = 'B2C_1A_TM_SIGNUP_SIGNIN'
 // Frontend B2C settings (for MSAL in browser - different client IDs than backend)
 var b2cFrontendClientId = environment == 'dev' ? 'e46d67ba-fe46-40f4-b222-2f982b2bb112' : '0a1647a4-c758-4964-904f-a9b66958c071'
 
+// Azure AD Entra External ID configuration - these are public values, not secrets
+// Note: Microsoft accounts work natively in Entra External ID (no external IDP setup needed)
+var entraInstance = environment == 'dev' ? 'https://trashmobecodev.ciamlogin.com/' : 'https://trashmobeco.ciamlogin.com/'
+var entraDomain = environment == 'dev' ? 'TrashMobEcoDev.onmicrosoft.com' : 'TrashMobEco.onmicrosoft.com'
+var entraBackendClientId = environment == 'dev' ? '84df543d-6535-45f5-afab-4d38528b721a' : ''
+var entraTenantId = environment == 'dev' ? '8577fa31-4b86-4e4b-8b02-93fba708cb19' : ''
+var entraFrontendClientId = environment == 'dev' ? '1e6ae74d-0160-4a01-9d75-04048e03b17e' : ''
+
+// Feature flag: use Entra External ID instead of B2C (enable for dev, not yet for prod)
+var useEntraExternalId = environment == 'dev' ? 'true' : 'false'
+
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' existing = {
   name: containerRegistryName
 }
@@ -138,6 +149,33 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
             {
               name: 'AzureAdB2C__FrontendClientId'
               value: b2cFrontendClientId
+            }
+            // Auth provider feature flag
+            {
+              name: 'UseEntraExternalId'
+              value: useEntraExternalId
+            }
+            // Azure AD Entra External ID backend settings (for JWT validation)
+            {
+              name: 'AzureAdEntra__Instance'
+              value: entraInstance
+            }
+            {
+              name: 'AzureAdEntra__ClientId'
+              value: entraBackendClientId
+            }
+            {
+              name: 'AzureAdEntra__Domain'
+              value: entraDomain
+            }
+            {
+              name: 'AzureAdEntra__TenantId'
+              value: entraTenantId
+            }
+            // Azure AD Entra External ID frontend settings (for MSAL in browser)
+            {
+              name: 'AzureAdEntra__FrontendClientId'
+              value: entraFrontendClientId
             }
             // Strapi CMS integration
             {
