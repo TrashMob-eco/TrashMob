@@ -226,6 +226,9 @@ dotnet_diagnostic.CA1822.severity = suggestion
 # CA1848: Use LoggerMessage delegates
 dotnet_diagnostic.CA1848.severity = silent
 
+# CA1873: Avoid expensive logging argument evaluation (.NET 10 rule, same pattern as CA1848)
+dotnet_diagnostic.CA1873.severity = silent
+
 # IDE0058: Expression value is never used
 dotnet_diagnostic.IDE0058.severity = silent
 
