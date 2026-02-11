@@ -15,8 +15,6 @@
     <Grid>
         <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
 
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
-
             <tabs:TabHostView Padding="10" 
                               Orientation="Horizontal" 
                               TabType="Fixed"

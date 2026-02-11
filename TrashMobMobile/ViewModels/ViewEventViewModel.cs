@@ -185,7 +185,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             EnableStopTrackEventRoute = false;
 
             WhatToExpect =
-                "What to Expect: \n\tCleanup supplies provided\n\tMeet fellow community members\n\tContribute to a cleaner environment.";
+                "What to Expect:\n\u2022 Cleanup supplies provided\n\u2022 Meet fellow community members\n\u2022 Contribute to a cleaner environment";
 
             await SetRegistrationOptions();
             await GetAttendeeCount();
@@ -438,6 +438,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             if (!await waiverManager.HasUserSignedTrashMobWaiverAsync())
             {
                 await Shell.Current.GoToAsync($"{nameof(WaiverPage)}");
+                return;
             }
 
             var eventAttendee = new EventAttendee

@@ -9,8 +9,6 @@
     <ScrollView>
         <Grid>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
-                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
-
                 <Grid RowDefinitions="Auto, Auto">
                     <Label Grid.Row="0"
                            Text="Available Event Partners"

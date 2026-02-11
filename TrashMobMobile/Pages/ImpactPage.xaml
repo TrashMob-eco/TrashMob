@@ -12,8 +12,7 @@
 
             <!-- Your Impact -->
             <Label Text="Your Impact"
-                   FontFamily="LexendSemibold"
-                   FontSize="Medium"
+                   Style="{StaticResource SectionHeader}"
                    Margin="5,10,5,0" />
 
             <Border Style="{x:StaticResource RoundBorder}" Margin="5,5">
@@ -74,8 +73,7 @@
 
             <!-- Community Impact -->
             <Label Text="Community Impact"
-                   FontFamily="LexendSemibold"
-                   FontSize="Medium"
+                   Style="{StaticResource SectionHeader}"
                    Margin="5,15,5,0" />
 
             <Border Style="{x:StaticResource RoundBorder}" Margin="5,5">
@@ -149,8 +147,7 @@
 
             <!-- Explore More -->
             <Label Text="Explore More"
-                   FontFamily="LexendSemibold"
-                   FontSize="Medium"
+                   Style="{StaticResource SectionHeader}"
                    Margin="5,15,5,5" />
 
             <VerticalStackLayout Spacing="8" Margin="5,0,5,20">

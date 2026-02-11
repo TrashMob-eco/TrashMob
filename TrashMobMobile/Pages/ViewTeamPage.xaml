@@ -30,20 +30,28 @@
             <Button Text="{Binding JoinButtonText}"
                     Command="{Binding JoinTeamCommand}"
                     IsVisible="{Binding CanJoin}"
-                    Style="{StaticResource PrimaryButton}"
+                    Style="{StaticResource PrimarySmallButton}"
                     Margin="10,5" />
 
-            <Label Text="You are a member of this team"
-                   IsVisible="{Binding IsUserMember}"
-                   FontSize="Small"
-                   FontAttributes="Bold"
-                   Margin="10,5"
-                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+            <HorizontalStackLayout IsVisible="{Binding IsUserMember}" Spacing="6" Margin="10,5">
+                <Image WidthRequest="18" HeightRequest="18">
+                    <Image.Source>
+                        <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                         Glyph="{StaticResource IconCheckCircle}"
+                                         Size="18"
+                                         Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                    </Image.Source>
+                </Image>
+                <Label Text="You are a member of this team"
+                       FontSize="Small"
+                       FontAttributes="Bold"
+                       VerticalOptions="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+            </HorizontalStackLayout>
 
             <!-- Members Section -->
             <Label Text="Members"
-                   FontFamily="LexendSemibold"
-                   FontSize="Medium"
+                   Style="{StaticResource SectionHeader}"
                    Margin="10,15,10,5" />
 
             <Label Text="No members found"
@@ -82,7 +90,8 @@
                 <Label Grid.Column="0"
                        Text="Upcoming Events"
                        FontFamily="LexendSemibold"
-                       FontSize="Medium" />
+                       FontSize="Medium"
+                       TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
                 <Button Grid.Column="1"
                         Text="Link Event"
                         Command="{Binding LinkEventCommand}"

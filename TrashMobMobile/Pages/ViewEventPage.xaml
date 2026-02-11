@@ -13,24 +13,25 @@
     <Grid>
         <VerticalStackLayout Style="{StaticResource OuterVerticalStack}" Margin="10">
             <Label
-                    Text="{Binding EventViewModel.Name}" Style="{StaticResource Headline}"
+                    Text="{Binding EventViewModel.Name}"
+                    FontFamily="LexendSemibold"
+                    FontSize="Title"
+                    HorizontalOptions="Start"
                     VerticalOptions="Center"
                     Margin="4" />
 
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
-
-            <tabs:TabHostView Padding="10" 
-                              Orientation="Horizontal" 
+            <tabs:TabHostView Padding="0"
+                              Orientation="Horizontal"
                               TabType="Fixed"
-                              SelectedIndex="{Binding Source={x:Reference Switcher}, 
+                              SelectedIndex="{Binding Source={x:Reference Switcher},
                                           Path=SelectedIndex, Mode=TwoWay}">
                 <tabs:BottomTabItem Label="Details"  SelectedTabColor="{StaticResource Primary}" />
 
                 <tabs:BottomTabItem Label="Partners" SelectedTabColor="{StaticResource Primary}" />
 
-                <tabs:BottomTabItem Label="Attendees" SelectedTabColor="{StaticResource Primary}" />
+                <tabs:BottomTabItem Label="People" SelectedTabColor="{StaticResource Primary}" />
 
-                <tabs:BottomTabItem Label="Litter Reports" SelectedTabColor="{StaticResource Primary}" />
+                <tabs:BottomTabItem Label="Litter" SelectedTabColor="{StaticResource Primary}" />
 
                 <tabs:BottomTabItem Label="Photos" SelectedTabColor="{StaticResource Primary}" />
 

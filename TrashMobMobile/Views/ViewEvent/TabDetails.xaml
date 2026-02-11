@@ -5,85 +5,166 @@
              xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
              xmlns:controls="clr-namespace:TrashMobMobile.Controls"
              x:Class="TrashMobMobile.Views.ViewEvent.TabDetails">
-    <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" RowSpacing="3"
-                      ColumnDefinitions="*, 2*, *">
+    <ScrollView>
+        <VerticalStackLayout Spacing="12" Margin="0">
 
-        <controls:CustomMap x:Name="eventLocationMap" HeightRequest="200"
-                            HandlerProperties.DisconnectPolicy="Manual"
-                              ItemsSource="{Binding Addresses}" Grid.Row="0" Grid.ColumnSpan="3">
-            <maps:Map.ItemTemplate>
-                <DataTemplate x:DataType="viewModels:AddressViewModel">
-                    <controls:CustomPin Location="{Binding Location}"
-                                          Address="{Binding StreetAddress}"
-                                          ImageSource="{Binding IconFile}"                                          
-                                          Label="{Binding AddressType}" />
-                </DataTemplate>
-            </maps:Map.ItemTemplate>
-        </controls:CustomMap>
+            <!-- Map -->
+            <Border StrokeShape="RoundRectangle 10"
+                    StrokeThickness="0"
+                    Padding="0"
+                    Margin="5,0">
+                <controls:CustomMap x:Name="eventLocationMap" HeightRequest="200"
+                                    HandlerProperties.DisconnectPolicy="Manual"
+                                    ItemsSource="{Binding Addresses}">
+                    <maps:Map.ItemTemplate>
+                        <DataTemplate x:DataType="viewModels:AddressViewModel">
+                            <controls:CustomPin Location="{Binding Location}"
+                                                Address="{Binding StreetAddress}"
+                                                ImageSource="{Binding IconFile}"
+                                                Label="{Binding AddressType}" />
+                        </DataTemplate>
+                    </maps:Map.ItemTemplate>
+                </controls:CustomMap>
+            </Border>
 
-        <Label Grid.Row="1" Grid.Column="0" Text="{Binding EventViewModel.DisplayDate}"
-                           FontAttributes="Bold" Grid.ColumnSpan="2" />
-        <Label Grid.Row="1" Grid.Column="3" Text="{Binding EventViewModel.DisplayTime}" />
-        <Label Grid.Row="2" Grid.Column="0" Text="{Binding SelectedEventType}" Style="{StaticResource LongText}" Margin="20, 0, 0, 0"
-                           Grid.ColumnSpan="2" />
-        <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding DisplayDuration}" Style="{StaticResource LongText}" Margin="20, 0, 0, 0" />
-        <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
-                           Text="{Binding EventViewModel.Address.DisplayAddress }" Style="{StaticResource LongText}" Margin="20, 0, 0, 0" />
-        <Label Grid.Row="6" Grid.Column="0" Text="About this event" FontAttributes="Bold"
-                           Grid.ColumnSpan="2" />
-        <Label Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding EventViewModel.Description}" Style="{StaticResource LongText}" Margin="20, 0, 0, 0"
-                           FontSize="Micro" />
-        <Label Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding WhatToExpect}" Style="{StaticResource LongText}" Margin="20, 0, 0, 0"
-                           FontSize="Micro" />
-        <Label Grid.Row="9" Grid.Column="0" Text="Attendees" />
-        <Label Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding AttendeeCount}" Style="{StaticResource LongText}" Margin="20, 0, 0, 0" />
+            <!-- Event Info Card -->
+            <Border Style="{x:StaticResource RoundBorder}">
+                <VerticalStackLayout Spacing="10">
 
-        <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="*, *, *, *"
-                      MaximumWidthRequest="400" Grid.Row="11" Grid.ColumnSpan="2">
-            <Button Margin="5"
-                            Grid.Row="0" 
-                            Grid.Column="0" 
-                            Text="Register" 
-                            Command="{Binding RegisterCommand}"
-                            IsVisible="{Binding EnableRegister}"
-                            Style="{StaticResource PrimarySmallButton}" />
-            <Button Margin="5"
-                            Grid.Row="0" 
-                            Grid.Column="0" 
-                            Text="Unregister" 
-                            Command="{Binding UnregisterCommand}"
-                            IsVisible="{Binding EnableUnregister}"
-                            Style="{StaticResource PrimarySmallButton}" />
-            <Button Margin="5"
-                            Grid.Row="0" 
-                            Grid.Column="0" 
-                            Text="Edit Event" 
-                            Command="{Binding EditEventCommand}"
-                            IsVisible="{Binding EnableEditEvent}"
-                            Style="{StaticResource PrimarySmallButton}" />
-            <Button Margin="5"
-                            Grid.Row="0" 
-                            Grid.Column="1" 
-                            Command="{Binding ViewEventSummaryCommand}" 
-                            Text="View Event Summary"
-                            IsVisible="{Binding EnableViewEventSummary}"
-                            Style="{StaticResource SecondarySmallButton}" />
-            <!--<Button Margin="5"
-                            Grid.Row="0"
-                            Grid.Column="2"
-                            Command="{Binding RealTimeLocationTrackerCommand}"
-                            IsVisible="{Binding EnableStartTrackEventRoute}"
-                            IsEnabled="{Binding EnableStartTrackEventRoute}"
-                            Text="Start Tracking"
-                            Style="{StaticResource SecondarySmallButton}" />
-            <Button Margin="5"
-                            Grid.Row="0"
-                            Grid.Column="2"
-                            Command="{Binding RealTimeLocationTrackerCancelCommand}"
-                            IsEnabled="{Binding EnableStopTrackEventRoute}"
-                            IsVisible="{Binding EnableStopTrackEventRoute}"
-                            Text="Stop Tracking"
-                            Style="{StaticResource SecondarySmallButton}" />-->
-        </Grid>
-    </Grid>
+                    <!-- Date & Time -->
+                    <HorizontalStackLayout Spacing="10">
+                        <Image MaximumWidthRequest="20" MaximumHeightRequest="20" VerticalOptions="Start">
+                            <Image.Source>
+                                <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                 Glyph="{StaticResource IconCalendarCheck}"
+                                                 Size="20"
+                                                 Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </Image.Source>
+                        </Image>
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="{Binding EventViewModel.DisplayDate}"
+                                   FontFamily="LexendSemibold"
+                                   FontSize="Small" />
+                            <Label Text="{Binding EventViewModel.DisplayTime}"
+                                   FontSize="Micro"
+                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+
+                    <!-- Duration -->
+                    <HorizontalStackLayout Spacing="10">
+                        <Image MaximumWidthRequest="20" MaximumHeightRequest="20" VerticalOptions="Center">
+                            <Image.Source>
+                                <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                 Glyph="{StaticResource IconTimerOutline}"
+                                                 Size="20"
+                                                 Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </Image.Source>
+                        </Image>
+                        <Label Text="{Binding DisplayDuration}"
+                               FontSize="Small"
+                               VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                    <!-- Address -->
+                    <HorizontalStackLayout Spacing="10">
+                        <Image MaximumWidthRequest="20" MaximumHeightRequest="20" VerticalOptions="Start">
+                            <Image.Source>
+                                <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                 Glyph="{StaticResource IconMapMarkerOutline}"
+                                                 Size="20"
+                                                 Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </Image.Source>
+                        </Image>
+                        <Label Text="{Binding EventViewModel.Address.DisplayAddress}"
+                               FontSize="Small"
+                               VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                    <!-- Event Type -->
+                    <HorizontalStackLayout Spacing="10">
+                        <Image MaximumWidthRequest="20" MaximumHeightRequest="20" VerticalOptions="Center">
+                            <Image.Source>
+                                <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                 Glyph="{StaticResource IconTag}"
+                                                 Size="20"
+                                                 Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </Image.Source>
+                        </Image>
+                        <Label Text="{Binding SelectedEventType}"
+                               FontSize="Small"
+                               VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- About This Event Card -->
+            <Border Style="{x:StaticResource RoundBorder}">
+                <VerticalStackLayout Spacing="8">
+                    <HorizontalStackLayout Spacing="8">
+                        <Image MaximumWidthRequest="20" MaximumHeightRequest="20" VerticalOptions="Center">
+                            <Image.Source>
+                                <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                 Glyph="{StaticResource IconInformationOutline}"
+                                                 Size="20"
+                                                 Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </Image.Source>
+                        </Image>
+                        <Label Text="About this event"
+                               FontFamily="LexendSemibold"
+                               FontSize="Small" />
+                    </HorizontalStackLayout>
+                    <Label Text="{Binding EventViewModel.Description}"
+                           FontSize="Micro"
+                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                    <Label Text="{Binding WhatToExpect}"
+                           FontSize="Micro"
+                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Attendees -->
+            <HorizontalStackLayout Spacing="8" Margin="5,4">
+                <Image MaximumWidthRequest="20" MaximumHeightRequest="20" VerticalOptions="Center">
+                    <Image.Source>
+                        <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                         Glyph="{StaticResource IconAccount}"
+                                         Size="20"
+                                         Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                    </Image.Source>
+                </Image>
+                <Label Text="{Binding AttendeeCount}"
+                       FontSize="Small"
+                       VerticalOptions="Center" />
+            </HorizontalStackLayout>
+
+            <!-- Primary Actions -->
+            <Button Text="Register"
+                    Command="{Binding RegisterCommand}"
+                    IsVisible="{Binding EnableRegister}"
+                    HorizontalOptions="Fill"
+                    Margin="5,4" />
+            <Button Text="Unregister"
+                    Command="{Binding UnregisterCommand}"
+                    IsVisible="{Binding EnableUnregister}"
+                    Style="{StaticResource SecondarySmallButton}"
+                    HorizontalOptions="Fill"
+                    Margin="5,4" />
+            <Button Text="Edit Event"
+                    Command="{Binding EditEventCommand}"
+                    IsVisible="{Binding EnableEditEvent}"
+                    Style="{StaticResource SecondarySmallButton}"
+                    HorizontalOptions="Fill"
+                    Margin="5,4" />
+
+            <!-- Secondary Actions -->
+            <Button Text="View Event Summary"
+                    Command="{Binding ViewEventSummaryCommand}"
+                    IsVisible="{Binding EnableViewEventSummary}"
+                    Style="{StaticResource SecondarySmallButton}"
+                    Margin="5,4" />
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentView>
