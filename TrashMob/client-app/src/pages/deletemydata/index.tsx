@@ -75,7 +75,13 @@ export const DeleteMyData = () => {
                     </CardHeader>
                     <CardContent>
                         {isUserLoaded ? (
-                            <AlertDialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) setConfirmText(''); }}>
+                            <AlertDialog
+                                open={dialogOpen}
+                                onOpenChange={(open) => {
+                                    setDialogOpen(open);
+                                    if (!open) setConfirmText('');
+                                }}
+                            >
                                 <AlertDialogTrigger asChild>
                                     <Button variant='destructive'>Delete Account</Button>
                                 </AlertDialogTrigger>
