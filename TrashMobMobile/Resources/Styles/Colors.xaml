@@ -19,7 +19,7 @@
     <Color x:Key="Destructive">#EF4444</Color>
 
     <!--Dark mode-->
-    <Color x:Key="PrimaryDark">#5EBD00</Color>
+    <Color x:Key="PrimaryDark">#2E9E8C</Color>
     <Color x:Key="PrimaryDarkText">White</Color>
     <Color x:Key="PrimaryDarkReverseText">#171717</Color>
     <Color x:Key="ContentPrimaryDark">#FAFAFA</Color>
@@ -81,4 +81,10 @@
     <Color x:Key="DarkTextBase">White</Color>
 
     <Color x:Key="GlobalBorderBase">#E4E5DE</Color>
+
+    <!-- Pressed state colors -->
+    <Color x:Key="PrimaryPressed">#004A3D</Color>
+    <Color x:Key="PrimaryDarkPressed">#237A6D</Color>
+    <Color x:Key="SecondaryPressed">#E8E8E9</Color>
+    <Color x:Key="SecondaryDarkPressed">#333333</Color>
 </ResourceDictionary>
