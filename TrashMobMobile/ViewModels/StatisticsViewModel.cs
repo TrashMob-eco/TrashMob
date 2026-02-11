@@ -21,4 +21,7 @@ public partial class StatisticsViewModel : ObservableObject
 
     [ObservableProperty]
     private int totalLitterReportsSubmitted;
+
+    [ObservableProperty]
+    private int totalWeightInPounds;
 }

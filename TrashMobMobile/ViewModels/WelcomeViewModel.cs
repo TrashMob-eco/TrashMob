@@ -25,6 +25,7 @@ public partial class WelcomeViewModel(IAuthService authService, IStatsRestServic
             StatisticsViewModel.TotalHours = stats.TotalHours;
             StatisticsViewModel.TotalLitterReportsSubmitted = stats.TotalLitterReportsSubmitted;
             StatisticsViewModel.TotalLitterReportsClosed = stats.TotalLitterReportsClosed;
+            StatisticsViewModel.TotalWeightInPounds = (int)stats.TotalWeightInPounds;
         }, "An error occurred while loading this page. Please try again.");
     }
 
