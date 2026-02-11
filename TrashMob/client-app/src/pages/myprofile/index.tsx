@@ -1,10 +1,10 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router';
-import { FormEvent, useCallback, useEffect, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { CircleUserRound, Loader2 } from 'lucide-react';
+import { Camera, CircleUserRound, Loader2 } from 'lucide-react';
 
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,7 +13,7 @@ import { EnhancedFormLabel as FormLabel } from '@/components/ui/custom/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { GetUserById, UpdateUser, VerifyUniqueUserName } from '@/services/users';
+import { GetUserById, UpdateUser, UploadProfilePhoto, VerifyUniqueUserName } from '@/services/users';
 import { useLogin } from '@/hooks/useLogin';
 import { useToast } from '@/hooks/use-toast';
 import UserData from '@/components/Models/UserData';
@@ -36,6 +36,58 @@ export const MyProfile = () => {
     const { toast } = useToast();
     const { currentUser, handleUserUpdated } = useLogin();
     const [userNameError, setUserNameError] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const uploadPhoto = useMutation({
+        mutationKey: UploadProfilePhoto().key,
+        mutationFn: UploadProfilePhoto().service,
+        onSuccess: () => {
+            toast({
+                variant: 'primary',
+                title: 'Profile photo updated!',
+            });
+            handleUserUpdated();
+        },
+        onError: () => {
+            toast({
+                variant: 'destructive',
+                title: 'Failed to upload photo. Please try again.',
+            });
+        },
+    });
+
+    const handleFileChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+
+            const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+            if (!validTypes.includes(file.type)) {
+                toast({
+                    variant: 'destructive',
+                    title: 'Invalid file type. Please upload a JPEG, PNG, or WebP image.',
+                });
+                return;
+            }
+
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            if (file.size > maxSize) {
+                toast({
+                    variant: 'destructive',
+                    title: 'File too large. Maximum size is 5MB.',
+                });
+                return;
+            }
+
+            uploadPhoto.mutate(file);
+
+            // Reset input so the same file can be re-selected
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+        },
+        [uploadPhoto, toast],
+    );
 
     const { data: user } = useQuery({
         queryKey: GetUserById({ userId: currentUser.id }).key,
@@ -151,22 +203,58 @@ export const MyProfile = () => {
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-2'>
                             <CardContent className='space-y-6'>
-                                {/* Profile photo display */}
+                                {/* Profile photo */}
                                 <div className='flex items-center gap-4'>
-                                    {user.profilePhotoUrl ? (
-                                        <img
-                                            src={user.profilePhotoUrl}
-                                            alt={user.userName}
-                                            className='h-16 w-16 rounded-full object-cover'
-                                            referrerPolicy='no-referrer'
-                                        />
-                                    ) : (
-                                        <CircleUserRound className='h-16 w-16 text-muted-foreground' />
-                                    )}
+                                    <input
+                                        ref={fileInputRef}
+                                        type='file'
+                                        accept='image/jpeg,image/png,image/webp'
+                                        className='hidden'
+                                        onChange={handleFileChange}
+                                    />
+                                    <button
+                                        type='button'
+                                        className='relative group cursor-pointer'
+                                        onClick={() => fileInputRef.current?.click()}
+                                        disabled={uploadPhoto.isPending}
+                                    >
+                                        {user.profilePhotoUrl ? (
+                                            <img
+                                                src={user.profilePhotoUrl}
+                                                alt={user.userName}
+                                                className='h-16 w-16 rounded-full object-cover'
+                                                referrerPolicy='no-referrer'
+                                            />
+                                        ) : (
+                                            <CircleUserRound className='h-16 w-16 text-muted-foreground' />
+                                        )}
+                                        <div className='absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity'>
+                                            {uploadPhoto.isPending ? (
+                                                <Loader2 className='h-6 w-6 text-white animate-spin' />
+                                            ) : (
+                                                <Camera className='h-6 w-6 text-white' />
+                                            )}
+                                        </div>
+                                    </button>
                                     <div>
-                                        <p className='text-sm text-muted-foreground'>
-                                            Profile photos are automatically imported from your social login provider
-                                            (Google, Facebook, etc.).
+                                        <Button
+                                            type='button'
+                                            variant='outline'
+                                            size='sm'
+                                            onClick={() => fileInputRef.current?.click()}
+                                            disabled={uploadPhoto.isPending}
+                                        >
+                                            {uploadPhoto.isPending ? (
+                                                <>
+                                                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                                                    Uploading...
+                                                </>
+                                            ) : (
+                                                'Change Photo'
+                                            )}
+                                        </Button>
+                                        <p className='text-sm text-muted-foreground mt-1'>
+                                            JPEG, PNG, or WebP. Max 5MB.
                                         </p>
                                     </div>
                                 </div>

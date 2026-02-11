@@ -18,7 +18,7 @@
     /// Controller for managing users, including retrieval, update, and deletion operations.
     /// </summary>
     [Route("api/users")]
-    public class UsersController(IUserManager userManager, IEventAttendeeMetricsManager metricsManager) : SecureController
+    public class UsersController(IUserManager userManager, IEventAttendeeMetricsManager metricsManager, IImageManager imageManager) : SecureController
     {
         /// <summary>
         /// Retrieves all users. Admin access required.
@@ -185,6 +185,45 @@
 
             var impactStats = await metricsManager.GetUserImpactStatsAsync(userId, cancellationToken).ConfigureAwait(false);
             return Ok(impactStats);
+        }
+
+        /// <summary>
+        /// Uploads a profile photo for the current user.
+        /// </summary>
+        /// <param name="imageUpload">The image upload data.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>Updated user with new profile photo URL.</remarks>
+        [HttpPost("photo")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        public async Task<IActionResult> UploadProfilePhoto(
+            [FromForm] ImageUpload imageUpload,
+            CancellationToken cancellationToken)
+        {
+            var user = await userManager.GetUserByInternalIdAsync(UserId, cancellationToken).ConfigureAwait(false);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            // Delete existing profile photo if present
+            if (!string.IsNullOrEmpty(user.ProfilePhotoUrl))
+            {
+                await imageManager.DeleteImage(UserId, ImageTypeEnum.UserProfilePhoto);
+            }
+
+            // Upload new photo to blob storage
+            imageUpload.ParentId = UserId;
+            imageUpload.ImageType = ImageTypeEnum.UserProfilePhoto;
+            await imageManager.UploadImage(imageUpload);
+
+            // Get the reduced-size URL and update user
+            var imageUrl = await imageManager.GetImageUrlAsync(UserId, ImageTypeEnum.UserProfilePhoto, ImageSizeEnum.Reduced, cancellationToken);
+            user.ProfilePhotoUrl = imageUrl;
+
+            var updatedUser = await userManager.UpdateAsync(user, cancellationToken).ConfigureAwait(false);
+            TrackEvent(nameof(UploadProfilePhoto));
+            return Ok(updatedUser);
         }
 
         private bool ValidateUser(string userId)

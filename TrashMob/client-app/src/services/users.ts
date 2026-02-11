@@ -56,6 +56,23 @@ export const VerifyUniqueUserName = (params: VerifyUniqueUserName_Params) => ({
         }),
 });
 
+export type UploadProfilePhoto_Response = UserData;
+export const UploadProfilePhoto = () => ({
+    key: ['/users/photo', 'upload'],
+    service: async (file: File) => {
+        const formData = new FormData();
+        formData.append('formFile', file);
+        return ApiService('protected').fetchData<UploadProfilePhoto_Response>({
+            url: '/users/photo',
+            method: 'post',
+            data: formData,
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+    },
+});
+
 export type DeleteUserById_Params = { id: string };
 export type DeleteUserById_Response = UserData | null;
 export const DeleteUserById = () => ({
