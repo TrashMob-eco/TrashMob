@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phases 1+4 Complete) |
+| **Status** | In Progress (Phases 1-4 Complete) |
 | **Priority** | High |
 | **Risk** | Low |
 | **Size** | Medium |
@@ -78,17 +78,17 @@ Create a new public page at `/for-communities` that serves as the primary conver
 
 ### Phase 2 — Home Page Community Integration
 
-- ? **Add community CTA to hero section** — Second button alongside "Join us today": "Start a Community" or "For Communities" linking to `/for-communities`
-- ? **Featured Communities section** — Carousel or grid showing communities marked as featured (via admin `IsFeatured` flag) with logos, names, and key metrics, with "View All Communities" link. Section is hidden or shows a "Start the first community" CTA when no featured communities exist.
-- ? **Update stats section** — Conditionally add community count to the home page stats section once there are more than 3 active communities (avoids displaying an underwhelming number at launch)
-- ? **Community testimonial** — Brief quote from a community admin in the social proof area
+- ✅ **Add community CTA to hero section** — Second button alongside "Join us today": "Start a Community" or "For Communities" linking to `/for-communities`
+- ✅ **Featured Communities section** — Carousel or grid showing communities marked as featured (via admin `IsFeatured` flag) with logos, names, and key metrics, with "View All Communities" link. Section is hidden or shows a "Start the first community" CTA when no featured communities exist.
+- ✅ **Update stats section** — Conditionally add community count to the home page stats section once there are more than 3 active communities (avoids displaying an underwhelming number at launch)
+- ? **Community testimonial** — Brief quote from a community admin in the social proof area (deferred until communities are onboarded)
 
 ### Phase 3 — Navigation & Discovery Improvements
 
-- ? **Add "For Communities" to About dropdown** — Add as a link in the About dropdown menu (not a top-level nav item, not buried in Explore)
-- ? **Update Getting Started page** — Expand the "Explore Your Community" section with a stronger CTA to become a community (not just browse existing ones)
-- ? **Update Partnerships page** — Add a "Looking to start a community?" banner that distinguishes geographic community partners from service partners, linking to `/for-communities`
-- ? **Footer link** — Add "For Communities" to the site footer
+- ✅ **Add "For Communities" to About dropdown** — Add as a link in the About dropdown menu (not a top-level nav item, not buried in Explore)
+- ✅ **Update Getting Started page** — Expand the "Explore Your Community" section with a stronger CTA to become a community (not just browse existing ones)
+- ✅ **Update Partnerships page** — Add a "Looking to start a community?" banner that distinguishes geographic community partners from service partners, linking to `/for-communities`
+- ✅ **Footer link** — Add "For Communities" to the site footer
 
 ### Phase 4 — Backend & Integration
 
@@ -103,7 +103,7 @@ Create a new public page at `/for-communities` that serves as the primary conver
   - Total community volunteers
   - Geographic coverage summary
 - ✅ **Featured communities flag** — Add `IsFeatured` boolean to the Partner model (default `false`). Site admins can toggle this in the admin dashboard to control which communities appear on the landing page and home page. When no communities are featured, the pages show placeholder/aspirational content instead.
-- ? **AI Sales Agent integration** — When a partner request with type "Community" is created, optionally create a prospect in the AI Sales Agent pipeline (Project 40)
+- ? **AI Sales Agent integration** — When a partner request with type "Community" is created, optionally create a prospect in the AI Sales Agent pipeline (Project 40) (deferred)
 
 ---
 
@@ -318,6 +318,7 @@ Partner Type:
 The following GitHub issues are tracked as part of this project:
 
 - **PR #2652** — Phase 1+4: Add Community partner type, For Communities landing page, and enhanced partner form
+- **PR #2661** — Phases 2+3: Add community showcase to home page, navigation, and related pages
 
 ---
 
@@ -331,7 +332,7 @@ The following GitHub issues are tracked as part of this project:
 
 ---
 
-**Last Updated:** February 10, 2026
+**Last Updated:** February 11, 2026
 **Owner:** Product & Engineering Team
-**Status:** In Progress (Phases 1+4 Complete)
-**Next Review:** When ready to begin Phase 2 (Home Page Integration)
+**Status:** In Progress (Phases 1-4 Complete)
+**Next Review:** Remaining: Community testimonial (Phase 2, deferred), AI Sales Agent integration (Phase 4, deferred)
