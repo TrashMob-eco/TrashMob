@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phase 2) |
+| **Status** | In Progress (Phase 2 Complete, Phase 3 next) |
 | **Priority** | Critical |
 | **Risk** | High |
 | **Size** | Large |
@@ -121,13 +121,12 @@ Custom CSS is **not available** — Entra External ID restricted custom CSS to t
 - [x] Display profile photos in event attendees, leaderboards (PR #2672)
 - [ ] Document sign-up flow for Privo
 
-### Phase 2 — In-App Profile Edit + Photo Upload
-- [ ] Build in-app profile edit page (replaces broken B2C policy)
-- [ ] Update profile fields via Microsoft Graph API
-- [ ] Add profile photo upload to Azure Blob Storage
-- [ ] Photo display across web and mobile (avatars, attendee lists, etc.)
-- [ ] In-app account deletion (replaces B2C deregister policy)
-- [ ] Home location capture during sign-up or profile edit
+### Phase 2 — In-App Profile Edit + Photo Upload (Complete)
+- [x] Build in-app profile edit page (replaces broken B2C policy) (PR #2675)
+- [x] In-app account deletion with typed "DELETE" confirmation (replaces B2C deregister policy) (PR #2676)
+- [x] Add profile photo upload to Azure Blob Storage via IImageManager (PR #2678)
+- [x] Photo display across web (avatars, attendee lists, leaderboards — done in Phase 1)
+- [ ] Home location capture during sign-up or profile edit (deferred — existing Location Preferences page covers this)
 
 ### Phase 3 — Privo Age Verification (→ Project 23 Phase 1-2)
 - [ ] Build Custom Authentication Extension (Azure Function) for age gate
@@ -463,5 +462,5 @@ For each provider (Google, Microsoft, Apple, Facebook):
 
 **Last Updated:** February 10, 2026
 **Owner:** Security Engineer + Product Lead
-**Status:** In Progress (Phase 2 — in-app profile edit + account deletion)
-**Next Review:** After Phase 2 implementation
+**Status:** In Progress (Phase 2 Complete — Phase 3 next: Privo age verification)
+**Next Review:** After Phase 3 planning with Privo
