@@ -97,7 +97,11 @@ Custom CSS is **not available** — Entra External ID restricted custom CSS to t
 - [x] Test sign-in with `UseEntraExternalId: true` on dev — sign-in, sign-up, Google, and Facebook all working
 
 #### Remaining (Manual — Azure Portal, Dev)
-- [ ] Add custom attributes (givenName, surname, dateOfBirth) to user flow attribute collection — currently sign-up only collects email/password
+- [ ] Add custom attributes (givenName, surname, dateOfBirth) to user flow — requires 4 steps:
+  1. **Define custom attributes:** External Identities → Custom user attributes → create `extension_dateOfBirth` (givenName/surname are built-in)
+  2. **Add to user flow:** User flows → [SignUpSignIn] → User attributes → check givenName, surname, dateOfBirth
+  3. **Add to token claims:** App registrations → [TrashMob API Dev] → Token configuration → Add optional claim → Directory schema extension source → map custom attributes
+  4. **Enable mapped claims:** App registration → Manifest → set `"acceptMappedClaims": true`
 - [x] Configure social identity provider: Microsoft account — **not needed**; Entra External ID supports Microsoft accounts natively (no longer an external IDP like in B2C)
 - [ ] Configure social identity provider: Apple (requires Apple Developer setup)
 - [x] Improve banner logo for sign-in page — created 245x36 version without tagline for better readability
@@ -129,12 +133,44 @@ Custom CSS is **not available** — Entra External ID restricted custom CSS to t
 - [ ] Home location capture during sign-up or profile edit (deferred — existing Location Preferences page covers this)
 
 ### Phase 3 — Privo Age Verification (→ Project 23 Phase 1-2)
-- [ ] Build Custom Authentication Extension (Azure Function) for age gate
-- [ ] Integrate with Privo API on `OnAttributeCollectionSubmit` event
-- [ ] Under-13 block, 13-17 minor flow trigger, 18+ standard flow
+
+**Architecture: Hybrid Age Gate (Option C)**
+Two-layer age verification — in-app pre-screen for fast UX + server-side Custom Authentication Extension for defense-in-depth.
+
+#### Layer 1: In-App Pre-Screen (before Entra redirect)
+Age check logic is the same on both platforms — show DOB input, calculate age, block/flag/continue.
+
+**Web (React):**
+- [ ] Build DOB input component shown when user clicks "Sign Up" (before `loginRedirect()`)
+- [ ] Calculate age from DOB:
+  - **Under 13** → block immediately with friendly message ("You must be 13 or older to join TrashMob"), no PII collected
+  - **13-17** → store DOB in session/state, redirect to Entra sign-up with minor flag
+  - **18+** → redirect to standard Entra sign-up
+- [ ] Pass age context to Entra via MSAL `extraQueryParameters` or `state` parameter
+
+**Mobile (MAUI):**
+- [ ] Build DOB input page/modal shown before `AcquireTokenInteractive()` in `AuthService`
+- [ ] Same age calculation and block/flag/continue logic as web
+- [ ] Pass age context to Entra via MSAL `extraQueryParameters` or `B2CAuthority` state
+- [ ] Handle "blocked" state with a friendly in-app page (no navigation to Entra)
+
+#### Layer 2: Custom Authentication Extension (Azure Function, server-side enforcement)
+- [ ] Build Custom Authentication Extension (Azure Function) for `OnAttributeCollectionSubmit`
+- [ ] Re-verify DOB submitted in Entra sign-up form (defense-in-depth — can't bypass by skipping in-app check)
+- [ ] Under-13 → return `showBlockPage` action
+- [ ] 13-17 → return `modifyAttributeValues` to set `isMinor` flag, continue with registration
+- [ ] 18+ → return `continueWithDefaultBehavior`
+- [ ] Integrate with Privo API for age verification (13-17 triggers Privo flow)
+
+#### Post-Registration (13-17 minor flow)
 - [ ] Implement Privo VPC (Verifiable Parental Consent) webhook
 - [ ] Consent status tracking in database (ParentalConsent entity)
-- [ ] Pending account limitations for minors awaiting consent
+- [ ] Pending account limitations for minors awaiting consent (limited access until parent approves)
+- [ ] Parent notification workflow via Privo (email with consent link)
+- [ ] 7-day consent timeout → account disabled if no response
+
+#### Documentation
+- [ ] Document hybrid age gate architecture (sponsorship deliverable)
 - [ ] Document Custom Authentication Extension + Privo integration (sponsorship deliverable)
 
 ### Phase 4 — User Migration + Testing
@@ -439,11 +475,30 @@ For each provider (Google, Microsoft, Apple, Facebook):
    - Surname (required)
    - Display Name (optional — maps to UserName)
 6. **Custom attributes** (create if not present):
+   - Go to **External Identities** → **Custom user attributes** → **+ Add**
    - `dateOfBirth` (String) — collected during sign-up for age verification
 7. Click **Create**
 8. After creation, go to **Properties** → configure:
    - Token lifetime: 1 hour (access token), 24 hours (refresh token)
    - Session behavior: match current B2C settings
+
+### Step-by-Step: Token Claims Configuration
+
+**Important:** Collecting attributes during sign-up is not enough — they must also be added to token claims so the backend JWT contains them.
+
+1. Go to **App registrations** → select **TrashMob API Dev** (backend app)
+2. Go to **Token configuration** → **+ Add optional claim**
+3. Select **ID token** and **Access token** for each:
+   - `given_name` (built-in)
+   - `family_name` (built-in)
+   - `email` (built-in)
+4. For custom attributes (e.g., `dateOfBirth`):
+   - **+ Add optional claim** → choose **Directory schema extension** as source
+   - Select the `extension_dateOfBirth` attribute
+5. Go to **Manifest** and verify:
+   - `"acceptMappedClaims": true`
+6. Repeat for the **Web SPA** and **Mobile** app registrations if they also need these claims
+7. **Test:** Sign in and decode the JWT at [jwt.ms](https://jwt.ms) to verify claims are present
 
 ### Step-by-Step: Branding
 

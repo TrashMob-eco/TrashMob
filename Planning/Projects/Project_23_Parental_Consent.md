@@ -52,11 +52,20 @@ This combined approach minimizes risk by building Privo integration directly int
 ## Scope
 
 ### Phase 1 — Age Verification (→ Project 1, Phase 3)
-- [ ] Build Custom Authentication Extension (Azure Function) for age gate
-- [ ] Integrate with Privo API on `OnAttributeCollectionSubmit` event
-- [ ] Under-13 block with explanation
-- [ ] 13-17 minor flow trigger
-- [ ] 18+ standard flow (no Privo interaction)
+
+**Architecture: Hybrid Age Gate (two-layer verification)**
+
+#### Layer 1: In-App Pre-Screen (Web + Mobile, before Entra redirect)
+- [ ] **Web (React):** DOB input component shown when user clicks "Sign Up" — before `loginRedirect()`
+- [ ] **Mobile (MAUI):** DOB input page/modal shown before `AcquireTokenInteractive()` in `AuthService`
+- [ ] Under-13 blocked immediately with friendly message (COPPA: no PII collected from children)
+- [ ] 13-17 flagged as minor, DOB passed to Entra sign-up via MSAL `extraQueryParameters` or `state`
+- [ ] 18+ proceeds to standard Entra sign-up
+
+#### Layer 2: Custom Authentication Extension (Azure Function, server-side)
+- [ ] `OnAttributeCollectionSubmit` re-verifies DOB (defense-in-depth — can't be bypassed)
+- [ ] Integrates with Privo API for age verification
+- [ ] Under-13 → `showBlockPage`, 13-17 → set `isMinor` flag, 18+ → continue
 - [ ] Document Custom Authentication Extension setup (sponsorship deliverable)
 
 ### Phase 2 — Parental Consent (→ Project 1, Phase 3)
@@ -140,9 +149,13 @@ This combined approach minimizes risk by building Privo integration directly int
 
 ### Integration Architecture
 
-The Privo integration uses **Entra External ID Custom Authentication Extensions** — Azure Functions triggered during the sign-up user flow. This replaces the B2C IEF custom policy approach and is the first-ever implementation of Entra External ID + Privo.
+The Privo integration uses a **Hybrid Age Gate (Option C)** — a two-layer approach combining an in-app pre-screen with Entra External ID Custom Authentication Extensions.
 
-**Key Integration Point:** `OnAttributeCollectionSubmit` event in the sign-up user flow triggers an Azure Function that calls the Privo API for age verification. The function returns actions to block, continue, or trigger the minor consent flow.
+**Layer 1 (In-App Pre-Screen):** React DOB input shown before `loginRedirect()`. Blocks under-13s immediately without collecting any PII (COPPA compliance). Passes DOB context to Entra via MSAL `extraQueryParameters` or `state`.
+
+**Layer 2 (Custom Authentication Extension):** `OnAttributeCollectionSubmit` event in the sign-up user flow triggers an Azure Function that re-verifies DOB and calls the Privo API. This server-side layer provides defense-in-depth — users cannot bypass age verification by navigating directly to the Entra sign-up URL.
+
+This replaces the B2C IEF custom policy approach and is the first-ever implementation of Entra External ID + Privo.
 
 ### Services Used
 
@@ -596,47 +609,75 @@ public async Task<ActionResult> ApproveEventParticipation(Guid minorId, Guid eve
 }
 ```
 
-### Registration Flow
+### Registration Flow (Hybrid Age Gate — Option C)
 
 ```
 User clicks "Sign Up"
          │
          ▼
-   Enter birthdate
-         │
-         ▼
-┌────────┴────────┐
-│   Privo Age     │
-│   Verification  │
-└────────┬────────┘
+┌─────────────────────┐
+│ LAYER 1: In-App     │  ← React UI (before Entra redirect)
+│ DOB Pre-Screen      │     No PII collected yet
+└────────┬────────────┘
          │
     ┌────┴────┬────────┐
     ▼         ▼        ▼
  Under 13   13-17    18+
     │         │        │
-    ▼         ▼        ▼
- BLOCKED   Minor    Standard
-           Flow     Registration
-             │
-             ▼
-    Enter parent email
-             │
-             ▼
-    Privo VPC Request
-             │
-             ▼
-    Pending status
-    (limited access)
-             │
-    ┌────────┴────────┐
-    ▼                 ▼
- Parent           Timeout
- Consents         (7 days)
-    │                 │
-    ▼                 ▼
- Full access      Account
- (with limits)    disabled
+    ▼         │        │
+ BLOCKED      │        │
+ (friendly    ▼        ▼
+  message)  ┌─────────────────────┐
+            │ Entra Sign-Up Flow  │  ← Redirect to Entra External ID
+            │ (email, name, DOB,  │     Collects all attributes
+            │  password/social)   │
+            └────────┬────────────┘
+                     │
+            ┌────────────────────┐
+            │ LAYER 2: Custom    │  ← Azure Function (server-side)
+            │ Auth Extension     │     OnAttributeCollectionSubmit
+            │ (re-verify DOB +   │     Defense-in-depth
+            │  Privo API call)   │
+            └────────┬───────────┘
+                     │
+                ┌────┴────┐
+                ▼         ▼
+             13-17      18+
+                │         │
+                ▼         ▼
+           Set isMinor  Standard
+           flag         Registration
+                │         │
+                ▼         ▼
+         ┌──────────┐  Account
+         │ Post-Reg │  Active
+         │ Privo    │
+         │ VPC Flow │
+         └────┬─────┘
+              │
+              ▼
+     Enter parent email
+              │
+              ▼
+     Privo VPC Request
+              │
+              ▼
+     Pending status
+     (limited access)
+              │
+     ┌────────┴────────┐
+     ▼                 ▼
+  Parent           Timeout
+  Consents         (7 days)
+     │                 │
+     ▼                 ▼
+  Full access      Account
+  (with limits)    disabled
 ```
+
+**Why two layers:**
+1. **Layer 1 (in-app)** — Best UX: blocks under-13s instantly before any PII is collected (COPPA compliance). No wasted form-filling.
+2. **Layer 2 (server-side)** — Security: prevents bypass (e.g., direct URL to Entra sign-up, API manipulation). Privo API call provides authoritative age verification.
 
 ### Minor Protections
 
@@ -740,10 +781,10 @@ Parents without TrashMob accounts still receive critical notifications via email
 > **Note:** Phases 1-2 are implemented as Project 1 Phase 3, and Phase 3 is implemented as Project 1 Phase 7. See [Project 1 — Auth Revamp](./Project_01_Auth_Revamp.md) for the full implementation timeline.
 
 ### Phase 1: Age Gate (→ Project 1, Phase 3)
-- Custom Authentication Extension (Azure Function) setup
-- Privo API integration on `OnAttributeCollectionSubmit`
-- Age verification during Entra External ID sign-up flow
-- Under-13 blocking with explanation page
+- In-app DOB pre-screen on **both web (React) and mobile (MAUI)** — blocks under-13s before Entra redirect (no PII collected)
+- Custom Authentication Extension (Azure Function) on `OnAttributeCollectionSubmit` — server-side defense-in-depth
+- Privo API integration for age verification (13-17 triggers minor flow)
+- Under-13 blocking at both layers
 - Minor flag in database
 
 ### Phase 2: Parental Consent (→ Project 1, Phase 3)
