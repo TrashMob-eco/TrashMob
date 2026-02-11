@@ -54,4 +54,8 @@ public partial class LitterReportViewModel : ObservableObject
     }
 
     public ObservableCollection<LitterImageViewModel> LitterImageViewModels { get; set; } = [];
+
+    public string? ThumbnailUrl => LitterImageViewModels.FirstOrDefault()?.AzureBlobUrl;
+
+    public bool HasThumbnail => !string.IsNullOrEmpty(ThumbnailUrl);
 }
