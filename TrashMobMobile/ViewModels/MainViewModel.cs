@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
 using TrashMob.Models.Poco;
 using TrashMobMobile.Authentication;
+using Sentry;
 using TrashMobMobile.Config;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
@@ -79,7 +80,14 @@ public partial class MainViewModel(IAuthService authService,
 
     private async void PerformNavigation(EventViewModel eventViewModel)
     {
-        await Shell.Current.GoToAsync($"{nameof(ViewEventPage)}?EventId={eventViewModel.Id}");
+        try
+        {
+            await Shell.Current.GoToAsync($"{nameof(ViewEventPage)}?EventId={eventViewModel.Id}");
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
     }
 
     public async Task Init()

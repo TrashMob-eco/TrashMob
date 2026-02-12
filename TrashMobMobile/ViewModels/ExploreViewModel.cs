@@ -12,28 +12,17 @@ public partial class ExploreViewModel(
     IMobEventManager mobEventManager,
     ILitterReportManager litterReportManager,
     INotificationService notificationService,
-    IUserManager userManager) : BaseViewModel(notificationService)
+    IUserManager userManager) : LocationFilterViewModel(notificationService)
 {
     private readonly IMobEventManager mobEventManager = mobEventManager;
     private readonly ILitterReportManager litterReportManager = litterReportManager;
     private readonly IUserManager userManager = userManager;
 
-    private IEnumerable<TrashMob.Models.Poco.Location> locations = [];
     private IEnumerable<Event> allEvents = [];
     private IEnumerable<Event> rawEvents = [];
 
-    private string? selectedCity;
-    private string? selectedCountry;
-    private string? selectedRegion;
-
     [ObservableProperty]
     private AddressViewModel userLocation = new();
-
-    [ObservableProperty]
-    private bool isMapSelected;
-
-    [ObservableProperty]
-    private bool isListSelected;
 
     [ObservableProperty]
     private bool showEvents = true;
@@ -53,45 +42,6 @@ public partial class ExploreViewModel(
 
     public ObservableCollection<AddressViewModel> Addresses { get; } = [];
 
-    public ObservableCollection<string> CountryCollection { get; } = [];
-
-    public ObservableCollection<string> RegionCollection { get; } = [];
-
-    public ObservableCollection<string> CityCollection { get; } = [];
-
-    public string? SelectedCountry
-    {
-        get => selectedCountry;
-        set
-        {
-            selectedCountry = value;
-            OnPropertyChanged();
-            HandleCountrySelected();
-        }
-    }
-
-    public string? SelectedRegion
-    {
-        get => selectedRegion;
-        set
-        {
-            selectedRegion = value;
-            OnPropertyChanged();
-            HandleRegionSelected();
-        }
-    }
-
-    public string? SelectedCity
-    {
-        get => selectedCity;
-        set
-        {
-            selectedCity = value;
-            OnPropertyChanged();
-            RebuildAddresses();
-        }
-    }
-
     public async Task Init()
     {
         await ExecuteAsync(async () =>
@@ -106,22 +56,6 @@ public partial class ExploreViewModel(
 
             RebuildAddresses();
         }, "Failed to load explore data. Please try again.");
-    }
-
-    [RelayCommand]
-    private Task MapSelected()
-    {
-        IsMapSelected = true;
-        IsListSelected = false;
-        return Task.CompletedTask;
-    }
-
-    [RelayCommand]
-    private Task ListSelected()
-    {
-        IsMapSelected = false;
-        IsListSelected = true;
-        return Task.CompletedTask;
     }
 
     [RelayCommand]
@@ -167,9 +101,7 @@ public partial class ExploreViewModel(
     {
         IsBusy = true;
 
-        SelectedCountry = null;
-        SelectedRegion = null;
-        SelectedCity = null;
+        ClearLocationSelections();
 
         await Task.WhenAll(
             RefreshEvents(),
@@ -180,27 +112,19 @@ public partial class ExploreViewModel(
         IsBusy = false;
     }
 
+    protected override void ApplyFilters()
+    {
+        RebuildAddresses();
+    }
+
     private async Task RefreshEvents()
     {
         var startDate = DateTimeOffset.UtcNow;
         var endDate = DateTimeOffset.UtcNow.AddMonths(3);
 
-        locations = await mobEventManager.GetLocationsByTimeRangeAsync(startDate, endDate);
+        Locations = await mobEventManager.GetLocationsByTimeRangeAsync(startDate, endDate);
 
-        CountryCollection.Clear();
-        RegionCollection.Clear();
-        CityCollection.Clear();
-
-        if (locations != null && locations.Any())
-        {
-            foreach (var country in locations.Select(l => l.Country).Distinct())
-            {
-                if (!string.IsNullOrEmpty(country))
-                {
-                    CountryCollection.Add(country);
-                }
-            }
-        }
+        PopulateCountries();
 
         var eventFilter = new EventFilter
         {
@@ -246,19 +170,19 @@ public partial class ExploreViewModel(
         {
             IEnumerable<Event> filtered = allEvents;
 
-            if (!string.IsNullOrEmpty(selectedCountry))
+            if (!string.IsNullOrEmpty(SelectedCountry))
             {
-                filtered = filtered.Where(e => e.Country == selectedCountry);
+                filtered = filtered.Where(e => e.Country == SelectedCountry);
             }
 
-            if (!string.IsNullOrEmpty(selectedRegion))
+            if (!string.IsNullOrEmpty(SelectedRegion))
             {
-                filtered = filtered.Where(e => e.Region == selectedRegion);
+                filtered = filtered.Where(e => e.Region == SelectedRegion);
             }
 
-            if (!string.IsNullOrEmpty(selectedCity))
+            if (!string.IsNullOrEmpty(SelectedCity))
             {
-                filtered = filtered.Where(e => e.City == selectedCity);
+                filtered = filtered.Where(e => e.City == SelectedCity);
             }
 
             rawEvents = filtered;
@@ -285,49 +209,5 @@ public partial class ExploreViewModel(
 
         AreItemsFound = Addresses.Count > 0;
         AreNoItemsFound = !AreItemsFound;
-    }
-
-    private void HandleCountrySelected()
-    {
-        selectedRegion = null;
-        OnPropertyChanged(nameof(SelectedRegion));
-        selectedCity = null;
-        OnPropertyChanged(nameof(SelectedCity));
-
-        RegionCollection.Clear();
-
-        if (locations != null && !string.IsNullOrEmpty(selectedCountry))
-        {
-            foreach (var region in locations.Where(l => l.Country == selectedCountry).Select(l => l.Region).Distinct())
-            {
-                if (!string.IsNullOrEmpty(region))
-                {
-                    RegionCollection.Add(region);
-                }
-            }
-        }
-
-        RebuildAddresses();
-    }
-
-    private void HandleRegionSelected()
-    {
-        selectedCity = null;
-        OnPropertyChanged(nameof(SelectedCity));
-
-        CityCollection.Clear();
-
-        if (locations != null && !string.IsNullOrEmpty(selectedCountry) && !string.IsNullOrEmpty(selectedRegion))
-        {
-            foreach (var city in locations.Where(l => l.Country == selectedCountry && l.Region == selectedRegion).Select(l => l.City).Distinct())
-            {
-                if (!string.IsNullOrEmpty(city))
-                {
-                    CityCollection.Add(city);
-                }
-            }
-        }
-
-        RebuildAddresses();
     }
 }

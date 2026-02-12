@@ -13,7 +13,7 @@ public partial class WaiverViewModel(INotificationService notificationService, I
     {
         await ExecuteAsync(async () =>
         {
-            var user = await userManager.GetUserAsync(App.CurrentUser!.Id.ToString());
+            var user = await userManager.GetUserAsync(userManager.CurrentUser.Id.ToString());
             if (user == null)
             {
                 throw new Exception("User not found.");
@@ -23,7 +23,7 @@ public partial class WaiverViewModel(INotificationService notificationService, I
             user.TrashMobWaiverVersion = Settings.CurrentTrashMobWaiverVersion.VersionId;
 
             await userManager.UpdateUserAsync(user);
-            App.CurrentUser = user;
+            userManager.CurrentUser = user;
             await Navigation.PopAsync();
         }, "An error occurred while signing the waiver. Please try again.");
     }

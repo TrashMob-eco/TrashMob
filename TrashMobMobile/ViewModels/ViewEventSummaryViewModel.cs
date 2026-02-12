@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
 using TrashMob.Models.Poco;
+using Sentry;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
@@ -62,7 +63,14 @@ public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager,
 
     private async void PerformNavigation(Guid pickupLocationId)
     {
-        await Shell.Current.GoToAsync($"{nameof(ViewPickupLocationPage)}?PickupLocationId={pickupLocationId}");
+        try
+        {
+            await Shell.Current.GoToAsync($"{nameof(ViewPickupLocationPage)}?PickupLocationId={pickupLocationId}");
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
     }
 
     public async Task Init(Guid eventId, Action updRoutes)

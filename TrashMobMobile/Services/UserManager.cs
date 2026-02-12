@@ -14,10 +14,8 @@
 
         public User CurrentUser
         {
-            get
-            {
-                return App.CurrentUser!;
-            }
+            get => App.CurrentUser!;
+            set => App.CurrentUser = value;
         }
 
         public Task<User> GetUserAsync(string userId, CancellationToken cancellationToken = default)

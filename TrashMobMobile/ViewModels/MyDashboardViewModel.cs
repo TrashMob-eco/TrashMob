@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models.Poco;
+using Sentry;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
@@ -204,12 +205,26 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
 
     private async void PerformEventNavigation(EventViewModel eventViewModel)
     {
-        await Shell.Current.GoToAsync($"{nameof(ViewEventPage)}?EventId={eventViewModel.Id}");
+        try
+        {
+            await Shell.Current.GoToAsync($"{nameof(ViewEventPage)}?EventId={eventViewModel.Id}");
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
     }
 
     private async void PerformLitterReportNavigation(LitterReportViewModel litterReportViewModel)
     {
-        await Shell.Current.GoToAsync($"{nameof(ViewLitterReportPage)}?LitterReportId={litterReportViewModel.Id}");
+        try
+        {
+            await Shell.Current.GoToAsync($"{nameof(ViewLitterReportPage)}?LitterReportId={litterReportViewModel.Id}");
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
     }
 
     private async Task RefreshStatistics()
@@ -316,16 +331,37 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
 
     private async void HandleUpcomingDateRangeSelected()
     {
-        await ExecuteAsync(RefreshEvents, "Failed to refresh events. Please try again.");
+        try
+        {
+            await ExecuteAsync(RefreshEvents, "Failed to refresh events. Please try again.");
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
     }
 
     private async void HandleCompletedDateRangeSelected()
     {
-        await ExecuteAsync(RefreshEvents, "Failed to refresh events. Please try again.");
+        try
+        {
+            await ExecuteAsync(RefreshEvents, "Failed to refresh events. Please try again.");
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
     }
 
     private async void HandleCreatedDateRangeSelected()
     {
-        await ExecuteAsync(RefreshLitterReports, "Failed to refresh litter reports. Please try again.");
+        try
+        {
+            await ExecuteAsync(RefreshLitterReports, "Failed to refresh litter reports. Please try again.");
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
     }
 }

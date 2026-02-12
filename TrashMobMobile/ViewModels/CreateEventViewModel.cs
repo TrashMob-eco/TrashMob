@@ -6,6 +6,7 @@ using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Color = Microsoft.Maui.Graphics.Color;
+using Sentry;
 using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
@@ -401,8 +402,15 @@ public partial class CreateEventViewModel : BaseViewModel
 
     private async void PerformNavigation(EventPartnerLocationViewModel eventPartnerLocationViewModel)
     {
-        await Shell.Current.GoToAsync(
-            $"{nameof(EditEventPartnerLocationServicesPage)}?EventId={EventViewModel.Id}&PartnerLocationId={eventPartnerLocationViewModel.PartnerLocationId}");
+        try
+        {
+            await Shell.Current.GoToAsync(
+                $"{nameof(EditEventPartnerLocationServicesPage)}?EventId={EventViewModel.Id}&PartnerLocationId={eventPartnerLocationViewModel.PartnerLocationId}");
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
     }
 
     private Guid? initialLitterReport = null;

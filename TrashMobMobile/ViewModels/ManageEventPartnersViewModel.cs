@@ -2,6 +2,7 @@
 
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Sentry;
 using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
@@ -45,8 +46,15 @@ public partial class ManageEventPartnersViewModel(IMobEventManager mobEventManag
 
     private async void PerformNavigation(EventPartnerLocationViewModel eventPartnerLocationViewModel)
     {
-        await Shell.Current.GoToAsync(
-            $"{nameof(EditEventPartnerLocationServicesPage)}?EventId={MobEvent.Id}&PartnerLocationId={eventPartnerLocationViewModel.PartnerLocationId}");
+        try
+        {
+            await Shell.Current.GoToAsync(
+                $"{nameof(EditEventPartnerLocationServicesPage)}?EventId={MobEvent.Id}&PartnerLocationId={eventPartnerLocationViewModel.PartnerLocationId}");
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
     }
 
     public async Task Init(Guid eventId)
