@@ -13,6 +13,7 @@
 
                 <!-- Welcome Header -->
                 <Label Text="{Binding WelcomeMessage}"
+                       AutomationId="WelcomeMessage"
                        FontFamily="LexendSemibold"
                        FontSize="Title"
                        Margin="10,15,10,5" />
@@ -28,6 +29,7 @@
                        TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
 
                 <CollectionView ItemsSource="{Binding UpcomingEvents}"
+                                AutomationId="UpcomingEventsList"
                                 SelectionMode="None"
                                 IsVisible="{Binding AreEventsFound}">
                     <CollectionView.ItemTemplate>
