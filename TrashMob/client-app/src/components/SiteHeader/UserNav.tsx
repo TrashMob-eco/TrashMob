@@ -27,6 +27,9 @@ export const UserNav = (props: UserNavProps) => {
         e.preventDefault();
         const apiConfig = getApiConfig();
 
+        // DEBUG: Show what we're sending to loginRedirect
+        alert(`[DEBUG 3] Sign-In Button Clicked\nScopes: ${JSON.stringify(apiConfig.b2cScopes)}`);
+
         getMsalClientInstance().loginRedirect({
             scopes: apiConfig.b2cScopes,
         });

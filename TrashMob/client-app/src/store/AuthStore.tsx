@@ -163,6 +163,18 @@ export async function GetMsalClient(navigateToLoginRequestUrl: boolean): Promise
 
     await msalC.initialize();
 
+    // DEBUG: Show MSAL config
+    alert(`[DEBUG 1] MSAL Initialized\nClient ID: ${clientId}\nAuthority: ${fullAuthority}\nAuthority Domain: ${authorityDomain}\nRedirect URI: ${uri}\nScopes: ${JSON.stringify(getApiConfig().b2cScopes)}`);
+
+    // DEBUG: Handle redirect promise and show result
+    const redirectResult = await msalC.handleRedirectPromise();
+    if (redirectResult) {
+        alert(`[DEBUG 2] Redirect Result Received!\nAccount: ${redirectResult.account?.username}\nEmail claim: ${(redirectResult.idTokenClaims as any)?.email || 'MISSING'}\nAll claims: ${JSON.stringify(Object.keys(redirectResult.idTokenClaims || {}))}`);
+    } else {
+        const accounts = msalC.getAllAccounts();
+        alert(`[DEBUG 2] No redirect result (not returning from auth)\nExisting accounts in cache: ${accounts.length}\n${accounts.map(a => a.username).join(', ')}`);
+    }
+
     return msalC;
 }
 
@@ -209,3 +221,26 @@ export function getDefaultHeaders(method: string): Headers {
 initializeAuth().catch((error) => {
     console.error('Failed to initialize auth config:', error);
 });
+
+// ========== DEBUG: Auth diagnostics ==========
+// Remove this block after debugging is complete
+export function debugAuthState(): string {
+    const provider = getAuthProvider();
+    const policies = getB2CPolicies();
+    const apiConfig = getApiConfig();
+    const cachedCfg = getCachedConfig();
+
+    const info = [
+        `Auth Provider: ${provider}`,
+        `Client ID: ${policies.clientId}`,
+        `Authority: ${policies.authorities.signUpSignIn.authority}`,
+        `Authority Domain: ${policies.authorityDomain}`,
+        `Scopes: ${JSON.stringify(apiConfig.b2cScopes)}`,
+        `Entra config loaded: ${!!cachedCfg?.azureAdEntra}`,
+        `B2C config loaded: ${!!cachedCfg?.azureAdB2C}`,
+        `MSAL instance exists: ${!!msalClientInstance}`,
+    ].join('\n');
+
+    return info;
+}
+// ========== END DEBUG ==========

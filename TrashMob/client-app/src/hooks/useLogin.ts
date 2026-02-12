@@ -16,9 +16,14 @@ export const useLogin = () => {
             return;
         }
         const id = getMsalClientInstance().addEventCallback((message: msal.EventMessage) => {
+            // DEBUG: Log all MSAL events
+            alert(`[DEBUG 4] MSAL Event: ${message.eventType}\nError: ${message.error?.message || 'none'}`);
+
             if (message.eventType === msal.EventType.LOGIN_SUCCESS) {
+                const result = message.payload as msal.AuthenticationResult;
+                alert(`[DEBUG 5] LOGIN_SUCCESS!\nAccount: ${result.account?.username}\nEmail claim: ${(result.idTokenClaims as any)?.email || 'MISSING'}\nAll claims: ${JSON.stringify(Object.keys(result.idTokenClaims || {}))}`);
                 trackAuth('Login', true);
-                verifyAccount(message.payload as msal.AuthenticationResult);
+                verifyAccount(result);
             }
             if (message.eventType === msal.EventType.LOGOUT_SUCCESS) {
                 trackAuth('Logout', true);
@@ -32,14 +37,20 @@ export const useLogin = () => {
 
     async function initialLogin() {
         const accounts = getMsalClientInstance().getAllAccounts();
+        alert(`[DEBUG 6] initialLogin called\nAccounts in cache: ${accounts?.length || 0}\n${accounts?.map(a => `${a.username} (${a.homeAccountId})`).join('\n') || 'none'}`);
         if (accounts === null || accounts.length <= 0) {
             return;
         }
-        const tokenResponse = await getMsalClientInstance().acquireTokenSilent({
-            scopes: getApiConfig().b2cScopes,
-            account: accounts[0],
-        });
-        verifyAccount(tokenResponse);
+        try {
+            const tokenResponse = await getMsalClientInstance().acquireTokenSilent({
+                scopes: getApiConfig().b2cScopes,
+                account: accounts[0],
+            });
+            alert(`[DEBUG 7] acquireTokenSilent success\nEmail claim: ${(tokenResponse.idTokenClaims as any)?.email || 'MISSING'}\nAll claims: ${JSON.stringify(Object.keys(tokenResponse.idTokenClaims || {}))}`);
+            verifyAccount(tokenResponse);
+        } catch (err: any) {
+            alert(`[DEBUG 7] acquireTokenSilent FAILED\nError: ${err.message || err}`);
+        }
     }
 
     function clearUser() {
@@ -52,21 +63,31 @@ export const useLogin = () => {
     }
 
     async function verifyAccount(result: msal.AuthenticationResult) {
-        const { userDeleted } = result.idTokenClaims as Record<string, any>;
+        const claims = result.idTokenClaims as Record<string, any>;
+        alert(`[DEBUG 8] verifyAccount called\nAll claims: ${JSON.stringify(claims, null, 2)}`);
+
+        const { userDeleted } = claims;
         if (userDeleted && userDeleted === true) {
+            alert('[DEBUG 8b] User marked as deleted — clearing');
             clearUser();
             return;
         }
-        const { email } = result.idTokenClaims as Record<string, any>;
+        const { email } = claims;
         if (!email) {
+            alert(`[DEBUG 9] NO EMAIL CLAIM!\nThis is why sign-in fails.\nAvailable claims: ${Object.keys(claims).join(', ')}\nFull claims: ${JSON.stringify(claims)}`);
             console.warn('No email claim found in token — cannot verify account');
             return;
         }
 
+        alert(`[DEBUG 9] Email found: ${email}\nCalling GetUserByEmail...`);
+
         try {
             const { data: user } = await GetUserByEmail({ email }).service();
             if (user) {
+                alert(`[DEBUG 10] User loaded!\nID: ${user.id}\nName: ${user.userName}\nEmail: ${user.email}`);
                 setCurrentUser(user);
+            } else {
+                alert(`[DEBUG 10] GetUserByEmail returned null/empty for: ${email}`);
             }
         } catch (error) {
             // On first sign-up, the backend auto-creates the user during auth validation.
