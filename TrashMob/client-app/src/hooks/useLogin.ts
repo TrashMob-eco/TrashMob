@@ -58,11 +58,30 @@ export const useLogin = () => {
             return;
         }
         const { email } = result.idTokenClaims as Record<string, any>;
-        const { data: user } = await GetUserByEmail({ email }).service();
-        if (!user) {
+        if (!email) {
+            console.warn('No email claim found in token — cannot verify account');
             return;
         }
-        setCurrentUser(user);
+
+        try {
+            const { data: user } = await GetUserByEmail({ email }).service();
+            if (user) {
+                setCurrentUser(user);
+            }
+        } catch (error) {
+            // On first sign-up, the backend auto-creates the user during auth validation.
+            // If the first call fails (e.g. transient error), retry once after a short delay.
+            console.warn('First GetUserByEmail attempt failed, retrying...', error);
+            try {
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+                const { data: user } = await GetUserByEmail({ email }).service();
+                if (user) {
+                    setCurrentUser(user);
+                }
+            } catch (retryError) {
+                console.error('Failed to verify account after retry', retryError);
+            }
+        }
     }
 
     return {
