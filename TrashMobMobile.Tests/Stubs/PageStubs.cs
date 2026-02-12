@@ -38,3 +38,5 @@ internal class BrowseTeamsPage { }
 internal class LeaderboardsPage { }
 internal class NewsletterPreferencesPage { }
 internal class ViewTeamPage { }
+internal class BrowseCommunitiesPage { }
+internal class ViewCommunityPage { }

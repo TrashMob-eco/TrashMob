@@ -53,6 +53,7 @@
     <Compile Include="..\TrashMobMobile\Extensions\DisplayUserExtensions.cs" Link="LinkedSource\Extensions\DisplayUserExtensions.cs" />
     <Compile Include="..\TrashMobMobile\Extensions\StringExtensions.cs" Link="LinkedSource\Extensions\StringExtensions.cs" />
     <Compile Include="..\TrashMobMobile\Extensions\TeamExtensions.cs" Link="LinkedSource\Extensions\TeamExtensions.cs" />
+    <Compile Include="..\TrashMobMobile\Extensions\CommunityExtensions.cs" Link="LinkedSource\Extensions\CommunityExtensions.cs" />
   </ItemGroup>
 
   <!-- Link authentication types -->
