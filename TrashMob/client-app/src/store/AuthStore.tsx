@@ -1,24 +1,15 @@
 import * as msal from '@azure/msal-browser';
 import { getAppConfig, getCachedConfig, type AuthProvider, type B2CConfig, type EntraConfig } from '../services/config';
 
-// Fallback B2C configuration for when config cannot be loaded
+// Fallback Entra External ID configuration for when config cannot be loaded
 // Uses dev settings as fallback since they're safer for testing
-const fallbackB2CConfig: B2CConfig = {
-    clientId: 'e46d67ba-fe46-40f4-b222-2f982b2bb112',
-    authorityDomain: 'TrashMobDev.b2clogin.com',
-    policies: {
-        signUpSignIn: 'B2C_1A_TM_SIGNUP_SIGNIN',
-        deleteUser: 'B2C_1A_TM_DEREGISTER',
-        profileEdit: 'B2C_1A_TM_PROFILEEDIT',
-    },
-    authorities: {
-        signUpSignIn: 'https://TrashMobDev.b2clogin.com/TrashMobDev.onmicrosoft.com/B2C_1A_TM_SIGNUP_SIGNIN',
-        deleteUser: 'https://TrashMobDev.b2clogin.com/TrashMobDev.onmicrosoft.com/B2C_1A_TM_DEREGISTER',
-        profileEdit: 'https://TrashMobDev.b2clogin.com/TrashMobDev.onmicrosoft.com/B2C_1A_TM_PROFILEEDIT',
-    },
+const fallbackEntraConfig: EntraConfig = {
+    clientId: '1e6ae74d-0160-4a01-9d75-04048e03b17e',
+    authorityDomain: 'trashmobecodev.ciamlogin.com',
+    authority: 'https://trashmobecodev.ciamlogin.com/',
     scopes: [
-        'https://TrashMobDev.onmicrosoft.com/api/TrashMob.Read',
-        'https://TrashMobDev.onmicrosoft.com/api/TrashMob.Writes',
+        'https://TrashMobEcoDev.onmicrosoft.com/api/TrashMob.Read',
+        'https://TrashMobEcoDev.onmicrosoft.com/api/TrashMob.Writes',
         'email',
     ],
 };
@@ -27,7 +18,7 @@ const fallbackB2CConfig: B2CConfig = {
 let msalClientInstance: msal.PublicClientApplication | null = null;
 let b2cConfig: B2CConfig | null = null;
 let entraConfig: EntraConfig | null = null;
-let authProvider: AuthProvider = 'b2c';
+let authProvider: AuthProvider = 'entra';
 let initPromise: Promise<void> | null = null;
 
 // Initialize auth configuration from backend
@@ -41,14 +32,17 @@ async function initializeAuth(): Promise<void> {
     }
 
     initPromise = getAppConfig().then((config) => {
-        authProvider = config.authProvider || 'b2c';
+        authProvider = config.authProvider || 'entra';
 
-        if (authProvider === 'entra' && config.azureAdEntra) {
-            entraConfig = config.azureAdEntra;
+        if (authProvider === 'entra') {
+            entraConfig = config.azureAdEntra || fallbackEntraConfig;
+            if (!config.azureAdEntra) {
+                console.warn('Entra config not available from server, using fallback');
+            }
         } else {
-            b2cConfig = config.azureAdB2C || fallbackB2CConfig;
+            b2cConfig = config.azureAdB2C || null;
             if (!config.azureAdB2C) {
-                console.warn('B2C config not available from server, using fallback');
+                console.warn('B2C config not available from server');
             }
         }
     });
@@ -74,20 +68,24 @@ export function getB2CPolicies(): {
 } {
     // When using Entra, return config with empty policy authorities
     // Profile edit and account deletion move to in-app (Graph API) in Phase 2
-    if (getAuthProvider() === 'entra' && entraConfig) {
+    const effectiveEntra = entraConfig || getCachedConfig()?.azureAdEntra || fallbackEntraConfig;
+    if (getAuthProvider() === 'entra') {
         return {
             names: { signUpSignIn: '', deleteUser: '', profileEdit: '' },
             authorities: {
-                signUpSignIn: { authority: entraConfig.authority },
+                signUpSignIn: { authority: effectiveEntra.authority },
                 deleteUser: { authority: '' },
                 profileEdit: { authority: '' },
             },
-            authorityDomain: entraConfig.authorityDomain,
-            clientId: entraConfig.clientId,
+            authorityDomain: effectiveEntra.authorityDomain,
+            clientId: effectiveEntra.clientId,
         };
     }
 
-    const config = b2cConfig || getCachedConfig()?.azureAdB2C || fallbackB2CConfig;
+    const config = b2cConfig || getCachedConfig()?.azureAdB2C;
+    if (!config) {
+        throw new Error('B2C auth provider selected but no B2C config available');
+    }
 
     return {
         names: config.policies,
@@ -102,11 +100,15 @@ export function getB2CPolicies(): {
 }
 
 export function getApiConfig(): { b2cScopes: string[] } {
-    if (getAuthProvider() === 'entra' && entraConfig) {
-        return { b2cScopes: entraConfig.scopes };
+    if (getAuthProvider() === 'entra') {
+        const config = entraConfig || getCachedConfig()?.azureAdEntra || fallbackEntraConfig;
+        return { b2cScopes: config.scopes };
     }
 
-    const config = b2cConfig || getCachedConfig()?.azureAdB2C || fallbackB2CConfig;
+    const config = b2cConfig || getCachedConfig()?.azureAdB2C;
+    if (!config) {
+        throw new Error('B2C auth provider selected but no B2C config available');
+    }
     return {
         b2cScopes: config.scopes,
     };

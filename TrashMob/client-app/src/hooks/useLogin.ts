@@ -35,11 +35,15 @@ export const useLogin = () => {
         if (accounts === null || accounts.length <= 0) {
             return;
         }
-        const tokenResponse = await getMsalClientInstance().acquireTokenSilent({
-            scopes: getApiConfig().b2cScopes,
-            account: accounts[0],
-        });
-        verifyAccount(tokenResponse);
+        try {
+            const tokenResponse = await getMsalClientInstance().acquireTokenSilent({
+                scopes: getApiConfig().b2cScopes,
+                account: accounts[0],
+            });
+            verifyAccount(tokenResponse);
+        } catch (err: any) {
+            console.warn('acquireTokenSilent failed:', err);
+        }
     }
 
     function clearUser() {
@@ -52,12 +56,14 @@ export const useLogin = () => {
     }
 
     async function verifyAccount(result: msal.AuthenticationResult) {
-        const { userDeleted } = result.idTokenClaims as Record<string, any>;
+        const claims = result.idTokenClaims as Record<string, any>;
+
+        const { userDeleted } = claims;
         if (userDeleted && userDeleted === true) {
             clearUser();
             return;
         }
-        const { email } = result.idTokenClaims as Record<string, any>;
+        const { email } = claims;
         if (!email) {
             console.warn('No email claim found in token — cannot verify account');
             return;
