@@ -73,7 +73,9 @@ export const useLogin = () => {
             // If the first call fails (e.g. transient error), retry once after a short delay.
             console.warn('First GetUserByEmail attempt failed, retrying...', error);
             try {
-                await new Promise((resolve) => setTimeout(resolve, 1000));
+                await new Promise<void>((resolve) => {
+                    setTimeout(resolve, 1000);
+                });
                 const { data: user } = await GetUserByEmail({ email }).service();
                 if (user) {
                     setCurrentUser(user);
