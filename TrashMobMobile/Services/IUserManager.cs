@@ -5,7 +5,7 @@
 
     public interface IUserManager
     {
-        User CurrentUser { get; }
+        User CurrentUser { get; set; }
 
         Task<User> GetUserAsync(string userId, CancellationToken cancellationToken = default);
 

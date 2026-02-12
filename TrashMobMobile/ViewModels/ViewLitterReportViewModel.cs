@@ -7,7 +7,7 @@ using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class ViewLitterReportViewModel(ILitterReportManager litterReportManager, IEventLitterReportManager eventLitterReportManager, INotificationService notificationService) : BaseViewModel(notificationService)
+public partial class ViewLitterReportViewModel(ILitterReportManager litterReportManager, IEventLitterReportManager eventLitterReportManager, INotificationService notificationService, IUserManager userManager) : BaseViewModel(notificationService)
 {
     private const int NewLitterReportStatus = 1;
     private const int AssignedLitterReportStatus = 2;
@@ -15,6 +15,7 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
 
     private readonly ILitterReportManager litterReportManager = litterReportManager;
     private readonly IEventLitterReportManager eventLitterReportManager = eventLitterReportManager;
+    private readonly IUserManager userManager = userManager;
     [ObservableProperty]
     private bool canDeleteLitterReport;
 
@@ -68,7 +69,7 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
                 }
             }
 
-            if (LitterReport.CreatedByUserId == App.CurrentUser!.Id &&
+            if (LitterReport.CreatedByUserId == userManager.CurrentUser.Id &&
                 LitterReport.LitterReportStatusId == NewLitterReportStatus)
             {
                 CanDeleteLitterReport = true;
@@ -78,7 +79,7 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
                 CanDeleteLitterReport = false;
             }
 
-            if (LitterReport.CreatedByUserId == App.CurrentUser!.Id &&
+            if (LitterReport.CreatedByUserId == userManager.CurrentUser.Id &&
                 (LitterReport.LitterReportStatusId == NewLitterReportStatus ||
                  LitterReport.LitterReportStatusId == AssignedLitterReportStatus))
             {
@@ -89,7 +90,7 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
                 CanEditLitterReport = false;
             }
 
-            if (LitterReport.CreatedByUserId == App.CurrentUser!.Id &&
+            if (LitterReport.CreatedByUserId == userManager.CurrentUser.Id &&
                 (LitterReport.LitterReportStatusId == NewLitterReportStatus ||
                  LitterReport.LitterReportStatusId == AssignedLitterReportStatus))
             {

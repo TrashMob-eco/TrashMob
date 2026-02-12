@@ -3,6 +3,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Sentry;
 using TrashMob.Models;
 using TrashMob.Models.Extensions;
 using TrashMobMobile.Extensions;
@@ -319,8 +320,15 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
 
     private async void PerformNavigation(EventPartnerLocationViewModel eventPartnerLocationViewModel)
     {
-        await Shell.Current.GoToAsync(
-            $"{nameof(EditEventPartnerLocationServicesPage)}?EventId={EventViewModel.Id}&PartnerLocationId={eventPartnerLocationViewModel.PartnerLocationId}");
+        try
+        {
+            await Shell.Current.GoToAsync(
+                $"{nameof(EditEventPartnerLocationServicesPage)}?EventId={EventViewModel.Id}&PartnerLocationId={eventPartnerLocationViewModel.PartnerLocationId}");
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
     }
 
     [RelayCommand]
