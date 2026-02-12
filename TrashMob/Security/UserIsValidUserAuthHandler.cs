@@ -39,9 +39,16 @@
 
                 if (user == null)
                 {
-                    AuthorizationFailure.Failed(new List<AuthorizationFailureReason>
-                        { new(this, $"User with email '{email}' not found.") });
-                    return;
+                    // Auto-create user on first login (needed for Entra External ID which
+                    // doesn't have B2C-style REST API callbacks during sign-up)
+                    user = await TryAutoCreateUser(context, email);
+
+                    if (user == null)
+                    {
+                        AuthorizationFailure.Failed(new List<AuthorizationFailureReason>
+                            { new(this, $"User with email '{email}' not found and could not be auto-created.") });
+                        return;
+                    }
                 }
 
                 // Auto-populate profile fields from social provider claims (one-time fill)
@@ -95,6 +102,65 @@
             {
                 logger.LogError(ex, "Error occurred while authenticating user. {0}",
                     JsonConvert.SerializeObject(context.User));
+            }
+        }
+
+        private async Task<Models.User> TryAutoCreateUser(AuthorizationHandlerContext context, string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return null;
+            }
+
+            // Extract the object ID from token claims (Entra uses "oid" or the sub claim)
+            var oidClaim = context.User.FindFirst("oid")
+                        ?? context.User.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")
+                        ?? context.User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (oidClaim == null || !Guid.TryParse(oidClaim.Value, out var objectId))
+            {
+                logger.LogWarning("Cannot auto-create user: no valid object ID claim found for email {Email}", email);
+                return null;
+            }
+
+            // Extract name claims if available
+            var givenNameClaim = context.User.FindFirst(ClaimTypes.GivenName)
+                              ?? context.User.FindFirst("given_name");
+            var surnameClaim = context.User.FindFirst(ClaimTypes.Surname)
+                            ?? context.User.FindFirst("family_name");
+            var pictureClaim = context.User.FindFirst("picture");
+
+            // Generate a username from email (part before @) — user can change it later
+            var userName = email.Split('@')[0];
+
+            // Ensure username is unique
+            var existingUser = await userManager.GetUserByUserNameAsync(userName, CancellationToken.None);
+            if (existingUser != null)
+            {
+                userName = $"{userName}_{objectId.ToString()[..8]}";
+            }
+
+            var newUser = new Models.User
+            {
+                Email = email,
+                ObjectId = objectId,
+                UserName = userName,
+                GivenName = givenNameClaim?.Value,
+                Surname = surnameClaim?.Value,
+                ProfilePhotoUrl = pictureClaim?.Value,
+                MemberSince = DateTimeOffset.UtcNow,
+            };
+
+            try
+            {
+                var createdUser = await userManager.AddAsync(newUser, CancellationToken.None);
+                logger.LogInformation("Auto-created user {Email} (ObjectId: {ObjectId}) on first Entra login", email, objectId);
+                return createdUser;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to auto-create user {Email} (ObjectId: {ObjectId})", email, objectId);
+                return null;
             }
         }
     }
