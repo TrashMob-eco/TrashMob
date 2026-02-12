@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TrashMob.Shared\TrashMob.Shared.csproj" />
+    <ProjectReference Include="..\TrashMob\TrashMob.csproj" />
   </ItemGroup>
 
 </Project>
