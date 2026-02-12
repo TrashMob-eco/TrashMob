@@ -160,6 +160,13 @@ Age check logic is the same on both platforms — show DOB input, calculate age,
 - [ ] Pass age context to Entra via MSAL `extraQueryParameters` or `B2CAuthority` state
 - [ ] Handle "blocked" state with a friendly in-app page (no navigation to Entra)
 
+#### Investigation: Verify Token Claims & User Profile Completeness
+- [ ] Confirm optional claims (`given_name`, `family_name`) are actually configured in Entra portal under App registrations > Token configuration (not just in the `configure-entra-apps.ps1` script)
+- [ ] Verify that email/password sign-in tokens include `given_name` and `family_name` claims (not just social IDP sign-ins)
+- [ ] For migrated B2C users whose DB `GivenName`/`Surname` are null: confirm the auth handler's one-time fill logic (`UserIsValidUserAuthHandler`) populates them on next Entra sign-in
+- [ ] Decide: should the profile page prompt users to fill in `GivenName`/`Surname` if missing? (Not blocking, but improves data quality and audit trail)
+- [ ] Decide: for existing users without `DateOfBirth`, grandfather as adults or prompt to add? (Current plan: grandfather as adults, since they registered before age gate existed)
+
 #### Layer 2: Custom Authentication Extension (Azure Function, server-side enforcement)
 - [ ] Build Custom Authentication Extension (Azure Function) for `OnAttributeCollectionSubmit`
 - [ ] Re-verify DOB submitted in Entra sign-up form (defense-in-depth — can't bypass by skipping in-app check)

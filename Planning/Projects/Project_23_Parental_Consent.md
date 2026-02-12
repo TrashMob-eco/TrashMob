@@ -68,6 +68,12 @@ This combined approach minimizes risk by building Privo integration directly int
 - [ ] Under-13 → `showBlockPage`, 13-17 → set `isMinor` flag, 18+ → continue
 - [ ] Document Custom Authentication Extension setup (sponsorship deliverable)
 
+#### Pre-requisite: Verify Token Claims & Profile Completeness
+See **Project 1, Phase 3 Investigation** for full task list. Key questions:
+- Are `given_name`/`family_name` optional claims working for all sign-in methods?
+- How are existing users without `DateOfBirth` handled? (Plan: grandfather as adults)
+- Should profile page prompt for missing fields?
+
 ### Phase 2 — Parental Consent (→ Project 1, Phase 3)
 - [ ] Implement Privo VPC (Verifiable Parental Consent) webhook
 - [ ] Parent notification workflow via Privo
