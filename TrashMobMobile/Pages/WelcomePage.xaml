@@ -12,6 +12,7 @@
 
                 <!-- Logo -->
                 <Image Source="{AppThemeBinding Light=bannerlogo_light.png, Dark=bannerlogo_dark.png}"
+                       AutomationId="WelcomeLogo"
                        MaximumHeightRequest="96"
                        HorizontalOptions="Center"
                        Margin="0,24,0,0" />
@@ -146,6 +147,7 @@
 
                 <!-- Login button -->
                 <Button Text="Get Started"
+                        AutomationId="GetStartedButton"
                         MaximumWidthRequest="200"
                         Margin="0,8,0,0"
                         Command="{Binding SignInCommand}" />

@@ -8,22 +8,27 @@
        Shell.NavBarIsVisible="False">
     <TabBar>
         <Tab Title="Home"
+             AutomationId="HomeTab"
              Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconHome}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
             <ShellContent ContentTemplate="{DataTemplate pages:HomeFeedPage}" Route="HomeFeedPage" />
         </Tab>
         <Tab Title="Explore"
+             AutomationId="ExploreTab"
              Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconCompass}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
             <ShellContent ContentTemplate="{DataTemplate pages:ExplorePage}" Route="ExplorePage" />
         </Tab>
         <Tab Title=" "
+             AutomationId="QuickActionTab"
              Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconPlusCircle}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}">
             <ShellContent ContentTemplate="{DataTemplate pages:QuickActionPlaceholderPage}" Route="QuickActionPlaceholderPage" />
         </Tab>
         <Tab Title="Impact"
+             AutomationId="ImpactTab"
              Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconTrophy}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
             <ShellContent ContentTemplate="{DataTemplate pages:ImpactPage}" Route="ImpactPage" />
         </Tab>
         <Tab Title="Profile"
+             AutomationId="ProfileTab"
              Icon="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconAccount}, Color={AppThemeBinding Light={StaticResource LightTextBase}, Dark={StaticResource DarkTextBase}}}">
             <ShellContent ContentTemplate="{DataTemplate pages:ProfilePage}" Route="ProfilePage" />
         </Tab>

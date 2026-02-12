@@ -14,6 +14,7 @@
             <Border Style="{x:StaticResource RoundBorder}" Margin="5,10,5,5">
                 <VerticalStackLayout Spacing="4" Padding="5">
                     <Label Text="{Binding UserName}"
+                           AutomationId="UserNameLabel"
                            FontFamily="LexendSemibold"
                            FontSize="Large" />
                     <Label Text="{Binding UserEmail}"
@@ -232,6 +233,7 @@
 
             <!-- Sign Out -->
             <Button Text="Sign Out"
+                    AutomationId="SignOutButton"
                     Command="{Binding SignOutCommand}"
                     Style="{StaticResource PrimaryLargeButton}"
                     Margin="5,20,5,5" />
