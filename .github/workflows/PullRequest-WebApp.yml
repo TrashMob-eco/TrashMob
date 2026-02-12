@@ -45,8 +45,13 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: Build and Test
-      run: dotnet test .\TrashMob.sln --configuration ${{ env.CONFIGURATION }}
+    - name: Build
+      run: dotnet build .\TrashMob.sln --configuration ${{ env.CONFIGURATION }}
+
+    - name: Test
+      run: |
+        dotnet test .\TrashMob.Shared.Tests --configuration ${{ env.CONFIGURATION }} --no-build
+        dotnet test .\TrashMobMobile.Tests --configuration ${{ env.CONFIGURATION }} --no-build
 
   build-container:
     runs-on: ubuntu-latest
