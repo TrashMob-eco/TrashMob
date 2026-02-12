@@ -96,6 +96,11 @@ Custom CSS is **not available** — Entra External ID restricted custom CSS to t
 - [x] Fill in `AzureAdEntra` config values in appsettings.Development.json
 - [x] Test sign-in with `UseEntraExternalId: true` on dev — sign-in, sign-up, Google, and Facebook all working
 
+#### Completed (Scripted — Entra App Registrations, Dev)
+- [x] Configure optional claims (given_name, family_name, email) on all app registrations — `Deploy/configure-entra-apps.ps1`
+- [x] Enable `acceptMappedClaims: true` on all app registrations
+- [x] Set `isFallbackPublicClient: true` on Mobile app registration (required for PKCE flows)
+
 #### Remaining (Manual — Azure Portal, Dev)
 - [ ] Add custom attributes (givenName, surname, dateOfBirth) to user flow — requires 4 steps:
   1. **Define custom attributes:** External Identities → Custom user attributes → create `extension_dateOfBirth` (givenName/surname are built-in)
@@ -123,6 +128,7 @@ Custom CSS is **not available** — Entra External ID restricted custom CSS to t
 - [x] Update backend JWT validation (authority URL, audience) (done in Phase 0)
 - [x] Auto-populate `ProfilePhotoUrl`, `GivenName`, `Surname` from social provider claims on login (PR #2670)
 - [x] Display profile photos in event attendees, leaderboards (PR #2672)
+- [x] Auto-create DB user on first Entra login (PR #2683) — B2C custom policies called back to the API to create the DB record during sign-up; Entra External ID doesn't have this callback, so the auth handler now auto-creates the user from token claims (email, oid, given_name, family_name, picture)
 - [ ] Document sign-up flow for Privo
 
 ### Phase 2 — In-App Profile Edit + Photo Upload (Complete)
@@ -515,7 +521,7 @@ For each provider (Google, Microsoft, Apple, Facebook):
 
 ---
 
-**Last Updated:** February 10, 2026
+**Last Updated:** February 11, 2026
 **Owner:** Security Engineer + Product Lead
-**Status:** In Progress (Phase 2 Complete — Phase 3 next: Privo age verification)
+**Status:** In Progress (Phase 2 Complete, auto-create user fix merged PR #2683 — Phase 3 next: Privo age verification)
 **Next Review:** After Phase 3 planning with Privo
