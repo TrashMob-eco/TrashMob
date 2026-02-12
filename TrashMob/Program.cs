@@ -49,12 +49,17 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Configuration.AddJsonFile("appsettings.json", true, true)
-                             .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true); // optional extra provider     
+                             .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true); // optional extra provider
 
         if (builder.Environment.IsDevelopment())
         {
             builder.Configuration.AddJsonFile("appsettings.Development.json", true, true);
         }
+
+        // Re-add environment variables so they override JSON file values
+        // (CreateBuilder already adds them, but the AddJsonFile calls above
+        // were appended after, giving JSON files higher priority)
+        builder.Configuration.AddEnvironmentVariables();
 
         if (!builder.Environment.IsDevelopment())
         {
