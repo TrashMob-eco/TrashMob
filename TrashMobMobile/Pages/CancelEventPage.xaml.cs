@@ -16,7 +16,7 @@ public partial class CancelEventPage : ContentPage
         BindingContext = this.viewModel;
     }
 
-    public string EventId { get; set; }
+    public string EventId { get; set; } = string.Empty;
 
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {

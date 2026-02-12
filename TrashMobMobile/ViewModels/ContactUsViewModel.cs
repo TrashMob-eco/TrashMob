@@ -10,16 +10,16 @@ public partial class ContactUsViewModel(IContactRequestManager contactRequestMan
     private readonly IContactRequestManager contactRequestManager = contactRequestManager;
 
     [ObservableProperty]
-    private string confirmation;
+    private string confirmation = string.Empty;
 
     [ObservableProperty]
-    private string email;
+    private string email = string.Empty;
 
     [ObservableProperty]
-    private string message;
+    private string message = string.Empty;
 
     [ObservableProperty]
-    private string name;
+    private string name = string.Empty;
 
     [RelayCommand]
     private async Task SubmitMessage()

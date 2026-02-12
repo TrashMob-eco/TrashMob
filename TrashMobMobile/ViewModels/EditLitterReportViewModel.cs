@@ -26,10 +26,10 @@ public partial class EditLitterReportViewModel(ILitterReportManager litterReport
     [ObservableProperty]
     private bool hasNoImages = true;
 
-    private LitterReport litterReport;
+    private LitterReport litterReport = null!;
 
     [ObservableProperty]
-    private string litterReportStatus;
+    private string litterReportStatus = string.Empty;
 
     private string name = string.Empty;
 
@@ -83,7 +83,10 @@ public partial class EditLitterReportViewModel(ILitterReportManager litterReport
                 foreach (var litterImage in litterReport.LitterImages)
                 {
                     var litterImageViewModel = litterImage.ToLitterImageViewModel(litterReport.LitterReportStatusId, NotificationService);
-                    LitterImageViewModels.Add(litterImageViewModel);
+                    if (litterImageViewModel != null)
+                    {
+                        LitterImageViewModels.Add(litterImageViewModel);
+                    }
                 }
             }
         }, "An error has occurred while loading the litter report. Please wait and try again in a moment.");

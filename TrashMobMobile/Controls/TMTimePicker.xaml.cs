@@ -4,8 +4,10 @@ using Maui.BindableProperty.Generator.Core;
 
 public partial class TMTimePicker : ContentView
 {
+#pragma warning disable CS0169 // Field used by AutoBindable source generator
     [AutoBindable(OnChanged = nameof(TimePropertyChanged), DefaultBindingMode = nameof(BindingMode.TwoWay), HidesUnderlyingProperty = true)]
     private TimeSpan time;
+#pragma warning restore CS0169
 
     public TMTimePicker()
     {

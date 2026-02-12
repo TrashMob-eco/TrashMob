@@ -45,7 +45,7 @@ public class TeamRestService(IHttpClientFactory httpClientFactory) : RestService
         using var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken);
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonConvert.DeserializeObject<Team>(content);
+        return JsonConvert.DeserializeObject<Team>(content)!;
     }
 
     public async Task<IEnumerable<Team>> GetMyTeamsAsync(CancellationToken cancellationToken = default)
@@ -81,7 +81,7 @@ public class TeamRestService(IHttpClientFactory httpClientFactory) : RestService
         using var response = await AuthorizedHttpClient.PostAsync(requestUri, null, cancellationToken);
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonConvert.DeserializeObject<TeamMember>(content);
+        return JsonConvert.DeserializeObject<TeamMember>(content)!;
     }
 
     public async Task<IEnumerable<Event>> GetUpcomingTeamEventsAsync(Guid teamId, CancellationToken cancellationToken = default)

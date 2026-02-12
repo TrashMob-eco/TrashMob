@@ -16,7 +16,7 @@ public class WaiverRestService(IHttpClientFactory httpClientFactory) : RestServi
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
-            return JsonConvert.DeserializeObject<Waiver>(responseString);
+            return JsonConvert.DeserializeObject<Waiver>(responseString)!;
         }
     }
 }

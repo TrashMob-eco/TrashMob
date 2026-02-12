@@ -11,7 +11,7 @@ public abstract partial class BaseViewModel(INotificationService notificationSer
     [ObservableProperty]
     private bool isError;
 
-    public INavigation Navigation { get; set; }
+    public INavigation Navigation { get; set; } = null!;
 
     public INotificationService NotificationService { get; } = notificationService;
 

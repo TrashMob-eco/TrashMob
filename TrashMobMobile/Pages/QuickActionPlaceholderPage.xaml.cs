@@ -12,7 +12,7 @@ public partial class QuickActionPlaceholderPage : ContentPage
         base.OnNavigatedTo(args);
 
         // Fallback: if the Navigating interception didn't work, show action sheet here
-        var action = await DisplayActionSheet("Quick Actions", "Cancel", null, "Create Event", "Report Litter");
+        var action = await DisplayActionSheetAsync("Quick Actions", "Cancel", null, "Create Event", "Report Litter");
 
         if (action == "Create Event")
         {

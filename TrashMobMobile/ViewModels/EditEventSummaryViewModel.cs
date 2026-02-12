@@ -18,7 +18,7 @@ public partial class EditEventSummaryViewModel(IMobEventManager mobEventManager,
     private EventSummaryViewModel eventSummaryViewModel = new();
 
     [ObservableProperty]
-    private WeightUnit selectedWeightUnit;
+    private WeightUnit selectedWeightUnit = null!;
 
     public ObservableCollection<WeightUnit> WeightUnits { get; } =
     [

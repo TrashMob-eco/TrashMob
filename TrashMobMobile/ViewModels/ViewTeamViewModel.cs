@@ -109,14 +109,14 @@ public partial class ViewTeamViewModel(
 
             if (availableEvents.Count == 0)
             {
-                await Shell.Current.DisplayAlert("No Events",
+                await Shell.Current.DisplayAlertAsync("No Events",
                     "You have no upcoming events available to link to this team.",
                     "OK");
                 return;
             }
 
             var eventNames = availableEvents.Select(e => e.Name).ToArray();
-            var selected = await Shell.Current.DisplayActionSheet(
+            var selected = await Shell.Current.DisplayActionSheetAsync(
                 "Select an event to link", "Cancel", null, eventNames);
 
             if (string.IsNullOrEmpty(selected) || selected == "Cancel")
@@ -139,7 +139,7 @@ public partial class ViewTeamViewModel(
             return;
         }
 
-        var confirm = await Shell.Current.DisplayAlert(
+        var confirm = await Shell.Current.DisplayAlertAsync(
             "Unlink Event",
             $"Remove \"{eventVm.Name}\" from this team?",
             "Unlink",

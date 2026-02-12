@@ -99,7 +99,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     [ObservableProperty]
     private bool isLitterReportListSelected;
     
-    private Action UpdateRoutes;
+    private Action UpdateRoutes = null!;
 
     [ObservableProperty]
     private DateTimeOffset routeStartTime;
@@ -557,17 +557,18 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     {
         await ExecuteAsync(async () =>
         {
-            var result = await MediaPicker.Default.PickPhotoAsync(new MediaPickerOptions
+            var results = await MediaPicker.Default.PickPhotosAsync(new MediaPickerOptions
             {
                 Title = "Select a photo",
             });
+            var result = results?.FirstOrDefault();
 
             if (result == null)
             {
                 return;
             }
 
-            var photoType = await Shell.Current.DisplayActionSheet(
+            var photoType = await Shell.Current.DisplayActionSheetAsync(
                 "When was this photo taken?", "Cancel", null, "Before", "During", "After");
 
             if (photoType == null || photoType == "Cancel")
@@ -599,7 +600,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             return;
         }
 
-        var confirm = await Shell.Current.DisplayAlert(
+        var confirm = await Shell.Current.DisplayAlertAsync(
             "Delete Photo", "Are you sure you want to delete this photo?", "Delete", "Cancel");
 
         if (!confirm)
@@ -640,7 +641,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             return;
         }
 
-        var confirm = await Shell.Current.DisplayAlert(
+        var confirm = await Shell.Current.DisplayAlertAsync(
             "Delete Route", "Are you sure you want to delete this route?", "Delete", "Cancel");
 
         if (!confirm)

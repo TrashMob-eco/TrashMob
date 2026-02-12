@@ -4,11 +4,12 @@ using Maui.BindableProperty.Generator.Core;
 
 public partial class TMEntry : ContentView
 {
+#pragma warning disable CS0169, CS0414 // Fields used by AutoBindable source generator
     [AutoBindable(OnChanged = nameof(OnKeyboardChanged))]
-    private readonly Keyboard keyboard;
+    private readonly Keyboard keyboard = null!;
 
     [AutoBindable(DefaultBindingMode = "TwoWay", OnChanged = nameof(TextPropertyChanged))]
-    private readonly string text;
+    private readonly string text = string.Empty;
 
     [AutoBindable(OnChanged = nameof(HorizontalTextAlignmentPropertyChanged))]
     private readonly TextAlignment horizontalTextAlignment;
@@ -17,7 +18,8 @@ public partial class TMEntry : ContentView
     private readonly bool isPassword;
 
     [AutoBindable(OnChanged = nameof(PlaceholderPropertyChanged))]
-    private readonly string placeholder;
+    private readonly string placeholder = string.Empty;
+#pragma warning restore CS0169, CS0414
 
     public TMEntry()
     {

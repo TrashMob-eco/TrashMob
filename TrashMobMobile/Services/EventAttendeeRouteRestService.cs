@@ -19,7 +19,7 @@
             {
                 response.EnsureSuccessStatusCode();
                 var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                return JsonConvert.DeserializeObject<IEnumerable<DisplayEventAttendeeRoute>>(content);
+                return JsonConvert.DeserializeObject<IEnumerable<DisplayEventAttendeeRoute>>(content) ?? [];
             }
         }
 
@@ -32,7 +32,7 @@
             {
                 response.EnsureSuccessStatusCode();
                 var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                return JsonConvert.DeserializeObject<IEnumerable<DisplayEventAttendeeRoute>>(content);
+                return JsonConvert.DeserializeObject<IEnumerable<DisplayEventAttendeeRoute>>(content) ?? [];
             }
         }
 
@@ -45,7 +45,7 @@
             {
                 response.EnsureSuccessStatusCode();
                 var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                return JsonConvert.DeserializeObject<IEnumerable<DisplayEventAttendeeRoute>>(content);
+                return JsonConvert.DeserializeObject<IEnumerable<DisplayEventAttendeeRoute>>(content) ?? [];
             }
         }
 
@@ -58,7 +58,7 @@
             {
                 response.EnsureSuccessStatusCode();
                 var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                return JsonConvert.DeserializeObject<DisplayEventAttendeeRoute>(content);
+                return JsonConvert.DeserializeObject<DisplayEventAttendeeRoute>(content)!;
             }
         }
 
@@ -93,7 +93,7 @@
             {
                 response.EnsureSuccessStatusCode();
                 var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                return JsonConvert.DeserializeObject<DisplayEventAttendeeRoute>(content);
+                return JsonConvert.DeserializeObject<DisplayEventAttendeeRoute>(content)!;
             }
         }
 
@@ -106,7 +106,7 @@
             {
                 response.EnsureSuccessStatusCode();
                 var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
-                return JsonConvert.DeserializeObject<DisplayEventAttendeeRoute>(responseContent);
+                return JsonConvert.DeserializeObject<DisplayEventAttendeeRoute>(responseContent)!;
             }
         }
     }

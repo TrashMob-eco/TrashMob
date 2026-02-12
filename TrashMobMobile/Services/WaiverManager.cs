@@ -17,6 +17,6 @@ public class WaiverManager : IWaiverManager
     public async Task<bool> HasUserSignedTrashMobWaiverAsync(CancellationToken cancellationToken = default)
     {
         var waiver = await waiverRestService.GetWaiver(TrashMobWaiverName, cancellationToken);
-        return App.CurrentUser.HasUserSignedWaiver(waiver, Settings.CurrentTrashMobWaiverVersion);
+        return App.CurrentUser!.HasUserSignedWaiver(waiver, Settings.CurrentTrashMobWaiverVersion);
     }
 }

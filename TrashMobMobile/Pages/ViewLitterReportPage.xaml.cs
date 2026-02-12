@@ -17,17 +17,18 @@ public partial class ViewLitterReportPage : ContentPage
         BindingContext = this.viewModel;
     }
 
-    public string LitterReportId { get; set; }
+    public string LitterReportId { get; set; } = string.Empty;
 
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
         await viewModel.Init(new Guid(LitterReportId));
 
-        if (viewModel?.LitterImageViewModels?.FirstOrDefault()?.Address?.Location != null)
+        var location = viewModel?.LitterImageViewModels?.FirstOrDefault()?.Address?.Location;
+
+        if (location != null)
         {
-            var mapSpan = new MapSpan(viewModel?.LitterImageViewModels?.FirstOrDefault()?.Address?.Location, 0.05,
-                0.05);
+            var mapSpan = new MapSpan(location, 0.05, 0.05);
             litterReportLocationMap.InitialMapSpanAndroid = mapSpan;
             litterReportLocationMap.MoveToRegion(mapSpan);
         }

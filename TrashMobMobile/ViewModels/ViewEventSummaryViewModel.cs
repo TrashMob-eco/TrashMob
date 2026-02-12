@@ -43,7 +43,7 @@ public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager,
 
     public ObservableCollection<DisplayEventAttendeeRoute> EventAttendeeRoutes { get; set; } = [];
 
-    private Action UpdateRoutes;
+    private Action UpdateRoutes = null!;
 
     public PickupLocationViewModel SelectedPickupLocation
     {

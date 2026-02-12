@@ -63,7 +63,7 @@ public partial class NewsletterPreferencesViewModel(
     [RelayCommand]
     private async Task UnsubscribeAll()
     {
-        var confirm = await Shell.Current.DisplayAlert(
+        var confirm = await Shell.Current.DisplayAlertAsync(
             "Unsubscribe from All",
             "Are you sure you want to unsubscribe from all newsletters?",
             "Unsubscribe All",

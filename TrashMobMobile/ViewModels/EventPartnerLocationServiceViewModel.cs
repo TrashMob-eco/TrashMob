@@ -22,16 +22,16 @@ public partial class EventPartnerLocationServiceViewModel : BaseViewModel
     private Guid partnerLocationId;
 
     [ObservableProperty]
-    private string partnerLocationName;
+    private string partnerLocationName = string.Empty;
 
     [ObservableProperty]
-    private string partnerLocationNotes;
+    private string partnerLocationNotes = string.Empty;
 
     [ObservableProperty]
-    private string serviceName;
+    private string serviceName = string.Empty;
 
     [ObservableProperty]
-    private string serviceStatus;
+    private string serviceStatus = string.Empty;
 
     private int serviceStatusId;
 

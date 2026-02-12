@@ -17,9 +17,9 @@ public partial class EditPickupLocationPage : ContentPage
         BindingContext = this.viewModel;
     }
 
-    public string EventId { get; set; }
+    public string EventId { get; set; } = string.Empty;
 
-    public string PickupLocationId { get; set; }
+    public string PickupLocationId { get; set; } = string.Empty;
 
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {

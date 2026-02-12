@@ -37,6 +37,7 @@ public partial class LitterImageViewModel : BaseViewModel
 
     public LitterImageViewModel(INotificationService notificationService) : base(notificationService)
     {
+        FilePath = string.Empty;
         AzureBlobUrl = string.Empty;
         Address = new AddressViewModel();
     }

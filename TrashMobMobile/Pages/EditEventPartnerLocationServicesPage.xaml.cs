@@ -17,9 +17,9 @@ public partial class EditEventPartnerLocationServicesPage : ContentPage
         BindingContext = this.viewModel;
     }
 
-    public string EventId { get; set; }
+    public string EventId { get; set; } = string.Empty;
 
-    public string PartnerLocationId { get; set; }
+    public string PartnerLocationId { get; set; } = string.Empty;
 
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {

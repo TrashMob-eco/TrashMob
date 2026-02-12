@@ -3,7 +3,7 @@
 using TrashMobMobile.Authentication;
 using TrashMobMobile.Services;
 
-public class LogoutViewModel(IAuthService authService, IStatsRestService statsRestService, INotificationService notificationService) : BaseViewModel(notificationService)
+public class LogoutViewModel(IAuthService authService, INotificationService notificationService) : BaseViewModel(notificationService)
 {
     private readonly IAuthService authService = authService;
 

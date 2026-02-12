@@ -151,7 +151,7 @@
                 PostalCode = mobEvent.PostalCode,
                 Region = mobEvent.Region,
                 StreetAddress = mobEvent.StreetAddress,
-                Location = new Location(mobEvent.Latitude.Value, mobEvent.Longitude.Value),
+                Location = new Location(mobEvent.Latitude.GetValueOrDefault(), mobEvent.Longitude.GetValueOrDefault()),
                 IconFile = GetMapIcon(mobEvent.IsCompleted()),
             };
         }

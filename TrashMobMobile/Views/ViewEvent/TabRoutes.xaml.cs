@@ -13,7 +13,7 @@ public partial class TabRoutes : ContentView
         Loaded += OnLoaded;
     }
 
-    private void OnLoaded(object sender, EventArgs e)
+    private void OnLoaded(object? sender, EventArgs e)
     {
         if (BindingContext is ViewEventViewModel vm)
         {
@@ -22,7 +22,7 @@ public partial class TabRoutes : ContentView
         }
     }
 
-    private void OnRoutesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+    private void OnRoutesCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         if (BindingContext is ViewEventViewModel vm)
         {

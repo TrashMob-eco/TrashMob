@@ -46,7 +46,7 @@ public class CommunityRestService(IHttpClientFactory httpClientFactory) : RestSe
         using var response = await AnonymousHttpClient.GetAsync(requestUri, cancellationToken);
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonConvert.DeserializeObject<Partner>(content);
+        return JsonConvert.DeserializeObject<Partner>(content)!;
     }
 
     public async Task<IEnumerable<Event>> GetCommunityEventsAsync(string slug, bool upcomingOnly = true, CancellationToken cancellationToken = default)

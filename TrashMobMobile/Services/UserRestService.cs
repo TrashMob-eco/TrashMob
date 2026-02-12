@@ -19,7 +19,7 @@ public class UserRestService(IHttpClientFactory httpClientFactory) : RestService
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
-            return JsonConvert.DeserializeObject<User>(responseString);
+            return JsonConvert.DeserializeObject<User>(responseString)!;
         }
     }
 
@@ -41,7 +41,7 @@ public class UserRestService(IHttpClientFactory httpClientFactory) : RestService
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
-            return JsonConvert.DeserializeObject<User>(responseString);
+            return JsonConvert.DeserializeObject<User>(responseString)!;
         }
     }
 
@@ -54,7 +54,7 @@ public class UserRestService(IHttpClientFactory httpClientFactory) : RestService
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
-            return JsonConvert.DeserializeObject<User>(responseString);
+            return JsonConvert.DeserializeObject<User>(responseString)!;
         }
     }
 
@@ -67,7 +67,7 @@ public class UserRestService(IHttpClientFactory httpClientFactory) : RestService
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
-            return JsonConvert.DeserializeObject<User>(responseString);
+            return JsonConvert.DeserializeObject<User>(responseString)!;
         }
     }
 }

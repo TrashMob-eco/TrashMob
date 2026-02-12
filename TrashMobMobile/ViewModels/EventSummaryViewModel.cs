@@ -15,7 +15,7 @@ public partial class EventSummaryViewModel : ObservableObject
     private Guid eventId;
 
     [ObservableProperty]
-    private string notes;
+    private string notes = string.Empty;
 
     [ObservableProperty]
     private int numberOfBags;

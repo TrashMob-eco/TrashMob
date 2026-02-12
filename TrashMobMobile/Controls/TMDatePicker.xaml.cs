@@ -4,8 +4,10 @@ using Maui.BindableProperty.Generator.Core;
 
 public partial class TMDatePicker : ContentView
 {
+#pragma warning disable CS0169 // Field used by AutoBindable source generator
     [AutoBindable(OnChanged = nameof(DateTimePropertyChanged), DefaultBindingMode = nameof(BindingMode.TwoWay), HidesUnderlyingProperty = true)]
     private DateTime date;
+#pragma warning restore CS0169
 
     public TMDatePicker()
     {
