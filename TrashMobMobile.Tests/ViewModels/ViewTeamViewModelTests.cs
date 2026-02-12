@@ -206,6 +206,20 @@ public class ViewTeamViewModelTests
         }
 
         var members = CreateTestMembers(memberCount);
+
+        // If user is a member, add them to the members list returned by GetTeamMembersAsync
+        // so UpdateMembershipState() finds them in the Members collection
+        if (isUserMember)
+        {
+            members.Add(new TeamMember
+            {
+                UserId = testUserId,
+                IsTeamLead = false,
+                JoinedDate = DateTimeOffset.UtcNow,
+                User = new User { UserName = "TestUser" },
+            });
+        }
+
         var events = TestHelpers.CreateTestEvents(upcomingEventCount);
 
         mockTeamManager.Setup(m => m.GetTeamAsync(testTeamId, It.IsAny<CancellationToken>())).ReturnsAsync(team);
