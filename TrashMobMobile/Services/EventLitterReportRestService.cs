@@ -25,7 +25,7 @@ public class EventLitterReportRestService(IHttpClientFactory httpClientFactory) 
         var eventLitterReport =
             await AuthorizedHttpClient.GetFromJsonAsync<FullEventLitterReport>(requestUri, SerializerOptions,
                 cancellationToken);
-        return eventLitterReport;
+        return eventLitterReport!;
     }
 
     public async Task AddLitterReportAsync(EventLitterReport eventLitterReport, CancellationToken cancellationToken = default)

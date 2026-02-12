@@ -24,7 +24,7 @@ public partial class EventLitterReportViewModel : LitterReportViewModel
     private bool canRemoveFromEvent;
 
     [ObservableProperty]
-    private string status;
+    private string status = string.Empty;
 
     private readonly IEventLitterReportManager eventLitterReportManager;
     private readonly Guid eventId;

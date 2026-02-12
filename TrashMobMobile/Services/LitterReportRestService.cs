@@ -20,7 +20,7 @@
             {
                 response.EnsureSuccessStatusCode();
                 var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                return JsonConvert.DeserializeObject<LitterReport>(content);
+                return JsonConvert.DeserializeObject<LitterReport>(content)!;
             }
         }
 
@@ -106,7 +106,7 @@
                 response.EnsureSuccessStatusCode();
                 var returnContent = await response.Content.ReadAsStringAsync(cancellationToken);
 
-                return JsonConvert.DeserializeObject<PaginatedList<LitterReport>>(returnContent);
+                return JsonConvert.DeserializeObject<PaginatedList<LitterReport>>(returnContent)!;
             }
         }
 
@@ -125,7 +125,7 @@
                     return [];
                 }
 
-                return JsonConvert.DeserializeObject<IEnumerable<LitterReport>>(content);
+                return JsonConvert.DeserializeObject<IEnumerable<LitterReport>>(content) ?? [];
             }
         }
 
@@ -164,7 +164,7 @@
                     return [];
                 }
 
-                return JsonConvert.DeserializeObject<IEnumerable<TrashMob.Models.Poco.Location>>(content);
+                return JsonConvert.DeserializeObject<IEnumerable<TrashMob.Models.Poco.Location>>(content) ?? [];
             }
         }
 

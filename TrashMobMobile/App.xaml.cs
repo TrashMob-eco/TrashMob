@@ -24,7 +24,9 @@ public partial class App : Application
             args.SetObserved();
         };
 
+#pragma warning disable CS0618
         MainPage = new AppShell();
+#pragma warning restore CS0618
     }
 
     public static User? CurrentUser { get; set; }

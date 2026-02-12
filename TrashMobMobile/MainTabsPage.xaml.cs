@@ -17,7 +17,7 @@ public partial class MainTabsPage : Shell
         {
             e.Cancel();
 
-            var action = await DisplayActionSheet("Quick Actions", "Cancel", null, "Create Event", "Report Litter");
+            var action = await DisplayActionSheetAsync("Quick Actions", "Cancel", null, "Create Event", "Report Litter");
 
             if (action == "Create Event")
             {

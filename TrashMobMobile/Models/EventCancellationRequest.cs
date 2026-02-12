@@ -4,6 +4,6 @@
     {
         public Guid EventId { get; set; }
 
-        public string CancellationReason { get; set; }
+        public string CancellationReason { get; set; } = string.Empty;
     }
 }

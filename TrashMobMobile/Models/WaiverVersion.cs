@@ -2,8 +2,8 @@
 {
     public class WaiverVersion
     {
-        public string VersionId { get; set; }
+        public string VersionId { get; set; } = string.Empty;
 
-        public string VersionDate { get; set; }
+        public string VersionDate { get; set; } = string.Empty;
     }
 }

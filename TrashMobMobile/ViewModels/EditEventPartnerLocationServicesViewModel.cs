@@ -16,7 +16,7 @@ public partial class EditEventPartnerLocationServicesViewModel(
     private readonly IServiceTypeRestService serviceTypeRestService = serviceTypeRestService;
 
     [ObservableProperty]
-    private EventPartnerLocationServiceViewModel selectedEventPartnerLocationServiceViewModel;
+    private EventPartnerLocationServiceViewModel selectedEventPartnerLocationServiceViewModel = null!;
 
     public ObservableCollection<EventPartnerLocationServiceViewModel> EventPartnerLocationServices { get; set; } =
         new();

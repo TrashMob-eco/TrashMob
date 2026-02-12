@@ -13,7 +13,7 @@ public class AuthService : IAuthService
     private string accessToken = string.Empty;
 
     private DateTimeOffset expiresOn;
-    private IPublicClientApplication pca;
+    private IPublicClientApplication pca = null!;
 
     private string userEmail = string.Empty;
 
@@ -30,7 +30,7 @@ public class AuthService : IAuthService
             InitializeClient();
         }
 
-        _ = await pca.GetAccountsAsync();
+        _ = await pca!.GetAccountsAsync();
 
         try
         {
@@ -84,7 +84,7 @@ public class AuthService : IAuthService
             InitializeClient();
         }
 
-        var accounts = await pca.GetAccountsAsync();
+        var accounts = await pca!.GetAccountsAsync();
         AuthenticationResult result;
 
         try
@@ -182,7 +182,7 @@ public class AuthService : IAuthService
 
         try
         {
-            var result = await pca
+            var result = await pca!
                 .AcquireTokenInteractive(AuthConstants.Scopes)
                 .ExecuteAsync();
 

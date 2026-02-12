@@ -25,7 +25,7 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
     private bool canMarkLitterReportCleaned;
 
     [ObservableProperty]
-    private string litterReportStatus;
+    private string litterReportStatus = string.Empty;
 
     [ObservableProperty]
     private Guid eventIdAssignedTo;
@@ -39,7 +39,7 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
     [ObservableProperty]
     public LitterReportViewModel? litterReportViewModel;
 
-    private LitterReport LitterReport { get; set; }
+    private LitterReport LitterReport { get; set; } = null!;
 
     public ObservableCollection<LitterImageViewModel> LitterImageViewModels { get; init; } = [];
 
@@ -68,7 +68,7 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
                 }
             }
 
-            if (LitterReport.CreatedByUserId == App.CurrentUser.Id &&
+            if (LitterReport.CreatedByUserId == App.CurrentUser!.Id &&
                 LitterReport.LitterReportStatusId == NewLitterReportStatus)
             {
                 CanDeleteLitterReport = true;
@@ -78,7 +78,7 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
                 CanDeleteLitterReport = false;
             }
 
-            if (LitterReport.CreatedByUserId == App.CurrentUser.Id &&
+            if (LitterReport.CreatedByUserId == App.CurrentUser!.Id &&
                 (LitterReport.LitterReportStatusId == NewLitterReportStatus ||
                  LitterReport.LitterReportStatusId == AssignedLitterReportStatus))
             {
@@ -89,7 +89,7 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
                 CanEditLitterReport = false;
             }
 
-            if (LitterReport.CreatedByUserId == App.CurrentUser.Id &&
+            if (LitterReport.CreatedByUserId == App.CurrentUser!.Id &&
                 (LitterReport.LitterReportStatusId == NewLitterReportStatus ||
                  LitterReport.LitterReportStatusId == AssignedLitterReportStatus))
             {
@@ -118,7 +118,7 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
     [RelayCommand]
     private async Task EditLitterReport()
     {
-        await Shell.Current.GoToAsync($"{nameof(EditLitterReportPage)}?LitterReportId={LitterReportViewModel.Id}");
+        await Shell.Current.GoToAsync($"{nameof(EditLitterReportPage)}?LitterReportId={LitterReportViewModel!.Id}");
     }
 
     [RelayCommand]
@@ -130,7 +130,7 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
     [RelayCommand]
     private async Task CreateEvent()
     {
-        await Shell.Current.GoToAsync($"{nameof(CreateEventPage)}?LitterReportId={litterReportViewModel.Id}");
+        await Shell.Current.GoToAsync($"{nameof(CreateEventPage)}?LitterReportId={litterReportViewModel!.Id}");
     }
 
     [RelayCommand]

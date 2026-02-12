@@ -6,21 +6,21 @@ using CommunityToolkit.Mvvm.ComponentModel;
 public partial class LitterReportViewModel : ObservableObject
 {
     [ObservableProperty]
-    private string createdDate;
+    private string createdDate = string.Empty;
 
     [ObservableProperty]
-    private string description;
+    private string description = string.Empty;
 
     [ObservableProperty]
     private Guid id;
 
     [ObservableProperty]
-    private string litterReportStatus;
+    private string litterReportStatus = string.Empty;
 
     private int litterReportStatusId;
 
     [ObservableProperty]
-    private string name;
+    private string name = string.Empty;
 
     public LitterReportViewModel()
     {

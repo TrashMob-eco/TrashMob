@@ -21,7 +21,7 @@
 
                 response.EnsureSuccessStatusCode();
                 var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                return JsonConvert.DeserializeObject<EventSummary>(content);
+                return JsonConvert.DeserializeObject<EventSummary>(content)!;
             }
             catch (HttpRequestException)
             {

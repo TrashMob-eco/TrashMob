@@ -582,6 +582,10 @@ dotnet_diagnostic.CA1001.severity = suggestion
 # MVVMTK0034: Field annotated with ObservableProperty should not be directly referenced
 dotnet_diagnostic.MVVMTK0034.severity = suggestion
 
+# Source-generated files (obj directory)
+[**/obj/**.cs]
+generated_code = true
+
 # TypeScript/JavaScript files
 [*.{ts,tsx,js,jsx}]
 indent_size = 2

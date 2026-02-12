@@ -13,7 +13,7 @@ public partial class WaiverViewModel(INotificationService notificationService, I
     {
         await ExecuteAsync(async () =>
         {
-            var user = await userManager.GetUserAsync(App.CurrentUser.Id.ToString());
+            var user = await userManager.GetUserAsync(App.CurrentUser!.Id.ToString());
             if (user == null)
             {
                 throw new Exception("User not found.");

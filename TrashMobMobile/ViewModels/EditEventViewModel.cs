@@ -26,20 +26,20 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
     private readonly ILitterReportManager litterReportManager = litterReportManager;
     private readonly IEventLitterReportManager eventLitterReportManager = eventLitterReportManager;
     private readonly IMobEventManager mobEventManager = mobEventManager;
-    private EventPartnerLocationViewModel selectedEventPartnerLocation;
+    private EventPartnerLocationViewModel selectedEventPartnerLocation = null!;
     
     private List<LitterReport> RawLitterReports { get; set; } = [];
 
     [ObservableProperty]
-    private EventViewModel eventViewModel;
+    private EventViewModel eventViewModel = null!;
 
     [ObservableProperty]
-    private string selectedEventType;
+    private string selectedEventType = string.Empty;
 
     [ObservableProperty]
-    private AddressViewModel userLocation;
+    private AddressViewModel userLocation = null!;
 
-    private Event MobEvent { get; set; }
+    private Event MobEvent { get; set; } = null!;
 
     [ObservableProperty] 
     private bool arePartnersAvailable;
@@ -90,7 +90,7 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
 
     public ObservableCollection<LitterImageViewModel> LitterImages { get; set; } = [];
 
-    public Action UpdateMapLocation { get; set; }
+    public Action UpdateMapLocation { get; set; } = null!;
 
     public async Task Init(Guid eventId)
     {

@@ -15,7 +15,7 @@ public class StatsRestService(IHttpClientFactory httpClientFactory) : RestServic
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
-            return JsonConvert.DeserializeObject<Stats>(responseString);
+            return JsonConvert.DeserializeObject<Stats>(responseString)!;
         }
     }
 
@@ -28,7 +28,7 @@ public class StatsRestService(IHttpClientFactory httpClientFactory) : RestServic
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
-            return JsonConvert.DeserializeObject<Stats>(responseString);
+            return JsonConvert.DeserializeObject<Stats>(responseString)!;
         }
     }
 }

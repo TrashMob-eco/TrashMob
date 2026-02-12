@@ -18,7 +18,7 @@ public class MapRestService(IHttpClientFactory httpClientFactory) : RestServiceB
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
-            return JsonConvert.DeserializeObject<Address>(responseString);
+            return JsonConvert.DeserializeObject<Address>(responseString)!;
         }
     }
 }

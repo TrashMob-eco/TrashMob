@@ -5,14 +5,16 @@ using Maui.BindableProperty.Generator.Core;
 
 public partial class TMPicker : ContentView
 {
+#pragma warning disable CS0414 // Fields used by AutoBindable source generator
     [AutoBindable(OnChanged = nameof(TitlePropertyChanged))]
-    private readonly string title;
-    
+    private readonly string title = string.Empty;
+
     [AutoBindable(OnChanged = nameof(ItemsSourcePropertyChanged))]
-    private readonly IList itemsSource;
+    private readonly IList itemsSource = null!;
 
     [AutoBindable(OnChanged = nameof(SelectedItemPropertyChanged))]
-    private readonly object selectedItem;
+    private readonly object selectedItem = null!;
+#pragma warning restore CS0414
     
 
     public TMPicker()
@@ -37,7 +39,7 @@ public partial class TMPicker : ContentView
 
     private void WrappedPicker_OnSelectedIndexChanged(object? sender, EventArgs e)
     {
-        SelectedItem = ((BorderlessPicker) sender).SelectedItem;
+        SelectedItem = ((BorderlessPicker)sender!).SelectedItem;
     }
 }
 

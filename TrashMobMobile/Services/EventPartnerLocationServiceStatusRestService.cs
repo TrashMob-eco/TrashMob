@@ -17,7 +17,7 @@ public class EventPartnerLocationServiceStatusRestService(IHttpClientFactory htt
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
-            return JsonConvert.DeserializeObject<List<EventPartnerLocationServiceStatus>>(responseString);
+            return JsonConvert.DeserializeObject<List<EventPartnerLocationServiceStatus>>(responseString) ?? [];
         }
     }
 }

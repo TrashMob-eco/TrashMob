@@ -26,17 +26,16 @@ public partial class CreateEventViewModel : BaseViewModel
     private readonly IEventLitterReportManager eventLitterReportManager;
     private readonly IUserManager userManager;
     private readonly INotificationService notificationService;
-    private readonly IEventPartnerLocationServiceStatusRestService eventPartnerLocationServiceStatusRestService;
     private IEnumerable<LitterReport> RawLitterReports { get; set; } = [];
 
-    public ICommand PreviousCommand { get; set; }
-    public ICommand NextCommand { get; set; }
+    public ICommand PreviousCommand { get; set; } = null!;
+    public ICommand NextCommand { get; set; } = null!;
 
-    public ICommand CloseCommand { get; set; }
+    public ICommand CloseCommand { get; set; } = null!;
 
-    [ObservableProperty] private EventViewModel eventViewModel;
+    [ObservableProperty] private EventViewModel eventViewModel = null!;
 
-    [ObservableProperty] private AddressViewModel userLocation;
+    [ObservableProperty] private AddressViewModel userLocation = null!;
 
     [ObservableProperty] private bool isStepValid;
 
@@ -56,7 +55,7 @@ public partial class CreateEventViewModel : BaseViewModel
     [ObservableProperty]
     private bool isLitterReportListSelected;
 
-    private string selectedEventType;
+    private string selectedEventType = string.Empty;
 
     public string SelectedEventType
     {
@@ -178,9 +177,9 @@ public partial class CreateEventViewModel : BaseViewModel
 
     public int CurrentStep { get; set; }
 
-    [ObservableProperty] private IContentView currentView;
+    [ObservableProperty] private IContentView currentView = null!;
 
-    public IContentView[] Steps { get; set; }
+    public IContentView[] Steps { get; set; } = [];
 
     public enum StepType
     {
@@ -376,7 +375,7 @@ public partial class CreateEventViewModel : BaseViewModel
     public ObservableCollection<EventLitterReportViewModel> EventLitterReports { get; set; } = [];
 
     private List<EventType> EventTypes { get; set; } = [];
-    private EventPartnerLocationViewModel selectedEventPartnerLocation;
+    private EventPartnerLocationViewModel selectedEventPartnerLocation = null!;
 
     public ObservableCollection<string> ETypes { get; set; } = [];
 
@@ -461,7 +460,7 @@ public partial class CreateEventViewModel : BaseViewModel
                         EventViewModel.Address.PostalCode = address.PostalCode;
                         EventViewModel.Address.StreetAddress = address.StreetAddress;
                         EventViewModel.Address.AddressType = AddressType.Event;
-                        EventViewModel.Address.Location = new Microsoft.Maui.Devices.Sensors.Location(address.Latitude.Value, address.Longitude.Value);
+                        EventViewModel.Address.Location = new Microsoft.Maui.Devices.Sensors.Location(address.Latitude!.Value, address.Longitude!.Value);
                     }
                 }
             }
@@ -690,29 +689,29 @@ public partial class CreateEventViewModel : BaseViewModel
 
     #region UI Related properties
 
-    [ObservableProperty] private string stepTitle;
+    [ObservableProperty] private string stepTitle = string.Empty;
 
     [ObservableProperty] private string nextStepText = "Next";
 
     //Event current step control
 
-    [ObservableProperty] private Color stepOneColor;
+    [ObservableProperty] private Color stepOneColor = null!;
 
-    [ObservableProperty] private Color stepTwoColor;
+    [ObservableProperty] private Color stepTwoColor = null!;
 
-    [ObservableProperty] private Color stepThreeColor;
+    [ObservableProperty] private Color stepThreeColor = null!;
 
-    [ObservableProperty] private Color stepFourColor;
+    [ObservableProperty] private Color stepFourColor = null!;
 
-    [ObservableProperty] private Color stepFiveColor;
+    [ObservableProperty] private Color stepFiveColor = null!;
 
-    [ObservableProperty] private Color stepSixColor;
+    [ObservableProperty] private Color stepSixColor = null!;
 
     //Validation Errors
 
-    [ObservableProperty] private string eventDurationError;
+    [ObservableProperty] private string eventDurationError = string.Empty;
 
-    [ObservableProperty] private string descriptionRequiredError;
+    [ObservableProperty] private string descriptionRequiredError = string.Empty;
 
     #endregion
 }

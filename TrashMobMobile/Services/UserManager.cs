@@ -16,7 +16,7 @@
         {
             get
             {
-                return App.CurrentUser;
+                return App.CurrentUser!;
             }
         }
 

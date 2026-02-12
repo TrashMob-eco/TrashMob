@@ -15,7 +15,7 @@ public class EventTypeRestService(IHttpClientFactory httpClientFactory) : RestSe
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
-            return JsonConvert.DeserializeObject<List<EventType>>(responseString);
+            return JsonConvert.DeserializeObject<List<EventType>>(responseString) ?? [];
         }
     }
 }

@@ -15,7 +15,7 @@ public class ServiceTypeRestService(IHttpClientFactory httpClientFactory) : Rest
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
-            return JsonConvert.DeserializeObject<List<ServiceType>>(responseString);
+            return JsonConvert.DeserializeObject<List<ServiceType>>(responseString) ?? [];
         }
     }
 }

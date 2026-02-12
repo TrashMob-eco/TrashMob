@@ -25,7 +25,7 @@ public partial class CreateEventPage : ContentPage
         BindingContext = this.viewModel;
     }
 
-    public string LitterReportId { get; set; }
+    public string LitterReportId { get; set; } = string.Empty;
 
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {

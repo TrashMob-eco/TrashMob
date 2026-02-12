@@ -18,7 +18,7 @@ public class PickupLocationRestService(IHttpClientFactory httpClientFactory) : R
         {
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            return JsonConvert.DeserializeObject<PickupLocation>(content);
+            return JsonConvert.DeserializeObject<PickupLocation>(content)!;
         }
     }
 
@@ -31,7 +31,7 @@ public class PickupLocationRestService(IHttpClientFactory httpClientFactory) : R
         {
             response.EnsureSuccessStatusCode();
             var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
-            var result = JsonConvert.DeserializeObject<PickupLocation>(responseContent);
+            var result = JsonConvert.DeserializeObject<PickupLocation>(responseContent)!;
             return result;
         }
     }
@@ -45,7 +45,7 @@ public class PickupLocationRestService(IHttpClientFactory httpClientFactory) : R
         {
             response.EnsureSuccessStatusCode();
             var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
-            var result = JsonConvert.DeserializeObject<PickupLocation>(responseContent);
+            var result = JsonConvert.DeserializeObject<PickupLocation>(responseContent)!;
             return result;
         }
     }
@@ -72,7 +72,7 @@ public class PickupLocationRestService(IHttpClientFactory httpClientFactory) : R
         {
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            var result = JsonConvert.DeserializeObject<List<PickupLocation>>(content);
+            var result = JsonConvert.DeserializeObject<List<PickupLocation>>(content) ?? [];
             return result;
         }
     }

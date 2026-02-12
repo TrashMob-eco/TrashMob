@@ -11,11 +11,11 @@ public partial class EventPartnerLocationViewModel : ObservableObject
     private Guid partnerLocationId;
 
     [ObservableProperty]
-    private string partnerLocationName;
+    private string partnerLocationName = string.Empty;
 
     [ObservableProperty]
-    private string partnerLocationNotes;
+    private string partnerLocationNotes = string.Empty;
 
     [ObservableProperty]
-    private string partnerServicesEngaged;
+    private string partnerServicesEngaged = string.Empty;
 }

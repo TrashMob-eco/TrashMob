@@ -18,7 +18,7 @@ public class MobEventRestService(IHttpClientFactory httpClientFactory) : RestSer
         var response = await AnonymousHttpClient.PostAsync(requestUri, content, cancellationToken);
         response.EnsureSuccessStatusCode();
         var returnContent = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonConvert.DeserializeObject<PaginatedList<Event>>(returnContent);
+        return JsonConvert.DeserializeObject<PaginatedList<Event>>(returnContent) ?? new();
     }
 
     public async Task<PaginatedList<Event>> GetUserEventsAsync(EventFilter filter, Guid userId, CancellationToken cancellationToken = default)
@@ -28,19 +28,17 @@ public class MobEventRestService(IHttpClientFactory httpClientFactory) : RestSer
         var response = await AnonymousHttpClient.PostAsync(requestUri, content, cancellationToken);
         response.EnsureSuccessStatusCode();
         var returnContent = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonConvert.DeserializeObject<PaginatedList<Event>>(returnContent);
+        return JsonConvert.DeserializeObject<PaginatedList<Event>>(returnContent) ?? new();
     }
 
     public async Task<IEnumerable<Event>> GetUserEventsAsync(Guid userId, bool showFutureEventsOnly,
         CancellationToken cancellationToken = default)
     {
-        var mobEvents = new List<Event>();
-
         var requestUri = $"{Controller}/userevents/{userId}/{showFutureEventsOnly}";
         var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken);
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        mobEvents = JsonConvert.DeserializeObject<List<Event>>(content);
+        var mobEvents = JsonConvert.DeserializeObject<List<Event>>(content) ?? [];
 
         return mobEvents;
     }
@@ -51,7 +49,7 @@ public class MobEventRestService(IHttpClientFactory httpClientFactory) : RestSer
         var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken);
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonConvert.DeserializeObject<Event>(content);
+        return JsonConvert.DeserializeObject<Event>(content)!;
     }
 
     public async Task<Event> UpdateEventAsync(Event mobEvent, CancellationToken cancellationToken = default)
@@ -60,25 +58,21 @@ public class MobEventRestService(IHttpClientFactory httpClientFactory) : RestSer
         var response = await AuthorizedHttpClient.PutAsync(Controller, content, cancellationToken);
         response.EnsureSuccessStatusCode();
         var returnContent = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonConvert.DeserializeObject<Event>(returnContent);
+        return JsonConvert.DeserializeObject<Event>(returnContent)!;
     }
 
     public async Task<Event> AddEventAsync(Event mobEvent, CancellationToken cancellationToken = default)
     {
-        HttpResponseMessage response = null;
-
         var content = JsonContent.Create(mobEvent, typeof(Event), null, SerializerOptions);
-        response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken);
+        var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken);
         response.EnsureSuccessStatusCode();
         var returnContent = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonConvert.DeserializeObject<Event>(returnContent);
+        return JsonConvert.DeserializeObject<Event>(returnContent)!;
     }
 
     public async Task DeleteEventAsync(EventCancellationRequest cancelEvent,
         CancellationToken cancellationToken = default)
     {
-        HttpResponseMessage response = null;
-
         var content = JsonContent.Create(cancelEvent, typeof(EventCancellationRequest), null, SerializerOptions);
         var httpRequestMessage = new HttpRequestMessage
         {
@@ -87,20 +81,18 @@ public class MobEventRestService(IHttpClientFactory httpClientFactory) : RestSer
             RequestUri = AuthorizedHttpClient.BaseAddress,
         };
 
-        response = await AuthorizedHttpClient.SendAsync(httpRequestMessage, cancellationToken);
+        var response = await AuthorizedHttpClient.SendAsync(httpRequestMessage, cancellationToken);
         response.EnsureSuccessStatusCode();
     }
 
     public async Task<IEnumerable<Event>> GetEventsUserIsAttending(Guid userId,
         CancellationToken cancellationToken = default)
     {
-        var mobEvents = new List<Event>();
-
         var requestUri = Controller + $"/eventsuserisattending/{userId}";
         var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken);
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        mobEvents = JsonConvert.DeserializeObject<List<Event>>(content);
+        var mobEvents = JsonConvert.DeserializeObject<List<Event>>(content) ?? [];
 
         return mobEvents;
     }
@@ -130,7 +122,7 @@ public class MobEventRestService(IHttpClientFactory httpClientFactory) : RestSer
                 return [];
             }
 
-            return JsonConvert.DeserializeObject<IEnumerable<Location>>(content);
+            return JsonConvert.DeserializeObject<IEnumerable<Location>>(content) ?? [];
         }
     }
 }
