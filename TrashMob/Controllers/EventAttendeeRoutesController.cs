@@ -110,10 +110,7 @@
         public async Task<IActionResult> UpdateEventAttendeeRoute(DisplayEventAttendeeRoute displayEventAttendeeRoute,
             CancellationToken cancellationToken)
         {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, displayEventAttendeeRoute,
-                AuthorizationPolicyConstants.UserOwnsEntity);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(displayEventAttendeeRoute, AuthorizationPolicyConstants.UserOwnsEntity))
             {
                 return Forbid();
             }

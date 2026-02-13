@@ -1,6 +1,7 @@
 namespace TrashMob.Controllers
 {
     using System;
+    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.DependencyInjection;
@@ -37,5 +38,16 @@ namespace TrashMob.Controllers
         }
 
         protected Guid UserId => new(HttpContext.Items["UserId"].ToString());
+
+        protected async Task<bool> IsAuthorizedAsync(object resource, string policy)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return false;
+            }
+
+            var authResult = await AuthorizationService.AuthorizeAsync(User, resource, policy);
+            return authResult.Succeeded;
+        }
     }
 }

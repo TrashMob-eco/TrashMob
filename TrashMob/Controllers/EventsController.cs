@@ -290,10 +290,7 @@
         [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateEvent(Event mobEvent, CancellationToken cancellationToken)
         {
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserIsEventLead);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }
@@ -351,10 +348,7 @@
             var mobEvent = await eventManager.GetAsync(eventCancellationRequest.EventId, cancellationToken)
                 .ConfigureAwait(false);
 
-            var authResult = await AuthorizationService.AuthorizeAsync(User, mobEvent,
-                AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin))
             {
                 return Forbid();
             }

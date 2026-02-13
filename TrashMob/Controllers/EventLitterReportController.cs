@@ -76,11 +76,7 @@
         public async Task<IActionResult> UpdateEventLitterReport(EventLitterReport eventLitterReport,
             CancellationToken cancellationToken)
         {
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, eventLitterReport,
-                    AuthorizationPolicyConstants.UserIsEventLead);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(eventLitterReport, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }

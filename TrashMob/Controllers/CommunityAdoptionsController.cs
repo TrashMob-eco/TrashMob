@@ -56,10 +56,7 @@ namespace TrashMob.Controllers
                 return NotFound();
             }
 
-            // Check authorization - must be partner admin
-            var authResult = await AuthorizationService.AuthorizeAsync(
-                User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-            if (!authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -87,10 +84,7 @@ namespace TrashMob.Controllers
                 return NotFound();
             }
 
-            // Check authorization
-            var authResult = await AuthorizationService.AuthorizeAsync(
-                User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-            if (!authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -123,10 +117,7 @@ namespace TrashMob.Controllers
                 return NotFound();
             }
 
-            // Check authorization
-            var authResult = await AuthorizationService.AuthorizeAsync(
-                User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-            if (!authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -167,10 +158,7 @@ namespace TrashMob.Controllers
                 return NotFound();
             }
 
-            // Check authorization
-            var authResult = await AuthorizationService.AuthorizeAsync(
-                User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-            if (!authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -208,10 +196,7 @@ namespace TrashMob.Controllers
                 return NotFound();
             }
 
-            // Check authorization
-            var authResult = await AuthorizationService.AuthorizeAsync(
-                User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-            if (!authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -239,10 +224,7 @@ namespace TrashMob.Controllers
                 return NotFound();
             }
 
-            // Check authorization
-            var authResult = await AuthorizationService.AuthorizeAsync(
-                User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-            if (!authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -270,10 +252,7 @@ namespace TrashMob.Controllers
                 return NotFound();
             }
 
-            // Check authorization
-            var authResult = await AuthorizationService.AuthorizeAsync(
-                User, partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-            if (!authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }

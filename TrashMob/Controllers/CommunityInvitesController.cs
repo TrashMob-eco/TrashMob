@@ -51,10 +51,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetBatches(Guid communityId, CancellationToken cancellationToken = default)
         {
             var partner = await partnerManager.GetAsync(communityId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -80,10 +77,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetBatch(Guid communityId, Guid id, CancellationToken cancellationToken = default)
         {
             var partner = await partnerManager.GetAsync(communityId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -118,10 +112,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken = default)
         {
             var partner = await partnerManager.GetAsync(communityId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }

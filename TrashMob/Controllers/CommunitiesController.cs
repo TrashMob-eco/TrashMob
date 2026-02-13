@@ -228,10 +228,7 @@ namespace TrashMob.Controllers
             }
 
             // Authorize: user must be partner admin or site admin
-            var authResult = await AuthorizationService.AuthorizeAsync(
-                User, community, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(community, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -262,10 +259,7 @@ namespace TrashMob.Controllers
             }
 
             // Authorize: user must be partner admin or site admin
-            var authResult = await AuthorizationService.AuthorizeAsync(
-                User, community, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(community, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -303,10 +297,7 @@ namespace TrashMob.Controllers
             }
 
             // Authorize: user must be partner admin or site admin
-            var authResult = await AuthorizationService.AuthorizeAsync(
-                User, existing, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(existing, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -368,10 +359,7 @@ namespace TrashMob.Controllers
             }
 
             // Authorize: user must be partner admin or site admin
-            var authResult = await AuthorizationService.AuthorizeAsync(
-                User, community, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(community, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -423,10 +411,7 @@ namespace TrashMob.Controllers
             }
 
             // Authorize: user must be partner admin or site admin
-            var authResult = await AuthorizationService.AuthorizeAsync(
-                User, community, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(community, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -469,10 +454,7 @@ namespace TrashMob.Controllers
             }
 
             // Authorize: user must be partner admin or site admin
-            var authResult = await AuthorizationService.AuthorizeAsync(
-                User, community, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(community, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }

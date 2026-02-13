@@ -71,21 +71,12 @@
         {
             var localPickupLocation = await Manager.GetAsync(pickupLocation.Id, cancellationToken);
 
-            // Does the user own the pickup location?
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, localPickupLocation,
-                    AuthorizationPolicyConstants.UserIsEventLead);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            // Does the user own the pickup location or the event?
+            if (!await IsAuthorizedAsync(localPickupLocation, AuthorizationPolicyConstants.UserIsEventLead))
             {
-                // Does the user own the event?
                 var mobEvent = await eventManager.GetAsync(pickupLocation.EventId, cancellationToken);
 
-                authResult =
-                    await AuthorizationService.AuthorizeAsync(User, mobEvent,
-                        AuthorizationPolicyConstants.UserIsEventLead);
-
-                if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+                if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
                 {
                     return Forbid();
                 }
@@ -123,18 +114,12 @@
         {
             var pickupLocation = await Manager.GetAsync(pickupLocationId, cancellationToken).ConfigureAwait(false);
 
-            var authResult = await AuthorizationService.AuthorizeAsync(User, pickupLocation,
-                AuthorizationPolicyConstants.UserIsEventLead);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(pickupLocation, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 // Check if the user is the event lead
                 var mobEvent = await eventManager.GetAsync(pickupLocation.EventId, cancellationToken);
 
-                authResult = await AuthorizationService.AuthorizeAsync(User, mobEvent,
-                    AuthorizationPolicyConstants.UserIsEventLead);
-
-                if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+                if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
                 {
                     return Forbid();
                 }
@@ -160,10 +145,7 @@
         {
             var mobEvent = await eventManager.GetAsync(instance.EventId, cancellationToken);
 
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserIsEventLead);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }
@@ -188,10 +170,7 @@
         {
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
 
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserIsEventLead);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }
@@ -217,10 +196,8 @@
             CancellationToken cancellationToken)
         {
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserIsEventLead);
 
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }
@@ -282,19 +259,12 @@
             // Is the user the owner of the pickup location?
             var entity = await Manager.GetAsync(id, cancellationToken);
 
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, entity, AuthorizationPolicyConstants.UserIsEventLead);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(entity, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 // Does the user own the event?
                 var mobEvent = await eventManager.GetAsync(entity.EventId, cancellationToken);
 
-                authResult =
-                    await AuthorizationService.AuthorizeAsync(User, mobEvent,
-                        AuthorizationPolicyConstants.UserIsEventLead);
-
-                if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+                if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
                 {
                     return Forbid();
                 }

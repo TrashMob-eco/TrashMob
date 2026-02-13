@@ -104,10 +104,7 @@ namespace TrashMob.Controllers
                 return NotFound();
             }
 
-            var authResult = await AuthorizationService.AuthorizeAsync(
-                User, mobEvent, AuthorizationPolicyConstants.UserIsEventLead);
-
-            if (!authResult.Succeeded)
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }
@@ -135,10 +132,7 @@ namespace TrashMob.Controllers
                 return NotFound();
             }
 
-            var authResult = await AuthorizationService.AuthorizeAsync(
-                User, mobEvent, AuthorizationPolicyConstants.UserIsEventLead);
-
-            if (!authResult.Succeeded)
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }
@@ -171,10 +165,7 @@ namespace TrashMob.Controllers
                 return NotFound();
             }
 
-            var authResult = await AuthorizationService.AuthorizeAsync(
-                User, mobEvent, AuthorizationPolicyConstants.UserIsEventLead);
-
-            if (!authResult.Succeeded)
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }
@@ -215,10 +206,7 @@ namespace TrashMob.Controllers
                 return NotFound();
             }
 
-            var authResult = await AuthorizationService.AuthorizeAsync(
-                User, mobEvent, AuthorizationPolicyConstants.UserIsEventLead);
-
-            if (!authResult.Succeeded)
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }
@@ -259,10 +247,7 @@ namespace TrashMob.Controllers
                 return NotFound();
             }
 
-            var authResult = await AuthorizationService.AuthorizeAsync(
-                User, mobEvent, AuthorizationPolicyConstants.UserIsEventLead);
-
-            if (!authResult.Succeeded)
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }
@@ -309,10 +294,7 @@ namespace TrashMob.Controllers
                 return NotFound();
             }
 
-            var authResult = await AuthorizationService.AuthorizeAsync(
-                User, mobEvent, AuthorizationPolicyConstants.UserIsEventLead);
-
-            if (!authResult.Succeeded)
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }
@@ -346,10 +328,7 @@ namespace TrashMob.Controllers
                 return NotFound();
             }
 
-            var authResult = await AuthorizationService.AuthorizeAsync(
-                User, mobEvent, AuthorizationPolicyConstants.UserIsEventLead);
-
-            if (!authResult.Succeeded)
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }

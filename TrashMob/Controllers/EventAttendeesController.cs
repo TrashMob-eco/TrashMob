@@ -62,11 +62,7 @@
         public async Task<IActionResult> UpdateEventAttendee(EventAttendee eventAttendee,
             CancellationToken cancellationToken)
         {
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, eventAttendee,
-                    AuthorizationPolicyConstants.UserOwnsEntity);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(eventAttendee, AuthorizationPolicyConstants.UserOwnsEntity))
             {
                 return Forbid();
             }

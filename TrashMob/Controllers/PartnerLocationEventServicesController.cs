@@ -41,10 +41,7 @@
             CancellationToken cancellationToken)
         {
             var partner = await partnerLocationManager.GetPartnerForLocationAsync(partnerLocationId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }

@@ -49,10 +49,7 @@
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> Update(JobOpportunity jobOpportunity, CancellationToken cancellationToken)
         {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, jobOpportunity,
-                AuthorizationPolicyConstants.UserIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(jobOpportunity, AuthorizationPolicyConstants.UserIsAdmin))
             {
                 return Forbid();
             }
@@ -74,10 +71,7 @@
         [RequiredScope(Constants.TrashMobWriteScope)]
         public override async Task<IActionResult> Add(JobOpportunity jobOpportunity, CancellationToken cancellationToken)
         {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, jobOpportunity,
-                AuthorizationPolicyConstants.UserIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(jobOpportunity, AuthorizationPolicyConstants.UserIsAdmin))
             {
                 return Forbid();
             }
@@ -99,10 +93,7 @@
         [RequiredScope(Constants.TrashMobWriteScope)]
         public override async Task<IActionResult> Delete(Guid jobOpportunityId, CancellationToken cancellationToken)
         {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, jobOpportunityId,
-                AuthorizationPolicyConstants.UserIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(jobOpportunityId, AuthorizationPolicyConstants.UserIsAdmin))
             {
                 return Forbid();
             }

@@ -115,11 +115,7 @@
         public async Task<IActionResult> UpdateEventSummary(EventSummary eventSummary,
             CancellationToken cancellationToken)
         {
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, eventSummary,
-                    AuthorizationPolicyConstants.UserIsEventLead);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(eventSummary, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }
@@ -142,11 +138,7 @@
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> AddEventSummary(EventSummary eventSummary, CancellationToken cancellationToken)
         {
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, eventSummary,
-                    AuthorizationPolicyConstants.UserIsEventLead);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(eventSummary, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }
@@ -172,10 +164,7 @@
         {
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken).ConfigureAwait(false);
 
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserIsEventLead);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }

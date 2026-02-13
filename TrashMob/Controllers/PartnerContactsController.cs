@@ -78,10 +78,7 @@
                 return NotFound();
             }
 
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -104,10 +101,7 @@
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
             var partner = await partnerManager.GetAsync(partnerContact.PartnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -130,10 +124,7 @@
             CancellationToken cancellationToken)
         {
             var partner = await partnerContactManager.GetPartnerForContact(partnerContactId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }

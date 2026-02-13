@@ -52,8 +52,7 @@ namespace TrashMob.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> GetNewsletters([FromQuery] string status = null, CancellationToken cancellationToken = default)
         {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, null, AuthorizationPolicyConstants.UserIsAdmin);
-            if (!authResult.Succeeded)
+            if (!await IsAuthorizedAsync(null, AuthorizationPolicyConstants.UserIsAdmin))
             {
                 return Forbid();
             }
@@ -97,8 +96,7 @@ namespace TrashMob.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetNewsletter(Guid id, CancellationToken cancellationToken = default)
         {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, null, AuthorizationPolicyConstants.UserIsAdmin);
-            if (!authResult.Succeeded)
+            if (!await IsAuthorizedAsync(null, AuthorizationPolicyConstants.UserIsAdmin))
             {
                 return Forbid();
             }
@@ -124,8 +122,7 @@ namespace TrashMob.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> CreateNewsletter([FromBody] CreateNewsletterRequest request, CancellationToken cancellationToken = default)
         {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, null, AuthorizationPolicyConstants.UserIsAdmin);
-            if (!authResult.Succeeded)
+            if (!await IsAuthorizedAsync(null, AuthorizationPolicyConstants.UserIsAdmin))
             {
                 return Forbid();
             }
@@ -167,8 +164,7 @@ namespace TrashMob.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateNewsletter(Guid id, [FromBody] UpdateNewsletterRequest request, CancellationToken cancellationToken = default)
         {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, null, AuthorizationPolicyConstants.UserIsAdmin);
-            if (!authResult.Succeeded)
+            if (!await IsAuthorizedAsync(null, AuthorizationPolicyConstants.UserIsAdmin))
             {
                 return Forbid();
             }
@@ -212,8 +208,7 @@ namespace TrashMob.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ScheduleNewsletter(Guid id, [FromBody] ScheduleNewsletterRequest request, CancellationToken cancellationToken = default)
         {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, null, AuthorizationPolicyConstants.UserIsAdmin);
-            if (!authResult.Succeeded)
+            if (!await IsAuthorizedAsync(null, AuthorizationPolicyConstants.UserIsAdmin))
             {
                 return Forbid();
             }
@@ -243,8 +238,7 @@ namespace TrashMob.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> SendNewsletter(Guid id, CancellationToken cancellationToken = default)
         {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, null, AuthorizationPolicyConstants.UserIsAdmin);
-            if (!authResult.Succeeded)
+            if (!await IsAuthorizedAsync(null, AuthorizationPolicyConstants.UserIsAdmin))
             {
                 return Forbid();
             }
@@ -275,8 +269,7 @@ namespace TrashMob.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> SendTestEmail(Guid id, [FromBody] TestSendRequest request, CancellationToken cancellationToken = default)
         {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, null, AuthorizationPolicyConstants.UserIsAdmin);
-            if (!authResult.Succeeded)
+            if (!await IsAuthorizedAsync(null, AuthorizationPolicyConstants.UserIsAdmin))
             {
                 return Forbid();
             }
@@ -311,8 +304,7 @@ namespace TrashMob.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteNewsletter(Guid id, CancellationToken cancellationToken = default)
         {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, null, AuthorizationPolicyConstants.UserIsAdmin);
-            if (!authResult.Succeeded)
+            if (!await IsAuthorizedAsync(null, AuthorizationPolicyConstants.UserIsAdmin))
             {
                 return Forbid();
             }
@@ -344,8 +336,7 @@ namespace TrashMob.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> GetTemplates(CancellationToken cancellationToken = default)
         {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, null, AuthorizationPolicyConstants.UserIsAdmin);
-            if (!authResult.Succeeded)
+            if (!await IsAuthorizedAsync(null, AuthorizationPolicyConstants.UserIsAdmin))
             {
                 return Forbid();
             }
