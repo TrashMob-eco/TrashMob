@@ -1,4 +1,3 @@
-import { GoogleReCaptchaProvider, useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -6,7 +5,6 @@ import { Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { useMutation } from '@tanstack/react-query';
 
-import { Recaptcha } from '@/config/recaptcha.config';
 import { CreateContactRequest } from '@/services/contact';
 import ContactRequestData from '@/components/Models/ContactRequestData';
 
@@ -32,11 +30,10 @@ const contactUsSchema = z.object({
 export const ContactUs = () => {
     const navigate = useNavigate();
     const { toast } = useToast();
-    const { executeRecaptcha } = useGoogleReCaptcha();
 
-    const createContactRequest = useMutation<unknown, unknown, { body: ContactRequestData; captchaToken: string }>({
+    const createContactRequest = useMutation<unknown, unknown, { body: ContactRequestData }>({
         mutationKey: CreateContactRequest().key,
-        mutationFn: (variable) => CreateContactRequest().service(variable.body, variable.captchaToken),
+        mutationFn: (variable) => CreateContactRequest().service(variable.body),
         onSuccess: () => {
             navigate('/');
 
@@ -51,31 +48,20 @@ export const ContactUs = () => {
         resolver: zodResolver(contactUsSchema),
     });
 
-    const onSubmit = useCallback(
-        async (values: z.infer<typeof contactUsSchema>) => {
-            /** Bot & Spam Protection */
-            if (!executeRecaptcha) {
-                return;
-            }
+    const onSubmit = useCallback(async (values: z.infer<typeof contactUsSchema>) => {
+        // If honeypot "humanDontSeeThisField" field is filled, silently reject the submission
+        if (values.humanDontSeeThisField) {
+            return;
+        }
 
-            // If honeypot "humanDontSeeThisField" field is filled, silently reject the submission
-            if (values.humanDontSeeThisField) {
-                return;
-            }
+        const { name, email, message } = values;
+        const body = new ContactRequestData();
+        body.name = name ?? '';
+        body.email = email ?? '';
+        body.message = message ?? '';
 
-            // Execute reCAPTCHA and get token
-            const captchaToken = await executeRecaptcha('form_submit');
-
-            const { name, email, message } = values;
-            const body = new ContactRequestData();
-            body.name = name ?? '';
-            body.email = email ?? '';
-            body.message = message ?? '';
-
-            return createContactRequest.mutateAsync({ body, captchaToken });
-        },
-        [executeRecaptcha],
-    );
+        return createContactRequest.mutateAsync({ body });
+    }, []);
 
     return (
         <div>
@@ -164,13 +150,5 @@ export const ContactUs = () => {
                 </Card>
             </div>
         </div>
-    );
-};
-
-export const ContactUsWrapper = () => {
-    return (
-        <GoogleReCaptchaProvider reCaptchaKey={Recaptcha.KEY}>
-            <ContactUs />
-        </GoogleReCaptchaProvider>
     );
 };

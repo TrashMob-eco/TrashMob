@@ -1,7 +1,6 @@
 ﻿namespace TrashMob.Controllers
 {
     using System;
-    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
@@ -131,6 +130,19 @@
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> PutUser(User user, CancellationToken cancellationToken)
         {
+            // Users can only update themselves unless they are a site admin
+            var currentUser = await userManager.GetUserByInternalIdAsync(UserId, cancellationToken).ConfigureAwait(false);
+
+            if (currentUser == null)
+            {
+                return NotFound();
+            }
+
+            if (user.Id != UserId && !currentUser.IsSiteAdmin)
+            {
+                return Forbid();
+            }
+
             try
             {
                 var updatedUser = await userManager.UpdateAsync(user, cancellationToken).ConfigureAwait(false);
@@ -159,6 +171,19 @@
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> DeleteUser(Guid id, CancellationToken cancellationToken)
         {
+            // Users can only delete themselves unless they are a site admin
+            var currentUser = await userManager.GetUserByInternalIdAsync(UserId, cancellationToken).ConfigureAwait(false);
+
+            if (currentUser == null)
+            {
+                return NotFound();
+            }
+
+            if (id != UserId && !currentUser.IsSiteAdmin)
+            {
+                return Forbid();
+            }
+
             await userManager.DeleteAsync(id, cancellationToken).ConfigureAwait(false);
             TrackEvent(nameof(DeleteUser));
 
@@ -226,10 +251,5 @@
             return Ok(updatedUser);
         }
 
-        private bool ValidateUser(string userId)
-        {
-            var nameIdentifier = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            return userId == nameIdentifier;
-        }
     }
 }

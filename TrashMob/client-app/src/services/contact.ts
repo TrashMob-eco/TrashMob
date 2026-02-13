@@ -9,9 +9,9 @@ export type CreateContactRequest_Body = ContactRequestData;
 export type CreateContactRequest_Response = unknown;
 export const CreateContactRequest = () => ({
     key: ['/ContactRequest', 'create'],
-    service: async (body: CreateContactRequest_Body, captchaToken: string) =>
+    service: async (body: CreateContactRequest_Body) =>
         ApiService('public').fetchData<CreateContactRequest_Response, CreateContactRequest_Body>({
-            url: `/ContactRequest?captchaToken=${captchaToken}`,
+            url: '/ContactRequest',
             method: 'post',
             data: body,
         }),

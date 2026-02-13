@@ -103,6 +103,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The updated event attendee route.</remarks>
         [HttpPut]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(typeof(EventAttendeeRoute), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]

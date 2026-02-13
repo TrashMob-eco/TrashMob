@@ -69,7 +69,7 @@
         [HttpDelete("{id}")]
         public virtual async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
-            var entity = Manager.GetAsync(id, cancellationToken);
+            var entity = await Manager.GetAsync(id, cancellationToken).ConfigureAwait(false);
 
             var authResult =
                 await AuthorizationService.AuthorizeAsync(User, entity, AuthorizationPolicyConstants.UserOwnsEntity);

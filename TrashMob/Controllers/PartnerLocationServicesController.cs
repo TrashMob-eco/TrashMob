@@ -75,6 +75,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The newly created partner location service.</remarks>
         [HttpPost]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> Add(PartnerLocationService partnerLocationService,
             CancellationToken cancellationToken)
         {
@@ -107,6 +108,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The updated partner location service.</remarks>
         [HttpPut]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> UpdatePartnerLocationService(PartnerLocationService partnerLocationService,
             CancellationToken cancellationToken)
         {
@@ -136,6 +138,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The ID of the deleted partner location service.</remarks>
         [HttpDelete("{partnerLocationId}/{serviceTypeId}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> DeletePartnerLocationService(Guid partnerLocationId, int serviceTypeId,
             CancellationToken cancellationToken)
         {

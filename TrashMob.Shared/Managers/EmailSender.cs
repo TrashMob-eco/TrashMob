@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using SendGrid;
     using SendGrid.Helpers.Mail;
     using TrashMob.Shared.Engine;
@@ -14,7 +15,7 @@
     /// <summary>
     /// Sends emails using the SendGrid API for both plain text and templated emails.
     /// </summary>
-    public class EmailSender : IEmailSender
+    public class EmailSender(ILogger<EmailSender> logger) : IEmailSender
     {
         /// <inheritdoc />
         public string ApiKey { get; set; }
@@ -42,11 +43,11 @@
                 var message = MailHelper.CreateSingleEmailToMultipleRecipients(from, tos, email.Subject, email.Message,
                     email.HtmlMessage);
                 var response = await client.SendEmailAsync(message, cancellationToken).ConfigureAwait(false);
-                Console.WriteLine(response);
+                logger.LogInformation("SendGrid response: {StatusCode}", response.StatusCode);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                logger.LogError(ex, "Failed to send email");
             }
         }
 
@@ -85,11 +86,11 @@
                 };
 
                 var response = await client.SendEmailAsync(message, cancellationToken).ConfigureAwait(false);
-                Console.WriteLine(response);
+                logger.LogInformation("SendGrid templated email response: {StatusCode}", response.StatusCode);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                logger.LogError(ex, "Failed to send templated email");
             }
         }
     }

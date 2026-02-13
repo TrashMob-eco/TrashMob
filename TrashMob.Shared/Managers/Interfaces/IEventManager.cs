@@ -71,7 +71,7 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// <param name="endTime">The end of the time range.</param>
         /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
         /// <returns>A collection of event locations within the time range.</returns>
-        Task<IEnumerable<Location>> GeEventLocationsByTimeRangeAsync(DateTimeOffset? startTime, DateTimeOffset? endTime,
+        Task<IEnumerable<Location>> GetEventLocationsByTimeRangeAsync(DateTimeOffset? startTime, DateTimeOffset? endTime,
             CancellationToken cancellationToken = default);
 
         /// <summary>

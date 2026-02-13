@@ -29,7 +29,7 @@ import { PrivacyPolicy } from './pages/privacypolicy';
 import { Help } from './pages/help/page';
 import { Faq } from './pages/faq/page';
 import { AboutUs } from './pages/aboutus/page';
-import { ContactUsWrapper as ContactUs } from './pages/contactus';
+import { ContactUs } from './pages/contactus';
 import { GettingStarted } from './pages/gettingstarted/page';
 import { WhatsNew } from './pages/whatsnew/page';
 import { Board } from './pages/board/page';

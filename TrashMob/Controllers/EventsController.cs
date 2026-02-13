@@ -285,7 +285,7 @@
         public async Task<IActionResult> GetEventLocationsByTimeRange([FromQuery] DateTimeOffset? startTime,
             [FromQuery] DateTimeOffset? endTime, CancellationToken cancellationToken)
         {
-            var result = await eventManager.GeEventLocationsByTimeRangeAsync(startTime, endTime, cancellationToken)
+            var result = await eventManager.GetEventLocationsByTimeRangeAsync(startTime, endTime, cancellationToken)
                 .ConfigureAwait(false);
 
             return Ok(result);
@@ -298,6 +298,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>Returns the updated event.</remarks>
         [HttpPut]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(typeof(Event), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
@@ -355,6 +356,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>Returns the ID of the deleted event.</remarks>
         [HttpDelete]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]

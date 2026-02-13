@@ -3,9 +3,12 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Identity.Web.Resource;
     using TrashMob.Models;
     using TrashMob.Security;
+    using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Poco;
 
@@ -37,10 +40,12 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>Action result.</remarks>
         [HttpPost]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> UploadImage([FromForm] ImageUpload imageUpload,
             CancellationToken cancellationToken)
         {
-            var mobEvent = eventManager.GetAsync(imageUpload.ParentId, cancellationToken);
+            var mobEvent = await eventManager.GetAsync(imageUpload.ParentId, cancellationToken).ConfigureAwait(false);
             var authResult =
                 await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserIsEventLead);
 
@@ -62,9 +67,20 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>Action result.</remarks>
         [HttpDelete]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> DeleteImage(Guid parentId, ImageTypeEnum imageType,
             CancellationToken cancellationToken)
         {
+            var mobEvent = await eventManager.GetAsync(parentId, cancellationToken).ConfigureAwait(false);
+            var authResult =
+                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserIsEventLead);
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            {
+                return Forbid();
+            }
+
             var deleted = await imageManager.DeleteImage(parentId, imageType);
             if (deleted)
             {

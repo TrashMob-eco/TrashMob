@@ -65,6 +65,8 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The updated pickup location.</remarks>
         [HttpPut]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> Update(PickupLocation pickupLocation, CancellationToken cancellationToken)
         {
             var localPickupLocation = await Manager.GetAsync(pickupLocation.Id, cancellationToken);
@@ -116,15 +118,27 @@
         /// <remarks>Action result.</remarks>
         [HttpPost("markpickedup/{pickupLocationId}")]
         [Authorize(AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> MarkAsPickedUp(Guid pickupLocationId, CancellationToken cancellationToken)
         {
-            // Todo: Add security
-            //var authResult = await AuthorizationService.AuthorizeAsync(User, pickupLocation, AuthorizationPolicyConstants.UserIsEventLead);
+            var pickupLocation = await Manager.GetAsync(pickupLocationId, cancellationToken).ConfigureAwait(false);
 
-            //if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
-            //{
-            //    return Forbid();
-            //}
+            var authResult = await AuthorizationService.AuthorizeAsync(User, pickupLocation,
+                AuthorizationPolicyConstants.UserIsEventLead);
+
+            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            {
+                // Check if the user is the event lead
+                var mobEvent = await eventManager.GetAsync(pickupLocation.EventId, cancellationToken);
+
+                authResult = await AuthorizationService.AuthorizeAsync(User, mobEvent,
+                    AuthorizationPolicyConstants.UserIsEventLead);
+
+                if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+                {
+                    return Forbid();
+                }
+            }
 
             await pickupLocationManager.MarkAsPickedUpAsync(pickupLocationId, UserId, cancellationToken)
                 .ConfigureAwait(false);
@@ -140,6 +154,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The added pickup location.</remarks>
         [HttpPost]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public override async Task<IActionResult> Add(PickupLocation instance, CancellationToken cancellationToken)
         {
@@ -167,6 +182,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>Action result.</remarks>
         [HttpPost("submit/{eventId}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> SubmitPickupLocations(Guid eventId, CancellationToken cancellationToken)
         {
@@ -195,6 +211,8 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>Action result.</remarks>
         [HttpPost("image/{eventId}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> UploadImage([FromForm] ImageUpload imageUpload, Guid eventId,
             CancellationToken cancellationToken)
         {

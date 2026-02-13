@@ -4,6 +4,7 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Models;
@@ -109,6 +110,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The updated event summary.</remarks>
         [HttpPut]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> UpdateEventSummary(EventSummary eventSummary,
             CancellationToken cancellationToken)
@@ -136,6 +138,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The created event summary.</remarks>
         [HttpPost]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> AddEventSummary(EventSummary eventSummary, CancellationToken cancellationToken)
         {
@@ -163,10 +166,11 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The ID of the deleted event summary.</remarks>
         [HttpDelete("{id}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> DeleteEventSummary(Guid eventId, CancellationToken cancellationToken)
         {
-            var mobEvent = eventManager.GetAsync(eventId, cancellationToken);
+            var mobEvent = await eventManager.GetAsync(eventId, cancellationToken).ConfigureAwait(false);
 
             var authResult =
                 await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserIsEventLead);
