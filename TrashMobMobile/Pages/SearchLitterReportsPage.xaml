@@ -9,86 +9,93 @@
              xmlns:controls="clr-namespace:TrashMobMobile.Controls"
              Title="Search Litter Reports">
     <Grid>
-        <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
+        <VerticalStackLayout Style="{StaticResource OuterVerticalStack}" Spacing="8">
             <Grid RowDefinitions="Auto, Auto, Auto, *">
-                <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*, *, *, *" Grid.Row="0">
-                    <Button Margin="10"
-                            Grid.Row="0" 
-                            Grid.Column="0" 
-                            Style="{StaticResource SecondarySmallButton}"
-                            Command="{Binding ViewNewCommand}"                                 
-                            Text="New">
-                        <Button.Triggers>
-                            <DataTrigger TargetType="Button" Binding="{Binding IsNewSelected}" Value="true">
-                                <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
-                            </DataTrigger>
-                            <DataTrigger TargetType="Button" Binding="{Binding IsNewSelected}" Value="false">
-                                <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
-                            </DataTrigger>
-                        </Button.Triggers>
-                    </Button>
-                    <Button Margin="10"
-                            Grid.Row="0" 
-                            Grid.Column="1" 
-                            Style="{StaticResource SecondarySmallButton}"
-                            Command="{Binding ViewAssignedCommand}" 
-                            Text="Assigned">
-                        <Button.Triggers>
-                            <DataTrigger TargetType="Button" Binding="{Binding IsAssignedSelected}" Value="true">
-                                <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
-                            </DataTrigger>
-                            <DataTrigger TargetType="Button" Binding="{Binding IsAssignedSelected}" Value="false">
-                                <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
-                            </DataTrigger>
-                        </Button.Triggers>
-                    </Button>
-                    <Button Margin="10"
-                            Grid.Row="0" 
-                            Grid.Column="2" 
-                            Style="{StaticResource SecondarySmallButton}"
-                            Command="{Binding ViewCleanedCommand}" 
-                            Text="Cleaned">
-                        <Button.Triggers>
-                            <DataTrigger TargetType="Button" Binding="{Binding IsCleanedSelected}" Value="true">
-                                <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
-                            </DataTrigger>
-                            <DataTrigger TargetType="Button" Binding="{Binding IsCleanedSelected}" Value="false">
-                                <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
-                            </DataTrigger>
-                        </Button.Triggers>
-                    </Button>
-                    <Label Text="Created Date" Grid.Row="1" Grid.Column="0" Style="{StaticResource FieldLabel}" Margin="10" />
-                    <controls:TMPicker Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
-                                          Title="Created Date Range"
-                                          HeightRequest="40"
-                                          Margin="10"
-                                          ItemsSource="{Binding CreatedDateRanges}"
-                                          SelectedItem="{Binding SelectedCreatedDateRange, Mode=TwoWay}" />
-                </Grid>
-                <Border Grid.Row="1" Style="{StaticResource RoundBorder}">
-                    <Grid ColumnDefinitions="*, *, *, *">
-                        <Picker x:Name="CountryPicker" Title="Select a country"
-                                    ItemsSource="{Binding CountryCollection}" SelectedItem="{Binding SelectedCountry}"
-                                    FontSize="Micro" Grid.Column="0" />
-                        <Picker x:Name="RegionPicker" Title="Select a state"
-                                    ItemsSource="{Binding RegionCollection}" SelectedItem="{Binding SelectedRegion}"
-                                    FontSize="Micro" Grid.Column="1" />
-                        <Picker x:Name="CityPicker" Title="Select a city" ItemsSource="{Binding CityCollection}"
-                                    SelectedItem="{Binding SelectedCity}" FontSize="Micro" Grid.Column="2" />
-                        <Button Text="Clear Selections" Command="{Binding ClearSelectionsCommand}" Margin="10"
-                                    FontSize="Micro" Grid.Column="3" />
-                    </Grid>
+                <!-- Status Filters -->
+                <Border Grid.Row="0" Style="{StaticResource RoundBorder}" Margin="10,8,10,0">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Filters" Style="{StaticResource SectionHeader}" Margin="0" />
+                        <Grid ColumnDefinitions="*, *, *" ColumnSpacing="8">
+                            <Button Grid.Column="0"
+                                    Style="{StaticResource SecondarySmallButton}"
+                                    Command="{Binding ViewNewCommand}"
+                                    Text="New">
+                                <Button.Triggers>
+                                    <DataTrigger TargetType="Button" Binding="{Binding IsNewSelected}" Value="true">
+                                        <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Button" Binding="{Binding IsNewSelected}" Value="false">
+                                        <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
+                                    </DataTrigger>
+                                </Button.Triggers>
+                            </Button>
+                            <Button Grid.Column="1"
+                                    Style="{StaticResource SecondarySmallButton}"
+                                    Command="{Binding ViewAssignedCommand}"
+                                    Text="Assigned">
+                                <Button.Triggers>
+                                    <DataTrigger TargetType="Button" Binding="{Binding IsAssignedSelected}" Value="true">
+                                        <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Button" Binding="{Binding IsAssignedSelected}" Value="false">
+                                        <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
+                                    </DataTrigger>
+                                </Button.Triggers>
+                            </Button>
+                            <Button Grid.Column="2"
+                                    Style="{StaticResource SecondarySmallButton}"
+                                    Command="{Binding ViewCleanedCommand}"
+                                    Text="Cleaned">
+                                <Button.Triggers>
+                                    <DataTrigger TargetType="Button" Binding="{Binding IsCleanedSelected}" Value="true">
+                                        <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Button" Binding="{Binding IsCleanedSelected}" Value="false">
+                                        <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
+                                    </DataTrigger>
+                                </Button.Triggers>
+                            </Button>
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="8">
+                            <Label Text="Created Date" Grid.Column="0" Style="{StaticResource FieldLabel}" VerticalOptions="Center" />
+                            <controls:TMPicker Grid.Column="1"
+                                                  Title="Created Date Range"
+                                                  HeightRequest="40"
+                                                  ItemsSource="{Binding CreatedDateRanges}"
+                                                  SelectedItem="{Binding SelectedCreatedDateRange, Mode=TwoWay}" />
+                        </Grid>
+                    </VerticalStackLayout>
                 </Border>
-                <Grid Margin="5" Grid.Row="2"
+
+                <!-- Location Filters -->
+                <Border Grid.Row="1" Style="{StaticResource RoundBorder}" Margin="10,0">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Location" Style="{StaticResource SectionHeader}" Margin="0" />
+                        <Grid ColumnDefinitions="*, *, *, Auto" ColumnSpacing="4">
+                            <Picker x:Name="CountryPicker" Title="Country"
+                                        ItemsSource="{Binding CountryCollection}" SelectedItem="{Binding SelectedCountry}"
+                                        FontSize="Micro" Grid.Column="0" />
+                            <Picker x:Name="RegionPicker" Title="State"
+                                        ItemsSource="{Binding RegionCollection}" SelectedItem="{Binding SelectedRegion}"
+                                        FontSize="Micro" Grid.Column="1" />
+                            <Picker x:Name="CityPicker" Title="City" ItemsSource="{Binding CityCollection}"
+                                        SelectedItem="{Binding SelectedCity}" FontSize="Micro" Grid.Column="2" />
+                            <Button Text="Clear" Command="{Binding ClearSelectionsCommand}"
+                                        FontSize="Micro" Grid.Column="3" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Grid Margin="10,4" Grid.Row="2"
                       ColumnDefinitions="6*, *, *"
                       RowDefinitions="Auto">
                     <ImageButton Grid.Column="1"
                              HeightRequest="24"
-                             Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconMap}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" 
+                             Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconMap}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}"
                              Command="{Binding MapSelectedCommand}" />
-                    <ImageButton Grid.Column="2" 
+                    <ImageButton Grid.Column="2"
                              HeightRequest="24"
-                             Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconViewList}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" 
+                             Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconViewList}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}"
                              Command="{Binding ListSelectedCommand}" />
                 </Grid>
 
