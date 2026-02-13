@@ -47,7 +47,9 @@ export async function getAppConfig(): Promise<AppConfig> {
     }
 
     // Fetch config from backend
-    configPromise = fetch('/api/config')
+    // Use VITE_API_URL if set (for local dev against remote backend), otherwise /api (proxied)
+    const configUrl = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/config` : '/api/config';
+    configPromise = fetch(configUrl)
         .then((response) => {
             if (!response.ok) {
                 throw new Error(`Failed to fetch config: ${response.status}`);
@@ -60,11 +62,10 @@ export async function getAppConfig(): Promise<AppConfig> {
         })
         .catch((error) => {
             console.error('Failed to fetch app config:', error);
-            // Return a default config that will cause auth to fail gracefully
+            // Return a default config — defaults to Entra (fallback config in AuthStore handles the rest)
             const defaultConfig: AppConfig = {
                 applicationInsightsKey: null,
-                authProvider: 'b2c',
-                azureAdB2C: null,
+                authProvider: 'entra',
             };
             cachedConfig = defaultConfig;
             return defaultConfig;
