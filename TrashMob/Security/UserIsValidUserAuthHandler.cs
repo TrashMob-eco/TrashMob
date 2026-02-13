@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
@@ -86,6 +87,18 @@
                     }
                 }
 
+                if (!user.DateOfBirth.HasValue)
+                {
+                    var dobClaim = context.User.FindFirst("dateOfBirth")
+                                 ?? context.User.FindFirst(ClaimTypes.DateOfBirth)
+                                 ?? context.User.Claims.FirstOrDefault(c => c.Type.Contains("dateOfBirth", StringComparison.OrdinalIgnoreCase));
+                    if (dobClaim != null && DateTimeOffset.TryParse(dobClaim.Value, out var parsedDob))
+                    {
+                        user.DateOfBirth = parsedDob;
+                        needsUpdate = true;
+                    }
+                }
+
                 if (needsUpdate)
                 {
                     await userManager.UpdateAsync(user, CancellationToken.None);
@@ -123,12 +136,15 @@
                 return null;
             }
 
-            // Extract name claims if available
+            // Extract name and profile claims if available
             var givenNameClaim = context.User.FindFirst(ClaimTypes.GivenName)
                               ?? context.User.FindFirst("given_name");
             var surnameClaim = context.User.FindFirst(ClaimTypes.Surname)
                             ?? context.User.FindFirst("family_name");
             var pictureClaim = context.User.FindFirst("picture");
+            var dobClaim = context.User.FindFirst("dateOfBirth")
+                         ?? context.User.FindFirst(ClaimTypes.DateOfBirth)
+                         ?? context.User.Claims.FirstOrDefault(c => c.Type.Contains("dateOfBirth", StringComparison.OrdinalIgnoreCase));
 
             // Generate a username from email (part before @) — user can change it later
             var userName = email.Split('@')[0];
@@ -140,6 +156,12 @@
                 userName = $"{userName}_{objectId.ToString()[..8]}";
             }
 
+            DateTimeOffset? dateOfBirth = null;
+            if (dobClaim != null && DateTimeOffset.TryParse(dobClaim.Value, out var parsedDob))
+            {
+                dateOfBirth = parsedDob;
+            }
+
             var newUser = new Models.User
             {
                 Email = email,
@@ -148,6 +170,7 @@
                 GivenName = givenNameClaim?.Value,
                 Surname = surnameClaim?.Value,
                 ProfilePhotoUrl = pictureClaim?.Value,
+                DateOfBirth = dateOfBirth,
                 MemberSince = DateTimeOffset.UtcNow,
             };
 
