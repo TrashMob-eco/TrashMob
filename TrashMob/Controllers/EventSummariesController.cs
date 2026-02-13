@@ -166,7 +166,7 @@
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> DeleteEventSummary(Guid eventId, CancellationToken cancellationToken)
         {
-            var mobEvent = eventManager.GetAsync(eventId, cancellationToken);
+            var mobEvent = await eventManager.GetAsync(eventId, cancellationToken).ConfigureAwait(false);
 
             var authResult =
                 await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserIsEventLead);

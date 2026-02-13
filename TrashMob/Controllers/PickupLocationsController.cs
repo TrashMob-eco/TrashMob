@@ -154,6 +154,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The added pickup location.</remarks>
         [HttpPost]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public override async Task<IActionResult> Add(PickupLocation instance, CancellationToken cancellationToken)
         {
@@ -181,6 +182,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>Action result.</remarks>
         [HttpPost("submit/{eventId}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> SubmitPickupLocations(Guid eventId, CancellationToken cancellationToken)
         {
@@ -209,6 +211,8 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>Action result.</remarks>
         [HttpPost("image/{eventId}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> UploadImage([FromForm] ImageUpload imageUpload, Guid eventId,
             CancellationToken cancellationToken)
         {
