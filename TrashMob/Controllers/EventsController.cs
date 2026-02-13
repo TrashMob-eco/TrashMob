@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Collections.Generic;
@@ -32,7 +32,7 @@
         [ProducesResponseType(typeof(IEnumerable<Event>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEvents(CancellationToken cancellationToken)
         {
-            var result = await eventManager.GetAsync(cancellationToken).ConfigureAwait(false);
+            var result = await eventManager.GetAsync(cancellationToken);
             return Ok(result);
         }
 
@@ -45,7 +45,7 @@
         [ProducesResponseType(typeof(List<DisplayEvent>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetActiveEvents(CancellationToken cancellationToken)
         {
-            var results = await eventManager.GetActiveEventsAsync(cancellationToken).ConfigureAwait(false);
+            var results = await eventManager.GetActiveEventsAsync(cancellationToken);
 
             // CreatedByUser is already included via the manager query
             var displayResults = results
@@ -64,7 +64,7 @@
         [ProducesResponseType(typeof(List<DisplayEvent>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetCompletedEvents(CancellationToken cancellationToken)
         {
-            var results = await eventManager.GetCompletedEventsAsync(cancellationToken).ConfigureAwait(false);
+            var results = await eventManager.GetCompletedEventsAsync(cancellationToken);
 
             // CreatedByUser is included via the manager query; canceled events already filtered
             var displayResults = results
@@ -84,8 +84,7 @@
         public async Task<IActionResult> GetNotCanceledEvents(CancellationToken cancellationToken)
         {
             // Use filtered query which excludes canceled events and includes CreatedByUser
-            var results = await eventManager.GetFilteredEventsAsync(new EventFilter(), cancellationToken)
-                .ConfigureAwait(false);
+            var results = await eventManager.GetFilteredEventsAsync(new EventFilter(), cancellationToken);
 
             var displayResults = results
                 .Select(e => e.ToDisplayEvent(e.CreatedByUserName ?? string.Empty))
@@ -107,7 +106,7 @@
         public async Task<IActionResult> GetEventsUserIsAttending(Guid userId, CancellationToken cancellationToken)
         {
             var result = await eventAttendeeManager
-                .GetEventsUserIsAttendingAsync(userId, cancellationToken: cancellationToken).ConfigureAwait(false);
+                .GetEventsUserIsAttendingAsync(userId, cancellationToken: cancellationToken);
             return Ok(result);
         }
 
@@ -125,10 +124,9 @@
         public async Task<IActionResult> GetUserEvents(Guid userId, bool futureEventsOnly,
             CancellationToken cancellationToken)
         {
-            var result1 = await eventManager.GetUserEventsAsync(userId, futureEventsOnly, cancellationToken)
-                .ConfigureAwait(false);
+            var result1 = await eventManager.GetUserEventsAsync(userId, futureEventsOnly, cancellationToken);
             var result2 = await eventAttendeeManager
-                .GetEventsUserIsAttendingAsync(userId, futureEventsOnly, cancellationToken).ConfigureAwait(false);
+                .GetEventsUserIsAttendingAsync(userId, futureEventsOnly, cancellationToken);
 
             var allResults = result1.Union(result2, new EventComparer());
             return Ok(allResults);
@@ -148,11 +146,9 @@
         public async Task<IActionResult> GetCanceledUserEvents(Guid userId, bool futureEventsOnly,
             CancellationToken cancellationToken)
         {
-            var result1 = await eventManager.GetCanceledUserEventsAsync(userId, futureEventsOnly, cancellationToken)
-                .ConfigureAwait(false);
+            var result1 = await eventManager.GetCanceledUserEventsAsync(userId, futureEventsOnly, cancellationToken);
             var result2 = await eventAttendeeManager
-                .GetCanceledEventsUserIsAttendingAsync(userId, futureEventsOnly, cancellationToken)
-                .ConfigureAwait(false);
+                .GetCanceledEventsUserIsAttendingAsync(userId, futureEventsOnly, cancellationToken);
 
             var allResults = result1.Union(result2, new EventComparer());
             return Ok(allResults);
@@ -167,7 +163,7 @@
         [ProducesResponseType(typeof(Event), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEvent(Guid id, CancellationToken cancellationToken = default)
         {
-            var mobEvent = await eventManager.GetAsync(id, cancellationToken).ConfigureAwait(false);
+            var mobEvent = await eventManager.GetAsync(id, cancellationToken);
 
             if (mobEvent == null)
             {
@@ -188,7 +184,7 @@
         public async Task<IActionResult> GetFilteredEvents([FromBody] EventFilter filter,
             CancellationToken cancellationToken)
         {
-            var result = await eventManager.GetFilteredEventsAsync(filter, cancellationToken).ConfigureAwait(false);
+            var result = await eventManager.GetFilteredEventsAsync(filter, cancellationToken);
 
             if (filter.PageSize != null)
             {
@@ -211,11 +207,10 @@
         [ProducesResponseType(typeof(PaginatedList<Event>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetPagedUserEvents([FromBody] EventFilter filter, Guid userId, CancellationToken cancellationToken)
         {
-            var result1 = await eventManager.GetUserEventsAsync(filter, userId, cancellationToken)
-                .ConfigureAwait(false);
+            var result1 = await eventManager.GetUserEventsAsync(filter, userId, cancellationToken);
 
             var result2 = await eventAttendeeManager
-                .GetEventsUserIsAttendingAsync(filter, userId, cancellationToken).ConfigureAwait(false);
+                .GetEventsUserIsAttendingAsync(filter, userId, cancellationToken);
 
             var allResults = result1.Union(result2, new EventComparer());
 
@@ -240,7 +235,7 @@
         public async Task<IActionResult> GetPagedFilteredEvents([FromBody] EventFilter filter,
             CancellationToken cancellationToken)
         {
-            var result = await eventManager.GetFilteredEventsAsync(filter, cancellationToken).ConfigureAwait(false);
+            var result = await eventManager.GetFilteredEventsAsync(filter, cancellationToken);
 
             if (filter.PageSize != null)
             {
@@ -270,8 +265,7 @@
         public async Task<IActionResult> GetEventLocationsByTimeRange([FromQuery] DateTimeOffset? startTime,
             [FromQuery] DateTimeOffset? endTime, CancellationToken cancellationToken)
         {
-            var result = await eventManager.GetEventLocationsByTimeRangeAsync(startTime, endTime, cancellationToken)
-                .ConfigureAwait(false);
+            var result = await eventManager.GetEventLocationsByTimeRangeAsync(startTime, endTime, cancellationToken);
 
             return Ok(result);
         }
@@ -304,7 +298,7 @@
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!await EventExists(mobEvent.Id, cancellationToken).ConfigureAwait(false))
+                if (!await EventExists(mobEvent.Id, cancellationToken))
                 {
                     return NotFound();
                 }
@@ -325,7 +319,7 @@
         [ProducesResponseType(typeof(Event), StatusCodes.Status200OK)]
         public async Task<IActionResult> AddEvent(Event mobEvent, CancellationToken cancellationToken)
         {
-            var newEvent = await eventManager.AddAsync(mobEvent, UserId, cancellationToken).ConfigureAwait(false);
+            var newEvent = await eventManager.AddAsync(mobEvent, UserId, cancellationToken);
             TrackEvent(nameof(AddEvent));
 
             return Ok(newEvent);
@@ -345,8 +339,7 @@
         public async Task<IActionResult> DeleteEvent(EventCancellationRequest eventCancellationRequest,
             CancellationToken cancellationToken)
         {
-            var mobEvent = await eventManager.GetAsync(eventCancellationRequest.EventId, cancellationToken)
-                .ConfigureAwait(false);
+            var mobEvent = await eventManager.GetAsync(eventCancellationRequest.EventId, cancellationToken);
 
             if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLeadOrIsAdmin))
             {
@@ -354,7 +347,7 @@
             }
 
             await eventManager.DeleteAsync(eventCancellationRequest.EventId,
-                eventCancellationRequest.CancellationReason, UserId, cancellationToken).ConfigureAwait(false);
+                eventCancellationRequest.CancellationReason, UserId, cancellationToken);
             TrackEvent(nameof(DeleteEvent));
 
             return Ok(eventCancellationRequest.EventId);
@@ -362,7 +355,7 @@
 
         private async Task<bool> EventExists(Guid id, CancellationToken cancellationToken)
         {
-            var mobEvent = await eventManager.GetAsync(id, cancellationToken).ConfigureAwait(false);
+            var mobEvent = await eventManager.GetAsync(id, cancellationToken);
 
             return mobEvent != null;
         }

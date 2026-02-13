@@ -45,7 +45,7 @@ namespace TrashMob.Controllers
         [ProducesResponseType(typeof(WaiverComplianceSummary), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetComplianceSummary(CancellationToken cancellationToken = default)
         {
-            var result = await userWaiverManager.GetComplianceSummaryAsync(cancellationToken).ConfigureAwait(false);
+            var result = await userWaiverManager.GetComplianceSummaryAsync(cancellationToken);
             TrackEvent(nameof(GetComplianceSummary));
 
             return Ok(result);
@@ -72,7 +72,7 @@ namespace TrashMob.Controllers
             if (filter.PageSize < 1) filter.PageSize = 50;
             if (filter.PageSize > 100) filter.PageSize = 100;
 
-            var result = await userWaiverManager.GetUserWaiversFilteredAsync(filter, cancellationToken).ConfigureAwait(false);
+            var result = await userWaiverManager.GetUserWaiversFilteredAsync(filter, cancellationToken);
             TrackEvent(nameof(GetUserWaivers));
 
             return Ok(result);
@@ -95,7 +95,7 @@ namespace TrashMob.Controllers
             if (days < 1) days = 1;
             if (days > 365) days = 365;
 
-            var result = await userWaiverManager.GetUsersWithExpiringWaiversAsync(days, cancellationToken).ConfigureAwait(false);
+            var result = await userWaiverManager.GetUsersWithExpiringWaiversAsync(days, cancellationToken);
             TrackEvent(nameof(GetUsersWithExpiringWaivers));
 
             return Ok(result);
@@ -117,7 +117,7 @@ namespace TrashMob.Controllers
         {
             filter ??= new UserWaiverFilter();
 
-            var records = await userWaiverManager.GetWaiversForExportAsync(filter, cancellationToken).ConfigureAwait(false);
+            var records = await userWaiverManager.GetWaiversForExportAsync(filter, cancellationToken);
             TrackEvent(nameof(ExportWaivers));
 
             // Generate CSV
@@ -143,7 +143,7 @@ namespace TrashMob.Controllers
             Guid userWaiverId,
             CancellationToken cancellationToken = default)
         {
-            var result = await userWaiverManager.GetUserWaiverWithDetailsAsync(userWaiverId, cancellationToken).ConfigureAwait(false);
+            var result = await userWaiverManager.GetUserWaiverWithDetailsAsync(userWaiverId, cancellationToken);
 
             if (result == null)
             {
@@ -189,7 +189,7 @@ namespace TrashMob.Controllers
 
         private static string EscapeCsvField(string field)
         {
-            if (string.IsNullOrEmpty(field))
+            if (string.IsNullOrWhiteSpace(field))
             {
                 return "";
             }

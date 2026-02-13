@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Collections.Generic;
@@ -101,7 +101,7 @@
                 return Forbid();
             }
 
-            await manager.AddAsync(partnerDocument, UserId, cancellationToken).ConfigureAwait(false);
+            await manager.AddAsync(partnerDocument, UserId, cancellationToken);
             TrackEvent(nameof(Add) + typeof(PartnerDocument));
 
             return Ok();
@@ -165,11 +165,11 @@
                 ExpirationDate = expirationDate,
             };
 
-            await manager.AddAsync(document, UserId, cancellationToken).ConfigureAwait(false);
+            await manager.AddAsync(document, UserId, cancellationToken);
 
             var blobPath = await storageManager.UploadDocumentAsync(partnerId, document.Id, formFile, cancellationToken);
             document.BlobStoragePath = blobPath;
-            await manager.UpdateAsync(document, UserId, cancellationToken).ConfigureAwait(false);
+            await manager.UpdateAsync(document, UserId, cancellationToken);
 
             TrackEvent(nameof(Upload) + typeof(PartnerDocument));
 
@@ -192,7 +192,7 @@
             }
 
             var document = await manager.GetAsync(partnerDocumentId, cancellationToken);
-            if (string.IsNullOrEmpty(document?.BlobStoragePath))
+            if (string.IsNullOrWhiteSpace(document?.BlobStoragePath))
             {
                 return BadRequest("This document has no uploaded file.");
             }
@@ -236,7 +236,7 @@
                 return Forbid();
             }
 
-            var result = await manager.UpdateAsync(partnerDocument, UserId, cancellationToken).ConfigureAwait(false);
+            var result = await manager.UpdateAsync(partnerDocument, UserId, cancellationToken);
             TrackEvent(nameof(Update) + typeof(PartnerDocument));
 
             return Ok(result);
@@ -259,12 +259,12 @@
             }
 
             var document = await manager.GetAsync(partnerDocumentId, cancellationToken);
-            if (!string.IsNullOrEmpty(document?.BlobStoragePath))
+            if (!string.IsNullOrWhiteSpace(document?.BlobStoragePath))
             {
                 await storageManager.DeleteDocumentAsync(document.BlobStoragePath, cancellationToken);
             }
 
-            await manager.DeleteAsync(partnerDocumentId, cancellationToken).ConfigureAwait(false);
+            await manager.DeleteAsync(partnerDocumentId, cancellationToken);
             TrackEvent(nameof(Delete) + typeof(PartnerDocument));
 
             return Ok(partnerDocumentId);

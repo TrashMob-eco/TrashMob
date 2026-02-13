@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Collections.Generic;
@@ -24,8 +24,7 @@
         public async Task<IActionResult> GetEventRoutes(Guid eventId, CancellationToken cancellationToken)
         {
             var routes = await eventAttendeeRouteManager
-                .GetAnonymizedRoutesForEventAsync(eventId, cancellationToken)
-                .ConfigureAwait(false);
+                .GetAnonymizedRoutesForEventAsync(eventId, cancellationToken);
 
             TrackEvent(nameof(GetEventRoutes));
             return Ok(routes);
@@ -41,8 +40,7 @@
         public async Task<IActionResult> GetEventRouteStats(Guid eventId, CancellationToken cancellationToken)
         {
             var stats = await eventAttendeeRouteManager
-                .GetEventRouteStatsAsync(eventId, cancellationToken)
-                .ConfigureAwait(false);
+                .GetEventRouteStatsAsync(eventId, cancellationToken);
 
             TrackEvent(nameof(GetEventRouteStats));
             return Ok(stats);

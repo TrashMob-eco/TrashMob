@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers
+namespace TrashMob.Shared.Managers
 {
     using System;
     using System.Collections.Generic;
@@ -93,7 +93,7 @@
         public override async Task<User> UpdateAsync(User user, CancellationToken cancellationToken = default)
         {
             // The IsSiteAdmin flag can only be changed directly in the database, so once set, we need to preserve that, no matter what the user passes in
-            var matchedUser = await GetUserByInternalIdAsync(user.Id, cancellationToken).ConfigureAwait(false);
+            var matchedUser = await GetUserByInternalIdAsync(user.Id, cancellationToken);
             user.IsSiteAdmin = matchedUser.IsSiteAdmin;
 
             return await base.UpdateAsync(user, cancellationToken);
@@ -266,7 +266,7 @@
             }
 
             // Remove the user's profile
-            var user = await Repo.GetAsync(id, cancellationToken).ConfigureAwait(false);
+            var user = await Repo.GetAsync(id, cancellationToken);
             var result = await Repo.DeleteAsync(user);
 
             return result;
@@ -300,8 +300,7 @@
             };
 
             await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.GenericEmail,
-                    SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None)
-                .ConfigureAwait(false);
+                    SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None);
 
             // Send welcome email to new User
             var welcomeMessage = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.WelcomeToTrashMob.ToString());
@@ -320,8 +319,7 @@
             };
 
             await emailManager.SendTemplatedEmailAsync(welcomeSubject, SendGridEmailTemplateId.GenericEmail,
-                    SendGridEmailGroupId.General, userDynamicTemplateData, welcomeRecipients, CancellationToken.None)
-                .ConfigureAwait(false);
+                    SendGridEmailGroupId.General, userDynamicTemplateData, welcomeRecipients, CancellationToken.None);
 
             return addedUser;
         }

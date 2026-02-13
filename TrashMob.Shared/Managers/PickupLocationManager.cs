@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers
+namespace TrashMob.Shared.Managers
 {
     using System;
     using System.Collections.Generic;
@@ -144,8 +144,7 @@
             }
 
             await emailManager.SendTemplatedEmailAsync(emailSubject, SendGridEmailTemplateId.PickupEmail,
-                    SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None)
-                .ConfigureAwait(false);
+                    SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None);
 
             // Update the submitted status
             foreach (var pickupLocation in pickupLocations)

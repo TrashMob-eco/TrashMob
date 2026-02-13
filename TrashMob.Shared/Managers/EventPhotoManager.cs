@@ -96,7 +96,7 @@ namespace TrashMob.Shared.Managers
             };
 
             // Upload image to blob storage
-            if (!string.IsNullOrEmpty(imageData))
+            if (!string.IsNullOrWhiteSpace(imageData))
             {
                 // Convert base64 to IFormFile-like stream
                 var bytes = Convert.FromBase64String(imageData);

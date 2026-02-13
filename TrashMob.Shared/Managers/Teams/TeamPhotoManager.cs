@@ -53,7 +53,7 @@ namespace TrashMob.Shared.Managers.Teams
         /// <inheritdoc />
         public async Task<int> HardDeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            await base.DeleteAsync(id, cancellationToken).ConfigureAwait(false);
+            await base.DeleteAsync(id, cancellationToken);
             await imageManager.DeleteImage(id, ImageTypeEnum.TeamPhoto);
 
             return 1;

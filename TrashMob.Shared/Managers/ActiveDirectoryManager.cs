@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers
+namespace TrashMob.Shared.Managers
 {
     using System;
     using System.Threading;
@@ -52,7 +52,7 @@
             }
 
             var response = await DoesUserExist(activeDirectoryNewUserRequest.userName,
-                activeDirectoryNewUserRequest.email, cancellationToken).ConfigureAwait(false);
+                activeDirectoryNewUserRequest.email, cancellationToken);
 
             if (response != null)
             {
@@ -66,7 +66,7 @@
                 UserName = activeDirectoryNewUserRequest.userName,
             };
 
-            await userManager.AddAsync(user, cancellationToken).ConfigureAwait(false);
+            await userManager.AddAsync(user, cancellationToken);
 
             var newUserResponse = new ActiveDirectoryContinuationResponse();
 
@@ -91,7 +91,7 @@
                 return response;
             }
 
-            await userManager.DeleteAsync(user.Id, cancellationToken).ConfigureAwait(false);
+            await userManager.DeleteAsync(user.Id, cancellationToken);
 
             var deleteUserResponse = new ActiveDirectoryContinuationResponse
             {
@@ -132,7 +132,7 @@
             }
 
             var response = await DoesUserExist(activeDirectoryValidateNewUserRequest.userName,
-                activeDirectoryValidateNewUserRequest.email, cancellationToken).ConfigureAwait(false);
+                activeDirectoryValidateNewUserRequest.email, cancellationToken);
 
             if (response != null)
             {
@@ -166,8 +166,7 @@
             }
 
             var originalUser = await userManager
-                .GetUserByObjectIdAsync(activeDirectoryUpdateUserProfileRequest.objectId, cancellationToken)
-                .ConfigureAwait(false);
+                .GetUserByObjectIdAsync(activeDirectoryUpdateUserProfileRequest.objectId, cancellationToken);
 
             if (originalUser == null)
             {
@@ -182,8 +181,7 @@
             }
 
             var checkUser = await userManager
-                .GetUserByUserNameAsync(activeDirectoryUpdateUserProfileRequest.userName, CancellationToken.None)
-                .ConfigureAwait(false);
+                .GetUserByUserNameAsync(activeDirectoryUpdateUserProfileRequest.userName, CancellationToken.None);
 
             if (checkUser != null && checkUser.ObjectId != activeDirectoryUpdateUserProfileRequest.objectId)
             {
@@ -224,8 +222,7 @@
             }
 
             var originalUser = await userManager
-                .GetUserByObjectIdAsync(activeDirectoryUpdateUserProfileRequest.objectId, cancellationToken)
-                .ConfigureAwait(false);
+                .GetUserByObjectIdAsync(activeDirectoryUpdateUserProfileRequest.objectId, cancellationToken);
 
             if (originalUser == null)
             {
@@ -241,7 +238,7 @@
 
             originalUser.UserName = activeDirectoryUpdateUserProfileRequest.userName;
 
-            await userManager.UpdateAsync(originalUser, cancellationToken).ConfigureAwait(false);
+            await userManager.UpdateAsync(originalUser, cancellationToken);
 
             var newUserResponse = new ActiveDirectoryContinuationResponse
             {
@@ -255,7 +252,7 @@
         private async Task<ActiveDirectoryResponseBase> DoesUserExist(string userName, string email,
             CancellationToken cancellationToken = default)
         {
-            var originalUser = await userManager.GetUserByEmailAsync(email, cancellationToken).ConfigureAwait(false);
+            var originalUser = await userManager.GetUserByEmailAsync(email, cancellationToken);
 
             if (originalUser != null)
             {
@@ -269,8 +266,7 @@
                 return response;
             }
 
-            var checkUser = await userManager.GetUserByUserNameAsync(userName, CancellationToken.None)
-                .ConfigureAwait(false);
+            var checkUser = await userManager.GetUserByUserNameAsync(userName, CancellationToken.None);
 
             if (checkUser != null)
             {

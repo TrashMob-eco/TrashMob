@@ -43,7 +43,7 @@ namespace TrashMob.Controllers
         [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
         public async Task<IActionResult> GetHeroSection(CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(strapiBaseUrl))
+            if (string.IsNullOrWhiteSpace(strapiBaseUrl))
             {
                 return StatusCode(StatusCodes.Status503ServiceUnavailable, "CMS not configured");
             }
@@ -72,7 +72,7 @@ namespace TrashMob.Controllers
         [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
         public async Task<IActionResult> GetWhatIsTrashmob(CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(strapiBaseUrl))
+            if (string.IsNullOrWhiteSpace(strapiBaseUrl))
             {
                 return StatusCode(StatusCodes.Status503ServiceUnavailable, "CMS not configured");
             }
@@ -101,7 +101,7 @@ namespace TrashMob.Controllers
         [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
         public async Task<IActionResult> GetGettingStarted(CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(strapiBaseUrl))
+            if (string.IsNullOrWhiteSpace(strapiBaseUrl))
             {
                 return StatusCode(StatusCodes.Status503ServiceUnavailable, "CMS not configured");
             }
@@ -130,7 +130,7 @@ namespace TrashMob.Controllers
         [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
         public IActionResult GetAdminUrl()
         {
-            if (string.IsNullOrEmpty(strapiBaseUrl))
+            if (string.IsNullOrWhiteSpace(strapiBaseUrl))
             {
                 return StatusCode(StatusCodes.Status503ServiceUnavailable, "CMS not configured");
             }

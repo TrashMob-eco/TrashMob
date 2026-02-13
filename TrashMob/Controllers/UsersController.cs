@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Threading;
@@ -28,7 +28,7 @@
         [Authorize(Policy = AuthorizationPolicyConstants.UserIsAdmin)]
         public async Task<IActionResult> GetUsers(CancellationToken cancellationToken)
         {
-            var result = await userManager.GetAsync(cancellationToken).ConfigureAwait(false);
+            var result = await userManager.GetAsync(cancellationToken);
             return Ok(result);
         }
 
@@ -42,7 +42,7 @@
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> GetUser(string userName, CancellationToken cancellationToken)
         {
-            var user = await userManager.GetUserByUserNameAsync(userName, cancellationToken).ConfigureAwait(false);
+            var user = await userManager.GetUserByUserNameAsync(userName, cancellationToken);
 
             if (user == null)
             {
@@ -62,7 +62,7 @@
         [Authorize(Policy = "ValidUser")]
         public async Task<IActionResult> GetUserByEmail(string email, CancellationToken cancellationToken)
         {
-            var user = await userManager.GetUserByEmailAsync(email, cancellationToken).ConfigureAwait(false);
+            var user = await userManager.GetUserByEmailAsync(email, cancellationToken);
 
             if (user == null)
             {
@@ -83,7 +83,7 @@
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> VerifyUnique(Guid userId, string userName, CancellationToken cancellationToken)
         {
-            var user = await userManager.GetUserByUserNameAsync(userName, cancellationToken).ConfigureAwait(false);
+            var user = await userManager.GetUserByUserNameAsync(userName, cancellationToken);
 
             if (user == null)
             {
@@ -108,7 +108,7 @@
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> GetUserByInternalId(Guid id, CancellationToken cancellationToken = default)
         {
-            var user = await userManager.GetUserByInternalIdAsync(id, cancellationToken).ConfigureAwait(false);
+            var user = await userManager.GetUserByInternalIdAsync(id, cancellationToken);
 
             if (user == null)
             {
@@ -131,7 +131,7 @@
         public async Task<IActionResult> PutUser(User user, CancellationToken cancellationToken)
         {
             // Users can only update themselves unless they are a site admin
-            var currentUser = await userManager.GetUserByInternalIdAsync(UserId, cancellationToken).ConfigureAwait(false);
+            var currentUser = await userManager.GetUserByInternalIdAsync(UserId, cancellationToken);
 
             if (currentUser == null)
             {
@@ -145,13 +145,13 @@
 
             try
             {
-                var updatedUser = await userManager.UpdateAsync(user, cancellationToken).ConfigureAwait(false);
+                var updatedUser = await userManager.UpdateAsync(user, cancellationToken);
                 TrackEvent("UpdateUser");
                 return Ok(updatedUser);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!await userManager.UserExistsAsync(user.Id, cancellationToken).ConfigureAwait(false))
+                if (!await userManager.UserExistsAsync(user.Id, cancellationToken))
                 {
                     return NotFound();
                 }
@@ -172,7 +172,7 @@
         public async Task<IActionResult> DeleteUser(Guid id, CancellationToken cancellationToken)
         {
             // Users can only delete themselves unless they are a site admin
-            var currentUser = await userManager.GetUserByInternalIdAsync(UserId, cancellationToken).ConfigureAwait(false);
+            var currentUser = await userManager.GetUserByInternalIdAsync(UserId, cancellationToken);
 
             if (currentUser == null)
             {
@@ -184,7 +184,7 @@
                 return Forbid();
             }
 
-            await userManager.DeleteAsync(id, cancellationToken).ConfigureAwait(false);
+            await userManager.DeleteAsync(id, cancellationToken);
             TrackEvent(nameof(DeleteUser));
 
             return Ok(id);
@@ -201,14 +201,14 @@
         [RequiredScope(Constants.TrashMobReadScope)]
         public async Task<IActionResult> GetUserImpact(Guid userId, CancellationToken cancellationToken)
         {
-            var user = await userManager.GetUserByInternalIdAsync(userId, cancellationToken).ConfigureAwait(false);
+            var user = await userManager.GetUserByInternalIdAsync(userId, cancellationToken);
 
             if (user == null)
             {
                 return NotFound();
             }
 
-            var impactStats = await metricsManager.GetUserImpactStatsAsync(userId, cancellationToken).ConfigureAwait(false);
+            var impactStats = await metricsManager.GetUserImpactStatsAsync(userId, cancellationToken);
             return Ok(impactStats);
         }
 
@@ -225,14 +225,14 @@
             [FromForm] ImageUpload imageUpload,
             CancellationToken cancellationToken)
         {
-            var user = await userManager.GetUserByInternalIdAsync(UserId, cancellationToken).ConfigureAwait(false);
+            var user = await userManager.GetUserByInternalIdAsync(UserId, cancellationToken);
             if (user == null)
             {
                 return NotFound();
             }
 
             // Delete existing profile photo if present
-            if (!string.IsNullOrEmpty(user.ProfilePhotoUrl))
+            if (!string.IsNullOrWhiteSpace(user.ProfilePhotoUrl))
             {
                 await imageManager.DeleteImage(UserId, ImageTypeEnum.UserProfilePhoto);
             }
@@ -246,7 +246,7 @@
             var imageUrl = await imageManager.GetImageUrlAsync(UserId, ImageTypeEnum.UserProfilePhoto, ImageSizeEnum.Reduced, cancellationToken);
             user.ProfilePhotoUrl = imageUrl;
 
-            var updatedUser = await userManager.UpdateAsync(user, cancellationToken).ConfigureAwait(false);
+            var updatedUser = await userManager.UpdateAsync(user, cancellationToken);
             TrackEvent(nameof(UploadProfilePhoto));
             return Ok(updatedUser);
         }

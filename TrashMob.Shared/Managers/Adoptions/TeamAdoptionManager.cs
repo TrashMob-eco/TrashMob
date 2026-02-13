@@ -54,14 +54,14 @@ namespace TrashMob.Shared.Managers.Adoptions
             CancellationToken cancellationToken = default)
         {
             // Validate team exists and is active
-            var team = await teamManager.GetAsync(teamId, cancellationToken).ConfigureAwait(false);
+            var team = await teamManager.GetAsync(teamId, cancellationToken);
             if (team == null || !team.IsActive)
             {
                 return ServiceResult<TeamAdoption>.Failure("Team not found or is inactive.");
             }
 
             // Validate area exists, is active, and is available
-            var area = await adoptableAreaManager.GetAsync(adoptableAreaId, cancellationToken).ConfigureAwait(false);
+            var area = await adoptableAreaManager.GetAsync(adoptableAreaId, cancellationToken);
             if (area == null || !area.IsActive)
             {
                 return ServiceResult<TeamAdoption>.Failure("Adoptable area not found or is inactive.");
@@ -73,7 +73,7 @@ namespace TrashMob.Shared.Managers.Adoptions
             }
 
             // Check for existing application
-            if (await HasExistingApplicationAsync(teamId, adoptableAreaId, cancellationToken).ConfigureAwait(false))
+            if (await HasExistingApplicationAsync(teamId, adoptableAreaId, cancellationToken))
             {
                 return ServiceResult<TeamAdoption>.Failure("This team already has a pending or approved adoption for this area.");
             }
@@ -93,10 +93,10 @@ namespace TrashMob.Shared.Managers.Adoptions
                 LastUpdatedDate = DateTimeOffset.UtcNow
             };
 
-            var result = await base.AddAsync(adoption, submittedByUserId, cancellationToken).ConfigureAwait(false);
+            var result = await base.AddAsync(adoption, submittedByUserId, cancellationToken);
 
             // Send notification to community admins
-            await SendApplicationSubmittedNotificationAsync(result, team, area, cancellationToken).ConfigureAwait(false);
+            await SendApplicationSubmittedNotificationAsync(result, team, area, cancellationToken);
 
             return ServiceResult<TeamAdoption>.Success(result);
         }
@@ -107,7 +107,7 @@ namespace TrashMob.Shared.Managers.Adoptions
             Guid reviewedByUserId,
             CancellationToken cancellationToken = default)
         {
-            var adoption = await Repo.GetAsync(adoptionId, cancellationToken).ConfigureAwait(false);
+            var adoption = await Repo.GetAsync(adoptionId, cancellationToken);
             if (adoption == null)
             {
                 return ServiceResult<TeamAdoption>.Failure("Adoption application not found.");
@@ -124,21 +124,21 @@ namespace TrashMob.Shared.Managers.Adoptions
             adoption.LastUpdatedByUserId = reviewedByUserId;
             adoption.LastUpdatedDate = DateTimeOffset.UtcNow;
 
-            var result = await base.UpdateAsync(adoption, reviewedByUserId, cancellationToken).ConfigureAwait(false);
+            var result = await base.UpdateAsync(adoption, reviewedByUserId, cancellationToken);
 
             // Update area status if not allowing co-adoption
-            var area = await adoptableAreaManager.GetAsync(adoption.AdoptableAreaId, cancellationToken).ConfigureAwait(false);
+            var area = await adoptableAreaManager.GetAsync(adoption.AdoptableAreaId, cancellationToken);
             if (area != null && !area.AllowCoAdoption)
             {
                 area.Status = "Adopted";
                 area.LastUpdatedByUserId = reviewedByUserId;
                 area.LastUpdatedDate = DateTimeOffset.UtcNow;
-                await adoptableAreaManager.UpdateAsync(area, reviewedByUserId, cancellationToken).ConfigureAwait(false);
+                await adoptableAreaManager.UpdateAsync(area, reviewedByUserId, cancellationToken);
             }
 
             // Send approval notification to team leads
-            var team = await teamManager.GetAsync(adoption.TeamId, cancellationToken).ConfigureAwait(false);
-            await SendApplicationApprovedNotificationAsync(result, team, area, cancellationToken).ConfigureAwait(false);
+            var team = await teamManager.GetAsync(adoption.TeamId, cancellationToken);
+            await SendApplicationApprovedNotificationAsync(result, team, area, cancellationToken);
 
             return ServiceResult<TeamAdoption>.Success(result);
         }
@@ -150,7 +150,7 @@ namespace TrashMob.Shared.Managers.Adoptions
             Guid reviewedByUserId,
             CancellationToken cancellationToken = default)
         {
-            var adoption = await Repo.GetAsync(adoptionId, cancellationToken).ConfigureAwait(false);
+            var adoption = await Repo.GetAsync(adoptionId, cancellationToken);
             if (adoption == null)
             {
                 return ServiceResult<TeamAdoption>.Failure("Adoption application not found.");
@@ -168,12 +168,12 @@ namespace TrashMob.Shared.Managers.Adoptions
             adoption.LastUpdatedByUserId = reviewedByUserId;
             adoption.LastUpdatedDate = DateTimeOffset.UtcNow;
 
-            var result = await base.UpdateAsync(adoption, reviewedByUserId, cancellationToken).ConfigureAwait(false);
+            var result = await base.UpdateAsync(adoption, reviewedByUserId, cancellationToken);
 
             // Send rejection notification to team leads
-            var team = await teamManager.GetAsync(adoption.TeamId, cancellationToken).ConfigureAwait(false);
-            var area = await adoptableAreaManager.GetAsync(adoption.AdoptableAreaId, cancellationToken).ConfigureAwait(false);
-            await SendApplicationRejectedNotificationAsync(result, team, area, cancellationToken).ConfigureAwait(false);
+            var team = await teamManager.GetAsync(adoption.TeamId, cancellationToken);
+            var area = await adoptableAreaManager.GetAsync(adoption.AdoptableAreaId, cancellationToken);
+            await SendApplicationRejectedNotificationAsync(result, team, area, cancellationToken);
 
             return ServiceResult<TeamAdoption>.Success(result);
         }
@@ -188,8 +188,7 @@ namespace TrashMob.Shared.Managers.Adoptions
                 .Include(a => a.AdoptableArea)
                     .ThenInclude(aa => aa.Partner)
                 .OrderByDescending(a => a.ApplicationDate)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -201,8 +200,7 @@ namespace TrashMob.Shared.Managers.Adoptions
                 .Where(a => a.AdoptableAreaId == adoptableAreaId)
                 .Include(a => a.Team)
                 .OrderByDescending(a => a.ApplicationDate)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -215,8 +213,7 @@ namespace TrashMob.Shared.Managers.Adoptions
                 .Include(a => a.Team)
                 .Include(a => a.AdoptableArea)
                 .OrderBy(a => a.ApplicationDate)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -229,8 +226,7 @@ namespace TrashMob.Shared.Managers.Adoptions
                 .Include(a => a.Team)
                 .Include(a => a.AdoptableArea)
                 .OrderByDescending(a => a.ReviewedDate)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -243,8 +239,7 @@ namespace TrashMob.Shared.Managers.Adoptions
                 .AnyAsync(a => a.TeamId == teamId
                     && a.AdoptableAreaId == adoptableAreaId
                     && (a.Status == "Pending" || a.Status == "Approved"),
-                    cancellationToken)
-                .ConfigureAwait(false);
+                    cancellationToken);
         }
 
         /// <inheritdoc />
@@ -262,8 +257,7 @@ namespace TrashMob.Shared.Managers.Adoptions
                 .Include(a => a.Team)
                 .Include(a => a.AdoptableArea)
                 .OrderBy(a => a.LastEventDate)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -278,11 +272,9 @@ namespace TrashMob.Shared.Managers.Adoptions
                     && a.Status == "Approved"
                     && (a.AdoptionEndDate == null || a.AdoptionEndDate >= today))
                 .Include(a => a.AdoptableArea)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
 
-            var areas = await adoptableAreaManager.GetByCommunityAsync(partnerId, cancellationToken)
-                .ConfigureAwait(false);
+            var areas = await adoptableAreaManager.GetByCommunityAsync(partnerId, cancellationToken);
 
             var activeAreas = areas.Where(a => a.IsActive).ToList();
             var adoptedAreaIds = adoptions.Select(a => a.AdoptableAreaId).Distinct().ToList();
@@ -313,8 +305,7 @@ namespace TrashMob.Shared.Managers.Adoptions
                 .Include(a => a.AdoptableArea)
                 .OrderBy(a => a.AdoptableArea.Name)
                 .ThenBy(a => a.Team.Name)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
         /// <summary>
@@ -351,8 +342,8 @@ namespace TrashMob.Shared.Managers.Adoptions
             AdoptableArea area,
             CancellationToken cancellationToken)
         {
-            var partner = await partnerManager.GetAsync(area.PartnerId, cancellationToken).ConfigureAwait(false);
-            var admins = await partnerAdminManager.GetAdminsForPartnerAsync(area.PartnerId, cancellationToken).ConfigureAwait(false);
+            var partner = await partnerManager.GetAsync(area.PartnerId, cancellationToken);
+            var admins = await partnerAdminManager.GetAdminsForPartnerAsync(area.PartnerId, cancellationToken);
 
             var adminList = admins.ToList();
             if (adminList.Count == 0)
@@ -369,7 +360,7 @@ namespace TrashMob.Shared.Managers.Adoptions
             var subject = $"New Adoption Application: {team.Name} for {area.Name}";
 
             var recipients = adminList
-                .Where(a => !string.IsNullOrEmpty(a.Email))
+                .Where(a => !string.IsNullOrWhiteSpace(a.Email))
                 .Select(a => new EmailAddress { Name = a.UserName ?? a.Email, Email = a.Email })
                 .ToList();
 
@@ -388,8 +379,7 @@ namespace TrashMob.Shared.Managers.Adoptions
                     SendGridEmailGroupId.General,
                     dynamicTemplateData,
                     recipients,
-                    cancellationToken)
-                    .ConfigureAwait(false);
+                    cancellationToken);
             }
         }
 
@@ -402,8 +392,8 @@ namespace TrashMob.Shared.Managers.Adoptions
             AdoptableArea area,
             CancellationToken cancellationToken)
         {
-            var partner = await partnerManager.GetAsync(area.PartnerId, cancellationToken).ConfigureAwait(false);
-            var teamLeads = await teamMemberManager.GetTeamLeadsAsync(adoption.TeamId, cancellationToken).ConfigureAwait(false);
+            var partner = await partnerManager.GetAsync(area.PartnerId, cancellationToken);
+            var teamLeads = await teamMemberManager.GetTeamLeadsAsync(adoption.TeamId, cancellationToken);
 
             var leadList = teamLeads.ToList();
             if (leadList.Count == 0)
@@ -422,7 +412,7 @@ namespace TrashMob.Shared.Managers.Adoptions
             var subject = $"Adoption Approved: {area.Name}";
 
             var recipients = leadList
-                .Where(l => l.User != null && !string.IsNullOrEmpty(l.User.Email))
+                .Where(l => l.User != null && !string.IsNullOrWhiteSpace(l.User.Email))
                 .Select(l => new EmailAddress { Name = l.User.UserName ?? l.User.Email, Email = l.User.Email })
                 .ToList();
 
@@ -441,8 +431,7 @@ namespace TrashMob.Shared.Managers.Adoptions
                     SendGridEmailGroupId.General,
                     dynamicTemplateData,
                     recipients,
-                    cancellationToken)
-                    .ConfigureAwait(false);
+                    cancellationToken);
             }
         }
 
@@ -455,8 +444,8 @@ namespace TrashMob.Shared.Managers.Adoptions
             AdoptableArea area,
             CancellationToken cancellationToken)
         {
-            var partner = await partnerManager.GetAsync(area.PartnerId, cancellationToken).ConfigureAwait(false);
-            var teamLeads = await teamMemberManager.GetTeamLeadsAsync(adoption.TeamId, cancellationToken).ConfigureAwait(false);
+            var partner = await partnerManager.GetAsync(area.PartnerId, cancellationToken);
+            var teamLeads = await teamMemberManager.GetTeamLeadsAsync(adoption.TeamId, cancellationToken);
 
             var leadList = teamLeads.ToList();
             if (leadList.Count == 0)
@@ -473,7 +462,7 @@ namespace TrashMob.Shared.Managers.Adoptions
             var subject = $"Adoption Application Update: {area.Name}";
 
             var recipients = leadList
-                .Where(l => l.User != null && !string.IsNullOrEmpty(l.User.Email))
+                .Where(l => l.User != null && !string.IsNullOrWhiteSpace(l.User.Email))
                 .Select(l => new EmailAddress { Name = l.User.UserName ?? l.User.Email, Email = l.User.Email })
                 .ToList();
 
@@ -492,8 +481,7 @@ namespace TrashMob.Shared.Managers.Adoptions
                     SendGridEmailGroupId.General,
                     dynamicTemplateData,
                     recipients,
-                    cancellationToken)
-                    .ConfigureAwait(false);
+                    cancellationToken);
             }
         }
     }

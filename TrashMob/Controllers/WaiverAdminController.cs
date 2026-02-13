@@ -42,7 +42,7 @@ namespace TrashMob.Controllers
         [ProducesResponseType(typeof(IEnumerable<WaiverVersion>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll(CancellationToken cancellationToken = default)
         {
-            var result = await waiverVersionManager.GetAllAsync(cancellationToken).ConfigureAwait(false);
+            var result = await waiverVersionManager.GetAllAsync(cancellationToken);
             TrackEvent(nameof(GetAll));
 
             return Ok(result);
@@ -59,7 +59,7 @@ namespace TrashMob.Controllers
         [ProducesResponseType(typeof(IEnumerable<WaiverVersion>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetActive(CancellationToken cancellationToken = default)
         {
-            var result = await waiverVersionManager.GetActiveWaiversAsync(cancellationToken).ConfigureAwait(false);
+            var result = await waiverVersionManager.GetActiveWaiversAsync(cancellationToken);
             TrackEvent(nameof(GetActive));
 
             return Ok(result);
@@ -78,7 +78,7 @@ namespace TrashMob.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellationToken = default)
         {
-            var result = await waiverVersionManager.GetAsync(id, cancellationToken).ConfigureAwait(false);
+            var result = await waiverVersionManager.GetAsync(id, cancellationToken);
 
             if (result == null)
             {
@@ -125,7 +125,7 @@ namespace TrashMob.Controllers
                 return BadRequest("Waiver text is required.");
             }
 
-            var result = await waiverVersionManager.AddAsync(waiverVersion, UserId, cancellationToken).ConfigureAwait(false);
+            var result = await waiverVersionManager.AddAsync(waiverVersion, UserId, cancellationToken);
             TrackEvent(nameof(Create));
 
             return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
@@ -154,7 +154,7 @@ namespace TrashMob.Controllers
                 return BadRequest("Waiver version ID mismatch.");
             }
 
-            var existing = await waiverVersionManager.GetAsync(id, cancellationToken).ConfigureAwait(false);
+            var existing = await waiverVersionManager.GetAsync(id, cancellationToken);
             if (existing == null)
             {
                 return NotFound();
@@ -163,7 +163,7 @@ namespace TrashMob.Controllers
             waiverVersion.LastUpdatedByUserId = UserId;
             waiverVersion.LastUpdatedDate = DateTimeOffset.UtcNow;
 
-            var result = await waiverVersionManager.UpdateAsync(waiverVersion, cancellationToken).ConfigureAwait(false);
+            var result = await waiverVersionManager.UpdateAsync(waiverVersion, cancellationToken);
             TrackEvent(nameof(Update));
 
             return Ok(result);
@@ -184,7 +184,7 @@ namespace TrashMob.Controllers
         {
             try
             {
-                await waiverVersionManager.DeactivateAsync(id, UserId, cancellationToken).ConfigureAwait(false);
+                await waiverVersionManager.DeactivateAsync(id, UserId, cancellationToken);
                 TrackEvent(nameof(Deactivate));
 
                 return NoContent();
@@ -229,8 +229,7 @@ namespace TrashMob.Controllers
             Guid communityId,
             CancellationToken cancellationToken = default)
         {
-            var result = await waiverVersionManager.GetCommunityWaiverAssignmentsAsync(communityId, cancellationToken)
-                .ConfigureAwait(false);
+            var result = await waiverVersionManager.GetCommunityWaiverAssignmentsAsync(communityId, cancellationToken);
             TrackEvent(nameof(GetCommunityWaivers));
 
             return Ok(result);
@@ -264,7 +263,7 @@ namespace TrashMob.Controllers
                     request.WaiverId,
                     communityId,
                     UserId,
-                    cancellationToken).ConfigureAwait(false);
+                    cancellationToken);
                 TrackEvent(nameof(AssignWaiver));
 
                 return CreatedAtAction(nameof(GetCommunityWaivers), new { communityId }, result);
@@ -291,8 +290,7 @@ namespace TrashMob.Controllers
             Guid waiverId,
             CancellationToken cancellationToken = default)
         {
-            await waiverVersionManager.RemoveFromCommunityAsync(waiverId, communityId, cancellationToken)
-                .ConfigureAwait(false);
+            await waiverVersionManager.RemoveFromCommunityAsync(waiverId, communityId, cancellationToken);
             TrackEvent(nameof(RemoveWaiver));
 
             return NoContent();

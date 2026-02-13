@@ -24,7 +24,7 @@ namespace TrashMob.Controllers
             // Extract instrumentation key from connection string
             // Format: InstrumentationKey=xxx;IngestionEndpoint=xxx;LiveEndpoint=xxx
             string instrumentationKey = null;
-            if (!string.IsNullOrEmpty(connectionString))
+            if (!string.IsNullOrWhiteSpace(connectionString))
             {
                 foreach (var part in connectionString.Split(';'))
                 {
@@ -58,7 +58,7 @@ namespace TrashMob.Controllers
             string profileEditAuthority = null;
             string authorityDomain = null;
 
-            if (!string.IsNullOrEmpty(b2cInstance) && !string.IsNullOrEmpty(b2cDomain))
+            if (!string.IsNullOrWhiteSpace(b2cInstance) && !string.IsNullOrWhiteSpace(b2cDomain))
             {
                 var baseAuthority = $"{b2cInstance}/{b2cDomain}";
                 signUpSignInAuthority = $"{baseAuthority}/{b2cSignUpSignInPolicyId}";
@@ -113,7 +113,7 @@ namespace TrashMob.Controllers
             string authority = null;
             string authorityDomain = null;
 
-            if (!string.IsNullOrEmpty(entraInstance) && !string.IsNullOrEmpty(entraTenantId))
+            if (!string.IsNullOrWhiteSpace(entraInstance) && !string.IsNullOrWhiteSpace(entraTenantId))
             {
                 // Entra External ID authority: https://{tenant}.ciamlogin.com/{tenantId}
                 authority = $"{entraInstance}/{entraTenantId}";

@@ -43,8 +43,7 @@ namespace TrashMob.Controllers
             [FromQuery] int pageSize = 50,
             CancellationToken cancellationToken = default)
         {
-            var result = await photoModerationManager.GetPendingPhotosAsync(page, pageSize, cancellationToken)
-                .ConfigureAwait(false);
+            var result = await photoModerationManager.GetPendingPhotosAsync(page, pageSize, cancellationToken);
             TrackEvent(nameof(GetPendingPhotos));
 
             return Ok(result);
@@ -66,8 +65,7 @@ namespace TrashMob.Controllers
             [FromQuery] int pageSize = 50,
             CancellationToken cancellationToken = default)
         {
-            var result = await photoModerationManager.GetFlaggedPhotosAsync(page, pageSize, cancellationToken)
-                .ConfigureAwait(false);
+            var result = await photoModerationManager.GetFlaggedPhotosAsync(page, pageSize, cancellationToken);
             TrackEvent(nameof(GetFlaggedPhotos));
 
             return Ok(result);
@@ -89,8 +87,7 @@ namespace TrashMob.Controllers
             [FromQuery] int pageSize = 50,
             CancellationToken cancellationToken = default)
         {
-            var result = await photoModerationManager.GetRecentlyModeratedAsync(page, pageSize, cancellationToken)
-                .ConfigureAwait(false);
+            var result = await photoModerationManager.GetRecentlyModeratedAsync(page, pageSize, cancellationToken);
             TrackEvent(nameof(GetRecentlyModerated));
 
             return Ok(result);
@@ -115,8 +112,7 @@ namespace TrashMob.Controllers
         {
             try
             {
-                var result = await photoModerationManager.ApprovePhotoAsync(photoType, id, UserId, cancellationToken)
-                    .ConfigureAwait(false);
+                var result = await photoModerationManager.ApprovePhotoAsync(photoType, id, UserId, cancellationToken);
                 TrackEvent(nameof(ApprovePhoto));
 
                 return Ok(result);
@@ -154,8 +150,7 @@ namespace TrashMob.Controllers
 
             try
             {
-                var result = await photoModerationManager.RejectPhotoAsync(photoType, id, request.Reason, UserId, cancellationToken)
-                    .ConfigureAwait(false);
+                var result = await photoModerationManager.RejectPhotoAsync(photoType, id, request.Reason, UserId, cancellationToken);
                 TrackEvent(nameof(RejectPhoto));
 
                 return Ok(result);
@@ -185,8 +180,7 @@ namespace TrashMob.Controllers
         {
             try
             {
-                var result = await photoModerationManager.DismissFlagAsync(photoType, id, UserId, cancellationToken)
-                    .ConfigureAwait(false);
+                var result = await photoModerationManager.DismissFlagAsync(photoType, id, UserId, cancellationToken);
                 TrackEvent(nameof(DismissFlag));
 
                 return Ok(result);
@@ -238,8 +232,7 @@ namespace TrashMob.Controllers
 
             try
             {
-                var result = await photoModerationManager.FlagPhotoAsync(photoType, id, request.Reason, UserId, cancellationToken)
-                    .ConfigureAwait(false);
+                var result = await photoModerationManager.FlagPhotoAsync(photoType, id, request.Reason, UserId, cancellationToken);
                 TrackEvent(nameof(FlagPhoto));
 
                 return Ok(result);

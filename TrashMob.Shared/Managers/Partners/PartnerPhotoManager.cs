@@ -53,7 +53,7 @@ namespace TrashMob.Shared.Managers.Partners
         public async Task<int> HardDeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
             // Delete from database first
-            await base.DeleteAsync(id, cancellationToken).ConfigureAwait(false);
+            await base.DeleteAsync(id, cancellationToken);
 
             // Then delete from blob storage
             await imageManager.DeleteImage(id, ImageTypeEnum.PartnerPhoto);

@@ -533,7 +533,7 @@ namespace TrashMob.Shared.Managers
 
         private async Task SendPhotoRemovedNotificationAsync(PhotoModerationItem photo, string reason, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(photo.UploaderEmail))
+            if (string.IsNullOrWhiteSpace(photo.UploaderEmail))
             {
                 return;
             }

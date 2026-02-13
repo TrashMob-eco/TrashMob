@@ -148,7 +148,7 @@ namespace TrashMob.Controllers
 
             // Validate status
             var validStatuses = new[] { "New", "Reviewed", "Resolved", "Deferred" };
-            if (!string.IsNullOrEmpty(request.Status) && !Array.Exists(validStatuses, s => s.Equals(request.Status, StringComparison.OrdinalIgnoreCase)))
+            if (!string.IsNullOrWhiteSpace(request.Status) && !Array.Exists(validStatuses, s => s.Equals(request.Status, StringComparison.OrdinalIgnoreCase)))
             {
                 return BadRequest("Invalid status. Must be one of: New, Reviewed, Resolved, Deferred");
             }

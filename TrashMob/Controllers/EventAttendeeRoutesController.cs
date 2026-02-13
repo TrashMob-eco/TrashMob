@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Collections.Generic;
@@ -31,7 +31,7 @@
         [ProducesResponseType(typeof(IEnumerable<EventAttendeeRoute>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEventAttendeeRoutes(Guid eventId, Guid userId, CancellationToken cancellationToken)
         {
-            var result = (await eventAttendeeRouteManager.GetByParentIdAsync(eventId, cancellationToken).ConfigureAwait(false)).Where(e => e.CreatedByUserId == userId);
+            var result = (await eventAttendeeRouteManager.GetByParentIdAsync(eventId, cancellationToken)).Where(e => e.CreatedByUserId == userId);
 
             TrackEvent(nameof(GetEventAttendeeRoutes));
             return Ok(result);
@@ -46,7 +46,7 @@
         [ProducesResponseType(typeof(IEnumerable<DisplayEventAttendeeRoute>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEventAttendeeRoutesByEventId(Guid eventId, CancellationToken cancellationToken)
         {
-            var result = await eventAttendeeRouteManager.GetByParentIdAsync(eventId, cancellationToken).ConfigureAwait(false);
+            var result = await eventAttendeeRouteManager.GetByParentIdAsync(eventId, cancellationToken);
 
             var currentUserId = User.Identity?.IsAuthenticated == true ? UserId : Guid.Empty;
 
@@ -68,7 +68,7 @@
         [ProducesResponseType(typeof(IEnumerable<EventAttendeeRoute>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEventAttendeeRoutesByUserId(Guid userId, CancellationToken cancellationToken)
         {
-            var result = await eventAttendeeRouteManager.GetByCreatedUserIdAsync(userId, cancellationToken).ConfigureAwait(false);
+            var result = await eventAttendeeRouteManager.GetByCreatedUserIdAsync(userId, cancellationToken);
 
             TrackEvent(nameof(GetEventAttendeeRoutes));
             return Ok(result);
@@ -85,7 +85,7 @@
         [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetEventAttendeeRoute(Guid id, CancellationToken cancellationToken)
         {
-            var result = await eventAttendeeRouteManager.GetAsync(x => x.Id == id, cancellationToken).ConfigureAwait(false);
+            var result = await eventAttendeeRouteManager.GetAsync(x => x.Id == id, cancellationToken);
 
             if (result == null || result.Count() == 0)
             {
@@ -118,7 +118,7 @@
             var eventAttendeeRoute = displayEventAttendeeRoute.ToEventAttendeeRoute();
 
             var updatedEventAttendeeRoute = await eventAttendeeRouteManager
-                .UpdateAsync(eventAttendeeRoute, UserId, cancellationToken).ConfigureAwait(false);
+                .UpdateAsync(eventAttendeeRoute, UserId, cancellationToken);
             TrackEvent(nameof(UpdateEventAttendeeRoute));
 
             return Ok(updatedEventAttendeeRoute);
@@ -138,8 +138,7 @@
         {
             var eventAttendeeRoute = displayEventAttendeeRoute.ToEventAttendeeRoute();
 
-            await eventAttendeeRouteManager.AddAsync(eventAttendeeRoute, UserId, cancellationToken)
-                .ConfigureAwait(false);
+            await eventAttendeeRouteManager.AddAsync(eventAttendeeRoute, UserId, cancellationToken);
             TrackEvent(nameof(AddEventAttendeeRoute));
             return Ok();
         }
@@ -157,7 +156,7 @@
         public async Task<IActionResult> DeleteEventAttendeeRoute(Guid routeId,
             CancellationToken cancellationToken)
         {
-            await eventAttendeeRouteManager.DeleteAsync(routeId, cancellationToken).ConfigureAwait(false);
+            await eventAttendeeRouteManager.DeleteAsync(routeId, cancellationToken);
             TrackEvent(nameof(DeleteEventAttendeeRoute));
 
             return new NoContentResult();

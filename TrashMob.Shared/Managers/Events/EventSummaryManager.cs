@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers.Events
+namespace TrashMob.Shared.Managers.Events
 {
     using System;
     using System.Collections.Generic;
@@ -85,8 +85,7 @@
         {
             var stats = new Stats();
             var result1 = await eventManager.GetUserEventsAsync(userId, false, cancellationToken);
-            var result2 = await eventAttendeeManager.GetEventsUserIsAttendingAsync(userId, false, cancellationToken)
-                .ConfigureAwait(false);
+            var result2 = await eventAttendeeManager.GetEventsUserIsAttendingAsync(userId, false, cancellationToken);
 
             var allResults = result1.Union(result2, new EventComparer());
 
@@ -185,10 +184,10 @@
         public override async Task<EventSummary> AddAsync(EventSummary eventSummary, Guid userId, CancellationToken cancellationToken = default)
         {
             // Add the event summary first
-            var result = await base.AddAsync(eventSummary, userId, cancellationToken).ConfigureAwait(false);
+            var result = await base.AddAsync(eventSummary, userId, cancellationToken);
 
             // Mark all associated litter reports as Cleaned
-            await MarkAssociatedLitterReportsAsCleanedAsync(eventSummary.EventId, userId, cancellationToken).ConfigureAwait(false);
+            await MarkAssociatedLitterReportsAsCleanedAsync(eventSummary.EventId, userId, cancellationToken);
 
             return result;
         }
@@ -197,10 +196,10 @@
         public override async Task<EventSummary> UpdateAsync(EventSummary eventSummary, Guid userId, CancellationToken cancellationToken = default)
         {
             // Update the event summary
-            var result = await base.UpdateAsync(eventSummary, userId, cancellationToken).ConfigureAwait(false);
+            var result = await base.UpdateAsync(eventSummary, userId, cancellationToken);
 
             // Mark all associated litter reports as Cleaned (in case new associations were added)
-            await MarkAssociatedLitterReportsAsCleanedAsync(eventSummary.EventId, userId, cancellationToken).ConfigureAwait(false);
+            await MarkAssociatedLitterReportsAsCleanedAsync(eventSummary.EventId, userId, cancellationToken);
 
             return result;
         }
@@ -208,7 +207,7 @@
         private async Task MarkAssociatedLitterReportsAsCleanedAsync(Guid eventId, Guid userId, CancellationToken cancellationToken)
         {
             // Get all litter reports associated with this event
-            var eventLitterReports = await eventLitterReportManager.GetByParentIdAsync(eventId, cancellationToken).ConfigureAwait(false);
+            var eventLitterReports = await eventLitterReportManager.GetByParentIdAsync(eventId, cancellationToken);
 
             foreach (var eventLitterReport in eventLitterReports)
             {
@@ -217,7 +216,7 @@
                 {
                     // Update the litter report status to Cleaned
                     eventLitterReport.LitterReport.LitterReportStatusId = (int)LitterReportStatusEnum.Cleaned;
-                    await litterReportManager.UpdateAsync(eventLitterReport.LitterReport, userId, cancellationToken).ConfigureAwait(false);
+                    await litterReportManager.UpdateAsync(eventLitterReport.LitterReport, userId, cancellationToken);
                 }
             }
         }

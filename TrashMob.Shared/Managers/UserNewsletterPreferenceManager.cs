@@ -211,7 +211,7 @@ namespace TrashMob.Shared.Managers
         /// </summary>
         private static string MaskEmail(string email)
         {
-            if (string.IsNullOrEmpty(email) || !email.Contains('@'))
+            if (string.IsNullOrWhiteSpace(email) || !email.Contains('@'))
             {
                 return "***";
             }

@@ -54,7 +54,7 @@ namespace TrashMob.Shared.Managers
         {
             var query = Repository.Get();
 
-            if (!string.IsNullOrEmpty(status))
+            if (!string.IsNullOrWhiteSpace(status))
             {
                 query = query.Where(f => f.Status == status);
             }
@@ -107,7 +107,7 @@ namespace TrashMob.Shared.Managers
             message = message.Replace("{Description}", feedback.Description);
 
             // Add screenshot section if available
-            var screenshotSection = string.IsNullOrEmpty(feedback.ScreenshotUrl)
+            var screenshotSection = string.IsNullOrWhiteSpace(feedback.ScreenshotUrl)
                 ? string.Empty
                 : $"<p><strong>Screenshot:</strong> <a href=\"{feedback.ScreenshotUrl}\">View Screenshot</a></p>";
             message = message.Replace("{ScreenshotSection}", screenshotSection);

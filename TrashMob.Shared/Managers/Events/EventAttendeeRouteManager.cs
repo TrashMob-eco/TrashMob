@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers.Events
+namespace TrashMob.Shared.Managers.Events
 {
     using System;
     using System.Collections.Generic;
@@ -147,12 +147,12 @@
             }
 
             var validPrivacyLevels = new[] { "Private", "EventOnly", "Public" };
-            if (!string.IsNullOrEmpty(request.PrivacyLevel) && !validPrivacyLevels.Contains(request.PrivacyLevel))
+            if (!string.IsNullOrWhiteSpace(request.PrivacyLevel) && !validPrivacyLevels.Contains(request.PrivacyLevel))
             {
                 return ServiceResult<EventAttendeeRoute>.Failure("Invalid privacy level. Must be Private, EventOnly, or Public.");
             }
 
-            if (!string.IsNullOrEmpty(request.PrivacyLevel))
+            if (!string.IsNullOrWhiteSpace(request.PrivacyLevel))
             {
                 route.PrivacyLevel = request.PrivacyLevel;
             }

@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Collections.Generic;
@@ -40,7 +40,7 @@
         public async Task<IActionResult> AddPartnerRequest(PartnerRequest partnerRequest,
             CancellationToken cancellationToken)
         {
-            await partnerRequestManager.AddAsync(partnerRequest, UserId, cancellationToken).ConfigureAwait(false);
+            await partnerRequestManager.AddAsync(partnerRequest, UserId, cancellationToken);
             TrackEvent(nameof(AddPartnerRequest));
 
             return Ok();
@@ -59,7 +59,7 @@
             CancellationToken cancellationToken)
         {
             var partnerRequest = await partnerRequestManager
-                .ApproveBecomeAPartnerAsync(partnerRequestId, UserId, cancellationToken).ConfigureAwait(false);
+                .ApproveBecomeAPartnerAsync(partnerRequestId, UserId, cancellationToken);
             TrackEvent(nameof(ApprovePartnerRequest));
 
             return Ok();
@@ -77,7 +77,7 @@
         public async Task<IActionResult> DenyPartnerRequest(Guid partnerRequestId, CancellationToken cancellationToken)
         {
             var partnerRequest = await partnerRequestManager
-                .DenyBecomeAPartnerAsync(partnerRequestId, UserId, cancellationToken).ConfigureAwait(false);
+                .DenyBecomeAPartnerAsync(partnerRequestId, UserId, cancellationToken);
 
             TrackEvent(nameof(DenyPartnerRequest));
 
@@ -108,7 +108,7 @@
         [ProducesResponseType(typeof(PartnerRequest), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetPartnerRequest(Guid partnerRequestId, CancellationToken cancellationToken)
         {
-            return Ok(await partnerRequestManager.GetAsync(partnerRequestId, cancellationToken).ConfigureAwait(false));
+            return Ok(await partnerRequestManager.GetAsync(partnerRequestId, cancellationToken));
         }
 
         /// <summary>
@@ -122,8 +122,7 @@
         [ProducesResponseType(typeof(IEnumerable<PartnerRequest>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetPartnerRequestsByUser(Guid userId, CancellationToken cancellationToken)
         {
-            return Ok(await partnerRequestManager.GetByCreatedUserIdAsync(userId, cancellationToken)
-                .ConfigureAwait(false));
+            return Ok(await partnerRequestManager.GetByCreatedUserIdAsync(userId, cancellationToken));
         }
     }
 }

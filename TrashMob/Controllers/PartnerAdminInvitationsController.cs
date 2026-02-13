@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Linq;
@@ -131,8 +131,7 @@
                 return NotFound($"User with Email {partnerAdminInvitation.Email} not found.");
             }
 
-            var result = await partnerAdminInvitationManager.AddAsync(partnerAdminInvitation, UserId, cancellationToken)
-                .ConfigureAwait(false);
+            var result = await partnerAdminInvitationManager.AddAsync(partnerAdminInvitation, UserId, cancellationToken);
             TrackEvent(nameof(AddPartnerAdminInvitation));
 
             return CreatedAtAction(nameof(GetPartnerAdminInvite),
@@ -159,8 +158,7 @@
             }
 
             var result = await partnerAdminInvitationManager
-                .ResendPartnerAdminInvitation(partnerAdminInvitationId, UserId, cancellationToken)
-                .ConfigureAwait(false);
+                .ResendPartnerAdminInvitation(partnerAdminInvitationId, UserId, cancellationToken);
             TrackEvent(nameof(ResendPartnerAdminInvitation));
 
             return Ok(result);
@@ -177,8 +175,7 @@
         public async Task<IActionResult> AcceptPartnerAdminInvitation(Guid partnerAdminInvitationId,
             CancellationToken cancellationToken)
         {
-            await partnerAdminInvitationManager.AcceptInvitation(partnerAdminInvitationId, UserId, cancellationToken)
-                .ConfigureAwait(false);
+            await partnerAdminInvitationManager.AcceptInvitation(partnerAdminInvitationId, UserId, cancellationToken);
             TrackEvent(nameof(AcceptPartnerAdminInvitation));
 
             return Ok();
@@ -195,8 +192,7 @@
         public async Task<IActionResult> DeclinePartnerAdminInvitation(Guid partnerAdminInvitationId,
             CancellationToken cancellationToken)
         {
-            await partnerAdminInvitationManager.DeclineInvitation(partnerAdminInvitationId, UserId, cancellationToken)
-                .ConfigureAwait(false);
+            await partnerAdminInvitationManager.DeclineInvitation(partnerAdminInvitationId, UserId, cancellationToken);
             TrackEvent(nameof(AcceptPartnerAdminInvitation));
 
             return Ok();
@@ -222,8 +218,7 @@
                 return Forbid();
             }
 
-            var result = await partnerAdminInvitationManager.DeleteAsync(partnerAdminInvitationId, cancellationToken)
-                .ConfigureAwait(false);
+            var result = await partnerAdminInvitationManager.DeleteAsync(partnerAdminInvitationId, cancellationToken);
             TrackEvent(nameof(AddPartnerAdminInvitation));
 
             return Ok(result);

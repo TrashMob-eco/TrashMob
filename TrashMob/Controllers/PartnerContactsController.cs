@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Threading;
@@ -106,8 +106,7 @@
                 return Forbid();
             }
 
-            var result = await partnerContactManager.UpdateAsync(partnerContact, UserId, cancellationToken)
-                .ConfigureAwait(false);
+            var result = await partnerContactManager.UpdateAsync(partnerContact, UserId, cancellationToken);
             TrackEvent(nameof(UpdatePartnerContact));
 
             return Ok(result);
@@ -129,7 +128,7 @@
                 return Forbid();
             }
 
-            await partnerContactManager.DeleteAsync(partnerContactId, cancellationToken).ConfigureAwait(false);
+            await partnerContactManager.DeleteAsync(partnerContactId, cancellationToken);
             TrackEvent(nameof(DeletePartnerContact));
 
             return Ok(partnerContactId);

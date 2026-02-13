@@ -443,7 +443,7 @@ namespace TrashMob.Shared.Managers
                     default:
                         // Try to get text content
                         var content = inline.ToString();
-                        if (!string.IsNullOrEmpty(content))
+                        if (!string.IsNullOrWhiteSpace(content))
                         {
                             text.Span(content);
                         }
@@ -477,7 +477,7 @@ namespace TrashMob.Shared.Managers
 
         private static string TruncateUserAgent(string userAgent)
         {
-            if (string.IsNullOrEmpty(userAgent))
+            if (string.IsNullOrWhiteSpace(userAgent))
             {
                 return "Not recorded";
             }

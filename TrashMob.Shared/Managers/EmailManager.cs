@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers
+namespace TrashMob.Shared.Managers
 {
     using System;
     using System.Collections.Generic;
@@ -65,7 +65,7 @@
 
             email.Addresses.AddRange(recipients);
 
-            await emailSender.SendTemplatedEmailAsync(email, cancellationToken).ConfigureAwait(false);
+            await emailSender.SendTemplatedEmailAsync(email, cancellationToken);
         }
 
         /// <inheritdoc />

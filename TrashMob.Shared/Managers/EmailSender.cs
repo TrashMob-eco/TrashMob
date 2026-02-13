@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers
+namespace TrashMob.Shared.Managers
 {
     using System;
     using System.Collections.Generic;
@@ -42,7 +42,7 @@
                 var client = new SendGridClient(ApiKey);
                 var message = MailHelper.CreateSingleEmailToMultipleRecipients(from, tos, email.Subject, email.Message,
                     email.HtmlMessage);
-                var response = await client.SendEmailAsync(message, cancellationToken).ConfigureAwait(false);
+                var response = await client.SendEmailAsync(message, cancellationToken);
                 logger.LogInformation("SendGrid response: {StatusCode}", response.StatusCode);
             }
             catch (Exception ex)
@@ -85,7 +85,7 @@
                     },
                 };
 
-                var response = await client.SendEmailAsync(message, cancellationToken).ConfigureAwait(false);
+                var response = await client.SendEmailAsync(message, cancellationToken);
                 logger.LogInformation("SendGrid templated email response: {StatusCode}", response.StatusCode);
             }
             catch (Exception ex)
