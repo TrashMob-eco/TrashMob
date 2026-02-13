@@ -1,0 +1,98 @@
+# Workflow for building and deploying the Auth Extension as a container to Azure Container Apps
+
+name: TrashMobDev - Auth Extension Container App
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/container_ca-authext-tm-dev-westus2.yml'
+      - 'TrashMob.AuthExtension/**'
+      - 'Deploy/containerAppAuthExtension.bicep'
+  workflow_dispatch:
+
+env:
+  AZURE_CONTAINER_REGISTRY: acrtmdevwestus2
+  CONTAINER_APP_NAME: ca-authext-tm-dev-westus2
+  RESOURCE_GROUP: rg-trashmob-dev-westus2
+  IMAGE_NAME: trashmob-authext
+  CONTAINER_APPS_ENVIRONMENT: cae-tm-dev-westus2
+  REGION: westus2
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: test
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v3.2.1
+        with:
+          versionSpec: '5.x'
+
+      - name: Determine Version
+        id: version_step
+        uses: gittools/actions/gitversion/execute@v3.2.1
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Login to Azure Container Registry
+        run: |
+          az acr login --name ${{ env.AZURE_CONTAINER_REGISTRY }}
+
+      - name: Build and push Docker image
+        run: |
+          IMAGE_TAG=${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ steps.version_step.outputs.semVer }}
+          IMAGE_TAG_LATEST=${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest
+
+          docker build -f TrashMob.AuthExtension/Dockerfile -t $IMAGE_TAG -t $IMAGE_TAG_LATEST .
+          docker push $IMAGE_TAG
+          docker push $IMAGE_TAG_LATEST
+
+      - name: Deploy to Azure Container Apps
+        run: |
+          SUBSCRIPTION_ID="${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+          CONTAINER_IMAGE="${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ steps.version_step.outputs.semVer }}"
+          CONTAINER_APPS_ENV_ID="/subscriptions/$SUBSCRIPTION_ID/resourceGroups/${{ env.RESOURCE_GROUP }}/providers/Microsoft.App/managedEnvironments/${{ env.CONTAINER_APPS_ENVIRONMENT }}"
+
+          az deployment group create \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --template-file Deploy/containerAppAuthExtension.bicep \
+            --parameters \
+              containerAppName=${{ env.CONTAINER_APP_NAME }} \
+              containerAppsEnvironmentId=$CONTAINER_APPS_ENV_ID \
+              containerRegistryName=${{ env.AZURE_CONTAINER_REGISTRY }} \
+              containerImage=$CONTAINER_IMAGE \
+              region=${{ env.REGION }} \
+              environment=dev \
+              authExtensionTenantId=${{ secrets.ENTRA_TENANT_ID }} \
+              authExtensionClientId=${{ secrets.AUTH_EXTENSION_CLIENT_ID }}
+
+      - name: Output Container App URL
+        run: |
+          FQDN=$(az containerapp show \
+            --name ${{ env.CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --query properties.configuration.ingress.fqdn \
+            -o tsv)
+
+          echo "Auth Extension URL: https://$FQDN"
+          echo "Endpoint: https://$FQDN/api/authext/attributecollectionsubmit"
+
+      - name: Logout from Azure
+        if: always()
+        run: az logout

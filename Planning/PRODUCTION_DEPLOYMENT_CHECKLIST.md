@@ -1,6 +1,6 @@
 # Production Deployment Checklist
 
-**Last Updated:** February 2, 2026
+**Last Updated:** February 12, 2026
 **Commits Since Last Release:** ~100+ commits from main
 
 ---
@@ -123,6 +123,189 @@ az deployment group create \
 
 **Note:** The workflow automatically creates the SQL user and deploys the container.
 
+### 4. Entra External ID — Auth Migration (Project 1)
+
+This is a **downtime deployment** — B2C will be fully replaced by Entra External ID in one push. All steps below must be completed before merging to release.
+
+**Reference:** See `Planning/Projects/Project_01_Auth_Revamp.md` for full details and `Planning/TechnicalDesigns/Auth_Migration.md` for technical architecture.
+
+#### 4.1 Create Production Entra Tenant
+
+- [ ] Go to Azure Portal → Microsoft Entra External ID → Create a **Customer** tenant
+  - Tenant name: `TrashMobEco`
+  - Domain: `trashmobeco.onmicrosoft.com`
+  - CIAM domain will be: `trashmobeco.ciamlogin.com`
+  - Location: United States
+- [ ] Record the **Tenant ID** (GUID from Overview page)
+
+#### 4.2 Register App Registrations (in the prod Entra tenant)
+
+Login to the prod tenant first:
+```bash
+az login --tenant <prod-entra-tenant-id> --allow-no-subscriptions
+```
+
+**a. Web SPA (Frontend):**
+- [ ] Name: `TrashMob Web`
+- [ ] Redirect URIs (SPA): `https://www.trashmob.eco`, `https://trashmob.eco`
+- [ ] Authentication → check ID tokens, uncheck Access tokens
+- [ ] Record **Application (client) ID** → this is `FrontendClientId`
+
+**b. Backend API:**
+- [ ] Name: `TrashMob API`
+- [ ] Expose an API → Application ID URI: `api://<client-id>`
+- [ ] Add scopes: `TrashMob.Read`, `TrashMob.Writes`
+- [ ] Record **Application (client) ID** → this is `ClientId` in appsettings
+
+**c. Mobile App:**
+- [ ] Name: `TrashMob Mobile`
+- [ ] Redirect URI (Public client): `eco.trashmob.trashmobmobile://auth`
+- [ ] Record **Application (client) ID**
+
+**d. Auth Extension (Layer 2):**
+- [ ] Name: `TrashMob AuthExtension`
+- [ ] Record **Application (client) ID** → used for JWT audience validation
+
+**e. Grant API Permissions:**
+- [ ] Web SPA → API permissions → add `TrashMob.Read` + `TrashMob.Writes` → Grant admin consent
+- [ ] Mobile App → API permissions → add `TrashMob.Read` + `TrashMob.Writes` → Grant admin consent
+
+#### 4.3 Configure Optional Claims
+
+Run the configure script (update `configure-entra-apps.ps1` with prod values first):
+```bash
+az login --tenant <prod-entra-tenant-id> --allow-no-subscriptions
+.\Deploy\configure-entra-apps.ps1 -Environment pr
+```
+
+This sets on all app registrations:
+- Optional claims: `email`, `given_name`, `family_name`, `preferred_username`
+- `acceptMappedClaims: true`
+- `isFallbackPublicClient: true` (mobile only)
+
+#### 4.4 Configure Social Identity Providers
+
+In Azure Portal → prod Entra tenant → External Identities → All identity providers:
+
+- [ ] **Google:** Create OAuth 2.0 credentials in Google Cloud Console, add redirect URI `https://trashmobeco.ciamlogin.com/trashmobeco.onmicrosoft.com/federation/oauth2`, enter Client ID + secret in Azure
+- [ ] **Facebook:** Add OAuth redirect URI in Facebook Developer Console, enter App ID + secret in Azure
+- [ ] **Apple:** Create Services ID in Apple Developer, configure return URL, enter credentials in Azure
+- [ ] **Microsoft:** Enabled by default in Entra External ID — just verify it's active
+
+#### 4.5 Create User Flow with dateOfBirth
+
+- [ ] User flows → New user flow → "Sign up and sign in"
+  - Name: `SignUpSignIn`
+  - Identity providers: all configured (Google, Microsoft, Apple, Facebook, Email)
+  - Attributes to collect: Email (required), Given Name (required), Surname (required)
+- [ ] Create custom attribute: External Identities → Custom user attributes → Add `dateOfBirth` (String type)
+- [ ] Add `dateOfBirth` to the user flow's attribute collection page
+
+#### 4.6 Configure Token Claims
+
+For each app registration (Web SPA, API, Mobile):
+- [ ] Token configuration → Add optional claims (ID + Access tokens):
+  - `given_name`, `family_name`, `email` (built-in)
+  - `dateOfBirth` (directory schema extension source)
+- [ ] Verify `acceptMappedClaims: true` in Manifest
+- [ ] Test: sign in and decode JWT at https://jwt.ms to verify claims
+
+#### 4.7 Configure Branding
+
+- [ ] Company branding → Default sign-in experience:
+  - Banner logo: TrashMob logo (260x36 px)
+  - Background image: TrashMob hero image (1920x1080 px)
+  - Background color: `#96ba00`
+  - Sign-in text: "Welcome to TrashMob.eco — Join the movement to clean up the planet!"
+  - Layout: Full-screen background template
+- [ ] Test in incognito browser
+
+#### 4.8 User Migration (B2C → Entra)
+
+- [ ] Run migration script to export B2C users → import to Entra External ID
+  - Reference: `Deploy/migrate-b2c-users.ps1` (dev version — update for prod)
+- [ ] Verify migrated user count matches B2C
+- [ ] Test sign-in with a few migrated accounts
+- [ ] Existing users without `DateOfBirth` are grandfathered as adults (no migration needed for DOB)
+
+#### 4.9 Update Production Configuration
+
+**a. Backend config (Key Vault or environment variables):**
+```
+AzureAdEntra__Instance=https://trashmobeco.ciamlogin.com/
+AzureAdEntra__ClientId=<API app client ID>
+AzureAdEntra__FrontendClientId=<Web SPA client ID>
+AzureAdEntra__Domain=trashmobeco.onmicrosoft.com
+AzureAdEntra__TenantId=<prod tenant ID>
+UseEntraExternalId=true
+```
+
+**b. Frontend config:** The `/api/config` endpoint returns auth config dynamically — verify it returns `authProvider: "entra"` with correct prod Entra values after deployment.
+
+**c. Update `Deploy/containerApp.bicep`** prod environment variables with prod Entra values.
+
+**d. Update `Deploy/configure-entra-apps.ps1`** with prod app registration IDs.
+
+#### 4.10 Deploy Auth Extension Container App (Layer 2)
+
+**a. Set GitHub Actions secrets** (in the `production` environment):
+```
+ENTRA_TENANT_ID=<prod-entra-tenant-id>
+AUTH_EXTENSION_CLIENT_ID=<auth-extension-app-client-id>
+```
+
+**b. Create production workflow:**
+- [ ] Copy `.github/workflows/container_ca-authext-tm-dev-westus2.yml` → `release_ca-authext-tm-pr-westus2.yml`
+- [ ] Update environment variables: registry `acrtmprwestus2`, container `ca-authext-tm-pr-westus2`, resource group `rg-trashmob-pr-westus2`
+- [ ] Trigger on push to `release` branch
+
+**c. Register Custom Authentication Extension in Entra portal:**
+- [ ] External Identities → Custom authentication extensions → Create
+- [ ] Type: `OnAttributeCollectionSubmit`
+- [ ] Target URL: `https://ca-authext-tm-pr-westus2.<fqdn>/api/authext/attributecollectionsubmit`
+- [ ] Link to auth extension app registration
+- [ ] Assign to user flow's "When a user submits their information" event
+
+#### 4.11 Mobile App Update
+
+- [ ] Verify `AuthConstants.cs` has correct prod Entra values (or uses config-driven approach)
+- [ ] Build and test on Android emulator + iOS simulator with prod tenant
+- [ ] Submit to Google Play Store and Apple App Store
+- [ ] Consider force-update flow for users on old B2C version
+
+#### 4.12 Pre-Cutover Verification (on dev.trashmob.eco)
+
+- [ ] **Web sign-in** via email/password → succeeds, JWT contains expected claims
+- [ ] **Web sign-in** via Google → succeeds, profile photo populated
+- [ ] **Web sign-in** via Facebook → succeeds
+- [ ] **Web "Create Account"** → shows age gate, blocks under-13, allows 13+
+- [ ] **Web "Sign In"** → goes directly to Entra (no age gate)
+- [ ] **Web "Attend" (unauthenticated)** → shows age gate before redirect
+- [ ] **Mobile sign-in** → Entra External ID (not B2C)
+- [ ] **Mobile "Create Account"** → AgeGatePage → blocks under-13
+- [ ] **Auth extension** → POST with under-13 DOB returns `showBlockPage`
+- [ ] **Profile edit** → in-app edit works (name, photo upload)
+- [ ] **Account deletion** → "Delete My Data" works with typed confirmation
+- [ ] **Auto-create user** → new sign-up creates DB user from token claims
+- [ ] **Migrated user sign-in** → existing B2C user signs in via Entra successfully
+
+---
+
+## Deployment Steps
+
+### Auth Migration Cutover Window
+
+**Timing:** Schedule a maintenance window (low-traffic period). Communicate to users in advance.
+
+**Cutover sequence:**
+1. Complete all pre-deployment tasks above (sections 0-4)
+2. Final B2C → Entra user migration (catch any new users since last migration)
+3. Merge main to release (triggers deployment)
+4. Verify Entra sign-in works on www.trashmob.eco
+5. Monitor Application Insights for auth errors for 24 hours
+6. If critical issues: rollback (see below)
+7. After 1-week coexistence: decommission B2C tenant
+
 ---
 
 ## Deployment Steps
@@ -208,6 +391,22 @@ git push origin release
     - Use Preview toggle to verify formatting before saving
   - [ ] Volunteer opportunities page renders markdown correctly
 
+- [ ] **Auth Migration — Entra External ID (Project 1)**
+  - [ ] Sign in via email/password works
+  - [ ] Sign in via Google works, profile photo auto-populated
+  - [ ] Sign in via Facebook works
+  - [ ] Sign in via Apple works
+  - [ ] "Create Account" shows age gate before Entra redirect
+  - [ ] Age gate blocks under-13 with friendly message
+  - [ ] "Sign In" goes directly to Entra (no age gate)
+  - [ ] Profile edit works in-app (name, photo upload)
+  - [ ] "Delete My Data" works with typed DELETE confirmation
+  - [ ] Migrated B2C user can sign in via Entra
+  - [ ] New user auto-created in DB on first sign-in
+  - [ ] Auth extension blocks under-13 sign-up server-side (test by navigating directly to Entra sign-up URL)
+  - [ ] JWT contains expected claims: email, given_name, family_name, dateOfBirth
+  - [ ] No auth errors in Application Insights after 1 hour
+
 ---
 
 ## Rollback Plan
@@ -235,6 +434,13 @@ az containerapp ingress traffic set \
   --revision-weight <previous-revision-name>=100
 ```
 
+### Auth Rollback (B2C Fallback)
+If Entra External ID has critical issues after cutover:
+1. Set `UseEntraExternalId=false` in Container App env vars (reverts to B2C)
+2. Redeploy Container App with B2C config
+3. Mobile users on old app version still use B2C — no action needed
+4. Mobile users on new app version cannot fallback — must wait for fix or app store update
+
 ### Database Rollback (If needed)
 Database migrations do NOT have automatic rollback. If critical issues:
 1. Restore from backup (Azure SQL automatic backups)
@@ -258,6 +464,9 @@ Database migrations do NOT have automatic rollback. If critical issues:
 | Database Backups | Project 32 | Configured retention policies |
 | Billing Alerts | Project 30 | Azure budget caps, grant monitor, cost runbook |
 | Job Opportunities Markdown | Issue #2215 | Markdown editor for job listings admin |
+| Auth Migration (B2C → Entra) | Project 1 | Entra External ID sign-in, profile photos, social IDPs |
+| Age Gate (COPPA) | Project 1/23 | Under-13 block (Layer 1 client + Layer 2 server), minor flagging |
+| Auth Extension | Project 1 | Server-side age verification Container App for Entra |
 
 ---
 
