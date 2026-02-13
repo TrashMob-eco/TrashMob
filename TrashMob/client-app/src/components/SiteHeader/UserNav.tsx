@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -12,6 +13,7 @@ import { Link } from 'react-router';
 import { cn } from '@/lib/utils';
 import UserData from '../Models/UserData';
 import { getApiConfig, getMsalClientInstance } from '@/store/AuthStore';
+import { AgeGateDialog } from '@/components/AgeGate/AgeGateDialog';
 import React from 'react';
 
 interface UserNavProps {
@@ -22,11 +24,25 @@ interface UserNavProps {
 
 export const UserNav = (props: UserNavProps) => {
     const { currentUser, isUserLoaded, className } = props;
+    const [showAgeGate, setShowAgeGate] = useState(false);
 
     function signIn(e: React.MouseEvent) {
         e.preventDefault();
         const apiConfig = getApiConfig();
 
+        getMsalClientInstance().loginRedirect({
+            scopes: apiConfig.b2cScopes,
+        });
+    }
+
+    function handleCreateAccount(e: React.MouseEvent) {
+        e.preventDefault();
+        setShowAgeGate(true);
+    }
+
+    function handleAgeGateConfirm() {
+        setShowAgeGate(false);
+        const apiConfig = getApiConfig();
         getMsalClientInstance().loginRedirect({
             scopes: apiConfig.b2cScopes,
         });
@@ -42,11 +58,21 @@ export const UserNav = (props: UserNavProps) => {
     }
 
     return (
-        <div className={cn('flex flex-row item-center basis-full lg:basis-0', className)}>
+        <div className={cn('flex flex-row items-center gap-2 basis-full lg:basis-0', className)}>
             {!isUserLoaded && (
-                <Button variant='outline' className='text-current border-primary' onClick={signIn}>
-                    Sign in
-                </Button>
+                <>
+                    <Button variant='outline' className='text-current border-primary' onClick={signIn}>
+                        Sign in
+                    </Button>
+                    <Button onClick={handleCreateAccount}>
+                        Create Account
+                    </Button>
+                    <AgeGateDialog
+                        open={showAgeGate}
+                        onOpenChange={setShowAgeGate}
+                        onConfirm={handleAgeGateConfirm}
+                    />
+                </>
             )}
             {isUserLoaded ? (
                 <HoverCard openDelay={200} closeDelay={100}>

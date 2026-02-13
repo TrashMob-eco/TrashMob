@@ -5,6 +5,7 @@ import { getApiConfig, getMsalClientInstance } from '../../store/AuthStore';
 import EventAttendeeData from '../Models/EventAttendeeData';
 import UserData from '../Models/UserData';
 import { WaiverSigningFlow } from '@/components/Waivers';
+import { AgeGateDialog } from '@/components/AgeGate/AgeGateDialog';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { GetRequiredWaiversForEvent } from '../../services/user-waivers';
@@ -31,6 +32,7 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
     const navigate = useNavigate();
     const [registered, setRegistered] = useState<boolean>(false);
     const [showWaiverFlow, setShowWaiverFlow] = useState<boolean>(false);
+    const [showAgeGate, setShowAgeGate] = useState<boolean>(false);
     const queryClient = useQueryClient();
     const { trackAttendance } = useFeatureMetrics();
 
@@ -79,20 +81,20 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
         setRegistered(true);
     };
 
+    function handleAgeGateConfirm() {
+        setShowAgeGate(false);
+        const apiConfig = getApiConfig();
+        getMsalClientInstance().loginRedirect({
+            scopes: apiConfig.b2cScopes,
+        });
+    }
+
     const handleAttend = (eventId: string) => {
         const accounts = getMsalClientInstance().getAllAccounts();
 
-        // Check if user is logged in
+        // Check if user is logged in — if not, show age gate before redirecting to sign-up
         if (accounts === null || accounts.length === 0) {
-            const apiConfig = getApiConfig();
-            getMsalClientInstance()
-                .loginRedirect({
-                    scopes: apiConfig.b2cScopes,
-                })
-                .then(() => {
-                    // After login, this component will re-render with updated data
-                    // The user can then click the button again
-                });
+            setShowAgeGate(true);
             return;
         }
 
@@ -149,6 +151,12 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
                     onComplete={handleWaiverFlowComplete}
                 />
             ) : null}
+
+            <AgeGateDialog
+                open={showAgeGate}
+                onOpenChange={setShowAgeGate}
+                onConfirm={handleAgeGateConfirm}
+            />
         </>
     );
 };
