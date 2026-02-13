@@ -52,6 +52,7 @@
         {
             return await Repo.Get(e => e.EventDate < DateTimeOffset.UtcNow
                                        && e.EventStatusId != (int)EventStatusEnum.Canceled)
+                .Include(e => e.CreatedByUser)
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
         }
 

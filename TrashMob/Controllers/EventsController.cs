@@ -20,7 +20,6 @@
 
     [Route("api/events")]
     public class EventsController(
-        IKeyedManager<User> userManager,
         IEventManager eventManager,
         IEventAttendeeManager eventAttendeeManager)
         : SecureController
@@ -48,13 +47,10 @@
         {
             var results = await eventManager.GetActiveEventsAsync(cancellationToken).ConfigureAwait(false);
 
-            var displayResults = new List<DisplayEvent>();
-
-            foreach (var mobEvent in results)
-            {
-                var user = await userManager.GetAsync(mobEvent.CreatedByUserId, cancellationToken);
-                displayResults.Add(mobEvent.ToDisplayEvent(user.UserName));
-            }
+            // CreatedByUser is already included via the manager query
+            var displayResults = results
+                .Select(e => e.ToDisplayEvent(e.CreatedByUserName ?? string.Empty))
+                .ToList();
 
             return Ok(displayResults);
         }
@@ -70,16 +66,10 @@
         {
             var results = await eventManager.GetCompletedEventsAsync(cancellationToken).ConfigureAwait(false);
 
-            var displayResults = new List<DisplayEvent>();
-
-            foreach (var mobEvent in results)
-            {
-                if (mobEvent.EventStatusId != (int)EventStatusEnum.Canceled)
-                {
-                    var user = await userManager.GetAsync(mobEvent.CreatedByUserId, cancellationToken);
-                    displayResults.Add(mobEvent.ToDisplayEvent(user.UserName));
-                }
-            }
+            // CreatedByUser is included via the manager query; canceled events already filtered
+            var displayResults = results
+                .Select(e => e.ToDisplayEvent(e.CreatedByUserName ?? string.Empty))
+                .ToList();
 
             return Ok(displayResults);
         }
@@ -93,18 +83,13 @@
         [ProducesResponseType(typeof(List<DisplayEvent>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetNotCanceledEvents(CancellationToken cancellationToken)
         {
-            var results = await eventManager.GetAsync(cancellationToken).ConfigureAwait(false);
+            // Use filtered query which excludes canceled events and includes CreatedByUser
+            var results = await eventManager.GetFilteredEventsAsync(new EventFilter(), cancellationToken)
+                .ConfigureAwait(false);
 
-            var displayResults = new List<DisplayEvent>();
-
-            foreach (var mobEvent in results)
-            {
-                if (mobEvent.EventStatusId != (int)EventStatusEnum.Canceled)
-                {
-                    var user = await userManager.GetAsync(mobEvent.CreatedByUserId, cancellationToken);
-                    displayResults.Add(mobEvent.ToDisplayEvent(user.UserName));
-                }
-            }
+            var displayResults = results
+                .Select(e => e.ToDisplayEvent(e.CreatedByUserName ?? string.Empty))
+                .ToList();
 
             return Ok(displayResults);
         }

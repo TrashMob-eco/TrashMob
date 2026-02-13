@@ -28,31 +28,41 @@ namespace TrashMob.Shared.Managers.Prospects
 
         public async Task<PipelineAnalytics> GetAnalyticsAsync(CancellationToken cancellationToken = default)
         {
-            var prospects = await prospectRepository.Get().ToListAsync(cancellationToken);
-            var emails = await outreachEmailRepository.Get().ToListAsync(cancellationToken);
+            var analytics = new PipelineAnalytics();
 
-            var analytics = new PipelineAnalytics
-            {
-                TotalProspects = prospects.Count,
-            };
+            // Total prospects via DB count
+            analytics.TotalProspects = await prospectRepository.Get().CountAsync(cancellationToken);
 
-            // Stage counts
-            var stageGroups = prospects.GroupBy(p => p.PipelineStage).ToDictionary(g => g.Key, g => g.Count());
+            // Stage counts via DB GroupBy (single query instead of loading all prospects)
+            var stageGroups = await prospectRepository.Get()
+                .GroupBy(p => p.PipelineStage)
+                .Select(g => new { Stage = g.Key, Count = g.Count() })
+                .ToListAsync(cancellationToken);
+
+            var stageDict = stageGroups.ToDictionary(g => g.Stage, g => g.Count);
             for (var i = 0; i < StageLabels.Length; i++)
             {
                 analytics.StageCounts.Add(new PipelineStageStat
                 {
                     Stage = i,
                     Label = StageLabels[i],
-                    Count = stageGroups.GetValueOrDefault(i, 0),
+                    Count = stageDict.GetValueOrDefault(i, 0),
                 });
             }
 
-            // Outreach email metrics
-            analytics.TotalEmailsSent = emails.Count(e => e.Status == "Sent" || e.Status == "Delivered" || e.Status == "Opened" || e.Status == "Clicked");
-            analytics.TotalEmailsOpened = emails.Count(e => e.Status == "Opened" || e.Status == "Clicked");
-            analytics.TotalEmailsClicked = emails.Count(e => e.Status == "Clicked");
-            analytics.TotalEmailsBounced = emails.Count(e => e.Status == "Bounced");
+            // Outreach email metrics via DB GroupBy (single query instead of loading all emails)
+            var emailStatusCounts = await outreachEmailRepository.Get()
+                .GroupBy(e => e.Status)
+                .Select(g => new { Status = g.Key, Count = g.Count() })
+                .ToListAsync(cancellationToken);
+
+            var sentStatuses = new HashSet<string> { "Sent", "Delivered", "Opened", "Clicked" };
+            var openedStatuses = new HashSet<string> { "Opened", "Clicked" };
+
+            analytics.TotalEmailsSent = emailStatusCounts.Where(e => sentStatuses.Contains(e.Status)).Sum(e => e.Count);
+            analytics.TotalEmailsOpened = emailStatusCounts.Where(e => openedStatuses.Contains(e.Status)).Sum(e => e.Count);
+            analytics.TotalEmailsClicked = emailStatusCounts.Where(e => e.Status == "Clicked").Sum(e => e.Count);
+            analytics.TotalEmailsBounced = emailStatusCounts.Where(e => e.Status == "Bounced").Sum(e => e.Count);
 
             if (analytics.TotalEmailsSent > 0)
             {
@@ -61,17 +71,19 @@ namespace TrashMob.Shared.Managers.Prospects
                 analytics.BounceRate = Math.Round((double)analytics.TotalEmailsBounced / analytics.TotalEmailsSent * 100, 1);
             }
 
-            // Conversion metrics
-            analytics.ConvertedCount = prospects.Count(p => p.ConvertedPartnerId.HasValue);
+            // Conversion metrics via DB count
+            analytics.ConvertedCount = await prospectRepository.Get()
+                .CountAsync(p => p.ConvertedPartnerId.HasValue, cancellationToken);
+
             if (analytics.TotalProspects > 0)
             {
                 analytics.ConversionRate = Math.Round((double)analytics.ConvertedCount / analytics.TotalProspects * 100, 1);
             }
 
-            // Average days in pipeline for converted prospects
-            var convertedProspects = prospects
+            // Average days in pipeline - load only converted prospects (small subset)
+            var convertedProspects = await prospectRepository.Get()
                 .Where(p => p.ConvertedPartnerId.HasValue && p.PipelineStage == 5)
-                .ToList();
+                .ToListAsync(cancellationToken);
 
             if (convertedProspects.Count > 0)
             {
@@ -79,8 +91,8 @@ namespace TrashMob.Shared.Managers.Prospects
                     convertedProspects.Average(p => (p.LastUpdatedDate - p.CreatedDate)?.TotalDays ?? 0), 1);
             }
 
-            // Type breakdown
-            analytics.TypeBreakdown = prospects
+            // Type breakdown via DB GroupBy
+            analytics.TypeBreakdown = await prospectRepository.Get()
                 .GroupBy(p => p.Type ?? "Unknown")
                 .Select(g => new ProspectTypeStat
                 {
@@ -89,7 +101,7 @@ namespace TrashMob.Shared.Managers.Prospects
                     ConvertedCount = g.Count(p => p.ConvertedPartnerId.HasValue),
                 })
                 .OrderByDescending(t => t.Count)
-                .ToList();
+                .ToListAsync(cancellationToken);
 
             return analytics;
         }

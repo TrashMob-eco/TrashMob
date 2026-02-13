@@ -50,16 +50,28 @@
             var events = eventRepository.Get();
             stats.TotalEvents = await events.CountAsync(e => e.EventStatusId != CancelledEventStatusId, cancellationToken);
 
-            var eventSummaries = await Repository.Get().ToListAsync(cancellationToken);
+            // Use database-side aggregation instead of loading all records into memory
+            var aggregates = await Repository.Get()
+                .GroupBy(es => 1)
+                .Select(g => new
+                {
+                    TotalBags = g.Sum(es => es.NumberOfBags),
+                    TotalBuckets = g.Sum(es => es.NumberOfBuckets),
+                    TotalHoursMinutes = g.Sum(es => es.DurationInMinutes * es.ActualNumberOfAttendees),
+                    TotalParticipants = g.Sum(es => es.ActualNumberOfAttendees),
+                    WeightPounds = g.Sum(es => es.PickedWeightUnitId == (int)WeightUnitEnum.Pound ? es.PickedWeight : 0),
+                    WeightKilograms = g.Sum(es => es.PickedWeightUnitId == (int)WeightUnitEnum.Kilogram ? es.PickedWeight : 0),
+                })
+                .FirstOrDefaultAsync(cancellationToken);
 
-            stats.TotalBags = eventSummaries.Sum(es => es.NumberOfBags) +
-                              eventSummaries.Sum(es => es.NumberOfBuckets) / 3;
-            stats.TotalHours = eventSummaries.Sum(es => es.DurationInMinutes * es.ActualNumberOfAttendees / 60);
-            stats.TotalParticipants = eventSummaries.Sum(es => es.ActualNumberOfAttendees);
-            stats.TotalWeightInPounds = eventSummaries.Where(e => e.PickedWeightUnitId == (int)WeightUnitEnum.Pound).Sum(e => e.PickedWeight) +
-                                       eventSummaries.Where(e => e.PickedWeightUnitId == (int)WeightUnitEnum.Kilogram).Sum(e => e.PickedWeight * 2.20462m);
-            stats.TotalWeightInKilograms = eventSummaries.Where(e => e.PickedWeightUnitId == (int)WeightUnitEnum.Kilogram).Sum(e => e.PickedWeight) +
-                                         eventSummaries.Where(e => e.PickedWeightUnitId == (int)WeightUnitEnum.Pound).Sum(e => e.PickedWeight * 0.453592m);
+            if (aggregates != null)
+            {
+                stats.TotalBags = aggregates.TotalBags + aggregates.TotalBuckets / 3;
+                stats.TotalHours = aggregates.TotalHoursMinutes / 60;
+                stats.TotalParticipants = aggregates.TotalParticipants;
+                stats.TotalWeightInPounds = aggregates.WeightPounds + aggregates.WeightKilograms * 2.20462m;
+                stats.TotalWeightInKilograms = aggregates.WeightKilograms + aggregates.WeightPounds * 0.453592m;
+            }
 
             var (totalLitterReports, cleanedLitterReports) = await litterReportManager.GetLitterReportCountsAsync(cancellationToken);
             stats.TotalLitterReportsClosed = cleanedLitterReports;
@@ -90,16 +102,15 @@
                                        eventSummaries.Where(e => e.PickedWeightUnitId == (int)WeightUnitEnum.Kilogram).Sum(e => e.PickedWeight * 2.20462m);
             stats.TotalWeightInKilograms = eventSummaries.Where(e => e.PickedWeightUnitId == (int)WeightUnitEnum.Kilogram).Sum(e => e.PickedWeight) +
                                          eventSummaries.Where(e => e.PickedWeightUnitId == (int)WeightUnitEnum.Pound).Sum(e => e.PickedWeight * 0.453592m);
-            var eventLitterReports = await eventLitterReportManager.GetAsync(cancellationToken);
+            // Use the expression-based GetAsync which includes the LitterReport navigation property,
+            // and filter by the user's event IDs to avoid loading ALL event litter reports
+            var eventIdsList = eventIds.ToList();
+            var eventLitterReports = await eventLitterReportManager.GetAsync(
+                elr => eventIdsList.Contains(elr.EventId), cancellationToken);
 
-            if (eventLitterReports == null)
-            {
-                stats.TotalLitterReportsClosed = 0;
-            }
-            else
-            {
-                stats.TotalLitterReportsClosed = eventLitterReports.Count(elr => eventIds.Contains(elr.EventId) && elr.LitterReport != null && elr.LitterReport.LitterReportStatusId == (int)LitterReportStatusEnum.Cleaned);
-            }
+            stats.TotalLitterReportsClosed = eventLitterReports.Count(elr =>
+                elr.LitterReport != null &&
+                elr.LitterReport.LitterReportStatusId == (int)LitterReportStatusEnum.Cleaned);
 
             stats.TotalLitterReportsSubmitted = await litterReportManager.GetUserLitterReportCountAsync(userId, cancellationToken);
 
@@ -110,50 +121,56 @@
         public async Task<IEnumerable<DisplayEventSummary>> GetFilteredAsync(LocationFilter locationFilter,
             CancellationToken cancellationToken = default)
         {
-            var eventSummaries = Repository.Get();
+            // Load all event summaries in a single query
+            var eventSummaries = await Repository.Get().ToListAsync(cancellationToken);
 
-            var displaySummaries = new List<DisplayEventSummary>();
-
-            foreach (var eventSummary in eventSummaries)
+            if (!eventSummaries.Any())
             {
-                var mobEvent = await eventRepository.GetAsync(eventSummary.EventId, cancellationToken)
-                    .ConfigureAwait(false);
-
-                if (mobEvent != null)
-                {
-                    if ((string.IsNullOrWhiteSpace(locationFilter.Country) || string.Equals(mobEvent.Country,
-                            locationFilter.Country, StringComparison.OrdinalIgnoreCase)) &&
-                        (string.IsNullOrWhiteSpace(locationFilter.Region) || string.Equals(mobEvent.Region,
-                            locationFilter.Region, StringComparison.OrdinalIgnoreCase)) &&
-                        (string.IsNullOrWhiteSpace(locationFilter.City) ||
-                         mobEvent.City.Contains(locationFilter.City, StringComparison.OrdinalIgnoreCase)) &&
-                        (string.IsNullOrWhiteSpace(locationFilter.PostalCode) ||
-                         mobEvent.PostalCode.Contains(locationFilter.PostalCode, StringComparison.OrdinalIgnoreCase)))
-                    {
-                        var displayEvent = new DisplayEventSummary
-                        {
-                            ActualNumberOfAttendees = eventSummary.ActualNumberOfAttendees,
-                            City = mobEvent.City,
-                            Country = mobEvent.Country,
-                            DurationInMinutes = eventSummary.DurationInMinutes,
-                            EventDate = mobEvent.EventDate,
-                            EventId = mobEvent.Id,
-                            EventTypeId = mobEvent.EventTypeId,
-                            Name = mobEvent.Name,
-                            NumberOfBags = eventSummary.NumberOfBags + eventSummary.NumberOfBuckets / 3.0,
-                            PostalCode = mobEvent.PostalCode,
-                            Region = mobEvent.Region,
-                            StreetAddress = mobEvent.StreetAddress,
-                            TotalWorkHours = eventSummary.ActualNumberOfAttendees * eventSummary.DurationInMinutes /
-                                             60.0,
-                        };
-
-                        displaySummaries.Add(displayEvent);
-                    }
-                }
+                return Enumerable.Empty<DisplayEventSummary>();
             }
 
-            return displaySummaries;
+            // Build filtered event query with location criteria (single query instead of N+1)
+            var summaryEventIds = eventSummaries.Select(es => es.EventId).Distinct().ToList();
+            var eventQuery = eventRepository.Get().Where(e => summaryEventIds.Contains(e.Id));
+
+            if (!string.IsNullOrWhiteSpace(locationFilter.Country))
+                eventQuery = eventQuery.Where(e => e.Country == locationFilter.Country);
+
+            if (!string.IsNullOrWhiteSpace(locationFilter.Region))
+                eventQuery = eventQuery.Where(e => e.Region == locationFilter.Region);
+
+            if (!string.IsNullOrWhiteSpace(locationFilter.City))
+                eventQuery = eventQuery.Where(e => e.City.Contains(locationFilter.City));
+
+            if (!string.IsNullOrWhiteSpace(locationFilter.PostalCode))
+                eventQuery = eventQuery.Where(e => e.PostalCode.Contains(locationFilter.PostalCode));
+
+            var events = await eventQuery.ToDictionaryAsync(e => e.Id, cancellationToken);
+
+            // Join in memory and project to display models
+            return eventSummaries
+                .Where(es => events.ContainsKey(es.EventId))
+                .Select(es =>
+                {
+                    var mobEvent = events[es.EventId];
+                    return new DisplayEventSummary
+                    {
+                        ActualNumberOfAttendees = es.ActualNumberOfAttendees,
+                        City = mobEvent.City,
+                        Country = mobEvent.Country,
+                        DurationInMinutes = es.DurationInMinutes,
+                        EventDate = mobEvent.EventDate,
+                        EventId = mobEvent.Id,
+                        EventTypeId = mobEvent.EventTypeId,
+                        Name = mobEvent.Name,
+                        NumberOfBags = es.NumberOfBags + es.NumberOfBuckets / 3.0,
+                        PostalCode = mobEvent.PostalCode,
+                        Region = mobEvent.Region,
+                        StreetAddress = mobEvent.StreetAddress,
+                        TotalWorkHours = es.ActualNumberOfAttendees * es.DurationInMinutes / 60.0,
+                    };
+                })
+                .ToList();
         }
 
         /// <inheritdoc />
