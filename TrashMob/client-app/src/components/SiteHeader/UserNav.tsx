@@ -64,14 +64,8 @@ export const UserNav = (props: UserNavProps) => {
                     <Button variant='outline' className='text-current border-primary' onClick={signIn}>
                         Sign in
                     </Button>
-                    <Button onClick={handleCreateAccount}>
-                        Create Account
-                    </Button>
-                    <AgeGateDialog
-                        open={showAgeGate}
-                        onOpenChange={setShowAgeGate}
-                        onConfirm={handleAgeGateConfirm}
-                    />
+                    <Button onClick={handleCreateAccount}>Create Account</Button>
+                    <AgeGateDialog open={showAgeGate} onOpenChange={setShowAgeGate} onConfirm={handleAgeGateConfirm} />
                 </>
             )}
             {isUserLoaded ? (

@@ -1,5 +1,12 @@
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+    DialogFooter,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { DatePicker } from '@/components/ui/datepicker';
 import { isUnder13 } from '@/lib/age-utils';
@@ -54,10 +61,7 @@ export function AgeGateDialog({ open, onOpenChange, onConfirm }: AgeGateDialogPr
                 ) : (
                     <>
                         <div className='py-2'>
-                            <DatePicker
-                                value={dob as Date}
-                                onChange={(value) => setDob(value)}
-                            />
+                            <DatePicker value={dob as Date} onChange={(value) => setDob(value)} />
                         </div>
                         <DialogFooter>
                             <Button variant='outline' onClick={() => handleOpenChange(false)}>

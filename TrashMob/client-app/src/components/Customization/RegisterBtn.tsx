@@ -152,11 +152,7 @@ export const RegisterBtn: FC<RegisterBtnProps> = ({
                 />
             ) : null}
 
-            <AgeGateDialog
-                open={showAgeGate}
-                onOpenChange={setShowAgeGate}
-                onConfirm={handleAgeGateConfirm}
-            />
+            <AgeGateDialog open={showAgeGate} onOpenChange={setShowAgeGate} onConfirm={handleAgeGateConfirm} />
         </>
     );
 };
