@@ -39,7 +39,7 @@ $config = @{
         WebSpaAppId     = '1e6ae74d-0160-4a01-9d75-04048e03b17e'
         ApiAppId        = '84df543d-6535-45f5-afab-4d38528b721a'
         MobileAppId     = '33bfdd2c-80a4-4e6e-b211-337b0467226d'
-        AuthExtAppId    = ''  # TODO: Create app registration for auth extension in Entra portal
+        AuthExtAppId    = '219a6eac-9f9e-4ade-96b8-881928bd6d6d'
     }
     'pr' = @{
         TenantId        = ''  # TODO: Fill in when prod tenant is created
