@@ -452,13 +452,22 @@ namespace TrashMob.Shared.Managers
                 .Distinct()
                 .CountAsync(cancellationToken);
 
-            // Get all signed waivers count
-            var allWaivers = await Repo.Get().ToListAsync(cancellationToken);
+            // Get waiver counts using database-side aggregation instead of loading all records
+            var waiverCounts = await Repo.Get()
+                .GroupBy(w => 1)
+                .Select(g => new
+                {
+                    Total = g.Count(),
+                    ESignature = g.Count(w => w.SigningMethod != "PaperUpload"),
+                    PaperUpload = g.Count(w => w.SigningMethod == "PaperUpload"),
+                    Minor = g.Count(w => w.IsMinor),
+                })
+                .FirstOrDefaultAsync(cancellationToken);
 
-            var totalSignedWaivers = allWaivers.Count;
-            var eSignatureCount = allWaivers.Count(w => w.SigningMethod != "PaperUpload");
-            var paperUploadCount = allWaivers.Count(w => w.SigningMethod == "PaperUpload");
-            var minorWaiversCount = allWaivers.Count(w => w.IsMinor);
+            var totalSignedWaivers = waiverCounts?.Total ?? 0;
+            var eSignatureCount = waiverCounts?.ESignature ?? 0;
+            var paperUploadCount = waiverCounts?.PaperUpload ?? 0;
+            var minorWaiversCount = waiverCounts?.Minor ?? 0;
 
             var usersWithoutWaivers = totalActiveUsers - usersWithValidWaivers;
             if (usersWithoutWaivers < 0) usersWithoutWaivers = 0;
