@@ -11,115 +11,129 @@
              Title="Contact Us">
     <ScrollView>
         <Grid>
-            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
-                <Grid RowDefinitions="Auto, Auto, *, Auto">
-                    <VerticalStackLayout Grid.Row="0">
-                        <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Name" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}" Spacing="8">
+                <Label
+                    Text="We'd love to hear from you"
+                    FontSize="Small"
+                    HorizontalOptions="Center"
+                    HorizontalTextAlignment="Center"
+                    TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}"
+                    Margin="5,8,5,0" />
 
-                        <controls:TMEntry Text="{Binding Name}" >
-                            <controls:TMEntry.Behaviors>
-                                <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5"
-                                                                    x:Name="nameValidator" />
-                            </controls:TMEntry.Behaviors>
-                        </controls:TMEntry>
+                <Border Style="{StaticResource RoundBorder}" Margin="10,0">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Your Details" Style="{StaticResource SectionHeader}" Margin="0" />
+                        <VerticalStackLayout>
+                            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Name" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
+                            <controls:TMEntry Text="{Binding Name}" >
+                                <controls:TMEntry.Behaviors>
+                                    <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged" MinimumLength="5"
+                                                                        x:Name="nameValidator" />
+                                </controls:TMEntry.Behaviors>
+                            </controls:TMEntry>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout>
+                            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Email" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
+                            <controls:TMEntry
+                                    Text="{Binding Email}"
+                                    Keyboard="Email" >
+                                <controls:TMEntry.Behaviors>
+                                    <toolkit:MultiValidationBehavior x:Name="EmailValidator">
+                                        <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged"
+                                                                            MinimumLength="5"
+                                                                            toolkit:MultiValidationBehavior.Error="Email is required and must be at least 5 characters." />
+                                        <toolkit:EmailValidationBehavior Flags="ValidateOnValueChanged"
+                                                                             toolkit:MultiValidationBehavior.Error="Email format is invalid." />
+                                    </toolkit:MultiValidationBehavior>
+                                </controls:TMEntry.Behaviors>
+                            </controls:TMEntry>
+                        </VerticalStackLayout>
                     </VerticalStackLayout>
+                </Border>
 
-                    <VerticalStackLayout Grid.Row="1">
-                        <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Email" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
-
-                        <controls:TMEntry
-                                Text="{Binding Email}"
-                                Keyboard="Email" >
-                            <controls:TMEntry.Behaviors>
-                                <toolkit:MultiValidationBehavior x:Name="EmailValidator">
-                                    <toolkit:TextValidationBehavior Flags="ValidateOnValueChanged"
-                                                                        MinimumLength="5"
-                                                                        toolkit:MultiValidationBehavior.Error="Email is required and must be at least 5 characters." />
-                                    <toolkit:EmailValidationBehavior Flags="ValidateOnValueChanged"
-                                                                         toolkit:MultiValidationBehavior.Error="Email format is invalid." />
-                                </toolkit:MultiValidationBehavior>
-                            </controls:TMEntry.Behaviors>
-                        </controls:TMEntry>
+                <Border Style="{StaticResource RoundBorder}" Margin="10,0">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Message" Style="{StaticResource SectionHeader}" Margin="0" />
+                        <VerticalStackLayout>
+                            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Message" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
+                            <controls:TMEditor
+                                    Text="{Binding Message}"
+                                    VerticalOptions="StartAndExpand"
+                                    MinimumHeightRequest="200">
+                                <controls:TMEditor.Behaviors>
+                                    <toolkit:TextValidationBehavior x:Name="messageValidator"
+                                                                        Flags="ValidateOnValueChanged" MinimumLength="10" />
+                                </controls:TMEditor.Behaviors>
+                            </controls:TMEditor>
+                        </VerticalStackLayout>
                     </VerticalStackLayout>
+                </Border>
 
-                    <VerticalStackLayout Grid.Row="2">
-                        <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Message" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
+                <Button
+                    Text="Submit"
+                    Command="{Binding SubmitMessageCommand}"
+                    Style="{StaticResource PrimaryLargeButton}"
+                    Margin="10,8,10,10">
+                    <Button.Triggers>
+                        <MultiTrigger TargetType="Button">
+                            <MultiTrigger.Conditions>
+                                <BindingCondition
+                                    Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}"
+                                    Value="True" />
+                                <BindingCondition
+                                    Binding="{Binding Source={x:Reference EmailValidator}, Path=IsValid}"
+                                    Value="True" />
+                                <BindingCondition
+                                    Binding="{Binding Source={x:Reference messageValidator}, Path=IsValid}"
+                                    Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter Property="IsEnabled" Value="True" />
+                        </MultiTrigger>
+                    </Button.Triggers>
+                </Button>
 
-                        <controls:TMEditor
-                                Text="{Binding Message}"
-                                VerticalOptions="StartAndExpand"
-                                MinimumHeightRequest="200">
-                            <controls:TMEditor.Behaviors>
-                                <toolkit:TextValidationBehavior x:Name="messageValidator"
-                                                                    Flags="ValidateOnValueChanged" MinimumLength="10" />
-                            </controls:TMEditor.Behaviors>
-                        </controls:TMEditor>
-                    </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Row="3">
-                        <Button
-                            Text="Submit"
-                            Command="{Binding SubmitMessageCommand}">
-                            <Button.Triggers>
-                                <MultiTrigger TargetType="Button">
-                                    <MultiTrigger.Conditions>
-                                        <BindingCondition
-                                            Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}"
-                                            Value="True" />
-                                        <BindingCondition
-                                            Binding="{Binding Source={x:Reference EmailValidator}, Path=IsValid}"
-                                            Value="True" />
-                                        <BindingCondition
-                                            Binding="{Binding Source={x:Reference messageValidator}, Path=IsValid}"
-                                            Value="True" />
-                                    </MultiTrigger.Conditions>
-                                    <Setter Property="IsEnabled" Value="True" />
-                                </MultiTrigger>
-                            </Button.Triggers>
-                        </Button>
-
-                        <Label
-                            Margin="10"
-                            FontSize="Micro"
-                            VerticalOptions="Center"
-                            HorizontalOptions="Center"
-                            HorizontalTextAlignment="Center"
-                            TextColor="Red">
-                            <Label.Triggers>
-                                <MultiTrigger TargetType="Label">
-                                    <MultiTrigger.Conditions>
-                                        <BindingCondition
-                                            Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}"
-                                            Value="True" />
-                                        <BindingCondition
-                                            Binding="{Binding Source={x:Reference EmailValidator}, Path=IsValid}"
-                                            Value="True" />
-                                        <BindingCondition
-                                            Binding="{Binding Source={x:Reference messageValidator}, Path=IsValid}"
-                                            Value="True" />
-                                    </MultiTrigger.Conditions>
-                                    <Setter Property="IsVisible" Value="False" />
-                                </MultiTrigger>
-                                <DataTrigger TargetType="Label"
-                                             Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}"
-                                             Value="False">
-                                    <Setter Property="Text" Value="Name is required and must be at least 5 characters." />
-                                </DataTrigger>
-                                <DataTrigger TargetType="Label"
-                                             Binding="{Binding Source={x:Reference EmailValidator}, Path=IsValid}"
-                                             Value="False">
-                                    <Setter Property="Text"
-                                            Value="{Binding Source={x:Reference EmailValidator}, Path=Errors[0]}" />
-                                </DataTrigger>
-                                <DataTrigger TargetType="Label"
-                                             Binding="{Binding Source={x:Reference messageValidator}, Path=IsValid}"
-                                             Value="False">
-                                    <Setter Property="Text"
-                                            Value="Message is required and must be at least 10 characters." />
-                                </DataTrigger>
-                            </Label.Triggers>
-                        </Label>
-                    </VerticalStackLayout>
-                </Grid>
+                <Label
+                    Margin="10,0"
+                    FontSize="Micro"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"
+                    HorizontalTextAlignment="Center"
+                    TextColor="Red">
+                    <Label.Triggers>
+                        <MultiTrigger TargetType="Label">
+                            <MultiTrigger.Conditions>
+                                <BindingCondition
+                                    Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}"
+                                    Value="True" />
+                                <BindingCondition
+                                    Binding="{Binding Source={x:Reference EmailValidator}, Path=IsValid}"
+                                    Value="True" />
+                                <BindingCondition
+                                    Binding="{Binding Source={x:Reference messageValidator}, Path=IsValid}"
+                                    Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter Property="IsVisible" Value="False" />
+                        </MultiTrigger>
+                        <DataTrigger TargetType="Label"
+                                     Binding="{Binding Source={x:Reference nameValidator}, Path=IsValid}"
+                                     Value="False">
+                            <Setter Property="Text" Value="Name is required and must be at least 5 characters." />
+                        </DataTrigger>
+                        <DataTrigger TargetType="Label"
+                                     Binding="{Binding Source={x:Reference EmailValidator}, Path=IsValid}"
+                                     Value="False">
+                            <Setter Property="Text"
+                                    Value="{Binding Source={x:Reference EmailValidator}, Path=Errors[0]}" />
+                        </DataTrigger>
+                        <DataTrigger TargetType="Label"
+                                     Binding="{Binding Source={x:Reference messageValidator}, Path=IsValid}"
+                                     Value="False">
+                            <Setter Property="Text"
+                                    Value="Message is required and must be at least 10 characters." />
+                        </DataTrigger>
+                    </Label.Triggers>
+                </Label>
             </VerticalStackLayout>
             <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
                      VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />

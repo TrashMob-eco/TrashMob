@@ -10,70 +10,78 @@
              Title="Event Summary">
     <ScrollView>
         <Grid>
-            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
-                <Grid RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="*">
-                    <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="*" Grid.Row="0">
-                        <Border Style="{x:StaticResource RoundBorder}" Grid.Row="0">
-                            <Grid RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="*, *, *">
-                                <Label Text="Please lets us know what TrashMob volunteers accomplished at this event!"
-                                   Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" FontSize="Micro"
-                                   Margin="0, 0, 0, 10" />
-                                <Image Grid.Row="1" Grid.Column="0" Source="person" MaximumWidthRequest="25" />
-                                <controls:TMEntry Grid.Row="2" Grid.Column="0" Padding="5"
-                                   Text="{ Binding EventSummaryViewModel.ActualNumberOfAttendees }" Keyboard="Numeric" />
-                                <Label Grid.Row="3" Grid.Column="0" Text="Attendees" FontSize="Micro"
-                                   HorizontalTextAlignment="Center" />
-                                <Image Grid.Row="1" Grid.Column="1" Source="trashbag" WidthRequest="25" />
-                                <controls:TMEntry Grid.Row="2" Grid.Column="1" Padding="5" Text="{ Binding EventSummaryViewModel.NumberOfBags }"
-                                   Keyboard="Numeric" />
-                                <Label Grid.Row="3" Grid.Column="1" Text="Bags Collected" FontSize="Micro"
-                                   HorizontalTextAlignment="Center" />
-                                <Image Grid.Row="1" Grid.Column="2" Source="clock" WidthRequest="25" />
-                                <controls:TMEntry Grid.Row="2" Grid.Column="2" Padding="5"
-                                   Text="{ Binding EventSummaryViewModel.DurationInMinutes }" Keyboard="Numeric" />
-                                <Label Grid.Row="3" Grid.Column="2" Text="Duration in Minutes" FontSize="Micro"
-                                   HorizontalTextAlignment="Center" />
-                            </Grid>
-                        </Border>
-                    </Grid>
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}" Spacing="8">
 
-                    <Border Style="{x:StaticResource RoundBorder}" Grid.Row="1" Margin="0,10">
-                        <VerticalStackLayout>
-                            <Label Text="Weight Collected (optional)" Style="{StaticResource FieldLabel}" Margin="0,0,0,5" />
-                            <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
-                                <controls:TMEntry
-                                    Text="{Binding EventSummaryViewModel.PickedWeight}"
-                                    Keyboard="Numeric"
-                                    WidthRequest="100"
-                                    Placeholder="0.0" />
-                                <Picker
-                                    ItemsSource="{Binding WeightUnits}"
-                                    ItemDisplayBinding="{Binding Name}"
-                                    SelectedItem="{Binding SelectedWeightUnit}"
-                                    WidthRequest="80" />
-                            </HorizontalStackLayout>
-                            <Label Text="A full 33-gallon bag typically weighs 15-25 lbs"
-                                   FontSize="Micro"
-                                   TextColor="{StaticResource Gray400}"
-                                   HorizontalTextAlignment="Center"
-                                   Margin="0,5,0,0" />
-                        </VerticalStackLayout>
-                    </Border>
+                <Label
+                    Text="Tell us what your volunteers accomplished"
+                    FontSize="Small"
+                    HorizontalOptions="Center"
+                    HorizontalTextAlignment="Center"
+                    TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}"
+                    Margin="5,8,5,0" />
 
-                    <VerticalStackLayout Grid.Row="2">
-                        <Label Text="Notes" Style="{StaticResource FieldLabel}" />
+                <!-- Event Metrics -->
+                <Border Style="{StaticResource RoundBorder}" Margin="10,0">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Event Metrics" Style="{StaticResource SectionHeader}" Margin="0" />
+                        <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="*, *, *" ColumnSpacing="8">
+                            <Image Grid.Row="0" Grid.Column="0" Source="person" MaximumWidthRequest="25" />
+                            <controls:TMEntry Grid.Row="1" Grid.Column="0" Padding="5"
+                               Text="{ Binding EventSummaryViewModel.ActualNumberOfAttendees }" Keyboard="Numeric" />
+                            <Label Grid.Row="2" Grid.Column="0" Text="Attendees" FontSize="Micro"
+                               HorizontalTextAlignment="Center" />
+                            <Image Grid.Row="0" Grid.Column="1" Source="trashbag" WidthRequest="25" />
+                            <controls:TMEntry Grid.Row="1" Grid.Column="1" Padding="5" Text="{ Binding EventSummaryViewModel.NumberOfBags }"
+                               Keyboard="Numeric" />
+                            <Label Grid.Row="2" Grid.Column="1" Text="Bags Collected" FontSize="Micro"
+                               HorizontalTextAlignment="Center" />
+                            <Image Grid.Row="0" Grid.Column="2" Source="clock" WidthRequest="25" />
+                            <controls:TMEntry Grid.Row="1" Grid.Column="2" Padding="5"
+                               Text="{ Binding EventSummaryViewModel.DurationInMinutes }" Keyboard="Numeric" />
+                            <Label Grid.Row="2" Grid.Column="2" Text="Duration (min)" FontSize="Micro"
+                               HorizontalTextAlignment="Center" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Weight Collected -->
+                <Border Style="{StaticResource RoundBorder}" Margin="10,0">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Weight Collected" Style="{StaticResource SectionHeader}" Margin="0" />
+                        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                            <controls:TMEntry
+                                Text="{Binding EventSummaryViewModel.PickedWeight}"
+                                Keyboard="Numeric"
+                                WidthRequest="100"
+                                Placeholder="0.0" />
+                            <Picker
+                                ItemsSource="{Binding WeightUnits}"
+                                ItemDisplayBinding="{Binding Name}"
+                                SelectedItem="{Binding SelectedWeightUnit}"
+                                WidthRequest="80" />
+                        </HorizontalStackLayout>
+                        <Label Text="A full 33-gallon bag typically weighs 15-25 lbs"
+                               FontSize="Micro"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}"
+                               HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Notes -->
+                <Border Style="{StaticResource RoundBorder}" Margin="10,0">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Notes" Style="{StaticResource SectionHeader}" Margin="0" />
                         <controls:TMEntry
                             Text="{Binding EventSummaryViewModel.Notes}"
                             VerticalOptions="StartAndExpand"
-                            MinimumHeightRequest="200"
-                            HorizontalTextAlignment="Center"/>
+                            MinimumHeightRequest="200" />
                     </VerticalStackLayout>
+                </Border>
 
-                    <Button Text="Save Event Summary" Command="{Binding SaveEventSummaryCommand}" Grid.Row="3"
-                        IsVisible="{Binding EnableSaveEventSummary}"
-                        Style="{StaticResource PrimarySmallButton}"
-                        Margin="10" />
-                </Grid>
+                <Button Text="Save Event Summary" Command="{Binding SaveEventSummaryCommand}"
+                    IsVisible="{Binding EnableSaveEventSummary}"
+                    Style="{StaticResource PrimaryLargeButton}"
+                    Margin="10,8,10,10" />
             </VerticalStackLayout>
             <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
                      VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />
