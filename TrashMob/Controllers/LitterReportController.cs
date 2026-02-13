@@ -267,11 +267,8 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var litterImage = await litterImageManager.GetAsync(litterImageId, cancellationToken);
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, litterImage,
-                    AuthorizationPolicyConstants.UserOwnsEntity);
 
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(litterImage, AuthorizationPolicyConstants.UserOwnsEntity))
             {
                 return Forbid();
             }
@@ -293,10 +290,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> UpdateLitterReport(LitterReport litterReport,
             CancellationToken cancellationToken)
         {
-            var authResult = await AuthorizationService.AuthorizeAsync(User, litterReport,
-                AuthorizationPolicyConstants.UserOwnsEntityOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(litterReport, AuthorizationPolicyConstants.UserOwnsEntityOrIsAdmin))
             {
                 return Forbid();
             }
@@ -325,10 +319,7 @@ namespace TrashMob.Controllers
         {
             var litterReport = await litterReportManager.GetAsync(id, cancellationToken).ConfigureAwait(false);
 
-            var authResult = await AuthorizationService.AuthorizeAsync(User, litterReport,
-                AuthorizationPolicyConstants.UserOwnsEntityOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(litterReport, AuthorizationPolicyConstants.UserOwnsEntityOrIsAdmin))
             {
                 return Forbid();
             }

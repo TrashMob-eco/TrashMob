@@ -108,10 +108,7 @@
                 return NotFound();
             }
 
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserIsEventLead);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }
@@ -157,10 +154,7 @@
                 return NotFound();
             }
 
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -211,10 +205,7 @@
                 return NotFound();
             }
 
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -254,10 +245,7 @@
                 return NotFound();
             }
 
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserIsEventLead);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }
@@ -294,10 +282,7 @@
                 return NotFound();
             }
 
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserIsEventLead);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }

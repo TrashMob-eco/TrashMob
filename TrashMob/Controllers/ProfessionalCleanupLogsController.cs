@@ -59,9 +59,7 @@ namespace TrashMob.Controllers
                 return NotFound();
             }
 
-            var authResult = await AuthorizationService.AuthorizeAsync(
-                User, company, AuthorizationPolicyConstants.UserIsProfessionalCompanyUserOrIsAdmin);
-            if (!authResult.Succeeded)
+            if (!await IsAuthorizedAsync(company, AuthorizationPolicyConstants.UserIsProfessionalCompanyUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -94,9 +92,7 @@ namespace TrashMob.Controllers
                 return NotFound();
             }
 
-            var authResult = await AuthorizationService.AuthorizeAsync(
-                User, company, AuthorizationPolicyConstants.UserIsProfessionalCompanyUserOrIsAdmin);
-            if (!authResult.Succeeded)
+            if (!await IsAuthorizedAsync(company, AuthorizationPolicyConstants.UserIsProfessionalCompanyUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -134,9 +130,7 @@ namespace TrashMob.Controllers
                 return NotFound();
             }
 
-            var authResult = await AuthorizationService.AuthorizeAsync(
-                User, company, AuthorizationPolicyConstants.UserIsProfessionalCompanyUserOrIsAdmin);
-            if (!authResult.Succeeded)
+            if (!await IsAuthorizedAsync(company, AuthorizationPolicyConstants.UserIsProfessionalCompanyUserOrIsAdmin))
             {
                 return Forbid();
             }

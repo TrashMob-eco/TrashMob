@@ -46,10 +46,8 @@
             CancellationToken cancellationToken)
         {
             var mobEvent = await eventManager.GetAsync(imageUpload.ParentId, cancellationToken).ConfigureAwait(false);
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserIsEventLead);
 
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }
@@ -73,10 +71,8 @@
             CancellationToken cancellationToken)
         {
             var mobEvent = await eventManager.GetAsync(parentId, cancellationToken).ConfigureAwait(false);
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserIsEventLead);
 
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
             {
                 return Forbid();
             }

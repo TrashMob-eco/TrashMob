@@ -60,10 +60,8 @@
         public async Task<IActionResult> GetPartnerDocuments(Guid partnerId, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -97,10 +95,8 @@
         public async Task<IActionResult> Add(PartnerDocument partnerDocument, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerDocument.PartnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -131,10 +127,8 @@
             CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -191,10 +185,8 @@
         public async Task<IActionResult> Download(Guid partnerDocumentId, CancellationToken cancellationToken)
         {
             var partner = await manager.GetPartnerForDocument(partnerDocumentId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -218,10 +210,8 @@
         public async Task<IActionResult> GetStorageUsage(Guid partnerId, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -240,10 +230,8 @@
         public async Task<IActionResult> Update(PartnerDocument partnerDocument, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerDocument.PartnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -264,10 +252,8 @@
         public async Task<IActionResult> Delete(Guid partnerDocumentId, CancellationToken cancellationToken)
         {
             var partner = await manager.GetPartnerForDocument(partnerDocumentId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
 
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }

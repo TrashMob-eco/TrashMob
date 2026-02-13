@@ -82,10 +82,7 @@
             var partnerLocation =
                 await partnerLocationManager.GetAsync(partnerLocationService.PartnerLocationId, cancellationToken);
             var partner = await partnerManager.GetAsync(partnerLocation.PartnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -115,10 +112,7 @@
             var partnerLocation =
                 await partnerLocationManager.GetAsync(partnerLocationService.PartnerLocationId, cancellationToken);
             var partner = await partnerManager.GetAsync(partnerLocation.PartnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }
@@ -144,10 +138,7 @@
         {
             var partnerLocation = await partnerLocationManager.GetAsync(partnerLocationId, cancellationToken);
             var partner = await partnerManager.GetAsync(partnerLocation.PartnerId, cancellationToken);
-            var authResult = await AuthorizationService.AuthorizeAsync(User, partner,
-                AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
             {
                 return Forbid();
             }

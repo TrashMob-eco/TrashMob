@@ -71,10 +71,7 @@
         {
             var entity = await Manager.GetAsync(id, cancellationToken).ConfigureAwait(false);
 
-            var authResult =
-                await AuthorizationService.AuthorizeAsync(User, entity, AuthorizationPolicyConstants.UserOwnsEntity);
-
-            if (!User.Identity.IsAuthenticated || !authResult.Succeeded)
+            if (!await IsAuthorizedAsync(entity, AuthorizationPolicyConstants.UserOwnsEntity))
             {
                 return Forbid();
             }
