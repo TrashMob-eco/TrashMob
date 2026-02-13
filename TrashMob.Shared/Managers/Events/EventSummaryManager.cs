@@ -102,16 +102,15 @@
                                        eventSummaries.Where(e => e.PickedWeightUnitId == (int)WeightUnitEnum.Kilogram).Sum(e => e.PickedWeight * 2.20462m);
             stats.TotalWeightInKilograms = eventSummaries.Where(e => e.PickedWeightUnitId == (int)WeightUnitEnum.Kilogram).Sum(e => e.PickedWeight) +
                                          eventSummaries.Where(e => e.PickedWeightUnitId == (int)WeightUnitEnum.Pound).Sum(e => e.PickedWeight * 0.453592m);
-            var eventLitterReports = await eventLitterReportManager.GetAsync(cancellationToken);
+            // Use the expression-based GetAsync which includes the LitterReport navigation property,
+            // and filter by the user's event IDs to avoid loading ALL event litter reports
+            var eventIdsList = eventIds.ToList();
+            var eventLitterReports = await eventLitterReportManager.GetAsync(
+                elr => eventIdsList.Contains(elr.EventId), cancellationToken);
 
-            if (eventLitterReports == null)
-            {
-                stats.TotalLitterReportsClosed = 0;
-            }
-            else
-            {
-                stats.TotalLitterReportsClosed = eventLitterReports.Count(elr => eventIds.Contains(elr.EventId) && elr.LitterReport != null && elr.LitterReport.LitterReportStatusId == (int)LitterReportStatusEnum.Cleaned);
-            }
+            stats.TotalLitterReportsClosed = eventLitterReports.Count(elr =>
+                elr.LitterReport != null &&
+                elr.LitterReport.LitterReportStatusId == (int)LitterReportStatusEnum.Cleaned);
 
             stats.TotalLitterReportsSubmitted = await litterReportManager.GetUserLitterReportCountAsync(userId, cancellationToken);
 
