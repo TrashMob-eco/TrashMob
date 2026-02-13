@@ -187,7 +187,7 @@ namespace TrashMob.Controllers
             await userManager.DeleteAsync(id, cancellationToken);
             TrackEvent(nameof(DeleteUser));
 
-            return Ok(id);
+            return NoContent();
         }
 
         /// <summary>

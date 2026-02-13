@@ -144,7 +144,7 @@ namespace TrashMob.Shared.Managers.Prospects
                     CadenceStep = nextStep,
                     Subject = subject,
                     HtmlBody = fullHtml,
-                    Status = "Sent",
+                    Status = ProspectOutreachStatus.Sent,
                     SentDate = DateTimeOffset.UtcNow,
                     CreatedByUserId = userId,
                     LastUpdatedByUserId = userId,
@@ -331,7 +331,7 @@ namespace TrashMob.Shared.Managers.Prospects
         private async Task<int> GetNextCadenceStepAsync(Guid prospectId, CancellationToken cancellationToken)
         {
             var lastStep = await outreachEmailRepository
-                .Get(e => e.ProspectId == prospectId && e.Status != "Failed")
+                .Get(e => e.ProspectId == prospectId && e.Status != ProspectOutreachStatus.Failed)
                 .MaxAsync(e => (int?)e.CadenceStep, cancellationToken) ?? 0;
 
             return lastStep + 1;

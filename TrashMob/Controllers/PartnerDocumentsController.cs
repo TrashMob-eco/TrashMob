@@ -267,7 +267,7 @@ namespace TrashMob.Controllers
             await manager.DeleteAsync(partnerDocumentId, cancellationToken);
             TrackEvent(nameof(Delete) + typeof(PartnerDocument));
 
-            return Ok(partnerDocumentId);
+            return NoContent();
         }
     }
 }

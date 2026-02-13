@@ -144,7 +144,7 @@ namespace TrashMob.Controllers
             await partnerLocationManager.DeleteAsync(partnerLocationId, cancellationToken);
             TrackEvent(nameof(DeletePartnerLocation));
 
-            return Ok(partnerLocationId);
+            return NoContent();
         }
 
         /// <summary>

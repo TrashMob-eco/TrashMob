@@ -130,7 +130,7 @@ namespace TrashMob.Controllers
             await manager.DeleteAsync(partnerSocialMediaAccountId, cancellationToken);
             TrackEvent(nameof(DeletePartnerSocialMediaAccount));
 
-            return Ok(partnerSocialMediaAccountId);
+            return NoContent();
         }
     }
 }

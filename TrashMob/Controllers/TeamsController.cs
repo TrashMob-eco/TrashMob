@@ -509,7 +509,7 @@ namespace TrashMob.Controllers
         [HttpDelete("{teamId}/logo")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(Team), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteTeamLogo(
@@ -540,8 +540,8 @@ namespace TrashMob.Controllers
             team.LastUpdatedByUserId = UserId;
             team.LastUpdatedDate = DateTimeOffset.UtcNow;
 
-            var updatedTeam = await teamManager.UpdateAsync(team, UserId, cancellationToken);
-            return Ok(updatedTeam);
+            await teamManager.UpdateAsync(team, UserId, cancellationToken);
+            return NoContent();
         }
 
         #endregion

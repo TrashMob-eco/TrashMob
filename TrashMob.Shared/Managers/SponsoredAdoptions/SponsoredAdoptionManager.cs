@@ -59,7 +59,7 @@ namespace TrashMob.Shared.Managers.SponsoredAdoptions
             return await Repo.Get()
                 .Include(sa => sa.AdoptableArea)
                 .Include(sa => sa.Sponsor)
-                .Where(sa => sa.ProfessionalCompanyId == companyId && sa.Status == "Active")
+                .Where(sa => sa.ProfessionalCompanyId == companyId && sa.Status == SponsoredAdoptionStatus.Active)
                 .OrderBy(sa => sa.AdoptableArea.Name)
                 .ToListAsync(cancellationToken);
         }
@@ -79,12 +79,12 @@ namespace TrashMob.Shared.Managers.SponsoredAdoptions
             var stats = new SponsoredAdoptionComplianceStats
             {
                 TotalSponsoredAdoptions = adoptions.Count,
-                ActiveAdoptions = adoptions.Count(a => a.Status == "Active"),
-                ExpiredAdoptions = adoptions.Count(a => a.Status == "Expired"),
+                ActiveAdoptions = adoptions.Count(a => a.Status == SponsoredAdoptionStatus.Active),
+                ExpiredAdoptions = adoptions.Count(a => a.Status == SponsoredAdoptionStatus.Expired),
                 TerminatedAdoptions = adoptions.Count(a => a.Status == "Terminated"),
             };
 
-            var activeAdoptions = adoptions.Where(a => a.Status == "Active").ToList();
+            var activeAdoptions = adoptions.Where(a => a.Status == SponsoredAdoptionStatus.Active).ToList();
             foreach (var adoption in activeAdoptions)
             {
                 var lastCleanup = adoption.CleanupLogs

@@ -76,11 +76,11 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            var results = await Manager.DeleteAsync(id, cancellationToken);
+            await Manager.DeleteAsync(id, cancellationToken);
 
             TrackEvent("Delete" + nameof(T));
 
-            return Ok(results);
+            return NoContent();
         }
     }
 }

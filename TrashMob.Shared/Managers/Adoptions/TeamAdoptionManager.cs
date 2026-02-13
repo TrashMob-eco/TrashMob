@@ -86,7 +86,7 @@ namespace TrashMob.Shared.Managers.Adoptions
                 AdoptableAreaId = adoptableAreaId,
                 ApplicationDate = DateTimeOffset.UtcNow,
                 ApplicationNotes = applicationNotes,
-                Status = "Pending",
+                Status = TeamAdoptionStatus.Pending,
                 CreatedByUserId = submittedByUserId,
                 CreatedDate = DateTimeOffset.UtcNow,
                 LastUpdatedByUserId = submittedByUserId,
@@ -113,12 +113,12 @@ namespace TrashMob.Shared.Managers.Adoptions
                 return ServiceResult<TeamAdoption>.Failure("Adoption application not found.");
             }
 
-            if (adoption.Status != "Pending")
+            if (adoption.Status != TeamAdoptionStatus.Pending)
             {
                 return ServiceResult<TeamAdoption>.Failure("Only pending applications can be approved.");
             }
 
-            adoption.Status = "Approved";
+            adoption.Status = TeamAdoptionStatus.Approved;
             adoption.ReviewedByUserId = reviewedByUserId;
             adoption.ReviewedDate = DateTimeOffset.UtcNow;
             adoption.LastUpdatedByUserId = reviewedByUserId;
@@ -156,12 +156,12 @@ namespace TrashMob.Shared.Managers.Adoptions
                 return ServiceResult<TeamAdoption>.Failure("Adoption application not found.");
             }
 
-            if (adoption.Status != "Pending")
+            if (adoption.Status != TeamAdoptionStatus.Pending)
             {
                 return ServiceResult<TeamAdoption>.Failure("Only pending applications can be rejected.");
             }
 
-            adoption.Status = "Rejected";
+            adoption.Status = TeamAdoptionStatus.Rejected;
             adoption.ReviewedByUserId = reviewedByUserId;
             adoption.ReviewedDate = DateTimeOffset.UtcNow;
             adoption.RejectionReason = rejectionReason;
@@ -209,7 +209,7 @@ namespace TrashMob.Shared.Managers.Adoptions
             CancellationToken cancellationToken = default)
         {
             return await Repo.Get()
-                .Where(a => a.AdoptableArea.PartnerId == partnerId && a.Status == "Pending")
+                .Where(a => a.AdoptableArea.PartnerId == partnerId && a.Status == TeamAdoptionStatus.Pending)
                 .Include(a => a.Team)
                 .Include(a => a.AdoptableArea)
                 .OrderBy(a => a.ApplicationDate)
@@ -222,7 +222,7 @@ namespace TrashMob.Shared.Managers.Adoptions
             CancellationToken cancellationToken = default)
         {
             return await Repo.Get()
-                .Where(a => a.AdoptableArea.PartnerId == partnerId && a.Status == "Approved")
+                .Where(a => a.AdoptableArea.PartnerId == partnerId && a.Status == TeamAdoptionStatus.Approved)
                 .Include(a => a.Team)
                 .Include(a => a.AdoptableArea)
                 .OrderByDescending(a => a.ReviewedDate)
@@ -238,7 +238,7 @@ namespace TrashMob.Shared.Managers.Adoptions
             return await Repo.Get()
                 .AnyAsync(a => a.TeamId == teamId
                     && a.AdoptableAreaId == adoptableAreaId
-                    && (a.Status == "Pending" || a.Status == "Approved"),
+                    && (a.Status == TeamAdoptionStatus.Pending || a.Status == TeamAdoptionStatus.Approved),
                     cancellationToken);
         }
 
@@ -251,7 +251,7 @@ namespace TrashMob.Shared.Managers.Adoptions
 
             return await Repo.Get()
                 .Where(a => a.AdoptableArea.PartnerId == partnerId
-                    && a.Status == "Approved"
+                    && a.Status == TeamAdoptionStatus.Approved
                     && !a.IsCompliant
                     && (a.AdoptionEndDate == null || a.AdoptionEndDate >= today))
                 .Include(a => a.Team)
@@ -269,7 +269,7 @@ namespace TrashMob.Shared.Managers.Adoptions
 
             var adoptions = await Repo.Get()
                 .Where(a => a.AdoptableArea.PartnerId == partnerId
-                    && a.Status == "Approved"
+                    && a.Status == TeamAdoptionStatus.Approved
                     && (a.AdoptionEndDate == null || a.AdoptionEndDate >= today))
                 .Include(a => a.AdoptableArea)
                 .ToListAsync(cancellationToken);
@@ -300,7 +300,7 @@ namespace TrashMob.Shared.Managers.Adoptions
             CancellationToken cancellationToken = default)
         {
             return await Repo.Get()
-                .Where(a => a.AdoptableArea.PartnerId == partnerId && a.Status == "Approved")
+                .Where(a => a.AdoptableArea.PartnerId == partnerId && a.Status == TeamAdoptionStatus.Approved)
                 .Include(a => a.Team)
                 .Include(a => a.AdoptableArea)
                 .OrderBy(a => a.AdoptableArea.Name)

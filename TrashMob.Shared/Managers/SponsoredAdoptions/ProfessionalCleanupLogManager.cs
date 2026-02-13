@@ -84,7 +84,7 @@ namespace TrashMob.Shared.Managers.SponsoredAdoptions
                 return ServiceResult<ProfessionalCleanupLog>.Failure("Sponsored adoption not found.");
             }
 
-            if (adoption.Status != "Active")
+            if (adoption.Status != SponsoredAdoptionStatus.Active)
             {
                 return ServiceResult<ProfessionalCleanupLog>.Failure("Sponsored adoption is not active.");
             }

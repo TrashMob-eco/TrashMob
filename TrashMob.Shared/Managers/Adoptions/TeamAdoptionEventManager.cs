@@ -50,7 +50,7 @@ namespace TrashMob.Shared.Managers.Adoptions
                 return ServiceResult<TeamAdoptionEvent>.Failure("Adoption not found.");
             }
 
-            if (adoption.Status != "Approved")
+            if (adoption.Status != TeamAdoptionStatus.Approved)
             {
                 return ServiceResult<TeamAdoptionEvent>.Failure("Only approved adoptions can have events linked.");
             }
@@ -152,7 +152,7 @@ namespace TrashMob.Shared.Managers.Adoptions
 
             return await adoptionRepository
                 .Get(a => a.TeamId == teamId
-                    && a.Status == "Approved"
+                    && a.Status == TeamAdoptionStatus.Approved
                     && (a.AdoptionEndDate == null || a.AdoptionEndDate >= today))
                 .Include(a => a.AdoptableArea)
                 .ToListAsync(cancellationToken);

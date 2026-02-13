@@ -334,7 +334,7 @@ namespace TrashMob.Controllers
         [HttpDelete]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> DeleteEvent(EventCancellationRequest eventCancellationRequest,
             CancellationToken cancellationToken)
@@ -350,7 +350,7 @@ namespace TrashMob.Controllers
                 eventCancellationRequest.CancellationReason, UserId, cancellationToken);
             TrackEvent(nameof(DeleteEvent));
 
-            return Ok(eventCancellationRequest.EventId);
+            return NoContent();
         }
 
         private async Task<bool> EventExists(Guid id, CancellationToken cancellationToken)

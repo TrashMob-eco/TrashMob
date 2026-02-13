@@ -269,11 +269,11 @@ namespace TrashMob.Controllers
                 }
             }
 
-            var results = await Manager.DeleteAsync(id, cancellationToken);
+            await Manager.DeleteAsync(id, cancellationToken);
 
             TrackEvent("Delete" + nameof(PickupLocation));
 
-            return Ok(results);
+            return NoContent();
         }
     }
 }

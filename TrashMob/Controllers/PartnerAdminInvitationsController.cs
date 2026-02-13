@@ -218,10 +218,10 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            var result = await partnerAdminInvitationManager.DeleteAsync(partnerAdminInvitationId, cancellationToken);
+            await partnerAdminInvitationManager.DeleteAsync(partnerAdminInvitationId, cancellationToken);
             TrackEvent(nameof(AddPartnerAdminInvitation));
 
-            return Ok(result);
+            return NoContent();
         }
     }
 }
