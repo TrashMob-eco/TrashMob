@@ -68,6 +68,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The updated event litter report.</remarks>
         [HttpPut]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(typeof(EventLitterReport), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]

@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Identity.Web.Resource;
@@ -92,6 +93,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The updated event partner location service.</remarks>
         [HttpPut]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(typeof(EventPartnerLocationService), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
@@ -131,6 +133,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The approved event partner location service.</remarks>
         [HttpPut("accept/{eventId}/{partnerLocationId}/{serviceId}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(typeof(EventPartnerLocationService), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
@@ -184,6 +187,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The declined event partner location service.</remarks>
         [HttpPut("decline/{eventId}/{partnerLocationId}/{serviceId}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(typeof(EventPartnerLocationService), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
@@ -235,6 +239,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>Returns the newly created event partner location service.</remarks>
         [HttpPost]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(typeof(EventPartnerLocationService), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
@@ -274,6 +279,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>Returns the number of entities deleted.</remarks>
         [HttpDelete("{eventId}/{partnerLocationId}/{serviceTypeId}")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]

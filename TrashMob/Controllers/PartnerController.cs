@@ -3,6 +3,7 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using TrashMob.Models;
     using TrashMob.Security;
@@ -42,6 +43,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>The updated partner.</remarks>
         [HttpPut]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<IActionResult> Update(Partner partner, CancellationToken cancellationToken)
         {
             var authResult = await AuthorizationService.AuthorizeAsync(User, partner,

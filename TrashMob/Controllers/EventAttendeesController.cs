@@ -54,6 +54,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>Returns the updated event attendee.</remarks>
         [HttpPut]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(typeof(EventAttendee), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
@@ -173,6 +174,7 @@
         /// <param name="userId">The user ID of the attendee to promote.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         [HttpPut("{eventId}/{userId}/promote")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(typeof(EventAttendee), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
@@ -207,6 +209,7 @@
         /// <param name="userId">The user ID of the lead to demote.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         [HttpPut("{eventId}/{userId}/demote")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(typeof(EventAttendee), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
