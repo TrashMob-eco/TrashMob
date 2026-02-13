@@ -13,10 +13,12 @@ namespace TrashMobDailyJobs
     public class StatGenerator
     {
         private readonly ILogger<StatGenerator> logger;
+        private readonly ILoggerFactory loggerFactory;
 
-        public StatGenerator(ILogger<StatGenerator> logger)
+        public StatGenerator(ILogger<StatGenerator> logger, ILoggerFactory loggerFactory)
         {
             this.logger = logger;
+            this.loggerFactory = loggerFactory;
         }
 
         public async Task RunAsync()
@@ -273,7 +275,7 @@ namespace TrashMobDailyJobs
             }
         }
 
-        private static Task SendSummaryReport(SiteStats siteStats, string instanceName, string sendGridApiKey)
+        private Task SendSummaryReport(SiteStats siteStats, string instanceName, string sendGridApiKey)
         {
             var sb = new StringBuilder();
 
@@ -300,7 +302,7 @@ namespace TrashMobDailyJobs
 
             email.Addresses.Add(new EmailAddress { Email = Constants.TrashMobEmailAddress, Name = Constants.TrashMobEmailName });
 
-            var emailSender = new EmailSender { ApiKey = sendGridApiKey };
+            var emailSender = new EmailSender(loggerFactory.CreateLogger<EmailSender>()) { ApiKey = sendGridApiKey };
             return emailSender.SendEmailAsync(email);
         }
     }
