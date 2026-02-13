@@ -43,5 +43,6 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(ViewTeamPage), typeof(ViewTeamPage));
         Routing.RegisterRoute(nameof(WaiverPage), typeof(WaiverPage));
         Routing.RegisterRoute(nameof(WelcomePage), typeof(WelcomePage));
+        Routing.RegisterRoute(nameof(AgeGatePage), typeof(AgeGatePage));
     }
 }

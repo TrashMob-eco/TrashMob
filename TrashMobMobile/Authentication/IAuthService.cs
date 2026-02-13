@@ -10,7 +10,7 @@ public interface IAuthService
 
     Task<string> GetAccessTokenAsync();
 
-    string GetUserEmail();
+    Task<SignInResult> SignUpInteractiveAsync();
 
-    // TODO: Add other methods
+    string GetUserEmail();
 }

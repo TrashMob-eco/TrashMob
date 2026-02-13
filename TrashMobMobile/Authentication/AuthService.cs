@@ -148,6 +148,11 @@ public class AuthService : IAuthService
         }
     }
 
+    public async Task<SignInResult> SignUpInteractiveAsync()
+    {
+        return await SignInInteractive();
+    }
+
     public string GetUserEmail()
     {
         if (string.IsNullOrWhiteSpace(userEmail))
@@ -162,7 +167,7 @@ public class AuthService : IAuthService
     {
         var pcaBuilder = PublicClientApplicationBuilder
             .Create(AuthConstants.ClientId)
-            .WithAuthority(AuthConstants.AuthoritySignIn)
+            .WithAuthority(AuthConstants.Authority)
 #if IOS
             .WithIosKeychainSecurityGroup(AuthConstants.IosKeychainSecurityGroup)
 #elif ANDROID

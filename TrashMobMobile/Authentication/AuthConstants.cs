@@ -2,31 +2,28 @@ namespace TrashMobMobile.Authentication;
 
 public static class AuthConstants
 {
-    private const string SignInPolicy = "B2C_1A_TM_SIGNUP_SIGNIN";
-
 #if USETEST
-    public const string ClientId = "31cb1c9a-eaa6-4fd0-b59f-0bd0099845ee";
-    private const string TenantName = "TrashmobDev";
-    private const string TenantId = $"{TenantName}.onmicrosoft.com";
+    public const string ClientId = "33bfdd2c-80a4-4e6e-b211-337b0467226d";
+    private const string TenantName = "trashmobecodev";
+    private const string TenantDomain = "TrashMobEcoDev.onmicrosoft.com";
     public const string ApiBaseUri = "https://dev.trashmob.eco/api/";
 #else
-    public const string ClientId = "193638ed-30a1-4e29-ba95-fc39f0c0f242";
-    private const string TenantName = "Trashmob";
-    private const string TenantId = $"{TenantName}.onmicrosoft.com";
+    public const string ClientId = "33bfdd2c-80a4-4e6e-b211-337b0467226d"; // TODO: Register prod mobile app in Entra
+    private const string TenantName = "trashmobecodev"; // TODO: Update to prod tenant
+    private const string TenantDomain = "TrashMobEcoDev.onmicrosoft.com"; // TODO: Update to prod tenant
     public const string ApiBaseUri = "https://www.trashmob.eco/api/";
 #endif
 
     public static readonly string[] Scopes =
     [
-        $"https://{TenantId}/api/TrashMob.Writes",
-        $"https://{TenantId}/api/TrashMob.Read",
+        $"https://{TenantDomain}/api/TrashMob.Writes",
+        $"https://{TenantDomain}/api/TrashMob.Read",
         "email",
         "openid",
         "offline_access",
     ];
 
-    private const string AuthorityBase = $"https://{TenantName}.b2clogin.com/tfp/{TenantId}/";
-    public const string AuthoritySignIn = $"{AuthorityBase}{SignInPolicy}";
+    public const string Authority = $"https://{TenantName}.ciamlogin.com/";
 
     public const string IosKeychainSecurityGroup = "com.microsoft.adalcache";
     public const string RedirectUri = "eco.trashmob.trashmobmobile://auth";

@@ -145,12 +145,22 @@
                     </VerticalStackLayout>
                 </Border>
 
-                <!-- Login button -->
-                <Button Text="Get Started"
-                        AutomationId="GetStartedButton"
-                        MaximumWidthRequest="200"
-                        Margin="0,8,0,0"
-                        Command="{Binding SignInCommand}" />
+                <!-- Auth buttons -->
+                <HorizontalStackLayout HorizontalOptions="Center" Spacing="12" Margin="0,8,0,0">
+                    <Button Text="Sign In"
+                            AutomationId="SignInButton"
+                            MaximumWidthRequest="160"
+                            BackgroundColor="Transparent"
+                            TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                            BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                            BorderWidth="1"
+                            Command="{Binding SignInCommand}" />
+
+                    <Button Text="Create Account"
+                            AutomationId="CreateAccountButton"
+                            MaximumWidthRequest="160"
+                            Command="{Binding CreateAccountCommand}" />
+                </HorizontalStackLayout>
 
                 <Label Text="Something went wrong logging you in."
                        HorizontalOptions="Center"

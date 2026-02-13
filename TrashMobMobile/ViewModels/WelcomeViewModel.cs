@@ -3,6 +3,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMobMobile.Authentication;
+using TrashMobMobile.Pages;
 using TrashMobMobile.Services;
 
 public partial class WelcomeViewModel(IAuthService authService, IStatsRestService statsRestService, INotificationService notificationService) : BaseViewModel(notificationService)
@@ -27,6 +28,12 @@ public partial class WelcomeViewModel(IAuthService authService, IStatsRestServic
             StatisticsViewModel.TotalLitterReportsClosed = stats.TotalLitterReportsClosed;
             StatisticsViewModel.TotalWeightInPounds = (int)stats.TotalWeightInPounds;
         }, "An error occurred while loading this page. Please try again.");
+    }
+
+    [RelayCommand]
+    private async Task CreateAccount()
+    {
+        await Shell.Current.GoToAsync(nameof(AgeGatePage));
     }
 
     [RelayCommand]
