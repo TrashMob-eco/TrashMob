@@ -40,7 +40,7 @@
         public async Task<IActionResult> UploadImage([FromForm] ImageUpload imageUpload,
             CancellationToken cancellationToken)
         {
-            var mobEvent = eventManager.GetAsync(imageUpload.ParentId, cancellationToken);
+            var mobEvent = await eventManager.GetAsync(imageUpload.ParentId, cancellationToken).ConfigureAwait(false);
             var authResult =
                 await AuthorizationService.AuthorizeAsync(User, mobEvent, AuthorizationPolicyConstants.UserIsEventLead);
 

@@ -102,7 +102,7 @@
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<Location>> GeEventLocationsByTimeRangeAsync(DateTimeOffset? startTime,
+        public async Task<IEnumerable<Location>> GetEventLocationsByTimeRangeAsync(DateTimeOffset? startTime,
             DateTimeOffset? endTime, CancellationToken cancellationToken = default)
         {
             var locations = await Repo.Get()

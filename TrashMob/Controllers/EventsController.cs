@@ -285,7 +285,7 @@
         public async Task<IActionResult> GetEventLocationsByTimeRange([FromQuery] DateTimeOffset? startTime,
             [FromQuery] DateTimeOffset? endTime, CancellationToken cancellationToken)
         {
-            var result = await eventManager.GeEventLocationsByTimeRangeAsync(startTime, endTime, cancellationToken)
+            var result = await eventManager.GetEventLocationsByTimeRangeAsync(startTime, endTime, cancellationToken)
                 .ConfigureAwait(false);
 
             return Ok(result);
