@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
@@ -36,7 +36,7 @@
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> SendMessageRequest(MessageRequest messageRequest)
         {
-            await messageRequestManager.SendMessageRequestAsync(messageRequest).ConfigureAwait(false);
+            await messageRequestManager.SendMessageRequestAsync(messageRequest);
 
             TrackEvent(nameof(SendMessageRequest));
 

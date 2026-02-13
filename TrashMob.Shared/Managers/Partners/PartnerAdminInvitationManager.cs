@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers.Partners
+namespace TrashMob.Shared.Managers.Partners
 {
     using System;
     using System.Collections.Generic;
@@ -123,8 +123,7 @@
 
                 await emailManager.SendTemplatedEmailAsync(welcomeSubject, SendGridEmailTemplateId.GenericEmail,
                         SendGridEmailGroupId.General, userDynamicTemplateData, welcomeRecipients,
-                        CancellationToken.None)
-                    .ConfigureAwait(false);
+                        CancellationToken.None);
 
                 instance.InvitationStatusId = (int)InvitationStatusEnum.Sent;
             }
@@ -151,13 +150,13 @@
 
                     await emailManager.SendTemplatedEmailAsync(welcomeSubject, SendGridEmailTemplateId.GenericEmail,
                         SendGridEmailGroupId.General, userDynamicTemplateData, welcomeRecipients,
-                        CancellationToken.None).ConfigureAwait(false);
+                        CancellationToken.None);
 
                     instance.InvitationStatusId = (int)InvitationStatusEnum.Sent;
                 }
             }
 
-            var newInvitation = await base.UpdateAsync(instance, userId, cancellationToken).ConfigureAwait(false);
+            var newInvitation = await base.UpdateAsync(instance, userId, cancellationToken);
             return newInvitation;
         }
 
@@ -229,8 +228,7 @@
 
                 await emailManager.SendTemplatedEmailAsync(welcomeSubject, SendGridEmailTemplateId.GenericEmail,
                         SendGridEmailGroupId.General, userDynamicTemplateData, welcomeRecipients,
-                        CancellationToken.None)
-                    .ConfigureAwait(false);
+                        CancellationToken.None);
             }
             else
             {
@@ -252,8 +250,7 @@
 
                 await emailManager.SendTemplatedEmailAsync(welcomeSubject, SendGridEmailTemplateId.GenericEmail,
                         SendGridEmailGroupId.General, userDynamicTemplateData, welcomeRecipients,
-                        CancellationToken.None)
-                    .ConfigureAwait(false);
+                        CancellationToken.None);
             }
 
             instance.InvitationStatusId = (int)InvitationStatusEnum.Sent;

@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Threading;
@@ -35,7 +35,7 @@
         [HttpGet("{jobOpportunityId}")]
         public async Task<IActionResult> Get(Guid jobOpportunityId, CancellationToken cancellationToken)
         {
-            return Ok(await Manager.GetAsync(jobOpportunityId, cancellationToken).ConfigureAwait(false));
+            return Ok(await Manager.GetAsync(jobOpportunityId, cancellationToken));
         }
 
         /// <summary>
@@ -54,7 +54,7 @@
                 return Forbid();
             }
 
-            var result = await Manager.UpdateAsync(jobOpportunity, UserId, cancellationToken).ConfigureAwait(false);
+            var result = await Manager.UpdateAsync(jobOpportunity, UserId, cancellationToken);
             TrackEvent(nameof(Update) + typeof(JobOpportunity));
 
             return Ok(result);
@@ -76,7 +76,7 @@
                 return Forbid();
             }
 
-            var result = await Manager.AddAsync(jobOpportunity, UserId, cancellationToken).ConfigureAwait(false);
+            var result = await Manager.AddAsync(jobOpportunity, UserId, cancellationToken);
             TrackEvent(nameof(Add) + typeof(JobOpportunity));
 
             return Ok(result);
@@ -98,7 +98,7 @@
                 return Forbid();
             }
 
-            var result = await Manager.DeleteAsync(jobOpportunityId, cancellationToken).ConfigureAwait(false);
+            var result = await Manager.DeleteAsync(jobOpportunityId, cancellationToken);
             TrackEvent(nameof(Add) + typeof(JobOpportunity));
 
             return Ok(result);

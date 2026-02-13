@@ -127,7 +127,7 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            if (string.IsNullOrEmpty(request.Subject))
+            if (string.IsNullOrWhiteSpace(request.Subject))
             {
                 return BadRequest("Subject is required.");
             }

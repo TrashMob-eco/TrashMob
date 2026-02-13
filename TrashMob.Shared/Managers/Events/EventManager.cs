@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers.Events
+namespace TrashMob.Shared.Managers.Events
 {
     using System;
     using System.Collections.Generic;
@@ -44,7 +44,7 @@
                     && e.IsEventPublic
                     && e.EventDate >= DateTimeOffset.UtcNow.AddMinutes(-1 * StandardEventWindowInMinutes))
                 .Include(e => e.CreatedByUser)
-                .ToListAsync(cancellationToken).ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -53,7 +53,7 @@
             return await Repo.Get(e => e.EventDate < DateTimeOffset.UtcNow
                                        && e.EventStatusId != (int)EventStatusEnum.Canceled)
                 .Include(e => e.CreatedByUser)
-                .ToListAsync(cancellationToken).ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -63,7 +63,7 @@
             return await Repo.Get(e => e.CreatedByUserId == userId
                                        && e.EventStatusId != (int)EventStatusEnum.Canceled
                                        && (!futureEventsOnly || e.EventDate >= DateTimeOffset.UtcNow))
-                .ToListAsync(cancellationToken).ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -74,7 +74,7 @@
                                        && e.EventStatusId != (int)EventStatusEnum.Canceled
                                        && (filter.StartDate == null || filter.StartDate <= e.EventDate)
                                        && (filter.EndDate == null || filter.EndDate >= e.EventDate))
-                .ToListAsync(cancellationToken).ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -84,7 +84,7 @@
             return await Repo.Get(e => e.CreatedByUserId == userId
                                        && e.EventStatusId == (int)EventStatusEnum.Canceled
                                        && (!futureEventsOnly || e.EventDate >= DateTimeOffset.UtcNow))
-                .ToListAsync(cancellationToken).ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -99,7 +99,7 @@
                                        (filter.City == null || e.City == filter.City) &&
                                        (filter.CreatedByUserId == null || e.CreatedByUserId == filter.CreatedByUserId))
                 .Include(e => e.CreatedByUser)
-                .ToListAsync(cancellationToken).ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -112,7 +112,7 @@
                 .GroupBy(e => new { e.Country, e.Region, e.City })
                 .Select(group => new Location
                     { Country = group.Key.Country, Region = group.Key.Region, City = group.Key.City })
-                .ToListAsync(cancellationToken).ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
 
             return locations;
         }
@@ -121,18 +121,18 @@
         public async Task<int> DeleteAsync(Guid id, string cancellationReason, Guid userId,
             CancellationToken cancellationToken)
         {
-            var instance = await Repo.GetAsync(id, cancellationToken).ConfigureAwait(false);
+            var instance = await Repo.GetAsync(id, cancellationToken);
 
             instance.EventStatusId = (int)EventStatusEnum.Canceled;
             instance.CancellationReason = cancellationReason;
 
             await base.UpdateAsync(instance, userId, cancellationToken);
 
-            var eventLitterReports = await eventLitterReportManager.GetByParentIdAsync(id, cancellationToken).ConfigureAwait(false);
+            var eventLitterReports = await eventLitterReportManager.GetByParentIdAsync(id, cancellationToken);
 
             foreach (var eventLitterReport in eventLitterReports)
             {
-                await eventLitterReportManager.Delete(id, eventLitterReport.LitterReportId, cancellationToken).ConfigureAwait(false);
+                await eventLitterReportManager.Delete(id, eventLitterReport.LitterReportId, cancellationToken);
             }
 
             var eventAttendees = eventAttendeeRepository.Get(e => e.EventId == id).Include(e => e.User);
@@ -142,7 +142,7 @@
             var emailCopy = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.EventCancelledNotice.ToString());
             emailCopy = emailCopy.Replace("{CancellationReason}", cancellationReason);
 
-            var localDate = await instance.GetLocalEventTime(mapManager).ConfigureAwait(false);
+            var localDate = await instance.GetLocalEventTime(mapManager);
 
             foreach (var attendee in eventAttendees)
             {
@@ -165,8 +165,7 @@
                 };
 
                 await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.EventEmail,
-                        SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None)
-                    .ConfigureAwait(false);
+                        SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None);
             }
 
             return 1;
@@ -195,7 +194,7 @@
                 new() { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress },
             };
 
-            var localTime = await instance.GetLocalEventTime(mapManager).ConfigureAwait(false);
+            var localTime = await instance.GetLocalEventTime(mapManager);
 
             var dynamicTemplateData = new
             {
@@ -211,8 +210,7 @@
             };
 
             await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.EventEmail,
-                    SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None)
-                .ConfigureAwait(false);
+                    SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None);
 
             return newEvent;
         }
@@ -221,7 +219,7 @@
         public override async Task<Event> UpdateAsync(Event instance, Guid userId,
             CancellationToken cancellationToken = default)
         {
-            var oldEvent = await Repo.GetWithNoTrackingAsync(instance.Id, cancellationToken).ConfigureAwait(false);
+            var oldEvent = await Repo.GetWithNoTrackingAsync(instance.Id, cancellationToken);
 
             var updatedEvent = await base.UpdateAsync(instance, userId, cancellationToken);
 
@@ -235,8 +233,8 @@
                 var emailCopy = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.EventUpdatedNotice.ToString());
                 emailCopy = emailCopy.Replace("{EventName}", instance.Name);
 
-                var oldLocalDate = await oldEvent.GetLocalEventTime(mapManager).ConfigureAwait(false);
-                var newLocalDate = await instance.GetLocalEventTime(mapManager).ConfigureAwait(false);
+                var oldLocalDate = await oldEvent.GetLocalEventTime(mapManager);
+                var newLocalDate = await instance.GetLocalEventTime(mapManager);
 
                 emailCopy = emailCopy.Replace("{EventDate}", oldLocalDate.Item1);
                 emailCopy = emailCopy.Replace("{EventTime}", oldLocalDate.Item2);
@@ -266,8 +264,7 @@
                     };
 
                     await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.EventEmail,
-                            SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None)
-                        .ConfigureAwait(false);
+                            SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None);
                 }
             }
 

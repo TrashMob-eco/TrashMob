@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Threading;
@@ -47,7 +47,7 @@
             }
 
             var events = await eventPartnerLocationServicesManager
-                .GetByPartnerLocationAsync(partnerLocationId, cancellationToken).ConfigureAwait(false);
+                .GetByPartnerLocationAsync(partnerLocationId, cancellationToken);
 
             return Ok(events);
         }
@@ -63,8 +63,7 @@
         public async Task<IActionResult> GetPartnerLocationEventServicesByUser(Guid userId,
             CancellationToken cancellationToken)
         {
-            var events = await eventPartnerLocationServicesManager.GetByUserAsync(userId, cancellationToken)
-                .ConfigureAwait(false);
+            var events = await eventPartnerLocationServicesManager.GetByUserAsync(userId, cancellationToken);
 
             return Ok(events);
         }

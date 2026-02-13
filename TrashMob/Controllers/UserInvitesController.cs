@@ -51,7 +51,7 @@ namespace TrashMob.Controllers
         [ProducesResponseType(typeof(IEnumerable<EmailInviteBatch>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetBatches(CancellationToken cancellationToken = default)
         {
-            var result = await emailInviteManager.GetUserBatchesAsync(UserId, cancellationToken).ConfigureAwait(false);
+            var result = await emailInviteManager.GetUserBatchesAsync(UserId, cancellationToken);
             TrackEvent(nameof(GetBatches));
 
             return Ok(result);
@@ -71,7 +71,7 @@ namespace TrashMob.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> GetBatch(System.Guid id, CancellationToken cancellationToken = default)
         {
-            var result = await emailInviteManager.GetBatchDetailsAsync(id, cancellationToken).ConfigureAwait(false);
+            var result = await emailInviteManager.GetBatchDetailsAsync(id, cancellationToken);
 
             if (result == null)
             {
@@ -99,7 +99,7 @@ namespace TrashMob.Controllers
         [ProducesResponseType(typeof(UserInviteQuota), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetQuota(CancellationToken cancellationToken = default)
         {
-            var monthlyCount = await emailInviteManager.GetUserMonthlyInviteCountAsync(UserId, cancellationToken).ConfigureAwait(false);
+            var monthlyCount = await emailInviteManager.GetUserMonthlyInviteCountAsync(UserId, cancellationToken);
             var remaining = MaxInvitesPerMonth - monthlyCount;
 
             var quota = new UserInviteQuota
@@ -145,7 +145,7 @@ namespace TrashMob.Controllers
             }
 
             // Check monthly quota
-            var monthlyCount = await emailInviteManager.GetUserMonthlyInviteCountAsync(UserId, cancellationToken).ConfigureAwait(false);
+            var monthlyCount = await emailInviteManager.GetUserMonthlyInviteCountAsync(UserId, cancellationToken);
             var remaining = MaxInvitesPerMonth - monthlyCount;
 
             if (remaining <= 0)
@@ -177,10 +177,10 @@ namespace TrashMob.Controllers
                 "User",
                 null,
                 null,
-                cancellationToken).ConfigureAwait(false);
+                cancellationToken);
 
             // Process the batch (send emails)
-            var result = await emailInviteManager.ProcessBatchAsync(batch.Id, cancellationToken).ConfigureAwait(false);
+            var result = await emailInviteManager.ProcessBatchAsync(batch.Id, cancellationToken);
 
             TrackEvent(nameof(CreateBatch));
 

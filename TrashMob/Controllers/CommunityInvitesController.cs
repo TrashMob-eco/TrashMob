@@ -56,7 +56,7 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            var result = await emailInviteManager.GetCommunityBatchesAsync(communityId, cancellationToken).ConfigureAwait(false);
+            var result = await emailInviteManager.GetCommunityBatchesAsync(communityId, cancellationToken);
             TrackEvent(nameof(GetBatches));
 
             return Ok(result);
@@ -82,7 +82,7 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            var result = await emailInviteManager.GetBatchDetailsAsync(id, cancellationToken).ConfigureAwait(false);
+            var result = await emailInviteManager.GetBatchDetailsAsync(id, cancellationToken);
 
             if (result == null || result.CommunityId != communityId)
             {
@@ -129,10 +129,10 @@ namespace TrashMob.Controllers
                 "Community",
                 communityId,
                 null,
-                cancellationToken).ConfigureAwait(false);
+                cancellationToken);
 
             // Process the batch (send emails)
-            var result = await emailInviteManager.ProcessBatchAsync(batch.Id, cancellationToken).ConfigureAwait(false);
+            var result = await emailInviteManager.ProcessBatchAsync(batch.Id, cancellationToken);
 
             TrackEvent(nameof(CreateBatch));
 

@@ -43,7 +43,7 @@ namespace TrashMob.Controllers
         [ProducesResponseType(typeof(IEnumerable<EmailInviteBatch>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetBatches(CancellationToken cancellationToken = default)
         {
-            var result = await emailInviteManager.GetAdminBatchesAsync(cancellationToken).ConfigureAwait(false);
+            var result = await emailInviteManager.GetAdminBatchesAsync(cancellationToken);
             TrackEvent(nameof(GetBatches));
 
             return Ok(result);
@@ -62,7 +62,7 @@ namespace TrashMob.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetBatch(Guid id, CancellationToken cancellationToken = default)
         {
-            var result = await emailInviteManager.GetBatchDetailsAsync(id, cancellationToken).ConfigureAwait(false);
+            var result = await emailInviteManager.GetBatchDetailsAsync(id, cancellationToken);
 
             if (result == null)
             {
@@ -101,10 +101,10 @@ namespace TrashMob.Controllers
                 "Admin",
                 null,
                 null,
-                cancellationToken).ConfigureAwait(false);
+                cancellationToken);
 
             // Process the batch (send emails)
-            var result = await emailInviteManager.ProcessBatchAsync(batch.Id, cancellationToken).ConfigureAwait(false);
+            var result = await emailInviteManager.ProcessBatchAsync(batch.Id, cancellationToken);
 
             TrackEvent(nameof(CreateBatch));
 

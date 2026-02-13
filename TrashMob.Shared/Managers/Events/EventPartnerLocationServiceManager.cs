@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers.Events
+namespace TrashMob.Shared.Managers.Events
 {
     using System;
     using System.Collections.Generic;
@@ -85,8 +85,7 @@
             };
 
             await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.GenericEmail,
-                    SendGridEmailGroupId.EventRelated, adminDynamicTemplateData, recipients, CancellationToken.None)
-                .ConfigureAwait(false);
+                    SendGridEmailGroupId.EventRelated, adminDynamicTemplateData, recipients, CancellationToken.None);
 
             var partnerMessage = pls.IsAutoApproved
                 ? emailManager.GetHtmlEmailCopy(NotificationTypeEnum.EventPartnerRequest.ToString())
@@ -111,13 +110,12 @@
             }
 
             await emailManager.SendTemplatedEmailAsync(partnerSubject, SendGridEmailTemplateId.GenericEmail,
-                    SendGridEmailGroupId.EventRelated, dynamicTemplateData, partnerRecipients, CancellationToken.None)
-                .ConfigureAwait(false);
+                    SendGridEmailGroupId.EventRelated, dynamicTemplateData, partnerRecipients, CancellationToken.None);
 
             if (pls.IsAutoApproved)
             {
                 instance.EventPartnerLocationServiceStatusId = (int)EventPartnerLocationServiceStatusEnum.Accepted;
-                await UpdateAsync(instance, userId, cancellationToken).ConfigureAwait(false);
+                await UpdateAsync(instance, userId, cancellationToken);
             }
 
             return existingService;
@@ -138,8 +136,7 @@
                 .Include(ep => ep.PartnerLocation.Partner)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            var user = await userRepository.GetAsync(existingService.CreatedByUserId, cancellationToken)
-                .ConfigureAwait(false);
+            var user = await userRepository.GetAsync(existingService.CreatedByUserId, cancellationToken);
 
             // Notify Admins that a partner request has been responded to
             var subject = "A partner request for an event has been responded to!";
@@ -159,8 +156,7 @@
             };
 
             await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.GenericEmail,
-                    SendGridEmailGroupId.EventRelated, adminDynamicTemplateData, recipients, CancellationToken.None)
-                .ConfigureAwait(false);
+                    SendGridEmailGroupId.EventRelated, adminDynamicTemplateData, recipients, CancellationToken.None);
 
             var partnerMessage = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.EventPartnerResponse.ToString());
             var partnerSubject = "A TrashMob.eco Partner has responded to your request!";
@@ -184,8 +180,7 @@
             };
 
             await emailManager.SendTemplatedEmailAsync(partnerSubject, SendGridEmailTemplateId.GenericEmail,
-                    SendGridEmailGroupId.EventRelated, dynamicTemplateData, partnerRecipients, CancellationToken.None)
-                .ConfigureAwait(false);
+                    SendGridEmailGroupId.EventRelated, dynamicTemplateData, partnerRecipients, CancellationToken.None);
 
             return existingService;
         }
@@ -351,7 +346,7 @@
                 .Include(p => p.PartnerLocation)
                 .Include(p => p.PartnerLocation.PartnerLocationContacts)
                 .Select(p => p.PartnerLocation)
-                .FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
+                .FirstOrDefaultAsync(cancellationToken);
             return partnerLocation;
         }
 
@@ -361,10 +356,10 @@
         {
             var displayEventPartners = new List<DisplayEventPartnerLocation>();
             var currentPartners =
-                (await GetCurrentPartnersAsync(eventId, cancellationToken).ConfigureAwait(false)).DistinctBy(p =>
+                (await GetCurrentPartnersAsync(eventId, cancellationToken)).DistinctBy(p =>
                     new { p.EventId, p.PartnerLocationId });
             var possiblePartners =
-                await GetPotentialPartnerLocationsAsync(eventId, cancellationToken).ConfigureAwait(false);
+                await GetPotentialPartnerLocationsAsync(eventId, cancellationToken);
 
             // Convert the current list of partners for the event to a display partner (reduces round trips)
             foreach (var cp in currentPartners.ToList())
@@ -438,7 +433,7 @@
             var eventPartners = await Repository.Get(ea => ea.EventId == eventId)
                 .Include(p => p.PartnerLocation)
                 .Include(p => p.PartnerLocation.Partner)
-                .ToListAsync(cancellationToken).ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
 
             return eventPartners;
         }

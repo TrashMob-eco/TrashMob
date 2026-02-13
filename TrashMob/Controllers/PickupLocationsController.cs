@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Threading;
@@ -31,7 +31,7 @@
         [HttpGet("{pickupLocationId}")]
         public async Task<IActionResult> Get(Guid pickupLocationId, CancellationToken cancellationToken)
         {
-            return Ok(await Manager.GetAsync(pickupLocationId, cancellationToken).ConfigureAwait(false));
+            return Ok(await Manager.GetAsync(pickupLocationId, cancellationToken));
         }
 
         /// <summary>
@@ -43,7 +43,7 @@
         [HttpGet("getbyevent/{eventId}")]
         public async Task<IActionResult> GetByEvent(Guid eventId, CancellationToken cancellationToken)
         {
-            return Ok(await Manager.GetByParentIdAsync(eventId, cancellationToken).ConfigureAwait(false));
+            return Ok(await Manager.GetByParentIdAsync(eventId, cancellationToken));
         }
 
         /// <summary>
@@ -55,7 +55,7 @@
         [HttpGet("getbyuser/{userId}")]
         public async Task<IActionResult> GetByUser(Guid userId, CancellationToken cancellationToken)
         {
-            return Ok(await pickupLocationManager.GetByUserAsync(userId, cancellationToken).ConfigureAwait(false));
+            return Ok(await pickupLocationManager.GetByUserAsync(userId, cancellationToken));
         }
 
         /// <summary>
@@ -95,7 +95,7 @@
             localPickupLocation.HasBeenPickedUp = pickupLocation.HasBeenPickedUp;
             localPickupLocation.HasBeenSubmitted = pickupLocation.HasBeenSubmitted; 
 
-            var result = await Manager.UpdateAsync(localPickupLocation, UserId, cancellationToken).ConfigureAwait(false);
+            var result = await Manager.UpdateAsync(localPickupLocation, UserId, cancellationToken);
             TrackEvent(nameof(Update) + typeof(PickupLocation));
 
             return Ok(result);
@@ -112,7 +112,7 @@
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> MarkAsPickedUp(Guid pickupLocationId, CancellationToken cancellationToken)
         {
-            var pickupLocation = await Manager.GetAsync(pickupLocationId, cancellationToken).ConfigureAwait(false);
+            var pickupLocation = await Manager.GetAsync(pickupLocationId, cancellationToken);
 
             if (!await IsAuthorizedAsync(pickupLocation, AuthorizationPolicyConstants.UserIsEventLead))
             {
@@ -125,8 +125,7 @@
                 }
             }
 
-            await pickupLocationManager.MarkAsPickedUpAsync(pickupLocationId, UserId, cancellationToken)
-                .ConfigureAwait(false);
+            await pickupLocationManager.MarkAsPickedUpAsync(pickupLocationId, UserId, cancellationToken);
             TrackEvent("MarkAsPickedUp");
 
             return Ok();
@@ -150,7 +149,7 @@
                 return Forbid();
             }
 
-            var result = await Manager.AddAsync(instance, UserId, cancellationToken).ConfigureAwait(false);
+            var result = await Manager.AddAsync(instance, UserId, cancellationToken);
 
             TrackEvent("AddPickupLocation");
 
@@ -175,7 +174,7 @@
                 return Forbid();
             }
 
-            await pickupLocationManager.SubmitPickupLocations(eventId, UserId, cancellationToken).ConfigureAwait(false);
+            await pickupLocationManager.SubmitPickupLocations(eventId, UserId, cancellationToken);
 
             TrackEvent("SubmitPickupLocations");
 
@@ -218,7 +217,7 @@
         {
             var url = await imageManager.GetImageUrlAsync(pickupLocationId, ImageTypeEnum.Pickup, ImageSizeEnum.Raw, cancellationToken);
 
-            if (string.IsNullOrEmpty(url))
+            if (string.IsNullOrWhiteSpace(url))
             {
                 return NoContent();
             }
@@ -239,7 +238,7 @@
         {
             var url = await imageManager.GetImageUrlAsync(pickupLocationId, ImageTypeEnum.Pickup, imageSize, cancellationToken);
 
-            if (string.IsNullOrEmpty(url))
+            if (string.IsNullOrWhiteSpace(url))
             {
                 return NoContent();
             }
@@ -270,7 +269,7 @@
                 }
             }
 
-            var results = await Manager.DeleteAsync(id, cancellationToken).ConfigureAwait(false);
+            var results = await Manager.DeleteAsync(id, cancellationToken);
 
             TrackEvent("Delete" + nameof(PickupLocation));
 

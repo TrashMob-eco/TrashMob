@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Threading;
@@ -45,7 +45,7 @@
         public async Task<IActionResult> UploadImage([FromForm] ImageUpload imageUpload,
             CancellationToken cancellationToken)
         {
-            var mobEvent = await eventManager.GetAsync(imageUpload.ParentId, cancellationToken).ConfigureAwait(false);
+            var mobEvent = await eventManager.GetAsync(imageUpload.ParentId, cancellationToken);
 
             if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
             {
@@ -70,7 +70,7 @@
         public async Task<IActionResult> DeleteImage(Guid parentId, ImageTypeEnum imageType,
             CancellationToken cancellationToken)
         {
-            var mobEvent = await eventManager.GetAsync(parentId, cancellationToken).ConfigureAwait(false);
+            var mobEvent = await eventManager.GetAsync(parentId, cancellationToken);
 
             if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
             {

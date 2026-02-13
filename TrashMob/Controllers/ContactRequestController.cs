@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System.Threading;
     using System.Threading.Tasks;
@@ -20,7 +20,7 @@
         [ProducesResponseType(typeof(void), 400)]
         public virtual async Task<IActionResult> Add([FromBody] ContactRequest instance, CancellationToken cancellationToken)
         {
-            await manager.AddAsync(instance, cancellationToken).ConfigureAwait(false);
+            await manager.AddAsync(instance, cancellationToken);
 
             TrackEvent("AddContactRequest");
 

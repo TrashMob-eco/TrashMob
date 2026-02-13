@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Threading;
@@ -117,8 +117,7 @@
                 return Forbid();
             }
 
-            await partnerLocationServicesManager.UpdateAsync(partnerLocationService, UserId, cancellationToken)
-                .ConfigureAwait(false);
+            await partnerLocationServicesManager.UpdateAsync(partnerLocationService, UserId, cancellationToken);
             TrackEvent(nameof(UpdatePartnerLocationService));
 
             return Ok(partnerLocationService);
@@ -143,8 +142,7 @@
                 return Forbid();
             }
 
-            await partnerLocationServicesManager.Delete(partnerLocationId, serviceTypeId, cancellationToken)
-                .ConfigureAwait(false);
+            await partnerLocationServicesManager.Delete(partnerLocationId, serviceTypeId, cancellationToken);
             TrackEvent(nameof(DeletePartnerLocationService));
 
             return Ok(partnerLocationId);

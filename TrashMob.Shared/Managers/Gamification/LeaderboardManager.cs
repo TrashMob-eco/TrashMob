@@ -69,7 +69,7 @@ namespace TrashMob.Shared.Managers.Gamification
                     && l.TimeRange == timeRange
                     && l.LocationScope == locationScope);
 
-            if (locationScope != "Global" && !string.IsNullOrEmpty(locationValue))
+            if (locationScope != "Global" && !string.IsNullOrWhiteSpace(locationValue))
             {
                 query = query.Where(l => l.LocationValue == locationValue);
             }
@@ -78,7 +78,7 @@ namespace TrashMob.Shared.Managers.Gamification
                 query = query.Where(l => l.LocationValue == null || l.LocationValue == "");
             }
 
-            var totalCount = await query.CountAsync(cancellationToken).ConfigureAwait(false);
+            var totalCount = await query.CountAsync(cancellationToken);
 
             var entries = await query
                 .OrderBy(l => l.Rank)
@@ -92,15 +92,13 @@ namespace TrashMob.Shared.Managers.Gamification
                     Score = l.Score,
                     FormattedScore = FormatScore(l.Score, leaderboardType)
                 })
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
 
-            await EnrichWithProfilePhotosAsync(entries, cancellationToken).ConfigureAwait(false);
+            await EnrichWithProfilePhotosAsync(entries, cancellationToken);
 
             var computedDate = await query
                 .Select(l => l.ComputedDate)
-                .FirstOrDefaultAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .FirstOrDefaultAsync(cancellationToken);
 
             return new LeaderboardResponse
             {
@@ -137,8 +135,7 @@ namespace TrashMob.Shared.Managers.Gamification
                 .AsNoTracking()
                 .Where(u => u.Id == userId)
                 .Select(u => new { u.ShowOnLeaderboards })
-                .FirstOrDefaultAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .FirstOrDefaultAsync(cancellationToken);
 
             if (user == null)
             {
@@ -169,8 +166,7 @@ namespace TrashMob.Shared.Managers.Gamification
                     && l.LeaderboardType == leaderboardType
                     && l.TimeRange == timeRange
                     && l.LocationScope == "Global")
-                .CountAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .CountAsync(cancellationToken);
 
             // Get user's entry
             var userEntry = await dbContext.LeaderboardCaches
@@ -180,13 +176,12 @@ namespace TrashMob.Shared.Managers.Gamification
                     && l.LeaderboardType == leaderboardType
                     && l.TimeRange == timeRange
                     && l.LocationScope == "Global")
-                .FirstOrDefaultAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .FirstOrDefaultAsync(cancellationToken);
 
             if (userEntry == null)
             {
                 // User not ranked - check why
-                var eventCount = await GetUserEventCountAsync(userId, timeRange, cancellationToken).ConfigureAwait(false);
+                var eventCount = await GetUserEventCountAsync(userId, timeRange, cancellationToken);
                 var ineligibleReason = eventCount < 3
                     ? $"You need to attend at least 3 events to appear on leaderboards. You have attended {eventCount} event(s)."
                     : "You are not yet ranked on this leaderboard.";
@@ -249,8 +244,7 @@ namespace TrashMob.Shared.Managers.Gamification
             return await query
                 .Select(ea => ea.EventId)
                 .Distinct()
-                .CountAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .CountAsync(cancellationToken);
         }
 
         private static DateTimeOffset GetStartDateForTimeRange(string timeRange)
@@ -303,7 +297,7 @@ namespace TrashMob.Shared.Managers.Gamification
                     && l.TimeRange == timeRange
                     && l.LocationScope == locationScope);
 
-            if (locationScope != "Global" && !string.IsNullOrEmpty(locationValue))
+            if (locationScope != "Global" && !string.IsNullOrWhiteSpace(locationValue))
             {
                 query = query.Where(l => l.LocationValue == locationValue);
             }
@@ -312,7 +306,7 @@ namespace TrashMob.Shared.Managers.Gamification
                 query = query.Where(l => l.LocationValue == null || l.LocationValue == "");
             }
 
-            var totalCount = await query.CountAsync(cancellationToken).ConfigureAwait(false);
+            var totalCount = await query.CountAsync(cancellationToken);
 
             var entries = await query
                 .OrderBy(l => l.Rank)
@@ -326,15 +320,13 @@ namespace TrashMob.Shared.Managers.Gamification
                     Score = l.Score,
                     FormattedScore = FormatScore(l.Score, leaderboardType)
                 })
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
 
-            await EnrichWithProfilePhotosAsync(entries, cancellationToken).ConfigureAwait(false);
+            await EnrichWithProfilePhotosAsync(entries, cancellationToken);
 
             var computedDate = await query
                 .Select(l => l.ComputedDate)
-                .FirstOrDefaultAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .FirstOrDefaultAsync(cancellationToken);
 
             return new LeaderboardResponse
             {
@@ -371,8 +363,7 @@ namespace TrashMob.Shared.Managers.Gamification
                 .AsNoTracking()
                 .Where(t => t.Id == teamId)
                 .Select(t => new { t.Name, t.IsActive })
-                .FirstOrDefaultAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .FirstOrDefaultAsync(cancellationToken);
 
             if (team == null)
             {
@@ -406,8 +397,7 @@ namespace TrashMob.Shared.Managers.Gamification
                     && l.LeaderboardType == leaderboardType
                     && l.TimeRange == timeRange
                     && l.LocationScope == "Global")
-                .CountAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .CountAsync(cancellationToken);
 
             // Get team's entry
             var teamEntry = await dbContext.LeaderboardCaches
@@ -417,13 +407,12 @@ namespace TrashMob.Shared.Managers.Gamification
                     && l.LeaderboardType == leaderboardType
                     && l.TimeRange == timeRange
                     && l.LocationScope == "Global")
-                .FirstOrDefaultAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .FirstOrDefaultAsync(cancellationToken);
 
             if (teamEntry == null)
             {
                 // Team not ranked - check why
-                var eventCount = await GetTeamEventCountAsync(teamId, timeRange, cancellationToken).ConfigureAwait(false);
+                var eventCount = await GetTeamEventCountAsync(teamId, timeRange, cancellationToken);
                 var ineligibleReason = eventCount < 3
                     ? $"Teams need at least 3 events with member participation to appear on leaderboards. This team has {eventCount} event(s)."
                     : "This team is not yet ranked on this leaderboard.";
@@ -467,8 +456,7 @@ namespace TrashMob.Shared.Managers.Gamification
                 .AsNoTracking()
                 .Where(u => userIds.Contains(u.Id))
                 .Select(u => new { u.Id, u.ProfilePhotoUrl })
-                .ToDictionaryAsync(u => u.Id, u => u.ProfilePhotoUrl, cancellationToken)
-                .ConfigureAwait(false);
+                .ToDictionaryAsync(u => u.Id, u => u.ProfilePhotoUrl, cancellationToken);
 
             foreach (var entry in userEntries)
             {
@@ -497,8 +485,7 @@ namespace TrashMob.Shared.Managers.Gamification
             return await query
                 .Select(x => x.EventId)
                 .Distinct()
-                .CountAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .CountAsync(cancellationToken);
         }
     }
 }

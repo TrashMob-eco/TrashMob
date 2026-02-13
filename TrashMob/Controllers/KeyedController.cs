@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Threading;
@@ -38,7 +38,7 @@
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public virtual async Task<IActionResult> Add(T instance, CancellationToken cancellationToken)
         {
-            await Manager.AddAsync(instance, UserId, cancellationToken).ConfigureAwait(false);
+            await Manager.AddAsync(instance, UserId, cancellationToken);
 
             TrackEvent("Add" + nameof(T));
 
@@ -53,7 +53,7 @@
         [HttpGet]
         public virtual async Task<IActionResult> Get(CancellationToken cancellationToken)
         {
-            var results = await Manager.GetAsync(cancellationToken).ConfigureAwait(false);
+            var results = await Manager.GetAsync(cancellationToken);
 
             TrackEvent("Get" + nameof(T));
 
@@ -69,14 +69,14 @@
         [HttpDelete("{id}")]
         public virtual async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
-            var entity = await Manager.GetAsync(id, cancellationToken).ConfigureAwait(false);
+            var entity = await Manager.GetAsync(id, cancellationToken);
 
             if (!await IsAuthorizedAsync(entity, AuthorizationPolicyConstants.UserOwnsEntity))
             {
                 return Forbid();
             }
 
-            var results = await Manager.DeleteAsync(id, cancellationToken).ConfigureAwait(false);
+            var results = await Manager.DeleteAsync(id, cancellationToken);
 
             TrackEvent("Delete" + nameof(T));
 

@@ -60,8 +60,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken = default)
         {
             var result = await userWaiverManager
-                .GetPendingWaiversForUserAsync(UserId, communityId, cancellationToken)
-                .ConfigureAwait(false);
+                .GetPendingWaiversForUserAsync(UserId, communityId, cancellationToken);
             TrackEvent(nameof(GetRequiredWaivers));
 
             return Ok(result);
@@ -82,8 +81,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken = default)
         {
             var result = await userWaiverManager
-                .GetRequiredWaiversForEventAsync(UserId, eventId, cancellationToken)
-                .ConfigureAwait(false);
+                .GetRequiredWaiversForEventAsync(UserId, eventId, cancellationToken);
             TrackEvent(nameof(GetRequiredWaiversForEvent));
 
             return Ok(result);
@@ -101,8 +99,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetMyWaivers(CancellationToken cancellationToken = default)
         {
             var result = await userWaiverManager
-                .GetUserWaiversAsync(UserId, cancellationToken)
-                .ConfigureAwait(false);
+                .GetUserWaiversAsync(UserId, cancellationToken);
             TrackEvent(nameof(GetMyWaivers));
 
             return Ok(result);
@@ -156,7 +153,7 @@ namespace TrashMob.Controllers
                 GuardianRelationship = request.GuardianRelationship,
             };
 
-            var result = await userWaiverManager.AcceptWaiverAsync(acceptRequest, cancellationToken).ConfigureAwait(false);
+            var result = await userWaiverManager.AcceptWaiverAsync(acceptRequest, cancellationToken);
 
             if (!result.IsSuccess)
             {
@@ -165,22 +162,20 @@ namespace TrashMob.Controllers
 
             // Generate and store PDF
             var userWaiver = result.Data;
-            var user = await userManager.GetAsync(UserId, cancellationToken).ConfigureAwait(false);
+            var user = await userManager.GetAsync(UserId, cancellationToken);
 
             try
             {
                 // Get the full waiver with version details
                 var waiverWithDetails = await userWaiverManager
-                    .GetUserWaiverWithDetailsAsync(userWaiver.Id, cancellationToken)
-                    .ConfigureAwait(false);
+                    .GetUserWaiverWithDetailsAsync(userWaiver.Id, cancellationToken);
 
                 var documentUrl = await waiverDocumentManager
-                    .GenerateAndStoreWaiverPdfAsync(waiverWithDetails, user, cancellationToken)
-                    .ConfigureAwait(false);
+                    .GenerateAndStoreWaiverPdfAsync(waiverWithDetails, user, cancellationToken);
 
                 // Update the user waiver with the document URL
                 userWaiver.DocumentUrl = documentUrl;
-                await userWaiverManager.UpdateAsync(userWaiver, cancellationToken).ConfigureAwait(false);
+                await userWaiverManager.UpdateAsync(userWaiver, cancellationToken);
             }
             catch (Exception)
             {
@@ -210,8 +205,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken = default)
         {
             var waiver = await userWaiverManager
-                .GetUserWaiverWithDetailsAsync(userWaiverId, cancellationToken)
-                .ConfigureAwait(false);
+                .GetUserWaiverWithDetailsAsync(userWaiverId, cancellationToken);
 
             if (waiver == null)
             {
@@ -246,8 +240,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken = default)
         {
             var waiver = await userWaiverManager
-                .GetUserWaiverWithDetailsAsync(userWaiverId, cancellationToken)
-                .ConfigureAwait(false);
+                .GetUserWaiverWithDetailsAsync(userWaiverId, cancellationToken);
 
             if (waiver == null)
             {
@@ -263,7 +256,7 @@ namespace TrashMob.Controllers
             // If no stored document, generate one on-the-fly
             if (string.IsNullOrWhiteSpace(waiver.DocumentUrl))
             {
-                var user = await userManager.GetAsync(waiver.UserId, cancellationToken).ConfigureAwait(false);
+                var user = await userManager.GetAsync(waiver.UserId, cancellationToken);
                 var pdfBytes = waiverDocumentManager.GenerateWaiverPdf(waiver, user);
 
                 TrackEvent(nameof(DownloadWaiverPdf));
@@ -292,8 +285,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken = default)
         {
             var hasValidWaiver = await userWaiverManager
-                .HasValidWaiverForEventAsync(UserId, eventId, cancellationToken)
-                .ConfigureAwait(false);
+                .HasValidWaiverForEventAsync(UserId, eventId, cancellationToken);
 
             TrackEvent(nameof(CheckWaiversForEvent));
 
@@ -349,8 +341,7 @@ namespace TrashMob.Controllers
             if (request.EventId.HasValue)
             {
                 isEventLead = await eventAttendeeManager
-                    .IsEventLeadAsync(request.EventId.Value, UserId, cancellationToken)
-                    .ConfigureAwait(false);
+                    .IsEventLeadAsync(request.EventId.Value, UserId, cancellationToken);
             }
 
             // Event leads can only upload for their events, admins can upload for anyone
@@ -373,8 +364,7 @@ namespace TrashMob.Controllers
             };
 
             var result = await userWaiverManager
-                .UploadPaperWaiverAsync(uploadRequest, UserId, cancellationToken)
-                .ConfigureAwait(false);
+                .UploadPaperWaiverAsync(uploadRequest, UserId, cancellationToken);
 
             if (!result.IsSuccess)
             {
@@ -405,8 +395,7 @@ namespace TrashMob.Controllers
             // Check if user is event lead or admin
             var isAdmin = User.IsInRole("Admin");
             var isEventLead = await eventAttendeeManager
-                .IsEventLeadAsync(eventId, UserId, cancellationToken)
-                .ConfigureAwait(false);
+                .IsEventLeadAsync(eventId, UserId, cancellationToken);
 
             if (!isAdmin && !isEventLead)
             {
@@ -414,8 +403,7 @@ namespace TrashMob.Controllers
             }
 
             var result = await userWaiverManager
-                .GetEventAttendeeWaiverStatusAsync(eventId, cancellationToken)
-                .ConfigureAwait(false);
+                .GetEventAttendeeWaiverStatusAsync(eventId, cancellationToken);
 
             TrackEvent(nameof(GetEventAttendeeWaiverStatus));
 
@@ -426,7 +414,7 @@ namespace TrashMob.Controllers
         {
             // Check for X-Forwarded-For header (when behind a proxy/load balancer)
             var forwardedFor = Request.Headers["X-Forwarded-For"].ToString();
-            if (!string.IsNullOrEmpty(forwardedFor))
+            if (!string.IsNullOrWhiteSpace(forwardedFor))
             {
                 // X-Forwarded-For can contain multiple IPs, take the first one
                 return forwardedFor.Split(',')[0].Trim();

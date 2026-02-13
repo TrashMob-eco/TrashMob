@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers
+namespace TrashMob.Shared.Managers
 {
     using System;
     using System.Net;
@@ -58,7 +58,7 @@
         /// Determines if managed identity authentication should be used.
         /// Managed identity is used when AzureMapsClientId is configured.
         /// </summary>
-        private bool UseManagedIdentity => !string.IsNullOrEmpty(GetAzureMapsClientId());
+        private bool UseManagedIdentity => !string.IsNullOrWhiteSpace(GetAzureMapsClientId());
 
         /// <summary>
         /// Gets a bearer token for Azure Maps API authentication using managed identity.
@@ -66,7 +66,7 @@
         private async Task<string> GetBearerTokenAsync(CancellationToken cancellationToken = default)
         {
             var tokenRequestContext = new TokenRequestContext(new[] { AzureMapsScope });
-            var token = await tokenCredential.GetTokenAsync(tokenRequestContext, cancellationToken).ConfigureAwait(false);
+            var token = await tokenCredential.GetTokenAsync(tokenRequestContext, cancellationToken);
             return token.Token;
         }
 
@@ -97,7 +97,7 @@
             logger.LogInformation("Getting distance between two points: {0}",
                 JsonSerializer.Serialize(distanceRequest));
 
-            var response = await azureMaps.GetGreatCircleDistance(distanceRequest).ConfigureAwait(false);
+            var response = await azureMaps.GetGreatCircleDistance(distanceRequest);
 
             logger.LogInformation("Response from getting distance between two points: {0}",
                 JsonSerializer.Serialize(response));
@@ -152,7 +152,7 @@
 
             logger.LogInformation("Getting time for timezoneRequest: {0}", JsonSerializer.Serialize(timezoneRequest));
 
-            var response = await azureMaps.GetTimezoneByCoordinates(timezoneRequest).ConfigureAwait(false);
+            var response = await azureMaps.GetTimezoneByCoordinates(timezoneRequest);
 
             logger.LogInformation("Response from getting time for timezoneRequest: {0}",
                 JsonSerializer.Serialize(response));
@@ -182,7 +182,7 @@
             logger.LogInformation("Getting address for searchAddressReverseRequest: {0}",
                 JsonSerializer.Serialize(searchAddressReverseRequest));
 
-            var response = await azureMaps.GetSearchAddressReverse(searchAddressReverseRequest).ConfigureAwait(false);
+            var response = await azureMaps.GetSearchAddressReverse(searchAddressReverseRequest);
 
             logger.LogInformation("Response from getting address for searcAddressReverseRequest: {0}",
                 JsonSerializer.Serialize(response));
@@ -218,7 +218,7 @@
                 // Use managed identity with bearer token authentication
                 url = $"https://atlas.microsoft.com/search/address/json?typeahead=true&api-version=1.0&query={Uri.EscapeDataString(query)}";
 
-                var token = await GetBearerTokenAsync().ConfigureAwait(false);
+                var token = await GetBearerTokenAsync();
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 httpClient.DefaultRequestHeaders.Add("x-ms-client-id", GetAzureMapsClientId());
             }
@@ -229,12 +229,12 @@
                 url = $"https://atlas.microsoft.com/search/address/json?typeahead=true&subscription-key={subscriptionKey}&api-version=1.0&query={Uri.EscapeDataString(query)}";
             }
 
-            if (!string.IsNullOrEmpty(entityType))
+            if (!string.IsNullOrWhiteSpace(entityType))
             {
                 url += $"&entityType={Uri.EscapeDataString(entityType)}";
             }
 
-            var response = await httpClient.GetAsync(url).ConfigureAwait(false);
+            var response = await httpClient.GetAsync(url);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -242,7 +242,7 @@
                 throw new Exception($"Azure Maps search failed: {response.StatusCode}");
             }
 
-            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var content = await response.Content.ReadAsStringAsync();
             logger.LogInformation("Address search completed with {Length} bytes", content.Length);
 
             return content;
@@ -261,7 +261,7 @@
                 // Use managed identity with bearer token authentication
                 url = $"https://atlas.microsoft.com/search/address/reverse/json?api-version=1.0&query={latitude},{longitude}";
 
-                var token = await GetBearerTokenAsync().ConfigureAwait(false);
+                var token = await GetBearerTokenAsync();
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 httpClient.DefaultRequestHeaders.Add("x-ms-client-id", GetAzureMapsClientId());
             }
@@ -272,7 +272,7 @@
                 url = $"https://atlas.microsoft.com/search/address/reverse/json?subscription-key={subscriptionKey}&api-version=1.0&query={latitude},{longitude}";
             }
 
-            var response = await httpClient.GetAsync(url).ConfigureAwait(false);
+            var response = await httpClient.GetAsync(url);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -280,7 +280,7 @@
                 throw new Exception($"Azure Maps reverse geocode failed: {response.StatusCode}");
             }
 
-            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var content = await response.Content.ReadAsStringAsync();
             logger.LogInformation("Reverse geocode completed with {Length} bytes", content.Length);
 
             return content;

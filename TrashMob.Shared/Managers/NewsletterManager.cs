@@ -58,7 +58,7 @@ namespace TrashMob.Shared.Managers
                 .Include(n => n.Category)
                 .AsQueryable();
 
-            if (!string.IsNullOrEmpty(status))
+            if (!string.IsNullOrWhiteSpace(status))
             {
                 query = query.Where(n => n.Status == status);
             }
@@ -176,7 +176,7 @@ namespace TrashMob.Shared.Managers
             var subscribedSet = subscribedUserIds.ToHashSet();
 
             var users = await query.ToListAsync(cancellationToken);
-            return users.Where(u => subscribedSet.Contains(u.Id) && !string.IsNullOrEmpty(u.Email));
+            return users.Where(u => subscribedSet.Contains(u.Id) && !string.IsNullOrWhiteSpace(u.Email));
         }
 
         /// <inheritdoc />

@@ -37,15 +37,13 @@ namespace TrashMob.Shared.Managers.Gamification
                 .AsNoTracking()
                 .Where(a => a.IsActive == true)
                 .OrderBy(a => a.DisplayOrder)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
 
             // Get user's earned achievements
             var earnedAchievements = await dbContext.UserAchievements
                 .AsNoTracking()
                 .Where(ua => ua.UserId == userId)
-                .ToDictionaryAsync(ua => ua.AchievementTypeId, ua => ua.EarnedDate, cancellationToken)
-                .ConfigureAwait(false);
+                .ToDictionaryAsync(ua => ua.AchievementTypeId, ua => ua.EarnedDate, cancellationToken);
 
             var achievements = achievementTypes.Select(at => new AchievementDto
             {
@@ -81,8 +79,7 @@ namespace TrashMob.Shared.Managers.Gamification
                 .AsNoTracking()
                 .Where(a => a.IsActive == true)
                 .OrderBy(a => a.DisplayOrder)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -95,8 +92,7 @@ namespace TrashMob.Shared.Managers.Gamification
                 .Include(ua => ua.AchievementType)
                 .Where(ua => ua.UserId == userId && !ua.NotificationSent)
                 .OrderByDescending(ua => ua.EarnedDate)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
 
             return unreadAchievements.Select(ua => new NewAchievementNotification
             {
@@ -124,8 +120,7 @@ namespace TrashMob.Shared.Managers.Gamification
         {
             var achievements = await dbContext.UserAchievements
                 .Where(ua => ua.UserId == userId && achievementTypeIds.Contains(ua.AchievementTypeId))
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
 
             foreach (var achievement in achievements)
             {
@@ -134,7 +129,7 @@ namespace TrashMob.Shared.Managers.Gamification
                 achievement.LastUpdatedDate = DateTimeOffset.UtcNow;
             }
 
-            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await dbContext.SaveChangesAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -147,8 +142,7 @@ namespace TrashMob.Shared.Managers.Gamification
             var existingAchievement = await dbContext.UserAchievements
                 .AsNoTracking()
                 .Where(ua => ua.UserId == userId && ua.AchievementTypeId == achievementTypeId)
-                .FirstOrDefaultAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .FirstOrDefaultAsync(cancellationToken);
 
             if (existingAchievement != null)
             {
@@ -169,7 +163,7 @@ namespace TrashMob.Shared.Managers.Gamification
             };
 
             dbContext.UserAchievements.Add(userAchievement);
-            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await dbContext.SaveChangesAsync(cancellationToken);
 
             return true;
         }

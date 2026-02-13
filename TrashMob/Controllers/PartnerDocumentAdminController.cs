@@ -41,7 +41,7 @@ namespace TrashMob.Controllers
         [ProducesResponseType(typeof(IEnumerable<PartnerDocument>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll(CancellationToken cancellationToken = default)
         {
-            var result = await manager.GetAllWithPartnerAsync(cancellationToken).ConfigureAwait(false);
+            var result = await manager.GetAllWithPartnerAsync(cancellationToken);
             TrackEvent(nameof(GetAll) + typeof(PartnerDocument));
 
             return Ok(result);

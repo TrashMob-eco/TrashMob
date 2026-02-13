@@ -150,7 +150,7 @@ namespace TrashMob.Controllers
         [HttpPost("unsubscribe")]
         public async Task<IActionResult> ProcessUnsubscribe([FromBody] UnsubscribeRequest request, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(request?.Token))
+            if (string.IsNullOrWhiteSpace(request?.Token))
             {
                 return BadRequest(new { success = false, errorMessage = "Token is required." });
             }

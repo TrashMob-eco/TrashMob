@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Threading;
@@ -82,7 +82,7 @@
                 return Forbid();
             }
 
-            await manager.AddAsync(partnerSocialMediaAccount, UserId, cancellationToken).ConfigureAwait(false);
+            await manager.AddAsync(partnerSocialMediaAccount, UserId, cancellationToken);
             TrackEvent(nameof(AddPartnerSocialMediaAccount));
 
             return Ok();
@@ -105,8 +105,7 @@
                 return Forbid();
             }
 
-            var result = await manager.UpdateAsync(partnerSocialMediaAccount, UserId, cancellationToken)
-                .ConfigureAwait(false);
+            var result = await manager.UpdateAsync(partnerSocialMediaAccount, UserId, cancellationToken);
             TrackEvent(nameof(UpdatePartnerSocialMediaAccount));
 
             return Ok(result);
@@ -128,7 +127,7 @@
                 return Forbid();
             }
 
-            await manager.DeleteAsync(partnerSocialMediaAccountId, cancellationToken).ConfigureAwait(false);
+            await manager.DeleteAsync(partnerSocialMediaAccountId, cancellationToken);
             TrackEvent(nameof(DeletePartnerSocialMediaAccount));
 
             return Ok(partnerSocialMediaAccountId);

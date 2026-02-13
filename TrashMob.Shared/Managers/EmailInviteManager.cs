@@ -229,14 +229,14 @@ namespace TrashMob.Shared.Managers
             string emailCopy;
             string subject;
 
-            if (!string.IsNullOrEmpty(teamName))
+            if (!string.IsNullOrWhiteSpace(teamName))
             {
                 // Use team-specific template
                 emailCopy = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.InviteToJoinTeam.ToString());
                 emailCopy = emailCopy.Replace("{teamName}", teamName);
                 subject = $"You're Invited to Join {teamName} on TrashMob.eco!";
             }
-            else if (!string.IsNullOrEmpty(communityName))
+            else if (!string.IsNullOrWhiteSpace(communityName))
             {
                 // Use community-specific template
                 emailCopy = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.InviteToJoinCommunity.ToString());

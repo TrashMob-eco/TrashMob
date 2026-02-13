@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers
+namespace TrashMob.Shared.Managers
 {
     using System;
     using System.Collections.Generic;
@@ -61,8 +61,7 @@
             };
 
             await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.GenericEmail,
-                    SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None)
-                .ConfigureAwait(false);
+                    SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None);
 
             return outputContactRequest;
         }

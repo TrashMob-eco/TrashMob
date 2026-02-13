@@ -481,7 +481,7 @@ namespace TrashMob.Controllers
             }
 
             // Delete existing logo if present
-            if (!string.IsNullOrEmpty(team.LogoUrl))
+            if (!string.IsNullOrWhiteSpace(team.LogoUrl))
             {
                 await imageManager.DeleteImage(teamId, ImageTypeEnum.TeamLogo);
             }
@@ -530,7 +530,7 @@ namespace TrashMob.Controllers
             }
 
             // Delete logo from blob storage
-            if (!string.IsNullOrEmpty(team.LogoUrl))
+            if (!string.IsNullOrWhiteSpace(team.LogoUrl))
             {
                 await imageManager.DeleteImage(teamId, ImageTypeEnum.TeamLogo);
             }

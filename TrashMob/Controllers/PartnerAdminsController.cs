@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 
 namespace TrashMob.Controllers
 {
@@ -155,7 +155,7 @@ namespace TrashMob.Controllers
 
             foreach (var pu in partnerAdmins)
             {
-                var user = await userManager.GetAsync(pu.UserId, cancellationToken).ConfigureAwait(false);
+                var user = await userManager.GetAsync(pu.UserId, cancellationToken);
                 users.Add(user.ToDisplayUser());
             }
 
@@ -194,8 +194,7 @@ namespace TrashMob.Controllers
                 LastUpdatedByUserId = UserId,
             };
 
-            var result = await partnerAdminManager.AddAsync(partnerUser, UserId, cancellationToken)
-                .ConfigureAwait(false);
+            var result = await partnerAdminManager.AddAsync(partnerUser, UserId, cancellationToken);
             TrackEvent(nameof(AddPartnerUser));
 
             return CreatedAtAction(nameof(GetPartnerUser), new { partnerId, userId }, result);

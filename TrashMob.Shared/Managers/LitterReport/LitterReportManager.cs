@@ -129,7 +129,7 @@ namespace TrashMob.Shared.Managers.LitterReport
             try
             {
                 var creator = await userManager.GetUserByInternalIdAsync(litterReport.CreatedByUserId, cancellationToken);
-                if (creator == null || string.IsNullOrEmpty(creator.Email))
+                if (creator == null || string.IsNullOrWhiteSpace(creator.Email))
                 {
                     logger.LogWarning("Could not find creator for litter report {LitterReportId} to send cleaned notification", litterReport.Id);
                     return;
@@ -160,8 +160,7 @@ namespace TrashMob.Shared.Managers.LitterReport
 
                 await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.GenericEmail,
                         SendGridEmailGroupId.LitterReportRelated, dynamicTemplateData, recipients,
-                        cancellationToken)
-                    .ConfigureAwait(false);
+                        cancellationToken);
 
                 logger.LogInformation("Sent litter report cleaned notification to user {UserId} for report {LitterReportId}", creator.Id, litterReport.Id);
             }
@@ -227,8 +226,7 @@ namespace TrashMob.Shared.Managers.LitterReport
 
                 await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.LitterReportEmail,
                         SendGridEmailGroupId.LitterReportRelated, dynamicTemplateData, recipients,
-                        CancellationToken.None)
-                    .ConfigureAwait(false);
+                        CancellationToken.None);
 
                 return newLitterReport;
             }
@@ -247,14 +245,14 @@ namespace TrashMob.Shared.Managers.LitterReport
             {
                 await dbTransaction.BeginTransactionAsync();
 
-                var instance = await Repo.GetAsync(id, cancellationToken).ConfigureAwait(false);
+                var instance = await Repo.GetAsync(id, cancellationToken);
                 if (instance == null)
                 {
                     return -1;
                 }
 
                 instance.LitterReportStatusId = (int)LitterReportStatusEnum.Cancelled;
-                await base.UpdateAsync(instance, userId, cancellationToken).ConfigureAwait(false);
+                await base.UpdateAsync(instance, userId, cancellationToken);
 
                 var ExistinglitterImages = await litterImageManager.GetByParentIdAsync(id, cancellationToken);
                 foreach (var image in ExistinglitterImages)
@@ -279,8 +277,7 @@ namespace TrashMob.Shared.Managers.LitterReport
         {
             return await Repo.Get(lr => lr.LitterReportStatusId == (int)LitterReportStatusEnum.New)
                 .Include(lr => lr.LitterImages)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -289,8 +286,7 @@ namespace TrashMob.Shared.Managers.LitterReport
         {
             return await Repo.Get(lr => lr.LitterReportStatusId == (int)LitterReportStatusEnum.Assigned)
                 .Include(lr => lr.LitterImages)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -299,8 +295,7 @@ namespace TrashMob.Shared.Managers.LitterReport
         {
             return await Repo.Get(lr => lr.LitterReportStatusId == (int)LitterReportStatusEnum.Cleaned)
                 .Include(lr => lr.LitterImages)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -309,8 +304,7 @@ namespace TrashMob.Shared.Managers.LitterReport
         {
             return await Repo.Get(lr => lr.LitterReportStatusId != (int)LitterReportStatusEnum.Cancelled)
                 .Include(lr => lr.LitterImages)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -319,8 +313,7 @@ namespace TrashMob.Shared.Managers.LitterReport
         {
             return await Repo.Get(lr => lr.LitterReportStatusId == (int)LitterReportStatusEnum.Cancelled)
                 .Include(lr => lr.LitterImages)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -329,8 +322,7 @@ namespace TrashMob.Shared.Managers.LitterReport
         {
             return await Repo.Get(lr => lr.CreatedByUserId == userId)
                 .Include(lr => lr.LitterImages)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -359,8 +351,7 @@ namespace TrashMob.Shared.Managers.LitterReport
                 .GroupBy(li => new { li.Country, li.Region, li.City })
                 .Select(group => new Location
                     { Country = group.Key.Country, Region = group.Key.Region, City = group.Key.City })
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
 
             return locations;
         }
@@ -381,7 +372,7 @@ namespace TrashMob.Shared.Managers.LitterReport
                                          lr.LitterImages.Any(li => li.Region == filter.Region)) &&
                                         (filter.City == null || lr.LitterImages.Any(li => li.City == filter.City)))
                 .Include(lr => lr.LitterImages.Where(f => filter.IncludeLitterImages))
-                .ToListAsync(cancellationToken).ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -389,7 +380,7 @@ namespace TrashMob.Shared.Managers.LitterReport
             CancellationToken cancellationToken)
         {
             var existingInstance =
-                await Repo.GetWithNoTrackingAsync(instance.Id, cancellationToken).ConfigureAwait(false);
+                await Repo.GetWithNoTrackingAsync(instance.Id, cancellationToken);
 
             if (existingInstance == null)
             {
@@ -489,8 +480,7 @@ namespace TrashMob.Shared.Managers.LitterReport
 
                     await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.LitterReportEmail,
                             SendGridEmailGroupId.LitterReportRelated, dynamicTemplateData, recipients,
-                            CancellationToken.None)
-                        .ConfigureAwait(false);
+                            CancellationToken.None);
                 }
                 catch (Exception emailEx)
                 {

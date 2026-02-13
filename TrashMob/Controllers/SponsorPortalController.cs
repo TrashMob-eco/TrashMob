@@ -157,7 +157,7 @@ namespace TrashMob.Controllers
 
         private static string EscapeCsvField(string field)
         {
-            if (string.IsNullOrEmpty(field))
+            if (string.IsNullOrWhiteSpace(field))
             {
                 return "";
             }

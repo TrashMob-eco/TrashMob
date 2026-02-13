@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers.IFTTT
+namespace TrashMob.Controllers.IFTTT
 {
     using System.Threading;
     using System.Threading.Tasks;
@@ -34,7 +34,7 @@
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public async Task<ActionResult> GetInfo(CancellationToken cancellationToken)
         {
-            var user = await userManager.GetAsync(UserId, cancellationToken).ConfigureAwait(false);
+            var user = await userManager.GetAsync(UserId, cancellationToken);
 
             if (user == null)
             {

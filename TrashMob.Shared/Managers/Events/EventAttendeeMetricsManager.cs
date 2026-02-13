@@ -44,7 +44,7 @@ namespace TrashMob.Shared.Managers.Events
             CancellationToken cancellationToken = default)
         {
             // Validate event exists
-            var eventEntity = await eventManager.GetAsync(eventId, cancellationToken).ConfigureAwait(false);
+            var eventEntity = await eventManager.GetAsync(eventId, cancellationToken);
             if (eventEntity == null)
             {
                 return ServiceResult<EventAttendeeMetrics>.Failure("Event not found.");
@@ -52,8 +52,7 @@ namespace TrashMob.Shared.Managers.Events
 
             // Check if user is a registered attendee for this event
             var attendingEvents = await eventAttendeeManager
-                .GetEventsUserIsAttendingAsync(userId, false, cancellationToken)
-                .ConfigureAwait(false);
+                .GetEventsUserIsAttendingAsync(userId, false, cancellationToken);
 
             if (!attendingEvents.Any(e => e.Id == eventId))
             {
@@ -61,7 +60,7 @@ namespace TrashMob.Shared.Managers.Events
             }
 
             // Check for existing submission
-            var existingMetrics = await GetMyMetricsAsync(eventId, userId, cancellationToken).ConfigureAwait(false);
+            var existingMetrics = await GetMyMetricsAsync(eventId, userId, cancellationToken);
 
             if (existingMetrics != null)
             {
@@ -79,7 +78,7 @@ namespace TrashMob.Shared.Managers.Events
                 existingMetrics.LastUpdatedByUserId = userId;
                 existingMetrics.LastUpdatedDate = DateTimeOffset.UtcNow;
 
-                var updatedResult = await base.UpdateAsync(existingMetrics, userId, cancellationToken).ConfigureAwait(false);
+                var updatedResult = await base.UpdateAsync(existingMetrics, userId, cancellationToken);
                 return ServiceResult<EventAttendeeMetrics>.Success(updatedResult);
             }
 
@@ -101,7 +100,7 @@ namespace TrashMob.Shared.Managers.Events
                 LastUpdatedDate = DateTimeOffset.UtcNow
             };
 
-            var result = await base.AddAsync(newMetrics, userId, cancellationToken).ConfigureAwait(false);
+            var result = await base.AddAsync(newMetrics, userId, cancellationToken);
             return ServiceResult<EventAttendeeMetrics>.Success(result);
         }
 
@@ -114,8 +113,7 @@ namespace TrashMob.Shared.Managers.Events
             return await Repo.Get()
                 .Include(m => m.PickedWeightUnit)
                 .Include(m => m.AdjustedPickedWeightUnit)
-                .FirstOrDefaultAsync(m => m.EventId == eventId && m.UserId == userId, cancellationToken)
-                .ConfigureAwait(false);
+                .FirstOrDefaultAsync(m => m.EventId == eventId && m.UserId == userId, cancellationToken);
         }
 
         /// <inheritdoc />
@@ -129,8 +127,7 @@ namespace TrashMob.Shared.Managers.Events
                 .Include(m => m.PickedWeightUnit)
                 .Include(m => m.AdjustedPickedWeightUnit)
                 .OrderBy(m => m.User.UserName)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -143,8 +140,7 @@ namespace TrashMob.Shared.Managers.Events
                 .Include(m => m.User)
                 .Include(m => m.PickedWeightUnit)
                 .OrderBy(m => m.CreatedDate)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -153,7 +149,7 @@ namespace TrashMob.Shared.Managers.Events
             Guid reviewerId,
             CancellationToken cancellationToken = default)
         {
-            var metrics = await Repo.GetAsync(metricsId, cancellationToken).ConfigureAwait(false);
+            var metrics = await Repo.GetAsync(metricsId, cancellationToken);
             if (metrics == null)
             {
                 return ServiceResult<EventAttendeeMetrics>.Failure("Metrics submission not found.");
@@ -170,7 +166,7 @@ namespace TrashMob.Shared.Managers.Events
             metrics.LastUpdatedByUserId = reviewerId;
             metrics.LastUpdatedDate = DateTimeOffset.UtcNow;
 
-            var result = await base.UpdateAsync(metrics, reviewerId, cancellationToken).ConfigureAwait(false);
+            var result = await base.UpdateAsync(metrics, reviewerId, cancellationToken);
             return ServiceResult<EventAttendeeMetrics>.Success(result);
         }
 
@@ -181,7 +177,7 @@ namespace TrashMob.Shared.Managers.Events
             Guid reviewerId,
             CancellationToken cancellationToken = default)
         {
-            var metrics = await Repo.GetAsync(metricsId, cancellationToken).ConfigureAwait(false);
+            var metrics = await Repo.GetAsync(metricsId, cancellationToken);
             if (metrics == null)
             {
                 return ServiceResult<EventAttendeeMetrics>.Failure("Metrics submission not found.");
@@ -199,7 +195,7 @@ namespace TrashMob.Shared.Managers.Events
             metrics.LastUpdatedByUserId = reviewerId;
             metrics.LastUpdatedDate = DateTimeOffset.UtcNow;
 
-            var result = await base.UpdateAsync(metrics, reviewerId, cancellationToken).ConfigureAwait(false);
+            var result = await base.UpdateAsync(metrics, reviewerId, cancellationToken);
             return ServiceResult<EventAttendeeMetrics>.Success(result);
         }
 
@@ -211,7 +207,7 @@ namespace TrashMob.Shared.Managers.Events
             Guid reviewerId,
             CancellationToken cancellationToken = default)
         {
-            var metrics = await Repo.GetAsync(metricsId, cancellationToken).ConfigureAwait(false);
+            var metrics = await Repo.GetAsync(metricsId, cancellationToken);
             if (metrics == null)
             {
                 return ServiceResult<EventAttendeeMetrics>.Failure("Metrics submission not found.");
@@ -233,7 +229,7 @@ namespace TrashMob.Shared.Managers.Events
             metrics.LastUpdatedByUserId = reviewerId;
             metrics.LastUpdatedDate = DateTimeOffset.UtcNow;
 
-            var result = await base.UpdateAsync(metrics, reviewerId, cancellationToken).ConfigureAwait(false);
+            var result = await base.UpdateAsync(metrics, reviewerId, cancellationToken);
             return ServiceResult<EventAttendeeMetrics>.Success(result);
         }
 
@@ -245,8 +241,7 @@ namespace TrashMob.Shared.Managers.Events
         {
             var pendingMetrics = await Repo.Get()
                 .Where(m => m.EventId == eventId && m.Status == "Pending")
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
 
             if (pendingMetrics.Count == 0)
             {
@@ -261,7 +256,7 @@ namespace TrashMob.Shared.Managers.Events
                 metrics.LastUpdatedByUserId = reviewerId;
                 metrics.LastUpdatedDate = DateTimeOffset.UtcNow;
 
-                await base.UpdateAsync(metrics, reviewerId, cancellationToken).ConfigureAwait(false);
+                await base.UpdateAsync(metrics, reviewerId, cancellationToken);
             }
 
             return ServiceResult<int>.Success(pendingMetrics.Count);
@@ -276,8 +271,7 @@ namespace TrashMob.Shared.Managers.Events
                 .Where(m => m.EventId == eventId)
                 .Include(m => m.PickedWeightUnit)
                 .Include(m => m.AdjustedPickedWeightUnit)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
 
             var approvedMetrics = allMetrics.Where(m => m.Status == "Approved" || m.Status == "Adjusted").ToList();
 
@@ -344,8 +338,7 @@ namespace TrashMob.Shared.Managers.Events
             CancellationToken cancellationToken = default)
         {
             return await Repo.Get()
-                .AnyAsync(m => m.EventId == eventId && m.UserId == userId, cancellationToken)
-                .ConfigureAwait(false);
+                .AnyAsync(m => m.EventId == eventId && m.UserId == userId, cancellationToken);
         }
 
         /// <inheritdoc />
@@ -358,8 +351,7 @@ namespace TrashMob.Shared.Managers.Events
                 .Include(m => m.User)
                 .Include(m => m.PickedWeightUnit)
                 .Include(m => m.AdjustedPickedWeightUnit)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
 
             var summary = new EventMetricsPublicSummary
             {
@@ -444,8 +436,7 @@ namespace TrashMob.Shared.Managers.Events
                 .Include(m => m.PickedWeightUnit)
                 .Include(m => m.AdjustedPickedWeightUnit)
                 .OrderByDescending(m => m.Event.EventDate)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
 
             var stats = new UserImpactStats
             {

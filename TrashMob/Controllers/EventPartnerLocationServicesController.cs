@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Collections.Generic;
@@ -114,7 +114,7 @@
             }
 
             var updatedEventPartnerLocationService = await eventPartnerLocationServiceManager
-                .UpdateAsync(eventPartnerLocationService, UserId, cancellationToken).ConfigureAwait(false);
+                .UpdateAsync(eventPartnerLocationService, UserId, cancellationToken);
 
             TrackEvent(nameof(UpdateEventPartnerLocationService));
 
@@ -165,7 +165,7 @@
                 (int)EventPartnerLocationServiceStatusEnum.Accepted;
 
             var updatedEventPartnerLocationService = await eventPartnerLocationServiceManager
-                .UpdateAsync(eventPartnerLocationService, UserId, cancellationToken).ConfigureAwait(false);
+                .UpdateAsync(eventPartnerLocationService, UserId, cancellationToken);
 
             TrackEvent(nameof(ApproveEventPartnerLocationService));
 
@@ -216,7 +216,7 @@
                 (int)EventPartnerLocationServiceStatusEnum.Declined;
 
             var updatedEventPartnerLocationService = await eventPartnerLocationServiceManager
-                .UpdateAsync(eventPartnerLocationService, UserId, cancellationToken).ConfigureAwait(false);
+                .UpdateAsync(eventPartnerLocationService, UserId, cancellationToken);
 
             TrackEvent(nameof(ApproveEventPartnerLocationService));
 
@@ -251,7 +251,7 @@
             }
 
             var result = await eventPartnerLocationServiceManager
-                .AddAsync(eventPartnerLocationService, UserId, cancellationToken).ConfigureAwait(false);
+                .AddAsync(eventPartnerLocationService, UserId, cancellationToken);
 
             TrackEvent(nameof(AddEventPartnerLocationService));
 
@@ -288,7 +288,7 @@
             }
 
             var result = await eventPartnerLocationServiceManager
-                .DeleteAsync(eventId, partnerLocationId, serviceTypeId, cancellationToken).ConfigureAwait(false);
+                .DeleteAsync(eventId, partnerLocationId, serviceTypeId, cancellationToken);
 
             TrackEvent(nameof(DeleteEventPartnerLocationService));
 

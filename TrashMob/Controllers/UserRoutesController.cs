@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System.Collections.Generic;
     using System.Threading;
@@ -28,8 +28,7 @@
         public async Task<IActionResult> GetMyRoutes(CancellationToken cancellationToken)
         {
             var routes = await eventAttendeeRouteManager
-                .GetUserRouteHistoryAsync(UserId, cancellationToken)
-                .ConfigureAwait(false);
+                .GetUserRouteHistoryAsync(UserId, cancellationToken);
 
             TrackEvent(nameof(GetMyRoutes));
             return Ok(routes);

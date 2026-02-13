@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers.Events
+namespace TrashMob.Shared.Managers.Events
 {
     using System;
     using System.Collections.Generic;
@@ -208,7 +208,7 @@
 
         private async Task SendCoLeadNotificationAsync(Guid eventId, User user, NotificationTypeEnum notificationType, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(user?.Email))
+            if (string.IsNullOrWhiteSpace(user?.Email))
             {
                 return;
             }

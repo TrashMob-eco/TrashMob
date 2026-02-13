@@ -44,7 +44,7 @@ namespace TrashMob.Shared.Managers.Adoptions
             CancellationToken cancellationToken = default)
         {
             // Validate adoption exists and is approved
-            var adoption = await adoptionManager.GetAsync(teamAdoptionId, cancellationToken).ConfigureAwait(false);
+            var adoption = await adoptionManager.GetAsync(teamAdoptionId, cancellationToken);
             if (adoption == null)
             {
                 return ServiceResult<TeamAdoptionEvent>.Failure("Adoption not found.");
@@ -56,14 +56,14 @@ namespace TrashMob.Shared.Managers.Adoptions
             }
 
             // Validate event exists
-            var evt = await eventManager.GetAsync(eventId, cancellationToken).ConfigureAwait(false);
+            var evt = await eventManager.GetAsync(eventId, cancellationToken);
             if (evt == null)
             {
                 return ServiceResult<TeamAdoptionEvent>.Failure("Event not found.");
             }
 
             // Check if already linked
-            if (await IsEventLinkedAsync(teamAdoptionId, eventId, cancellationToken).ConfigureAwait(false))
+            if (await IsEventLinkedAsync(teamAdoptionId, eventId, cancellationToken))
             {
                 return ServiceResult<TeamAdoptionEvent>.Failure("Event is already linked to this adoption.");
             }
@@ -81,10 +81,10 @@ namespace TrashMob.Shared.Managers.Adoptions
                 LastUpdatedDate = DateTimeOffset.UtcNow,
             };
 
-            var created = await AddAsync(adoptionEvent, userId, cancellationToken).ConfigureAwait(false);
+            var created = await AddAsync(adoptionEvent, userId, cancellationToken);
 
             // Update compliance tracking on the adoption
-            await UpdateComplianceAsync(teamAdoptionId, userId, cancellationToken).ConfigureAwait(false);
+            await UpdateComplianceAsync(teamAdoptionId, userId, cancellationToken);
 
             return ServiceResult<TeamAdoptionEvent>.Success(created);
         }
@@ -95,7 +95,7 @@ namespace TrashMob.Shared.Managers.Adoptions
             Guid userId,
             CancellationToken cancellationToken = default)
         {
-            var adoptionEvent = await GetAsync(teamAdoptionEventId, cancellationToken).ConfigureAwait(false);
+            var adoptionEvent = await GetAsync(teamAdoptionEventId, cancellationToken);
             if (adoptionEvent == null)
             {
                 return ServiceResult<bool>.Failure("Adoption event link not found.");
@@ -103,10 +103,10 @@ namespace TrashMob.Shared.Managers.Adoptions
 
             var teamAdoptionId = adoptionEvent.TeamAdoptionId;
 
-            await DeleteAsync(teamAdoptionEventId, cancellationToken).ConfigureAwait(false);
+            await DeleteAsync(teamAdoptionEventId, cancellationToken);
 
             // Update compliance tracking on the adoption
-            await UpdateComplianceAsync(teamAdoptionId, userId, cancellationToken).ConfigureAwait(false);
+            await UpdateComplianceAsync(teamAdoptionId, userId, cancellationToken);
 
             return ServiceResult<bool>.Success(true);
         }
@@ -119,8 +119,7 @@ namespace TrashMob.Shared.Managers.Adoptions
             return await Repo.Get(ae => ae.TeamAdoptionId == teamAdoptionId)
                 .Include(ae => ae.Event)
                 .OrderByDescending(ae => ae.Event.EventDate)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -131,8 +130,7 @@ namespace TrashMob.Shared.Managers.Adoptions
             return await Repo.Get(ae => ae.EventId == eventId)
                 .Include(ae => ae.TeamAdoption)
                     .ThenInclude(a => a.AdoptableArea)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -142,8 +140,7 @@ namespace TrashMob.Shared.Managers.Adoptions
             CancellationToken cancellationToken = default)
         {
             return await Repo.Get(ae => ae.TeamAdoptionId == teamAdoptionId && ae.EventId == eventId)
-                .AnyAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .AnyAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -158,8 +155,7 @@ namespace TrashMob.Shared.Managers.Adoptions
                     && a.Status == "Approved"
                     && (a.AdoptionEndDate == null || a.AdoptionEndDate >= today))
                 .Include(a => a.AdoptableArea)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -168,14 +164,14 @@ namespace TrashMob.Shared.Managers.Adoptions
             Guid userId,
             CancellationToken cancellationToken = default)
         {
-            var adoption = await adoptionManager.GetAsync(teamAdoptionId, cancellationToken).ConfigureAwait(false);
+            var adoption = await adoptionManager.GetAsync(teamAdoptionId, cancellationToken);
             if (adoption == null)
             {
                 return;
             }
 
             // Get all linked events
-            var linkedEvents = await GetByAdoptionIdAsync(teamAdoptionId, cancellationToken).ConfigureAwait(false);
+            var linkedEvents = await GetByAdoptionIdAsync(teamAdoptionId, cancellationToken);
             var eventsList = linkedEvents.ToList();
 
             // Update tracking fields
@@ -193,7 +189,7 @@ namespace TrashMob.Shared.Managers.Adoptions
             adoption.LastUpdatedByUserId = userId;
             adoption.LastUpdatedDate = DateTimeOffset.UtcNow;
 
-            await adoptionManager.UpdateAsync(adoption, userId, cancellationToken).ConfigureAwait(false);
+            await adoptionManager.UpdateAsync(adoption, userId, cancellationToken);
         }
 
         private static bool CalculateCompliance(TeamAdoption adoption)

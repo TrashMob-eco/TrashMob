@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Collections.Generic;
@@ -41,7 +41,7 @@
         public async Task<IActionResult> GetEventAttendees(Guid eventId, CancellationToken cancellationToken)
         {
             var result =
-                (await eventAttendeeManager.GetByParentIdAsync(eventId, cancellationToken).ConfigureAwait(false))
+                (await eventAttendeeManager.GetByParentIdAsync(eventId, cancellationToken))
                 .Select(u => u.User.ToDisplayUser());
             TrackEvent(nameof(GetEventAttendees));
             return Ok(result);
@@ -70,15 +70,14 @@
             try
             {
                 var updatedEventAttendee = await eventAttendeeManager
-                    .UpdateAsync(eventAttendee, UserId, cancellationToken).ConfigureAwait(false);
+                    .UpdateAsync(eventAttendee, UserId, cancellationToken);
                 TrackEvent(nameof(UpdateEventAttendee));
 
                 return Ok(updatedEventAttendee);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!await EventAttendeeExists(eventAttendee.EventId, eventAttendee.UserId, cancellationToken)
-                        .ConfigureAwait(false))
+                if (!await EventAttendeeExists(eventAttendee.EventId, eventAttendee.UserId, cancellationToken))
                 {
                     return NotFound();
                 }
@@ -103,14 +102,12 @@
         {
             // Validate waiver compliance before registration
             var hasValidWaiver = await userWaiverManager
-                .HasValidWaiverForEventAsync(eventAttendee.UserId, eventAttendee.EventId, cancellationToken)
-                .ConfigureAwait(false);
+                .HasValidWaiverForEventAsync(eventAttendee.UserId, eventAttendee.EventId, cancellationToken);
 
             if (!hasValidWaiver)
             {
                 var requiredWaivers = await userWaiverManager
-                    .GetRequiredWaiversForEventAsync(eventAttendee.UserId, eventAttendee.EventId, cancellationToken)
-                    .ConfigureAwait(false);
+                    .GetRequiredWaiversForEventAsync(eventAttendee.UserId, eventAttendee.EventId, cancellationToken);
 
                 return BadRequest(new WaiverRequiredResponse
                 {
@@ -120,7 +117,7 @@
                 });
             }
 
-            await eventAttendeeManager.AddAsync(eventAttendee, UserId, cancellationToken).ConfigureAwait(false);
+            await eventAttendeeManager.AddAsync(eventAttendee, UserId, cancellationToken);
             TrackEvent(nameof(AddEventAttendee));
             return Ok();
         }
@@ -139,7 +136,7 @@
         public async Task<IActionResult> DeleteEventAttendee(Guid eventId, Guid userId,
             CancellationToken cancellationToken)
         {
-            await eventAttendeeManager.Delete(eventId, userId, cancellationToken).ConfigureAwait(false);
+            await eventAttendeeManager.Delete(eventId, userId, cancellationToken);
             TrackEvent(nameof(DeleteEventAttendee));
 
             return new NoContentResult();
@@ -155,7 +152,7 @@
         public async Task<IActionResult> GetEventLeads(Guid eventId, CancellationToken cancellationToken)
         {
             var result =
-                (await eventAttendeeManager.GetEventLeadsAsync(eventId, cancellationToken).ConfigureAwait(false))
+                (await eventAttendeeManager.GetEventLeadsAsync(eventId, cancellationToken))
                 .Select(ea => ea.User.ToDisplayUser());
             TrackEvent(nameof(GetEventLeads));
             return Ok(result);
@@ -252,8 +249,7 @@
             // Check if caller is event lead or admin
             var isAdmin = User.IsInRole("Admin");
             var isEventLead = await eventAttendeeManager
-                .IsEventLeadAsync(eventId, UserId, cancellationToken)
-                .ConfigureAwait(false);
+                .IsEventLeadAsync(eventId, UserId, cancellationToken);
 
             if (!isAdmin && !isEventLead)
             {
@@ -261,8 +257,7 @@
             }
 
             var hasValidWaiver = await userWaiverManager
-                .HasValidWaiverForEventAsync(userId, eventId, cancellationToken)
-                .ConfigureAwait(false);
+                .HasValidWaiverForEventAsync(userId, eventId, cancellationToken);
 
             TrackEvent(nameof(VerifyAttendeeWaiverStatus));
 
@@ -272,7 +267,7 @@
         private async Task<bool> EventAttendeeExists(Guid eventId, Guid userId, CancellationToken cancellationToken)
         {
             var attendee = await eventAttendeeManager
-                .GetAsync(ea => ea.EventId == eventId && ea.UserId == userId, cancellationToken).ConfigureAwait(false);
+                .GetAsync(ea => ea.EventId == eventId && ea.UserId == userId, cancellationToken);
 
             return attendee?.FirstOrDefault() != null;
         }

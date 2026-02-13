@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Threading;
@@ -34,8 +34,7 @@
             CancellationToken cancellationToken)
         {
             var result = await eventAttendeeRouteManager
-                .UpdateRouteMetadataAsync(routeId, UserId, request, cancellationToken)
-                .ConfigureAwait(false);
+                .UpdateRouteMetadataAsync(routeId, UserId, request, cancellationToken);
 
             if (!result.IsSuccess)
             {

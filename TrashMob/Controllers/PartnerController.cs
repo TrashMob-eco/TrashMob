@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers
+namespace TrashMob.Controllers
 {
     using System;
     using System.Threading;
@@ -33,7 +33,7 @@
         [HttpGet("{partnerId}")]
         public async Task<IActionResult> Get(Guid partnerId, CancellationToken cancellationToken)
         {
-            return Ok(await Manager.GetAsync(partnerId, cancellationToken).ConfigureAwait(false));
+            return Ok(await Manager.GetAsync(partnerId, cancellationToken));
         }
 
         /// <summary>
@@ -51,7 +51,7 @@
                 return Forbid();
             }
 
-            var result = await Manager.UpdateAsync(partner, UserId, cancellationToken).ConfigureAwait(false);
+            var result = await Manager.UpdateAsync(partner, UserId, cancellationToken);
             TrackEvent(nameof(Update) + typeof(Partner));
 
             return Ok(result);

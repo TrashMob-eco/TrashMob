@@ -289,7 +289,7 @@ namespace TrashMob.Shared.Managers.Prospects
                 .Get(p => p.NextFollowUpDate != null
                     && p.NextFollowUpDate <= now
                     && p.PipelineStage == 1  // Contacted
-                    && !string.IsNullOrEmpty(p.ContactEmail))
+                    && !string.IsNullOrWhiteSpace(p.ContactEmail))
                 .Take(settings.MaxFollowUpsPerRun)
                 .ToListAsync(cancellationToken);
 

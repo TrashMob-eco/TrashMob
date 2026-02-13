@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers
+namespace TrashMob.Shared.Managers
 {
     using System;
     using System.Security.Cryptography.X509Certificates;
@@ -25,7 +25,7 @@
         /// <inheritdoc />
         public async Task<X509Certificate2> GetCertificateAsync(string certificateSecretName)
         {
-            var secret = await secretClient.GetSecretAsync(certificateSecretName).ConfigureAwait(false)
+            var secret = await secretClient.GetSecretAsync(certificateSecretName)
                 ?? throw new InvalidOperationException($"Unable to find certificate with secret name {certificateSecretName}");
 
             var pfxBytes = Convert.FromBase64String(secret.Value.Value);
