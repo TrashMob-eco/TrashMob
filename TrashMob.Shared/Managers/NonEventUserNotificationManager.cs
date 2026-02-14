@@ -29,8 +29,8 @@
         public async Task<IEnumerable<NonEventUserNotification>> GetByUserIdAsync(Guid userId,
             int userNotificationTypeId, CancellationToken cancellationToken = default)
         {
-            return (await Repository.Get(n => n.UserId == userId && n.UserNotificationTypeId == userNotificationTypeId)
-                .ToListAsync(cancellationToken)).AsEnumerable();
+            return await Repository.Get(n => n.UserId == userId && n.UserNotificationTypeId == userNotificationTypeId)
+                .ToListAsync(cancellationToken);
         }
     }
 }

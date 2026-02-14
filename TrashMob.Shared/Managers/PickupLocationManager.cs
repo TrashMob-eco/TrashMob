@@ -37,9 +37,8 @@ namespace TrashMob.Shared.Managers
         public override async Task<IEnumerable<PickupLocation>> GetByParentIdAsync(Guid parentId,
             CancellationToken cancellationToken)
         {
-            return (await Repository.Get().Where(p => p.EventId == parentId)
-                    .ToListAsync(cancellationToken))
-                .AsEnumerable();
+            return await Repository.Get().Where(p => p.EventId == parentId)
+                    .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />

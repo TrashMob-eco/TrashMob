@@ -48,8 +48,7 @@ namespace TrashMob.Shared.Managers.Partners
         public override async Task<IEnumerable<PartnerAdminInvitation>> GetByParentIdAsync(Guid parentId,
             CancellationToken cancellationToken)
         {
-            return (await Repository.Get().Where(p => p.PartnerId == parentId).ToListAsync(cancellationToken))
-                .AsEnumerable();
+            return await Repository.Get().Where(p => p.PartnerId == parentId).ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />

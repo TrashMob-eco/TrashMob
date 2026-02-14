@@ -41,8 +41,8 @@
         public override async Task<IEnumerable<PartnerLocation>> GetByParentIdAsync(Guid parentId,
             CancellationToken cancellationToken)
         {
-            return (await Repository.Get().Where(p => p.PartnerId == parentId).Include(p => p.PartnerLocationContacts)
-                .ToListAsync(cancellationToken)).AsEnumerable();
+            return await Repository.Get().Where(p => p.PartnerId == parentId).Include(p => p.PartnerLocationContacts)
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />

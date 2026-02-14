@@ -7,6 +7,7 @@ namespace TrashMob.Controllers
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Models;
     using TrashMob.Security;
@@ -177,10 +178,11 @@ namespace TrashMob.Controllers
                 userWaiver.DocumentUrl = documentUrl;
                 await userWaiverManager.UpdateAsync(userWaiver, cancellationToken);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Log but don't fail the waiver acceptance if PDF generation fails
+                // Don't fail the waiver acceptance if PDF generation fails
                 // The waiver is still valid, PDF can be regenerated later
+                Logger?.LogWarning(ex, "PDF generation failed for waiver {WaiverId}", userWaiver.Id);
             }
 
             TrackEvent(nameof(AcceptWaiver));

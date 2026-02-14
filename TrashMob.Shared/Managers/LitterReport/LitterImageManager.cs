@@ -85,9 +85,8 @@ namespace TrashMob.Shared.Managers.LitterReport
         public override async Task<IEnumerable<LitterImage>> GetByParentIdAsync(Guid parentId,
             CancellationToken cancellationToken)
         {
-            return (await Repository.Get().Where(p => p.LitterReportId == parentId)
-                    .ToListAsync(cancellationToken))
-                .AsEnumerable();
+            return await Repository.Get().Where(p => p.LitterReportId == parentId)
+                    .ToListAsync(cancellationToken);
         }
     }
 }

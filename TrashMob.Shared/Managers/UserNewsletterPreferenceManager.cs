@@ -7,6 +7,7 @@ namespace TrashMob.Shared.Managers
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence;
@@ -17,14 +18,17 @@ namespace TrashMob.Shared.Managers
     public class UserNewsletterPreferenceManager : IUserNewsletterPreferenceManager
     {
         private readonly MobDbContext dbContext;
+        private readonly ILogger<UserNewsletterPreferenceManager> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserNewsletterPreferenceManager"/> class.
         /// </summary>
         /// <param name="dbContext">The database context.</param>
-        public UserNewsletterPreferenceManager(MobDbContext dbContext)
+        /// <param name="logger">The logger.</param>
+        public UserNewsletterPreferenceManager(MobDbContext dbContext, ILogger<UserNewsletterPreferenceManager> logger)
         {
             this.dbContext = dbContext;
+            this.logger = logger;
         }
 
         /// <inheritdoc />
@@ -200,8 +204,9 @@ namespace TrashMob.Shared.Managers
                     };
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                logger.LogWarning(ex, "Failed to process unsubscribe token");
                 return new UnsubscribeResult { Success = false, ErrorMessage = "Invalid token." };
             }
         }
