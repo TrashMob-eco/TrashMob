@@ -36,7 +36,7 @@ export const ImageUploader = ({
     images,
     onImagesChange,
     onEditLocation,
-    maxImages = 10,
+    maxImages = 5,
     maxSizeMB = 10,
 }: ImageUploaderProps) => {
     const fileInputRef = useRef<HTMLInputElement>(null);

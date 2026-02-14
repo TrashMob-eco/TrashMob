@@ -172,6 +172,7 @@ namespace TrashMob.Shared.Managers.LitterReport
                     litterImage.LastUpdatedByUserId = userId;
                     litterImage.CreatedDate = DateTime.UtcNow;
                     litterImage.LastUpdatedDate = DateTime.UtcNow;
+                    litterImage.AzureBlobURL ??= string.Empty;
                 }
 
                 // Add litter report
@@ -422,6 +423,7 @@ namespace TrashMob.Shared.Managers.LitterReport
                     litterImage.LastUpdatedByUserId = userId;
                     litterImage.CreatedDate = DateTime.UtcNow;
                     litterImage.LastUpdatedDate = DateTime.UtcNow;
+                    litterImage.AzureBlobURL ??= string.Empty;
                 }
 
                 // Add litter report
