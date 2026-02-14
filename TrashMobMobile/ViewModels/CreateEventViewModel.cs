@@ -26,6 +26,7 @@ public partial class CreateEventViewModel : BaseViewModel
     private readonly ILitterReportManager litterReportManager;
     private readonly IEventLitterReportManager eventLitterReportManager;
     private readonly IUserManager userManager;
+    private readonly ITeamManager teamManager;
     private readonly INotificationService notificationService;
     private IEnumerable<LitterReport> RawLitterReports { get; set; } = [];
 
@@ -55,6 +56,69 @@ public partial class CreateEventViewModel : BaseViewModel
 
     [ObservableProperty]
     private bool isLitterReportListSelected;
+
+    [ObservableProperty]
+    private bool isTeamPickerVisible;
+
+    public ObservableCollection<string> VisibilityOptions { get; set; } = ["Public", "Team Only", "Private"];
+
+    public ObservableCollection<string> TeamNames { get; set; } = [];
+
+    private List<Team> UserTeams { get; set; } = [];
+
+    private string selectedVisibility = "Public";
+
+    public string SelectedVisibility
+    {
+        get => selectedVisibility;
+        set
+        {
+            if (value == null)
+                return;
+
+            if (selectedVisibility != value)
+            {
+                selectedVisibility = value;
+                OnPropertyChanged();
+
+                IsTeamPickerVisible = value == "Team Only";
+
+                EventViewModel.EventVisibilityId = value switch
+                {
+                    "Team Only" => (int)EventVisibilityEnum.TeamOnly,
+                    "Private" => (int)EventVisibilityEnum.Private,
+                    _ => (int)EventVisibilityEnum.Public,
+                };
+
+                if (value != "Team Only")
+                {
+                    EventViewModel.TeamId = null;
+                    SelectedTeam = string.Empty;
+                }
+            }
+        }
+    }
+
+    private string selectedTeam = string.Empty;
+
+    public string SelectedTeam
+    {
+        get => selectedTeam;
+        set
+        {
+            if (value == null)
+                return;
+
+            if (selectedTeam != value)
+            {
+                selectedTeam = value;
+                OnPropertyChanged();
+
+                var team = UserTeams.FirstOrDefault(t => t.Name == value);
+                EventViewModel.TeamId = team?.Id;
+            }
+        }
+    }
 
     private string selectedEventType = string.Empty;
 
@@ -132,7 +196,8 @@ public partial class CreateEventViewModel : BaseViewModel
         IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService,
         ILitterReportManager litterReportManager,
         IEventLitterReportManager eventLitterReportRestService,
-        IUserManager userManager)
+        IUserManager userManager,
+        ITeamManager teamManager)
         : base(notificationService)
     {
         this.mobEventManager = mobEventManager;
@@ -144,6 +209,7 @@ public partial class CreateEventViewModel : BaseViewModel
         this.litterReportManager = litterReportManager;
         this.eventLitterReportManager = eventLitterReportRestService;
         this.userManager = userManager;
+        this.teamManager = teamManager;
 
         NextCommand = new Command(async () =>
         {
@@ -437,12 +503,19 @@ public partial class CreateEventViewModel : BaseViewModel
             UserLocation = userManager.CurrentUser.GetAddress();
             EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
 
+            UserTeams = (await teamManager.GetMyTeamsAsync()).ToList();
+            TeamNames.Clear();
+            foreach (var team in UserTeams)
+            {
+                TeamNames.Add(team.Name);
+            }
+
             // Set defaults
             EventViewModel = new EventViewModel
             {
                 Name = DefaultEventName,
                 EventDate = DateTime.Now.AddDays(1),
-                IsEventPublic = true,
+                EventVisibilityId = (int)EventVisibilityEnum.Public,
                 MaxNumberOfParticipants = 0,
                 DurationHours = 2,
                 DurationMinutes = 0,
@@ -681,9 +754,15 @@ public partial class CreateEventViewModel : BaseViewModel
 
     private async Task<bool> Validate()
     {
-        if (EventViewModel.IsEventPublic && EventViewModel.EventDate < DateTimeOffset.Now)
+        if (EventViewModel.EventVisibilityId == (int)EventVisibilityEnum.Public && EventViewModel.EventDate < DateTimeOffset.Now)
         {
             await NotificationService.NotifyError("Event Dates for new public events must be in the future.");
+            return false;
+        }
+
+        if (EventViewModel.EventVisibilityId == (int)EventVisibilityEnum.TeamOnly && EventViewModel.TeamId == null)
+        {
+            await NotificationService.NotifyError("A team must be selected for Team Only events.");
             return false;
         }
 

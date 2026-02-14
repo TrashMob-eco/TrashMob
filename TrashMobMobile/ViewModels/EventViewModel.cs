@@ -37,7 +37,10 @@ public partial class EventViewModel : ObservableObject
     private Guid id;
 
     [ObservableProperty]
-    private bool isEventPublic;
+    private int eventVisibilityId = (int)EventVisibilityEnum.Public;
+
+    [ObservableProperty]
+    private Guid? teamId;
 
     private bool isUserAttending;
 
@@ -134,6 +137,13 @@ public partial class EventViewModel : ObservableObject
         return true;
     }
 
+    public string EventVisibilityText => EventVisibilityId switch
+    {
+        (int)EventVisibilityEnum.TeamOnly => "Team Only",
+        (int)EventVisibilityEnum.Private => "Private",
+        _ => "Public",
+    };
+
     public Event ToEvent()
     {
         return new Event
@@ -148,7 +158,8 @@ public partial class EventViewModel : ObservableObject
             DurationHours = DurationHours,
             DurationMinutes = DurationMinutes,
             EventTypeId = EventTypeId,
-            EventVisibilityId = IsEventPublic ? (int)EventVisibilityEnum.Public : (int)EventVisibilityEnum.Private,
+            EventVisibilityId = EventVisibilityId,
+            TeamId = TeamId,
             Latitude = Address.Latitude,
             Longitude = Address.Longitude,
             MaxNumberOfParticipants = MaxNumberOfParticipants,

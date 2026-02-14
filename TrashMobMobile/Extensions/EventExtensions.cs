@@ -41,10 +41,14 @@
             return localDateTime.ToShortTimeString();
         }
 
-        public static string GetPublicEventText(this Event mobEvent)
+        public static string GetVisibilityText(this Event mobEvent)
         {
-            //TODO: move hard code string to resource file
-            return mobEvent.IsEventPublic ? "Yes" : "No";
+            return mobEvent.EventVisibilityId switch
+            {
+                (int)EventVisibilityEnum.TeamOnly => "Team Only",
+                (int)EventVisibilityEnum.Private => "Private",
+                _ => "Public",
+            };
         }
 
         public static string GetEventStatusText(this Event mobEvent)
@@ -127,7 +131,8 @@
                 EventDate = mobEvent.EventDate,
                 EventStatusId = mobEvent.EventStatusId,
                 EventTypeId = mobEvent.EventTypeId,
-                IsEventPublic = mobEvent.IsEventPublic,
+                EventVisibilityId = mobEvent.EventVisibilityId,
+                TeamId = mobEvent.TeamId,
                 MaxNumberOfParticipants = mobEvent.MaxNumberOfParticipants,
                 Name = mobEvent.Name,
                 UserRoleForEvent = mobEvent.IsEventLead(userId) ? "Lead" : "Attendee",
