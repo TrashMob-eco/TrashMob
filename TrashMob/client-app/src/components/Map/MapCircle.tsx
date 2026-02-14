@@ -2,13 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useMap } from '@vis.gl/react-google-maps';
 
 /** Renders a circle overlay on the map. Must be a child of GoogleMap/APIProvider. */
-export const MapCircle = ({
-    center,
-    radiusMeters,
-}: {
-    center: { lat: number; lng: number };
-    radiusMeters: number;
-}) => {
+export const MapCircle = ({ center, radiusMeters }: { center: { lat: number; lng: number }; radiusMeters: number }) => {
     const map = useMap();
     const circleRef = useRef<google.maps.Circle>();
 
