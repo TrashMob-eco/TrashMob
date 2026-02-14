@@ -38,10 +38,9 @@ namespace TrashMob.Shared.Managers.Events
         public override async Task<IEnumerable<EventAttendeeRoute>> GetByParentIdAsync(Guid parentId,
             CancellationToken cancellationToken)
         {
-            return (await Repository.Get().Where(p => p.EventId == parentId)
+            return await Repository.Get().Where(p => p.EventId == parentId)
                     .Include(p => p.User)
-                    .ToListAsync(cancellationToken))
-                .AsEnumerable();
+                    .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />

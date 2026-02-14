@@ -364,8 +364,9 @@ namespace TrashMob.Controllers
 
                 return Ok(url);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                logger.LogWarning(ex, "Failed to get image URL for litter image {LitterImageId}", litterImageId);
                 return NoContent();
             }
         }

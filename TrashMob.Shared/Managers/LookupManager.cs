@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers
+namespace TrashMob.Shared.Managers
 {
     using System;
     using System.Collections.Generic;
@@ -34,13 +34,13 @@
         /// <inheritdoc />
         public virtual async Task<IEnumerable<T>> GetAsync()
         {
-            return (await Repository.Get().ToListAsync()).AsEnumerable();
+            return await Repository.Get().ToListAsync();
         }
 
         /// <inheritdoc />
         public virtual async Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> expression)
         {
-            return (await Repository.Get(expression).ToListAsync()).AsEnumerable();
+            return await Repository.Get(expression).ToListAsync();
         }
 
         /// <inheritdoc />

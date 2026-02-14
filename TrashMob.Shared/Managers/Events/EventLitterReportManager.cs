@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers.Events
+namespace TrashMob.Shared.Managers.Events
 {
     using System;
     using System.Collections.Generic;
@@ -43,11 +43,10 @@
         public override async Task<IEnumerable<EventLitterReport>> GetByParentIdAsync(Guid parentId,
             CancellationToken cancellationToken)
         {
-            return (await Repository.Get().Where(p => p.EventId == parentId)
+            return await Repository.Get().Where(p => p.EventId == parentId)
                     .Include(p => p.LitterReport)
                     .Include(p => p.LitterReport.LitterImages)
-                    .ToListAsync(cancellationToken))
-                .AsEnumerable();
+                    .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc />
