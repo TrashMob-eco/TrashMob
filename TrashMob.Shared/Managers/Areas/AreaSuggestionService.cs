@@ -168,10 +168,10 @@ namespace TrashMob.Shared.Managers.Areas
 
         private static string BuildUserPrompt(AreaSuggestionRequest request)
         {
-            var parts = new List<string>
-            {
+            List<string> parts =
+            [
                 $"Area description: \"{request.Description}\"",
-            };
+            ];
 
             if (!string.IsNullOrWhiteSpace(request.CommunityName))
             {
@@ -190,7 +190,7 @@ namespace TrashMob.Shared.Managers.Areas
             List<GeocodingQuery>? queries,
             CancellationToken cancellationToken)
         {
-            var coordinates = new List<(double Lat, double Lon)>();
+            List<(double Lat, double Lon)> coordinates = [];
 
             if (queries == null || queries.Count == 0)
             {

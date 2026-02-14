@@ -95,7 +95,7 @@ namespace TrashMob.Shared.Managers.Prospects
                 .Where(p => p.PartnerStatusId == (int)PartnerStatusEnum.Active && p.HomePageEnabled)
                 .ToListAsync(cancellationToken);
 
-            var gaps = new List<GeographicGap>();
+            List<GeographicGap> gaps = [];
 
             foreach (var group in eventGroups)
             {

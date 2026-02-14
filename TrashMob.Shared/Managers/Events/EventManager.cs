@@ -159,10 +159,10 @@ namespace TrashMob.Shared.Managers.Events
                     googleMapsUrl = instance.GoogleMapsUrl(),
                 };
 
-                var recipients = new List<EmailAddress>
-                {
+                List<EmailAddress> recipients =
+                [
                     new() { Name = attendee.User.UserName, Email = attendee.User.Email },
-                };
+                ];
 
                 await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.EventEmail,
                         SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None);
@@ -189,10 +189,10 @@ namespace TrashMob.Shared.Managers.Events
             var message = $"A new event: {instance.Name} in {instance.City} has been created on TrashMob.eco!";
             var subject = "New Event Alert";
 
-            var recipients = new List<EmailAddress>
-            {
+            List<EmailAddress> recipients =
+            [
                 new() { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress },
-            };
+            ];
 
             var localTime = await instance.GetLocalEventTime(mapManager);
 
@@ -258,10 +258,10 @@ namespace TrashMob.Shared.Managers.Events
                         googleMapsUrl = instance.GoogleMapsUrl(),
                     };
 
-                    var recipients = new List<EmailAddress>
-                    {
+                    List<EmailAddress> recipients =
+                    [
                         new() { Name = attendee.User.UserName, Email = attendee.User.Email },
-                    };
+                    ];
 
                     await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.EventEmail,
                             SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None);

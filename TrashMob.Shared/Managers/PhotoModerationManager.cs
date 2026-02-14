@@ -542,10 +542,10 @@ namespace TrashMob.Shared.Managers
             message = message.Replace("{Context}", context);
             message = message.Replace("{Reason}", reason);
 
-            var recipients = new List<EmailAddress>
-            {
-                new() { Name = photo.UploaderName ?? "TrashMob User", Email = photo.UploaderEmail }
-            };
+            List<EmailAddress> recipients =
+            [
+                new() { Name = photo.UploaderName ?? "TrashMob User", Email = photo.UploaderEmail },
+            ];
 
             var dynamicTemplateData = new
             {
@@ -652,10 +652,10 @@ namespace TrashMob.Shared.Managers
             // Send to each admin separately
             foreach (var admin in admins)
             {
-                var recipients = new List<EmailAddress>
-                {
-                    new() { Name = admin.UserName ?? "Admin", Email = admin.Email }
-                };
+                List<EmailAddress> recipients =
+                [
+                    new() { Name = admin.UserName ?? "Admin", Email = admin.Email },
+                ];
 
                 var dynamicTemplateData = new
                 {

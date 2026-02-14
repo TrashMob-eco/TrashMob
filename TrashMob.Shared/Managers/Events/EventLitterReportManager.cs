@@ -90,7 +90,7 @@ namespace TrashMob.Shared.Managers.Events
                 return events;
             }
 
-            return new List<Event>();
+            return [];
         }
     }
 }

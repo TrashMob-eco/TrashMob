@@ -181,10 +181,10 @@
                         googleMapsUrl = mobEvent.GoogleMapsUrl(),
                     };
 
-                    var recipients = new List<EmailAddress>
-                    {
+                    List<EmailAddress> recipients =
+                    [
                         new() { Name = user.UserName, Email = user.Email },
-                    };
+                    ];
 
                     Logger.LogInformation("Sending email to {0}, Subject {0}", user.Email, EmailSubject);
 
@@ -227,10 +227,10 @@
                 subject = EmailSubject,
             };
 
-            var recipients = new List<EmailAddress>
-            {
+            List<EmailAddress> recipients =
+            [
                 new() { Name = user.UserName, Email = user.Email },
-            };
+            ];
 
             Logger.LogInformation("Sending email to {0}, Subject {0}", user.Email, EmailSubject);
 

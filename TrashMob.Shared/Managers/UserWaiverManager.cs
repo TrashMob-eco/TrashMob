@@ -80,10 +80,10 @@ namespace TrashMob.Shared.Managers
                         w.EffectiveDate <= now &&
                         (w.ExpiryDate == null || w.ExpiryDate > now))
                     .ToListAsync(cancellationToken)
-                : new List<WaiverVersion>();
+                : [];
 
             // Combine and filter out already signed waivers
-            var requiredWaivers = new List<WaiverVersion>();
+            List<WaiverVersion> requiredWaivers = [];
 
             if (globalWaiver != null && !signedWaiverVersionIds.Contains(globalWaiver.Id))
             {
@@ -118,7 +118,7 @@ namespace TrashMob.Shared.Managers
                 .OrderByDescending(w => w.EffectiveDate)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            var requiredWaivers = new List<WaiverVersion>();
+            List<WaiverVersion> requiredWaivers = [];
 
             if (globalWaiver != null && !signedWaiverVersionIds.Contains(globalWaiver.Id))
             {

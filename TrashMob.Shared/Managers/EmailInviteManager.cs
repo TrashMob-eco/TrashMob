@@ -232,10 +232,10 @@ namespace TrashMob.Shared.Managers
                 emailCopy,
             };
 
-            var recipients = new List<EmailAddress>
-            {
+            List<EmailAddress> recipients =
+            [
                 new() { Name = invite.Email, Email = invite.Email },
-            };
+            ];
 
             await emailManager.SendTemplatedEmailAsync(
                 subject,

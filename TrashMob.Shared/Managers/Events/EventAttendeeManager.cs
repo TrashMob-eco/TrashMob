@@ -57,7 +57,7 @@ namespace TrashMob.Shared.Managers.Events
                 return events;
             }
 
-            return new List<Event>();
+            return [];
         }
 
         /// <inheritdoc />
@@ -76,7 +76,7 @@ namespace TrashMob.Shared.Managers.Events
                 return events;
             }
 
-            return new List<Event>();
+            return [];
         }
 
         /// <inheritdoc />
@@ -217,10 +217,10 @@ namespace TrashMob.Shared.Managers.Events
             message = message.Replace("{EventDate}", eventDate.ToString("D"));
             message = message.Replace("{EventTime}", eventDate.ToString("t"));
 
-            var recipients = new List<EmailAddress>
-            {
-                new() { Name = user.UserName ?? "TrashMob User", Email = user.Email }
-            };
+            List<EmailAddress> recipients =
+            [
+                new() { Name = user.UserName ?? "TrashMob User", Email = user.Email },
+            ];
 
             var dynamicTemplateData = new
             {

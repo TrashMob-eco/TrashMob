@@ -141,10 +141,10 @@ namespace TrashMob.Shared.Managers.Prospects
                     emailCopy = fullHtml,
                 };
 
-                var recipients = new List<EmailAddress>
-                {
+                List<EmailAddress> recipients =
+                [
                     new() { Name = prospect.ContactName ?? prospect.Name, Email = recipientEmail },
-                };
+                ];
 
                 await emailManager.SendTemplatedEmailAsync(
                     subject,

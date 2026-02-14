@@ -31,7 +31,7 @@ namespace TrashMob.Shared.Managers
 
             var from = new EmailAddress(Constants.TrashMobEmailAddress, Constants.TrashMobEmailName);
 
-            var tos = new List<EmailAddress>();
+            List<EmailAddress> tos = [];
             foreach (var address in email.Addresses)
             {
                 tos.Add(new EmailAddress(address.Email, address.Name));
@@ -62,7 +62,7 @@ namespace TrashMob.Shared.Managers
 
             var from = new EmailAddress(Constants.TrashMobEmailAddress, Constants.TrashMobEmailName);
 
-            var tos = new List<EmailAddress>();
+            List<EmailAddress> tos = [];
             foreach (var address in email.Addresses)
             {
                 tos.Add(new EmailAddress(address.Email, address.Name));
@@ -78,11 +78,11 @@ namespace TrashMob.Shared.Managers
                 message.Asm = new ASM
                 {
                     GroupId = email.GroupId,
-                    GroupsToDisplay = new List<int>
-                    {
+                    GroupsToDisplay =
+                    [
                         SendGridEmailGroupId.EventRelated,
                         SendGridEmailGroupId.General,
-                    },
+                    ],
                 };
 
                 var response = await client.SendEmailAsync(message, cancellationToken);

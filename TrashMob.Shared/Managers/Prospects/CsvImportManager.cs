@@ -148,7 +148,7 @@ namespace TrashMob.Shared.Managers.Prospects
 
         private static async Task<List<string>> ReadLinesAsync(Stream stream)
         {
-            var lines = new List<string>();
+            List<string> lines = [];
             using var reader = new StreamReader(stream);
 
             while (await reader.ReadLineAsync() is { } line)
@@ -168,7 +168,7 @@ namespace TrashMob.Shared.Managers.Prospects
         /// </summary>
         public static List<string> ParseCsvLine(string line)
         {
-            var fields = new List<string>();
+            List<string> fields = [];
             var current = new System.Text.StringBuilder();
             var inQuotes = false;
 
