@@ -14,22 +14,11 @@ namespace TrashMob.Controllers
     /// </summary>
     [Authorize]
     [Route("api/partnercontacts")]
-    public class PartnerContactsController : SecureController
+    public class PartnerContactsController(
+        IKeyedManager<Partner> partnerManager,
+        IPartnerContactManager partnerContactManager)
+        : SecureController
     {
-        private readonly IPartnerContactManager partnerContactManager;
-        private readonly IKeyedManager<Partner> partnerManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartnerContactsController"/> class.
-        /// </summary>
-        /// <param name="partnerManager">The partner manager.</param>
-        /// <param name="partnerContactManager">The partner contact manager.</param>
-        public PartnerContactsController(IKeyedManager<Partner> partnerManager,
-            IPartnerContactManager partnerContactManager)
-        {
-            this.partnerManager = partnerManager;
-            this.partnerContactManager = partnerContactManager;
-        }
 
         /// <summary>
         /// Gets all contacts for a given partner. Requires a valid user.

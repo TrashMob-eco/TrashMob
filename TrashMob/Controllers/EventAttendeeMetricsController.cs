@@ -17,23 +17,11 @@ namespace TrashMob.Controllers
     /// Controller for attendee-submitted event metrics.
     /// </summary>
     [Route("api/events/{eventId}/attendee-metrics")]
-    public class EventAttendeeMetricsController : SecureController
+    public class EventAttendeeMetricsController(
+        IEventAttendeeMetricsManager metricsManager,
+        IKeyedManager<Event> eventManager)
+        : SecureController
     {
-        private readonly IEventAttendeeMetricsManager metricsManager;
-        private readonly IKeyedManager<Event> eventManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EventAttendeeMetricsController"/> class.
-        /// </summary>
-        /// <param name="metricsManager">The attendee metrics manager.</param>
-        /// <param name="eventManager">The event manager.</param>
-        public EventAttendeeMetricsController(
-            IEventAttendeeMetricsManager metricsManager,
-            IKeyedManager<Event> eventManager)
-        {
-            this.metricsManager = metricsManager;
-            this.eventManager = eventManager;
-        }
 
         /// <summary>
         /// Gets the current user's metrics submission for an event.

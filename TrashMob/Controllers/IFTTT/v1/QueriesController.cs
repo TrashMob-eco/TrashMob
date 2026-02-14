@@ -15,18 +15,9 @@ namespace TrashMob.Controllers.IFTTT
     /// </summary>
     [Route("api/ifttt/v1/[controller]")]
     [RequiredScope(Constants.TrashMobIFTTTScope)]
-    public class QueriesController : SecureController
+    public class QueriesController(IQueriesManager queriesManager)
+        : SecureController
     {
-        private readonly IQueriesManager queriesManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="QueriesController"/> class.
-        /// </summary>
-        /// <param name="queriesManager">The queries manager.</param>
-        public QueriesController(IQueriesManager queriesManager)
-        {
-            this.queriesManager = queriesManager;
-        }
 
         /// <summary>
         /// Gets all events for IFTTT queries.

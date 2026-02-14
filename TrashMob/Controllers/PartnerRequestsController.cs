@@ -15,18 +15,9 @@ namespace TrashMob.Controllers
     /// Controller for managing partner requests, including creation, approval, and denial.
     /// </summary>
     [Route("api/partnerrequests")]
-    public class PartnerRequestsController : SecureController
+    public class PartnerRequestsController(IPartnerRequestManager partnerRequestManager)
+        : SecureController
     {
-        private readonly IPartnerRequestManager partnerRequestManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartnerRequestsController"/> class.
-        /// </summary>
-        /// <param name="partnerRequestManager">The partner request manager.</param>
-        public PartnerRequestsController(IPartnerRequestManager partnerRequestManager)
-        {
-            this.partnerRequestManager = partnerRequestManager;
-        }
 
         /// <summary>
         /// Adds a new partner request. Requires a valid user.

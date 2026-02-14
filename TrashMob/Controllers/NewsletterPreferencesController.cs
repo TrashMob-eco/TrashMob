@@ -15,23 +15,11 @@ namespace TrashMob.Controllers
     /// </summary>
     [Authorize]
     [Route("api/newsletter-preferences")]
-    public class NewsletterPreferencesController : SecureController
+    public class NewsletterPreferencesController(
+        IUserNewsletterPreferenceManager preferenceManager,
+        ILookupRepository<NewsletterCategory> categoryRepository)
+        : SecureController
     {
-        private readonly IUserNewsletterPreferenceManager preferenceManager;
-        private readonly ILookupRepository<NewsletterCategory> categoryRepository;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NewsletterPreferencesController"/> class.
-        /// </summary>
-        /// <param name="preferenceManager">The preference manager.</param>
-        /// <param name="categoryRepository">The category repository.</param>
-        public NewsletterPreferencesController(
-            IUserNewsletterPreferenceManager preferenceManager,
-            ILookupRepository<NewsletterCategory> categoryRepository)
-        {
-            this.preferenceManager = preferenceManager;
-            this.categoryRepository = categoryRepository;
-        }
 
         /// <summary>
         /// Gets all newsletter categories.

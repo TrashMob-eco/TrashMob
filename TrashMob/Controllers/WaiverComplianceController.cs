@@ -21,18 +21,9 @@ namespace TrashMob.Controllers
     /// All endpoints require site admin privileges.
     /// </summary>
     [Route("api/admin/waivers/compliance")]
-    public class WaiverComplianceController : SecureController
+    public class WaiverComplianceController(IUserWaiverManager userWaiverManager)
+        : SecureController
     {
-        private readonly IUserWaiverManager userWaiverManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WaiverComplianceController"/> class.
-        /// </summary>
-        /// <param name="userWaiverManager">The user waiver manager.</param>
-        public WaiverComplianceController(IUserWaiverManager userWaiverManager)
-        {
-            this.userWaiverManager = userWaiverManager;
-        }
 
         /// <summary>
         /// Gets waiver compliance summary statistics for the admin dashboard.

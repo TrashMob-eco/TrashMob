@@ -15,16 +15,9 @@ namespace TrashMob.Controllers
     /// Controller for managing job opportunities, including CRUD operations.
     /// </summary>
     [Route("api/jobopportunities")]
-    public class JobOpportunitiesController : KeyedController<JobOpportunity>
+    public class JobOpportunitiesController(IKeyedManager<JobOpportunity> jobOpportunityManager)
+        : KeyedController<JobOpportunity>(jobOpportunityManager)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="JobOpportunitiesController"/> class.
-        /// </summary>
-        /// <param name="jobOpportunityManager">The job opportunity manager.</param>
-        public JobOpportunitiesController(IKeyedManager<JobOpportunity> jobOpportunityManager)
-            : base(jobOpportunityManager)
-        {
-        }
 
         /// <summary>
         /// Gets a job opportunity by its unique identifier.

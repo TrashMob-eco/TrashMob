@@ -5,11 +5,8 @@
     using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/eventpartnerlocationservicestatuses")]
-    public class EventPartnerLocationServiceStatusesController : LookupController<EventPartnerLocationServiceStatus>
+    public class EventPartnerLocationServiceStatusesController(ILookupManager<EventPartnerLocationServiceStatus> manager)
+        : LookupController<EventPartnerLocationServiceStatus>(manager)
     {
-        public EventPartnerLocationServiceStatusesController(ILookupManager<EventPartnerLocationServiceStatus> manager)
-            : base(manager)
-        {
-        }
     }
 }

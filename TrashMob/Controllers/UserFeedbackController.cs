@@ -17,18 +17,9 @@ namespace TrashMob.Controllers
     /// Controller for managing user feedback submissions.
     /// </summary>
     [Route("api/feedback")]
-    public class UserFeedbackController : SecureController
+    public class UserFeedbackController(IUserFeedbackManager feedbackManager)
+        : SecureController
     {
-        private readonly IUserFeedbackManager feedbackManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UserFeedbackController"/> class.
-        /// </summary>
-        /// <param name="feedbackManager">The feedback manager.</param>
-        public UserFeedbackController(IUserFeedbackManager feedbackManager)
-        {
-            this.feedbackManager = feedbackManager;
-        }
 
         /// <summary>
         /// Submits new user feedback. Can be called by authenticated or anonymous users.

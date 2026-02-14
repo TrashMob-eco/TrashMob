@@ -15,23 +15,11 @@ namespace TrashMob.Controllers
     /// </summary>
     [Route("api/webhooks/sendgrid")]
     [ApiController]
-    public class NewsletterWebhooksController : ControllerBase
+    public class NewsletterWebhooksController(
+        INewsletterManager newsletterManager,
+        ILogger<NewsletterWebhooksController> logger)
+        : ControllerBase
     {
-        private readonly INewsletterManager newsletterManager;
-        private readonly ILogger<NewsletterWebhooksController> logger;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NewsletterWebhooksController"/> class.
-        /// </summary>
-        /// <param name="newsletterManager">The newsletter manager.</param>
-        /// <param name="logger">The logger.</param>
-        public NewsletterWebhooksController(
-            INewsletterManager newsletterManager,
-            ILogger<NewsletterWebhooksController> logger)
-        {
-            this.newsletterManager = newsletterManager;
-            this.logger = logger;
-        }
 
         /// <summary>
         /// Processes SendGrid webhook events for newsletter tracking.

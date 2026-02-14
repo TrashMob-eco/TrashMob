@@ -9,18 +9,9 @@
     /// </summary>
     [Route("api/ifttt/v1/test/[controller]")]
     [ApiController]
-    public class SetupController : Controller
+    public class SetupController(IKeyVaultManager keyVaultManager)
+        : Controller
     {
-        private readonly IKeyVaultManager keyVaultManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SetupController"/> class.
-        /// </summary>
-        /// <param name="keyVaultManager">The key vault manager.</param>
-        public SetupController(IKeyVaultManager keyVaultManager)
-        {
-            this.keyVaultManager = keyVaultManager;
-        }
 
         /// <summary>
         /// Gets test setup information for IFTTT authentication.

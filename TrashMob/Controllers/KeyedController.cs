@@ -12,21 +12,13 @@ namespace TrashMob.Controllers
     /// <summary>
     /// Abstract controller for keyed entities, providing add, get, and delete operations.
     /// </summary>
-    public abstract class KeyedController<T> : SecureController where T : KeyedModel
+    public abstract class KeyedController<T>(IKeyedManager<T> manager)
+        : SecureController where T : KeyedModel
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="KeyedController{T}"/> class.
-        /// </summary>
-        /// <param name="manager">The keyed manager.</param>
-        public KeyedController(IKeyedManager<T> manager)
-        {
-            Manager = manager;
-        }
-
         /// <summary>
         /// Gets the keyed manager.
         /// </summary>
-        protected IKeyedManager<T> Manager { get; }
+        protected IKeyedManager<T> Manager { get; } = manager;
 
         /// <summary>
         /// Adds a new entity. Requires a valid user.

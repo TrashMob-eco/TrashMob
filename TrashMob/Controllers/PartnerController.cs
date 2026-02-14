@@ -13,16 +13,9 @@ namespace TrashMob.Controllers
     /// Controller for managing partners, including retrieval and update.
     /// </summary>
     [Route("api/partners")]
-    public class PartnersController : KeyedController<Partner>
+    public class PartnersController(IKeyedManager<Partner> partnerManager)
+        : KeyedController<Partner>(partnerManager)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartnersController"/> class.
-        /// </summary>
-        /// <param name="partnerManager">The partner manager.</param>
-        public PartnersController(IKeyedManager<Partner> partnerManager)
-            : base(partnerManager)
-        {
-        }
 
         /// <summary>
         /// Gets a partner by its unique identifier.

@@ -29,7 +29,6 @@ namespace TrashMob.Controllers
         IConfiguration configuration,
         ILogger<CmsController> logger) : BaseController(logger)
     {
-        private readonly IHttpClientFactory httpClientFactory = httpClientFactory;
         private readonly string strapiBaseUrl = configuration["StrapiBaseUrl"] ?? string.Empty;
 
         /// <summary>

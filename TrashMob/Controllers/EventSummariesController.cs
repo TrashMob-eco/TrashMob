@@ -14,22 +14,11 @@ namespace TrashMob.Controllers
     using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/eventsummaries")]
-    public class EventSummariesController : SecureController
+    public class EventSummariesController(
+        IEventSummaryManager eventSummaryManager,
+        IKeyedManager<Event> eventManager)
+        : SecureController
     {
-        private readonly IKeyedManager<Event> eventManager;
-        private readonly IEventSummaryManager eventSummaryManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EventSummariesController"/> class.
-        /// </summary>
-        /// <param name="eventSummaryManager">The event summary manager.</param>
-        /// <param name="eventManager">The event manager.</param>
-        public EventSummariesController(IEventSummaryManager eventSummaryManager,
-            IKeyedManager<Event> eventManager)
-        {
-            this.eventSummaryManager = eventSummaryManager;
-            this.eventManager = eventManager;
-        }
 
         /// <summary>
         /// Gets the event summary for a given event.

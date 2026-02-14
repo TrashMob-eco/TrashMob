@@ -12,18 +12,9 @@
     /// Controller for map-related operations, including map key retrieval and address lookup.
     /// </summary>
     [Route("api/maps")]
-    public class MapsController : SecureController
+    public class MapsController(IMapManager mapRepository)
+        : SecureController
     {
-        private readonly IMapManager mapRepository;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MapsController"/> class.
-        /// </summary>
-        /// <param name="mapRepository">The map manager.</param>
-        public MapsController(IMapManager mapRepository)
-        {
-            this.mapRepository = mapRepository;
-        }
 
         /// <summary>
         /// Gets the map key.

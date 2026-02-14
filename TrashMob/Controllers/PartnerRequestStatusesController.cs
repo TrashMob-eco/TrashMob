@@ -8,15 +8,8 @@
     /// Controller for partner request status lookup operations.
     /// </summary>
     [Route("api/partnerrequeststatuses")]
-    public class PartnerRequestStatusesController : LookupController<PartnerRequestStatus>
+    public class PartnerRequestStatusesController(ILookupManager<PartnerRequestStatus> manager)
+        : LookupController<PartnerRequestStatus>(manager)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartnerRequestStatusesController"/> class.
-        /// </summary>
-        /// <param name="manager">The partner request status lookup manager.</param>
-        public PartnerRequestStatusesController(ILookupManager<PartnerRequestStatus> manager)
-            : base(manager)
-        {
-        }
     }
 }

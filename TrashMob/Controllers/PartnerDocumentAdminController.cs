@@ -17,18 +17,9 @@ namespace TrashMob.Controllers
     /// All endpoints require site admin privileges.
     /// </summary>
     [Route("api/admin/partnerdocuments")]
-    public class PartnerDocumentAdminController : SecureController
+    public class PartnerDocumentAdminController(IPartnerDocumentManager manager)
+        : SecureController
     {
-        private readonly IPartnerDocumentManager manager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartnerDocumentAdminController"/> class.
-        /// </summary>
-        /// <param name="manager">The partner document manager.</param>
-        public PartnerDocumentAdminController(IPartnerDocumentManager manager)
-        {
-            this.manager = manager;
-        }
 
         /// <summary>
         /// Gets all partner documents across all partners, with partner information included.

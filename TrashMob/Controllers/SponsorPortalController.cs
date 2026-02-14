@@ -19,31 +19,13 @@ namespace TrashMob.Controllers
     /// Portal endpoints for sponsor users (read-only views of adoptions and cleanup logs).
     /// </summary>
     [Route("api/sponsors")]
-    public class SponsorPortalController : SecureController
+    public class SponsorPortalController(
+        ISponsorManager sponsorManager,
+        IPartnerAdminManager partnerAdminManager,
+        IProfessionalCleanupLogManager logManager,
+        IKeyedManager<Partner> partnerManager)
+        : SecureController
     {
-        private readonly ISponsorManager sponsorManager;
-        private readonly IPartnerAdminManager partnerAdminManager;
-        private readonly IProfessionalCleanupLogManager logManager;
-        private readonly IKeyedManager<Partner> partnerManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SponsorPortalController"/> class.
-        /// </summary>
-        /// <param name="sponsorManager">The sponsor manager.</param>
-        /// <param name="partnerAdminManager">The partner admin manager.</param>
-        /// <param name="logManager">The cleanup log manager.</param>
-        /// <param name="partnerManager">The partner manager.</param>
-        public SponsorPortalController(
-            ISponsorManager sponsorManager,
-            IPartnerAdminManager partnerAdminManager,
-            IProfessionalCleanupLogManager logManager,
-            IKeyedManager<Partner> partnerManager)
-        {
-            this.sponsorManager = sponsorManager;
-            this.partnerAdminManager = partnerAdminManager;
-            this.logManager = logManager;
-            this.partnerManager = partnerManager;
-        }
 
         /// <summary>
         /// Gets all sponsors the authenticated user has access to via partner admin memberships.

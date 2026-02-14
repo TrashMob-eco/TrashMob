@@ -17,31 +17,13 @@ namespace TrashMob.Controllers
     /// Controller for sponsor adoption reports and cleanup log summaries.
     /// </summary>
     [Route("api/sponsors/{sponsorId}/adoptions")]
-    public class SponsorReportsController : SecureController
+    public class SponsorReportsController(
+        ISponsoredAdoptionManager adoptionManager,
+        IProfessionalCleanupLogManager logManager,
+        ISponsorManager sponsorManager,
+        IKeyedManager<Partner> partnerManager)
+        : SecureController
     {
-        private readonly ISponsoredAdoptionManager adoptionManager;
-        private readonly IProfessionalCleanupLogManager logManager;
-        private readonly ISponsorManager sponsorManager;
-        private readonly IKeyedManager<Partner> partnerManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SponsorReportsController"/> class.
-        /// </summary>
-        /// <param name="adoptionManager">The sponsored adoption manager.</param>
-        /// <param name="logManager">The cleanup log manager.</param>
-        /// <param name="sponsorManager">The sponsor manager.</param>
-        /// <param name="partnerManager">The partner manager.</param>
-        public SponsorReportsController(
-            ISponsoredAdoptionManager adoptionManager,
-            IProfessionalCleanupLogManager logManager,
-            ISponsorManager sponsorManager,
-            IKeyedManager<Partner> partnerManager)
-        {
-            this.adoptionManager = adoptionManager;
-            this.logManager = logManager;
-            this.sponsorManager = sponsorManager;
-            this.partnerManager = partnerManager;
-        }
 
         /// <summary>
         /// Gets all sponsored adoptions for a specific sponsor.

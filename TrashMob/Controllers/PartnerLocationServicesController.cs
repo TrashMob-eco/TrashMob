@@ -13,26 +13,12 @@ namespace TrashMob.Controllers
     /// Controller for managing partner location services, including retrieval and creation.
     /// </summary>
     [Route("api/partnerlocationservices")]
-    public class PartnerLocationServicesController : SecureController
+    public class PartnerLocationServicesController(
+        IBaseManager<PartnerLocationService> partnerLocationServicesManager,
+        IKeyedManager<Partner> partnerManager,
+        IKeyedManager<PartnerLocation> partnerLocationManager)
+        : SecureController
     {
-        private readonly IKeyedManager<PartnerLocation> partnerLocationManager;
-        private readonly IBaseManager<PartnerLocationService> partnerLocationServicesManager;
-        private readonly IKeyedManager<Partner> partnerManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartnerLocationServicesController"/> class.
-        /// </summary>
-        /// <param name="partnerLocationServicesManager">The partner location services manager.</param>
-        /// <param name="partnerManager">The partner manager.</param>
-        /// <param name="partnerLocationManager">The partner location manager.</param>
-        public PartnerLocationServicesController(IBaseManager<PartnerLocationService> partnerLocationServicesManager,
-            IKeyedManager<Partner> partnerManager,
-            IKeyedManager<PartnerLocation> partnerLocationManager)
-        {
-            this.partnerLocationServicesManager = partnerLocationServicesManager;
-            this.partnerManager = partnerManager;
-            this.partnerLocationManager = partnerLocationManager;
-        }
 
         /// <summary>
         /// Gets all partner location services for a given partner location. Requires a valid user.

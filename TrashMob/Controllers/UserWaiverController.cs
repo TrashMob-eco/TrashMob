@@ -20,31 +20,13 @@ namespace TrashMob.Controllers
     /// Handles waiver signing, viewing, and downloading.
     /// </summary>
     [Route("api/waivers")]
-    public class UserWaiverController : SecureController
+    public class UserWaiverController(
+        IUserWaiverManager userWaiverManager,
+        IWaiverDocumentManager waiverDocumentManager,
+        IUserManager userManager,
+        IEventAttendeeManager eventAttendeeManager)
+        : SecureController
     {
-        private readonly IUserWaiverManager userWaiverManager;
-        private readonly IWaiverDocumentManager waiverDocumentManager;
-        private readonly IUserManager userManager;
-        private readonly IEventAttendeeManager eventAttendeeManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UserWaiverController"/> class.
-        /// </summary>
-        /// <param name="userWaiverManager">The user waiver manager.</param>
-        /// <param name="waiverDocumentManager">The waiver document manager.</param>
-        /// <param name="userManager">The user manager.</param>
-        /// <param name="eventAttendeeManager">The event attendee manager.</param>
-        public UserWaiverController(
-            IUserWaiverManager userWaiverManager,
-            IWaiverDocumentManager waiverDocumentManager,
-            IUserManager userManager,
-            IEventAttendeeManager eventAttendeeManager)
-        {
-            this.userWaiverManager = userWaiverManager;
-            this.waiverDocumentManager = waiverDocumentManager;
-            this.userManager = userManager;
-            this.eventAttendeeManager = eventAttendeeManager;
-        }
 
         /// <summary>
         /// Gets waivers the current user needs to sign.

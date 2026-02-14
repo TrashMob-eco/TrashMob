@@ -20,27 +20,12 @@ namespace TrashMob.Controllers
     /// </summary>
     [Authorize]
     [Route("api/teams/{teamId}/invites")]
-    public class TeamInvitesController : SecureController
+    public class TeamInvitesController(
+        IEmailInviteManager emailInviteManager,
+        ITeamManager teamManager,
+        ITeamMemberManager teamMemberManager)
+        : SecureController
     {
-        private readonly IEmailInviteManager emailInviteManager;
-        private readonly ITeamManager teamManager;
-        private readonly ITeamMemberManager teamMemberManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TeamInvitesController"/> class.
-        /// </summary>
-        /// <param name="emailInviteManager">The email invite manager.</param>
-        /// <param name="teamManager">The team manager.</param>
-        /// <param name="teamMemberManager">The team member manager.</param>
-        public TeamInvitesController(
-            IEmailInviteManager emailInviteManager,
-            ITeamManager teamManager,
-            ITeamMemberManager teamMemberManager)
-        {
-            this.emailInviteManager = emailInviteManager;
-            this.teamManager = teamManager;
-            this.teamMemberManager = teamMemberManager;
-        }
 
         /// <summary>
         /// Gets all email invite batches for a team.

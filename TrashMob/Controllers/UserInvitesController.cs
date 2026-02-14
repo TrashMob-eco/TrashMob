@@ -18,7 +18,8 @@ namespace TrashMob.Controllers
     /// </summary>
     [Route("api/invites")]
     [Authorize]
-    public class UserInvitesController : SecureController
+    public class UserInvitesController(IEmailInviteManager emailInviteManager)
+        : SecureController
     {
         /// <summary>
         /// Maximum number of emails per batch for user invites.
@@ -29,17 +30,6 @@ namespace TrashMob.Controllers
         /// Maximum number of invites per month for each user.
         /// </summary>
         private const int MaxInvitesPerMonth = 50;
-
-        private readonly IEmailInviteManager emailInviteManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UserInvitesController"/> class.
-        /// </summary>
-        /// <param name="emailInviteManager">The email invite manager.</param>
-        public UserInvitesController(IEmailInviteManager emailInviteManager)
-        {
-            this.emailInviteManager = emailInviteManager;
-        }
 
         /// <summary>
         /// Gets the current user's invite batches.

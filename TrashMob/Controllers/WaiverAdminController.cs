@@ -18,18 +18,9 @@ namespace TrashMob.Controllers
     /// All endpoints require site admin privileges.
     /// </summary>
     [Route("api/admin/waivers")]
-    public class WaiverAdminController : SecureController
+    public class WaiverAdminController(IWaiverVersionManager waiverVersionManager)
+        : SecureController
     {
-        private readonly IWaiverVersionManager waiverVersionManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WaiverAdminController"/> class.
-        /// </summary>
-        /// <param name="waiverVersionManager">The waiver version manager.</param>
-        public WaiverAdminController(IWaiverVersionManager waiverVersionManager)
-        {
-            this.waiverVersionManager = waiverVersionManager;
-        }
 
         /// <summary>
         /// Gets all waiver versions. Admin only.
@@ -201,19 +192,9 @@ namespace TrashMob.Controllers
     /// All endpoints require site admin privileges.
     /// </summary>
     [Route("api/admin/communities/{communityId}/waivers")]
-    public class CommunityWaiverAdminController : SecureController
+    public class CommunityWaiverAdminController(IWaiverVersionManager waiverVersionManager)
+        : SecureController
     {
-        private readonly IWaiverVersionManager waiverVersionManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CommunityWaiverAdminController"/> class
-        /// for managing waiver assignments to communities.
-        /// </summary>
-        /// <param name="waiverVersionManager">The manager for waiver version operations.</param>
-        public CommunityWaiverAdminController(IWaiverVersionManager waiverVersionManager)
-        {
-            this.waiverVersionManager = waiverVersionManager;
-        }
 
         /// <summary>
         /// Gets all waiver assignments for a community. Admin only.

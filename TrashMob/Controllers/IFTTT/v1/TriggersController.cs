@@ -15,18 +15,9 @@ namespace TrashMob.Controllers.IFTTT
     /// </summary>
     [Route("api/ifttt/v1/[controller]")]
     [RequiredScope(Constants.TrashMobIFTTTScope)]
-    public class TriggersController : SecureController
+    public class TriggersController(ITriggersManager triggersManager)
+        : SecureController
     {
-        private readonly ITriggersManager triggersManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TriggersController"/> class.
-        /// </summary>
-        /// <param name="triggersManager">The triggers manager.</param>
-        public TriggersController(ITriggersManager triggersManager)
-        {
-            this.triggersManager = triggersManager;
-        }
 
         /// <summary>
         /// Gets all new events created (IFTTT trigger).
