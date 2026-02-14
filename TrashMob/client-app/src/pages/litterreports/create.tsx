@@ -124,6 +124,7 @@ const CreateLitterReportPageInner = () => {
             litterReport.description = formValues.description || '';
             litterReport.litterReportStatusId = 1; // New
             litterReport.createdByUserId = currentUser.id;
+            litterReport.lastUpdatedByUserId = currentUser.id;
 
             // Build litter image data array
             litterReport.litterImages = images.map((img) => {
@@ -138,6 +139,7 @@ const CreateLitterReportPageInner = () => {
                 litterImage.country = img.country;
                 litterImage.postalCode = img.postalCode;
                 litterImage.createdByUserId = currentUser.id;
+                litterImage.lastUpdatedByUserId = currentUser.id;
                 return litterImage;
             });
 
