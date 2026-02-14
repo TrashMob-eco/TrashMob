@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useMap } from '@vis.gl/react-google-maps';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { GetFilteredEvents, GetFilteredEvents_Params } from '@/services/events';
 import { cn } from '@/lib/utils';
@@ -28,7 +28,10 @@ import {
     getAllUpcomingTimerange,
     getUpcomingTimeranges,
     getLastDaysTimerange,
+    getLastMonthsTimerange,
+    getAllCompletedTimerange,
 } from './utils/timerange';
+import { LitterReportStatusEnum } from '@/components/Models/LitterReportStatus';
 
 enum EventStatusFilter {
     UPCOMING = 'upcoming',
@@ -74,6 +77,8 @@ export const EventSection = (props: EventSectionProps) => {
     const [selectedLocation, setSelectedLocation] = useState<SearchLocationOption>();
     const [view, setView] = useState<string>('map');
     const [showLitterReports, setShowLitterReports] = useState<boolean>(false);
+    const [litterStatusFilter, setLitterStatusFilter] = useState<string>('all');
+    const [litterDateFilter, setLitterDateFilter] = useState<string>(getAllCompletedTimerange());
 
     /** Litter Reports for Map */
     const { data: litterReports } = useQuery({
@@ -82,6 +87,36 @@ export const EventSection = (props: EventSectionProps) => {
         select: (res) => res.data,
         enabled: showLitterReports,
     });
+
+    const litterStatusOptions = [
+        { value: 'all', label: 'All Statuses' },
+        { value: String(LitterReportStatusEnum.New), label: 'New' },
+        { value: String(LitterReportStatusEnum.Assigned), label: 'Assigned' },
+        { value: String(LitterReportStatusEnum.Cleaned), label: 'Cleaned' },
+    ];
+
+    const litterDateOptions = [
+        { value: getLastDaysTimerange(7), label: 'Last 7 days' },
+        { value: getLastDaysTimerange(30), label: 'Last 30 days' },
+        { value: getLastDaysTimerange(90), label: 'Last 90 days' },
+        { value: getLastMonthsTimerange(6), label: 'Last 6 months' },
+        { value: getLastMonthsTimerange(12), label: 'Last year' },
+        { value: getAllCompletedTimerange(), label: 'All time' },
+    ];
+
+    const filteredLitterReports = useMemo(() => {
+        if (!litterReports) return [];
+        const [lrStart, lrEnd] = litterDateFilter.split('|');
+        return litterReports.filter((report) => {
+            if (litterStatusFilter !== 'all' && report.litterReportStatusId !== Number(litterStatusFilter))
+                return false;
+            if (report.createdDate) {
+                const created = new Date(report.createdDate);
+                if (created < new Date(lrStart) || created > new Date(lrEnd)) return false;
+            }
+            return true;
+        });
+    }, [litterReports, litterStatusFilter, litterDateFilter]);
 
     /** Time Ranges */
     const timeRangeOptions =
@@ -226,7 +261,7 @@ export const EventSection = (props: EventSectionProps) => {
 
                         <div className='flex-1' />
 
-                        {/* Litter Reports Toggle - only shown in map view */}
+                        {/* Litter Reports Toggle + Filters - only shown in map view */}
                         {view === 'map' && (
                             <div className='flex items-center gap-2'>
                                 <Checkbox
@@ -239,8 +274,36 @@ export const EventSection = (props: EventSectionProps) => {
                                     className='text-sm font-medium cursor-pointer flex items-center gap-1'
                                 >
                                     <Trash2 className='h-4 w-4' />
-                                    Show Litter Reports
+                                    Litter Reports
                                 </Label>
+                                {showLitterReports ? (
+                                    <>
+                                        <Select value={litterStatusFilter} onValueChange={setLitterStatusFilter}>
+                                            <SelectTrigger className='w-36 h-8 text-xs'>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {litterStatusOptions.map((opt) => (
+                                                    <SelectItemAlt key={opt.value} value={opt.value}>
+                                                        {opt.label}
+                                                    </SelectItemAlt>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <Select value={litterDateFilter} onValueChange={setLitterDateFilter}>
+                                            <SelectTrigger className='w-36 h-8 text-xs'>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {litterDateOptions.map((opt) => (
+                                                    <SelectItemAlt key={opt.value} value={opt.value}>
+                                                        {opt.label}
+                                                    </SelectItemAlt>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </>
+                                ) : null}
                             </div>
                         )}
 
@@ -303,8 +366,9 @@ export const EventSection = (props: EventSectionProps) => {
                                         : undefined
                                 }
                                 defaultZoom={13}
-                                litterReports={litterReports}
+                                litterReports={filteredLitterReports}
                                 showLitterReports={showLitterReports}
+                                showUserLocation={isUserLoaded}
                             />
                         </>
                     ) : (

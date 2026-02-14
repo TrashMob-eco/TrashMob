@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { AdvancedMarker, InfoWindow, MapProps } from '@vis.gl/react-google-maps';
 import { GoogleMapWithKey as GoogleMap } from '../Map/GoogleMap';
+import { MapCircle } from '../Map/MapCircle';
 import { EventDetailInfoWindowHeader, EventDetailInfoWindowContent } from '../Map/EventInfoWindowContent';
 import EventData from '../Models/EventData';
 import UserData from '../Models/UserData';
@@ -39,6 +40,16 @@ const getLitterReportColor = (statusId: number): string => {
     }
 };
 
+/** Home icon pin for user's preferred location */
+const UserLocationPin = () => (
+    <div className='flex items-center justify-center w-10 h-10 rounded-full bg-white border-2 border-[#005C4C] shadow-md'>
+        <svg width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='#005C4C' strokeWidth='2'>
+            <path d='M3 12l9-9 9 9' />
+            <path d='M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7' />
+        </svg>
+    </div>
+);
+
 interface EventsMapProps extends MapProps {
     id?: string;
     events: EventData[];
@@ -46,10 +57,21 @@ interface EventsMapProps extends MapProps {
     currentUser: UserData;
     litterReports?: LitterReportData[];
     showLitterReports?: boolean;
+    showUserLocation?: boolean;
 }
 
 export const EventsMap = (props: EventsMapProps) => {
-    const { id, events, isUserLoaded, currentUser, gestureHandling, litterReports, showLitterReports, ...rest } = props;
+    const {
+        id,
+        events,
+        isUserLoaded,
+        currentUser,
+        gestureHandling,
+        litterReports,
+        showLitterReports,
+        showUserLocation,
+        ...rest
+    } = props;
 
     // Load and add user's attendance to events
     const { data: myAttendanceList } = useQuery({
@@ -139,6 +161,23 @@ export const EventsMap = (props: EventsMapProps) => {
                           </AdvancedMarker>
                       ))
                     : null}
+
+                {/* User Location Pin + Travel Radius */}
+                {showUserLocation && currentUser.latitude && currentUser.longitude ? (
+                    <>
+                        <AdvancedMarker position={{ lat: currentUser.latitude, lng: currentUser.longitude }} zIndex={0}>
+                            <UserLocationPin />
+                        </AdvancedMarker>
+                        {currentUser.travelLimitForLocalEvents > 0 ? (
+                            <MapCircle
+                                center={{ lat: currentUser.latitude, lng: currentUser.longitude }}
+                                radiusMeters={
+                                    currentUser.travelLimitForLocalEvents * (currentUser.prefersMetric ? 1000 : 1609.34)
+                                }
+                            />
+                        ) : null}
+                    </>
+                ) : null}
 
                 {/* Event Info Window */}
                 {showingEvent ? (

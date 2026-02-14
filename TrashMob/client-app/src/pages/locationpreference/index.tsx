@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router';
-import { FormEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { FormEvent, useCallback, useEffect } from 'react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -9,7 +9,7 @@ import { Loader2 } from 'lucide-react';
 import * as ToolTips from '@/store/ToolTips';
 
 import { HeroSection } from '@/components/Customization/HeroSection';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { EnhancedFormLabel as FormLabel } from '@/components/ui/custom/form';
 import { Input } from '@/components/ui/input';
@@ -19,8 +19,9 @@ import { GoogleMapWithKey as GoogleMap } from '@/components/Map/GoogleMap';
 import { Button } from '@/components/ui/button';
 import { GetUserById, UpdateUser } from '@/services/users';
 import { AzureSearchLocationInput, SearchLocationOption } from '@/components/Map/AzureSearchLocationInput';
-import { MapMouseEvent, useMap } from '@vis.gl/react-google-maps';
+import { MapMouseEvent } from '@vis.gl/react-google-maps';
 import { useAzureMapSearchAddressReverse } from '@/hooks/useAzureMapSearchAddressReverse';
+import { MapCircle } from '@/components/Map/MapCircle';
 import { useMapStore } from '@/hooks/useMapStore';
 import { useLogin } from '@/hooks/useLogin';
 import { useToast } from '@/hooks/use-toast';
@@ -133,9 +134,6 @@ export const LocationPreference = () => {
     );
 
     /** Map */
-    const map = useMap();
-    const radiusRef = useRef<google.maps.Circle>();
-
     const latitude = form.watch('latitude');
     const longitude = form.watch('longitude');
 
@@ -151,17 +149,11 @@ export const LocationPreference = () => {
         { enabled: false },
     );
 
-    const handleSelectSearchLocation = useCallback(
-        async (location: SearchLocationOption) => {
-            const { lat, lon } = location.position;
-            form.setValue('latitude', lat);
-            form.setValue('longitude', lon);
-
-            // side effect: Move Map Center
-            if (map) map.panTo({ lat, lng: lon });
-        },
-        [map],
-    );
+    const handleSelectSearchLocation = useCallback(async (location: SearchLocationOption) => {
+        const { lat, lon } = location.position;
+        form.setValue('latitude', lat);
+        form.setValue('longitude', lon);
+    }, []);
 
     const handleClickMap = useCallback((e: MapMouseEvent) => {
         if (e.detail.latLng) {
@@ -196,32 +188,6 @@ export const LocationPreference = () => {
         };
         if (latitude && longitude) searchAddressReverse();
     }, [latitude, longitude]);
-
-    // On Map Initialized, add circle polygon
-    useEffect(() => {
-        if (!map || radiusRef.current) return;
-
-        const radiusCircle = new google.maps.Circle({
-            strokeColor: '#005C4C',
-            strokeOpacity: 0.8,
-            strokeWeight: 2,
-            fillColor: '#005C4C',
-            fillOpacity: 0.2,
-            clickable: false,
-            map,
-        });
-        radiusRef.current = radiusCircle;
-    }, [map]);
-
-    // On radius, lat, lng changed, update radius polygon
-    useEffect(() => {
-        if (map && radiusRef.current) {
-            radiusRef.current.setCenter({ lat: latitude, lng: longitude });
-
-            // Note: radius unit is meter.
-            radiusRef.current.setRadius(travelLimitForLocalEvents * (prefersMetric ? 1000 : 1600));
-        }
-    }, [map, radiusRef, latitude, longitude, travelLimitForLocalEvents, prefersMetric]);
 
     const date = moment().format('LL');
     const time = moment().format('LTS');
@@ -261,6 +227,12 @@ export const LocationPreference = () => {
                                                                 date={date}
                                                                 time={time}
                                                             />
+                                                        }
+                                                    />
+                                                    <MapCircle
+                                                        center={{ lat: latitude, lng: longitude }}
+                                                        radiusMeters={
+                                                            travelLimitForLocalEvents * (prefersMetric ? 1000 : 1609.34)
                                                         }
                                                     />
                                                 </GoogleMap>
