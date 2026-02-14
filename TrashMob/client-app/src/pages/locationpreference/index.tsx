@@ -232,8 +232,7 @@ export const LocationPreference = () => {
                                                     <MapCircle
                                                         center={{ lat: latitude, lng: longitude }}
                                                         radiusMeters={
-                                                            travelLimitForLocalEvents *
-                                                            (prefersMetric ? 1000 : 1609.34)
+                                                            travelLimitForLocalEvents * (prefersMetric ? 1000 : 1609.34)
                                                         }
                                                     />
                                                 </GoogleMap>

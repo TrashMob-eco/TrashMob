@@ -108,7 +108,8 @@ export const EventSection = (props: EventSectionProps) => {
         if (!litterReports) return [];
         const [lrStart, lrEnd] = litterDateFilter.split('|');
         return litterReports.filter((report) => {
-            if (litterStatusFilter !== 'all' && report.litterReportStatusId !== Number(litterStatusFilter)) return false;
+            if (litterStatusFilter !== 'all' && report.litterReportStatusId !== Number(litterStatusFilter))
+                return false;
             if (report.createdDate) {
                 const created = new Date(report.createdDate);
                 if (created < new Date(lrStart) || created > new Date(lrEnd)) return false;
@@ -275,7 +276,7 @@ export const EventSection = (props: EventSectionProps) => {
                                     <Trash2 className='h-4 w-4' />
                                     Litter Reports
                                 </Label>
-                                {showLitterReports && (
+                                {showLitterReports ? (
                                     <>
                                         <Select value={litterStatusFilter} onValueChange={setLitterStatusFilter}>
                                             <SelectTrigger className='w-36 h-8 text-xs'>
@@ -302,7 +303,7 @@ export const EventSection = (props: EventSectionProps) => {
                                             </SelectContent>
                                         </Select>
                                     </>
-                                )}
+                                ) : null}
                             </div>
                         )}
 

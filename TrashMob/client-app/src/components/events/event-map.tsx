@@ -61,7 +61,17 @@ interface EventsMapProps extends MapProps {
 }
 
 export const EventsMap = (props: EventsMapProps) => {
-    const { id, events, isUserLoaded, currentUser, gestureHandling, litterReports, showLitterReports, showUserLocation, ...rest } = props;
+    const {
+        id,
+        events,
+        isUserLoaded,
+        currentUser,
+        gestureHandling,
+        litterReports,
+        showLitterReports,
+        showUserLocation,
+        ...rest
+    } = props;
 
     // Load and add user's attendance to events
     const { data: myAttendanceList } = useQuery({
@@ -155,18 +165,14 @@ export const EventsMap = (props: EventsMapProps) => {
                 {/* User Location Pin + Travel Radius */}
                 {showUserLocation && currentUser.latitude && currentUser.longitude ? (
                     <>
-                        <AdvancedMarker
-                            position={{ lat: currentUser.latitude, lng: currentUser.longitude }}
-                            zIndex={0}
-                        >
+                        <AdvancedMarker position={{ lat: currentUser.latitude, lng: currentUser.longitude }} zIndex={0}>
                             <UserLocationPin />
                         </AdvancedMarker>
                         {currentUser.travelLimitForLocalEvents > 0 ? (
                             <MapCircle
                                 center={{ lat: currentUser.latitude, lng: currentUser.longitude }}
                                 radiusMeters={
-                                    currentUser.travelLimitForLocalEvents *
-                                    (currentUser.prefersMetric ? 1000 : 1609.34)
+                                    currentUser.travelLimitForLocalEvents * (currentUser.prefersMetric ? 1000 : 1609.34)
                                 }
                             />
                         ) : null}
