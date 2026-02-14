@@ -630,7 +630,7 @@ export const Help: React.FC = () => {
                         <CardContent className='flex flex-col gap-4'>
                             {tabContent.questions.map((item, i) => (
                                 <div className='prose' key={`q-${i}`}>
-                                    <h5>{item.question}</h5>
+                                    <h5 className='font-semibold'>{item.question}</h5>
                                     <div
                                         className='text-base text-foreground/75'
                                         dangerouslySetInnerHTML={{ __html: item.answer }}

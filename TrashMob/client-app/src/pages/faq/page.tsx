@@ -186,7 +186,7 @@ const faqs = [
             },
             {
                 question: 'How do event organizers request Partner services?',
-                answer: 'After creating an event, event leads can browse available partners in their area and request services. Partners are notified and can accept or decline requests based on availability. If no partners are in your area, you can use the "Invite a Partner" feature to help grow the network.',
+                answer: 'After creating an event, event leads can browse available partners in their area and request services. Partners are notified and can accept or decline requests based on availability. If no partners are in your area, you can use the <a href="https://www.trashmob.eco/inviteapartner">"Invite a Partner"</a> feature to help grow the network.',
             },
             {
                 question: 'How do Partners manage service requests?',
@@ -217,7 +217,7 @@ const faqs = [
             },
             {
                 question: 'Can I report a website bug?',
-                answer: 'Yes, you can! Once you are signed in, use the Feedback tool in the bottom-left corner of any page to let us know what you found. Thank you!',
+                answer: 'Yes, you can! Once you are signed in, use the Feedback tool in the bottom-right corner of any page to let us know what you found. Thank you!',
             },
             {
                 question: 'Is the TrashMob team looking for support?',
