@@ -217,7 +217,7 @@ const faqs = [
             },
             {
                 question: 'Can I report a website bug?',
-                answer: 'Yes, you can! Once you are signed in, use the Feedback tool in the bottom-left corner of any page to let us know what you found. Thank you!',
+                answer: 'Yes, you can! Once you are signed in, use the Feedback tool in the bottom-right corner of any page to let us know what you found. Thank you!',
             },
             {
                 question: 'Is the TrashMob team looking for support?',
