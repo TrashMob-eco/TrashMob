@@ -96,6 +96,21 @@
                                VerticalOptions="Center" />
                     </HorizontalStackLayout>
 
+                    <!-- Visibility -->
+                    <HorizontalStackLayout Spacing="10">
+                        <Image MaximumWidthRequest="20" MaximumHeightRequest="20" VerticalOptions="Center">
+                            <Image.Source>
+                                <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                 Glyph="{StaticResource IconEye}"
+                                                 Size="20"
+                                                 Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </Image.Source>
+                        </Image>
+                        <Label Text="{Binding EventViewModel.EventVisibilityText}"
+                               FontSize="Small"
+                               VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
                 </VerticalStackLayout>
             </Border>
 

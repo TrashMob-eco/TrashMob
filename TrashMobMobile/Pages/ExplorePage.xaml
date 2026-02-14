@@ -211,7 +211,18 @@
                             <DataTemplate x:DataType="viewModels:EventViewModel">
                                 <Border Style="{x:StaticResource RoundBorder}" Margin="5,3">
                                     <VerticalStackLayout Padding="10,8" Spacing="2">
-                                        <Label Text="{Binding Name}" FontFamily="LexendSemibold" FontSize="Small" />
+                                        <HorizontalStackLayout Spacing="6">
+                                            <Label Text="{Binding Name}" FontFamily="LexendSemibold" FontSize="Small" />
+                                            <Label Text="{Binding EventVisibilityText}" FontSize="Micro"
+                                                   TextColor="{StaticResource Primary}"
+                                                   VerticalOptions="Center">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding EventVisibilityText}" Value="Public">
+                                                        <Setter Property="IsVisible" Value="False" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                        </HorizontalStackLayout>
                                         <Label Text="{Binding DisplayDate}" FontSize="Micro"
                                                TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
                                         <Label Text="{Binding Address.DisplayAddress}" FontSize="Micro"

@@ -4,12 +4,11 @@
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:controls="clr-namespace:TrashMobMobile.Controls"
              x:Class="TrashMobMobile.Views.EditEvent.TabDetails">
-    <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="*, *, *, *" MaximumWidthRequest="400">
+    <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="*, *, *, *" MaximumWidthRequest="400">
 
         <VerticalStackLayout Grid.Row="0" Grid.ColumnSpan="4">
             <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Name" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
             <controls:TMEntry Text="{Binding EventViewModel.Name}" />
-
         </VerticalStackLayout>
 
         <VerticalStackLayout Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
@@ -37,7 +36,6 @@
             <controls:TMEditor Text="{Binding EventViewModel.Description}" />
         </VerticalStackLayout>
 
-
         <VerticalStackLayout Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
             <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Event Type" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
             <controls:TMPicker Title="Event Type" ItemsSource="{Binding ETypes}"
@@ -50,8 +48,18 @@
         </VerticalStackLayout>
 
         <VerticalStackLayout Grid.Row="4" Grid.Column="3">
-            <Label Text="Is Event Public?" Style="{StaticResource FieldLabel}" />
-            <CheckBox IsChecked="{Binding EventViewModel.IsEventPublic}" />
+            <Label Text="Visibility" Style="{StaticResource FieldLabel}" />
+            <controls:TMPicker Title="Visibility"
+                               ItemsSource="{Binding VisibilityOptions}"
+                               SelectedItem="{Binding SelectedVisibility, Mode=TwoWay}" />
+        </VerticalStackLayout>
+
+        <VerticalStackLayout Grid.Row="5" Grid.ColumnSpan="4"
+                             IsVisible="{Binding IsTeamPickerVisible}">
+            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Team" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
+            <controls:TMPicker Title="Select Team"
+                               ItemsSource="{Binding TeamNames}"
+                               SelectedItem="{Binding SelectedTeam, Mode=TwoWay}" />
         </VerticalStackLayout>
     </Grid>
 </ContentView>

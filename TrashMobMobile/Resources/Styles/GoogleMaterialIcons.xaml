@@ -524,7 +524,7 @@
     <!-- <x:String x:Key="IconExclamation">&#xf0205;</x:String> -->
     <!-- <x:String x:Key="IconExitToApp">&#xf0206;</x:String> -->
     <!-- <x:String x:Key="IconExport">&#xf0207;</x:String> -->
-    <!-- <x:String x:Key="IconEye">&#xf0208;</x:String> -->
+    <x:String x:Key="IconEye">&#xf0208;</x:String>
     <!-- <x:String x:Key="IconEyeOff">&#xf0209;</x:String> -->
     <!-- <x:String x:Key="IconEyedropper">&#xf020a;</x:String> -->
     <!-- <x:String x:Key="IconEyedropperVariant">&#xf020b;</x:String> -->
