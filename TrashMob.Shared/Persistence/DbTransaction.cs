@@ -6,21 +6,8 @@ namespace TrashMob.Shared.Persistence
     /// <summary>
     /// Provides database transaction implementation for managing transactional data access.
     /// </summary>
-    public class DbTransaction : IDbTransaction
+    public class DbTransaction(MobDbContext mobDbContext) : IDbTransaction
     {
-        /// <summary>
-        /// The database context.
-        /// </summary>
-        protected readonly MobDbContext mobDbContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DbTransaction"/> class.
-        /// </summary>
-        /// <param name="mobDbContext">The database context to use for transaction management.</param>
-        public DbTransaction(MobDbContext mobDbContext)
-        {
-            this.mobDbContext = mobDbContext;
-        }
 
         /// <inheritdoc />
         public async Task BeginTransactionAsync()

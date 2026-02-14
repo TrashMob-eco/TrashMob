@@ -10,30 +10,21 @@ namespace TrashMob.Shared.Engine
     /// <summary>
     /// Notification engine that reminds users when their waivers are expiring.
     /// </summary>
-    public class WaiverExpiringNotifier : NotificationEngineBase
+    public class WaiverExpiringNotifier(
+        IEventManager eventManager,
+        IKeyedManager<User> userManager,
+        IEventAttendeeManager eventAttendeeManager,
+        IKeyedManager<UserNotification> userNotificationManager,
+        INonEventUserNotificationManager nonEventUserNotificationManager,
+        IEmailSender emailSender,
+        IEmailManager emailManager,
+        IMapManager mapRepository,
+        IUserWaiverManager userWaiverManager,
+        ILogger logger)
+        : NotificationEngineBase(eventManager, userManager, eventAttendeeManager, userNotificationManager,
+            nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
     {
-        private readonly IUserWaiverManager userWaiverManager;
         private const int DaysBeforeExpiry = 30;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WaiverExpiringNotifier"/> class.
-        /// </summary>
-        public WaiverExpiringNotifier(
-            IEventManager eventManager,
-            IKeyedManager<User> userManager,
-            IEventAttendeeManager eventAttendeeManager,
-            IKeyedManager<UserNotification> userNotificationManager,
-            INonEventUserNotificationManager nonEventUserNotificationManager,
-            IEmailSender emailSender,
-            IEmailManager emailManager,
-            IMapManager mapRepository,
-            IUserWaiverManager userWaiverManager,
-            ILogger logger)
-            : base(eventManager, userManager, eventAttendeeManager, userNotificationManager,
-                nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
-        {
-            this.userWaiverManager = userWaiverManager;
-        }
 
         /// <inheritdoc />
         protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.WaiverExpiringReminder;

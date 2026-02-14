@@ -10,24 +10,19 @@
     /// <summary>
     /// Notification engine that reminds users to set their location in their profile to receive event notifications.
     /// </summary>
-    public class UserProfileLocationNotifier : NotificationEngineBase
+    public class UserProfileLocationNotifier(
+        IEventManager eventManager,
+        IKeyedManager<User> userManager,
+        IEventAttendeeManager eventAttendeeManager,
+        IKeyedManager<UserNotification> userNotificationManager,
+        INonEventUserNotificationManager nonEventUserNotificationManager,
+        IEmailSender emailSender,
+        IEmailManager emailManager,
+        IMapManager mapRepository,
+        ILogger logger)
+        : NotificationEngineBase(eventManager, userManager, eventAttendeeManager, userNotificationManager,
+            nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UserProfileLocationNotifier"/> class.
-        /// </summary>
-        public UserProfileLocationNotifier(IEventManager eventManager,
-            IKeyedManager<User> userManager,
-            IEventAttendeeManager eventAttendeeManager,
-            IKeyedManager<UserNotification> userNotificationManager,
-            INonEventUserNotificationManager nonEventUserNotificationManager,
-            IEmailSender emailSender,
-            IEmailManager emailManager,
-            IMapManager mapRepository,
-            ILogger logger) :
-            base(eventManager, userManager, eventAttendeeManager, userNotificationManager,
-                nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
-        {
-        }
 
         /// <inheritdoc />
         protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.UserProfileUpdateLocation;

@@ -12,10 +12,10 @@ namespace TrashMob.Shared.Managers.Prospects
     /// Analyzes sentiment of prospect replies using the Anthropic Claude API.
     /// Falls back to "Neutral" when the API is not configured.
     /// </summary>
-    public class SentimentAnalysisService : ISentimentAnalysisService
+    public class SentimentAnalysisService(
+        IConfiguration configuration,
+        ILogger<SentimentAnalysisService> logger) : ISentimentAnalysisService
     {
-        private readonly IConfiguration configuration;
-        private readonly ILogger<SentimentAnalysisService> logger;
         private static readonly SemaphoreSlim RateLimiter = new(1, 1);
 
         private const string SystemPrompt =
@@ -23,12 +23,6 @@ namespace TrashMob.Shared.Managers.Prospects
             "Respond with EXACTLY one word: \"Positive\", \"Neutral\", or \"Negative\". No other text.";
 
         private static readonly string[] ValidSentiments = ["Positive", "Neutral", "Negative"];
-
-        public SentimentAnalysisService(IConfiguration configuration, ILogger<SentimentAnalysisService> logger)
-        {
-            this.configuration = configuration;
-            this.logger = logger;
-        }
 
         public async Task<string> AnalyzeSentimentAsync(string replyText, CancellationToken cancellationToken = default)
         {

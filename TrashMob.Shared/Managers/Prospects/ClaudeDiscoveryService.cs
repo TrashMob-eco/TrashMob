@@ -17,10 +17,10 @@ namespace TrashMob.Shared.Managers.Prospects
     /// Discovers community prospects using the Anthropic Claude API.
     /// Supports both freeform custom queries and location-based discovery.
     /// </summary>
-    public class ClaudeDiscoveryService : IClaudeDiscoveryService
+    public class ClaudeDiscoveryService(
+        IConfiguration configuration,
+        ILogger<ClaudeDiscoveryService> logger) : IClaudeDiscoveryService
     {
-        private readonly IConfiguration configuration;
-        private readonly ILogger<ClaudeDiscoveryService> logger;
         private static readonly SemaphoreSlim RateLimiter = new(1, 1);
         private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
 
@@ -38,13 +38,6 @@ namespace TrashMob.Shared.Managers.Prospects
 
             Return ONLY the JSON array, no markdown fences, no other text.
             """;
-
-        public ClaudeDiscoveryService(IConfiguration configuration,
-            ILogger<ClaudeDiscoveryService> logger)
-        {
-            this.configuration = configuration;
-            this.logger = logger;
-        }
 
         /// <inheritdoc />
         public async Task<DiscoveryResult> DiscoverProspectsAsync(DiscoveryRequest request,

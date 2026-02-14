@@ -7,24 +7,19 @@
     /// <summary>
     /// Notification engine that reminds users about events they are attending within the next 24 hours.
     /// </summary>
-    public class UpcomingEventAttendingSoonNotifier : UpcomingEventAttendingBaseNotifier, INotificationEngine
+    public class UpcomingEventAttendingSoonNotifier(
+        IEventManager eventManager,
+        IKeyedManager<User> userManager,
+        IEventAttendeeManager eventAttendeeManager,
+        IKeyedManager<UserNotification> userNotificationManager,
+        INonEventUserNotificationManager nonEventUserNotificationManager,
+        IEmailSender emailSender,
+        IEmailManager emailManager,
+        IMapManager mapRepository,
+        ILogger logger)
+        : UpcomingEventAttendingBaseNotifier(eventManager, userManager, eventAttendeeManager, userNotificationManager,
+            nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger), INotificationEngine
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UpcomingEventAttendingSoonNotifier"/> class.
-        /// </summary>
-        public UpcomingEventAttendingSoonNotifier(IEventManager eventManager,
-            IKeyedManager<User> userManager,
-            IEventAttendeeManager eventAttendeeManager,
-            IKeyedManager<UserNotification> userNotificationManager,
-            INonEventUserNotificationManager nonEventUserNotificationManager,
-            IEmailSender emailSender,
-            IEmailManager emailManager,
-            IMapManager mapRepository,
-            ILogger logger) :
-            base(eventManager, userManager, eventAttendeeManager, userNotificationManager,
-                nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
-        {
-        }
 
         /// <inheritdoc />
         protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.UpcomingEventAttendingSoon;
