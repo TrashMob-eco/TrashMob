@@ -36,14 +36,14 @@ namespace TrashMob.Shared.Managers.Adoptions
         {
             // Validate team exists and is active
             var team = await teamManager.GetAsync(teamId, cancellationToken);
-            if (team == null || !team.IsActive)
+            if (team is null || !team.IsActive)
             {
                 return ServiceResult<TeamAdoption>.Failure("Team not found or is inactive.");
             }
 
             // Validate area exists, is active, and is available
             var area = await adoptableAreaManager.GetAsync(adoptableAreaId, cancellationToken);
-            if (area == null || !area.IsActive)
+            if (area is null || !area.IsActive)
             {
                 return ServiceResult<TeamAdoption>.Failure("Adoptable area not found or is inactive.");
             }
@@ -89,7 +89,7 @@ namespace TrashMob.Shared.Managers.Adoptions
             CancellationToken cancellationToken = default)
         {
             var adoption = await Repo.GetAsync(adoptionId, cancellationToken);
-            if (adoption == null)
+            if (adoption is null)
             {
                 return ServiceResult<TeamAdoption>.Failure("Adoption application not found.");
             }
@@ -109,7 +109,7 @@ namespace TrashMob.Shared.Managers.Adoptions
 
             // Update area status if not allowing co-adoption
             var area = await adoptableAreaManager.GetAsync(adoption.AdoptableAreaId, cancellationToken);
-            if (area != null && !area.AllowCoAdoption)
+            if (area is not null && !area.AllowCoAdoption)
             {
                 area.Status = "Adopted";
                 area.LastUpdatedByUserId = reviewedByUserId;
@@ -132,7 +132,7 @@ namespace TrashMob.Shared.Managers.Adoptions
             CancellationToken cancellationToken = default)
         {
             var adoption = await Repo.GetAsync(adoptionId, cancellationToken);
-            if (adoption == null)
+            if (adoption is null)
             {
                 return ServiceResult<TeamAdoption>.Failure("Adoption application not found.");
             }
@@ -393,7 +393,7 @@ namespace TrashMob.Shared.Managers.Adoptions
             var subject = $"Adoption Approved: {area.Name}";
 
             var recipients = leadList
-                .Where(l => l.User != null && !string.IsNullOrWhiteSpace(l.User.Email))
+                .Where(l => l.User is not null && !string.IsNullOrWhiteSpace(l.User.Email))
                 .Select(l => new EmailAddress { Name = l.User.UserName ?? l.User.Email, Email = l.User.Email })
                 .ToList();
 
@@ -443,7 +443,7 @@ namespace TrashMob.Shared.Managers.Adoptions
             var subject = $"Adoption Application Update: {area.Name}";
 
             var recipients = leadList
-                .Where(l => l.User != null && !string.IsNullOrWhiteSpace(l.User.Email))
+                .Where(l => l.User is not null && !string.IsNullOrWhiteSpace(l.User.Email))
                 .Select(l => new EmailAddress { Name = l.User.UserName ?? l.User.Email, Email = l.User.Email })
                 .ToList();
 

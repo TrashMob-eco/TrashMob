@@ -53,7 +53,7 @@ namespace TrashMob.Shared.Managers.Partners
             var existingUser = await userManager.GetUserByEmailAsync(instance.Email, cancellationToken);
             var partner = await partnerManager.GetAsync(instance.PartnerId, cancellationToken);
 
-            if (existingInvitation != null)
+            if (existingInvitation is not null)
             {
                 if (existingInvitation.InvitationStatusId == (int)InvitationStatusEnum.Accepted)
                 {
@@ -67,7 +67,7 @@ namespace TrashMob.Shared.Managers.Partners
             {
                 instance.InvitationStatusId = (int)InvitationStatusEnum.New;
 
-                if (existingUser != null)
+                if (existingUser is not null)
                 {
                     // Check to see if this Admin already exists in the system (without an invite since they were created prior to invites).
                     var partners =
@@ -83,7 +83,7 @@ namespace TrashMob.Shared.Managers.Partners
                 await base.AddAsync(instance, userId, cancellationToken);
             }
 
-            if (existingUser == null)
+            if (existingUser is null)
             {
                 var welcomeMessage =
                     emailManager.GetHtmlEmailCopy(NotificationTypeEnum.InviteNewUserToBePartnerAdmin.ToString());
@@ -147,7 +147,7 @@ namespace TrashMob.Shared.Managers.Partners
             var partnerAdminInvitation = await Repository.Get(pa => pa.Id == partnerAdminInviationId)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (partnerAdminInvitation == null)
+            if (partnerAdminInvitation is null)
             {
                 return;
             }
@@ -170,7 +170,7 @@ namespace TrashMob.Shared.Managers.Partners
             var partnerAdminInvitation = await Repository.Get(pa => pa.Id == partnerAdminInviationId)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (partnerAdminInvitation == null)
+            if (partnerAdminInvitation is null)
             {
                 return;
             }
@@ -188,7 +188,7 @@ namespace TrashMob.Shared.Managers.Partners
             var existingUser = await userManager.GetUserByEmailAsync(instance.Email, cancellationToken);
             var partner = await partnerManager.GetAsync(instance.PartnerId, cancellationToken);
 
-            if (existingUser == null)
+            if (existingUser is null)
             {
                 var welcomeMessage =
                     emailManager.GetHtmlEmailCopy(NotificationTypeEnum.InviteNewUserToBePartnerAdmin.ToString());

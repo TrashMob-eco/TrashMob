@@ -40,7 +40,7 @@ namespace TrashMob.Shared.Managers.Prospects
             if (string.Equals(instance.ActivityType, "Reply", StringComparison.OrdinalIgnoreCase))
             {
                 var prospect = await prospectRepository.GetAsync(instance.ProspectId, cancellationToken);
-                if (prospect != null)
+                if (prospect is not null)
                 {
                     var advanced = false;
 

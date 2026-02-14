@@ -57,7 +57,7 @@ namespace TrashMob.Shared.Managers
         public async Task<Newsletter> ScheduleNewsletterAsync(Guid newsletterId, DateTimeOffset scheduledDate, Guid userId, CancellationToken cancellationToken = default)
         {
             var newsletter = await GetAsync(newsletterId, cancellationToken);
-            if (newsletter == null)
+            if (newsletter is null)
             {
                 throw new InvalidOperationException($"Newsletter {newsletterId} not found.");
             }
@@ -83,7 +83,7 @@ namespace TrashMob.Shared.Managers
                 .Include(n => n.Category)
                 .FirstOrDefaultAsync(n => n.Id == newsletterId, cancellationToken);
 
-            if (newsletter == null)
+            if (newsletter is null)
             {
                 throw new InvalidOperationException($"Newsletter {newsletterId} not found.");
             }
@@ -132,7 +132,7 @@ namespace TrashMob.Shared.Managers
                     var community = await dbContext.Partners
                         .FirstOrDefaultAsync(p => p.Id == newsletter.TargetId.Value, cancellationToken);
 
-                    if (community == null)
+                    if (community is null)
                     {
                         return Enumerable.Empty<User>();
                     }
@@ -159,7 +159,7 @@ namespace TrashMob.Shared.Managers
         public async Task UpdateStatisticsAsync(Guid newsletterId, int deliveredCount, int openCount, int clickCount, int bounceCount, int unsubscribeCount, CancellationToken cancellationToken = default)
         {
             var newsletter = await dbContext.Newsletters.FindAsync(new object[] { newsletterId }, cancellationToken);
-            if (newsletter == null)
+            if (newsletter is null)
             {
                 return;
             }
@@ -180,7 +180,7 @@ namespace TrashMob.Shared.Managers
                 .Include(n => n.Category)
                 .FirstOrDefaultAsync(n => n.Id == newsletterId, cancellationToken);
 
-            if (newsletter == null)
+            if (newsletter is null)
             {
                 throw new InvalidOperationException($"Newsletter {newsletterId} not found.");
             }

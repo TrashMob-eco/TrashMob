@@ -88,7 +88,7 @@ namespace TrashMob.Shared.Managers
                 .Include(b => b.Invites)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (batch == null)
+            if (batch is null)
             {
                 throw new ArgumentException("Batch not found.", nameof(batchId));
             }

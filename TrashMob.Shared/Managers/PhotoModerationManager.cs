@@ -582,7 +582,7 @@ namespace TrashMob.Shared.Managers
                     .Include(i => i.CreatedByUser)
                     .FirstOrDefaultAsync(i => i.Id == photoId, cancellationToken);
 
-                if (image != null)
+                if (image is not null)
                 {
                     uploaderName = image.CreatedByUser?.UserName ?? "Unknown";
                     uploaderEmail = image.CreatedByUser?.Email ?? "Unknown";
@@ -596,7 +596,7 @@ namespace TrashMob.Shared.Managers
                     .Include(p => p.UploadedByUser)
                     .FirstOrDefaultAsync(p => p.Id == photoId, cancellationToken);
 
-                if (photo != null)
+                if (photo is not null)
                 {
                     uploaderName = photo.UploadedByUser?.UserName ?? "Unknown";
                     uploaderEmail = photo.UploadedByUser?.Email ?? "Unknown";
@@ -610,7 +610,7 @@ namespace TrashMob.Shared.Managers
                     .Include(p => p.UploadedByUser)
                     .FirstOrDefaultAsync(p => p.Id == photoId, cancellationToken);
 
-                if (photo != null)
+                if (photo is not null)
                 {
                     uploaderName = photo.UploadedByUser?.UserName ?? "Unknown";
                     uploaderEmail = photo.UploadedByUser?.Email ?? "Unknown";
@@ -624,7 +624,7 @@ namespace TrashMob.Shared.Managers
                     .Include(p => p.UploadedByUser)
                     .FirstOrDefaultAsync(p => p.Id == photoId, cancellationToken);
 
-                if (photo != null)
+                if (photo is not null)
                 {
                     uploaderName = photo.UploadedByUser?.UserName ?? "Unknown";
                     uploaderEmail = photo.UploadedByUser?.Email ?? "Unknown";

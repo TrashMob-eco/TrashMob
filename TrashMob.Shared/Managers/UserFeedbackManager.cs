@@ -66,7 +66,7 @@ namespace TrashMob.Shared.Managers
         public async Task<UserFeedback> UpdateStatusAsync(Guid id, string status, string internalNotes, Guid reviewedByUserId, CancellationToken cancellationToken = default)
         {
             var feedback = await Repo.GetAsync(id, cancellationToken);
-            if (feedback == null)
+            if (feedback is null)
             {
                 return null;
             }

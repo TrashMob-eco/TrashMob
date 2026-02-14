@@ -85,7 +85,7 @@ namespace TrashMob.Shared.Managers
                 .Get(cw => cw.WaiverVersionId == waiverId && cw.CommunityId == communityId)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (existing != null)
+            if (existing is not null)
             {
                 throw new InvalidOperationException("This waiver is already assigned to this community.");
             }
@@ -112,7 +112,7 @@ namespace TrashMob.Shared.Managers
                 .Get(cw => cw.WaiverVersionId == waiverId && cw.CommunityId == communityId)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (communityWaiver != null)
+            if (communityWaiver is not null)
             {
                 await communityWaiverRepository.DeleteAsync(communityWaiver);
             }
@@ -131,7 +131,7 @@ namespace TrashMob.Shared.Managers
         public async Task DeactivateAsync(Guid waiverId, Guid userId, CancellationToken cancellationToken = default)
         {
             var waiver = await Repo.GetAsync(waiverId, cancellationToken);
-            if (waiver == null)
+            if (waiver is null)
             {
                 throw new InvalidOperationException("Waiver not found.");
             }

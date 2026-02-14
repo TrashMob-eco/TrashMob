@@ -126,7 +126,7 @@ namespace TrashMob.Shared.Managers.Gamification
                 .Select(u => new { u.ShowOnLeaderboards })
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (user == null)
+            if (user is null)
             {
                 return new UserRankResponse
                 {
@@ -167,7 +167,7 @@ namespace TrashMob.Shared.Managers.Gamification
                     && l.LocationScope == "Global")
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (userEntry == null)
+            if (userEntry is null)
             {
                 // User not ranked - check why
                 var eventCount = await GetUserEventCountAsync(userId, timeRange, cancellationToken);
@@ -354,7 +354,7 @@ namespace TrashMob.Shared.Managers.Gamification
                 .Select(t => new { t.Name, t.IsActive })
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (team == null)
+            if (team is null)
             {
                 return new TeamRankResponse
                 {
@@ -398,7 +398,7 @@ namespace TrashMob.Shared.Managers.Gamification
                     && l.LocationScope == "Global")
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (teamEntry == null)
+            if (teamEntry is null)
             {
                 // Team not ranked - check why
                 var eventCount = await GetTeamEventCountAsync(teamId, timeRange, cancellationToken);

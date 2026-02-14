@@ -69,7 +69,7 @@ namespace TrashMob.Shared.Managers.Areas
             {
                 // Step 1: Ask Claude to interpret the description
                 var claudeResponse = await GetClaudeInterpretation(apiKey, request, cancellationToken);
-                if (claudeResponse == null)
+                if (claudeResponse is null)
                 {
                     return new AreaSuggestionResult { Message = "Could not interpret the area description. Try being more specific." };
                 }
@@ -192,7 +192,7 @@ namespace TrashMob.Shared.Managers.Areas
         {
             List<(double Lat, double Lon)> coordinates = [];
 
-            if (queries == null || queries.Count == 0)
+            if (queries is null || queries.Count == 0)
             {
                 return coordinates;
             }
@@ -204,7 +204,7 @@ namespace TrashMob.Shared.Managers.Areas
                     var rawJson = await mapManager.SearchAddressAsync(query.Address);
                     var searchResult = JsonSerializer.Deserialize<AzureMapsSearchResponse>(rawJson, JsonOptions);
 
-                    if (searchResult?.Results != null && searchResult.Results.Count > 0)
+                    if (searchResult?.Results is not null && searchResult.Results.Count > 0)
                     {
                         var topResult = searchResult.Results[0];
                         coordinates.Add((topResult.Position.Lat, topResult.Position.Lon));

@@ -119,7 +119,7 @@ namespace TrashMob.Shared.Managers.Prospects
 
                     // Calculate and persist FitScore
                     var breakdown = await scoringManager.CalculateFitScoreAsync(added.Id, cancellationToken);
-                    if (breakdown != null && breakdown.TotalScore != 0)
+                    if (breakdown is not null && breakdown.TotalScore != 0)
                     {
                         added.FitScore = breakdown.TotalScore;
                         added.LastUpdatedByUserId = userId;

@@ -35,7 +35,7 @@ namespace TrashMob.Shared.Managers.LitterReport
         {
             try
             {
-                if (litterReport.LitterImages == null || litterReport.LitterImages.Count == 0)
+                if (litterReport.LitterImages is null || litterReport.LitterImages.Count == 0)
                 {
                     return null;
                 }
@@ -46,7 +46,7 @@ namespace TrashMob.Shared.Managers.LitterReport
                     .Include(l => l.LitterImages)
                     .FirstOrDefault();
 
-                if (existingInstance == null)
+                if (existingInstance is null)
                 {
                     return null;
                 }
@@ -89,7 +89,7 @@ namespace TrashMob.Shared.Managers.LitterReport
                 var resultLitterReport = await base.UpdateAsync(existingInstance, userId, cancellationToken);
 
                 // Send notification to creator if status changed to Cleaned
-                if (statusChangedToCleaned && resultLitterReport != null)
+                if (statusChangedToCleaned && resultLitterReport is not null)
                 {
                     await SendLitterReportCleanedNotificationAsync(resultLitterReport, cancellationToken);
                 }
@@ -108,7 +108,7 @@ namespace TrashMob.Shared.Managers.LitterReport
             try
             {
                 var creator = await userManager.GetUserByInternalIdAsync(litterReport.CreatedByUserId, cancellationToken);
-                if (creator == null || string.IsNullOrWhiteSpace(creator.Email))
+                if (creator is null || string.IsNullOrWhiteSpace(creator.Email))
                 {
                     logger.LogWarning("Could not find creator for litter report {LitterReportId} to send cleaned notification", litterReport.Id);
                     return;
@@ -156,7 +156,7 @@ namespace TrashMob.Shared.Managers.LitterReport
         {
             try
             {
-                if (litterReport.LitterImages == null || litterReport.LitterImages.Count == 0)
+                if (litterReport.LitterImages is null || litterReport.LitterImages.Count == 0)
                 {
                     return null;
                 }
@@ -177,7 +177,7 @@ namespace TrashMob.Shared.Managers.LitterReport
                 // Add litter report
                 var newLitterReport = await base.AddAsync(litterReport, userId, cancellationToken);
 
-                if (newLitterReport == null)
+                if (newLitterReport is null)
                 {
                     return null;
                 }
@@ -225,7 +225,7 @@ namespace TrashMob.Shared.Managers.LitterReport
                 await dbTransaction.BeginTransactionAsync();
 
                 var instance = await Repo.GetAsync(id, cancellationToken);
-                if (instance == null)
+                if (instance is null)
                 {
                     return -1;
                 }
@@ -361,7 +361,7 @@ namespace TrashMob.Shared.Managers.LitterReport
             var existingInstance =
                 await Repo.GetWithNoTrackingAsync(instance.Id, cancellationToken);
 
-            if (existingInstance == null)
+            if (existingInstance is null)
             {
                 return null;
             }
@@ -394,12 +394,12 @@ namespace TrashMob.Shared.Managers.LitterReport
         public async Task<ServiceResult<LitterReport>> AddWithResultAsync(LitterReport litterReport, Guid userId,
             CancellationToken cancellationToken = default)
         {
-            if (litterReport == null)
+            if (litterReport is null)
             {
                 return ServiceResult<LitterReport>.Failure("Litter report cannot be null.");
             }
 
-            if (litterReport.LitterImages == null || litterReport.LitterImages.Count == 0)
+            if (litterReport.LitterImages is null || litterReport.LitterImages.Count == 0)
             {
                 return ServiceResult<LitterReport>.Failure("Litter report must include at least one image.");
             }
@@ -427,7 +427,7 @@ namespace TrashMob.Shared.Managers.LitterReport
                 // Add litter report
                 var newLitterReport = await base.AddAsync(litterReport, userId, cancellationToken);
 
-                if (newLitterReport == null)
+                if (newLitterReport is null)
                 {
                     await dbTransaction.RollbackTransactionAsync();
                     return ServiceResult<LitterReport>.Failure("Failed to save litter report to the database.");

@@ -30,7 +30,7 @@ namespace TrashMob.Shared.Managers.Prospects
         {
             var prospect = await prospectRepository.GetAsync(prospectId, cancellationToken);
 
-            if (prospect == null)
+            if (prospect is null)
             {
                 return null;
             }
