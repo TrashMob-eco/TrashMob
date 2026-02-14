@@ -11,18 +11,9 @@
     /// Controller for managing application secrets.
     /// </summary>
     [Route("api/secrets")]
-    public class SecretsController : SecureController
+    public class SecretsController(ISecretRepository secretRepository)
+        : SecureController
     {
-        private readonly ISecretRepository secretRepository;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SecretsController"/> class.
-        /// </summary>
-        /// <param name="secretRepository">The secret repository.</param>
-        public SecretsController(ISecretRepository secretRepository)
-        {
-            this.secretRepository = secretRepository;
-        }
 
         /// <summary>
         /// Gets a secret by name. Requires a valid user.

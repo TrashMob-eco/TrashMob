@@ -5,11 +5,8 @@
     using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/socialmediaaccounttypes")]
-    public class SocialMediaAccountTypesController : LookupController<SocialMediaAccountType>
+    public class SocialMediaAccountTypesController(ILookupManager<SocialMediaAccountType> manager)
+        : LookupController<SocialMediaAccountType>(manager)
     {
-        public SocialMediaAccountTypesController(ILookupManager<SocialMediaAccountType> manager)
-            : base(manager)
-        {
-        }
     }
 }

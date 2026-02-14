@@ -13,18 +13,9 @@ namespace TrashMob.Controllers
     /// Controller for sending message requests. Admin only.
     /// </summary>
     [Route("api/messagerequest")]
-    public class MessageRequestController : SecureController
+    public class MessageRequestController(IMessageRequestManager messageRequestManager)
+        : SecureController
     {
-        private readonly IMessageRequestManager messageRequestManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MessageRequestController"/> class.
-        /// </summary>
-        /// <param name="messageRequestManager">The message request manager.</param>
-        public MessageRequestController(IMessageRequestManager messageRequestManager)
-        {
-            this.messageRequestManager = messageRequestManager;
-        }
 
         /// <summary>
         /// Sends a message request. Admin only.

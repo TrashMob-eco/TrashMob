@@ -14,22 +14,11 @@ namespace TrashMob.Controllers
     /// </summary>
     [Authorize]
     [Route("api/partnersocialmediaaccounts")]
-    public class PartnerSocialMediaAccountController : SecureController
+    public class PartnerSocialMediaAccountController(
+        IPartnerSocialMediaAccountManager manager,
+        IKeyedManager<Partner> partnerManager)
+        : SecureController
     {
-        private readonly IPartnerSocialMediaAccountManager manager;
-        private readonly IKeyedManager<Partner> partnerManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartnerSocialMediaAccountController"/> class.
-        /// </summary>
-        /// <param name="partnerSocialMediaAccountManager">The partner social media account manager.</param>
-        /// <param name="partnerManager">The partner manager.</param>
-        public PartnerSocialMediaAccountController(IPartnerSocialMediaAccountManager partnerSocialMediaAccountManager,
-            IKeyedManager<Partner> partnerManager)
-        {
-            manager = partnerSocialMediaAccountManager;
-            this.partnerManager = partnerManager;
-        }
 
         /// <summary>
         /// Gets all social media accounts for a given partner.

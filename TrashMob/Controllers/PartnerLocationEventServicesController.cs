@@ -12,23 +12,11 @@ namespace TrashMob.Controllers
     /// Controller for managing partner location event services, including retrieval by location and user.
     /// </summary>
     [Route("api/partnerlocationeventservices")]
-    public class PartnerLocationEventServicesController : SecureController
+    public class PartnerLocationEventServicesController(
+        IEventPartnerLocationServiceManager eventPartnerLocationServicesManager,
+        IPartnerLocationManager partnerLocationManager)
+        : SecureController
     {
-        private readonly IEventPartnerLocationServiceManager eventPartnerLocationServicesManager;
-        private readonly IPartnerLocationManager partnerLocationManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartnerLocationEventServicesController"/> class.
-        /// </summary>
-        /// <param name="eventPartnerLocationServicesManager">The event partner location services manager.</param>
-        /// <param name="partnerLocationManager">The partner location manager.</param>
-        public PartnerLocationEventServicesController(
-            IEventPartnerLocationServiceManager eventPartnerLocationServicesManager,
-            IPartnerLocationManager partnerLocationManager)
-        {
-            this.eventPartnerLocationServicesManager = eventPartnerLocationServicesManager;
-            this.partnerLocationManager = partnerLocationManager;
-        }
 
         /// <summary>
         /// Gets all event services for a given partner location.

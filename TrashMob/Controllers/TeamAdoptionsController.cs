@@ -17,31 +17,13 @@ namespace TrashMob.Controllers
     /// Controller for team adoption operations (team-centric view).
     /// </summary>
     [Route("api/teams/{teamId}/adoptions")]
-    public class TeamAdoptionsController : SecureController
+    public class TeamAdoptionsController(
+        ITeamAdoptionManager adoptionManager,
+        ITeamAdoptionEventManager adoptionEventManager,
+        IKeyedManager<Team> teamManager,
+        ITeamMemberManager teamMemberManager)
+        : SecureController
     {
-        private readonly ITeamAdoptionManager adoptionManager;
-        private readonly ITeamAdoptionEventManager adoptionEventManager;
-        private readonly IKeyedManager<Team> teamManager;
-        private readonly ITeamMemberManager teamMemberManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TeamAdoptionsController"/> class.
-        /// </summary>
-        /// <param name="adoptionManager">The team adoption manager.</param>
-        /// <param name="adoptionEventManager">The team adoption event manager.</param>
-        /// <param name="teamManager">The team manager.</param>
-        /// <param name="teamMemberManager">The team member manager.</param>
-        public TeamAdoptionsController(
-            ITeamAdoptionManager adoptionManager,
-            ITeamAdoptionEventManager adoptionEventManager,
-            IKeyedManager<Team> teamManager,
-            ITeamMemberManager teamMemberManager)
-        {
-            this.adoptionManager = adoptionManager;
-            this.adoptionEventManager = adoptionEventManager;
-            this.teamManager = teamManager;
-            this.teamMemberManager = teamMemberManager;
-        }
 
         /// <summary>
         /// Gets all adoption applications for a team.

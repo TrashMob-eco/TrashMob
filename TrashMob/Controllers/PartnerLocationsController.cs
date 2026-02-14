@@ -17,22 +17,11 @@ namespace TrashMob.Controllers
     /// </summary>
     [Authorize]
     [Route("api/partnerlocations")]
-    public class PartnerLocationsController : SecureController
+    public class PartnerLocationsController(
+        IPartnerLocationManager partnerLocationManager,
+        IKeyedManager<Partner> partnerManager)
+        : SecureController
     {
-        private readonly IPartnerLocationManager partnerLocationManager;
-        private readonly IKeyedManager<Partner> partnerManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartnerLocationsController"/> class.
-        /// </summary>
-        /// <param name="partnerLocationManager">The partner location manager.</param>
-        /// <param name="partnerManager">The partner manager.</param>
-        public PartnerLocationsController(IPartnerLocationManager partnerLocationManager,
-            IKeyedManager<Partner> partnerManager)
-        {
-            this.partnerLocationManager = partnerLocationManager;
-            this.partnerManager = partnerManager;
-        }
 
         /// <summary>
         /// Gets all partner locations for a given partner.

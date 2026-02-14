@@ -17,27 +17,12 @@ namespace TrashMob.Controllers
     /// Controller for professional cleanup log operations.
     /// </summary>
     [Route("api/professional-companies/{companyId}/cleanup-logs")]
-    public class ProfessionalCleanupLogsController : SecureController
+    public class ProfessionalCleanupLogsController(
+        IProfessionalCleanupLogManager logManager,
+        IProfessionalCompanyManager companyManager,
+        ISponsoredAdoptionManager adoptionManager)
+        : SecureController
     {
-        private readonly IProfessionalCleanupLogManager logManager;
-        private readonly IProfessionalCompanyManager companyManager;
-        private readonly ISponsoredAdoptionManager adoptionManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ProfessionalCleanupLogsController"/> class.
-        /// </summary>
-        /// <param name="logManager">The cleanup log manager.</param>
-        /// <param name="companyManager">The professional company manager.</param>
-        /// <param name="adoptionManager">The sponsored adoption manager.</param>
-        public ProfessionalCleanupLogsController(
-            IProfessionalCleanupLogManager logManager,
-            IProfessionalCompanyManager companyManager,
-            ISponsoredAdoptionManager adoptionManager)
-        {
-            this.logManager = logManager;
-            this.companyManager = companyManager;
-            this.adoptionManager = adoptionManager;
-        }
 
         /// <summary>
         /// Gets all cleanup logs for a professional company.

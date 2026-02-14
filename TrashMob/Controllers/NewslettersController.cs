@@ -20,27 +20,11 @@ namespace TrashMob.Controllers
     /// </summary>
     [Authorize]
     [Route("api/admin/newsletters")]
-    public class NewslettersController : SecureController
+    public class NewslettersController(
+        INewsletterManager newsletterManager,
+        ILookupRepository<NewsletterTemplate> templateRepository)
+        : SecureController
     {
-        private readonly INewsletterManager newsletterManager;
-        private readonly ILookupRepository<NewsletterCategory> categoryRepository;
-        private readonly ILookupRepository<NewsletterTemplate> templateRepository;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NewslettersController"/> class.
-        /// </summary>
-        /// <param name="newsletterManager">The newsletter manager.</param>
-        /// <param name="categoryRepository">The category repository.</param>
-        /// <param name="templateRepository">The template repository.</param>
-        public NewslettersController(
-            INewsletterManager newsletterManager,
-            ILookupRepository<NewsletterCategory> categoryRepository,
-            ILookupRepository<NewsletterTemplate> templateRepository)
-        {
-            this.newsletterManager = newsletterManager;
-            this.categoryRepository = categoryRepository;
-            this.templateRepository = templateRepository;
-        }
 
         /// <summary>
         /// Gets all newsletters with optional status filter.

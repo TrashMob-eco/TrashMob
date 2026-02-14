@@ -18,18 +18,11 @@ namespace TrashMob.Controllers
     using TrashMob.Shared.Poco;
 
     [Route("api/eventattendees")]
-    public class EventAttendeesController : SecureController
+    public class EventAttendeesController(
+        IEventAttendeeManager eventAttendeeManager,
+        IUserWaiverManager userWaiverManager)
+        : SecureController
     {
-        private readonly IEventAttendeeManager eventAttendeeManager;
-        private readonly IUserWaiverManager userWaiverManager;
-
-        public EventAttendeesController(
-            IEventAttendeeManager eventAttendeeManager,
-            IUserWaiverManager userWaiverManager)
-        {
-            this.eventAttendeeManager = eventAttendeeManager;
-            this.userWaiverManager = userWaiverManager;
-        }
 
         /// <summary>
         /// Gets all attendees for a given event.

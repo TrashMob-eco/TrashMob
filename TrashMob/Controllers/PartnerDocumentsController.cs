@@ -16,12 +16,12 @@ namespace TrashMob.Controllers
     /// </summary>
     [Authorize]
     [Route("api/partnerdocuments")]
-    public class PartnerDocumentsController : SecureController
+    public class PartnerDocumentsController(
+        IKeyedManager<Partner> partnerManager,
+        IPartnerDocumentManager manager,
+        IPartnerDocumentStorageManager storageManager)
+        : SecureController
     {
-        private readonly IPartnerDocumentManager manager;
-        private readonly IKeyedManager<Partner> partnerManager;
-        private readonly IPartnerDocumentStorageManager storageManager;
-
         private static readonly HashSet<string> AllowedContentTypes = new(StringComparer.OrdinalIgnoreCase)
         {
             "application/pdf",
@@ -33,22 +33,6 @@ namespace TrashMob.Controllers
 
         private const long MaxFileSizeBytes = 25 * 1024 * 1024; // 25 MB
         private const long MaxPartnerStorageBytes = 500 * 1024 * 1024; // 500 MB
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartnerDocumentsController"/> class.
-        /// </summary>
-        /// <param name="partnerManager">The partner manager.</param>
-        /// <param name="manager">The partner document manager.</param>
-        /// <param name="storageManager">The partner document storage manager.</param>
-        public PartnerDocumentsController(
-            IKeyedManager<Partner> partnerManager,
-            IPartnerDocumentManager manager,
-            IPartnerDocumentStorageManager storageManager)
-        {
-            this.manager = manager;
-            this.partnerManager = partnerManager;
-            this.storageManager = storageManager;
-        }
 
         /// <summary>
         /// Gets all documents for a given partner.

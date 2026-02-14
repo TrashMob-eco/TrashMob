@@ -16,26 +16,12 @@ namespace TrashMob.Controllers
     using TrashMob.Shared.Managers.Interfaces;
 
     [Route("api/eventpartnerlocationservices")]
-    public class EventPartnerLocationServicesController : SecureController
+    public class EventPartnerLocationServicesController(
+        IKeyedManager<Event> eventManager,
+        IEventPartnerLocationServiceManager eventPartnerLocationServiceManager,
+        IPartnerLocationManager partnerLocationManager)
+        : SecureController
     {
-        private readonly IKeyedManager<Event> eventManager;
-        private readonly IEventPartnerLocationServiceManager eventPartnerLocationServiceManager;
-        private readonly IPartnerLocationContactManager partnerLocationContactManager;
-        private readonly IPartnerLocationManager partnerLocationManager;
-        private readonly IKeyedManager<Partner> partnerManager;
-
-        public EventPartnerLocationServicesController(IKeyedManager<Event> eventManager,
-            IKeyedManager<Partner> partnerManager,
-            IEventPartnerLocationServiceManager eventPartnerLocationServiceManager,
-            IPartnerLocationManager partnerLocationManager,
-            IPartnerLocationContactManager partnerLocationContactManager)
-        {
-            this.eventPartnerLocationServiceManager = eventPartnerLocationServiceManager;
-            this.eventManager = eventManager;
-            this.partnerManager = partnerManager;
-            this.partnerLocationManager = partnerLocationManager;
-            this.partnerLocationContactManager = partnerLocationContactManager;
-        }
 
         /// <summary>
         /// Gets a list of all event partner location services for a given event.

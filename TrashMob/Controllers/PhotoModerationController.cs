@@ -18,14 +18,9 @@ namespace TrashMob.Controllers
     /// Includes admin endpoints for moderation and user endpoints for flagging.
     /// </summary>
     [Route("api/admin/photos")]
-    public class PhotoModerationController : SecureController
+    public class PhotoModerationController(IPhotoModerationManager photoModerationManager)
+        : SecureController
     {
-        private readonly IPhotoModerationManager photoModerationManager;
-
-        public PhotoModerationController(IPhotoModerationManager photoModerationManager)
-        {
-            this.photoModerationManager = photoModerationManager;
-        }
 
         /// <summary>
         /// Gets photos pending moderation review. Admin only.
@@ -196,14 +191,9 @@ namespace TrashMob.Controllers
     /// Controller for user photo flagging.
     /// </summary>
     [Route("api/photos")]
-    public class PhotoFlagController : SecureController
+    public class PhotoFlagController(IPhotoModerationManager photoModerationManager)
+        : SecureController
     {
-        private readonly IPhotoModerationManager photoModerationManager;
-
-        public PhotoFlagController(IPhotoModerationManager photoModerationManager)
-        {
-            this.photoModerationManager = photoModerationManager;
-        }
 
         /// <summary>
         /// Flags a photo for review. Any authenticated user.

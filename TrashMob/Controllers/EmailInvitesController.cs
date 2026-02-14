@@ -19,18 +19,9 @@ namespace TrashMob.Controllers
     /// All endpoints require site admin privileges.
     /// </summary>
     [Route("api/admin/invites")]
-    public class EmailInvitesController : SecureController
+    public class EmailInvitesController(IEmailInviteManager emailInviteManager)
+        : SecureController
     {
-        private readonly IEmailInviteManager emailInviteManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EmailInvitesController"/> class.
-        /// </summary>
-        /// <param name="emailInviteManager">The email invite manager.</param>
-        public EmailInvitesController(IEmailInviteManager emailInviteManager)
-        {
-            this.emailInviteManager = emailInviteManager;
-        }
 
         /// <summary>
         /// Gets all email invite batches. Admin only.

@@ -20,26 +20,12 @@ namespace TrashMob.Controllers
     /// </summary>
     [Authorize]
     [Route("api/partneradmins")]
-    public class PartnerAdminsController : SecureController
+    public class PartnerAdminsController(
+        IKeyedManager<User> userManager,
+        IPartnerAdminManager partnerAdminManager,
+        IKeyedManager<Partner> partnerManager)
+        : SecureController
     {
-        private readonly IPartnerAdminManager partnerAdminManager;
-        private readonly IKeyedManager<Partner> partnerManager;
-        private readonly IKeyedManager<User> userManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartnerAdminsController"/> class.
-        /// </summary>
-        /// <param name="userManager">The user manager.</param>
-        /// <param name="partnerAdminManager">The partner admin manager.</param>
-        /// <param name="partnerManager">The partner manager.</param>
-        public PartnerAdminsController(IKeyedManager<User> userManager,
-            IPartnerAdminManager partnerAdminManager,
-            IKeyedManager<Partner> partnerManager)
-        {
-            this.partnerManager = partnerManager;
-            this.userManager = userManager;
-            this.partnerAdminManager = partnerAdminManager;
-        }
 
         /// <summary>
         /// Gets all partner admins for a given partner.

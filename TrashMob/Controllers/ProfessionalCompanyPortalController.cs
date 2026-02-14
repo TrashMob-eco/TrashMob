@@ -16,18 +16,9 @@ namespace TrashMob.Controllers
     /// Portal endpoints for professional company users.
     /// </summary>
     [Route("api/professional-companies")]
-    public class ProfessionalCompanyPortalController : SecureController
+    public class ProfessionalCompanyPortalController(IProfessionalCompanyUserManager companyUserManager)
+        : SecureController
     {
-        private readonly IProfessionalCompanyUserManager companyUserManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ProfessionalCompanyPortalController"/> class.
-        /// </summary>
-        /// <param name="companyUserManager">The professional company user manager.</param>
-        public ProfessionalCompanyPortalController(IProfessionalCompanyUserManager companyUserManager)
-        {
-            this.companyUserManager = companyUserManager;
-        }
 
         /// <summary>
         /// Gets all professional companies the authenticated user is assigned to.
