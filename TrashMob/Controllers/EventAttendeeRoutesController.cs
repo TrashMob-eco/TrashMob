@@ -19,8 +19,6 @@ namespace TrashMob.Controllers
     [Route("api/eventattendeeroutes")]
     public class EventAttendeeRoutesController(IEventAttendeeRouteManager eventAttendeeRouteManager) : SecureController
     {
-        private readonly IEventAttendeeRouteManager eventAttendeeRouteManager = eventAttendeeRouteManager;
-
         /// <summary>
         /// Gets a list of event attendee routes for a specific event and user.
         /// </summary>
@@ -132,15 +130,15 @@ namespace TrashMob.Controllers
         [HttpPost]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status201Created)]
         public async Task<IActionResult> AddEventAttendeeRoute(DisplayEventAttendeeRoute displayEventAttendeeRoute,
             CancellationToken cancellationToken)
         {
             var eventAttendeeRoute = displayEventAttendeeRoute.ToEventAttendeeRoute();
 
-            await eventAttendeeRouteManager.AddAsync(eventAttendeeRoute, UserId, cancellationToken);
+            var result = await eventAttendeeRouteManager.AddAsync(eventAttendeeRoute, UserId, cancellationToken);
             TrackEvent(nameof(AddEventAttendeeRoute));
-            return Ok();
+            return CreatedAtAction(nameof(GetEventAttendeeRoute), new { id = result.Id }, result);
         }
 
         /// <summary>

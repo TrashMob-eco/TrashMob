@@ -18,23 +18,11 @@ namespace TrashMob.Controllers
     /// Controller for managing sponsored adoptions within a community.
     /// </summary>
     [Route("api/communities/{partnerId}/sponsored-adoptions")]
-    public class CommunitySponsoredAdoptionsController : SecureController
+    public class CommunitySponsoredAdoptionsController(
+        ISponsoredAdoptionManager adoptionManager,
+        IKeyedManager<Partner> partnerManager)
+        : SecureController
     {
-        private readonly ISponsoredAdoptionManager adoptionManager;
-        private readonly IKeyedManager<Partner> partnerManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CommunitySponsoredAdoptionsController"/> class.
-        /// </summary>
-        /// <param name="adoptionManager">The sponsored adoption manager.</param>
-        /// <param name="partnerManager">The partner manager.</param>
-        public CommunitySponsoredAdoptionsController(
-            ISponsoredAdoptionManager adoptionManager,
-            IKeyedManager<Partner> partnerManager)
-        {
-            this.adoptionManager = adoptionManager;
-            this.partnerManager = partnerManager;
-        }
 
         /// <summary>
         /// Gets all sponsored adoptions for a community.

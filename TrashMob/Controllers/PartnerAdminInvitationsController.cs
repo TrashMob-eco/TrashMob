@@ -15,26 +15,12 @@ namespace TrashMob.Controllers
     /// </summary>
     [Authorize]
     [Route("api/partneradmininvitations")]
-    public class PartnerAdminInvitationsController : SecureController
+    public class PartnerAdminInvitationsController(
+        IKeyedManager<User> userManager,
+        IPartnerAdminInvitationManager partnerAdminInvitationManager,
+        IKeyedManager<Partner> partnerManager)
+        : SecureController
     {
-        private readonly IPartnerAdminInvitationManager partnerAdminInvitationManager;
-        private readonly IKeyedManager<Partner> partnerManager;
-        private readonly IKeyedManager<User> userManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartnerAdminInvitationsController"/> class.
-        /// </summary>
-        /// <param name="userManager">The user manager.</param>
-        /// <param name="partnerAdminInvitationManager">The partner admin invitation manager.</param>
-        /// <param name="partnerManager">The partner manager.</param>
-        public PartnerAdminInvitationsController(IKeyedManager<User> userManager,
-            IPartnerAdminInvitationManager partnerAdminInvitationManager,
-            IKeyedManager<Partner> partnerManager)
-        {
-            this.partnerManager = partnerManager;
-            this.userManager = userManager;
-            this.partnerAdminInvitationManager = partnerAdminInvitationManager;
-        }
 
         /// <summary>
         /// Gets all partner admin invitations for a given partner.

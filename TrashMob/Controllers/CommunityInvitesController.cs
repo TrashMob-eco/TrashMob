@@ -20,23 +20,11 @@ namespace TrashMob.Controllers
     /// </summary>
     [Authorize]
     [Route("api/communities/{communityId}/invites")]
-    public class CommunityInvitesController : SecureController
+    public class CommunityInvitesController(
+        IEmailInviteManager emailInviteManager,
+        IKeyedManager<Partner> partnerManager)
+        : SecureController
     {
-        private readonly IEmailInviteManager emailInviteManager;
-        private readonly IKeyedManager<Partner> partnerManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CommunityInvitesController"/> class.
-        /// </summary>
-        /// <param name="emailInviteManager">The email invite manager.</param>
-        /// <param name="partnerManager">The partner manager for authorization.</param>
-        public CommunityInvitesController(
-            IEmailInviteManager emailInviteManager,
-            IKeyedManager<Partner> partnerManager)
-        {
-            this.emailInviteManager = emailInviteManager;
-            this.partnerManager = partnerManager;
-        }
 
         /// <summary>
         /// Gets all email invite batches for a community.

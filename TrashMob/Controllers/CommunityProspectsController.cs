@@ -89,11 +89,11 @@ namespace TrashMob.Controllers
         /// <param name="prospect">The prospect to create.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         [HttpPost]
-        [ProducesResponseType(typeof(CommunityProspect), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(CommunityProspect), StatusCodes.Status201Created)]
         public async Task<IActionResult> Create(CommunityProspect prospect, CancellationToken cancellationToken)
         {
             var result = await communityProspectManager.AddAsync(prospect, UserId, cancellationToken);
-            return Ok(result);
+            return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
         }
 
         /// <summary>
@@ -164,12 +164,12 @@ namespace TrashMob.Controllers
         /// <param name="activity">The activity to create.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         [HttpPost("{id}/activities")]
-        [ProducesResponseType(typeof(ProspectActivity), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProspectActivity), StatusCodes.Status201Created)]
         public async Task<IActionResult> CreateActivity(Guid id, ProspectActivity activity, CancellationToken cancellationToken)
         {
             activity.ProspectId = id;
             var result = await prospectActivityManager.AddAsync(activity, UserId, cancellationToken);
-            return Ok(result);
+            return CreatedAtAction(nameof(GetActivities), new { id }, result);
         }
 
         /// <summary>
