@@ -168,7 +168,7 @@ namespace TrashMob.Controllers
             await eventSummaryManager.DeleteAsync(eventId, cancellationToken);
             TrackEvent(nameof(DeleteEventSummary));
 
-            return Ok(eventId);
+            return NoContent();
         }
     }
 }

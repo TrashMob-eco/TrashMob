@@ -131,7 +131,7 @@ namespace TrashMob.Controllers
             await partnerContactManager.DeleteAsync(partnerContactId, cancellationToken);
             TrackEvent(nameof(DeletePartnerContact));
 
-            return Ok(partnerContactId);
+            return NoContent();
         }
     }
 }

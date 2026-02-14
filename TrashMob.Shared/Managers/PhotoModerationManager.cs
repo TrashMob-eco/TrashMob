@@ -234,10 +234,10 @@ namespace TrashMob.Shared.Managers
             }
 
             // Resolve any pending flags
-            await ResolveFlagsAsync(photoType, photoId, adminUserId, "Approved", cancellationToken);
+            await ResolveFlagsAsync(photoType, photoId, adminUserId, PhotoModerationAction.Approved, cancellationToken);
 
             // Log the action
-            await LogModerationActionAsync(photoType, photoId, "Approved", null, adminUserId, cancellationToken);
+            await LogModerationActionAsync(photoType, photoId, PhotoModerationAction.Approved, null, adminUserId, cancellationToken);
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 
@@ -326,10 +326,10 @@ namespace TrashMob.Shared.Managers
             }
 
             // Resolve any pending flags
-            await ResolveFlagsAsync(photoType, photoId, adminUserId, "Rejected", cancellationToken);
+            await ResolveFlagsAsync(photoType, photoId, adminUserId, PhotoModerationAction.Rejected, cancellationToken);
 
             // Log the action
-            await LogModerationActionAsync(photoType, photoId, "Rejected", reason, adminUserId, cancellationToken);
+            await LogModerationActionAsync(photoType, photoId, PhotoModerationAction.Rejected, reason, adminUserId, cancellationToken);
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 
@@ -485,7 +485,7 @@ namespace TrashMob.Shared.Managers
             _dbContext.PhotoFlags.Add(flag);
 
             // Log the action
-            await LogModerationActionAsync(photoType, photoId, "Flagged", reason, userId, cancellationToken);
+            await LogModerationActionAsync(photoType, photoId, PhotoModerationAction.Flagged, reason, userId, cancellationToken);
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 

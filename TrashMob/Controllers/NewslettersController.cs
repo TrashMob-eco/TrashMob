@@ -11,6 +11,7 @@ namespace TrashMob.Controllers
     using Microsoft.EntityFrameworkCore;
     using TrashMob.Models;
     using TrashMob.Security;
+    using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
 
@@ -141,7 +142,7 @@ namespace TrashMob.Controllers
                 TextContent = request.TextContent,
                 TargetType = request.TargetType ?? "All",
                 TargetId = request.TargetId,
-                Status = "Draft"
+                Status = NewsletterStatus.Draft
             };
 
             var created = await newsletterManager.AddAsync(newsletter, UserId, cancellationToken);
@@ -175,7 +176,7 @@ namespace TrashMob.Controllers
                 return NotFound();
             }
 
-            if (newsletter.Status != "Draft")
+            if (newsletter.Status != NewsletterStatus.Draft)
             {
                 return BadRequest("Only draft newsletters can be updated.");
             }
@@ -298,7 +299,7 @@ namespace TrashMob.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Success status.</returns>
         [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -315,7 +316,7 @@ namespace TrashMob.Controllers
                 return NotFound();
             }
 
-            if (newsletter.Status != "Draft")
+            if (newsletter.Status != NewsletterStatus.Draft)
             {
                 return BadRequest("Only draft newsletters can be deleted.");
             }
@@ -323,7 +324,7 @@ namespace TrashMob.Controllers
             await newsletterManager.DeleteAsync(id, cancellationToken);
             TrackEvent(nameof(DeleteNewsletter));
 
-            return Ok(new { message = "Newsletter deleted." });
+            return NoContent();
         }
 
         /// <summary>

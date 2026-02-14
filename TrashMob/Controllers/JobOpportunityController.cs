@@ -98,10 +98,10 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            var result = await Manager.DeleteAsync(jobOpportunityId, cancellationToken);
+            await Manager.DeleteAsync(jobOpportunityId, cancellationToken);
             TrackEvent(nameof(Add) + typeof(JobOpportunity));
 
-            return Ok(result);
+            return NoContent();
         }
     }
 }

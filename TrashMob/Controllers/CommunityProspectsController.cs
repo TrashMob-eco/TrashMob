@@ -115,12 +115,12 @@ namespace TrashMob.Controllers
         /// <param name="id">The prospect ID to delete.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
             await communityProspectManager.DeleteAsync(id, cancellationToken);
-            return Ok();
+            return NoContent();
         }
 
         /// <summary>

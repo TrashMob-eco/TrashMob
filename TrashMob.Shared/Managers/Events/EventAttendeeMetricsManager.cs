@@ -65,7 +65,7 @@ namespace TrashMob.Shared.Managers.Events
             if (existingMetrics != null)
             {
                 // Update existing submission if still pending
-                if (existingMetrics.Status != "Pending")
+                if (existingMetrics.Status != EventAttendeeMetricsStatus.Pending)
                 {
                     return ServiceResult<EventAttendeeMetrics>.Failure("Your metrics have already been reviewed and cannot be modified.");
                 }
@@ -93,7 +93,7 @@ namespace TrashMob.Shared.Managers.Events
                 PickedWeightUnitId = metrics.PickedWeightUnitId,
                 DurationMinutes = metrics.DurationMinutes,
                 Notes = metrics.Notes,
-                Status = "Pending",
+                Status = EventAttendeeMetricsStatus.Pending,
                 CreatedByUserId = userId,
                 CreatedDate = DateTimeOffset.UtcNow,
                 LastUpdatedByUserId = userId,
@@ -136,7 +136,7 @@ namespace TrashMob.Shared.Managers.Events
             CancellationToken cancellationToken = default)
         {
             return await Repo.Get()
-                .Where(m => m.EventId == eventId && m.Status == "Pending")
+                .Where(m => m.EventId == eventId && m.Status == EventAttendeeMetricsStatus.Pending)
                 .Include(m => m.User)
                 .Include(m => m.PickedWeightUnit)
                 .OrderBy(m => m.CreatedDate)
@@ -155,12 +155,12 @@ namespace TrashMob.Shared.Managers.Events
                 return ServiceResult<EventAttendeeMetrics>.Failure("Metrics submission not found.");
             }
 
-            if (metrics.Status != "Pending")
+            if (metrics.Status != EventAttendeeMetricsStatus.Pending)
             {
                 return ServiceResult<EventAttendeeMetrics>.Failure("Only pending submissions can be approved.");
             }
 
-            metrics.Status = "Approved";
+            metrics.Status = EventAttendeeMetricsStatus.Approved;
             metrics.ReviewedByUserId = reviewerId;
             metrics.ReviewedDate = DateTimeOffset.UtcNow;
             metrics.LastUpdatedByUserId = reviewerId;
@@ -183,12 +183,12 @@ namespace TrashMob.Shared.Managers.Events
                 return ServiceResult<EventAttendeeMetrics>.Failure("Metrics submission not found.");
             }
 
-            if (metrics.Status != "Pending")
+            if (metrics.Status != EventAttendeeMetricsStatus.Pending)
             {
                 return ServiceResult<EventAttendeeMetrics>.Failure("Only pending submissions can be rejected.");
             }
 
-            metrics.Status = "Rejected";
+            metrics.Status = EventAttendeeMetricsStatus.Rejected;
             metrics.ReviewedByUserId = reviewerId;
             metrics.ReviewedDate = DateTimeOffset.UtcNow;
             metrics.RejectionReason = reason;
@@ -213,12 +213,12 @@ namespace TrashMob.Shared.Managers.Events
                 return ServiceResult<EventAttendeeMetrics>.Failure("Metrics submission not found.");
             }
 
-            if (metrics.Status != "Pending")
+            if (metrics.Status != EventAttendeeMetricsStatus.Pending)
             {
                 return ServiceResult<EventAttendeeMetrics>.Failure("Only pending submissions can be adjusted.");
             }
 
-            metrics.Status = "Adjusted";
+            metrics.Status = EventAttendeeMetricsStatus.Adjusted;
             metrics.ReviewedByUserId = reviewerId;
             metrics.ReviewedDate = DateTimeOffset.UtcNow;
             metrics.AdjustedBagsCollected = adjustedValues.AdjustedBagsCollected ?? adjustedValues.BagsCollected;
@@ -240,7 +240,7 @@ namespace TrashMob.Shared.Managers.Events
             CancellationToken cancellationToken = default)
         {
             var pendingMetrics = await Repo.Get()
-                .Where(m => m.EventId == eventId && m.Status == "Pending")
+                .Where(m => m.EventId == eventId && m.Status == EventAttendeeMetricsStatus.Pending)
                 .ToListAsync(cancellationToken);
 
             if (pendingMetrics.Count == 0)
@@ -250,7 +250,7 @@ namespace TrashMob.Shared.Managers.Events
 
             foreach (var metrics in pendingMetrics)
             {
-                metrics.Status = "Approved";
+                metrics.Status = EventAttendeeMetricsStatus.Approved;
                 metrics.ReviewedByUserId = reviewerId;
                 metrics.ReviewedDate = DateTimeOffset.UtcNow;
                 metrics.LastUpdatedByUserId = reviewerId;
@@ -273,13 +273,13 @@ namespace TrashMob.Shared.Managers.Events
                 .Include(m => m.AdjustedPickedWeightUnit)
                 .ToListAsync(cancellationToken);
 
-            var approvedMetrics = allMetrics.Where(m => m.Status == "Approved" || m.Status == "Adjusted").ToList();
+            var approvedMetrics = allMetrics.Where(m => m.Status == EventAttendeeMetricsStatus.Approved || m.Status == EventAttendeeMetricsStatus.Adjusted).ToList();
 
             var totals = new AttendeeMetricsTotals
             {
                 TotalSubmissions = allMetrics.Count,
                 ApprovedSubmissions = approvedMetrics.Count,
-                PendingSubmissions = allMetrics.Count(m => m.Status == "Pending"),
+                PendingSubmissions = allMetrics.Count(m => m.Status == EventAttendeeMetricsStatus.Pending),
                 TotalBagsCollected = 0,
                 TotalWeightPounds = 0,
                 TotalDurationMinutes = 0
@@ -293,7 +293,7 @@ namespace TrashMob.Shared.Managers.Events
                 int? weightUnitId;
                 int? duration;
 
-                if (metrics.Status == "Adjusted")
+                if (metrics.Status == EventAttendeeMetricsStatus.Adjusted)
                 {
                     bags = metrics.AdjustedBagsCollected ?? metrics.BagsCollected;
                     weight = metrics.AdjustedPickedWeight ?? metrics.PickedWeight;
@@ -347,7 +347,7 @@ namespace TrashMob.Shared.Managers.Events
             CancellationToken cancellationToken = default)
         {
             var approvedMetrics = await Repo.Get()
-                .Where(m => m.EventId == eventId && (m.Status == "Approved" || m.Status == "Adjusted"))
+                .Where(m => m.EventId == eventId && (m.Status == EventAttendeeMetricsStatus.Approved || m.Status == EventAttendeeMetricsStatus.Adjusted))
                 .Include(m => m.User)
                 .Include(m => m.PickedWeightUnit)
                 .Include(m => m.AdjustedPickedWeightUnit)
@@ -366,7 +366,7 @@ namespace TrashMob.Shared.Managers.Events
                 int? weightUnitId;
                 int? duration;
 
-                if (metrics.Status == "Adjusted")
+                if (metrics.Status == EventAttendeeMetricsStatus.Adjusted)
                 {
                     bags = metrics.AdjustedBagsCollected ?? metrics.BagsCollected;
                     weight = metrics.AdjustedPickedWeight ?? metrics.PickedWeight;
@@ -431,7 +431,7 @@ namespace TrashMob.Shared.Managers.Events
             CancellationToken cancellationToken = default)
         {
             var userMetrics = await Repo.Get()
-                .Where(m => m.UserId == userId && (m.Status == "Approved" || m.Status == "Adjusted"))
+                .Where(m => m.UserId == userId && (m.Status == EventAttendeeMetricsStatus.Approved || m.Status == EventAttendeeMetricsStatus.Adjusted))
                 .Include(m => m.Event)
                 .Include(m => m.PickedWeightUnit)
                 .Include(m => m.AdjustedPickedWeightUnit)
@@ -450,7 +450,7 @@ namespace TrashMob.Shared.Managers.Events
                 int? weightUnitId;
                 int? duration;
 
-                if (metrics.Status == "Adjusted")
+                if (metrics.Status == EventAttendeeMetricsStatus.Adjusted)
                 {
                     bags = metrics.AdjustedBagsCollected ?? metrics.BagsCollected;
                     weight = metrics.AdjustedPickedWeight ?? metrics.PickedWeight;

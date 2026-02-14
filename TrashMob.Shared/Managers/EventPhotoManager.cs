@@ -268,10 +268,10 @@ namespace TrashMob.Shared.Managers
             photo.ModerationReason = reason;
 
             // Resolve any pending flags
-            await ResolveFlagsAsync(photoId, moderatorId, "Rejected", cancellationToken);
+            await ResolveFlagsAsync(photoId, moderatorId, PhotoModerationAction.Rejected, cancellationToken);
 
             // Log the moderation action
-            await LogModerationActionAsync(photoId, "Rejected", reason, moderatorId, cancellationToken);
+            await LogModerationActionAsync(photoId, PhotoModerationAction.Rejected, reason, moderatorId, cancellationToken);
 
             await dbContext.SaveChangesAsync(cancellationToken);
 

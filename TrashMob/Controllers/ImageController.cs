@@ -80,7 +80,7 @@ namespace TrashMob.Controllers
             var deleted = await imageManager.DeleteImage(parentId, imageType);
             if (deleted)
             {
-                return Ok();
+                return NoContent();
             }
 
             return BadRequest("The image is not deleted");

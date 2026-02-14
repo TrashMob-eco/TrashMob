@@ -72,7 +72,7 @@ namespace TrashMob.Shared.Managers
         public async Task<IEnumerable<Newsletter>> GetScheduledNewslettersAsync(DateTimeOffset beforeDate, CancellationToken cancellationToken = default)
         {
             return await dbContext.Newsletters
-                .Where(n => n.Status == "Scheduled" && n.ScheduledDate <= beforeDate)
+                .Where(n => n.Status == NewsletterStatus.Scheduled && n.ScheduledDate <= beforeDate)
                 .Include(n => n.Category)
                 .ToListAsync(cancellationToken);
         }
@@ -86,12 +86,12 @@ namespace TrashMob.Shared.Managers
                 throw new InvalidOperationException($"Newsletter {newsletterId} not found.");
             }
 
-            if (newsletter.Status != "Draft")
+            if (newsletter.Status != NewsletterStatus.Draft)
             {
                 throw new InvalidOperationException($"Only draft newsletters can be scheduled. Current status: {newsletter.Status}");
             }
 
-            newsletter.Status = "Scheduled";
+            newsletter.Status = NewsletterStatus.Scheduled;
             newsletter.ScheduledDate = scheduledDate;
             newsletter.LastUpdatedByUserId = userId;
             newsletter.LastUpdatedDate = DateTimeOffset.UtcNow;
@@ -112,7 +112,7 @@ namespace TrashMob.Shared.Managers
                 throw new InvalidOperationException($"Newsletter {newsletterId} not found.");
             }
 
-            if (newsletter.Status != "Draft" && newsletter.Status != "Scheduled")
+            if (newsletter.Status != NewsletterStatus.Draft && newsletter.Status != NewsletterStatus.Scheduled)
             {
                 throw new InvalidOperationException($"Newsletter cannot be sent. Current status: {newsletter.Status}");
             }
@@ -121,7 +121,7 @@ namespace TrashMob.Shared.Managers
             var recipients = await GetRecipientsAsync(newsletter, cancellationToken);
             newsletter.RecipientCount = recipients.Count();
 
-            newsletter.Status = "Sending";
+            newsletter.Status = NewsletterStatus.Sending;
             newsletter.LastUpdatedByUserId = userId;
             newsletter.LastUpdatedDate = DateTimeOffset.UtcNow;
 
@@ -136,7 +136,7 @@ namespace TrashMob.Shared.Managers
 
             switch (newsletter.TargetType)
             {
-                case "Team":
+                case NewsletterTargetType.Team:
                     if (!newsletter.TargetId.HasValue)
                     {
                         throw new InvalidOperationException("Team newsletter requires a TargetId.");
@@ -147,7 +147,7 @@ namespace TrashMob.Shared.Managers
                         .Select(tm => tm.User);
                     break;
 
-                case "Community":
+                case NewsletterTargetType.Community:
                     if (!newsletter.TargetId.HasValue)
                     {
                         throw new InvalidOperationException("Community newsletter requires a TargetId.");
@@ -165,7 +165,7 @@ namespace TrashMob.Shared.Managers
                         .Where(u => u.City == community.City && u.Region == community.Region);
                     break;
 
-                case "All":
+                case NewsletterTargetType.All:
                 default:
                     query = dbContext.Users.AsQueryable();
                     break;
@@ -240,7 +240,7 @@ namespace TrashMob.Shared.Managers
                     // Get recipients and update count
                     var recipients = await GetRecipientsAsync(newsletter, cancellationToken);
                     newsletter.RecipientCount = recipients.Count();
-                    newsletter.Status = "Sending";
+                    newsletter.Status = NewsletterStatus.Sending;
                     newsletter.LastUpdatedDate = DateTimeOffset.UtcNow;
 
                     await dbContext.SaveChangesAsync(cancellationToken);
@@ -262,7 +262,7 @@ namespace TrashMob.Shared.Managers
         public async Task<int> ProcessSendingNewslettersAsync(CancellationToken cancellationToken = default)
         {
             var sendingNewsletters = await dbContext.Newsletters
-                .Where(n => n.Status == "Sending")
+                .Where(n => n.Status == NewsletterStatus.Sending)
                 .Include(n => n.Category)
                 .ToListAsync(cancellationToken);
 
@@ -278,7 +278,7 @@ namespace TrashMob.Shared.Managers
                 catch (Exception ex)
                 {
                     logger.LogError(ex, "Failed to send newsletter {NewsletterId}", newsletter.Id);
-                    newsletter.Status = "Failed";
+                    newsletter.Status = NewsletterStatus.Failed;
                     await dbContext.SaveChangesAsync(cancellationToken);
                 }
             }
@@ -338,7 +338,7 @@ namespace TrashMob.Shared.Managers
 
             // Mark as sent
             newsletter.SentCount = sentCount;
-            newsletter.Status = "Sent";
+            newsletter.Status = NewsletterStatus.Sent;
             newsletter.SentDate = DateTimeOffset.UtcNow;
             await dbContext.SaveChangesAsync(cancellationToken);
 

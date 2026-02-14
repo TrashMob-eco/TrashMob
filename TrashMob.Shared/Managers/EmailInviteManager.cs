@@ -82,7 +82,7 @@ namespace TrashMob.Shared.Managers
                 DeliveredCount = 0,
                 BouncedCount = 0,
                 FailedCount = 0,
-                Status = "Pending",
+                Status = EmailInviteStatus.Pending,
             };
 
             await base.AddAsync(batch, senderUserId, cancellationToken);
@@ -95,7 +95,7 @@ namespace TrashMob.Shared.Managers
                     Id = Guid.NewGuid(),
                     BatchId = batch.Id,
                     Email = email,
-                    Status = "Pending",
+                    Status = EmailInviteStatus.Pending,
                 };
 
                 await emailInviteRepository.AddAsync(invite);
@@ -118,11 +118,11 @@ namespace TrashMob.Shared.Managers
             }
 
             // Update batch status to processing
-            batch.Status = "Processing";
+            batch.Status = EmailInviteStatus.Processing;
             await Repository.UpdateAsync(batch);
 
             var senderName = batch.SenderUser?.UserName ?? "TrashMob.eco";
-            var pendingInvites = batch.Invites.Where(i => i.Status == "Pending").ToList();
+            var pendingInvites = batch.Invites.Where(i => i.Status == EmailInviteStatus.Pending).ToList();
 
             // Get community name if this is a community batch
             string communityName = null;
@@ -145,13 +145,13 @@ namespace TrashMob.Shared.Managers
                 try
                 {
                     await SendInviteEmailAsync(invite, senderName, communityName, teamName, cancellationToken);
-                    invite.Status = "Sent";
+                    invite.Status = EmailInviteStatus.Sent;
                     invite.SentDate = DateTimeOffset.UtcNow;
                     batch.SentCount++;
                 }
                 catch (Exception ex)
                 {
-                    invite.Status = "Failed";
+                    invite.Status = EmailInviteStatus.Failed;
                     invite.ErrorMessage = ex.Message.Length > 500 ? ex.Message[..500] : ex.Message;
                     batch.FailedCount++;
                 }
@@ -160,7 +160,7 @@ namespace TrashMob.Shared.Managers
             }
 
             // Update batch completion status
-            batch.Status = "Complete";
+            batch.Status = EmailInviteStatus.Complete;
             batch.CompletedDate = DateTimeOffset.UtcNow;
             await Repository.UpdateAsync(batch);
 

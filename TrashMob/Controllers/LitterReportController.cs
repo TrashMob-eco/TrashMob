@@ -322,7 +322,7 @@ namespace TrashMob.Controllers
             if (result != -1)
             {
                 TrackEvent(nameof(DeleteLitterReport));
-                return Ok(id);
+                return NoContent();
             }
 
             return BadRequest("Could not find the litter report, delete failed");

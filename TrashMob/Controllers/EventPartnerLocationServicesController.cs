@@ -269,7 +269,7 @@ namespace TrashMob.Controllers
         [HttpDelete("{eventId}/{partnerLocationId}/{serviceTypeId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteEventPartnerLocationService(Guid eventId, Guid partnerLocationId,
@@ -287,12 +287,12 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            var result = await eventPartnerLocationServiceManager
+            await eventPartnerLocationServiceManager
                 .DeleteAsync(eventId, partnerLocationId, serviceTypeId, cancellationToken);
 
             TrackEvent(nameof(DeleteEventPartnerLocationService));
 
-            return Ok(result);
+            return NoContent();
         }
     }
 }
