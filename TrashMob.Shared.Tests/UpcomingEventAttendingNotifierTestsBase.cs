@@ -44,14 +44,14 @@ namespace TrashMob.Shared.Tests
                 .Setup(ea =>
                     ea.GetEventsUserIsAttendingAsync(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(events);
-            EventManager.Setup(e => e.GetActiveEventsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(events);
+            EventManager.Setup(e => e.GetActiveEventsAsync(It.IsAny<Guid?>(), It.IsAny<CancellationToken>())).ReturnsAsync(events);
             UserManager.Setup(u => u.GetAsync(It.IsAny<CancellationToken>())).ReturnsAsync(users);
 
             // Act
             await Engine.GenerateNotificationsAsync();
 
             // Assert
-            EventManager.Verify(_ => _.GetActiveEventsAsync(It.IsAny<CancellationToken>()), Times.Once);
+            EventManager.Verify(_ => _.GetActiveEventsAsync(It.IsAny<Guid?>(), It.IsAny<CancellationToken>()), Times.Once);
             UserManager.Verify(_ => _.GetAsync(It.IsAny<CancellationToken>()), Times.Once);
             EventAttendeeManager.Verify(
                 _ => _.GetEventsUserIsAttendingAsync(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
@@ -75,14 +75,14 @@ namespace TrashMob.Shared.Tests
                 .Setup(ea =>
                     ea.GetEventsUserIsAttendingAsync(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(events);
-            EventManager.Setup(e => e.GetActiveEventsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(events);
+            EventManager.Setup(e => e.GetActiveEventsAsync(It.IsAny<Guid?>(), It.IsAny<CancellationToken>())).ReturnsAsync(events);
             UserManager.Setup(u => u.GetAsync(It.IsAny<CancellationToken>())).ReturnsAsync(users);
 
             // Act
             await Engine.GenerateNotificationsAsync();
 
             // Assert
-            EventManager.Verify(_ => _.GetActiveEventsAsync(It.IsAny<CancellationToken>()), Times.Once);
+            EventManager.Verify(_ => _.GetActiveEventsAsync(It.IsAny<Guid?>(), It.IsAny<CancellationToken>()), Times.Once);
             UserManager.Verify(_ => _.GetAsync(It.IsAny<CancellationToken>()), Times.Once);
             EventAttendeeManager.Verify(
                 _ => _.GetEventsUserIsAttendingAsync(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
@@ -107,7 +107,7 @@ namespace TrashMob.Shared.Tests
                 .Setup(ea =>
                     ea.GetEventsUserIsAttendingAsync(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(events);
-            EventManager.Setup(e => e.GetActiveEventsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(events);
+            EventManager.Setup(e => e.GetActiveEventsAsync(It.IsAny<Guid?>(), It.IsAny<CancellationToken>())).ReturnsAsync(events);
             UserManager.Setup(u => u.GetAsync(It.IsAny<CancellationToken>())).ReturnsAsync(users);
 
             // Act
@@ -115,7 +115,7 @@ namespace TrashMob.Shared.Tests
 
             // Assert
             UserManager.Verify(_ => _.GetAsync(It.IsAny<CancellationToken>()), Times.Once);
-            EventManager.Verify(_ => _.GetActiveEventsAsync(It.IsAny<CancellationToken>()), Times.Exactly(2));
+            EventManager.Verify(_ => _.GetActiveEventsAsync(It.IsAny<Guid?>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
             EventAttendeeManager.Verify(
                 _ => _.GetEventsUserIsAttendingAsync(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
                 Times.Exactly(2));
@@ -134,7 +134,7 @@ namespace TrashMob.Shared.Tests
             var events = GetEventList1();
             var users = GetUserList1();
 
-            EventManager.Setup(e => e.GetActiveEventsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(events);
+            EventManager.Setup(e => e.GetActiveEventsAsync(It.IsAny<Guid?>(), It.IsAny<CancellationToken>())).ReturnsAsync(events);
             UserManager.Setup(u => u.GetAsync(It.IsAny<CancellationToken>())).ReturnsAsync(users);
 
             // Act
@@ -142,7 +142,7 @@ namespace TrashMob.Shared.Tests
 
             // Assert
             UserManager.Verify(_ => _.GetAsync(It.IsAny<CancellationToken>()), Times.Once);
-            EventManager.Verify(_ => _.GetActiveEventsAsync(It.IsAny<CancellationToken>()), Times.Once);
+            EventManager.Verify(_ => _.GetActiveEventsAsync(It.IsAny<Guid?>(), It.IsAny<CancellationToken>()), Times.Once);
             EventAttendeeManager.Verify(
                 _ => _.GetEventsUserIsAttendingAsync(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
                 Times.Once);
@@ -163,7 +163,7 @@ namespace TrashMob.Shared.Tests
             var alternateEvents = GetEventList1();
             alternateEvents[0].Id = new Guid();
 
-            EventManager.Setup(e => e.GetActiveEventsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(events);
+            EventManager.Setup(e => e.GetActiveEventsAsync(It.IsAny<Guid?>(), It.IsAny<CancellationToken>())).ReturnsAsync(events);
             UserManager.Setup(u => u.GetAsync(It.IsAny<CancellationToken>())).ReturnsAsync(users);
 
             // The user is attending all available events
@@ -177,7 +177,7 @@ namespace TrashMob.Shared.Tests
 
             // Assert
             UserManager.Verify(_ => _.GetAsync(It.IsAny<CancellationToken>()), Times.Once);
-            EventManager.Verify(_ => _.GetActiveEventsAsync(It.IsAny<CancellationToken>()), Times.Once);
+            EventManager.Verify(_ => _.GetActiveEventsAsync(It.IsAny<Guid?>(), It.IsAny<CancellationToken>()), Times.Once);
             EventAttendeeManager.Verify(
                 _ => _.GetEventsUserIsAttendingAsync(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
                 Times.Once);
@@ -200,7 +200,7 @@ namespace TrashMob.Shared.Tests
                 .Setup(ea =>
                     ea.GetEventsUserIsAttendingAsync(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(events);
-            EventManager.Setup(e => e.GetActiveEventsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(events);
+            EventManager.Setup(e => e.GetActiveEventsAsync(It.IsAny<Guid?>(), It.IsAny<CancellationToken>())).ReturnsAsync(events);
             UserManager.Setup(u => u.GetAsync(It.IsAny<CancellationToken>())).ReturnsAsync(users);
 
             // The user has already received notifications for all events
@@ -223,7 +223,7 @@ namespace TrashMob.Shared.Tests
 
             // Assert
             UserManager.Verify(_ => _.GetAsync(It.IsAny<CancellationToken>()), Times.Once);
-            EventManager.Verify(_ => _.GetActiveEventsAsync(It.IsAny<CancellationToken>()), Times.Once);
+            EventManager.Verify(_ => _.GetActiveEventsAsync(It.IsAny<Guid?>(), It.IsAny<CancellationToken>()), Times.Once);
             EventAttendeeManager.Verify(
                 _ => _.GetEventsUserIsAttendingAsync(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
                 Times.Once);
@@ -246,7 +246,7 @@ namespace TrashMob.Shared.Tests
                 .Setup(ea =>
                     ea.GetEventsUserIsAttendingAsync(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(events);
-            EventManager.Setup(e => e.GetActiveEventsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(events);
+            EventManager.Setup(e => e.GetActiveEventsAsync(It.IsAny<Guid?>(), It.IsAny<CancellationToken>())).ReturnsAsync(events);
             UserManager.Setup(u => u.GetAsync(It.IsAny<CancellationToken>())).ReturnsAsync(users);
 
             var userNotifications = new List<UserNotification>();
@@ -259,7 +259,7 @@ namespace TrashMob.Shared.Tests
 
             // Assert
             UserManager.Verify(_ => _.GetAsync(It.IsAny<CancellationToken>()), Times.Once);
-            EventManager.Verify(_ => _.GetActiveEventsAsync(It.IsAny<CancellationToken>()), Times.Once);
+            EventManager.Verify(_ => _.GetActiveEventsAsync(It.IsAny<Guid?>(), It.IsAny<CancellationToken>()), Times.Once);
             EventAttendeeManager.Verify(
                 _ => _.GetEventsUserIsAttendingAsync(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
                 Times.Once);
@@ -285,7 +285,7 @@ namespace TrashMob.Shared.Tests
 
             events[0].EventDate = DateTimeOffset.UtcNow.AddDays(NumberOfDaysToAddForEventMaxOutOfWindow);
 
-            EventManager.Setup(e => e.GetActiveEventsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(events);
+            EventManager.Setup(e => e.GetActiveEventsAsync(It.IsAny<Guid?>(), It.IsAny<CancellationToken>())).ReturnsAsync(events);
             UserManager.Setup(u => u.GetAsync(It.IsAny<CancellationToken>())).ReturnsAsync(users);
 
             // Act
@@ -293,7 +293,7 @@ namespace TrashMob.Shared.Tests
 
             // Assert
             UserManager.Verify(_ => _.GetAsync(It.IsAny<CancellationToken>()), Times.Once);
-            EventManager.Verify(_ => _.GetActiveEventsAsync(It.IsAny<CancellationToken>()), Times.Once);
+            EventManager.Verify(_ => _.GetActiveEventsAsync(It.IsAny<Guid?>(), It.IsAny<CancellationToken>()), Times.Once);
             EventAttendeeManager.Verify(
                 _ => _.GetEventsUserIsAttendingAsync(It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
                 Times.Once);

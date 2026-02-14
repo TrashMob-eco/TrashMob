@@ -148,7 +148,7 @@ public partial class EventViewModel : ObservableObject
             DurationHours = DurationHours,
             DurationMinutes = DurationMinutes,
             EventTypeId = EventTypeId,
-            IsEventPublic = IsEventPublic,
+            EventVisibilityId = IsEventPublic ? (int)EventVisibilityEnum.Public : (int)EventVisibilityEnum.Private,
             Latitude = Address.Latitude,
             Longitude = Address.Longitude,
             MaxNumberOfParticipants = MaxNumberOfParticipants,

@@ -43,7 +43,7 @@
                 List<Event> eventsToNotifyUserFor = [];
 
                 // Get list of active events
-                var events = await EventManager.GetActiveEventsAsync(cancellationToken).ConfigureAwait(false);
+                var events = await EventManager.GetActiveEventsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
                 // Limit the list of events to process to those in the next window UTC
                 foreach (var mobEvent in events.Where(e =>

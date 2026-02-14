@@ -59,7 +59,7 @@ internal static class TestHelpers
             Longitude = -122.3321,
             CreatedByUserId = createdByUserId ?? Guid.NewGuid(),
             EventStatusId = eventStatusId,
-            IsEventPublic = isEventPublic,
+            EventVisibilityId = isEventPublic ? (int)EventVisibilityEnum.Public : (int)EventVisibilityEnum.Private,
             EventTypeId = 1,
             DurationHours = 2,
             DurationMinutes = 0,

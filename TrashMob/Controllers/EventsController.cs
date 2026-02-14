@@ -45,7 +45,8 @@ namespace TrashMob.Controllers
         [ProducesResponseType(typeof(List<DisplayEvent>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetActiveEvents(CancellationToken cancellationToken)
         {
-            var results = await eventManager.GetActiveEventsAsync(cancellationToken);
+            Guid? userId = User.Identity?.IsAuthenticated == true ? UserId : null;
+            var results = await eventManager.GetActiveEventsAsync(userId, cancellationToken);
 
             // CreatedByUser is already included via the manager query
             var displayResults = results
@@ -84,7 +85,8 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetNotCanceledEvents(CancellationToken cancellationToken)
         {
             // Use filtered query which excludes canceled events and includes CreatedByUser
-            var results = await eventManager.GetFilteredEventsAsync(new EventFilter(), cancellationToken);
+            Guid? userId = User.Identity?.IsAuthenticated == true ? UserId : null;
+            var results = await eventManager.GetFilteredEventsAsync(new EventFilter(), userId, cancellationToken);
 
             var displayResults = results
                 .Select(e => e.ToDisplayEvent(e.CreatedByUserName ?? string.Empty))
@@ -184,7 +186,8 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetFilteredEvents([FromBody] EventFilter filter,
             CancellationToken cancellationToken)
         {
-            var result = await eventManager.GetFilteredEventsAsync(filter, cancellationToken);
+            Guid? userId = User.Identity?.IsAuthenticated == true ? UserId : null;
+            var result = await eventManager.GetFilteredEventsAsync(filter, userId, cancellationToken);
 
             if (filter.PageSize is not null)
             {
@@ -235,7 +238,8 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetPagedFilteredEvents([FromBody] EventFilter filter,
             CancellationToken cancellationToken)
         {
-            var result = await eventManager.GetFilteredEventsAsync(filter, cancellationToken);
+            Guid? userId = User.Identity?.IsAuthenticated == true ? UserId : null;
+            var result = await eventManager.GetFilteredEventsAsync(filter, userId, cancellationToken);
 
             if (filter.PageSize is not null)
             {
