@@ -210,7 +210,7 @@ namespace TrashMob.Shared.Managers.Areas
 
                 // Extract ExtendedData
                 var extData = placemark.Element(ns + "ExtendedData");
-                if (extData != null)
+                if (extData is not null)
                 {
                     foreach (var data in extData.Elements(ns + "Data"))
                     {
@@ -240,7 +240,7 @@ namespace TrashMob.Shared.Managers.Areas
                 var polygon = placemark.Descendants(ns + "Polygon").FirstOrDefault();
                 var lineString = placemark.Descendants(ns + "LineString").FirstOrDefault();
 
-                if (polygon != null)
+                if (polygon is not null)
                 {
                     var coords = ParseKmlCoordinates(
                         polygon.Descendants(ns + "coordinates").FirstOrDefault()?.Value);
@@ -257,7 +257,7 @@ namespace TrashMob.Shared.Managers.Areas
                             $"Feature '{name ?? "unnamed"}' skipped: polygon has fewer than 3 coordinates.");
                     }
                 }
-                else if (lineString != null)
+                else if (lineString is not null)
                 {
                     var coords = ParseKmlCoordinates(
                         lineString.Descendants(ns + "coordinates").FirstOrDefault()?.Value);
@@ -278,7 +278,7 @@ namespace TrashMob.Shared.Managers.Areas
                 {
                     // Check for Point — we skip these with a warning
                     var point = placemark.Descendants(ns + "Point").FirstOrDefault();
-                    if (point != null)
+                    if (point is not null)
                     {
                         feature.IsValid = false;
                         feature.ValidationErrors.Add(
@@ -304,7 +304,7 @@ namespace TrashMob.Shared.Managers.Areas
             var kmlEntry = archive.Entries
                 .FirstOrDefault(e => e.FullName.EndsWith(".kml", StringComparison.OrdinalIgnoreCase));
 
-            if (kmlEntry == null)
+            if (kmlEntry is null)
             {
                 result.Error = "KMZ file does not contain a .kml file.";
                 return;
@@ -352,7 +352,7 @@ namespace TrashMob.Shared.Managers.Areas
                     var feature = new AreaImportFeature();
 
                     // Extract attributes as properties
-                    if (ntsFeature.Attributes != null)
+                    if (ntsFeature.Attributes is not null)
                     {
                         foreach (var attrName in ntsFeature.Attributes.GetNames())
                         {
@@ -362,7 +362,7 @@ namespace TrashMob.Shared.Managers.Areas
                     }
 
                     // Convert geometry to GeoJSON
-                    if (ntsFeature.Geometry != null)
+                    if (ntsFeature.Geometry is not null)
                     {
                         var geomType = ntsFeature.Geometry.GeometryType;
 

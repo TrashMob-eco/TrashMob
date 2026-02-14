@@ -130,7 +130,7 @@ namespace TrashMob.Shared.Managers.Communities
         public async Task<IEnumerable<Event>> GetCommunityEventsAsync(string slug, bool upcomingOnly = true, CancellationToken cancellationToken = default)
         {
             var community = await GetBySlugAsync(slug, cancellationToken);
-            if (community == null)
+            if (community is null)
             {
                 return Enumerable.Empty<Event>();
             }
@@ -173,7 +173,7 @@ namespace TrashMob.Shared.Managers.Communities
         public async Task<IEnumerable<Team>> GetCommunityTeamsAsync(string slug, double radiusMiles = 50, CancellationToken cancellationToken = default)
         {
             var community = await GetBySlugAsync(slug, cancellationToken);
-            if (community == null || !community.Latitude.HasValue || !community.Longitude.HasValue)
+            if (community is null || !community.Latitude.HasValue || !community.Longitude.HasValue)
             {
                 return Enumerable.Empty<Team>();
             }
@@ -191,7 +191,7 @@ namespace TrashMob.Shared.Managers.Communities
         public async Task<IEnumerable<LitterReport>> GetCommunityLitterReportsAsync(string slug, CancellationToken cancellationToken = default)
         {
             var community = await GetBySlugAsync(slug, cancellationToken);
-            if (community == null)
+            if (community is null)
             {
                 return Enumerable.Empty<LitterReport>();
             }
@@ -220,7 +220,7 @@ namespace TrashMob.Shared.Managers.Communities
 
             // Get unique litter reports from the images
             var litterReportIds = litterImages
-                .Where(li => li.LitterReport != null)
+                .Where(li => li.LitterReport is not null)
                 .Select(li => li.LitterReportId)
                 .Distinct()
                 .ToList();
@@ -237,7 +237,7 @@ namespace TrashMob.Shared.Managers.Communities
             var stats = new Stats();
 
             var community = await GetBySlugAsync(slug, cancellationToken);
-            if (community == null)
+            if (community is null)
             {
                 return stats;
             }
@@ -344,7 +344,7 @@ namespace TrashMob.Shared.Managers.Communities
         public async Task<Partner> UpdateCommunityContentAsync(Partner community, Guid userId, CancellationToken cancellationToken = default)
         {
             var existing = await partnerRepository.GetAsync(community.Id, cancellationToken);
-            if (existing == null)
+            if (existing is null)
             {
                 return null;
             }
@@ -380,7 +380,7 @@ namespace TrashMob.Shared.Managers.Communities
         public async Task<CommunityDashboard> GetCommunityDashboardAsync(Guid partnerId, CancellationToken cancellationToken = default)
         {
             var community = await partnerRepository.GetAsync(partnerId, cancellationToken);
-            if (community == null)
+            if (community is null)
             {
                 return null;
             }
@@ -497,7 +497,7 @@ namespace TrashMob.Shared.Managers.Communities
                 var litterImages = await litterQuery.ToListAsync(cancellationToken);
 
                 var openLitterReportIds = litterImages
-                    .Where(li => li.LitterReport != null && li.LitterReport.LitterReportStatusId == (int)LitterReportStatusEnum.New)
+                    .Where(li => li.LitterReport is not null && li.LitterReport.LitterReportStatusId == (int)LitterReportStatusEnum.New)
                     .Select(li => li.LitterReportId)
                     .Distinct()
                     .ToList();

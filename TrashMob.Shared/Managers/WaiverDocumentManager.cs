@@ -377,7 +377,7 @@ namespace TrashMob.Shared.Managers
         /// </summary>
         private static void RenderInlines(TextDescriptor text, ContainerInline container)
         {
-            if (container == null) return;
+            if (container is null) return;
 
             foreach (var inline in container)
             {

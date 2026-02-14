@@ -66,7 +66,7 @@ namespace TrashMob.Shared.Managers.SponsoredAdoptions
         {
             // Validate the sponsored adoption exists and is active
             var adoption = await sponsoredAdoptionRepository.GetAsync(log.SponsoredAdoptionId, cancellationToken);
-            if (adoption == null)
+            if (adoption is null)
             {
                 return ServiceResult<ProfessionalCleanupLog>.Failure("Sponsored adoption not found.");
             }

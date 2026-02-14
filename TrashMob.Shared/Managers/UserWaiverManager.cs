@@ -85,7 +85,7 @@ namespace TrashMob.Shared.Managers
             // Combine and filter out already signed waivers
             List<WaiverVersion> requiredWaivers = [];
 
-            if (globalWaiver != null && !signedWaiverVersionIds.Contains(globalWaiver.Id))
+            if (globalWaiver is not null && !signedWaiverVersionIds.Contains(globalWaiver.Id))
             {
                 requiredWaivers.Add(globalWaiver);
             }
@@ -120,7 +120,7 @@ namespace TrashMob.Shared.Managers
 
             List<WaiverVersion> requiredWaivers = [];
 
-            if (globalWaiver != null && !signedWaiverVersionIds.Contains(globalWaiver.Id))
+            if (globalWaiver is not null && !signedWaiverVersionIds.Contains(globalWaiver.Id))
             {
                 requiredWaivers.Add(globalWaiver);
             }
@@ -166,7 +166,7 @@ namespace TrashMob.Shared.Managers
 
             // Get the waiver version
             var waiverVersion = await waiverVersionRepository.GetAsync(request.WaiverVersionId, cancellationToken);
-            if (waiverVersion == null)
+            if (waiverVersion is null)
             {
                 return ServiceResult<UserWaiver>.Failure("Waiver version not found.");
             }
@@ -194,7 +194,7 @@ namespace TrashMob.Shared.Managers
                     uw.ExpiryDate >= now)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (existingWaiver != null)
+            if (existingWaiver is not null)
             {
                 return ServiceResult<UserWaiver>.Failure("You have already signed this waiver version.");
             }
@@ -273,7 +273,7 @@ namespace TrashMob.Shared.Managers
             CancellationToken cancellationToken = default)
         {
             // Validate file
-            if (request.FormFile == null || request.FormFile.Length == 0)
+            if (request.FormFile is null || request.FormFile.Length == 0)
             {
                 return ServiceResult<UserWaiver>.Failure("No file was uploaded.");
             }
@@ -296,14 +296,14 @@ namespace TrashMob.Shared.Managers
 
             // Validate user exists
             var user = await userRepository.GetAsync(request.UserId, cancellationToken);
-            if (user == null)
+            if (user is null)
             {
                 return ServiceResult<UserWaiver>.Failure("User not found.");
             }
 
             // Validate waiver version exists and is active
             var waiverVersion = await waiverVersionRepository.GetAsync(request.WaiverVersionId, cancellationToken);
-            if (waiverVersion == null)
+            if (waiverVersion is null)
             {
                 return ServiceResult<UserWaiver>.Failure("Waiver version not found.");
             }
@@ -322,7 +322,7 @@ namespace TrashMob.Shared.Managers
                     uw.ExpiryDate >= now)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (existingWaiver != null)
+            if (existingWaiver is not null)
             {
                 return ServiceResult<UserWaiver>.Failure("User has already signed this waiver version.");
             }

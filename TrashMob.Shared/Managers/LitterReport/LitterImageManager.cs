@@ -36,7 +36,7 @@ namespace TrashMob.Shared.Managers.LitterReport
         public override async Task<LitterImage> UpdateAsync(LitterImage instance, Guid userId,
             CancellationToken cancellationToken = default)
         {
-            if (instance == null)
+            if (instance is null)
             {
                 return null;
             }
@@ -49,7 +49,7 @@ namespace TrashMob.Shared.Managers.LitterReport
         {
             var litterImage = await GetAsync(id, cancellationToken);
 
-            if (litterImage == null)
+            if (litterImage is null)
             {
                 return -1;
             }

@@ -73,7 +73,7 @@
                         .GetAsync(es => es.EventId == mobEvent.Id, cancellationToken).ConfigureAwait(false);
 
                     // Only send an email if the summary has not been completed.
-                    if (eventSummary?.FirstOrDefault() == null)
+                    if (eventSummary?.FirstOrDefault() is null)
                     {
                         // Add to the event list to be sent
                         eventsToNotifyUserFor.Add(mobEvent);

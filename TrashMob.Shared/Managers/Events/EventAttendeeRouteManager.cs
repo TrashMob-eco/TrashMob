@@ -124,7 +124,7 @@ namespace TrashMob.Shared.Managers.Events
         {
             var route = await Repo.GetAsync(routeId, cancellationToken);
 
-            if (route == null)
+            if (route is null)
             {
                 return ServiceResult<EventAttendeeRoute>.Failure("Route not found.");
             }
@@ -151,7 +151,7 @@ namespace TrashMob.Shared.Managers.Events
             route.BagsCollected = request.BagsCollected;
             route.WeightCollected = request.WeightCollected;
 
-            if (route.PrivacyLevel == "Public" && route.ExpiresDate == null)
+            if (route.PrivacyLevel == "Public" && route.ExpiresDate is null)
             {
                 route.ExpiresDate = DateTimeOffset.UtcNow.AddYears(2);
             }

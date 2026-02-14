@@ -68,7 +68,7 @@ namespace TrashMob.Shared.Managers.SponsoredAdoptions
             var entity = await Repository.Get(cu => cu.ProfessionalCompanyId == companyId && cu.UserId == userId, false)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (entity == null)
+            if (entity is null)
             {
                 return 0;
             }

@@ -116,7 +116,7 @@ namespace TrashMob.Shared.Managers
             CancellationToken cancellationToken = default)
         {
             var photo = await GetAsync(photoId, cancellationToken);
-            if (photo == null)
+            if (photo is null)
             {
                 return null;
             }
@@ -134,7 +134,7 @@ namespace TrashMob.Shared.Managers
             CancellationToken cancellationToken = default)
         {
             var photo = await GetAsync(photoId, cancellationToken);
-            if (photo == null)
+            if (photo is null)
             {
                 return false;
             }
@@ -157,7 +157,7 @@ namespace TrashMob.Shared.Managers
             CancellationToken cancellationToken = default)
         {
             var photo = await GetAsync(photoId, cancellationToken);
-            if (photo == null)
+            if (photo is null)
             {
                 return false;
             }
@@ -213,7 +213,7 @@ namespace TrashMob.Shared.Managers
             CancellationToken cancellationToken = default)
         {
             var photo = await GetAsync(photoId, cancellationToken);
-            if (photo == null)
+            if (photo is null)
             {
                 return null;
             }
@@ -242,7 +242,7 @@ namespace TrashMob.Shared.Managers
             CancellationToken cancellationToken = default)
         {
             var photo = await GetAsync(photoId, cancellationToken);
-            if (photo == null)
+            if (photo is null)
             {
                 return null;
             }

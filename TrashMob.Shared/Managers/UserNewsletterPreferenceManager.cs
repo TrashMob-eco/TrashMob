@@ -34,7 +34,7 @@ namespace TrashMob.Shared.Managers
             var preference = await dbContext.UserNewsletterPreferences
                 .FirstOrDefaultAsync(p => p.UserId == userId && p.CategoryId == categoryId, cancellationToken);
 
-            if (preference == null)
+            if (preference is null)
             {
                 preference = new UserNewsletterPreference
                 {
@@ -152,7 +152,7 @@ namespace TrashMob.Shared.Managers
 
                 // Verify user exists
                 var user = await dbContext.Users.FindAsync(new object[] { userId }, cancellationToken);
-                if (user == null)
+                if (user is null)
                 {
                     return new UnsubscribeResult { Success = false, ErrorMessage = "User not found." };
                 }
@@ -177,7 +177,7 @@ namespace TrashMob.Shared.Managers
                     }
 
                     var category = await dbContext.NewsletterCategories.FindAsync(new object[] { categoryId }, cancellationToken);
-                    if (category == null)
+                    if (category is null)
                     {
                         return new UnsubscribeResult { Success = false, ErrorMessage = "Category not found." };
                     }

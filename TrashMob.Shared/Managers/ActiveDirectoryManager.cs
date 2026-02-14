@@ -44,7 +44,7 @@ namespace TrashMob.Shared.Managers
             var response = await DoesUserExist(activeDirectoryNewUserRequest.userName,
                 activeDirectoryNewUserRequest.email, cancellationToken);
 
-            if (response != null)
+            if (response is not null)
             {
                 return response;
             }
@@ -69,7 +69,7 @@ namespace TrashMob.Shared.Managers
         {
             var user = await userManager.GetUserByObjectIdAsync(objectId, cancellationToken);
 
-            if (user == null)
+            if (user is null)
             {
                 var response = new ActiveDirectoryValidationFailedResponse
                 {
@@ -124,7 +124,7 @@ namespace TrashMob.Shared.Managers
             var response = await DoesUserExist(activeDirectoryValidateNewUserRequest.userName,
                 activeDirectoryValidateNewUserRequest.email, cancellationToken);
 
-            if (response != null)
+            if (response is not null)
             {
                 return response;
             }
@@ -158,7 +158,7 @@ namespace TrashMob.Shared.Managers
             var originalUser = await userManager
                 .GetUserByObjectIdAsync(activeDirectoryUpdateUserProfileRequest.objectId, cancellationToken);
 
-            if (originalUser == null)
+            if (originalUser is null)
             {
                 var response = new ActiveDirectoryValidationFailedResponse
                 {
@@ -173,7 +173,7 @@ namespace TrashMob.Shared.Managers
             var checkUser = await userManager
                 .GetUserByUserNameAsync(activeDirectoryUpdateUserProfileRequest.userName, CancellationToken.None);
 
-            if (checkUser != null && checkUser.ObjectId != activeDirectoryUpdateUserProfileRequest.objectId)
+            if (checkUser is not null && checkUser.ObjectId != activeDirectoryUpdateUserProfileRequest.objectId)
             {
                 var response = new ActiveDirectoryValidationFailedResponse
                 {
@@ -214,7 +214,7 @@ namespace TrashMob.Shared.Managers
             var originalUser = await userManager
                 .GetUserByObjectIdAsync(activeDirectoryUpdateUserProfileRequest.objectId, cancellationToken);
 
-            if (originalUser == null)
+            if (originalUser is null)
             {
                 var response = new ActiveDirectoryValidationFailedResponse
                 {
@@ -244,7 +244,7 @@ namespace TrashMob.Shared.Managers
         {
             var originalUser = await userManager.GetUserByEmailAsync(email, cancellationToken);
 
-            if (originalUser != null)
+            if (originalUser is not null)
             {
                 var response = new ActiveDirectoryValidationFailedResponse
                 {
@@ -258,7 +258,7 @@ namespace TrashMob.Shared.Managers
 
             var checkUser = await userManager.GetUserByUserNameAsync(userName, CancellationToken.None);
 
-            if (checkUser != null)
+            if (checkUser is not null)
             {
                 var response = new ActiveDirectoryValidationFailedResponse
                 {

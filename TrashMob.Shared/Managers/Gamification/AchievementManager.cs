@@ -134,7 +134,7 @@ namespace TrashMob.Shared.Managers.Gamification
                 .Where(ua => ua.UserId == userId && ua.AchievementTypeId == achievementTypeId)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (existingAchievement != null)
+            if (existingAchievement is not null)
             {
                 return false; // Already earned
             }

@@ -100,14 +100,14 @@ namespace TrashMob.Shared.Managers.Events
             var attendee = await Repository.Get(ea => ea.EventId == eventId && ea.UserId == userId)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (attendee != null && attendee.IsEventLead)
+            if (attendee is not null && attendee.IsEventLead)
             {
                 return true;
             }
 
             // Also check if user is the event creator (they're always considered a lead)
             var evt = await eventRepository.GetAsync(eventId, cancellationToken);
-            return evt != null && evt.CreatedByUserId == userId;
+            return evt is not null && evt.CreatedByUserId == userId;
         }
 
         /// <inheritdoc />
@@ -134,7 +134,7 @@ namespace TrashMob.Shared.Managers.Events
                 .Include(ea => ea.User)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (attendee == null)
+            if (attendee is null)
             {
                 throw new InvalidOperationException("User is not an attendee of this event.");
             }
@@ -172,7 +172,7 @@ namespace TrashMob.Shared.Managers.Events
                 .Include(ea => ea.User)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (attendee == null)
+            if (attendee is null)
             {
                 throw new InvalidOperationException("User is not an attendee of this event.");
             }
@@ -202,7 +202,7 @@ namespace TrashMob.Shared.Managers.Events
             }
 
             var evt = await eventRepository.GetAsync(eventId, cancellationToken);
-            if (evt == null)
+            if (evt is null)
             {
                 return;
             }

@@ -32,7 +32,7 @@ namespace TrashMob.Shared.Managers.Adoptions
         {
             // Validate adoption exists and is approved
             var adoption = await adoptionManager.GetAsync(teamAdoptionId, cancellationToken);
-            if (adoption == null)
+            if (adoption is null)
             {
                 return ServiceResult<TeamAdoptionEvent>.Failure("Adoption not found.");
             }
@@ -44,7 +44,7 @@ namespace TrashMob.Shared.Managers.Adoptions
 
             // Validate event exists
             var evt = await eventManager.GetAsync(eventId, cancellationToken);
-            if (evt == null)
+            if (evt is null)
             {
                 return ServiceResult<TeamAdoptionEvent>.Failure("Event not found.");
             }
@@ -83,7 +83,7 @@ namespace TrashMob.Shared.Managers.Adoptions
             CancellationToken cancellationToken = default)
         {
             var adoptionEvent = await GetAsync(teamAdoptionEventId, cancellationToken);
-            if (adoptionEvent == null)
+            if (adoptionEvent is null)
             {
                 return ServiceResult<bool>.Failure("Adoption event link not found.");
             }
@@ -152,7 +152,7 @@ namespace TrashMob.Shared.Managers.Adoptions
             CancellationToken cancellationToken = default)
         {
             var adoption = await adoptionManager.GetAsync(teamAdoptionId, cancellationToken);
-            if (adoption == null)
+            if (adoption is null)
             {
                 return;
             }
@@ -164,7 +164,7 @@ namespace TrashMob.Shared.Managers.Adoptions
             // Update tracking fields
             adoption.EventCount = eventsList.Count;
             adoption.LastEventDate = eventsList
-                .Where(ae => ae.Event != null)
+                .Where(ae => ae.Event is not null)
                 .Select(ae => ae.Event.EventDate)
                 .OrderByDescending(d => d)
                 .FirstOrDefault();

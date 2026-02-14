@@ -35,7 +35,7 @@ namespace TrashMob.Shared.Managers.Prospects
             CancellationToken cancellationToken = default)
         {
             var prospect = await prospectRepository.GetAsync(prospectId, cancellationToken);
-            if (prospect == null)
+            if (prospect is null)
             {
                 return new OutreachPreview { ProspectId = prospectId, Subject = "Prospect not found" };
             }
@@ -70,7 +70,7 @@ namespace TrashMob.Shared.Managers.Prospects
             }
 
             var prospect = await prospectRepository.GetAsync(prospectId, cancellationToken);
-            if (prospect == null)
+            if (prospect is null)
             {
                 return new OutreachSendResult { Success = false, ErrorMessage = "Prospect not found." };
             }

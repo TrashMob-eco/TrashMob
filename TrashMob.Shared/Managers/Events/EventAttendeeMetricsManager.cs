@@ -33,7 +33,7 @@ namespace TrashMob.Shared.Managers.Events
         {
             // Validate event exists
             var eventEntity = await eventManager.GetAsync(eventId, cancellationToken);
-            if (eventEntity == null)
+            if (eventEntity is null)
             {
                 return ServiceResult<EventAttendeeMetrics>.Failure("Event not found.");
             }
@@ -50,7 +50,7 @@ namespace TrashMob.Shared.Managers.Events
             // Check for existing submission
             var existingMetrics = await GetMyMetricsAsync(eventId, userId, cancellationToken);
 
-            if (existingMetrics != null)
+            if (existingMetrics is not null)
             {
                 // Update existing submission if still pending
                 if (existingMetrics.Status != EventAttendeeMetricsStatus.Pending)
@@ -138,7 +138,7 @@ namespace TrashMob.Shared.Managers.Events
             CancellationToken cancellationToken = default)
         {
             var metrics = await Repo.GetAsync(metricsId, cancellationToken);
-            if (metrics == null)
+            if (metrics is null)
             {
                 return ServiceResult<EventAttendeeMetrics>.Failure("Metrics submission not found.");
             }
@@ -166,7 +166,7 @@ namespace TrashMob.Shared.Managers.Events
             CancellationToken cancellationToken = default)
         {
             var metrics = await Repo.GetAsync(metricsId, cancellationToken);
-            if (metrics == null)
+            if (metrics is null)
             {
                 return ServiceResult<EventAttendeeMetrics>.Failure("Metrics submission not found.");
             }
@@ -196,7 +196,7 @@ namespace TrashMob.Shared.Managers.Events
             CancellationToken cancellationToken = default)
         {
             var metrics = await Repo.GetAsync(metricsId, cancellationToken);
-            if (metrics == null)
+            if (metrics is null)
             {
                 return ServiceResult<EventAttendeeMetrics>.Failure("Metrics submission not found.");
             }
@@ -390,7 +390,7 @@ namespace TrashMob.Shared.Managers.Events
                 }
 
                 // Add to contributors list (all approved metrics are public by default)
-                if (metrics.User != null)
+                if (metrics.User is not null)
                 {
                     summary.Contributors.Add(new PublicAttendeeMetrics
                     {
@@ -475,7 +475,7 @@ namespace TrashMob.Shared.Managers.Events
                 }
 
                 // Add event breakdown
-                if (metrics.Event != null)
+                if (metrics.Event is not null)
                 {
                     stats.EventBreakdown.Add(new UserEventMetricsSummary
                     {

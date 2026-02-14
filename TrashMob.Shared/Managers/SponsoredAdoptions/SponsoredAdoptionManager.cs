@@ -85,7 +85,7 @@ namespace TrashMob.Shared.Managers.SponsoredAdoptions
                     .OrderByDescending(l => l.CleanupDate)
                     .FirstOrDefault();
 
-                if (lastCleanup != null &&
+                if (lastCleanup is not null &&
                     (now - lastCleanup.CleanupDate).TotalDays <= adoption.CleanupFrequencyDays)
                 {
                     stats.AdoptionsOnSchedule++;

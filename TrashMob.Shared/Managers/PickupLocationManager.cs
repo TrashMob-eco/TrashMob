@@ -90,7 +90,7 @@ namespace TrashMob.Shared.Managers
             var partnerLocation =
                 await eventPartnerLocationServiceManager.GetHaulingPartnerLocationForEvent(eventId, cancellationToken);
 
-            if (partnerLocation == null)
+            if (partnerLocation is null)
             {
                 // Todo add error handling for this
                 return;

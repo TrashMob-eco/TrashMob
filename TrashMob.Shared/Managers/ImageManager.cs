@@ -44,7 +44,7 @@ namespace TrashMob.Shared.Managers
         /// <inheritdoc />
         public async Task UploadImageAsync(ImageUpload imageUpload)
         {
-            if (imageUpload?.FormFile == null)
+            if (imageUpload?.FormFile is null)
             {
                 throw new ArgumentNullException(nameof(imageUpload));
             }
@@ -65,7 +65,7 @@ namespace TrashMob.Shared.Managers
             var fileName = $"{imageUpload.ParentId}-{imageUpload.ImageType}-{ImageSizeEnum.Raw}-{fileTime}{Path.GetExtension(imageUpload.FormFile?.FileName)}".ToLower();
 
             // Upload the raw file
-            if (imageUpload.FormFile == null)
+            if (imageUpload.FormFile is null)
             {
                 throw new ArgumentException("ImageUpload FormFile cannot be null");
             }
@@ -115,7 +115,7 @@ namespace TrashMob.Shared.Managers
         {
             var imageName = await GetImageNameAsync(parentId, imageType);
 
-            if (imageName == null)
+            if (imageName is null)
             {
                 return false;
             }

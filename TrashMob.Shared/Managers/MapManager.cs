@@ -124,7 +124,7 @@ namespace TrashMob.Shared.Managers
         {
             var azureMaps = new AzureMapsToolkit.AzureMapsServices(GetMapKey());
 
-            if (azureMaps == null)
+            if (azureMaps is null)
             {
                 logger.LogError("Failed to get instance of azuremaps.");
                 throw new Exception("Failed to get instance of azuremaps");
@@ -156,7 +156,7 @@ namespace TrashMob.Shared.Managers
         {
             var azureMaps = new AzureMapsToolkit.AzureMapsServices(GetMapKey());
 
-            if (azureMaps == null)
+            if (azureMaps is null)
             {
                 logger.LogError("Failed to get instance of azuremaps.");
                 throw new Exception("Failed to get instance of azuremaps");

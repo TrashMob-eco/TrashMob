@@ -74,7 +74,7 @@ namespace TrashMob.Shared.Engine
                 foreach (var report in recentReports)
                 {
                     var firstImage = report.LitterImages?.FirstOrDefault();
-                    if (firstImage == null || !firstImage.Latitude.HasValue || !firstImage.Longitude.HasValue)
+                    if (firstImage is null || !firstImage.Latitude.HasValue || !firstImage.Longitude.HasValue)
                     {
                         continue;
                     }
@@ -130,7 +130,7 @@ namespace TrashMob.Shared.Engine
                 var reportListHtml = string.Join("", reports.Take(5).Select(r =>
                 {
                     var firstImage = r.LitterImages?.FirstOrDefault();
-                    var location = firstImage != null
+                    var location = firstImage is not null
                         ? $"{firstImage.City}, {firstImage.Region}"
                         : "Unknown location";
                     var url = $"{baseUrl}/litterreports/{r.Id}";

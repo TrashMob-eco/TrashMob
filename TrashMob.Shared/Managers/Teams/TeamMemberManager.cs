@@ -79,7 +79,7 @@ namespace TrashMob.Shared.Managers.Teams
         public async Task<int> RemoveMemberAsync(Guid teamId, Guid userId, CancellationToken cancellationToken = default)
         {
             var member = await GetByTeamAndUserAsync(teamId, userId, cancellationToken);
-            if (member == null)
+            if (member is null)
             {
                 return 0;
             }
@@ -91,7 +91,7 @@ namespace TrashMob.Shared.Managers.Teams
         public async Task<TeamMember> PromoteToLeadAsync(Guid teamId, Guid userId, Guid promotedByUserId, CancellationToken cancellationToken = default)
         {
             var member = await GetByTeamAndUserAsync(teamId, userId, cancellationToken);
-            if (member == null)
+            if (member is null)
             {
                 throw new InvalidOperationException($"User {userId} is not a member of team {teamId}");
             }
@@ -107,7 +107,7 @@ namespace TrashMob.Shared.Managers.Teams
         public async Task<TeamMember> DemoteFromLeadAsync(Guid teamId, Guid userId, Guid demotedByUserId, CancellationToken cancellationToken = default)
         {
             var member = await GetByTeamAndUserAsync(teamId, userId, cancellationToken);
-            if (member == null)
+            if (member is null)
             {
                 throw new InvalidOperationException($"User {userId} is not a member of team {teamId}");
             }

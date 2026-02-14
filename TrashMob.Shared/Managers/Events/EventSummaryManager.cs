@@ -48,7 +48,7 @@ namespace TrashMob.Shared.Managers.Events
                 })
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (aggregates != null)
+            if (aggregates is not null)
             {
                 stats.TotalBags = aggregates.TotalBags + aggregates.TotalBuckets / 3;
                 stats.TotalHours = aggregates.TotalHoursMinutes / 60;
@@ -92,7 +92,7 @@ namespace TrashMob.Shared.Managers.Events
                 elr => eventIdsList.Contains(elr.EventId), cancellationToken);
 
             stats.TotalLitterReportsClosed = eventLitterReports.Count(elr =>
-                elr.LitterReport != null &&
+                elr.LitterReport is not null &&
                 elr.LitterReport.LitterReportStatusId == (int)LitterReportStatusEnum.Cleaned);
 
             stats.TotalLitterReportsSubmitted = await litterReportManager.GetUserLitterReportCountAsync(userId, cancellationToken);
@@ -195,7 +195,7 @@ namespace TrashMob.Shared.Managers.Events
 
             foreach (var eventLitterReport in eventLitterReports)
             {
-                if (eventLitterReport.LitterReport != null &&
+                if (eventLitterReport.LitterReport is not null &&
                     eventLitterReport.LitterReport.LitterReportStatusId != (int)LitterReportStatusEnum.Cleaned)
                 {
                     // Update the litter report status to Cleaned
