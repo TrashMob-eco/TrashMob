@@ -36,7 +36,7 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// <param name="UserId">The unique identifier of the user accepting the invitation.</param>
         /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        Task AcceptInvitation(Guid partnerAdminInvitationId, Guid UserId, CancellationToken cancellationToken);
+        Task AcceptInvitationAsync(Guid partnerAdminInvitationId, Guid UserId, CancellationToken cancellationToken);
 
         /// <summary>
         /// Declines a partner admin invitation for a user.
@@ -45,7 +45,7 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// <param name="UserId">The unique identifier of the user declining the invitation.</param>
         /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        Task DeclineInvitation(Guid partnerAdminInvitationId, Guid UserId, CancellationToken cancellationToken);
+        Task DeclineInvitationAsync(Guid partnerAdminInvitationId, Guid UserId, CancellationToken cancellationToken);
 
         /// <summary>
         /// Resends a partner admin invitation.
@@ -54,7 +54,7 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// <param name="UserId">The unique identifier of the user resending the invitation.</param>
         /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
         /// <returns>The resent partner admin invitation.</returns>
-        Task<PartnerAdminInvitation> ResendPartnerAdminInvitation(Guid partnerAdminInvitationId, Guid UserId,
+        Task<PartnerAdminInvitation> ResendPartnerAdminInvitationAsync(Guid partnerAdminInvitationId, Guid UserId,
             CancellationToken cancellationToken);
     }
 }

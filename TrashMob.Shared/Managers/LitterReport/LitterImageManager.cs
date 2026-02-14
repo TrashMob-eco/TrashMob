@@ -76,7 +76,7 @@ namespace TrashMob.Shared.Managers.LitterReport
         public async Task<int> HardDeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
             await base.DeleteAsync(id, cancellationToken);
-            await imageManager.DeleteImage(id, ImageTypeEnum.LitterImage);
+            await imageManager.DeleteImageAsync(id, ImageTypeEnum.LitterImage);
 
             return 1;
         }

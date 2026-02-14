@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers.Interfaces
+namespace TrashMob.Shared.Managers.Interfaces
 {
     using System;
     using System.Threading;
@@ -15,7 +15,7 @@
         /// Uploads an image to blob storage.
         /// </summary>
         /// <param name="imageUpload">The image upload request containing image data.</param>
-        public Task UploadImage(ImageUpload imageUpload);
+        public Task UploadImageAsync(ImageUpload imageUpload);
 
         /// <summary>
         /// Gets the URL for an image in blob storage.
@@ -33,6 +33,6 @@
         /// <param name="parentId">The parent entity ID.</param>
         /// <param name="imageType">The type of image to delete.</param>
         /// <returns>True if the image was deleted, false otherwise.</returns>
-        public Task<bool> DeleteImage(Guid parentId, ImageTypeEnum imageType);
+        public Task<bool> DeleteImageAsync(Guid parentId, ImageTypeEnum imageType);
     }
 }

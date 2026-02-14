@@ -145,7 +145,7 @@ namespace TrashMob.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>Updated partner admin invitation.</remarks>
         [HttpPost("resend/{partnerAdminInvitationId}")]
-        public async Task<IActionResult> ResendPartnerAdminInvitation(Guid partnerAdminInvitationId,
+        public async Task<IActionResult> ResendPartnerAdminInvitationAsync(Guid partnerAdminInvitationId,
             CancellationToken cancellationToken)
         {
             // Make sure the person adding the user is either an admin or already a user for the partner
@@ -158,8 +158,8 @@ namespace TrashMob.Controllers
             }
 
             var result = await partnerAdminInvitationManager
-                .ResendPartnerAdminInvitation(partnerAdminInvitationId, UserId, cancellationToken);
-            TrackEvent(nameof(ResendPartnerAdminInvitation));
+                .ResendPartnerAdminInvitationAsync(partnerAdminInvitationId, UserId, cancellationToken);
+            TrackEvent(nameof(ResendPartnerAdminInvitationAsync));
 
             return Ok(result);
         }
@@ -175,7 +175,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> AcceptPartnerAdminInvitation(Guid partnerAdminInvitationId,
             CancellationToken cancellationToken)
         {
-            await partnerAdminInvitationManager.AcceptInvitation(partnerAdminInvitationId, UserId, cancellationToken);
+            await partnerAdminInvitationManager.AcceptInvitationAsync(partnerAdminInvitationId, UserId, cancellationToken);
             TrackEvent(nameof(AcceptPartnerAdminInvitation));
 
             return Ok();
@@ -192,7 +192,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> DeclinePartnerAdminInvitation(Guid partnerAdminInvitationId,
             CancellationToken cancellationToken)
         {
-            await partnerAdminInvitationManager.DeclineInvitation(partnerAdminInvitationId, UserId, cancellationToken);
+            await partnerAdminInvitationManager.DeclineInvitationAsync(partnerAdminInvitationId, UserId, cancellationToken);
             TrackEvent(nameof(AcceptPartnerAdminInvitation));
 
             return Ok();

@@ -348,7 +348,7 @@ namespace TrashMob.Controllers
             // Upload to blob storage
             imageUpload.ParentId = photoId;
             imageUpload.ImageType = ImageTypeEnum.TeamPhoto;
-            await imageManager.UploadImage(imageUpload);
+            await imageManager.UploadImageAsync(imageUpload);
 
             // Get the image URL and save photo record
             var imageUrl = await imageManager.GetImageUrlAsync(photoId, ImageTypeEnum.TeamPhoto, ImageSizeEnum.Reduced, cancellationToken);
@@ -483,13 +483,13 @@ namespace TrashMob.Controllers
             // Delete existing logo if present
             if (!string.IsNullOrWhiteSpace(team.LogoUrl))
             {
-                await imageManager.DeleteImage(teamId, ImageTypeEnum.TeamLogo);
+                await imageManager.DeleteImageAsync(teamId, ImageTypeEnum.TeamLogo);
             }
 
             // Upload new logo to blob storage
             imageUpload.ParentId = teamId;
             imageUpload.ImageType = ImageTypeEnum.TeamLogo;
-            await imageManager.UploadImage(imageUpload);
+            await imageManager.UploadImageAsync(imageUpload);
 
             // Get the image URL and update team
             var logoUrl = await imageManager.GetImageUrlAsync(teamId, ImageTypeEnum.TeamLogo, ImageSizeEnum.Reduced, cancellationToken);
@@ -532,7 +532,7 @@ namespace TrashMob.Controllers
             // Delete logo from blob storage
             if (!string.IsNullOrWhiteSpace(team.LogoUrl))
             {
-                await imageManager.DeleteImage(teamId, ImageTypeEnum.TeamLogo);
+                await imageManager.DeleteImageAsync(teamId, ImageTypeEnum.TeamLogo);
             }
 
             // Clear logo URL on team

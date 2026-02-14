@@ -16,7 +16,6 @@ namespace TrashMob.Controllers
     /// Controller for managing images, including upload and deletion.
     /// </summary>
     [Route("api/image")]
-    [ApiController]
     public class ImageController : SecureController
     {
         private readonly IEventManager eventManager;
@@ -42,7 +41,7 @@ namespace TrashMob.Controllers
         [HttpPost]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> UploadImage([FromForm] ImageUpload imageUpload,
+        public async Task<IActionResult> UploadImageAsync([FromForm] ImageUpload imageUpload,
             CancellationToken cancellationToken)
         {
             var mobEvent = await eventManager.GetAsync(imageUpload.ParentId, cancellationToken);
@@ -52,7 +51,7 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            await imageManager.UploadImage(imageUpload);
+            await imageManager.UploadImageAsync(imageUpload);
 
             return Ok();
         }
@@ -67,7 +66,7 @@ namespace TrashMob.Controllers
         [HttpDelete]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> DeleteImage(Guid parentId, ImageTypeEnum imageType,
+        public async Task<IActionResult> DeleteImageAsync(Guid parentId, ImageTypeEnum imageType,
             CancellationToken cancellationToken)
         {
             var mobEvent = await eventManager.GetAsync(parentId, cancellationToken);
@@ -77,7 +76,7 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            var deleted = await imageManager.DeleteImage(parentId, imageType);
+            var deleted = await imageManager.DeleteImageAsync(parentId, imageType);
             if (deleted)
             {
                 return NoContent();

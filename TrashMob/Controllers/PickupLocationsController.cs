@@ -165,7 +165,7 @@ namespace TrashMob.Controllers
         [HttpPost("submit/{eventId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> SubmitPickupLocations(Guid eventId, CancellationToken cancellationToken)
+        public async Task<IActionResult> SubmitPickupLocationsAsync(Guid eventId, CancellationToken cancellationToken)
         {
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
 
@@ -174,7 +174,7 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            await pickupLocationManager.SubmitPickupLocations(eventId, UserId, cancellationToken);
+            await pickupLocationManager.SubmitPickupLocationsAsync(eventId, UserId, cancellationToken);
 
             TrackEvent("SubmitPickupLocations");
 
@@ -191,7 +191,7 @@ namespace TrashMob.Controllers
         [HttpPost("image/{eventId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        public async Task<IActionResult> UploadImage([FromForm] ImageUpload imageUpload, Guid eventId,
+        public async Task<IActionResult> UploadImageAsync([FromForm] ImageUpload imageUpload, Guid eventId,
             CancellationToken cancellationToken)
         {
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
@@ -201,7 +201,7 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            await imageManager.UploadImage(imageUpload);
+            await imageManager.UploadImageAsync(imageUpload);
 
             return Ok();
         }

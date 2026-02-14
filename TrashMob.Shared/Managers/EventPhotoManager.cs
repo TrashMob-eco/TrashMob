@@ -109,7 +109,7 @@ namespace TrashMob.Shared.Managers
                     FormFile = new FormFileWrapper(stream, "eventphoto.jpg")
                 };
 
-                await imageManager.UploadImage(imageUpload);
+                await imageManager.UploadImageAsync(imageUpload);
 
                 // Get the URLs
                 photo.ImageUrl = await imageManager.GetImageUrlAsync(

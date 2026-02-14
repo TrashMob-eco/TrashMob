@@ -17,7 +17,6 @@ namespace TrashMob.Controllers
     /// Controller for professional cleanup log operations.
     /// </summary>
     [Route("api/professional-companies/{companyId}/cleanup-logs")]
-    [ApiController]
     public class ProfessionalCleanupLogsController : SecureController
     {
         private readonly IProfessionalCleanupLogManager logManager;

@@ -17,7 +17,6 @@ namespace TrashMob.Controllers
     /// Controller for managing sponsors within a community's sponsored adoption program.
     /// </summary>
     [Route("api/communities/{partnerId}/sponsors")]
-    [ApiController]
     public class CommunitySponsorsController : SecureController
     {
         private readonly ISponsorManager sponsorManager;

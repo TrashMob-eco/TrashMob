@@ -17,7 +17,6 @@ namespace TrashMob.Controllers
     /// Controller for managing event links to team adoptions.
     /// </summary>
     [Route("api/adoptions/{adoptionId}/events")]
-    [ApiController]
     public class AdoptionEventsController : SecureController
     {
         private readonly ITeamAdoptionEventManager adoptionEventManager;

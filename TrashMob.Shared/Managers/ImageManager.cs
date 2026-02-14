@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Shared.Managers
+namespace TrashMob.Shared.Managers
 {
     using System;
     using System.IO;
@@ -42,7 +42,7 @@
         }
 
         /// <inheritdoc />
-        public async Task UploadImage(ImageUpload imageUpload)
+        public async Task UploadImageAsync(ImageUpload imageUpload)
         {
             if (imageUpload?.FormFile == null)
             {
@@ -114,7 +114,7 @@
         }
 
         /// <inheritdoc />
-        public async Task<bool> DeleteImage(Guid parentId, ImageTypeEnum imageType)
+        public async Task<bool> DeleteImageAsync(Guid parentId, ImageTypeEnum imageType)
         {
             var imageName = await GetImageNameAsync(parentId, imageType);
 

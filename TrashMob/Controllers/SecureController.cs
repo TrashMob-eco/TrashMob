@@ -6,8 +6,6 @@ namespace TrashMob.Controllers
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-
-    [ApiController]
     public abstract class SecureController : BaseController
     {
         private IAuthorizationService authorizationService;

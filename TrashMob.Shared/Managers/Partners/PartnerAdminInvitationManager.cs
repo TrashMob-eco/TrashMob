@@ -160,7 +160,7 @@ namespace TrashMob.Shared.Managers.Partners
         }
 
         /// <inheritdoc />
-        public async Task AcceptInvitation(Guid partnerAdminInviationId, Guid userId,
+        public async Task AcceptInvitationAsync(Guid partnerAdminInviationId, Guid userId,
             CancellationToken cancellationToken)
         {
             var partnerAdminInvitation = await Repository.Get(pa => pa.Id == partnerAdminInviationId)
@@ -183,7 +183,7 @@ namespace TrashMob.Shared.Managers.Partners
         }
 
         /// <inheritdoc />
-        public async Task DeclineInvitation(Guid partnerAdminInviationId, Guid userId,
+        public async Task DeclineInvitationAsync(Guid partnerAdminInviationId, Guid userId,
             CancellationToken cancellationToken)
         {
             var partnerAdminInvitation = await Repository.Get(pa => pa.Id == partnerAdminInviationId)
@@ -199,7 +199,7 @@ namespace TrashMob.Shared.Managers.Partners
         }
 
         /// <inheritdoc />
-        public async Task<PartnerAdminInvitation> ResendPartnerAdminInvitation(Guid partnerAdminInvitationId,
+        public async Task<PartnerAdminInvitation> ResendPartnerAdminInvitationAsync(Guid partnerAdminInvitationId,
             Guid UserId, CancellationToken cancellationToken)
         {
             // Check to see if this user already exists in the system.

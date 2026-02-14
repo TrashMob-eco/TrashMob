@@ -234,13 +234,13 @@ namespace TrashMob.Controllers
             // Delete existing profile photo if present
             if (!string.IsNullOrWhiteSpace(user.ProfilePhotoUrl))
             {
-                await imageManager.DeleteImage(UserId, ImageTypeEnum.UserProfilePhoto);
+                await imageManager.DeleteImageAsync(UserId, ImageTypeEnum.UserProfilePhoto);
             }
 
             // Upload new photo to blob storage
             imageUpload.ParentId = UserId;
             imageUpload.ImageType = ImageTypeEnum.UserProfilePhoto;
-            await imageManager.UploadImage(imageUpload);
+            await imageManager.UploadImageAsync(imageUpload);
 
             // Get the reduced-size URL and update user
             var imageUrl = await imageManager.GetImageUrlAsync(UserId, ImageTypeEnum.UserProfilePhoto, ImageSizeEnum.Reduced, cancellationToken);
