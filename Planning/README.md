@@ -13,7 +13,7 @@
 - **[Executive Summary](./Executive_Summary.md)** - High-level overview, strategic objectives, and 2026 roadmap
 - **[Risks & Mitigations](./Risks_and_Mitigations.md)** - Cross-project risks and mitigation strategies
 
-### 2026 Projects (46 Total)
+### 2026 Projects (47 Total)
 
 **Note:** Projects are not time-bound. Volunteers pick up work based on priority and availability.
 
@@ -68,6 +68,7 @@
 | [Project 39 - Regional Communities](./Projects/Project_39_Regional_Communities.md) | County/state community pages and adoption programs | ✅ Complete |
 | [Project 41 - Sponsored Adoptions](./Projects/Project_41_Sponsored_Adoptions.md) | Sponsor-funded professional cleanup tracking | In Progress (Phases 1-4 Complete) |
 | [Project 42 - Partner Document Management](./Projects/Project_42_Partner_Document_Management.md) | File upload & storage for partner documents | ✅ Complete |
+| [Project 47 - Team-Visible Private Events](./Projects/Project_47_Team_Private_Events.md) | Team-scoped event visibility for member-only events | Not Started |
 
 #### High Priority (Marketing & Growth)
 
@@ -108,6 +109,7 @@
 - [Project 42 - Partner Document Management](./Projects/Project_42_Partner_Document_Management.md)
 - [Project 43 - Sign Management](./Projects/Project_43_Sign_Management.md)
 - [Project 44 - Area Map Editor](./Projects/Project_44_Area_Map_Editor.md)
+- [Project 47 - Team-Visible Private Events](./Projects/Project_47_Team_Private_Events.md)
 
 ### Impact Tracking
 - [Project 7 - Event Weights](./Projects/Project_07_Event_Weights.md) ✅
@@ -151,10 +153,10 @@
 | **In Progress** | 12 | Projects 1 (Phase 2 Complete, Phase 3 next), 4 (Phases 1-2 Complete), 6, 8 (Phase 1-4 Complete), 15 (Backend & Website Complete), 22 (Phase 1-3 Complete), 25 (Phase 1 Complete), 30, 38 (Phases 1-4, 6-7 Complete), 41 (Phases 1-4 Complete), 44 (Phases 1-4 Complete), 45 (Phases 1-4 Complete) |
 | **Ready for Review** | 2 | Projects 2, 5 |
 | **Planning** | 1 | Project 23 (combined with Project 1) |
-| **Not Started** | 6 | Projects 12, 24, 31, 36, 43, 46 |
+| **Not Started** | 7 | Projects 12, 24, 31, 36, 43, 46, 47 |
 | **Deprioritized** | 1 | Project 33 |
 
-**Total:** 46 project specifications documented
+**Total:** 47 project specifications documented
 
 ---
 
