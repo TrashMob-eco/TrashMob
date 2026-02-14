@@ -30,7 +30,7 @@ const faqs = [
             },
             {
                 question: 'Why do I have to be a registered user to create an event?',
-                answer: 'We want to ensure that all events are legitimate and properly led, and anonymously user-led events have the potential to create security and safety problems.',
+                answer: 'We want to ensure that all events are legitimate and properly led, and anonymously user-led events have the potential to create security and safety problems. Additionally, every participant must sign the appropriate liability waivers before attending an event, and registration is required to track waiver compliance and protect both volunteers and event organizers.',
             },
             {
                 question: 'Why does TrashMob ask for latitude and longitude values when creating an event?',
@@ -58,6 +58,14 @@ const faqs = [
             {
                 question: 'What does TrashMob do with my profile and event data?',
                 answer: 'Profile data is used to help event owners have an accurate list of registered attendees and their contact information. Event data is used to add to TrashMob’s total stats. Please read our <a href="https://www.trashmob.eco/privacypolicy">privacy policy</a> and <a href="https://www.trashmob.eco/termsofservice">terms of service</a>.',
+            },
+            {
+                question: 'Why does TrashMob ask for my name?',
+                answer: 'Your name is used on liability waivers, which are legally required documents that protect both you and event organizers. Waivers must include your full legal name to be valid. Your name also appears on leaderboards (if you opt in) and helps event leads identify registered attendees. We never share your name with third parties outside of event coordination.',
+            },
+            {
+                question: 'Why does TrashMob ask for my date of birth?',
+                answer: 'We collect your date of birth to determine whether you are an adult (18+) or a minor (13\u201317). This is important because minors require parental or guardian consent to participate in cleanup events, and there are certain roles (such as Event Lead, Team Lead, and Partner Admin) that are restricted to adults. Collecting date of birth also helps us comply with child privacy laws like COPPA. We never display your date of birth publicly.',
             },
             {
                 question: 'Can I change my base location?',
@@ -174,7 +182,7 @@ const faqs = [
             },
             {
                 question: 'What supplies do volunteers need?',
-                answer: 'This will depend on what type of environment they are working in, but here are some suggestions:<ul class="list-disc pl-8"><li>Garbage Bags</li><li>Sharps Container</li><li>Cardboard box for glass</li><li>Litter Pickers ahead traffic sign</li></ul>',
+                answer: 'This will depend on what type of environment they are working in, but here are some suggestions:<ul class="list-disc pl-8"><li>Garbage Bags</li><li>Sharps Container</li><li>Cardboard box for glass</li><li>Litter Pickers Ahead traffic sign</li></ul>',
             },
             {
                 question: 'How do event organizers request Partner services?',
@@ -209,7 +217,7 @@ const faqs = [
             },
             {
                 question: 'Can I report a website bug?',
-                answer: 'Yes, you can! Please <a href="https://www.trashmob.eco/contactus">Contact us</a> and let us know what you found. Thank you!',
+                answer: 'Yes, you can! Once you are signed in, use the Feedback tool in the bottom-left corner of any page to let us know what you found. Thank you!',
             },
             {
                 question: 'Is the TrashMob team looking for support?',
@@ -260,7 +268,7 @@ export const Faq: React.FC = () => {
                         <CardContent className='flex flex-col gap-4'>
                             {faqGroup.questions.map((item, i) => (
                                 <div className='prose' key={`q-${i}`}>
-                                    <h5>{item.question}</h5>
+                                    <h5 className='font-semibold'>{item.question}</h5>
                                     <p
                                         className='text-base text-foreground/75'
                                         dangerouslySetInnerHTML={{ __html: item.answer }}

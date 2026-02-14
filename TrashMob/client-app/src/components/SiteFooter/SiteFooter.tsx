@@ -18,7 +18,6 @@ export const SiteFooter = () => {
         { href: '/contactus', title: 'Contact us' },
         { href: '/privacypolicy', title: 'Privacy policy' },
         { href: '/termsofservice', title: 'Terms of service' },
-        { href: '/waivers', title: 'Waivers' },
     ];
 
     return (
@@ -33,7 +32,7 @@ export const SiteFooter = () => {
                     <div className='w-72 md:w-96 max-w-full mb-5 mx-auto md:mx-0!'>
                         <Logo fill='#fff' className='opacity-40' />
                     </div>
-                    <div className='grid grid-rows-10 grid-cols-1 md:grid-rows-4 md:grid-cols-3 gap-4 gap-x-8 md:grid-flow-col'>
+                    <div className='grid grid-cols-1 md:grid-rows-3 md:grid-cols-3 gap-4 gap-x-8 md:grid-flow-col'>
                         {footerNavs.map((nav) => {
                             return nav.href.startsWith('/') ? (
                                 <Link to={nav.href} key={nav.href} className={cn(navClassName)}>

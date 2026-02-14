@@ -3,7 +3,6 @@ import { Link } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronDown, Globe, Users, BarChart3, MapPin, Calendar, Mail, Shield, CheckCircle2 } from 'lucide-react';
 
-import { HeroSection } from '@/components/Customization/HeroSection';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { GetFeaturedCommunities, GetCommunityPublicStats } from '@/services/communities';
@@ -169,21 +168,31 @@ export const ForCommunitiesPage: FC = () => {
 
     return (
         <div>
-            {/* Hero Section */}
-            <HeroSection
-                Title='Bring TrashMob to Your Community'
-                Description='Organize cleanups, engage volunteers, and track your environmental impact with a branded community page on TrashMob.eco.'
-            />
-
-            {/* Hero CTA Buttons */}
-            <section className='bg-primary text-primary-foreground pb-8'>
-                <div className='container flex flex-col sm:flex-row gap-4 justify-center'>
-                    <Button size='lg' variant='secondary' asChild>
-                        <Link to='/becomeapartner?type=community'>Start Your Community</Link>
-                    </Button>
-                    <Button size='lg' variant='outline' className='border-white text-white hover:bg-white/10' asChild>
-                        <Link to='/communities'>Browse Communities</Link>
-                    </Button>
+            {/* Hero Section with CTA */}
+            <section className='bg-primary text-primary-foreground'>
+                <div className='container relative py-10 md:py-14'>
+                    <div className='relative z-10 max-w-2xl'>
+                        <h1 className='font-bold text-2xl md:text-[40px] leading-tight md:leading-[50px] mb-3'>
+                            Bring TrashMob to Your Community
+                        </h1>
+                        <p className='font-medium text-primary-foreground/90 mb-6'>
+                            Organize cleanups, engage volunteers, and track your environmental impact with a branded
+                            community page on TrashMob.eco.
+                        </p>
+                        <div className='flex flex-col sm:flex-row gap-3'>
+                            <Button size='lg' variant='secondary' asChild>
+                                <Link to='/becomeapartner?type=community'>Start Your Community</Link>
+                            </Button>
+                            <Button
+                                size='lg'
+                                variant='outline'
+                                className='border-white text-white hover:bg-white/10'
+                                asChild
+                            >
+                                <Link to='/communities'>Browse Communities</Link>
+                            </Button>
+                        </div>
+                    </div>
                 </div>
             </section>
 

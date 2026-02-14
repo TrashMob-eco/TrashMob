@@ -60,21 +60,40 @@ const tabContents = [
                 `,
             },
             {
-                question: 'After the Event',
+                question: 'After the Event — Event Summary',
                 answer: `
-                    <p>After your cleanup, record what you accomplished:</p>
+                    <p>After your cleanup, record what you accomplished on the <strong>Event Summary</strong> page:</p>
                     <ol class="list-decimal pl-8">
                         <li>Go to <strong>My Dashboard</strong> and find your completed event</li>
-                        <li>Click <strong>"Add Summary"</strong> to record:
-                            <ul class="list-disc pl-8 mt-2">
-                                <li>Number of attendees</li>
-                                <li>Bags of litter collected</li>
-                                <li>Actual duration</li>
-                                <li>Notes about the cleanup</li>
-                            </ul>
-                        </li>
-                        <li>If a partner handled hauling, mark pickup locations so they know where to collect the bags</li>
+                        <li>Click <strong>"Add Summary"</strong> (or "Edit Summary" if one exists)</li>
                     </ol>
+                    <h6>Event Summary Information</h6>
+                    <p>Fill in the details of your cleanup:</p>
+                    <ul class="list-disc pl-8">
+                        <li><strong>Actual Number of Attendees</strong> - How many people showed up (pre-filled from event max)</li>
+                        <li><strong>Duration in Minutes</strong> - How long the cleanup actually took</li>
+                        <li><strong>Number of Bags</strong> - Total bags of litter collected</li>
+                        <li><strong>Number of Buckets</strong> - Total buckets used</li>
+                        <li><strong>Picked Weight</strong> - Total weight of litter collected</li>
+                        <li><strong>Weight Unit</strong> - Pounds or Kilograms (defaults to your profile preference)</li>
+                        <li><strong>Notes</strong> - Anything noteworthy about the cleanup</li>
+                    </ul>
+                    <p>Only the event lead can edit these fields. Click <strong>Save</strong> to record the summary.</p>
+                    <h6>Pickup Locations</h6>
+                    <p>If you requested hauling support from a partner, tell them exactly where to find the collected litter:</p>
+                    <ol class="list-decimal pl-8">
+                        <li>Click <strong>"Add Pickup Location"</strong> to open the location form</li>
+                        <li>Set a <strong>name</strong> for the pile (e.g. "Corner of Main & 5th")</li>
+                        <li>Place the <strong>pin on the map</strong> as precisely as possible so the hauling crew can find it</li>
+                        <li>Add <strong>notes</strong> with any extra detail (e.g. "Behind the dumpster by the parking lot")</li>
+                        <li>You can add as many locations as needed — use <strong>Edit</strong> or <strong>Remove</strong> from the menu on each row</li>
+                        <li>When all locations are entered, click <strong>"Submit"</strong> to notify the hauling partner</li>
+                    </ol>
+                    <p>Each location shows a status: <strong>Not submitted</strong>, <strong>Submitted</strong>, or <strong>Picked Up</strong>.</p>
+                    <h6>Litter Reports Cleaned</h6>
+                    <p>If your cleanup addressed any existing <strong>Litter Reports</strong>, associate them with this event so they're marked as cleaned. This links your cleanup effort to community-reported litter.</p>
+                    <h6>Hauling Partner Contacts</h6>
+                    <p>If a hauling partner is assigned to your event, their contact details (name, email, phone) are displayed here for easy reference.</p>
                     <p>Recording your impact helps TrashMob track community progress and recognize top volunteers!</p>
                 `,
             },
@@ -127,14 +146,27 @@ const tabContents = [
                         <li>Find your partnership under "My Partnerships"</li>
                         <li>Click <strong>"Activate Partnership"</strong> to open the Partner Dashboard</li>
                     </ol>
-                    <h6>Partner Dashboard Sections</h6>
+                    <p>The Partner Dashboard has a sidebar with the following sections:</p>
+                    <h6>Service Requests</h6>
+                    <p>View and manage cleanup event requests that volunteers have submitted for your services. This is the default landing page for the dashboard.</p>
+                    <h6>Edit Partner</h6>
+                    <p>Update your organization's name, website, and other basic details.</p>
+                    <h6>Locations</h6>
+                    <p>Manage the physical locations where you provide services (dumpster sites, supply pickup points, offices). You can view locations in a table or on a map. See the <strong>"Adding Partner Locations"</strong> section below for details.</p>
+                    <h6>Services</h6>
+                    <p>Configure which services (hauling, disposal, supplies, starter kits) you offer at each location. Each service can be enabled or disabled per location, and you can add notes about availability or conditions. See <strong>"Configuring Services"</strong> below.</p>
+                    <h6>Contacts</h6>
+                    <p>Manage two types of contacts:</p>
                     <ul class="list-disc pl-8">
-                        <li><strong>Manage Partner</strong> - Update organization name and website</li>
-                        <li><strong>Contacts</strong> - Set who TrashMob staff should contact for partnership issues</li>
-                        <li><strong>Admins</strong> - Add multiple people who can manage the partnership (recommended for continuity)</li>
-                        <li><strong>Documents</strong> - Store links to agreements, marketing materials, etc.</li>
-                        <li><strong>Social Media</strong> - List accounts to tag when we post about your events</li>
+                        <li><strong>Organization contacts</strong> - General contacts displayed publicly for your partnership</li>
+                        <li><strong>Location contacts</strong> - People who receive email notifications when volunteers request services at specific locations (tip: use a distribution list rather than an individual)</li>
                     </ul>
+                    <h6>Admins</h6>
+                    <p>Invite and manage people who can administer your partnership. You can send email invitations, track their status (pending or accepted), and resend or cancel invitations. We recommend having at least 2 admins for continuity.</p>
+                    <h6>Documents</h6>
+                    <p>Upload and manage partnership documents such as agreements, contracts, reports, insurance certificates, and more. You can either <strong>upload files directly</strong> (PDF, Word, Excel, PNG, JPEG — max 25 MB each) or <strong>link to external URLs</strong>. Documents can be categorized by type, given expiration dates, and downloaded or opened at any time. A storage meter shows how much of your allocated space is in use. See <strong>"Managing Documents"</strong> below for details.</p>
+                    <h6>Social Media</h6>
+                    <p>List your social media accounts so TrashMob can tag your organization when posting about events in your area.</p>
                 `,
             },
             {
@@ -173,6 +205,36 @@ const tabContents = [
                         <li><strong>Require advance notice</strong> - Get notified before events (important for hauling to ensure crews are available)</li>
                     </ul>
                     <p>Once configured, set your <strong>Partner Status to Active</strong>. Your locations will then appear to event leads in your area.</p>
+                `,
+            },
+            {
+                question: 'Managing Documents',
+                answer: `
+                    <p>The <strong>Documents</strong> tab lets you store important partnership files and links in one place.</p>
+                    <h6>Adding a Document</h6>
+                    <ol class="list-decimal pl-8">
+                        <li>Click <strong>"Add Document"</strong></li>
+                        <li>Give the document a <strong>name</strong></li>
+                        <li>Select a <strong>type</strong>: Agreement, Contract, Report, Insurance, Certificate, or Other</li>
+                        <li>Choose how to store it:
+                            <ul class="list-disc pl-8 mt-2">
+                                <li><strong>Upload a file</strong> - Drag and drop or browse to upload (PDF, Word, Excel, PNG, JPEG — max 25 MB)</li>
+                                <li><strong>Link to a URL</strong> - Paste a link to an externally hosted document</li>
+                            </ul>
+                        </li>
+                        <li>Optionally set an <strong>expiration date</strong> to track when the document needs renewal</li>
+                        <li>Click <strong>Save</strong></li>
+                    </ol>
+                    <h6>Managing Existing Documents</h6>
+                    <ul class="list-disc pl-8">
+                        <li><strong>Download</strong> uploaded files or <strong>Open</strong> linked URLs directly from the table</li>
+                        <li><strong>Edit</strong> a document's name, type, or expiration date</li>
+                        <li><strong>Remove</strong> documents you no longer need</li>
+                        <li><strong>Filter by type</strong> using the dropdown to find specific documents quickly</li>
+                        <li><strong>Search</strong> by document name using the search bar</li>
+                    </ul>
+                    <h6>Storage</h6>
+                    <p>A progress bar at the top of the Documents page shows how much of your allocated storage is in use. If you're running low on space, remove outdated files or use external URLs instead of uploads.</p>
                 `,
             },
         ],
@@ -264,6 +326,29 @@ const tabContents = [
                     <p><strong>Note:</strong> Private teams don't appear in search results - you'll need a direct invitation from a team lead.</p>
                 `,
             },
+            {
+                question: 'Adopting an Area',
+                answer: `
+                    <p>Some communities offer <strong>Adopt-a-Location</strong> programs where teams can take responsibility for keeping a specific area clean on a regular schedule.</p>
+                    <h6>How to Adopt an Area</h6>
+                    <ol class="list-decimal pl-8">
+                        <li>Find a community that has adoptable areas available</li>
+                        <li>Browse the available areas — each area shows its type (Park, Trail, Highway, etc.), cleanup frequency, and minimum events per year</li>
+                        <li>Submit an <strong>adoption application</strong> for the area your team wants to maintain</li>
+                        <li>Include any <strong>notes</strong> about why your team is a good fit</li>
+                        <li>Wait for the community admin to <strong>review and approve</strong> your application</li>
+                    </ol>
+                    <h6>What to Expect After Approval</h6>
+                    <ul class="list-disc pl-8">
+                        <li>Your team commits to cleaning the adopted area at the required frequency (e.g. every 90 days)</li>
+                        <li>You should meet the <strong>minimum number of events per year</strong> set by the community</li>
+                        <li>Review any <strong>safety requirements</strong> specific to the area before organizing cleanups</li>
+                        <li>The community tracks your team's <strong>compliance</strong> — keeping up with the schedule helps maintain your adoption</li>
+                        <li>Some areas allow <strong>co-adoption</strong>, meaning multiple teams can share responsibility for the same location</li>
+                    </ul>
+                    <p>Adopting an area is a great way to make a lasting, visible impact in your community and build team identity around a specific place.</p>
+                `,
+            },
         ],
     },
     {
@@ -274,7 +359,7 @@ const tabContents = [
             {
                 question: 'Exploring Communities',
                 answer: `
-                    <p>Communities are local areas or organizations that have partnered with TrashMob to organize cleanups in their region.</p>
+                    <p>Communities are local areas or organizations that have partnered with TrashMob to organize cleanups in their region. Communities can represent cities, counties, states, or regional organizations — any geographic area that wants to coordinate cleanup efforts.</p>
                     <h6>Finding Communities</h6>
                     <ol class="list-decimal pl-8">
                         <li>Go to the <a href='https://www.trashmob.eco/communities'>Communities page</a></li>
@@ -331,10 +416,12 @@ const tabContents = [
             {
                 question: 'Becoming a Community Partner',
                 answer: `
-                    <p>Represent a city, organization, or regional group? Here's how to create a community page:</p>
+                    <p>Represent a city, county, state, or regional organization? Here's how to create a community page:</p>
                     <h6>Who Can Partner?</h6>
                     <ul class="list-disc pl-8">
                         <li>Cities and municipalities</li>
+                        <li>Counties and county departments</li>
+                        <li>State agencies and programs</li>
                         <li>Regional environmental organizations</li>
                         <li>Neighborhood associations</li>
                         <li>Business improvement districts</li>
@@ -356,6 +443,52 @@ const tabContents = [
                         <li>Connection with active volunteer teams</li>
                         <li>Tools to promote cleanup initiatives</li>
                     </ul>
+                `,
+            },
+            {
+                question: 'Adopt-a-Location Programs',
+                answer: `
+                    <p>Communities can create <strong>Adopt-a-Location</strong> programs that let teams take ownership of specific areas and commit to keeping them clean on a regular schedule.</p>
+                    <h6>How It Works</h6>
+                    <ol class="list-decimal pl-8">
+                        <li>A <strong>community admin</strong> defines adoptable areas (parks, trails, highways, streets, waterways, or spots) on the community dashboard</li>
+                        <li><strong>Teams</strong> browse available areas and submit an application to adopt one</li>
+                        <li>The community admin <strong>reviews and approves or rejects</strong> the application</li>
+                        <li>Once approved, the team commits to cleaning the area at the required frequency (e.g. every 90 days)</li>
+                        <li>The community admin monitors <strong>compliance</strong> — tracking whether teams are meeting their cleanup commitments</li>
+                    </ol>
+                    <h6>Setting Up Adoptable Areas (Community Admins)</h6>
+                    <p>From the Partner Dashboard, go to the <strong>Community</strong> section in the sidebar:</p>
+                    <ol class="list-decimal pl-8">
+                        <li><strong>Area Defaults</strong> - Set default requirements that apply to all new areas:
+                            <ul class="list-disc pl-8 mt-2">
+                                <li>Default cleanup frequency (e.g. every 90 days)</li>
+                                <li>Minimum events per year (e.g. 4)</li>
+                                <li>Default safety requirements</li>
+                                <li>Whether to allow co-adoption (multiple teams sharing one area)</li>
+                            </ul>
+                        </li>
+                        <li><strong>Adoptable Areas</strong> - Create and manage individual areas:
+                            <ul class="list-disc pl-8 mt-2">
+                                <li>Give the area a <strong>name</strong> and <strong>description</strong></li>
+                                <li>Select the <strong>area type</strong>: Highway, Park, Trail, Waterway, Street, or Spot</li>
+                                <li>Set cleanup frequency and minimum events per year (or click "Use Community Defaults")</li>
+                                <li>Add <strong>safety requirements</strong> specific to the area</li>
+                                <li>Draw the area <strong>boundaries on the map</strong> or paste GeoJSON</li>
+                            </ul>
+                        </li>
+                        <li><strong>Bulk Import</strong> - Import many areas at once from GeoJSON or KML files using the import wizard. The wizard auto-detects field mappings and shows a map preview before importing.</li>
+                    </ol>
+                    <h6>Managing Adoptions</h6>
+                    <p>The <strong>Adoptions</strong> tab in the community dashboard provides three views:</p>
+                    <ul class="list-disc pl-8">
+                        <li><strong>Pending Applications</strong> - Review team requests and approve or reject them (with a reason)</li>
+                        <li><strong>Approved Adoptions</strong> - See all active adoptions with compliance status, event counts, and last event dates</li>
+                        <li><strong>Delinquent Adoptions</strong> - Teams that have fallen behind on their cleanup schedule, with days overdue</li>
+                    </ul>
+                    <p>A compliance dashboard at the top shows key metrics: total adoptions, adoption rate, compliance rate, and counts of at-risk or delinquent adoptions. You can also <strong>export all adoption data as CSV</strong> for reporting.</p>
+                    <h6>Sponsored Adoptions</h6>
+                    <p>Communities can also set up <strong>sponsored adoptions</strong> where a sponsor funds a professional company to maintain an area. These are managed separately under the <strong>Sponsored Adoptions</strong> tab, with their own compliance tracking and cleanup logs.</p>
                 `,
             },
         ],
@@ -398,6 +531,22 @@ const tabContents = [
                 `,
             },
             {
+                question: 'MCP Server URLs',
+                answer: `
+                    <p>Use the following URLs to connect to the TrashMob MCP server:</p>
+                    <ul class="list-disc pl-8">
+                        <li><strong>Production:</strong> <code>https://mcp.trashmob.eco</code></li>
+                        <li><strong>Development:</strong> <code>https://dev-mcp.trashmob.eco</code></li>
+                    </ul>
+                    <p>The server supports two transport methods:</p>
+                    <ul class="list-disc pl-8">
+                        <li><strong>Streamable HTTP</strong> — <code>/messages</code> endpoint (recommended)</li>
+                        <li><strong>Server-Sent Events</strong> — <code>/sse</code> endpoint</li>
+                    </ul>
+                    <p>Most AI clients will auto-detect the correct transport when given the base URL.</p>
+                `,
+            },
+            {
                 question: 'Connecting from Claude Desktop',
                 answer: `
                     <p>To use TrashMob with Claude Desktop:</p>
@@ -405,7 +554,7 @@ const tabContents = [
                         <li>Open Claude Desktop and go to <strong>Settings</strong></li>
                         <li>Navigate to the <strong>MCP Servers</strong> section</li>
                         <li>Click <strong>"Add Server"</strong></li>
-                        <li>Enter the TrashMob MCP server URL</li>
+                        <li>Enter the TrashMob MCP server URL: <code>https://mcp.trashmob.eco</code></li>
                         <li>Save and restart Claude Desktop</li>
                     </ol>
                     <p>Once connected, you can ask Claude natural language questions about TrashMob events, teams, communities, and more.</p>
@@ -417,7 +566,15 @@ const tabContents = [
                     <p>To use TrashMob with Claude Code (CLI):</p>
                     <ol class="list-decimal pl-8">
                         <li>Open your Claude Code settings file</li>
-                        <li>Add the TrashMob MCP server to your configuration</li>
+                        <li>Add the TrashMob MCP server to your configuration:
+                            <pre class="bg-gray-100 p-3 rounded mt-2 text-sm overflow-x-auto">{
+  "mcpServers": {
+    "trashmob": {
+      "url": "https://mcp.trashmob.eco"
+    }
+  }
+}</pre>
+                        </li>
                         <li>Restart Claude Code</li>
                     </ol>
                     <p>Claude Code will automatically discover the available tools and you can use them in your conversations.</p>

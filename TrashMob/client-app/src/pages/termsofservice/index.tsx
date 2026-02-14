@@ -1,5 +1,5 @@
-import React, { FC } from 'react';
-import logo from '@/components/assets/logo.svg';
+import { FC } from 'react';
+import { Logo } from '@/components/Logo';
 import { HeroSection } from '@/components/Customization/HeroSection';
 
 export class TermsOfServiceVersion {
@@ -103,10 +103,8 @@ export const TermsOfService: FC = () => {
                 </p>
 
                 <p className='mt-5'>The team at TrashMob.eco</p>
-                <div className='mb-5'>
-                    <div className='p-0'>
-                        <img src={logo} className='p-0 m-0 pl-2 mb-5' alt='TrashMob Logo' />
-                    </div>
+                <div className='mb-5 w-48'>
+                    <Logo showBrandName />
                 </div>
             </div>
         </div>

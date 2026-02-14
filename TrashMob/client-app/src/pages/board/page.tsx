@@ -59,23 +59,23 @@ export const Board: React.FC = () => {
                 {boards.map((board) => (
                     <div className='p-4 mt-24 bg-card shadow-lg rounded-lg!'>
                         <div className='flex flex-col md:flex-row gap-8'>
-                            <div className='basis-full md:basis-6/12 lg:basis-5/12'>
+                            <div className='basis-full md:basis-6/12 lg:basis-5/12 flex-shrink-0'>
                                 <img
                                     src={board.img}
                                     alt={board.name}
-                                    className='mx-auto md:mx-0 mt-0 h-100 object-cover rounded-md!'
+                                    className='mx-auto md:mx-0 mt-0 w-full max-w-xs aspect-[3/4] object-cover rounded-md!'
                                 />
                             </div>
                             <div className='basis-full md:basis-6/12 lg:basis-7/12'>
                                 <div className='flex justify-between items-center'>
                                     <h2 className='m-0 font-medium text-3xl color-primary'>{board.name}</h2>
-                                    <a href={board.linkedin}>
+                                    <a href={board.linkedin} target='_blank' rel='noopener noreferrer'>
                                         <img src={linkedIn} alt='linkedin icon' className='mt-0 object-cover' />
                                     </a>
                                 </div>
                                 <h5 className='my-3 font-medium text-[#696b72]'>{board.position}</h5>
                                 {board.detail.map((paragraph, i) => (
-                                    <p className='text-sm font-normal text-[#696b72]' key={i}>
+                                    <p className='text-sm font-normal text-[#696b72] mb-3 last:mb-0' key={i}>
                                         {paragraph}
                                     </p>
                                 ))}
