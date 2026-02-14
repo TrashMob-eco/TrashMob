@@ -31,7 +31,7 @@ namespace TrashMob.Shared.Tests.Builders
                 Latitude = 47.6062,
                 Longitude = -122.3321,
                 MaxNumberOfParticipants = 20,
-                IsEventPublic = true,
+                EventVisibilityId = (int)EventVisibilityEnum.Public,
                 CreatedByUserId = creatorId,
                 CreatedDate = DateTimeOffset.UtcNow,
                 LastUpdatedByUserId = creatorId,
@@ -168,13 +168,22 @@ namespace TrashMob.Shared.Tests.Builders
 
         public EventBuilder AsPrivate()
         {
-            _event.IsEventPublic = false;
+            _event.EventVisibilityId = (int)EventVisibilityEnum.Private;
+            _event.TeamId = null;
             return this;
         }
 
         public EventBuilder AsPublic()
         {
-            _event.IsEventPublic = true;
+            _event.EventVisibilityId = (int)EventVisibilityEnum.Public;
+            _event.TeamId = null;
+            return this;
+        }
+
+        public EventBuilder AsTeamOnly(Guid teamId)
+        {
+            _event.EventVisibilityId = (int)EventVisibilityEnum.TeamOnly;
+            _event.TeamId = teamId;
             return this;
         }
 

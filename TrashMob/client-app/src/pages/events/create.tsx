@@ -4,7 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Switch } from '@/components/ui/switch';
+import { useQuery } from '@tanstack/react-query';
+import { GetMyTeams } from '@/services/teams';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { DatePicker } from '@/components/ui/datepicker';
@@ -69,7 +70,8 @@ const createEventSchema = z.object({
     latitude: z.number(),
     longitude: z.number(),
     maxNumberOfParticipants: z.number().min(0),
-    isEventPublic: z.boolean(),
+    eventVisibilityId: z.string(),
+    teamId: z.string().nullable().optional(),
     createdByUserId: z.string(),
     eventStatusId: z.number(),
     locationConfirmed: z.boolean(),
@@ -88,6 +90,7 @@ export const CreateEventPage = () => {
     const { fromLitterReport } = (location.state || {}) as { fromLitterReport?: LitterReportData };
 
     const { data: eventTypes } = useGetEventTypes();
+    const { data: myTeams } = useQuery({ queryKey: GetMyTeams().key, queryFn: GetMyTeams().service });
     const steps = [
         { key: 'pick-location', label: 'Pick Location' },
         { key: 'edit-detail', label: 'Edit Detail' },
@@ -153,7 +156,8 @@ export const CreateEventPage = () => {
             eventDate: moment().add(1, 'day').toDate(),
             eventTimeStart: '9:00',
             eventTimeEnd: '11:00',
-            isEventPublic: true,
+            eventVisibilityId: '1',
+            teamId: null,
             maxNumberOfParticipants: 10,
             locationConfirmed: false,
             createdByUserId: currentUser.id,
@@ -193,7 +197,7 @@ export const CreateEventPage = () => {
             'eventTimeStart',
             'eventTimeEnd',
             'maxNumberOfParticipants',
-            'isEventPublic',
+            'eventVisibilityId',
             'latitude',
             'longitude',
         ]);
@@ -227,7 +231,8 @@ export const CreateEventPage = () => {
         body.latitude = formValues.latitude ?? 0;
         body.longitude = formValues.longitude ?? 0;
         body.maxNumberOfParticipants = formValues.maxNumberOfParticipants ?? 0;
-        body.isEventPublic = formValues.isEventPublic;
+        body.eventVisibilityId = Number(formValues.eventVisibilityId);
+        body.teamId = formValues.eventVisibilityId === '2' ? (formValues.teamId ?? null) : null;
         body.createdByUserId = currentUser.id;
         body.eventStatusId = formValues.eventStatusId;
 
@@ -268,6 +273,7 @@ export const CreateEventPage = () => {
 
     const eventName = form.watch('name');
     const eventDescription = form.watch('description');
+    const eventVisibilityId = form.watch('eventVisibilityId');
     const latitude = form.watch('latitude');
     const longitude = form.watch('longitude');
 
@@ -409,19 +415,52 @@ export const CreateEventPage = () => {
                                 />
                                 <FormField
                                     control={form.control}
-                                    name='isEventPublic'
+                                    name='eventVisibilityId'
                                     render={({ field }) => (
                                         <FormItem className='col-span-3'>
-                                            <FormLabel>Is Public Event</FormLabel>
+                                            <FormLabel>Visibility</FormLabel>
                                             <FormControl>
-                                                <div className='flex h-[36px] items-center'>
-                                                    <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                                </div>
+                                                <Select value={field.value} onValueChange={field.onChange}>
+                                                    <SelectTrigger className='w-full'>
+                                                        <SelectValue placeholder='Visibility' />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value='1'>Public</SelectItem>
+                                                        <SelectItem value='2'>Team Only</SelectItem>
+                                                        <SelectItem value='3'>Private</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
+                                {eventVisibilityId === '2' && (
+                                    <FormField
+                                        control={form.control}
+                                        name='teamId'
+                                        render={({ field }) => (
+                                            <FormItem className='col-span-3'>
+                                                <FormLabel>Team</FormLabel>
+                                                <FormControl>
+                                                    <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                                                        <SelectTrigger className='w-full'>
+                                                            <SelectValue placeholder='Select team' />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {(myTeams?.data || []).map((team) => (
+                                                                <SelectItem key={team.id} value={team.id}>
+                                                                    {team.name}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                )}
                                 <FormField
                                     control={form.control}
                                     name='maxNumberOfParticipants'

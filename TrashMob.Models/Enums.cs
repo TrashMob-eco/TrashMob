@@ -331,6 +331,27 @@ namespace TrashMob.Models
     }
 
     /// <summary>
+    /// Represents the visibility level of an event.
+    /// </summary>
+    public enum EventVisibilityEnum
+    {
+        /// <summary>
+        /// Event is visible to all users and included in public listings and notifications.
+        /// </summary>
+        Public = 1,
+
+        /// <summary>
+        /// Event is visible only to members of the specified team.
+        /// </summary>
+        TeamOnly = 2,
+
+        /// <summary>
+        /// Event is visible only to the creator, for personal tracking.
+        /// </summary>
+        Private = 3,
+    }
+
+    /// <summary>
     /// Represents the type of a partner document.
     /// </summary>
     public enum PartnerDocumentTypeEnum

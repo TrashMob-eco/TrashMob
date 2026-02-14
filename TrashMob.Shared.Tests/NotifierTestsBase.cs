@@ -156,7 +156,7 @@
                 PostalCode = "98040",
                 Region = "Washington",
                 StreetAddress = "1 King Street",
-                IsEventPublic = true,
+                EventVisibilityId = (int)EventVisibilityEnum.Public,
             };
 
             var events = new List<Event>
@@ -189,7 +189,7 @@
                 PostalCode = "98040",
                 Region = "Washington",
                 StreetAddress = "1 King Street",
-                IsEventPublic = true,
+                EventVisibilityId = (int)EventVisibilityEnum.Public,
             };
 
             var relevantEvent2 = new Event
@@ -212,7 +212,7 @@
                 PostalCode = "98040",
                 Region = "Washington",
                 StreetAddress = "1 Queen Street",
-                IsEventPublic = true,
+                EventVisibilityId = (int)EventVisibilityEnum.Public,
             };
 
             var events = new List<Event>

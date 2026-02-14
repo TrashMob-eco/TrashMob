@@ -43,7 +43,7 @@
                 List<Event> eventsToNotifyUserFor = [];
 
                 // Get list of active events
-                var events = await EventManager.GetActiveEventsAsync(cancellationToken).ConfigureAwait(false);
+                var events = await EventManager.GetActiveEventsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
                 // Get list of events user is already attending
                 var eventsUserIsAttending = await EventAttendeeManager

@@ -24,25 +24,36 @@ namespace TrashMob.Shared.Managers.Events
     /// <param name="eventLitterReportManager">The manager for event litter reports.</param>
     /// <param name="mapManager">The map manager for timezone operations.</param>
     /// <param name="emailManager">The email manager for sending notifications.</param>
+    /// <param name="teamManager">The manager for team operations.</param>
     public class EventManager(
         IKeyedRepository<Event> repository,
         IEventAttendeeManager eventAttendeeManager,
         IBaseRepository<EventAttendee> eventAttendeeRepository,
         IEventLitterReportManager eventLitterReportManager,
         IMapManager mapManager,
-        IEmailManager emailManager)
+        IEmailManager emailManager,
+        ITeamManager teamManager)
         : KeyedManager<Event>(repository), IEventManager
     {
         private const int StandardEventWindowInMinutes = 120;
         private readonly IEventLitterReportManager eventLitterReportManager = eventLitterReportManager;
 
         /// <inheritdoc />
-        public async Task<IEnumerable<Event>> GetActiveEventsAsync(CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Event>> GetActiveEventsAsync(Guid? userId = null,
+            CancellationToken cancellationToken = default)
         {
+            var userTeamIds = await GetUserTeamIdsAsync(userId, cancellationToken);
+
             return await Repo.Get(e =>
                     (e.EventStatusId == (int)EventStatusEnum.Active || e.EventStatusId == (int)EventStatusEnum.Full)
-                    && e.IsEventPublic
-                    && e.EventDate >= DateTimeOffset.UtcNow.AddMinutes(-1 * StandardEventWindowInMinutes))
+                    && e.EventDate >= DateTimeOffset.UtcNow.AddMinutes(-1 * StandardEventWindowInMinutes)
+                    && (
+                        e.EventVisibilityId == (int)EventVisibilityEnum.Public
+                        || (e.EventVisibilityId == (int)EventVisibilityEnum.TeamOnly
+                            && e.TeamId != null
+                            && userTeamIds.Contains(e.TeamId.Value))
+                        || (userId != null && e.CreatedByUserId == userId.Value)
+                    ))
                 .Include(e => e.CreatedByUser)
                 .ToListAsync(cancellationToken);
         }
@@ -88,16 +99,27 @@ namespace TrashMob.Shared.Managers.Events
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<Event>> GetFilteredEventsAsync(EventFilter filter,
+        public async Task<IEnumerable<Event>> GetFilteredEventsAsync(EventFilter filter, Guid? userId = null,
             CancellationToken cancellationToken = default)
         {
+            var userTeamIds = await GetUserTeamIdsAsync(userId, cancellationToken);
+
             return await Repo.Get(e => e.EventStatusId != (int)EventStatusEnum.Canceled &&
                                        (filter.StartDate == null || e.EventDate >= filter.StartDate) &&
                                        (filter.EndDate == null || e.EventDate <= filter.EndDate) &&
                                        (filter.Country == null || e.Country == filter.Country) &&
                                        (filter.Region == null || e.Region == filter.Region) &&
                                        (filter.City == null || e.City == filter.City) &&
-                                       (filter.CreatedByUserId == null || e.CreatedByUserId == filter.CreatedByUserId))
+                                       (filter.CreatedByUserId == null || e.CreatedByUserId == filter.CreatedByUserId) &&
+                                       (filter.EventStatusId == null || e.EventStatusId == filter.EventStatusId) &&
+                                       (filter.EventVisibilityId == null || e.EventVisibilityId == filter.EventVisibilityId) &&
+                                       (
+                                           e.EventVisibilityId == (int)EventVisibilityEnum.Public
+                                           || (e.EventVisibilityId == (int)EventVisibilityEnum.TeamOnly
+                                               && e.TeamId != null
+                                               && userTeamIds.Contains(e.TeamId.Value))
+                                           || (userId != null && e.CreatedByUserId == userId.Value)
+                                       ))
                 .Include(e => e.CreatedByUser)
                 .ToListAsync(cancellationToken);
         }
@@ -175,6 +197,8 @@ namespace TrashMob.Shared.Managers.Events
         public override async Task<Event> AddAsync(Event instance, Guid userId,
             CancellationToken cancellationToken = default)
         {
+            await ValidateEventVisibilityAsync(instance, userId, cancellationToken);
+
             var newEvent = await base.AddAsync(instance, userId, cancellationToken);
 
             var newEventAttendee = new EventAttendee
@@ -219,6 +243,8 @@ namespace TrashMob.Shared.Managers.Events
         public override async Task<Event> UpdateAsync(Event instance, Guid userId,
             CancellationToken cancellationToken = default)
         {
+            await ValidateEventVisibilityAsync(instance, userId, cancellationToken);
+
             var oldEvent = await Repo.GetWithNoTrackingAsync(instance.Id, cancellationToken);
 
             var updatedEvent = await base.UpdateAsync(instance, userId, cancellationToken);
@@ -269,6 +295,41 @@ namespace TrashMob.Shared.Managers.Events
             }
 
             return updatedEvent;
+        }
+
+        private async Task<List<Guid>> GetUserTeamIdsAsync(Guid? userId,
+            CancellationToken cancellationToken = default)
+        {
+            if (userId == null)
+            {
+                return [];
+            }
+
+            var teams = await teamManager.GetTeamsByUserAsync(userId.Value, cancellationToken);
+            return teams.Select(t => t.Id).ToList();
+        }
+
+        private async Task ValidateEventVisibilityAsync(Event instance, Guid userId,
+            CancellationToken cancellationToken = default)
+        {
+            if (instance.EventVisibilityId == (int)EventVisibilityEnum.TeamOnly)
+            {
+                if (instance.TeamId == null)
+                {
+                    throw new InvalidOperationException("TeamId is required for team-only events.");
+                }
+
+                var teams = await teamManager.GetTeamsByUserAsync(userId, cancellationToken);
+                if (!teams.Any(t => t.Id == instance.TeamId.Value))
+                {
+                    throw new InvalidOperationException(
+                        "User must be a member of the specified team to create team-only events.");
+                }
+            }
+            else
+            {
+                instance.TeamId = null;
+            }
         }
     }
 }

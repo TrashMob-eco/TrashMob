@@ -27,6 +27,7 @@ namespace TrashMob.Shared.Tests.Managers.Events
         private readonly Mock<IEventLitterReportManager> _eventLitterReportManager;
         private readonly Mock<IMapManager> _mapManager;
         private readonly Mock<IEmailManager> _emailManager;
+        private readonly Mock<ITeamManager> _teamManager;
         private readonly EventManager _sut;
 
         public EventManagerTests()
@@ -37,6 +38,7 @@ namespace TrashMob.Shared.Tests.Managers.Events
             _eventLitterReportManager = new Mock<IEventLitterReportManager>();
             _mapManager = new Mock<IMapManager>();
             _emailManager = new Mock<IEmailManager>();
+            _teamManager = new Mock<ITeamManager>();
 
             // Default setup for common dependencies
             // Return the event date formatted as ISO 8601 string (parseable as DateTimeOffset)
@@ -51,6 +53,8 @@ namespace TrashMob.Shared.Tests.Managers.Events
                     It.IsAny<List<EmailAddress>>(),
                     It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
+            _teamManager.Setup(m => m.GetTeamsByUserAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<Team>());
 
             _sut = new EventManager(
                 _eventRepository.Object,
@@ -58,7 +62,8 @@ namespace TrashMob.Shared.Tests.Managers.Events
                 _eventAttendeeRepository.Object,
                 _eventLitterReportManager.Object,
                 _mapManager.Object,
-                _emailManager.Object);
+                _emailManager.Object,
+                _teamManager.Object);
         }
 
         #region GetActiveEventsAsync Tests

@@ -174,7 +174,7 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
             MobEvent.DurationMinutes = EventViewModel.DurationMinutes;
             MobEvent.EventDate = EventViewModel.EventDate;
             MobEvent.EventTypeId = EventViewModel.EventTypeId;
-            MobEvent.IsEventPublic = EventViewModel.IsEventPublic;
+            MobEvent.EventVisibilityId = EventViewModel.IsEventPublic ? (int)EventVisibilityEnum.Public : (int)EventVisibilityEnum.Private;
             MobEvent.Latitude = EventViewModel.Address.Latitude;
             MobEvent.Longitude = EventViewModel.Address.Longitude;
             MobEvent.MaxNumberOfParticipants = EventViewModel.MaxNumberOfParticipants;

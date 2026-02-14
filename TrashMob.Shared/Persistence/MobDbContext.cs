@@ -390,6 +390,20 @@
                     .HasForeignKey(d => d.LastUpdatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Events_ApplicationUser_LastUpdatedBy");
+
+                entity.HasOne(d => d.Team)
+                    .WithMany()
+                    .HasForeignKey(d => d.TeamId)
+                    .OnDelete(DeleteBehavior.SetNull)
+                    .HasConstraintName("FK_Events_Teams_TeamId");
+
+                entity.HasIndex(e => e.EventVisibilityId)
+                    .HasDatabaseName("IX_Events_EventVisibilityId");
+
+                entity.HasIndex(e => e.TeamId)
+                    .HasDatabaseName("IX_Events_TeamId");
+
+                entity.Ignore(e => e.IsEventPublic);
             });
 
             modelBuilder.Entity<EventAttendee>(entity =>

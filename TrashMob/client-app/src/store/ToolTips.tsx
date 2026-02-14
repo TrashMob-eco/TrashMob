@@ -11,8 +11,8 @@ export const EventMaxNumberOfParticipants =
     "Max Number of Participants is optional. If you are concerned your event's work area is too small to accomodate large numbers of people, select a value that is practical for the location, knowing that attendance rates will vary depending on location, weather, and other factors.";
 export const EventType =
     'Choose an Event Type that matches the type of location and the type of work being done. Note that some event types may require special training (i.e. Highway cleanup), so be sure to mention any special requirements you may have in your event description.';
-export const EventIsEventPublic =
-    'A public event is open to anyone to join. A private event is something you have created to track your own effort, or to do with friends and colleagues only and will not be shown to others.';
+export const EventVisibility =
+    'Public events are open to anyone. Team Only events are visible only to members of the selected team. Private events are for tracking your own efforts and are not shown to others.';
 export const EventDate = 'The date of the event.';
 export const EventTime = 'The start time of the event.';
 export const LocationPreferenceMaxEventsRadius =

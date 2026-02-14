@@ -49,7 +49,7 @@
                 List<Event> eventsToNotifyUserFor = [];
 
                 // Get list of active events
-                var events = await EventManager.GetActiveEventsAsync(cancellationToken).ConfigureAwait(false);
+                var events = await EventManager.GetActiveEventsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
                 // Get list of events user is already attending
                 var eventsUserIsAttending = await EventAttendeeManager
@@ -60,8 +60,8 @@
                              e.EventDate <= DateTimeOffset.UtcNow.AddHours(MaxNumberOfHoursInWindow) &&
                              e.EventDate > DateTimeOffset.UtcNow.AddHours(MinNumberOfHoursInWindow)))
                 {
-                    // Skip private events
-                    if (!mobEvent.IsEventPublic)
+                    // Skip non-public events (team-only and private)
+                    if (mobEvent.EventVisibilityId != (int)EventVisibilityEnum.Public)
                     {
                         continue;
                     }

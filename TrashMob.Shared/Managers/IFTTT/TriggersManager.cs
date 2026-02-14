@@ -74,7 +74,7 @@
             List<IftttEventResponse> triggersResponses = [];
 
             // Get all the public events in the future
-            foreach (var mobEvent in events.Where(e => e.IsEventPublic && e.EventDate >= DateTimeOffset.UtcNow).ToList()
+            foreach (var mobEvent in events.Where(e => e.EventVisibilityId == (int)EventVisibilityEnum.Public && e.EventDate >= DateTimeOffset.UtcNow).ToList()
                          .OrderByDescending(e => e.CreatedDate).Take(triggersRequest.limit))
             {
                 var triggersResponse = new IftttEventResponse();
