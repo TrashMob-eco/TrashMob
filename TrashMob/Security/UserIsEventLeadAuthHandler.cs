@@ -75,7 +75,8 @@ namespace TrashMob.Security
 
                 // Look up the actual event from the database to verify ownership
                 // SECURITY: Do not trust CreatedByUserId from the request body
-                var actualEvent = await eventManager.GetAsync(eventId.Value, CancellationToken.None);
+                // Use no-tracking to avoid EF Core conflicts when the entity is later updated
+                var actualEvent = await eventManager.GetWithNoTrackingAsync(eventId.Value, CancellationToken.None);
 
                 if (actualEvent is null)
                 {
