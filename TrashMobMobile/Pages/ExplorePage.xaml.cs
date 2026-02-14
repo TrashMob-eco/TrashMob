@@ -1,6 +1,7 @@
 namespace TrashMobMobile.Pages;
 
 using Microsoft.Maui.Controls.Maps;
+using Microsoft.Maui.Maps;
 
 public partial class ExplorePage : ContentPage
 {
@@ -17,6 +18,35 @@ public partial class ExplorePage : ContentPage
     {
         base.OnNavigatedTo(args);
         await viewModel.Init();
+
+        if (viewModel.HasUserLocation && viewModel.UserMapSpan != null)
+        {
+            exploreMap.InitialMapSpanAndroid = viewModel.UserMapSpan;
+            exploreMap.MoveToRegion(viewModel.UserMapSpan);
+            UpdateRadiusCircle();
+        }
+    }
+
+    private void UpdateRadiusCircle()
+    {
+        if (!viewModel.HasUserLocation || viewModel.UserLocation.Latitude == null || viewModel.UserLocation.Longitude == null)
+            return;
+
+        exploreMap.MapElements.Clear();
+
+        var center = new Location(viewModel.UserLocation.Latitude.Value, viewModel.UserLocation.Longitude.Value);
+        var radius = viewModel.GetTravelRadius();
+
+        var circle = new Circle
+        {
+            Center = center,
+            Radius = radius,
+            StrokeColor = Color.FromArgb("#80005B4C"),
+            StrokeWidth = 2,
+            FillColor = Color.FromArgb("#20005B4C"),
+        };
+
+        exploreMap.MapElements.Add(circle);
     }
 
     private async void Pin_InfoWindowClicked(object? sender, PinClickedEventArgs e)
