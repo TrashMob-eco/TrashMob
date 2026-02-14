@@ -41,7 +41,7 @@ namespace TrashMob.Security
                 var emailAddressClaim = context.User.FindFirst(ClaimTypes.Email);
                 var emailClaim = context.User.FindFirst("email");
 
-                var email = emailAddressClaim == null ? emailClaim.Value : emailAddressClaim.Value;
+                var email = emailAddressClaim == null ? emailClaim?.Value : emailAddressClaim?.Value;
 
                 var user = await userManager.GetUserByEmailAsync(email, CancellationToken.None);
 

@@ -99,7 +99,7 @@ public partial class MainViewModel(IAuthService authService,
             if (signedIn.Succeeded)
             {
                 var email = authService.GetUserEmail();
-                var user = await userRestService.GetUserByEmailAsync(email, UserState.UserContext);
+                var user = await userRestService.GetUserByEmailAsync(email);
 
                 WelcomeMessage = $"Welcome, {user.UserName}!";
 

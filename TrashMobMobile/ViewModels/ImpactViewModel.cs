@@ -34,6 +34,7 @@ public partial class ImpactViewModel(
             TotalEvents = stats.TotalEvents,
             TotalBags = stats.TotalBags,
             TotalHours = stats.TotalHours,
+            TotalWeightInPounds = stats.TotalWeightInPounds,
             TotalLitterReportsSubmitted = stats.TotalLitterReportsSubmitted,
             TotalLitterReportsClosed = stats.TotalLitterReportsClosed,
         };
@@ -61,6 +62,7 @@ public partial class ImpactViewModel(
             TotalEvents = stats.TotalEvents,
             TotalBags = stats.TotalBags,
             TotalHours = stats.TotalHours,
+            TotalWeightInPounds = stats.TotalWeightInPounds,
             TotalLitterReportsSubmitted = stats.TotalLitterReportsSubmitted,
             TotalLitterReportsClosed = stats.TotalLitterReportsClosed,
         };

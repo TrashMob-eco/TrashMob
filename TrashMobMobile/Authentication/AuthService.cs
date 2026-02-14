@@ -220,15 +220,16 @@ public class AuthService : IAuthService
         var emailClaim = result.ClaimsPrincipal.Claims.FirstOrDefault(c => c.Type == "email");
         var context = GetUserContext(result);
 
+        // Set user context first so AuthHandler can use the token for the API call below
+        UserState.UserContext = context;
+
         if (emailClaim != null)
         {
             userEmail = emailClaim.Value;
-            var user = await userManager.GetUserByEmailAsync(context.EmailAddress, context);
+            var user = await userManager.GetUserByEmailAsync(context.EmailAddress);
 
             App.CurrentUser = user;
         }
-
-        UserState.UserContext = context;
     }
 
     private bool IsTokenExpired()

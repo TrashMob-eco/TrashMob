@@ -10,11 +10,11 @@
              Title="Litter Report">
     <ScrollView>
         <Grid>
-            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}" Spacing="8">
 
                 <!-- Report Info Card -->
-                <Border Style="{x:StaticResource RoundBorder}" Margin="5,10,5,5">
-                    <VerticalStackLayout Spacing="4" Padding="10,10">
+                <Border Style="{x:StaticResource RoundBorder}" Margin="10,8,10,0">
+                    <VerticalStackLayout Spacing="4">
                         <Label Text="{Binding LitterReportViewModel.Name}"
                                FontFamily="LexendSemibold"
                                FontSize="Large" />
@@ -28,70 +28,70 @@
                 </Border>
 
                 <!-- Action Buttons -->
-                <VerticalStackLayout Spacing="8" Margin="5,5">
-                    <Button Command="{Binding EditLitterReportCommand}"
-                            Text="Edit Report"
-                            IsEnabled="{Binding CanEditLitterReport}"
-                            IsVisible="{Binding CanEditLitterReport}"
-                            Style="{StaticResource PrimaryLargeButton}" />
-                    <Button Command="{Binding MarkLitterReportCleanedCommand}"
-                            IsEnabled="{Binding CanMarkLitterReportCleaned}"
-                            IsVisible="{Binding CanMarkLitterReportCleaned}"
-                            Style="{StaticResource SecondaryLargeButton}"
-                            Text="Mark as Cleaned" />
-                    <Button Command="{Binding DeleteLitterReportCommand}"
-                            IsEnabled="{Binding CanDeleteLitterReport}"
-                            IsVisible="{Binding CanDeleteLitterReport}"
-                            Style="{StaticResource SecondaryLargeButton}"
-                            Text="Delete Report" />
-                    <Button Command="{Binding ViewEventCommand}"
-                            IsEnabled="{Binding IsAssignedToEvent}"
-                            IsVisible="{Binding IsAssignedToEvent}"
-                            Style="{StaticResource SecondaryLargeButton}"
-                            Text="View Event" />
-                    <Button Command="{Binding CreateEventCommand}"
-                            IsEnabled="{Binding IsNotAssignedToEvent}"
-                            IsVisible="{Binding IsNotAssignedToEvent}"
-                            Style="{StaticResource SecondaryLargeButton}"
-                            Text="Create Event" />
-                </VerticalStackLayout>
-
-                <!-- Map -->
-                <Label Text="Locations"
-                       Style="{StaticResource SectionHeader}"
-                       Margin="5,10,5,5" />
-
-                <Border Style="{x:StaticResource RoundBorder}" Margin="5,0">
-                    <controls:CustomMap x:Name="litterReportLocationMap" ItemsSource="{Binding LitterImageViewModels}">
-                        <maps:Map.ItemTemplate>
-                            <DataTemplate x:DataType="viewModels:LitterImageViewModel">
-                                <controls:CustomPin Location="{Binding Address.Location}"
-                                          Address="{Binding Address.StreetAddress}"
-                                          ImageSource="{Binding Address.IconFile}"
-                                          Label="Litter Image" />
-                            </DataTemplate>
-                        </maps:Map.ItemTemplate>
-                    </controls:CustomMap>
+                <Border Style="{StaticResource RoundBorder}" Margin="10,0">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Actions" Style="{StaticResource SectionHeader}" Margin="0" />
+                        <Button Command="{Binding EditLitterReportCommand}"
+                                Text="Edit Report"
+                                IsEnabled="{Binding CanEditLitterReport}"
+                                IsVisible="{Binding CanEditLitterReport}"
+                                Style="{StaticResource PrimaryLargeButton}" />
+                        <Button Command="{Binding MarkLitterReportCleanedCommand}"
+                                IsEnabled="{Binding CanMarkLitterReportCleaned}"
+                                IsVisible="{Binding CanMarkLitterReportCleaned}"
+                                Style="{StaticResource SecondaryLargeButton}"
+                                Text="Mark as Cleaned" />
+                        <Button Command="{Binding DeleteLitterReportCommand}"
+                                IsEnabled="{Binding CanDeleteLitterReport}"
+                                IsVisible="{Binding CanDeleteLitterReport}"
+                                Style="{StaticResource SecondaryLargeButton}"
+                                Text="Delete Report" />
+                        <Button Command="{Binding ViewEventCommand}"
+                                IsEnabled="{Binding IsAssignedToEvent}"
+                                IsVisible="{Binding IsAssignedToEvent}"
+                                Style="{StaticResource SecondaryLargeButton}"
+                                Text="View Event" />
+                        <Button Command="{Binding CreateEventCommand}"
+                                IsEnabled="{Binding IsNotAssignedToEvent}"
+                                IsVisible="{Binding IsNotAssignedToEvent}"
+                                Style="{StaticResource SecondaryLargeButton}"
+                                Text="Create Event" />
+                    </VerticalStackLayout>
                 </Border>
 
-                <!-- Litter Images -->
-                <CollectionView x:Name="LitterImagesCollection"
-                                ItemsSource="{Binding LitterImageViewModels}"
-                                SelectionMode="None"
-                                Margin="0,5">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="viewModels:LitterImageViewModel">
-                            <Border Style="{StaticResource RoundBorder}" Margin="5,3">
-                                <Grid ColumnDefinitions="Auto, *" Padding="8,6" ColumnSpacing="10">
-                                    <Image Source="{Binding AzureBlobUrl}" MaximumWidthRequest="80" Aspect="AspectFill" Grid.Column="0" />
-                                    <Label Text="{Binding Address.DisplayAddress}" Grid.Column="1"
-                                           LineBreakMode="WordWrap" FontSize="Small" VerticalOptions="Center"
-                                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
+                <!-- Locations -->
+                <Border Style="{StaticResource RoundBorder}" Margin="10,0">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Locations" Style="{StaticResource SectionHeader}" Margin="0" />
+                        <controls:CustomMap x:Name="litterReportLocationMap" ItemsSource="{Binding LitterImageViewModels}">
+                            <maps:Map.ItemTemplate>
+                                <DataTemplate x:DataType="viewModels:LitterImageViewModel">
+                                    <controls:CustomPin Location="{Binding Address.Location}"
+                                              Address="{Binding Address.StreetAddress}"
+                                              ImageSource="{Binding Address.IconFile}"
+                                              Label="Litter Image" />
+                                </DataTemplate>
+                            </maps:Map.ItemTemplate>
+                        </controls:CustomMap>
+
+                        <CollectionView x:Name="LitterImagesCollection"
+                                        ItemsSource="{Binding LitterImageViewModels}"
+                                        SelectionMode="None">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="viewModels:LitterImageViewModel">
+                                    <Border Style="{StaticResource RoundBorder}" Margin="0,3">
+                                        <Grid ColumnDefinitions="Auto, *" Padding="8,6" ColumnSpacing="10">
+                                            <Image Source="{Binding AzureBlobUrl}" MaximumWidthRequest="80" Aspect="AspectFill" Grid.Column="0" />
+                                            <Label Text="{Binding Address.DisplayAddress}" Grid.Column="1"
+                                                   LineBreakMode="WordWrap" FontSize="Small" VerticalOptions="Center"
+                                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Border>
             </VerticalStackLayout>
             <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
                      VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />

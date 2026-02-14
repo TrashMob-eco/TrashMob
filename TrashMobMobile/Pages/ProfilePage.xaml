@@ -8,253 +8,263 @@
              Title="Profile">
 
     <ScrollView>
-        <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
+        <Grid>
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}" Spacing="8">
 
-            <!-- User Header -->
-            <Border Style="{x:StaticResource RoundBorder}" Margin="5,10,5,5">
-                <VerticalStackLayout Spacing="4" Padding="5">
-                    <Label Text="{Binding UserName}"
-                           AutomationId="UserNameLabel"
-                           FontFamily="LexendSemibold"
-                           FontSize="Large" />
-                    <Label Text="{Binding UserEmail}"
-                           FontSize="Small"
-                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
-                    <Label Text="{Binding MemberSince}"
-                           FontSize="Micro"
-                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
-                </VerticalStackLayout>
-            </Border>
-
-            <!-- Location Preference -->
-            <Border Style="{x:StaticResource RoundBorder}" Margin="5,5">
-                <Grid ColumnDefinitions="*, Auto" Padding="5">
-                    <VerticalStackLayout Grid.Column="0" Spacing="2">
-                        <Label Text="Location Preference"
+                <!-- User Header -->
+                <Border Style="{x:StaticResource RoundBorder}" Margin="10,8,10,0">
+                    <VerticalStackLayout Spacing="4" Padding="12,10">
+                        <Label Text="{Binding UserName}"
+                               AutomationId="UserNameLabel"
                                FontFamily="LexendSemibold"
-                               FontSize="Small" />
-                        <Label Text="{Binding LocationSummary}"
+                               FontSize="Large" />
+                        <Label Text="{Binding UserEmail}"
+                               FontSize="Small"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                        <Label Text="{Binding MemberSince}"
                                FontSize="Micro"
                                TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
                     </VerticalStackLayout>
-                    <Button Grid.Column="1"
-                            Text="Edit"
-                            Command="{Binding EditLocationCommand}"
-                            Style="{StaticResource SecondarySmallButton}" />
-                </Grid>
-            </Border>
+                </Border>
+
+                <!-- Location Preference -->
+                <Border Style="{x:StaticResource RoundBorder}" Margin="10,0">
+                    <Grid ColumnDefinitions="*, Auto" Padding="12,10">
+                        <VerticalStackLayout Grid.Column="0" Spacing="2">
+                            <Label Text="Location Preference"
+                                   FontFamily="LexendSemibold"
+                                   FontSize="Small" />
+                            <Label Text="{Binding LocationSummary}"
+                                   FontSize="Micro"
+                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                        </VerticalStackLayout>
+                        <Button Grid.Column="1"
+                                Text="Edit"
+                                Command="{Binding EditLocationCommand}"
+                                Style="{StaticResource SecondarySmallButton}" />
+                    </Grid>
+                </Border>
 
             <!-- My Events Section -->
-            <Label Text="My Events"
-                   Style="{StaticResource SectionHeader}"
-                   Margin="5,15,5,5" />
+            <Border Style="{StaticResource RoundBorder}" Margin="10,0">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="My Events" Style="{StaticResource SectionHeader}" Margin="0" />
+                    <HorizontalStackLayout Spacing="8">
+                        <Button Text="Upcoming"
+                                Command="{Binding ShowUpcomingEventsCommand}"
+                                Style="{StaticResource SecondarySmallButton}">
+                            <Button.Triggers>
+                                <DataTrigger TargetType="Button" Binding="{Binding ShowUpcoming}" Value="true">
+                                    <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Button" Binding="{Binding ShowUpcoming}" Value="false">
+                                    <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
+                                </DataTrigger>
+                            </Button.Triggers>
+                        </Button>
+                        <Button Text="Completed"
+                                Command="{Binding ShowCompletedEventsCommand}"
+                                Style="{StaticResource SecondarySmallButton}">
+                            <Button.Triggers>
+                                <DataTrigger TargetType="Button" Binding="{Binding ShowCompleted}" Value="true">
+                                    <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Button" Binding="{Binding ShowCompleted}" Value="false">
+                                    <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
+                                </DataTrigger>
+                            </Button.Triggers>
+                        </Button>
+                    </HorizontalStackLayout>
 
-            <HorizontalStackLayout Spacing="8" Margin="5,0">
-                <Button Text="Upcoming"
-                        Command="{Binding ShowUpcomingEventsCommand}"
-                        Style="{StaticResource PrimarySmallButton}" />
-                <Button Text="Completed"
-                        Command="{Binding ShowCompletedEventsCommand}"
-                        Style="{StaticResource SecondarySmallButton}" />
-            </HorizontalStackLayout>
+                    <!-- Upcoming Events List -->
+                    <VerticalStackLayout IsVisible="{Binding ShowUpcoming}">
+                        <Label Text="No upcoming events"
+                               IsVisible="{Binding AreNoUpcomingEventsFound}"
+                               FontSize="Small"
+                               Margin="0,4"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                        <CollectionView ItemsSource="{Binding UpcomingEvents}"
+                                        SelectionMode="None"
+                                        IsVisible="{Binding AreUpcomingEventsFound}"
+                                        MaximumHeightRequest="300">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="viewModels:EventViewModel">
+                                    <Border Style="{x:StaticResource RoundBorder}" Margin="0,3">
+                                        <VerticalStackLayout Padding="10,8" Spacing="2">
+                                            <Label Text="{Binding Name}" FontFamily="LexendSemibold" FontSize="Small" />
+                                            <Label Text="{Binding DisplayDate}" FontSize="Micro"
+                                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                            <Label Text="{Binding Address.DisplayAddress}" FontSize="Micro"
+                                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                        </VerticalStackLayout>
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ProfileViewModel}}, Path=ViewEventCommand}"
+                                                CommandParameter="{Binding .}" />
+                                        </Border.GestureRecognizers>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
 
-            <!-- Upcoming Events List -->
-            <VerticalStackLayout IsVisible="{Binding ShowUpcoming}">
-                <Label Text="No upcoming events"
-                       IsVisible="{Binding AreNoUpcomingEventsFound}"
-                       FontSize="Small"
-                       Margin="10,10"
-                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
-                <CollectionView ItemsSource="{Binding UpcomingEvents}"
-                                SelectionMode="None"
-                                IsVisible="{Binding AreUpcomingEventsFound}"
-                                MaximumHeightRequest="300">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="viewModels:EventViewModel">
-                            <Border Style="{x:StaticResource RoundBorder}" Margin="5,3">
-                                <VerticalStackLayout Padding="10,8" Spacing="2">
-                                    <Label Text="{Binding Name}" FontFamily="LexendSemibold" FontSize="Small" />
-                                    <Label Text="{Binding DisplayDate}" FontSize="Micro"
-                                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
-                                    <Label Text="{Binding Address.DisplayAddress}" FontSize="Micro"
-                                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
-                                </VerticalStackLayout>
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ProfileViewModel}}, Path=ViewEventCommand}"
-                                        CommandParameter="{Binding .}" />
-                                </Border.GestureRecognizers>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </VerticalStackLayout>
-
-            <!-- Completed Events List -->
-            <VerticalStackLayout IsVisible="{Binding ShowCompleted}">
-                <Label Text="No completed events"
-                       IsVisible="{Binding AreNoCompletedEventsFound}"
-                       FontSize="Small"
-                       Margin="10,10"
-                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
-                <CollectionView ItemsSource="{Binding CompletedEvents}"
-                                SelectionMode="None"
-                                IsVisible="{Binding AreCompletedEventsFound}"
-                                MaximumHeightRequest="300">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="viewModels:EventViewModel">
-                            <Border Style="{x:StaticResource RoundBorder}" Margin="5,3">
-                                <VerticalStackLayout Padding="10,8" Spacing="2">
-                                    <Label Text="{Binding Name}" FontFamily="LexendSemibold" FontSize="Small" />
-                                    <Label Text="{Binding DisplayDate}" FontSize="Micro"
-                                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
-                                    <Label Text="{Binding Address.DisplayAddress}" FontSize="Micro"
-                                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
-                                </VerticalStackLayout>
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ProfileViewModel}}, Path=ViewEventCommand}"
-                                        CommandParameter="{Binding .}" />
-                                </Border.GestureRecognizers>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </VerticalStackLayout>
+                    <!-- Completed Events List -->
+                    <VerticalStackLayout IsVisible="{Binding ShowCompleted}">
+                        <Label Text="No completed events"
+                               IsVisible="{Binding AreNoCompletedEventsFound}"
+                               FontSize="Small"
+                               Margin="0,4"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                        <CollectionView ItemsSource="{Binding CompletedEvents}"
+                                        SelectionMode="None"
+                                        IsVisible="{Binding AreCompletedEventsFound}"
+                                        MaximumHeightRequest="300">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="viewModels:EventViewModel">
+                                    <Border Style="{x:StaticResource RoundBorder}" Margin="0,3">
+                                        <VerticalStackLayout Padding="10,8" Spacing="2">
+                                            <Label Text="{Binding Name}" FontFamily="LexendSemibold" FontSize="Small" />
+                                            <Label Text="{Binding DisplayDate}" FontSize="Micro"
+                                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                            <Label Text="{Binding Address.DisplayAddress}" FontSize="Micro"
+                                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                        </VerticalStackLayout>
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ProfileViewModel}}, Path=ViewEventCommand}"
+                                                CommandParameter="{Binding .}" />
+                                        </Border.GestureRecognizers>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
 
             <!-- My Litter Reports Section -->
-            <Label Text="My Litter Reports"
-                   Style="{StaticResource SectionHeader}"
-                   Margin="5,15,5,5" />
-
-            <Label Text="No litter reports"
-                   IsVisible="{Binding AreNoLitterReportsFound}"
-                   FontSize="Small"
-                   Margin="10,5"
-                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
-            <CollectionView ItemsSource="{Binding LitterReports}"
-                            SelectionMode="None"
-                            IsVisible="{Binding AreLitterReportsFound}"
-                            MaximumHeightRequest="250">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="viewModels:LitterReportViewModel">
-                        <Border Style="{x:StaticResource RoundBorder}" Margin="5,3">
-                            <VerticalStackLayout Padding="10,8" Spacing="2">
-                                <Label Text="{Binding Name}" FontFamily="LexendSemibold" FontSize="Small" />
-                                <Label Text="{Binding LitterReportStatus}" FontSize="Micro"
-                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
-                                <Label Text="{Binding Description}" FontSize="Micro" MaxLines="2"
-                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
-                            </VerticalStackLayout>
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ProfileViewModel}}, Path=ViewLitterReportCommand}"
-                                    CommandParameter="{Binding .}" />
-                            </Border.GestureRecognizers>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+            <Border Style="{StaticResource RoundBorder}" Margin="10,0">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="My Litter Reports" Style="{StaticResource SectionHeader}" Margin="0" />
+                    <Label Text="No litter reports"
+                           IsVisible="{Binding AreNoLitterReportsFound}"
+                           FontSize="Small"
+                           Margin="0,4"
+                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                    <CollectionView ItemsSource="{Binding LitterReports}"
+                                    SelectionMode="None"
+                                    IsVisible="{Binding AreLitterReportsFound}"
+                                    MaximumHeightRequest="250">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="viewModels:LitterReportViewModel">
+                                <Border Style="{x:StaticResource RoundBorder}" Margin="0,3">
+                                    <VerticalStackLayout Padding="10,8" Spacing="2">
+                                        <Label Text="{Binding Name}" FontFamily="LexendSemibold" FontSize="Small" />
+                                        <Label Text="{Binding LitterReportStatus}" FontSize="Micro"
+                                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                        <Label Text="{Binding Description}" FontSize="Micro" MaxLines="2"
+                                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                    </VerticalStackLayout>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ProfileViewModel}}, Path=ViewLitterReportCommand}"
+                                            CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
 
             <!-- My Teams Section -->
-            <Grid ColumnDefinitions="*, Auto" Margin="5,15,5,5">
-                <Label Text="My Teams"
-                       FontFamily="LexendSemibold"
-                       FontSize="Medium"
-                       TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
-                       Grid.Column="0" />
-                <Button Text="Browse Teams"
-                        Command="{Binding BrowseTeamsCommand}"
-                        Style="{StaticResource SecondarySmallButton}"
-                        Grid.Column="1" />
-            </Grid>
-
-            <Label Text="You haven't joined any teams yet"
-                   IsVisible="{Binding AreNoTeamsFound}"
-                   FontSize="Small"
-                   Margin="10,5"
-                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
-            <CollectionView ItemsSource="{Binding MyTeams}"
-                            SelectionMode="None"
-                            IsVisible="{Binding AreTeamsFound}"
-                            MaximumHeightRequest="250">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="viewModels:TeamViewModel">
-                        <Border Style="{x:StaticResource RoundBorder}" Margin="5,3">
-                            <VerticalStackLayout Padding="10,8" Spacing="2">
-                                <Label Text="{Binding Name}" FontFamily="LexendSemibold" FontSize="Small" />
-                                <Label Text="{Binding Location}" FontSize="Micro"
-                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
-                                <Label Text="{Binding MemberCountDisplay}" FontSize="Micro"
-                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
-                            </VerticalStackLayout>
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ProfileViewModel}}, Path=ViewTeamCommand}"
-                                    CommandParameter="{Binding .}" />
-                            </Border.GestureRecognizers>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+            <Border Style="{StaticResource RoundBorder}" Margin="10,0">
+                <VerticalStackLayout Spacing="8">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Label Text="My Teams" Style="{StaticResource SectionHeader}" Margin="0"
+                               Grid.Column="0" />
+                        <Button Text="Browse Teams"
+                                Command="{Binding BrowseTeamsCommand}"
+                                Style="{StaticResource SecondarySmallButton}"
+                                Grid.Column="1" />
+                    </Grid>
+                    <Label Text="You haven't joined any teams yet"
+                           IsVisible="{Binding AreNoTeamsFound}"
+                           FontSize="Small"
+                           Margin="0,4"
+                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                    <CollectionView ItemsSource="{Binding MyTeams}"
+                                    SelectionMode="None"
+                                    IsVisible="{Binding AreTeamsFound}"
+                                    MaximumHeightRequest="250">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="viewModels:TeamViewModel">
+                                <Border Style="{x:StaticResource RoundBorder}" Margin="0,3">
+                                    <VerticalStackLayout Padding="10,8" Spacing="2">
+                                        <Label Text="{Binding Name}" FontFamily="LexendSemibold" FontSize="Small" />
+                                        <Label Text="{Binding Location}" FontSize="Micro"
+                                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                        <Label Text="{Binding MemberCountDisplay}" FontSize="Micro"
+                                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                    </VerticalStackLayout>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ProfileViewModel}}, Path=ViewTeamCommand}"
+                                            CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
 
             <!-- Settings Section -->
-            <Label Text="Settings"
-                   Style="{StaticResource SectionHeader}"
-                   Margin="5,15,5,5" />
-
-            <VerticalStackLayout Spacing="8" Margin="5,0">
-                <Button Text="Privacy Policy"
-                        Command="{Binding OpenPrivacyPolicyCommand}"
-                        Style="{StaticResource SecondaryLargeButton}"
-                        ContentLayout="Left, 12"
-                        ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconBinoculars}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" />
-                <Button Text="Terms of Service"
-                        Command="{Binding OpenTermsOfServiceCommand}"
-                        Style="{StaticResource SecondaryLargeButton}"
-                        ContentLayout="Left, 12"
-                        ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconFileDocument}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" />
-                <Button Text="Sign Waiver"
-                        Command="{Binding SignWaiverCommand}"
-                        Style="{StaticResource SecondaryLargeButton}"
-                        ContentLayout="Left, 12"
-                        ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconSignatureText}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" />
-                <Button Text="Contact Us"
-                        Command="{Binding ContactUsCommand}"
-                        Style="{StaticResource SecondaryLargeButton}"
-                        ContentLayout="Left, 12"
-                        ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconEmail}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" />
-                <Button Text="Newsletter Preferences"
-                        Command="{Binding ManageNewsletterPreferencesCommand}"
-                        Style="{StaticResource SecondaryLargeButton}"
-                        ContentLayout="Left, 12"
-                        ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconEmailNewsletter}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" />
-            </VerticalStackLayout>
+            <Border Style="{StaticResource RoundBorder}" Margin="10,0">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Settings" Style="{StaticResource SectionHeader}" Margin="0" />
+                    <Button Text="Privacy Policy"
+                            Command="{Binding OpenPrivacyPolicyCommand}"
+                            Style="{StaticResource SecondaryLargeButton}"
+                            ContentLayout="Left, 12"
+                            ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconBinoculars}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" />
+                    <Button Text="Terms of Service"
+                            Command="{Binding OpenTermsOfServiceCommand}"
+                            Style="{StaticResource SecondaryLargeButton}"
+                            ContentLayout="Left, 12"
+                            ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconFileDocument}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" />
+                    <Button Text="Contact Us"
+                            Command="{Binding ContactUsCommand}"
+                            Style="{StaticResource SecondaryLargeButton}"
+                            ContentLayout="Left, 12"
+                            ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconEmail}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" />
+                    <Button Text="Newsletter Preferences"
+                            Command="{Binding ManageNewsletterPreferencesCommand}"
+                            Style="{StaticResource SecondaryLargeButton}"
+                            ContentLayout="Left, 12"
+                            ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconEmailNewsletter}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" />
+                </VerticalStackLayout>
+            </Border>
 
             <!-- Sign Out -->
             <Button Text="Sign Out"
                     AutomationId="SignOutButton"
                     Command="{Binding SignOutCommand}"
                     Style="{StaticResource PrimaryLargeButton}"
-                    Margin="5,20,5,5" />
+                    Margin="10,8,10,10" />
 
             <!-- Version -->
             <Label x:Name="VersionLabel"
                    FontSize="Micro"
                    HorizontalTextAlignment="Center"
-                   Margin="0,5,0,20"
+                   Margin="0,0,0,20"
                    TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
 
-            <!-- Loading Overlay -->
-            <BoxView BackgroundColor="{StaticResource TransparentBlack}"
-                     IsVisible="{Binding IsBusy}"
-                     VerticalOptions="Fill"
-                     HorizontalOptions="Fill" />
-            <ActivityIndicator IsRunning="{Binding IsBusy}"
-                               IsVisible="{Binding IsBusy}"
-                               VerticalOptions="Center"
+            </VerticalStackLayout>
+            <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
+                     VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center"
                                HorizontalOptions="Center" />
-
-        </VerticalStackLayout>
+        </Grid>
     </ScrollView>
 </ContentPage>
