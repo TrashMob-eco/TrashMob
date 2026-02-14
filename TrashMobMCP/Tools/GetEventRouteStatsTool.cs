@@ -3,6 +3,7 @@ namespace TrashMobMCP.Tools;
 using System.ComponentModel;
 using System.Text.Json;
 using ModelContextProtocol.Server;
+using TrashMob.Models;
 using TrashMob.Shared.Managers.Interfaces;
 
 /// <summary>
@@ -13,10 +14,12 @@ public class GetEventRouteStatsTool
 {
     private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
     private readonly IEventAttendeeRouteManager _routeManager;
+    private readonly IEventManager _eventManager;
 
-    public GetEventRouteStatsTool(IEventAttendeeRouteManager routeManager)
+    public GetEventRouteStatsTool(IEventAttendeeRouteManager routeManager, IEventManager eventManager)
     {
         _routeManager = routeManager;
+        _eventManager = eventManager;
     }
 
     /// <summary>
@@ -34,6 +37,15 @@ public class GetEventRouteStatsTool
             return JsonSerializer.Serialize(new
             {
                 error = "Invalid event ID format. Must be a valid GUID."
+            }, JsonOptions);
+        }
+
+        var evt = await _eventManager.GetAsync(parsedEventId);
+        if (evt is null || evt.EventVisibilityId != (int)EventVisibilityEnum.Public)
+        {
+            return JsonSerializer.Serialize(new
+            {
+                error = "Event not found."
             }, JsonOptions);
         }
 

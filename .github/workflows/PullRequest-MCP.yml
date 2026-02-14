@@ -1,0 +1,37 @@
+# Pull Request workflow for TrashMob MCP Server Container
+
+name: PR - MCP Server
+
+on:
+  pull_request:
+    branches: [ "main", "release" ]
+    paths:
+      - '.github/workflows/PullRequest-MCP.yml'
+      - '.github/workflows/container_mcp-tm-dev-westus2.yml'
+      - 'Deploy/containerAppMCP.bicep'
+      - 'TrashMobMCP/**'
+      - 'TrashMob.Models/**'
+      - 'TrashMob.Shared/**'
+
+jobs:
+  build-container:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build TrashMobMCP Container
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: TrashMobMCP/Dockerfile
+        push: false
+        tags: trashmobmcp:pr-${{ github.event.pull_request.number }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max

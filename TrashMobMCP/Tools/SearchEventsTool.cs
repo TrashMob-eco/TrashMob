@@ -65,6 +65,7 @@ public class SearchEventsTool
 
         var sanitizedEvents = events
             .Where(e => e.EventStatusId != (int)EventStatusEnum.Canceled)
+            .Where(e => e.EventVisibilityId == (int)EventVisibilityEnum.Public)
             .Select(Sanitize)
             .ToList();
 
