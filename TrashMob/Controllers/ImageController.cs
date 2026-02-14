@@ -16,21 +16,11 @@ namespace TrashMob.Controllers
     /// Controller for managing images, including upload and deletion.
     /// </summary>
     [Route("api/image")]
-    public class ImageController : SecureController
+    public class ImageController(
+        IImageManager imageManager,
+        IEventManager eventManager)
+        : SecureController
     {
-        private readonly IEventManager eventManager;
-        private readonly IImageManager imageManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ImageController"/> class.
-        /// </summary>
-        /// <param name="imageManager">The image manager.</param>
-        /// <param name="eventManager">The event manager.</param>
-        public ImageController(IImageManager imageManager, IEventManager eventManager)
-        {
-            this.imageManager = imageManager;
-            this.eventManager = eventManager;
-        }
 
         /// <summary>
         /// Uploads an image for an event.

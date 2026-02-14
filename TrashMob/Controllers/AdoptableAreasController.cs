@@ -20,31 +20,13 @@ namespace TrashMob.Controllers
     /// Controller for managing adoptable areas within a community.
     /// </summary>
     [Route("api/communities/{partnerId}/areas")]
-    public class AdoptableAreasController : SecureController
+    public class AdoptableAreasController(
+        IAdoptableAreaManager areaManager,
+        IKeyedManager<Partner> partnerManager,
+        IAreaSuggestionService areaSuggestionService,
+        IAreaFileParser areaFileParser)
+        : SecureController
     {
-        private readonly IAdoptableAreaManager areaManager;
-        private readonly IKeyedManager<Partner> partnerManager;
-        private readonly IAreaSuggestionService areaSuggestionService;
-        private readonly IAreaFileParser areaFileParser;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AdoptableAreasController"/> class.
-        /// </summary>
-        /// <param name="areaManager">The adoptable area manager.</param>
-        /// <param name="partnerManager">The partner manager.</param>
-        /// <param name="areaSuggestionService">The AI area suggestion service.</param>
-        /// <param name="areaFileParser">The area file parser for bulk import.</param>
-        public AdoptableAreasController(
-            IAdoptableAreaManager areaManager,
-            IKeyedManager<Partner> partnerManager,
-            IAreaSuggestionService areaSuggestionService,
-            IAreaFileParser areaFileParser)
-        {
-            this.areaManager = areaManager;
-            this.partnerManager = partnerManager;
-            this.areaSuggestionService = areaSuggestionService;
-            this.areaFileParser = areaFileParser;
-        }
 
         /// <summary>
         /// Gets all adoptable areas for a community.

@@ -18,23 +18,11 @@ namespace TrashMob.Controllers
     /// Controller for community admin adoption management.
     /// </summary>
     [Route("api/communities/{partnerId}/adoptions")]
-    public class CommunityAdoptionsController : SecureController
+    public class CommunityAdoptionsController(
+        ITeamAdoptionManager adoptionManager,
+        IKeyedManager<Partner> partnerManager)
+        : SecureController
     {
-        private readonly ITeamAdoptionManager adoptionManager;
-        private readonly IKeyedManager<Partner> partnerManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CommunityAdoptionsController"/> class.
-        /// </summary>
-        /// <param name="adoptionManager">The team adoption manager.</param>
-        /// <param name="partnerManager">The partner manager.</param>
-        public CommunityAdoptionsController(
-            ITeamAdoptionManager adoptionManager,
-            IKeyedManager<Partner> partnerManager)
-        {
-            this.adoptionManager = adoptionManager;
-            this.partnerManager = partnerManager;
-        }
 
         /// <summary>
         /// Gets all pending adoption applications for a community.

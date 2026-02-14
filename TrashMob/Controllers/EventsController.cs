@@ -316,13 +316,13 @@ namespace TrashMob.Controllers
         [HttpPost]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
-        [ProducesResponseType(typeof(Event), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Event), StatusCodes.Status201Created)]
         public async Task<IActionResult> AddEvent(Event mobEvent, CancellationToken cancellationToken)
         {
             var newEvent = await eventManager.AddAsync(mobEvent, UserId, cancellationToken);
             TrackEvent(nameof(AddEvent));
 
-            return Ok(newEvent);
+            return CreatedAtAction(nameof(GetEvent), new { id = newEvent.Id }, newEvent);
         }
 
         /// <summary>

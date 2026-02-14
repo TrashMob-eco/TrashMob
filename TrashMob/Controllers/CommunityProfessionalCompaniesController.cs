@@ -17,27 +17,12 @@ namespace TrashMob.Controllers
     /// Controller for managing professional cleanup companies within a community.
     /// </summary>
     [Route("api/communities/{partnerId}/professional-companies")]
-    public class CommunityProfessionalCompaniesController : SecureController
+    public class CommunityProfessionalCompaniesController(
+        IProfessionalCompanyManager companyManager,
+        IProfessionalCompanyUserManager companyUserManager,
+        IKeyedManager<Partner> partnerManager)
+        : SecureController
     {
-        private readonly IProfessionalCompanyManager companyManager;
-        private readonly IProfessionalCompanyUserManager companyUserManager;
-        private readonly IKeyedManager<Partner> partnerManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CommunityProfessionalCompaniesController"/> class.
-        /// </summary>
-        /// <param name="companyManager">The professional company manager.</param>
-        /// <param name="companyUserManager">The professional company user manager.</param>
-        /// <param name="partnerManager">The partner manager.</param>
-        public CommunityProfessionalCompaniesController(
-            IProfessionalCompanyManager companyManager,
-            IProfessionalCompanyUserManager companyUserManager,
-            IKeyedManager<Partner> partnerManager)
-        {
-            this.companyManager = companyManager;
-            this.companyUserManager = companyUserManager;
-            this.partnerManager = partnerManager;
-        }
 
         /// <summary>
         /// Gets all active professional companies for a community.

@@ -17,27 +17,12 @@ namespace TrashMob.Controllers
     /// Controller for managing event links to team adoptions.
     /// </summary>
     [Route("api/adoptions/{adoptionId}/events")]
-    public class AdoptionEventsController : SecureController
+    public class AdoptionEventsController(
+        ITeamAdoptionEventManager adoptionEventManager,
+        ITeamAdoptionManager adoptionManager,
+        ITeamMemberManager teamMemberManager)
+        : SecureController
     {
-        private readonly ITeamAdoptionEventManager adoptionEventManager;
-        private readonly ITeamAdoptionManager adoptionManager;
-        private readonly ITeamMemberManager teamMemberManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AdoptionEventsController"/> class.
-        /// </summary>
-        /// <param name="adoptionEventManager">The team adoption event manager.</param>
-        /// <param name="adoptionManager">The team adoption manager.</param>
-        /// <param name="teamMemberManager">The team member manager.</param>
-        public AdoptionEventsController(
-            ITeamAdoptionEventManager adoptionEventManager,
-            ITeamAdoptionManager adoptionManager,
-            ITeamMemberManager teamMemberManager)
-        {
-            this.adoptionEventManager = adoptionEventManager;
-            this.adoptionManager = adoptionManager;
-            this.teamMemberManager = teamMemberManager;
-        }
 
         /// <summary>
         /// Gets all events linked to an adoption.

@@ -15,16 +15,11 @@ namespace TrashMob.Controllers
     using TrashMob.Shared.Poco;
 
     [Route("api/admin")]
-    public class AdminController : SecureController
+    public class AdminController(
+        IKeyedManager<PartnerRequest> partnerRequestManager,
+        IEmailManager emailManager)
+        : SecureController
     {
-        private readonly IEmailManager emailManager;
-        private readonly IKeyedManager<PartnerRequest> partnerRequestManager;
-
-        public AdminController(IKeyedManager<PartnerRequest> partnerRequestManager, IEmailManager emailManager)
-        {
-            this.partnerRequestManager = partnerRequestManager;
-            this.emailManager = emailManager;
-        }
 
         /// <summary>
         /// Updates a partner request. Admin only.
