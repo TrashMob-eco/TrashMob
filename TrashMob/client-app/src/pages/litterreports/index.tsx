@@ -26,11 +26,7 @@ import {
     LitterReportStatusColors,
 } from '@/components/Models/LitterReportStatus';
 import { GetNotCancelledLitterReports } from '@/services/litter-report';
-import {
-    getLastDaysTimerange,
-    getLastMonthsTimerange,
-    getAllCompletedTimerange,
-} from '@/pages/_home/utils/timerange';
+import { getLastDaysTimerange, getLastMonthsTimerange, getAllCompletedTimerange } from '@/pages/_home/utils/timerange';
 
 const formatDate = (date: Date | null) => {
     if (!date) return '-';
@@ -250,7 +246,10 @@ export const LitterReportsPage = () => {
                         {/* Color legend */}
                         <div className='flex flex-wrap items-center gap-4 mb-3 text-sm'>
                             <div className='flex items-center gap-1.5'>
-                                <div className='w-3 h-3 rounded-full' style={{ backgroundColor: litterReportColors.new }} />
+                                <div
+                                    className='w-3 h-3 rounded-full'
+                                    style={{ backgroundColor: litterReportColors.new }}
+                                />
                                 <span>New</span>
                             </div>
                             <div className='flex items-center gap-1.5'>

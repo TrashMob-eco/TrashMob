@@ -40,7 +40,8 @@ export const ContactUs = () => {
             toast({
                 variant: 'primary',
                 title: 'Message sent!',
-                description: "Thanks for reaching out. We've received your message and will get back to you as soon as we can.",
+                description:
+                    "Thanks for reaching out. We've received your message and will get back to you as soon as we can.",
             });
         },
     });

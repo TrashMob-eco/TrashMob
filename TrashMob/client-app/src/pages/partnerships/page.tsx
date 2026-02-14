@@ -35,22 +35,10 @@ export const Partnerships: FC<any> = () => {
                         <div>
                             <h2 className='font-semibold text-3xl mb-6 text-center md:text-left'>Our Partners</h2>
                             <div className='flex flex-wrap gap-6 justify-center md:justify-start items-center'>
-                                <a
-                                    href='https://issaquahhighlands.com/'
-                                    target='_blank'
-                                    rel='noreferrer noopener'
-                                >
-                                    <img
-                                        src={Ihca}
-                                        alt='Issaquah Highlands Community Association'
-                                        className='h-20'
-                                    />
+                                <a href='https://issaquahhighlands.com/' target='_blank' rel='noreferrer noopener'>
+                                    <img src={Ihca} alt='Issaquah Highlands Community Association' className='h-20' />
                                 </a>
-                                <a
-                                    href='https://troutunlimited.org'
-                                    target='_blank'
-                                    rel='noreferrer noopener'
-                                >
+                                <a href='https://troutunlimited.org' target='_blank' rel='noreferrer noopener'>
                                     <img src={TroutUnlimited} alt='Trout Unlimited' className='h-20' />
                                 </a>
                             </div>
@@ -63,8 +51,8 @@ export const Partnerships: FC<any> = () => {
                     <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
                         <div className='flex flex-col space-y-3 items-center text-center md:items-start md:text-left!'>
                             <p className='text-lg font-medium'>
-                                No partner for your event? Invite local government or business to join TrashMob.eco as
-                                a partner!
+                                No partner for your event? Invite local government or business to join TrashMob.eco as a
+                                partner!
                             </p>
                             <Button asChild>
                                 <Link to='/inviteapartner'>Invite a partner</Link>
