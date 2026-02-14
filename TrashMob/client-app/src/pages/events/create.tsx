@@ -3,7 +3,9 @@ import { ManageEventDashboardLayout } from './_layout';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { EnhancedFormLabel as FormLabel } from '@/components/ui/custom/form';
+import { CharacterCounter } from '@/components/ui/character-counter';
 import { useQuery } from '@tanstack/react-query';
 import { GetMyTeams } from '@/services/teams';
 import { Input } from '@/components/ui/input';
@@ -334,33 +336,39 @@ export const CreateEventPage = () => {
                                         />
                                     </FormControl>
                                 </FormItem>
-                                {latitude && longitude ? (
-                                    <>
-                                        <FormItem className='col-span-12'>
-                                            <GoogleMap
-                                                id='locationPicker'
-                                                defaultCenter={{ lat: latitude, lng: longitude }}
-                                                defaultZoom={16}
-                                                style={{ width: '100%', height: '300px' }}
-                                                onClick={handleClickMap}
-                                            >
-                                                <Marker
-                                                    position={{ lat: latitude, lng: longitude }}
-                                                    draggable
-                                                    onDragEnd={handleMarkerDragEnd}
-                                                />
-                                            </GoogleMap>
-                                            <FormDescription>
-                                                Drag marker or click on map to move marker to precise location.
-                                            </FormDescription>
-                                        </FormItem>
-                                        <div className='col-span-12 flex gap-2 justify-end'>
-                                            <Button type='button' onClick={() => setStep('edit-detail')}>
-                                                Next
-                                            </Button>
-                                        </div>
-                                    </>
-                                ) : null}
+                                <FormItem className='col-span-12'>
+                                    <GoogleMap
+                                        id='locationPicker'
+                                        defaultCenter={
+                                            latitude && longitude ? { lat: latitude, lng: longitude } : undefined
+                                        }
+                                        defaultZoom={latitude && longitude ? 16 : undefined}
+                                        style={{ width: '100%', height: '300px' }}
+                                        onClick={handleClickMap}
+                                    >
+                                        {latitude && longitude ? (
+                                            <Marker
+                                                position={{ lat: latitude, lng: longitude }}
+                                                draggable
+                                                onDragEnd={handleMarkerDragEnd}
+                                            />
+                                        ) : null}
+                                    </GoogleMap>
+                                    <FormDescription>
+                                        {latitude && longitude
+                                            ? 'Drag the marker or click elsewhere on the map to fine-tune the location.'
+                                            : 'Search for an address above, or click on the map to set the location.'}
+                                    </FormDescription>
+                                </FormItem>
+                                <div className='col-span-12 flex gap-2 justify-end'>
+                                    <Button
+                                        type='button'
+                                        disabled={!latitude || !longitude}
+                                        onClick={() => setStep('edit-detail')}
+                                    >
+                                        Next
+                                    </Button>
+                                </div>
                             </div>
                         </TabsContent>
                         <TabsContent value='edit-detail'>
@@ -370,22 +378,18 @@ export const CreateEventPage = () => {
                                     name='name'
                                     render={({ field }) => (
                                         <FormItem className='col-span-12'>
-                                            <FormLabel>Event Name</FormLabel>
+                                            <FormLabel required>Event Name</FormLabel>
                                             <FormControl>
-                                                <Input placeholder='New Event' {...field} />
+                                                <Input
+                                                    placeholder='New Event'
+                                                    maxLength={MAX_EVENT_NAME_LENGTH}
+                                                    {...field}
+                                                />
                                             </FormControl>
-                                            <div className='flex justify-between'>
-                                                <div className='grow'>
-                                                    <FormMessage />
-                                                </div>
-                                                <FormDescription
-                                                    className={cn('text-right', {
-                                                        'text-destructive': eventName.length > MAX_EVENT_NAME_LENGTH,
-                                                    })}
-                                                >
-                                                    {eventName.length}/{MAX_EVENT_NAME_LENGTH}
-                                                </FormDescription>
-                                            </div>
+                                            <CharacterCounter
+                                                currentLength={eventName?.length || 0}
+                                                maxLength={MAX_EVENT_NAME_LENGTH}
+                                            />
                                         </FormItem>
                                     )}
                                 />
@@ -394,7 +398,7 @@ export const CreateEventPage = () => {
                                     name='eventTypeId'
                                     render={({ field }) => (
                                         <FormItem className='col-span-6'>
-                                            <FormLabel>Event Type</FormLabel>
+                                            <FormLabel required>Event Type</FormLabel>
                                             <FormControl>
                                                 <Select value={field.value} onValueChange={field.onChange}>
                                                     <SelectTrigger className='w-full'>
@@ -466,7 +470,7 @@ export const CreateEventPage = () => {
                                     name='maxNumberOfParticipants'
                                     render={({ field }) => (
                                         <FormItem className='col-span-3'>
-                                            <FormLabel>Max attendees</FormLabel>
+                                            <FormLabel required>Max attendees</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     type='number'
@@ -483,7 +487,7 @@ export const CreateEventPage = () => {
                                     name='eventDate'
                                     render={({ field }) => (
                                         <FormItem className='col-span-6'>
-                                            <FormLabel>Date</FormLabel>
+                                            <FormLabel required>Date</FormLabel>
                                             <FormControl>
                                                 <DatePicker {...field} />
                                             </FormControl>
@@ -496,7 +500,7 @@ export const CreateEventPage = () => {
                                     name='eventTimeStart'
                                     render={({ field }) => (
                                         <FormItem className='col-span-3'>
-                                            <FormLabel>Start time</FormLabel>
+                                            <FormLabel required>Start time</FormLabel>
                                             <FormControl>
                                                 <TimePicker {...field} />
                                             </FormControl>
@@ -509,7 +513,7 @@ export const CreateEventPage = () => {
                                     name='eventTimeEnd'
                                     render={({ field }) => (
                                         <FormItem className='col-span-3'>
-                                            <FormLabel>End time</FormLabel>
+                                            <FormLabel required>End time</FormLabel>
                                             <FormControl>
                                                 <TimePicker {...field} />
                                             </FormControl>
@@ -525,24 +529,16 @@ export const CreateEventPage = () => {
                                             <FormLabel>Description</FormLabel>
                                             <FormControl>
                                                 <Textarea
-                                                    placeholder='Type your message here.'
+                                                    placeholder='Describe the event, what to bring, meeting point, etc.'
                                                     className='resize-none'
+                                                    maxLength={MAX_EVENT_DESC_LENGTH}
                                                     {...field}
                                                 />
                                             </FormControl>
-                                            <div className='flex justify-between'>
-                                                <div className='grow'>
-                                                    <FormMessage />
-                                                </div>
-                                                <FormDescription
-                                                    className={cn('text-right', {
-                                                        'text-destructive':
-                                                            (eventDescription || '').length > MAX_EVENT_DESC_LENGTH,
-                                                    })}
-                                                >
-                                                    {(eventDescription || '').length}/{MAX_EVENT_DESC_LENGTH}
-                                                </FormDescription>
-                                            </div>
+                                            <CharacterCounter
+                                                currentLength={(eventDescription || '').length}
+                                                maxLength={MAX_EVENT_DESC_LENGTH}
+                                            />
                                         </FormItem>
                                     )}
                                 />
