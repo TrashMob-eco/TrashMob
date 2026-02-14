@@ -65,10 +65,10 @@
              * Use your correct FairPlayTube API port
              * */
             //ngrok.exe http https://localhost:44373 -host-header="localhost:44373"
-            services.AddScoped<BaseAddressAuthorizationMessageHandler>();
+            services.AddScoped<AuthHandler>();
             services.AddHttpClient($"ServerAPI", client =>
                     client.BaseAddress = new Uri(Settings.ApiBaseUrl))
-                .AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>()
+                .AddHttpMessageHandler<AuthHandler>()
                 .AddHttpMessageHandler<SentryHttpMessageHandler>()
                 .SetHandlerLifetime(TimeSpan.FromMinutes(5)) //Set lifetime to five minutes
                 .AddPolicyHandler(GetRetryPolicy());

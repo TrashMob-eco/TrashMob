@@ -1,7 +1,6 @@
 ﻿namespace TrashMobMobile.Services
 {
     using System.Text.Json;
-    using TrashMobMobile.Authentication;
     using TrashMobMobile.Config;
 
     public abstract class RestServiceBase(IHttpClientFactory httpClientFactory)
@@ -23,8 +22,6 @@
                 var authorizedHttpClient = httpClientFactory.CreateClient("ServerAPI");
 
                 authorizedHttpClient.BaseAddress = new Uri(string.Concat(TrashMobApiAddress, Controller));
-                authorizedHttpClient.DefaultRequestHeaders.Add("Accept", "application/json, text/plain");
-                authorizedHttpClient.DefaultRequestHeaders.Authorization = GetAuthToken(UserState.UserContext);
 
                 return authorizedHttpClient;
             }
@@ -39,17 +36,6 @@
                 anonymousHttpClient.DefaultRequestHeaders.Add("Accept", "application/json, text/plain");
                 return anonymousHttpClient;
             }
-        }
-
-        protected virtual System.Net.Http.Headers.AuthenticationHeaderValue? GetAuthToken(UserContext userContext)
-        {
-            if (string.IsNullOrWhiteSpace(userContext.AccessToken))
-            {
-                return null;
-            }
-
-            return new System.Net.Http.Headers
-                .AuthenticationHeaderValue("bearer", userContext.AccessToken);
         }
     }
 }

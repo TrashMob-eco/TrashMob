@@ -7,13 +7,14 @@ namespace TrashMob.Controllers
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using TrashMob.Models;
+    using TrashMob.Security;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
 
     /// <summary>
     /// Controller for managing user newsletter preferences.
     /// </summary>
-    [Authorize]
+    [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
     [Route("api/newsletter-preferences")]
     public class NewsletterPreferencesController : SecureController
     {

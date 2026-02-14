@@ -1,10 +1,8 @@
 ﻿namespace TrashMobMobile.Services;
 
-using System.Diagnostics;
 using System.Net.Http.Json;
 using Newtonsoft.Json;
 using TrashMob.Models;
-using TrashMobMobile.Authentication;
 
 public class UserRestService(IHttpClientFactory httpClientFactory) : RestServiceBase(httpClientFactory), IUserRestService
 {
@@ -23,20 +21,12 @@ public class UserRestService(IHttpClientFactory httpClientFactory) : RestService
         }
     }
 
-    public async Task<User> GetUserByEmailAsync(string email, UserContext userContext,
+    public async Task<User> GetUserByEmailAsync(string email,
         CancellationToken cancellationToken = default)
     {
-        var localHttpClient = new HttpClient
-        {
-            BaseAddress = new Uri(string.Concat(TrashMobApiAddress, Controller)),
-        };
-
-        localHttpClient.DefaultRequestHeaders.Authorization = GetAuthToken(userContext);
-        localHttpClient.DefaultRequestHeaders.Add("Accept", "application/json, text/plain");
-
         var requestUri = Controller + "/getuserbyemail/" + email;
 
-        using (var response = await localHttpClient.GetAsync(requestUri, cancellationToken))
+        using (var response = await AuthorizedHttpClient.GetAsync(requestUri, cancellationToken))
         {
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
