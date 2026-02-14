@@ -186,7 +186,7 @@ const faqs = [
             },
             {
                 question: 'How do event organizers request Partner services?',
-                answer: 'After creating an event, event leads can browse available partners in their area and request services. Partners are notified and can accept or decline requests based on availability. If no partners are in your area, you can use the "Invite a Partner" feature to help grow the network.',
+                answer: 'After creating an event, event leads can browse available partners in their area and request services. Partners are notified and can accept or decline requests based on availability. If no partners are in your area, you can use the <a href="https://www.trashmob.eco/inviteapartner">"Invite a Partner"</a> feature to help grow the network.',
             },
             {
                 question: 'How do Partners manage service requests?',
