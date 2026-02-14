@@ -33,7 +33,7 @@ namespace TrashMob.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> SubmitFeedback([FromBody] UserFeedback feedback, CancellationToken cancellationToken)
         {
-            if (feedback == null)
+            if (feedback is null)
             {
                 return BadRequest("Feedback cannot be null.");
             }
@@ -58,7 +58,7 @@ namespace TrashMob.Controllers
             // Try to get UserId if authenticated
             try
             {
-                if (HttpContext.Items.ContainsKey("UserId") && HttpContext.Items["UserId"] != null)
+                if (HttpContext.Items.ContainsKey("UserId") && HttpContext.Items["UserId"] is not null)
                 {
                     feedback.UserId = new Guid(HttpContext.Items["UserId"].ToString());
                 }
@@ -90,7 +90,7 @@ namespace TrashMob.Controllers
         {
             var feedback = await feedbackManager.GetAsync(id, cancellationToken);
 
-            if (feedback == null)
+            if (feedback is null)
             {
                 return NotFound();
             }
@@ -132,7 +132,7 @@ namespace TrashMob.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateFeedback(Guid id, [FromBody] UpdateFeedbackRequest request, CancellationToken cancellationToken)
         {
-            if (request == null)
+            if (request is null)
             {
                 return BadRequest("Request body is required.");
             }
@@ -146,7 +146,7 @@ namespace TrashMob.Controllers
 
             var feedback = await feedbackManager.UpdateStatusAsync(id, request.Status, request.InternalNotes, UserId, cancellationToken);
 
-            if (feedback == null)
+            if (feedback is null)
             {
                 return NotFound();
             }
@@ -170,7 +170,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> DeleteFeedback(Guid id, CancellationToken cancellationToken)
         {
             var existing = await feedbackManager.GetAsync(id, cancellationToken);
-            if (existing == null)
+            if (existing is null)
             {
                 return NotFound();
             }

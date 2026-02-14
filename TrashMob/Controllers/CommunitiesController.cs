@@ -56,7 +56,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetCommunityBySlug(string slug, CancellationToken cancellationToken)
         {
             var community = await communityManager.GetBySlugAsync(slug, cancellationToken);
-            if (community == null)
+            if (community is null)
             {
                 return NotFound();
             }
@@ -101,7 +101,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken = default)
         {
             var community = await communityManager.GetBySlugAsync(slug, cancellationToken);
-            if (community == null)
+            if (community is null)
             {
                 return NotFound();
             }
@@ -125,7 +125,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken = default)
         {
             var community = await communityManager.GetBySlugAsync(slug, cancellationToken);
-            if (community == null)
+            if (community is null)
             {
                 return NotFound();
             }
@@ -147,7 +147,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken = default)
         {
             var community = await communityManager.GetBySlugAsync(slug, cancellationToken);
-            if (community == null)
+            if (community is null)
             {
                 return NotFound();
             }
@@ -169,7 +169,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken = default)
         {
             var community = await communityManager.GetBySlugAsync(slug, cancellationToken);
-            if (community == null)
+            if (community is null)
             {
                 return NotFound();
             }
@@ -222,7 +222,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken = default)
         {
             var community = await communityManager.GetByIdAsync(communityId, cancellationToken);
-            if (community == null)
+            if (community is null)
             {
                 return NotFound();
             }
@@ -253,7 +253,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken = default)
         {
             var community = await communityManager.GetByIdAsync(communityId, cancellationToken);
-            if (community == null)
+            if (community is null)
             {
                 return NotFound();
             }
@@ -285,13 +285,13 @@ namespace TrashMob.Controllers
             [FromBody] Partner community,
             CancellationToken cancellationToken = default)
         {
-            if (community == null || community.Id != communityId)
+            if (community is null || community.Id != communityId)
             {
                 return BadRequest("Community ID in URL must match the body.");
             }
 
             var existing = await communityManager.GetByIdAsync(communityId, cancellationToken);
-            if (existing == null)
+            if (existing is null)
             {
                 return NotFound();
             }
@@ -325,7 +325,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetCommunityPhotos(string slug, CancellationToken cancellationToken)
         {
             var community = await communityManager.GetBySlugAsync(slug, cancellationToken);
-            if (community == null)
+            if (community is null)
             {
                 return NotFound();
             }
@@ -353,7 +353,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var community = await communityManager.GetBySlugAsync(slug, cancellationToken);
-            if (community == null)
+            if (community is null)
             {
                 return NotFound();
             }
@@ -405,7 +405,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var community = await communityManager.GetBySlugAsync(slug, cancellationToken);
-            if (community == null)
+            if (community is null)
             {
                 return NotFound();
             }
@@ -417,7 +417,7 @@ namespace TrashMob.Controllers
             }
 
             var photo = await partnerPhotoManager.GetAsync(photoId, cancellationToken);
-            if (photo == null || photo.PartnerId != community.Id)
+            if (photo is null || photo.PartnerId != community.Id)
             {
                 return NotFound();
             }
@@ -448,7 +448,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var community = await communityManager.GetBySlugAsync(slug, cancellationToken);
-            if (community == null)
+            if (community is null)
             {
                 return NotFound();
             }
@@ -460,7 +460,7 @@ namespace TrashMob.Controllers
             }
 
             var photo = await partnerPhotoManager.GetAsync(photoId, cancellationToken);
-            if (photo == null || photo.PartnerId != community.Id)
+            if (photo is null || photo.PartnerId != community.Id)
             {
                 return NotFound();
             }

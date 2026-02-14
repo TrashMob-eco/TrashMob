@@ -47,11 +47,11 @@ namespace TrashMob.Security
                 var emailAddressClaim = context.User.FindFirst(ClaimTypes.Email);
                 var emailClaim = context.User.FindFirst("email");
 
-                var email = emailAddressClaim == null ? emailClaim?.Value : emailAddressClaim?.Value;
+                var email = emailAddressClaim is null ? emailClaim?.Value : emailAddressClaim?.Value;
 
                 var user = await userManager.GetUserByEmailAsync(email, CancellationToken.None);
 
-                if (user == null)
+                if (user is null)
                 {
                     AuthorizationFailure.Failed(new List<AuthorizationFailureReason>
                         { new(this, $"User with email '{email}' not found.") });
@@ -77,7 +77,7 @@ namespace TrashMob.Security
                 // SECURITY: Do not trust CreatedByUserId from the request body
                 var actualEvent = await eventManager.GetAsync(eventId.Value, CancellationToken.None);
 
-                if (actualEvent == null)
+                if (actualEvent is null)
                 {
                     AuthorizationFailure.Failed(new List<AuthorizationFailureReason>
                         { new(this, $"Event with ID '{eventId.Value}' not found.") });
@@ -142,7 +142,7 @@ namespace TrashMob.Security
         private static Guid? TryGetEventIdViaReflection(BaseModel resource)
         {
             var eventIdProperty = resource.GetType().GetProperty("EventId");
-            if (eventIdProperty != null && eventIdProperty.PropertyType == typeof(Guid))
+            if (eventIdProperty is not null && eventIdProperty.PropertyType == typeof(Guid))
             {
                 return (Guid)eventIdProperty.GetValue(resource);
             }

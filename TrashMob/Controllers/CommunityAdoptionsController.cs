@@ -38,7 +38,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetPendingApplications(Guid partnerId, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -66,7 +66,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetApprovedAdoptions(Guid partnerId, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -99,7 +99,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -140,7 +140,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -178,7 +178,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetDelinquentAdoptions(Guid partnerId, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -206,7 +206,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetComplianceStats(Guid partnerId, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -234,7 +234,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> ExportAdoptions(Guid partnerId, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }

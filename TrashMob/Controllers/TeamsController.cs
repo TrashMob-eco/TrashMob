@@ -56,7 +56,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetTeam(Guid teamId, CancellationToken cancellationToken)
         {
             var team = await teamManager.GetAsync(teamId, cancellationToken);
-            if (team == null)
+            if (team is null)
             {
                 return NotFound();
             }
@@ -150,7 +150,7 @@ namespace TrashMob.Controllers
 
             // Verify the user is an adult (18+) to create a team
             var user = await userManager.GetAsync(UserId, cancellationToken);
-            if (user == null)
+            if (user is null)
             {
                 return BadRequest("User not found.");
             }
@@ -192,7 +192,7 @@ namespace TrashMob.Controllers
             }
 
             var existingTeam = await teamManager.GetAsync(teamId, cancellationToken);
-            if (existingTeam == null)
+            if (existingTeam is null)
             {
                 return NotFound();
             }
@@ -247,7 +247,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> DeactivateTeam(Guid teamId, CancellationToken cancellationToken)
         {
             var existingTeam = await teamManager.GetAsync(teamId, cancellationToken);
-            if (existingTeam == null)
+            if (existingTeam is null)
             {
                 return NotFound();
             }
@@ -281,7 +281,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetTeamPhotos(Guid teamId, CancellationToken cancellationToken)
         {
             var team = await teamManager.GetAsync(teamId, cancellationToken);
-            if (team == null)
+            if (team is null)
             {
                 return NotFound();
             }
@@ -324,7 +324,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var team = await teamManager.GetAsync(teamId, cancellationToken);
-            if (team == null)
+            if (team is null)
             {
                 return NotFound();
             }
@@ -376,7 +376,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var team = await teamManager.GetAsync(teamId, cancellationToken);
-            if (team == null)
+            if (team is null)
             {
                 return NotFound();
             }
@@ -389,7 +389,7 @@ namespace TrashMob.Controllers
             }
 
             var photo = await teamPhotoManager.GetAsync(photoId, cancellationToken);
-            if (photo == null || photo.TeamId != teamId)
+            if (photo is null || photo.TeamId != teamId)
             {
                 return NotFound();
             }
@@ -419,7 +419,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var team = await teamManager.GetAsync(teamId, cancellationToken);
-            if (team == null)
+            if (team is null)
             {
                 return NotFound();
             }
@@ -432,7 +432,7 @@ namespace TrashMob.Controllers
             }
 
             var photo = await teamPhotoManager.GetAsync(photoId, cancellationToken);
-            if (photo == null || photo.TeamId != teamId)
+            if (photo is null || photo.TeamId != teamId)
             {
                 return NotFound();
             }
@@ -468,7 +468,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var team = await teamManager.GetAsync(teamId, cancellationToken);
-            if (team == null)
+            if (team is null)
             {
                 return NotFound();
             }
@@ -517,7 +517,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var team = await teamManager.GetAsync(teamId, cancellationToken);
-            if (team == null)
+            if (team is null)
             {
                 return NotFound();
             }

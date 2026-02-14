@@ -75,7 +75,7 @@ namespace TrashMob.Controllers
                 (await partnerAdminInvitationManager.GetByParentIdAsync(partnerId, cancellationToken)).FirstOrDefault(
                     pu => pu.Email == email);
 
-            if (partnerInvite == null)
+            if (partnerInvite is null)
             {
                 return NotFound();
             }
@@ -112,7 +112,7 @@ namespace TrashMob.Controllers
 
             var addUser = await userManager.GetAsync(p => p.Email == partnerAdminInvitation.Email, cancellationToken);
 
-            if (addUser == null) 
+            if (addUser is null) 
             {
                 return NotFound($"User with Email {partnerAdminInvitation.Email} not found.");
             }

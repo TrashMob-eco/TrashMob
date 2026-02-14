@@ -38,7 +38,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetLogs(Guid companyId, CancellationToken cancellationToken)
         {
             var company = await companyManager.GetAsync(companyId, cancellationToken);
-            if (company == null)
+            if (company is null)
             {
                 return NotFound();
             }
@@ -71,7 +71,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var company = await companyManager.GetAsync(companyId, cancellationToken);
-            if (company == null)
+            if (company is null)
             {
                 return NotFound();
             }
@@ -109,7 +109,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetAssignments(Guid companyId, CancellationToken cancellationToken)
         {
             var company = await companyManager.GetAsync(companyId, cancellationToken);
-            if (company == null)
+            if (company is null)
             {
                 return NotFound();
             }

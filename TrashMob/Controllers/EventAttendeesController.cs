@@ -262,7 +262,7 @@ namespace TrashMob.Controllers
             var attendee = await eventAttendeeManager
                 .GetAsync(ea => ea.EventId == eventId && ea.UserId == userId, cancellationToken);
 
-            return attendee?.FirstOrDefault() != null;
+            return attendee?.FirstOrDefault() is not null;
         }
     }
 

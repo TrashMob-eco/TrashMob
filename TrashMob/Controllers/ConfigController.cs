@@ -91,7 +91,7 @@ namespace TrashMob.Controllers
                         deleteUser = deleteUserAuthority,
                         profileEdit = profileEditAuthority,
                     },
-                    scopes = b2cDomain != null
+                    scopes = b2cDomain is not null
                         ? new[]
                         {
                             $"https://{b2cDomain}/api/TrashMob.Read",
@@ -133,7 +133,7 @@ namespace TrashMob.Controllers
                     clientId = entraFrontendClientId,
                     authorityDomain,
                     authority,
-                    scopes = entraDomain != null
+                    scopes = entraDomain is not null
                         ? new[]
                         {
                             $"https://{entraDomain}/api/TrashMob.Read",

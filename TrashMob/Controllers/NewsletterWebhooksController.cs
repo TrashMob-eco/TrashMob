@@ -31,7 +31,7 @@ namespace TrashMob.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> ProcessNewsletterEvents([FromBody] List<SendGridEvent> events, CancellationToken cancellationToken = default)
         {
-            if (events == null || !events.Any())
+            if (events is null || !events.Any())
             {
                 return Ok();
             }

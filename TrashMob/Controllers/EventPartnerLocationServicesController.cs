@@ -89,7 +89,7 @@ namespace TrashMob.Controllers
         {
             var mobEvent = await eventManager.GetAsync(eventPartnerLocationService.EventId, cancellationToken);
 
-            if (mobEvent == null)
+            if (mobEvent is null)
             {
                 return NotFound();
             }
@@ -126,7 +126,7 @@ namespace TrashMob.Controllers
         {
             var partner = await partnerLocationManager.GetPartnerForLocationAsync(partnerLocationId, cancellationToken);
 
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -134,7 +134,7 @@ namespace TrashMob.Controllers
             var eventPartnerLocationServices =
                 await eventPartnerLocationServiceManager.GetCurrentPartnersAsync(eventId, cancellationToken);
 
-            if (eventPartnerLocationServices == null || !eventPartnerLocationServices.Any(epls =>
+            if (eventPartnerLocationServices is null || !eventPartnerLocationServices.Any(epls =>
                     epls.ServiceTypeId == serviceId && epls.PartnerLocationId == partnerLocationId))
             {
                 return NotFound();
@@ -177,7 +177,7 @@ namespace TrashMob.Controllers
         {
             var partner = await partnerLocationManager.GetPartnerForLocationAsync(partnerLocationId, cancellationToken);
 
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -185,7 +185,7 @@ namespace TrashMob.Controllers
             var eventPartnerLocationServices =
                 await eventPartnerLocationServiceManager.GetCurrentPartnersAsync(eventId, cancellationToken);
 
-            if (eventPartnerLocationServices == null || !eventPartnerLocationServices.Any(epls =>
+            if (eventPartnerLocationServices is null || !eventPartnerLocationServices.Any(epls =>
                     epls.ServiceTypeId == serviceId && epls.PartnerLocationId == partnerLocationId))
             {
                 return NotFound();
@@ -226,7 +226,7 @@ namespace TrashMob.Controllers
         {
             var mobEvent = await eventManager.GetAsync(eventPartnerLocationService.EventId, cancellationToken);
 
-            if (mobEvent == null)
+            if (mobEvent is null)
             {
                 return NotFound();
             }
@@ -263,7 +263,7 @@ namespace TrashMob.Controllers
         {
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
 
-            if (mobEvent == null)
+            if (mobEvent is null)
             {
                 return NotFound();
             }

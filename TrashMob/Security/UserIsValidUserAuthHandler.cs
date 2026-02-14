@@ -34,17 +34,17 @@
                 var emailAddressClaim = context.User.FindFirst(ClaimTypes.Email);
                 var emailClaim = context.User.FindFirst("email");
 
-                var email = emailAddressClaim == null ? emailClaim?.Value : emailAddressClaim?.Value;
+                var email = emailAddressClaim is null ? emailClaim?.Value : emailAddressClaim?.Value;
 
                 var user = await userManager.GetUserByEmailAsync(email, CancellationToken.None);
 
-                if (user == null)
+                if (user is null)
                 {
                     // Auto-create user on first login (needed for Entra External ID which
                     // doesn't have B2C-style REST API callbacks during sign-up)
                     user = await TryAutoCreateUser(context, email);
 
-                    if (user == null)
+                    if (user is null)
                     {
                         AuthorizationFailure.Failed(new List<AuthorizationFailureReason>
                             { new(this, $"User with email '{email}' not found and could not be auto-created.") });
@@ -58,7 +58,7 @@
                 if (string.IsNullOrEmpty(user.ProfilePhotoUrl))
                 {
                     var pictureClaim = context.User.FindFirst("picture");
-                    if (pictureClaim != null)
+                    if (pictureClaim is not null)
                     {
                         user.ProfilePhotoUrl = pictureClaim.Value;
                         needsUpdate = true;
@@ -69,7 +69,7 @@
                 {
                     var givenNameClaim = context.User.FindFirst(ClaimTypes.GivenName)
                                       ?? context.User.FindFirst("given_name");
-                    if (givenNameClaim != null)
+                    if (givenNameClaim is not null)
                     {
                         user.GivenName = givenNameClaim.Value;
                         needsUpdate = true;
@@ -80,7 +80,7 @@
                 {
                     var surnameClaim = context.User.FindFirst(ClaimTypes.Surname)
                                     ?? context.User.FindFirst("family_name");
-                    if (surnameClaim != null)
+                    if (surnameClaim is not null)
                     {
                         user.Surname = surnameClaim.Value;
                         needsUpdate = true;
@@ -92,7 +92,7 @@
                     var dobClaim = context.User.FindFirst("dateOfBirth")
                                  ?? context.User.FindFirst(ClaimTypes.DateOfBirth)
                                  ?? context.User.Claims.FirstOrDefault(c => c.Type.Contains("dateOfBirth", StringComparison.OrdinalIgnoreCase));
-                    if (dobClaim != null && DateTimeOffset.TryParse(dobClaim.Value, out var parsedDob))
+                    if (dobClaim is not null && DateTimeOffset.TryParse(dobClaim.Value, out var parsedDob))
                     {
                         user.DateOfBirth = parsedDob;
                         needsUpdate = true;
@@ -130,7 +130,7 @@
                         ?? context.User.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")
                         ?? context.User.FindFirst(ClaimTypes.NameIdentifier);
 
-            if (oidClaim == null || !Guid.TryParse(oidClaim.Value, out var objectId))
+            if (oidClaim is null || !Guid.TryParse(oidClaim.Value, out var objectId))
             {
                 logger.LogWarning("Cannot auto-create user: no valid object ID claim found for email {Email}", email);
                 return null;
@@ -151,13 +151,13 @@
 
             // Ensure username is unique
             var existingUser = await userManager.GetUserByUserNameAsync(userName, CancellationToken.None);
-            if (existingUser != null)
+            if (existingUser is not null)
             {
                 userName = $"{userName}_{objectId.ToString()[..8]}";
             }
 
             DateTimeOffset? dateOfBirth = null;
-            if (dobClaim != null && DateTimeOffset.TryParse(dobClaim.Value, out var parsedDob))
+            if (dobClaim is not null && DateTimeOffset.TryParse(dobClaim.Value, out var parsedDob))
             {
                 dateOfBirth = parsedDob;
             }

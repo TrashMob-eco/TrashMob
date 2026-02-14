@@ -40,7 +40,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
-            if (mobEvent == null)
+            if (mobEvent is null)
             {
                 return NotFound("Event not found");
             }
@@ -70,7 +70,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetPhoto(Guid eventId, Guid photoId, CancellationToken cancellationToken)
         {
             var photo = await eventPhotoManager.GetAsync(photoId, cancellationToken);
-            if (photo == null || photo.EventId != eventId)
+            if (photo is null || photo.EventId != eventId)
             {
                 return NotFound("Photo not found");
             }
@@ -97,14 +97,14 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
-            if (mobEvent == null)
+            if (mobEvent is null)
             {
                 return NotFound("Event not found");
             }
 
             // Check if user is event lead or attendee
             var isLead = mobEvent.CreatedByUserId == UserId;
-            var isAttendee = await eventAttendeeManager.GetAsync(eventId, UserId, cancellationToken) != null;
+            var isAttendee = await eventAttendeeManager.GetAsync(eventId, UserId, cancellationToken) is not null;
 
             if (!isLead && !isAttendee)
             {
@@ -163,7 +163,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var photo = await eventPhotoManager.GetAsync(photoId, cancellationToken);
-            if (photo == null || photo.EventId != eventId)
+            if (photo is null || photo.EventId != eventId)
             {
                 return NotFound("Photo not found");
             }
@@ -206,7 +206,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var photo = await eventPhotoManager.GetAsync(photoId, cancellationToken);
-            if (photo == null || photo.EventId != eventId)
+            if (photo is null || photo.EventId != eventId)
             {
                 return NotFound("Photo not found");
             }
@@ -247,7 +247,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var photo = await eventPhotoManager.GetAsync(photoId, cancellationToken);
-            if (photo == null || photo.EventId != eventId)
+            if (photo is null || photo.EventId != eventId)
             {
                 return NotFound("Photo not found");
             }

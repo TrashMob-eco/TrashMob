@@ -72,7 +72,7 @@ namespace TrashMob.Controllers
 
             var result = await emailInviteManager.GetBatchDetailsAsync(id, cancellationToken);
 
-            if (result == null || result.CommunityId != communityId)
+            if (result is null || result.CommunityId != communityId)
             {
                 return NotFound();
             }
@@ -105,7 +105,7 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            if (request == null || request.Emails == null || !request.Emails.Any())
+            if (request is null || request.Emails is null || !request.Emails.Any())
             {
                 return BadRequest("Email list is required.");
             }

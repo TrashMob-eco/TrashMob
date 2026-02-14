@@ -38,7 +38,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetCompanies(Guid partnerId, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -67,7 +67,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetCompany(Guid partnerId, Guid companyId, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -78,7 +78,7 @@ namespace TrashMob.Controllers
             }
 
             var company = await companyManager.GetAsync(companyId, cancellationToken);
-            if (company == null || company.PartnerId != partnerId)
+            if (company is null || company.PartnerId != partnerId)
             {
                 return NotFound();
             }
@@ -105,7 +105,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -144,7 +144,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -155,7 +155,7 @@ namespace TrashMob.Controllers
             }
 
             var existing = await companyManager.GetAsync(companyId, cancellationToken);
-            if (existing == null || existing.PartnerId != partnerId)
+            if (existing is null || existing.PartnerId != partnerId)
             {
                 return NotFound();
             }
@@ -189,7 +189,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -200,7 +200,7 @@ namespace TrashMob.Controllers
             }
 
             var company = await companyManager.GetAsync(companyId, cancellationToken);
-            if (company == null || company.PartnerId != partnerId)
+            if (company is null || company.PartnerId != partnerId)
             {
                 return NotFound();
             }
@@ -233,7 +233,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -244,7 +244,7 @@ namespace TrashMob.Controllers
             }
 
             var company = await companyManager.GetAsync(companyId, cancellationToken);
-            if (company == null || company.PartnerId != partnerId)
+            if (company is null || company.PartnerId != partnerId)
             {
                 return NotFound();
             }
@@ -268,7 +268,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetUsers(Guid partnerId, Guid companyId, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -279,7 +279,7 @@ namespace TrashMob.Controllers
             }
 
             var company = await companyManager.GetAsync(companyId, cancellationToken);
-            if (company == null || company.PartnerId != partnerId)
+            if (company is null || company.PartnerId != partnerId)
             {
                 return NotFound();
             }

@@ -165,7 +165,7 @@ namespace TrashMob.Controllers
         {
             var mobEvent = await eventManager.GetAsync(id, cancellationToken);
 
-            if (mobEvent == null)
+            if (mobEvent is null)
             {
                 return NotFound();
             }
@@ -186,7 +186,7 @@ namespace TrashMob.Controllers
         {
             var result = await eventManager.GetFilteredEventsAsync(filter, cancellationToken);
 
-            if (filter.PageSize != null)
+            if (filter.PageSize is not null)
             {
                 var pagedResults = result.OrderByDescending(e => e.EventDate).Skip(filter.PageIndex.GetValueOrDefault(0) * filter.PageSize.GetValueOrDefault(10))
                     .Take(filter.PageSize.GetValueOrDefault(10)).ToList();
@@ -214,7 +214,7 @@ namespace TrashMob.Controllers
 
             var allResults = result1.Union(result2, new EventComparer());
 
-            if (filter.PageSize != null)
+            if (filter.PageSize is not null)
             {
                 var pagedResults = PaginatedList<Event>.Create(allResults.OrderByDescending(e => e.EventDate).AsQueryable(),
                                        filter.PageIndex.GetValueOrDefault(0), filter.PageSize.GetValueOrDefault(10));
@@ -237,7 +237,7 @@ namespace TrashMob.Controllers
         {
             var result = await eventManager.GetFilteredEventsAsync(filter, cancellationToken);
 
-            if (filter.PageSize != null)
+            if (filter.PageSize is not null)
             {
                 var pagedResults = PaginatedList<Event>.Create(result.OrderByDescending(e => e.EventDate).AsQueryable(),
                                        filter.PageIndex.GetValueOrDefault(0), filter.PageSize.GetValueOrDefault(10));
@@ -357,7 +357,7 @@ namespace TrashMob.Controllers
         {
             var mobEvent = await eventManager.GetAsync(id, cancellationToken);
 
-            return mobEvent != null;
+            return mobEvent is not null;
         }
     }
 }

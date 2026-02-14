@@ -38,7 +38,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetSponsoredAdoptions(Guid partnerId, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -67,7 +67,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetSponsoredAdoption(Guid partnerId, Guid id, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -78,7 +78,7 @@ namespace TrashMob.Controllers
             }
 
             var adoption = await adoptionManager.GetAsync(id, cancellationToken);
-            if (adoption == null)
+            if (adoption is null)
             {
                 return NotFound();
             }
@@ -105,7 +105,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -143,7 +143,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -154,7 +154,7 @@ namespace TrashMob.Controllers
             }
 
             var existing = await adoptionManager.GetAsync(id, cancellationToken);
-            if (existing == null)
+            if (existing is null)
             {
                 return NotFound();
             }
@@ -180,7 +180,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetComplianceStats(Guid partnerId, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }

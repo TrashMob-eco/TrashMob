@@ -140,7 +140,7 @@ namespace TrashMob.Controllers
             var litterReport = await eventLitterReportManager
                 .GetAsync(ea => ea.EventId == eventId && ea.LitterReportId == litterReportId, cancellationToken);
 
-            return litterReport?.FirstOrDefault() != null;
+            return litterReport?.FirstOrDefault() is not null;
         }
 
         private async Task<IEnumerable<FullEventLitterReport>> ToFullEventLitterReports(IEnumerable<EventLitterReport> eventLitterReports, CancellationToken cancellationToken)

@@ -31,7 +31,7 @@ namespace TrashMob.Controllers.IFTTT
         {
             var error = triggersManager.ValidateRequest(triggersRequest, EventRequestType.All);
 
-            if (error != null)
+            if (error is not null)
             {
                 return BadRequest(error);
             }
@@ -59,7 +59,7 @@ namespace TrashMob.Controllers.IFTTT
         {
             var error = triggersManager.ValidateRequest(triggersRequest, EventRequestType.ByCountry);
 
-            if (error != null)
+            if (error is not null)
             {
                 return BadRequest(error);
             }
@@ -87,7 +87,7 @@ namespace TrashMob.Controllers.IFTTT
         {
             var error = triggersManager.ValidateRequest(triggersRequest, EventRequestType.ByRegion);
 
-            if (error != null)
+            if (error is not null)
             {
                 return BadRequest(error);
             }
@@ -114,7 +114,7 @@ namespace TrashMob.Controllers.IFTTT
         {
             var error = triggersManager.ValidateRequest(triggersRequest, EventRequestType.ByCity);
 
-            if (error != null)
+            if (error is not null)
             {
                 return BadRequest(error);
             }
@@ -142,7 +142,7 @@ namespace TrashMob.Controllers.IFTTT
         {
             var error = triggersManager.ValidateRequest(triggersRequest, EventRequestType.ByPostalCode);
 
-            if (error != null)
+            if (error is not null)
             {
                 return BadRequest(error);
             }

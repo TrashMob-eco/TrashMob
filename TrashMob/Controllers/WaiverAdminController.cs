@@ -71,7 +71,7 @@ namespace TrashMob.Controllers
         {
             var result = await waiverVersionManager.GetAsync(id, cancellationToken);
 
-            if (result == null)
+            if (result is null)
             {
                 return NotFound();
             }
@@ -96,7 +96,7 @@ namespace TrashMob.Controllers
             [FromBody] WaiverVersion waiverVersion,
             CancellationToken cancellationToken = default)
         {
-            if (waiverVersion == null)
+            if (waiverVersion is null)
             {
                 return BadRequest("Waiver version is required.");
             }
@@ -140,13 +140,13 @@ namespace TrashMob.Controllers
             [FromBody] WaiverVersion waiverVersion,
             CancellationToken cancellationToken = default)
         {
-            if (waiverVersion == null || waiverVersion.Id != id)
+            if (waiverVersion is null || waiverVersion.Id != id)
             {
                 return BadRequest("Waiver version ID mismatch.");
             }
 
             var existing = await waiverVersionManager.GetAsync(id, cancellationToken);
-            if (existing == null)
+            if (existing is null)
             {
                 return NotFound();
             }
@@ -233,7 +233,7 @@ namespace TrashMob.Controllers
             [FromBody] AssignWaiverRequest request,
             CancellationToken cancellationToken = default)
         {
-            if (request == null || request.WaiverId == Guid.Empty)
+            if (request is null || request.WaiverId == Guid.Empty)
             {
                 return BadRequest("Waiver ID is required.");
             }

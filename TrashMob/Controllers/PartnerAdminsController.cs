@@ -99,7 +99,7 @@ namespace TrashMob.Controllers
                 (await partnerAdminManager.GetByParentIdAsync(partnerId, cancellationToken)).FirstOrDefault(pu =>
                     pu.UserId == userId);
 
-            if (partnerUser == null)
+            if (partnerUser is null)
             {
                 return NotFound();
             }
@@ -131,7 +131,7 @@ namespace TrashMob.Controllers
 
             var partnerAdmins = await partnerAdminManager.GetByParentIdAsync(partnerId, cancellationToken);
 
-            if (partnerAdmins == null || !partnerAdmins.Any())
+            if (partnerAdmins is null || !partnerAdmins.Any())
             {
                 return NotFound();
             }

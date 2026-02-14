@@ -26,7 +26,7 @@ namespace TrashMob.Controllers.IFTTT
         {
             var user = await userManager.GetAsync(UserId, cancellationToken);
 
-            if (user == null)
+            if (user is null)
             {
                 return NotFound();
             }

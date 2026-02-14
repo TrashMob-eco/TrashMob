@@ -37,7 +37,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetSponsors(Guid partnerId, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -66,7 +66,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetSponsor(Guid partnerId, Guid sponsorId, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -77,7 +77,7 @@ namespace TrashMob.Controllers
             }
 
             var sponsor = await sponsorManager.GetAsync(sponsorId, cancellationToken);
-            if (sponsor == null || sponsor.PartnerId != partnerId)
+            if (sponsor is null || sponsor.PartnerId != partnerId)
             {
                 return NotFound();
             }
@@ -101,7 +101,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> CreateSponsor(Guid partnerId, [FromBody] Sponsor sponsor, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -140,7 +140,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -151,7 +151,7 @@ namespace TrashMob.Controllers
             }
 
             var existing = await sponsorManager.GetAsync(sponsorId, cancellationToken);
-            if (existing == null || existing.PartnerId != partnerId)
+            if (existing is null || existing.PartnerId != partnerId)
             {
                 return NotFound();
             }
@@ -179,7 +179,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> DeactivateSponsor(Guid partnerId, Guid sponsorId, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -190,7 +190,7 @@ namespace TrashMob.Controllers
             }
 
             var existing = await sponsorManager.GetAsync(sponsorId, cancellationToken);
-            if (existing == null || existing.PartnerId != partnerId)
+            if (existing is null || existing.PartnerId != partnerId)
             {
                 return NotFound();
             }

@@ -27,7 +27,7 @@
 
         public Task OnAuthorizationAsync(AuthorizationFilterContext context)
         {
-            if (context == null)
+            if (context is null)
             {
                 throw new ArgumentNullException(nameof(context));
             }

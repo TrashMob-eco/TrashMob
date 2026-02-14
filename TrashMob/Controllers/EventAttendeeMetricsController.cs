@@ -37,7 +37,7 @@ namespace TrashMob.Controllers
         {
             var metrics = await metricsManager.GetMyMetricsAsync(eventId, UserId, cancellationToken);
 
-            if (metrics == null)
+            if (metrics is null)
             {
                 return NotFound();
             }
@@ -86,7 +86,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetAllMetrics(Guid eventId, CancellationToken cancellationToken)
         {
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
-            if (mobEvent == null)
+            if (mobEvent is null)
             {
                 return NotFound();
             }
@@ -114,7 +114,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetPendingMetrics(Guid eventId, CancellationToken cancellationToken)
         {
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
-            if (mobEvent == null)
+            if (mobEvent is null)
             {
                 return NotFound();
             }
@@ -147,7 +147,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
-            if (mobEvent == null)
+            if (mobEvent is null)
             {
                 return NotFound();
             }
@@ -188,7 +188,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
-            if (mobEvent == null)
+            if (mobEvent is null)
             {
                 return NotFound();
             }
@@ -229,7 +229,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
-            if (mobEvent == null)
+            if (mobEvent is null)
             {
                 return NotFound();
             }
@@ -276,7 +276,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> ApproveAllPending(Guid eventId, CancellationToken cancellationToken)
         {
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
-            if (mobEvent == null)
+            if (mobEvent is null)
             {
                 return NotFound();
             }
@@ -310,7 +310,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetTotals(Guid eventId, CancellationToken cancellationToken)
         {
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
-            if (mobEvent == null)
+            if (mobEvent is null)
             {
                 return NotFound();
             }
@@ -337,7 +337,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetPublicMetrics(Guid eventId, CancellationToken cancellationToken)
         {
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
-            if (mobEvent == null)
+            if (mobEvent is null)
             {
                 return NotFound();
             }

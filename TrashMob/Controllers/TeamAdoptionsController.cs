@@ -39,7 +39,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetTeamAdoptions(Guid teamId, CancellationToken cancellationToken)
         {
             var team = await teamManager.GetAsync(teamId, cancellationToken);
-            if (team == null)
+            if (team is null)
             {
                 return NotFound();
             }
@@ -74,7 +74,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var team = await teamManager.GetAsync(teamId, cancellationToken);
-            if (team == null)
+            if (team is null)
             {
                 return NotFound();
             }
@@ -116,7 +116,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetActiveAdoptions(Guid teamId, CancellationToken cancellationToken)
         {
             var team = await teamManager.GetAsync(teamId, cancellationToken);
-            if (team == null)
+            if (team is null)
             {
                 return NotFound();
             }

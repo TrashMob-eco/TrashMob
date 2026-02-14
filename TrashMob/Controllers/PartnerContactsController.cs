@@ -62,7 +62,7 @@ namespace TrashMob.Controllers
         {
             var partner = await partnerManager.GetAsync(partnerContact.PartnerId, cancellationToken);
 
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }

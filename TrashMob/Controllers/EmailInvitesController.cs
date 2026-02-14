@@ -55,7 +55,7 @@ namespace TrashMob.Controllers
         {
             var result = await emailInviteManager.GetBatchDetailsAsync(id, cancellationToken);
 
-            if (result == null)
+            if (result is null)
             {
                 return NotFound();
             }
@@ -80,7 +80,7 @@ namespace TrashMob.Controllers
             [FromBody] CreateEmailInviteBatchRequest request,
             CancellationToken cancellationToken = default)
         {
-            if (request == null || request.Emails == null || !request.Emails.Any())
+            if (request is null || request.Emails is null || !request.Emails.Any())
             {
                 return BadRequest("Email list is required.");
             }
