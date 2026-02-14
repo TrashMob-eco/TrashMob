@@ -93,8 +93,8 @@ namespace TrashMob.Shared.Engine
                     }
 
                     // Calculate distance
-                    var userLocation = new Tuple<double, double>(user.Latitude.Value, user.Longitude.Value);
-                    var reportLocation = new Tuple<double, double>(firstImage.Latitude.Value, firstImage.Longitude.Value);
+                    var userLocation = (user.Latitude.Value, user.Longitude.Value);
+                    var reportLocation = (firstImage.Latitude.Value, firstImage.Longitude.Value);
 
                     var distance = await mapRepository
                         .GetDistanceBetweenTwoPointsAsync(userLocation, reportLocation, user.PrefersMetric)

@@ -136,7 +136,7 @@ namespace TrashMob.Controllers
                 return NotFound();
             }
 
-            var users = new List<DisplayUser>();
+            List<DisplayUser> users = [];
 
             foreach (var pu in partnerAdmins)
             {

@@ -145,7 +145,7 @@ namespace TrashMob.Controllers
 
         private async Task<IEnumerable<FullEventLitterReport>> ToFullEventLitterReports(IEnumerable<EventLitterReport> eventLitterReports, CancellationToken cancellationToken)
         {
-            var fullEventLitterReports = new List<FullEventLitterReport>();
+            List<FullEventLitterReport> fullEventLitterReports = [];
 
             foreach (var eventLitterReport in eventLitterReports)
             {

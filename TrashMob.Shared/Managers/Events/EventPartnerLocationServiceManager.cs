@@ -141,8 +141,7 @@ namespace TrashMob.Shared.Managers.Events
 
             partnerMessage = partnerMessage.Replace("{UserName}", user.UserName);
 
-            var dashboardLink =
-                string.Format("https://www.trashmob.eco/events/{0}/edit", existingService.EventId);
+            var dashboardLink = $"https://www.trashmob.eco/events/{existingService.EventId}/edit";
             partnerMessage = partnerMessage.Replace("{PartnerResponseUrl}", dashboardLink);
 
             List<EmailAddress> partnerRecipients =

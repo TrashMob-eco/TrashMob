@@ -38,7 +38,7 @@ namespace TrashMob.Shared.Managers
         public string GetHtmlEmailCopy(string notificationType)
         {
             var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = string.Format("TrashMob.Shared.Engine.EmailCopy.{0}.html", notificationType);
+            var resourceName = $"TrashMob.Shared.Engine.EmailCopy.{notificationType}.html";
             logger.LogInformation("Getting email copy: {resourceName}", resourceName);
             string result;
 
@@ -92,7 +92,7 @@ namespace TrashMob.Shared.Managers
         public string GetEmailTemplate(string notificationType)
         {
             var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = string.Format("TrashMob.Shared.Engine.EmailTemplates.{0}.txt", notificationType);
+            var resourceName = $"TrashMob.Shared.Engine.EmailTemplates.{notificationType}.txt";
             logger.LogInformation("Getting email template: {resourceName}", resourceName);
             string result;
 
@@ -109,7 +109,7 @@ namespace TrashMob.Shared.Managers
         public string GetHtmlEmailTemplate(string notificationType)
         {
             var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = string.Format("TrashMob.Shared.Engine.EmailTemplates.{0}.html", notificationType);
+            var resourceName = $"TrashMob.Shared.Engine.EmailTemplates.{notificationType}.html";
             logger.LogInformation("Getting email template: {resourceName}", resourceName);
             string result;
 

@@ -98,7 +98,7 @@ namespace TrashMob.Controllers
         {
             var stepDistance = (double)totalDistanceMeters / pointCount;
             var bearing = Rng.NextDouble() * 360;
-            var coordinates = new List<Coordinate>();
+            List<Coordinate> coordinates = [];
 
             var currentLat = centerLat;
             var currentLon = centerLon;

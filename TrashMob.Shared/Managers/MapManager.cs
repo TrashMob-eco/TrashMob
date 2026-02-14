@@ -69,15 +69,15 @@ namespace TrashMob.Shared.Managers
         }
 
         /// <inheritdoc />
-        public async Task<double> GetDistanceBetweenTwoPointsAsync(Tuple<double, double> pointA,
-            Tuple<double, double> pointB, bool IsMetric = true)
+        public async Task<double> GetDistanceBetweenTwoPointsAsync((double Lat, double Lon) pointA,
+            (double Lat, double Lon) pointB, bool IsMetric = true)
         {
             var azureMaps = new AzureMapsToolkit.AzureMapsServices(GetMapKey());
             var distanceRequest = new GreatCircleDistanceRequest
             {
-                Query = $"{pointA.Item1},{pointA.Item2}:{pointB.Item1},{pointB.Item2}",
-                Start = new Coordinate { Lat = pointA.Item1, Lon = pointA.Item2 },
-                End = new Coordinate { Lat = pointB.Item1, Lon = pointB.Item2 },
+                Query = $"{pointA.Lat},{pointA.Lon}:{pointB.Lat},{pointB.Lon}",
+                Start = new Coordinate { Lat = pointA.Lat, Lon = pointA.Lon },
+                End = new Coordinate { Lat = pointB.Lat, Lon = pointB.Lon },
             };
 
             logger.LogInformation("Getting distance between two points: {0}",
@@ -120,7 +120,7 @@ namespace TrashMob.Shared.Managers
         }
 
         /// <inheritdoc />
-        public async Task<string> GetTimeForPointAsync(Tuple<double, double> pointA, DateTimeOffset dateTimeOffset)
+        public async Task<string> GetTimeForPointAsync((double Lat, double Lon) pointA, DateTimeOffset dateTimeOffset)
         {
             var azureMaps = new AzureMapsToolkit.AzureMapsServices(GetMapKey());
 
@@ -132,7 +132,7 @@ namespace TrashMob.Shared.Managers
 
             var timezoneRequest = new TimeZoneRequest
             {
-                Query = $"{pointA.Item1},{pointA.Item2}",
+                Query = $"{pointA.Lat},{pointA.Lon}",
                 TimeStamp = dateTimeOffset.UtcDateTime.ToString("O"),
             };
 

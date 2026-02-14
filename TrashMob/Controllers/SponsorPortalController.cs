@@ -38,7 +38,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetMySponsors(CancellationToken cancellationToken)
         {
             var partners = await partnerAdminManager.GetPartnersByUserIdAsync(UserId, cancellationToken);
-            var allSponsors = new List<Sponsor>();
+            List<Sponsor> allSponsors = [];
 
             foreach (var partner in partners)
             {

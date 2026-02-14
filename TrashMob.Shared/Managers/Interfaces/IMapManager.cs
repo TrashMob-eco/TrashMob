@@ -24,20 +24,20 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// <summary>
         /// Calculates the distance between two geographic points.
         /// </summary>
-        /// <param name="pointA">The first point as a tuple of latitude and longitude.</param>
-        /// <param name="pointB">The second point as a tuple of latitude and longitude.</param>
+        /// <param name="pointA">The first point as a tuple of (latitude, longitude).</param>
+        /// <param name="pointB">The second point as a tuple of (latitude, longitude).</param>
         /// <param name="IsMetric">Whether to return the distance in metric units. Defaults to true.</param>
         /// <returns>The distance between the two points.</returns>
-        Task<double> GetDistanceBetweenTwoPointsAsync(Tuple<double, double> pointA, Tuple<double, double> pointB,
+        Task<double> GetDistanceBetweenTwoPointsAsync((double Lat, double Lon) pointA, (double Lat, double Lon) pointB,
             bool IsMetric = true);
 
         /// <summary>
         /// Gets the timezone information for a geographic point at a specific time.
         /// </summary>
-        /// <param name="pointA">The geographic point as a tuple of latitude and longitude.</param>
+        /// <param name="pointA">The geographic point as a tuple of (latitude, longitude).</param>
         /// <param name="dateTimeOffset">The date and time for the timezone lookup.</param>
         /// <returns>The timezone identifier for the specified point and time.</returns>
-        Task<string> GetTimeForPointAsync(Tuple<double, double> pointA, DateTimeOffset dateTimeOffset);
+        Task<string> GetTimeForPointAsync((double Lat, double Lon) pointA, DateTimeOffset dateTimeOffset);
 
         /// <summary>
         /// Gets the address for a geographic coordinate.
