@@ -62,8 +62,7 @@ namespace TrashMob.Shared.Managers
             logger.LogInformation("ParentId: {ParentId}, ImageType: {ImageType}, File: {FileName}",
                 imageUpload.ParentId, imageUpload.ImageType, imageUpload.FormFile?.FileName);
 
-            var fileName = string.Format("{0}-{1}-{2}-{3}{4}", imageUpload.ParentId, imageUpload.ImageType.ToString(),
-                ImageSizeEnum.Raw.ToString(), fileTime, Path.GetExtension(imageUpload.FormFile?.FileName)).ToLower();
+            var fileName = $"{imageUpload.ParentId}-{imageUpload.ImageType}-{ImageSizeEnum.Raw}-{fileTime}{Path.GetExtension(imageUpload.FormFile?.FileName)}".ToLower();
 
             // Upload the raw file
             if (imageUpload.FormFile == null)
@@ -81,8 +80,7 @@ namespace TrashMob.Shared.Managers
             // Create a thumbnail
             using (var image = await Image.LoadAsync(memoryStream))
             {
-                var thumbNailFileName = string.Format("{0}-{1}-{2}-{3}.jpg", imageUpload.ParentId,
-                    imageUpload.ImageType.ToString(), ImageSizeEnum.Thumb.ToString(), fileTime).ToLower();
+                var thumbNailFileName = $"{imageUpload.ParentId}-{imageUpload.ImageType}-{ImageSizeEnum.Thumb}-{fileTime}.jpg".ToLower();
 
                 image.Mutate(x => x.Resize(thumbnailWidth, thumbnailHeight));
 
@@ -99,8 +97,7 @@ namespace TrashMob.Shared.Managers
             // Create a reduced image
             using (var image = await Image.LoadAsync(memoryStream))
             {
-                var reducedFileName = string.Format("{0}-{1}-{2}-{3}.jpg", imageUpload.ParentId,
-                    imageUpload.ImageType.ToString(), ImageSizeEnum.Reduced.ToString(), fileTime).ToLower();
+                var reducedFileName = $"{imageUpload.ParentId}-{imageUpload.ImageType}-{ImageSizeEnum.Reduced}-{fileTime}.jpg".ToLower();
 
                 image.Mutate(x => x.Resize(reducedWidth, reducedHeight));
 

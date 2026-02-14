@@ -40,8 +40,8 @@ namespace TrashMob.Shared.Tests.Managers.Events
 
             // Default setup for common dependencies
             // Return the event date formatted as ISO 8601 string (parseable as DateTimeOffset)
-            _mapManager.Setup(m => m.GetTimeForPointAsync(It.IsAny<Tuple<double, double>>(), It.IsAny<DateTimeOffset>()))
-                .ReturnsAsync((Tuple<double, double> _, DateTimeOffset eventDate) => eventDate.ToString("o"));
+            _mapManager.Setup(m => m.GetTimeForPointAsync(It.IsAny<(double, double)>(), It.IsAny<DateTimeOffset>()))
+                .ReturnsAsync(((double, double) _, DateTimeOffset eventDate) => eventDate.ToString("o"));
             _emailManager.Setup(e => e.GetHtmlEmailCopy(It.IsAny<string>())).Returns("Test email content");
             _emailManager.Setup(e => e.SendTemplatedEmailAsync(
                     It.IsAny<string>(),

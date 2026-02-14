@@ -16,23 +16,22 @@
         /// <param name="mobEvent">The event to get local time for.</param>
         /// <param name="mapRepository">The map manager for timezone lookups.</param>
         /// <returns>A tuple containing the formatted local date and time strings.</returns>
-        public static async Task<Tuple<string, string>> GetLocalEventTime(this Event mobEvent,
+        public static async Task<(string Date, string Time)> GetLocalEventTime(this Event mobEvent,
             IMapManager mapRepository)
         {
             // Note that the UI should never be passing in a null latitude and longitude... but during testing, this is possible. This hack is bad and will have unintented consequences
             var localTime = await mapRepository
-                .GetTimeForPointAsync(new Tuple<double, double>(mobEvent.Latitude ?? 0, mobEvent.Longitude ?? 0),
+                .GetTimeForPointAsync((mobEvent.Latitude ?? 0, mobEvent.Longitude ?? 0),
                     mobEvent.EventDate).ConfigureAwait(false);
 
             if (string.IsNullOrWhiteSpace(localTime))
             {
-                return new Tuple<string, string>(mobEvent.EventDate.ToString("MMMM dd, yyyy"),
+                return (mobEvent.EventDate.ToString("MMMM dd, yyyy"),
                     mobEvent.EventDate.ToString("h:mm tt"));
             }
 
             var localDate = DateTimeOffset.Parse(localTime);
-            var retVal = new Tuple<string, string>(localDate.ToString("MMMM dd, yyyy"), localDate.ToString("h:mm tt"));
-            return retVal;
+            return (localDate.ToString("MMMM dd, yyyy"), localDate.ToString("h:mm tt"));
         }
 
         /// <summary>

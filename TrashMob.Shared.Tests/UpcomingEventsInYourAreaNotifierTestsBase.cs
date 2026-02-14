@@ -292,8 +292,8 @@ namespace TrashMob.Shared.Tests
             UserManager.Setup(u => u.GetAsync(It.IsAny<CancellationToken>())).ReturnsAsync(users);
 
             // Setup a return of distance between User and Event of 50 (in whatever units)
-            MapRepository.Setup(mr => mr.GetDistanceBetweenTwoPointsAsync(It.IsAny<Tuple<double, double>>(),
-                It.IsAny<Tuple<double, double>>(), It.IsAny<bool>())).ReturnsAsync(50);
+            MapRepository.Setup(mr => mr.GetDistanceBetweenTwoPointsAsync(It.IsAny<(double, double)>(),
+                It.IsAny<(double, double)>(), It.IsAny<bool>())).ReturnsAsync(50);
 
             // Act
             await Engine.GenerateNotificationsAsync();

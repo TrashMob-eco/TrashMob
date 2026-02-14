@@ -150,8 +150,8 @@ namespace TrashMob.Shared.Managers.Events
                 {
                     username = attendee.User.UserName,
                     eventName = instance.Name,
-                    eventDate = localDate.Item1,
-                    eventTime = localDate.Item2,
+                    eventDate = localDate.Date,
+                    eventTime = localDate.Time,
                     eventAddress = instance.EventAddress(),
                     emailCopy,
                     subject,
@@ -200,8 +200,8 @@ namespace TrashMob.Shared.Managers.Events
             {
                 username = Constants.TrashMobEmailName,
                 eventName = instance.Name,
-                eventDate = localTime.Item1,
-                eventTime = localTime.Item2,
+                eventDate = localTime.Date,
+                eventTime = localTime.Time,
                 eventAddress = instance.EventAddress(),
                 emailCopy = message,
                 subject,
@@ -236,8 +236,8 @@ namespace TrashMob.Shared.Managers.Events
                 var oldLocalDate = await oldEvent.GetLocalEventTime(mapManager);
                 var newLocalDate = await instance.GetLocalEventTime(mapManager);
 
-                emailCopy = emailCopy.Replace("{EventDate}", oldLocalDate.Item1);
-                emailCopy = emailCopy.Replace("{EventTime}", oldLocalDate.Item2);
+                emailCopy = emailCopy.Replace("{EventDate}", oldLocalDate.Date);
+                emailCopy = emailCopy.Replace("{EventTime}", oldLocalDate.Time);
 
                 var subject = "A TrashMob.eco event you were scheduled to attend has been updated!";
 
@@ -249,8 +249,8 @@ namespace TrashMob.Shared.Managers.Events
                     {
                         username = attendee.User.UserName,
                         eventName = instance.Name,
-                        eventDate = newLocalDate.Item1,
-                        eventTime = newLocalDate.Item2,
+                        eventDate = newLocalDate.Date,
+                        eventTime = newLocalDate.Time,
                         eventAddress = instance.EventAddress(),
                         emailCopy,
                         subject,

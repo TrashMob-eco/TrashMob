@@ -171,8 +171,8 @@
                     {
                         username = user.UserName,
                         eventName = mobEvent.Name,
-                        eventDate = localDate.Item1,
-                        eventTime = localDate.Item2,
+                        eventDate = localDate.Date,
+                        eventTime = localDate.Time,
                         eventAddress = mobEvent.EventAddress(),
                         emailCopy,
                         subject = EmailSubject,
