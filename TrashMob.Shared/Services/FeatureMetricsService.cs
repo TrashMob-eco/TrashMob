@@ -12,15 +12,9 @@ namespace TrashMob.Shared.Services
     /// <summary>
     /// Service for tracking feature usage metrics using OpenTelemetry Activities.
     /// </summary>
-    public class FeatureMetricsService : IFeatureMetricsService
+    public class FeatureMetricsService(ILogger<FeatureMetricsService> logger) : IFeatureMetricsService
     {
         private static readonly ActivitySource FeatureMetricsSource = new("TrashMob.FeatureMetrics", "1.0.0");
-        private readonly ILogger<FeatureMetricsService> logger;
-
-        public FeatureMetricsService(ILogger<FeatureMetricsService> logger)
-        {
-            this.logger = logger;
-        }
 
         /// <inheritdoc />
         public void TrackFeatureUsage(string category, string action, Dictionary<string, object>? properties = null)

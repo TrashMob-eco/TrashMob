@@ -14,36 +14,14 @@ namespace TrashMob.Shared.Engine
     /// Notification engine that sends weekly digest emails about new litter reports in users' geographic area.
     /// This notifier should only run once per week (e.g., on Mondays).
     /// </summary>
-    public class WeeklyLitterReportsInYourAreaNotifier : INotificationEngine
+    public class WeeklyLitterReportsInYourAreaNotifier(
+        IKeyedManager<User> userManager,
+        ILitterReportManager litterReportManager,
+        INonEventUserNotificationManager nonEventUserNotificationManager,
+        IEmailManager emailManager,
+        IMapManager mapRepository,
+        ILogger logger) : INotificationEngine
     {
-        private readonly IEmailManager emailManager;
-        private readonly IEmailSender emailSender;
-        private readonly ILitterReportManager litterReportManager;
-        private readonly ILogger logger;
-        private readonly IMapManager mapRepository;
-        private readonly INonEventUserNotificationManager nonEventUserNotificationManager;
-        private readonly IKeyedManager<User> userManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WeeklyLitterReportsInYourAreaNotifier"/> class.
-        /// </summary>
-        public WeeklyLitterReportsInYourAreaNotifier(
-            IKeyedManager<User> userManager,
-            ILitterReportManager litterReportManager,
-            INonEventUserNotificationManager nonEventUserNotificationManager,
-            IEmailSender emailSender,
-            IEmailManager emailManager,
-            IMapManager mapRepository,
-            ILogger logger)
-        {
-            this.userManager = userManager;
-            this.litterReportManager = litterReportManager;
-            this.nonEventUserNotificationManager = nonEventUserNotificationManager;
-            this.emailSender = emailSender;
-            this.emailManager = emailManager;
-            this.mapRepository = mapRepository;
-            this.logger = logger;
-        }
 
         /// <inheritdoc />
         public async Task GenerateNotificationsAsync(CancellationToken cancellationToken = default)

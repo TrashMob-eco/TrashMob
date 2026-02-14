@@ -11,15 +11,9 @@
     /// Provides data access implementation for entities derived from <see cref="KeyedModel"/> that have a <see cref="Guid"/> identifier.
     /// </summary>
     /// <typeparam name="T">The entity type that derives from <see cref="KeyedModel"/>.</typeparam>
-    public class KeyedRepository<T> : BaseRepository<T>, IKeyedRepository<T> where T : KeyedModel
+    public class KeyedRepository<T>(MobDbContext mobDbContext)
+        : BaseRepository<T>(mobDbContext), IKeyedRepository<T> where T : KeyedModel
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="KeyedRepository{T}"/> class.
-        /// </summary>
-        /// <param name="mobDbContext">The database context to use for data access.</param>
-        public KeyedRepository(MobDbContext mobDbContext) : base(mobDbContext)
-        {
-        }
 
         /// <inheritdoc />
         public override async Task<T> AddAsync(T instance)

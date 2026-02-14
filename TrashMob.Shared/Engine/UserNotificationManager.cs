@@ -8,62 +8,20 @@
     /// <summary>
     /// Manages and orchestrates all user notification engines.
     /// </summary>
-    public class UserNotificationManager : IUserNotificationManager
+    public class UserNotificationManager(
+        IEventManager eventManager,
+        IKeyedManager<User> userManager,
+        IEventAttendeeManager eventAttendeeManager,
+        IKeyedManager<UserNotification> userNotificationManager,
+        INonEventUserNotificationManager nonEventUserNotificationManager,
+        IEmailSender emailSender,
+        IEmailManager emailManager,
+        IMapManager mapRepository,
+        IBaseManager<EventSummary> eventSummaryManager,
+        ILitterReportManager litterReportManager,
+        IUserWaiverManager userWaiverManager,
+        ILogger<UserNotificationManager> logger) : IUserNotificationManager
     {
-        private readonly IEmailManager emailManager;
-        private readonly IEmailSender emailSender;
-        private readonly IEventAttendeeManager eventAttendeeManager;
-        private readonly IEventManager eventManager;
-        private readonly IBaseManager<EventSummary> eventSummaryManager;
-        private readonly ILitterReportManager litterReportManager;
-        private readonly ILogger<UserNotificationManager> logger;
-        private readonly IMapManager mapRepository;
-        private readonly INonEventUserNotificationManager nonEventUserNotificationManager;
-        private readonly IKeyedManager<User> userManager;
-        private readonly IKeyedManager<UserNotification> userNotificationManager;
-        private readonly IUserWaiverManager userWaiverManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UserNotificationManager"/> class.
-        /// </summary>
-        /// <param name="eventManager">Manager for event operations.</param>
-        /// <param name="userManager">Manager for user operations.</param>
-        /// <param name="eventAttendeeManager">Manager for event attendee operations.</param>
-        /// <param name="userNotificationManager">Manager for user notification tracking.</param>
-        /// <param name="nonEventUserNotificationManager">Manager for non-event notifications.</param>
-        /// <param name="emailSender">Service for sending emails.</param>
-        /// <param name="emailManager">Manager for email operations.</param>
-        /// <param name="mapRepository">Repository for map services.</param>
-        /// <param name="eventSummaryManager">Manager for event summaries.</param>
-        /// <param name="litterReportManager">Manager for litter report operations.</param>
-        /// <param name="userWaiverManager">Manager for user waiver operations.</param>
-        /// <param name="logger">Logger instance.</param>
-        public UserNotificationManager(IEventManager eventManager,
-            IKeyedManager<User> userManager,
-            IEventAttendeeManager eventAttendeeManager,
-            IKeyedManager<UserNotification> userNotificationManager,
-            INonEventUserNotificationManager nonEventUserNotificationManager,
-            IEmailSender emailSender,
-            IEmailManager emailManager,
-            IMapManager mapRepository,
-            IBaseManager<EventSummary> eventSummaryManager,
-            ILitterReportManager litterReportManager,
-            IUserWaiverManager userWaiverManager,
-            ILogger<UserNotificationManager> logger)
-        {
-            this.eventManager = eventManager;
-            this.userManager = userManager;
-            this.eventAttendeeManager = eventAttendeeManager;
-            this.userNotificationManager = userNotificationManager;
-            this.nonEventUserNotificationManager = nonEventUserNotificationManager;
-            this.emailSender = emailSender;
-            this.emailManager = emailManager;
-            this.mapRepository = mapRepository;
-            this.eventSummaryManager = eventSummaryManager;
-            this.litterReportManager = litterReportManager;
-            this.userWaiverManager = userWaiverManager;
-            this.logger = logger;
-        }
 
         /// <inheritdoc />
         public async Task RunAllNotifications()
@@ -121,7 +79,7 @@
             await userProfileLocationNotifier.GenerateNotificationsAsync().ConfigureAwait(false);
 
             var weeklyLitterReportsNotifier = new WeeklyLitterReportsInYourAreaNotifier(userManager,
-                litterReportManager, nonEventUserNotificationManager, emailSender, emailManager, mapRepository,
+                litterReportManager, nonEventUserNotificationManager, emailManager, mapRepository,
                 logger);
             await weeklyLitterReportsNotifier.GenerateNotificationsAsync().ConfigureAwait(false);
 

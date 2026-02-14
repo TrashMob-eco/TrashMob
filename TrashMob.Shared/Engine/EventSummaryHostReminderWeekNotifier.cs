@@ -12,28 +12,20 @@
     /// <summary>
     /// Notification engine that sends a weekly reminder to event hosts who haven't completed their event summary.
     /// </summary>
-    public class EventSummaryHostWeekReminderNotifier : NotificationEngineBase, INotificationEngine
+    public class EventSummaryHostWeekReminderNotifier(
+        IEventManager eventManager,
+        IKeyedManager<User> userManager,
+        IEventAttendeeManager eventAttendeeManager,
+        IKeyedManager<UserNotification> userNotificationManager,
+        INonEventUserNotificationManager nonEventUserNotificationManager,
+        IEmailSender emailSender,
+        IEmailManager emailManager,
+        IMapManager mapRepository,
+        IBaseManager<EventSummary> eventSummaryManager,
+        ILogger logger)
+        : NotificationEngineBase(eventManager, userManager, eventAttendeeManager, userNotificationManager,
+            nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger), INotificationEngine
     {
-        private readonly IBaseManager<EventSummary> eventSummaryManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EventSummaryHostWeekReminderNotifier"/> class.
-        /// </summary>
-        public EventSummaryHostWeekReminderNotifier(IEventManager eventManager,
-            IKeyedManager<User> userManager,
-            IEventAttendeeManager eventAttendeeManager,
-            IKeyedManager<UserNotification> userNotificationManager,
-            INonEventUserNotificationManager nonEventUserNotificationManager,
-            IEmailSender emailSender,
-            IEmailManager emailManager,
-            IMapManager mapRepository,
-            IBaseManager<EventSummary> eventSummaryManager,
-            ILogger logger) :
-            base(eventManager, userManager, eventAttendeeManager, userNotificationManager,
-                nonEventUserNotificationManager, emailSender, emailManager, mapRepository, logger)
-        {
-            this.eventSummaryManager = eventSummaryManager;
-        }
 
         protected override NotificationTypeEnum NotificationType => NotificationTypeEnum.EventSummaryHostWeekReminder;
 

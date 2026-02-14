@@ -15,10 +15,10 @@ namespace TrashMob.Shared.Managers.Prospects
     /// <summary>
     /// Generates AI-personalized outreach email content using the Anthropic Claude API.
     /// </summary>
-    public class OutreachContentService : IOutreachContentService
+    public class OutreachContentService(
+        IConfiguration configuration,
+        ILogger<OutreachContentService> logger) : IOutreachContentService
     {
-        private readonly IConfiguration configuration;
-        private readonly ILogger<OutreachContentService> logger;
         private static readonly SemaphoreSlim RateLimiter = new(1, 1);
         private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
 
@@ -42,13 +42,6 @@ namespace TrashMob.Shared.Managers.Prospects
 
             Return ONLY the JSON object, no markdown fences, no other text.
             """;
-
-        public OutreachContentService(IConfiguration configuration,
-            ILogger<OutreachContentService> logger)
-        {
-            this.configuration = configuration;
-            this.logger = logger;
-        }
 
         /// <inheritdoc />
         public async Task<OutreachPreview> GenerateOutreachContentAsync(CommunityProspect prospect,

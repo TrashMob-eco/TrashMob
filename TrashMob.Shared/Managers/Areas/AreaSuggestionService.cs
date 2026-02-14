@@ -16,11 +16,11 @@ namespace TrashMob.Shared.Managers.Areas
     using TrashMob.Models;
     using TrashMob.Shared.Managers.Interfaces;
 
-    public class AreaSuggestionService : IAreaSuggestionService
+    public class AreaSuggestionService(
+        IConfiguration configuration,
+        ILogger<AreaSuggestionService> logger,
+        IMapManager mapManager) : IAreaSuggestionService
     {
-        private readonly IConfiguration configuration;
-        private readonly ILogger<AreaSuggestionService> logger;
-        private readonly IMapManager mapManager;
         private static readonly SemaphoreSlim RateLimiter = new(1, 1);
         private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
 
@@ -47,16 +47,6 @@ namespace TrashMob.Shared.Managers.Areas
 
             Return ONLY the JSON object, no markdown fences, no other text.
             """;
-
-        public AreaSuggestionService(
-            IConfiguration configuration,
-            ILogger<AreaSuggestionService> logger,
-            IMapManager mapManager)
-        {
-            this.configuration = configuration;
-            this.logger = logger;
-            this.mapManager = mapManager;
-        }
 
         public async Task<AreaSuggestionResult> SuggestAreaAsync(
             AreaSuggestionRequest request,
