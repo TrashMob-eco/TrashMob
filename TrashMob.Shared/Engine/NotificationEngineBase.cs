@@ -186,7 +186,7 @@
                         new() { Name = user.UserName, Email = user.Email },
                     ];
 
-                    Logger.LogInformation("Sending email to {0}, Subject {0}", user.Email, EmailSubject);
+                    Logger.LogInformation("Sending email to {Email}, Subject {Subject}", user.Email, EmailSubject);
 
                     await EmailManager.SendTemplatedEmailAsync(EmailSubject, SendGridEmailTemplateId.EventEmail,
                             SendGridEmailGroupId.EventRelated, dynamicTemplateData, recipients, CancellationToken.None)
@@ -232,7 +232,7 @@
                 new() { Name = user.UserName, Email = user.Email },
             ];
 
-            Logger.LogInformation("Sending email to {0}, Subject {0}", user.Email, EmailSubject);
+            Logger.LogInformation("Sending email to {Email}, Subject {Subject}", user.Email, EmailSubject);
 
             await EmailManager.SendTemplatedEmailAsync(EmailSubject, SendGridEmailTemplateId.GenericEmail,
                     SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None)
