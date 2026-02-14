@@ -3,13 +3,31 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
              x:Class="TrashMobMobile.Views.ViewEvent.TabPartners">
-    <Grid RowDefinitions="Auto, Auto">
-        <Label Grid.Row="1" Text="We're sorry. There are currently no partners assigned to this event." IsVisible="{Binding AreNoPartnersAvailable}" />
+    <Grid RowDefinitions="*">
+        <!-- Empty state -->
+        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center"
+                             Spacing="8" Margin="20"
+                             IsVisible="{Binding AreNoPartnersAvailable}">
+            <Image MaximumWidthRequest="32" MaximumHeightRequest="32"
+                   HorizontalOptions="Center">
+                <Image.Source>
+                    <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                     Glyph="{StaticResource IconHandshake}"
+                                     Size="32"
+                                     Color="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                </Image.Source>
+            </Image>
+            <Label Text="No partners assigned to this event"
+                   FontSize="Small"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+        </VerticalStackLayout>
 
-        <CollectionView Grid.Row="1" x:Name="AvailableEventPartners"
-                                    ItemsSource="{Binding AvailablePartners}"
-                                    SelectionMode="None" 
-                                    IsVisible="{Binding ArePartnersAvailable}">
+        <!-- Partner list -->
+        <CollectionView x:Name="AvailableEventPartners"
+                        ItemsSource="{Binding AvailablePartners}"
+                        SelectionMode="None"
+                        IsVisible="{Binding ArePartnersAvailable}">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="viewModels:EventPartnerLocationViewModel">
                     <Border Style="{StaticResource RoundBorder}" Margin="5,3">

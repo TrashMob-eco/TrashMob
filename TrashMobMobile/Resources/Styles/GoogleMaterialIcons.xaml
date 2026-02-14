@@ -18,7 +18,7 @@
     <!-- <x:String x:Key="IconAccountKey">&#xf000b;</x:String> -->
     <!-- <x:String x:Key="IconTooltipAccount">&#xf000c;</x:String> -->
     <!-- <x:String x:Key="IconAccountMinus">&#xf000d;</x:String> -->
-    <!-- <x:String x:Key="IconAccountMultiple">&#xf000e;</x:String> -->
+    <x:String x:Key="IconAccountMultiple">&#xf000e;</x:String>
     <!-- <x:String x:Key="IconAccountMultipleOutline">&#xf000f;</x:String> -->
     <!-- <x:String x:Key="IconAccountMultiplePlus">&#xf0010;</x:String> -->
     <!-- <x:String x:Key="IconAccountNetwork">&#xf0011;</x:String> -->
@@ -4623,7 +4623,7 @@
     <!-- <x:String x:Key="IconEmoticonLolOutline">&#xf1215;</x:String> -->
     <!-- <x:String x:Key="IconFileSync">&#xf1216;</x:String> -->
     <!-- <x:String x:Key="IconFileSyncOutline">&#xf1217;</x:String> -->
-    <!-- <x:String x:Key="IconHandshake">&#xf1218;</x:String> -->
+    <x:String x:Key="IconHandshake">&#xf1218;</x:String>
     <!-- <x:String x:Key="IconLanguageKotlin">&#xf1219;</x:String> -->
     <!-- <x:String x:Key="IconLanguageFortran">&#xf121a;</x:String> -->
     <!-- <x:String x:Key="IconOffer">&#xf121b;</x:String> -->

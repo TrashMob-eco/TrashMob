@@ -13,6 +13,24 @@
         <CollectionView x:Name="EventAttendeesCollection" Grid.Row="1"
                                     ItemsSource="{Binding EventAttendees}"
                                     SelectionMode="None">
+            <CollectionView.EmptyView>
+                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center"
+                                     Spacing="8" Margin="20">
+                    <Image MaximumWidthRequest="32" MaximumHeightRequest="32"
+                           HorizontalOptions="Center">
+                        <Image.Source>
+                            <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconAccountMultiple}"
+                                             Size="32"
+                                             Color="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                        </Image.Source>
+                    </Image>
+                    <Label Text="No attendees yet"
+                           FontSize="Small"
+                           HorizontalTextAlignment="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="viewModels:EventAttendeeViewModel">
                     <Border Style="{StaticResource RoundBorder}" Margin="5,3">
