@@ -256,7 +256,7 @@ namespace TrashMob.Controllers
         /// <remarks>Result of the upload operation.</remarks>
         [HttpPost("image/{litterImageId}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
-        public async Task<IActionResult> UploadImage([FromForm] ImageUpload imageUpload, Guid litterImageId,
+        public async Task<IActionResult> UploadImageAsync([FromForm] ImageUpload imageUpload, Guid litterImageId,
             CancellationToken cancellationToken)
         {
             var litterImage = await litterImageManager.GetAsync(litterImageId, cancellationToken);
@@ -266,7 +266,7 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            await imageManager.UploadImage(imageUpload);
+            await imageManager.UploadImageAsync(imageUpload);
 
             return Ok();
         }

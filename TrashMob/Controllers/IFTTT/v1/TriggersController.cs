@@ -1,4 +1,4 @@
-﻿namespace TrashMob.Controllers.IFTTT
+namespace TrashMob.Controllers.IFTTT
 {
     using System.Threading;
     using System.Threading.Tasks;
@@ -15,7 +15,6 @@
     /// </summary>
     [Route("api/ifttt/v1/[controller]")]
     [RequiredScope(Constants.TrashMobIFTTTScope)]
-    [ApiController]
     public class TriggersController : SecureController
     {
         private readonly ITriggersManager triggersManager;

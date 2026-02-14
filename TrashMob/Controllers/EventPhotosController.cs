@@ -127,7 +127,7 @@ namespace TrashMob.Controllers
             // Upload to blob storage
             imageUpload.ParentId = photoId;
             imageUpload.ImageType = ImageTypeEnum.EventPhoto;
-            await imageManager.UploadImage(imageUpload);
+            await imageManager.UploadImageAsync(imageUpload);
 
             // Get the image URLs and save photo record
             var imageUrl = await imageManager.GetImageUrlAsync(photoId, ImageTypeEnum.EventPhoto, ImageSizeEnum.Reduced, cancellationToken);

@@ -16,7 +16,6 @@ namespace TrashMob.Controllers
     /// Portal endpoints for professional company users.
     /// </summary>
     [Route("api/professional-companies")]
-    [ApiController]
     public class ProfessionalCompanyPortalController : SecureController
     {
         private readonly IProfessionalCompanyUserManager companyUserManager;

@@ -20,7 +20,6 @@ namespace TrashMob.Controllers
     /// Controller for managing adoptable areas within a community.
     /// </summary>
     [Route("api/communities/{partnerId}/areas")]
-    [ApiController]
     public class AdoptableAreasController : SecureController
     {
         private readonly IAdoptableAreaManager areaManager;

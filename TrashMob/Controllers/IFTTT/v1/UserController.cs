@@ -11,7 +11,6 @@ namespace TrashMob.Controllers.IFTTT
     /// Controller for IFTTT user info, providing endpoints for user information retrieval.
     /// </summary>
     [Route("api/ifttt/v1/[controller]")]
-    [ApiController]
     public class UserController : SecureController
     {
         private readonly IUserManager userManager;

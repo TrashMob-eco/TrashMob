@@ -82,7 +82,7 @@ namespace TrashMob.Shared.Managers
         }
 
         /// <inheritdoc />
-        public async Task SubmitPickupLocations(Guid eventId, Guid userId, CancellationToken cancellationToken)
+        public async Task SubmitPickupLocationsAsync(Guid eventId, Guid userId, CancellationToken cancellationToken)
         {
             // Get the Event
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);

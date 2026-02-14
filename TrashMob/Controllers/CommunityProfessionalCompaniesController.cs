@@ -17,7 +17,6 @@ namespace TrashMob.Controllers
     /// Controller for managing professional cleanup companies within a community.
     /// </summary>
     [Route("api/communities/{partnerId}/professional-companies")]
-    [ApiController]
     public class CommunityProfessionalCompaniesController : SecureController
     {
         private readonly IProfessionalCompanyManager companyManager;

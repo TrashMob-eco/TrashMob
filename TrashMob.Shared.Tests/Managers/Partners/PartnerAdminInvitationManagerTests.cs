@@ -130,7 +130,7 @@ namespace TrashMob.Shared.Tests.Managers.Partners
                 .ReturnsAsync((PartnerAdmin pa, CancellationToken _) => pa);
 
             // Act
-            await _sut.AcceptInvitation(invitationId, userId, CancellationToken.None);
+            await _sut.AcceptInvitationAsync(invitationId, userId, CancellationToken.None);
 
             // Assert
             _invitationRepository.Verify(r => r.UpdateAsync(It.Is<PartnerAdminInvitation>(
@@ -157,7 +157,7 @@ namespace TrashMob.Shared.Tests.Managers.Partners
                 .ReturnsAsync((PartnerAdmin pa, CancellationToken _) => pa);
 
             // Act
-            await _sut.AcceptInvitation(invitationId, userId, CancellationToken.None);
+            await _sut.AcceptInvitationAsync(invitationId, userId, CancellationToken.None);
 
             // Assert
             _partnerAdminManager.Verify(m => m.AddAsync(
@@ -176,7 +176,7 @@ namespace TrashMob.Shared.Tests.Managers.Partners
             _invitationRepository.SetupGetWithFilter(new List<PartnerAdminInvitation>());
 
             // Act
-            await _sut.AcceptInvitation(invitationId, userId, CancellationToken.None);
+            await _sut.AcceptInvitationAsync(invitationId, userId, CancellationToken.None);
 
             // Assert
             _partnerAdminManager.Verify(m => m.AddAsync(It.IsAny<PartnerAdmin>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -203,7 +203,7 @@ namespace TrashMob.Shared.Tests.Managers.Partners
             _invitationRepository.SetupGetWithFilter(new List<PartnerAdminInvitation> { invitation });
 
             // Act
-            await _sut.DeclineInvitation(invitationId, userId, CancellationToken.None);
+            await _sut.DeclineInvitationAsync(invitationId, userId, CancellationToken.None);
 
             // Assert
             _invitationRepository.Verify(r => r.UpdateAsync(It.Is<PartnerAdminInvitation>(
@@ -226,7 +226,7 @@ namespace TrashMob.Shared.Tests.Managers.Partners
             _invitationRepository.SetupGetWithFilter(new List<PartnerAdminInvitation> { invitation });
 
             // Act
-            await _sut.DeclineInvitation(invitationId, userId, CancellationToken.None);
+            await _sut.DeclineInvitationAsync(invitationId, userId, CancellationToken.None);
 
             // Assert
             _partnerAdminManager.Verify(m => m.AddAsync(It.IsAny<PartnerAdmin>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -243,7 +243,7 @@ namespace TrashMob.Shared.Tests.Managers.Partners
             _invitationRepository.SetupGetWithFilter(new List<PartnerAdminInvitation>());
 
             // Act
-            await _sut.DeclineInvitation(invitationId, userId, CancellationToken.None);
+            await _sut.DeclineInvitationAsync(invitationId, userId, CancellationToken.None);
 
             // Assert
             _invitationRepository.Verify(r => r.UpdateAsync(It.IsAny<PartnerAdminInvitation>()), Times.Never);
@@ -471,7 +471,7 @@ namespace TrashMob.Shared.Tests.Managers.Partners
                 .ReturnsAsync(partner);
 
             // Act
-            var result = await _sut.ResendPartnerAdminInvitation(invitationId, userId, CancellationToken.None);
+            var result = await _sut.ResendPartnerAdminInvitationAsync(invitationId, userId, CancellationToken.None);
 
             // Assert
             _emailManager.Verify(e => e.GetHtmlEmailCopy(NotificationTypeEnum.InviteNewUserToBePartnerAdmin.ToString()), Times.Once);
@@ -512,7 +512,7 @@ namespace TrashMob.Shared.Tests.Managers.Partners
                 .ReturnsAsync(partner);
 
             // Act
-            var result = await _sut.ResendPartnerAdminInvitation(invitationId, userId, CancellationToken.None);
+            var result = await _sut.ResendPartnerAdminInvitationAsync(invitationId, userId, CancellationToken.None);
 
             // Assert
             _emailManager.Verify(e => e.GetHtmlEmailCopy(NotificationTypeEnum.InviteExistingUserToBePartnerAdmin.ToString()), Times.Once);

@@ -19,7 +19,6 @@ namespace TrashMob.Controllers
     /// Portal endpoints for sponsor users (read-only views of adoptions and cleanup logs).
     /// </summary>
     [Route("api/sponsors")]
-    [ApiController]
     public class SponsorPortalController : SecureController
     {
         private readonly ISponsorManager sponsorManager;

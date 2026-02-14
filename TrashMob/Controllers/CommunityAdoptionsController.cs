@@ -18,7 +18,6 @@ namespace TrashMob.Controllers
     /// Controller for community admin adoption management.
     /// </summary>
     [Route("api/communities/{partnerId}/adoptions")]
-    [ApiController]
     public class CommunityAdoptionsController : SecureController
     {
         private readonly ITeamAdoptionManager adoptionManager;

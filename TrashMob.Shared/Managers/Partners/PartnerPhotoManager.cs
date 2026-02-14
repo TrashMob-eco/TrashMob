@@ -56,7 +56,7 @@ namespace TrashMob.Shared.Managers.Partners
             await base.DeleteAsync(id, cancellationToken);
 
             // Then delete from blob storage
-            await imageManager.DeleteImage(id, ImageTypeEnum.PartnerPhoto);
+            await imageManager.DeleteImageAsync(id, ImageTypeEnum.PartnerPhoto);
 
             return 1;
         }

@@ -17,7 +17,6 @@ namespace TrashMob.Controllers
     /// Controller for team adoption operations (team-centric view).
     /// </summary>
     [Route("api/teams/{teamId}/adoptions")]
-    [ApiController]
     public class TeamAdoptionsController : SecureController
     {
         private readonly ITeamAdoptionManager adoptionManager;

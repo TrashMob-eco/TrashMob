@@ -17,7 +17,6 @@ namespace TrashMob.Controllers
     /// Controller for sponsor adoption reports and cleanup log summaries.
     /// </summary>
     [Route("api/sponsors/{sponsorId}/adoptions")]
-    [ApiController]
     public class SponsorReportsController : SecureController
     {
         private readonly ISponsoredAdoptionManager adoptionManager;

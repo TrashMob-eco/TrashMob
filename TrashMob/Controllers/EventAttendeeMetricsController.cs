@@ -17,7 +17,6 @@ namespace TrashMob.Controllers
     /// Controller for attendee-submitted event metrics.
     /// </summary>
     [Route("api/events/{eventId}/attendee-metrics")]
-    [ApiController]
     public class EventAttendeeMetricsController : SecureController
     {
         private readonly IEventAttendeeMetricsManager metricsManager;
