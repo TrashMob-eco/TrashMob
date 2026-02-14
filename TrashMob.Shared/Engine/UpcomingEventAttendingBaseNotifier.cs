@@ -40,7 +40,7 @@
             // for each user
             foreach (var user in users)
             {
-                var eventsToNotifyUserFor = new List<Event>();
+                List<Event> eventsToNotifyUserFor = [];
 
                 // Get list of active events
                 var events = await EventManager.GetActiveEventsAsync(cancellationToken).ConfigureAwait(false);

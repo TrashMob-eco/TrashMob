@@ -472,10 +472,10 @@ namespace TrashMob.Shared.Managers.Areas
         {
             if (string.IsNullOrWhiteSpace(coordString))
             {
-                return new List<double[]>();
+                return [];
             }
 
-            var coords = new List<double[]>();
+            List<double[]> coords = [];
             var tuples = coordString.Trim().Split(new[] { ' ', '\n', '\r', '\t' },
                 StringSplitOptions.RemoveEmptyEntries);
 

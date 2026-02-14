@@ -71,7 +71,7 @@ namespace TrashMob.Shared.Managers
         /// <inheritdoc />
         public Task<IEnumerable<EmailTemplate>> GetEmailTemplatesAsync(CancellationToken cancellationToken)
         {
-            var emailTemplates = new List<EmailTemplate>();
+            List<EmailTemplate> emailTemplates = [];
             foreach (var notificationType in Enum.GetValues(typeof(NotificationTypeEnum)))
             {
                 var content = GetHtmlEmailCopy(notificationType.ToString());

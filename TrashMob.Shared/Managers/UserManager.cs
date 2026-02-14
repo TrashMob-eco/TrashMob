@@ -267,10 +267,10 @@ namespace TrashMob.Shared.Managers
                 subject,
             };
 
-            var recipients = new List<EmailAddress>
-            {
+            List<EmailAddress> recipients =
+            [
                 new() { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress },
-            };
+            ];
 
             await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.GenericEmail,
                     SendGridEmailGroupId.General, dynamicTemplateData, recipients, CancellationToken.None);
@@ -286,10 +286,10 @@ namespace TrashMob.Shared.Managers
                 subject = welcomeSubject,
             };
 
-            var welcomeRecipients = new List<EmailAddress>
-            {
+            List<EmailAddress> welcomeRecipients =
+            [
                 new() { Name = user.UserName, Email = user.Email },
-            };
+            ];
 
             await emailManager.SendTemplatedEmailAsync(welcomeSubject, SendGridEmailTemplateId.GenericEmail,
                     SendGridEmailGroupId.General, userDynamicTemplateData, welcomeRecipients, CancellationToken.None);

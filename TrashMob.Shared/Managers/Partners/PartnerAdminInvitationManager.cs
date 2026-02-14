@@ -96,10 +96,10 @@ namespace TrashMob.Shared.Managers.Partners
                     subject = welcomeSubject,
                 };
 
-                var welcomeRecipients = new List<EmailAddress>
-                {
+                List<EmailAddress> welcomeRecipients =
+                [
                     new() { Name = instance.Email, Email = instance.Email },
-                };
+                ];
 
                 await emailManager.SendTemplatedEmailAsync(welcomeSubject, SendGridEmailTemplateId.GenericEmail,
                         SendGridEmailGroupId.General, userDynamicTemplateData, welcomeRecipients,
@@ -123,10 +123,10 @@ namespace TrashMob.Shared.Managers.Partners
                         subject = welcomeSubject,
                     };
 
-                    var welcomeRecipients = new List<EmailAddress>
-                    {
+                    List<EmailAddress> welcomeRecipients =
+                    [
                         new() { Name = existingUser.UserName, Email = instance.Email },
-                    };
+                    ];
 
                     await emailManager.SendTemplatedEmailAsync(welcomeSubject, SendGridEmailTemplateId.GenericEmail,
                         SendGridEmailGroupId.General, userDynamicTemplateData, welcomeRecipients,
@@ -201,10 +201,10 @@ namespace TrashMob.Shared.Managers.Partners
                     subject = welcomeSubject,
                 };
 
-                var welcomeRecipients = new List<EmailAddress>
-                {
+                List<EmailAddress> welcomeRecipients =
+                [
                     new() { Name = instance.Email, Email = instance.Email },
-                };
+                ];
 
                 await emailManager.SendTemplatedEmailAsync(welcomeSubject, SendGridEmailTemplateId.GenericEmail,
                         SendGridEmailGroupId.General, userDynamicTemplateData, welcomeRecipients,
@@ -223,10 +223,10 @@ namespace TrashMob.Shared.Managers.Partners
                     subject = welcomeSubject,
                 };
 
-                var welcomeRecipients = new List<EmailAddress>
-                {
+                List<EmailAddress> welcomeRecipients =
+                [
                     new() { Name = existingUser.UserName, Email = instance.Email },
-                };
+                ];
 
                 await emailManager.SendTemplatedEmailAsync(welcomeSubject, SendGridEmailTemplateId.GenericEmail,
                         SendGridEmailGroupId.General, userDynamicTemplateData, welcomeRecipients,
@@ -250,7 +250,7 @@ namespace TrashMob.Shared.Managers.Partners
                 .Include(p => p.Partner)
                 .ToListAsync(cancellationToken);
 
-            var displayInvitations = new List<DisplayPartnerAdminInvitation>();
+            List<DisplayPartnerAdminInvitation> displayInvitations = [];
             foreach (var invitation in partnerInvitations)
             {
                 var displayInvitation = new DisplayPartnerAdminInvitation

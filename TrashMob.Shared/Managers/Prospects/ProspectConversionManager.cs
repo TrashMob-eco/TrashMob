@@ -114,14 +114,14 @@ namespace TrashMob.Shared.Managers.Prospects
                     subject,
                 };
 
-                var recipients = new List<Shared.Poco.EmailAddress>
-                {
+                List<Shared.Poco.EmailAddress> recipients =
+                [
                     new()
                     {
                         Name = prospect.ContactName ?? prospect.Name,
                         Email = prospect.ContactEmail,
                     },
-                };
+                ];
 
                 await emailManager.SendTemplatedEmailAsync(
                     subject,

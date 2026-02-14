@@ -101,10 +101,10 @@ namespace TrashMob.Shared.Managers
                 : $"<p><strong>Screenshot:</strong> <a href=\"{feedback.ScreenshotUrl}\">View Screenshot</a></p>";
             message = message.Replace("{ScreenshotSection}", screenshotSection);
 
-            var recipients = new List<EmailAddress>
-            {
+            List<EmailAddress> recipients =
+            [
                 new() { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress },
-            };
+            ];
 
             var dynamicTemplateData = new
             {

@@ -48,7 +48,7 @@ namespace TrashMob.Shared.Managers
             var partnerLocations =
                 await partnerAdminManager.GetHaulingPartnerLocationsByUserIdAsync(userId, cancellationToken);
 
-            var pickupLocations = new List<PickupLocation>();
+            List<PickupLocation> pickupLocations = [];
 
             // For each partner location
             foreach (var partnerLocation in partnerLocations)
@@ -108,7 +108,7 @@ namespace TrashMob.Shared.Managers
 
             var emailSubject = "A Trashmob.eco Event has pickups ready!";
 
-            var recipients = new List<EmailAddress>();
+            List<EmailAddress> recipients = [];
 
             foreach (var contact in contacts)
             {

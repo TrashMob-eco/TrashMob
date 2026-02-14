@@ -50,10 +50,10 @@ namespace TrashMob.Shared.Managers.Events
             var subject = "A New Partner Request for an Event has been made!";
             var message = $"A new partner request for an event has been made for event {existingService.Event.Name}!";
 
-            var recipients = new List<EmailAddress>
-            {
+            List<EmailAddress> recipients =
+            [
                 new() { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress },
-            };
+            ];
 
             var adminDynamicTemplateData = new
             {
@@ -79,7 +79,7 @@ namespace TrashMob.Shared.Managers.Events
                 subject,
             };
 
-            var partnerRecipients = new List<EmailAddress>();
+            List<EmailAddress> partnerRecipients = [];
 
             foreach (var contact in existingService.PartnerLocation.PartnerLocationContacts)
             {
@@ -121,10 +121,10 @@ namespace TrashMob.Shared.Managers.Events
             var message =
                 $"A partner request for an event has been responded to for event {existingService.Event.Name}!";
 
-            var recipients = new List<EmailAddress>
-            {
+            List<EmailAddress> recipients =
+            [
                 new() { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress },
-            };
+            ];
 
             var adminDynamicTemplateData = new
             {
@@ -145,10 +145,10 @@ namespace TrashMob.Shared.Managers.Events
                 string.Format("https://www.trashmob.eco/events/{0}/edit", existingService.EventId);
             partnerMessage = partnerMessage.Replace("{PartnerResponseUrl}", dashboardLink);
 
-            var partnerRecipients = new List<EmailAddress>
-            {
+            List<EmailAddress> partnerRecipients =
+            [
                 new() { Name = user.UserName, Email = user.Email },
-            };
+            ];
 
             var dynamicTemplateData = new
             {
@@ -167,7 +167,7 @@ namespace TrashMob.Shared.Managers.Events
         public async Task<IEnumerable<DisplayPartnerLocationServiceEvent>> GetByPartnerLocationAsync(
             Guid partnerLocationId, CancellationToken cancellationToken = default)
         {
-            var displayEventPartners = new List<DisplayPartnerLocationServiceEvent>();
+            List<DisplayPartnerLocationServiceEvent> displayEventPartners = [];
 
             var currentPartnerLocations = await Repository.Get(p => p.PartnerLocation.Id == partnerLocationId)
                 .Include(p => p.PartnerLocation)
@@ -209,7 +209,7 @@ namespace TrashMob.Shared.Managers.Events
         public async Task<IEnumerable<DisplayPartnerLocationServiceEvent>> GetByUserAsync(Guid userId,
             CancellationToken cancellationToken = default)
         {
-            var displayEventPartners = new List<DisplayPartnerLocationServiceEvent>();
+            List<DisplayPartnerLocationServiceEvent> displayEventPartners = [];
 
             // Get list of partners for a user
             var partners = await partnerAdminRepository.Get(p => p.UserId == userId)
@@ -271,7 +271,7 @@ namespace TrashMob.Shared.Managers.Events
                 .Include(p => p.PartnerLocation.Partner)
                 .ToListAsync(cancellationToken);
 
-            var displayEventPartnerLocationServices = new List<DisplayEventPartnerLocationService>();
+            List<DisplayEventPartnerLocationService> displayEventPartnerLocationServices = [];
 
             foreach (var service in existingServices)
             {
@@ -332,7 +332,7 @@ namespace TrashMob.Shared.Managers.Events
         public async Task<IEnumerable<DisplayEventPartnerLocation>> GetByEventAsync(Guid eventId,
             CancellationToken cancellationToken = default)
         {
-            var displayEventPartners = new List<DisplayEventPartnerLocation>();
+            List<DisplayEventPartnerLocation> displayEventPartners = [];
             var currentPartners =
                 (await GetCurrentPartnersAsync(eventId, cancellationToken)).DistinctBy(p =>
                     new { p.EventId, p.PartnerLocationId });

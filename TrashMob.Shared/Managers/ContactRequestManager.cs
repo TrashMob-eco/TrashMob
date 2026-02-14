@@ -37,10 +37,10 @@ namespace TrashMob.Shared.Managers
             message = message.Replace("{UserEmail}", contactRequest.Email);
             message = message.Replace("{Message}", contactRequest.Message);
 
-            var recipients = new List<EmailAddress>
-            {
+            List<EmailAddress> recipients =
+            [
                 new() { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress },
-            };
+            ];
 
             var dynamicTemplateData = new
             {

@@ -389,9 +389,9 @@ namespace TrashMob.Shared.Managers.Communities
             {
                 Community = community,
                 Stats = new Stats(),
-                RecentEvents = new List<Event>(),
-                UpcomingEvents = new List<Event>(),
-                RecentActivity = new List<CommunityActivity>(),
+                RecentEvents = [],
+                UpcomingEvents = [],
+                RecentActivity = [],
             };
 
             // Get stats if we have city/region
@@ -445,7 +445,7 @@ namespace TrashMob.Shared.Managers.Communities
                 dashboard.RecentEvents = recentEvents;
 
                 // Build recent activity from completed events
-                var recentActivity = new List<CommunityActivity>();
+                List<CommunityActivity> recentActivity = [];
                 foreach (var evt in recentEvents.Take(10))
                 {
                     recentActivity.Add(new CommunityActivity

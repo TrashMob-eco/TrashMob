@@ -43,10 +43,10 @@ namespace TrashMob.Shared.Managers.Partners
                 var message = $"From Email: {instance.Email}\nFrom Name:{instance.Name}\nMessage:\n{instance.Notes}";
                 var subject = "Partner Request";
 
-                var recipients = new List<EmailAddress>
-                {
+                List<EmailAddress> recipients =
+                [
                     new() { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress },
-                };
+                ];
 
                 var dynamicTemplateData = new
                 {
@@ -83,10 +83,10 @@ namespace TrashMob.Shared.Managers.Partners
                     subject = welcomeSubject,
                 };
 
-                var welcomeRecipients = new List<EmailAddress>
-                {
+                List<EmailAddress> welcomeRecipients =
+                [
                     new() { Name = instance.Name, Email = instance.Email },
-                };
+                ];
 
                 await emailManager.SendTemplatedEmailAsync(welcomeSubject, SendGridEmailTemplateId.GenericEmail,
                         SendGridEmailGroupId.General, userDynamicTemplateData, welcomeRecipients,
@@ -97,10 +97,10 @@ namespace TrashMob.Shared.Managers.Partners
                     $"Sent to Email: {instance.Email}\nTo Partner Name:{instance.Name}\nCity: {instance.City}\nRegion: {instance.Region}\nMessage:\n{instance.Notes}";
                 var subject = "Partner Request Sent";
 
-                var recipients = new List<EmailAddress>
-                {
+                List<EmailAddress> recipients =
+                [
                     new() { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress },
-                };
+                ];
 
                 var dynamicTemplateData = new
                 {
@@ -138,10 +138,10 @@ namespace TrashMob.Shared.Managers.Partners
                 subject = partnerSubject,
             };
 
-            var partnerRecipients = new List<EmailAddress>
-            {
+            List<EmailAddress> partnerRecipients =
+            [
                 new() { Name = partnerRequest.Name, Email = partnerRequest.Email },
-            };
+            ];
 
             await emailManager.SendTemplatedEmailAsync(partnerSubject, SendGridEmailTemplateId.GenericEmail,
                     SendGridEmailGroupId.General, dynamicTemplateData, partnerRecipients, CancellationToken.None);
@@ -169,10 +169,10 @@ namespace TrashMob.Shared.Managers.Partners
                 subject = partnerSubject,
             };
 
-            var partnerRecipients = new List<EmailAddress>
-            {
+            List<EmailAddress> partnerRecipients =
+            [
                 new() { Name = partnerRequest.Name, Email = partnerRequest.Email },
-            };
+            ];
 
             await emailManager.SendTemplatedEmailAsync(partnerSubject, SendGridEmailTemplateId.GenericEmail,
                     SendGridEmailGroupId.General, dynamicTemplateData, partnerRecipients, CancellationToken.None);

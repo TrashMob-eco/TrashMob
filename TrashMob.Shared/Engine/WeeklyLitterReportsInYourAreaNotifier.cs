@@ -69,7 +69,7 @@ namespace TrashMob.Shared.Engine
                     continue;
                 }
 
-                var nearbyReports = new List<LitterReport>();
+                List<LitterReport> nearbyReports = [];
 
                 foreach (var report in recentReports)
                 {
@@ -144,10 +144,10 @@ namespace TrashMob.Shared.Engine
 
                 var subject = $"Weekly Digest: {reports.Count} new litter report(s) in your area";
 
-                var recipients = new List<EmailAddress>
-                {
+                List<EmailAddress> recipients =
+                [
                     new() { Name = user.UserName, Email = user.Email },
-                };
+                ];
 
                 var dynamicTemplateData = new
                 {

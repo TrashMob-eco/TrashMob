@@ -247,7 +247,7 @@ namespace TrashMob.Shared.Managers.Events
                 return coords.ToList();
             }
 
-            var result = new List<Coordinate>();
+            List<Coordinate> result = [];
             var cumulativeDistance = 0.0;
 
             for (var i = 0; i < coords.Length; i++)

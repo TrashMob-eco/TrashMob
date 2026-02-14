@@ -71,7 +71,7 @@ namespace TrashMob.Shared.Managers.LitterReport
                     }
                 }
 
-                var deletedIds = new List<Guid>();
+                List<Guid> deletedIds = [];
                 foreach (var litterImage in existingInstance.LitterImages)
                 {
                     if (!litterReport.LitterImages.Select(x => x.Id).Contains(litterImage.Id))
@@ -125,10 +125,10 @@ namespace TrashMob.Shared.Managers.LitterReport
 
                 var subject = "Your litter report has been cleaned!";
 
-                var recipients = new List<EmailAddress>
-                {
+                List<EmailAddress> recipients =
+                [
                     new() { Name = creator.UserName, Email = creator.Email },
-                };
+                ];
 
                 var dynamicTemplateData = new
                 {
@@ -188,10 +188,10 @@ namespace TrashMob.Shared.Managers.LitterReport
                     $"A new litter report: {litterReport.Name} in {litterReport.LitterImages.First().City} has been created on TrashMob.eco!";
                 var subject = "New Litter Report Alert";
 
-                var recipients = new List<EmailAddress>
-                {
+                List<EmailAddress> recipients =
+                [
                     new() { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress },
-                };
+                ];
 
                 var dynamicTemplateData = new
                 {
@@ -442,10 +442,10 @@ namespace TrashMob.Shared.Managers.LitterReport
                         $"A new litter report: {litterReport.Name} in {litterReport.LitterImages.First().City} has been created on TrashMob.eco!";
                     var subject = "New Litter Report Alert";
 
-                    var recipients = new List<EmailAddress>
-                    {
+                    List<EmailAddress> recipients =
+                    [
                         new() { Name = Constants.TrashMobEmailName, Email = Constants.TrashMobEmailAddress },
-                    };
+                    ];
 
                     var dynamicTemplateData = new
                     {
