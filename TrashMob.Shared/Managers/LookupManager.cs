@@ -15,21 +15,13 @@ namespace TrashMob.Shared.Managers
     /// Manager class for lookup/reference data entities with integer primary keys.
     /// </summary>
     /// <typeparam name="T">The entity type derived from LookupModel.</typeparam>
-    public class LookupManager<T> : ILookupManager<T> where T : LookupModel
+    public class LookupManager<T>(ILookupRepository<T> repository)
+        : ILookupManager<T> where T : LookupModel
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LookupManager{T}"/> class.
-        /// </summary>
-        /// <param name="repository">The lookup repository for data access operations.</param>
-        public LookupManager(ILookupRepository<T> repository)
-        {
-            Repository = repository;
-        }
-
         /// <summary>
         /// Gets the repository used for data access operations.
         /// </summary>
-        protected ILookupRepository<T> Repository { get; }
+        protected ILookupRepository<T> Repository { get; } = repository;
 
         /// <inheritdoc />
         public virtual async Task<IEnumerable<T>> GetAsync()

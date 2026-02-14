@@ -15,23 +15,11 @@ namespace TrashMob.Shared.Managers.LitterReport
     /// <summary>
     /// Manages litter images including CRUD operations and image storage integration.
     /// </summary>
-    public class LitterImageManager : KeyedManager<LitterImage>, ILitterImageManager
+    public class LitterImageManager(
+        IKeyedRepository<LitterImage> repository,
+        IImageManager imageManager)
+        : KeyedManager<LitterImage>(repository), ILitterImageManager
     {
-        private readonly IImageManager imageManager;
-        private IDbTransaction dbTransaction;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LitterImageManager"/> class.
-        /// </summary>
-        /// <param name="repository">The repository for litter image data access.</param>
-        /// <param name="dbTransaction">The database transaction manager.</param>
-        /// <param name="imageManager">The image manager for blob storage operations.</param>
-        public LitterImageManager(IKeyedRepository<LitterImage> repository, IDbTransaction dbTransaction,
-            IImageManager imageManager) : base(repository)
-        {
-            this.dbTransaction = dbTransaction;
-            this.imageManager = imageManager;
-        }
 
         /// <inheritdoc />
         public async Task<LitterImage> AddAsync(FullLitterImage instance, Guid userId,

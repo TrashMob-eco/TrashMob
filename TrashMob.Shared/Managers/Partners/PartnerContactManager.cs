@@ -13,16 +13,9 @@ namespace TrashMob.Shared.Managers.Partners
     /// <summary>
     /// Manages partner contacts including CRUD operations and retrieving the partner associated with a contact.
     /// </summary>
-    public class PartnerContactManager : KeyedManager<PartnerContact>, IPartnerContactManager
+    public class PartnerContactManager(IKeyedRepository<PartnerContact> partnerContactRepository)
+        : KeyedManager<PartnerContact>(partnerContactRepository), IPartnerContactManager
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartnerContactManager"/> class.
-        /// </summary>
-        /// <param name="partnerContactRepository">The repository for partner contact data access.</param>
-        public PartnerContactManager(IKeyedRepository<PartnerContact> partnerContactRepository) : base(
-            partnerContactRepository)
-        {
-        }
 
         /// <inheritdoc />
         public async Task<Partner> GetPartnerForContact(Guid partnerContactId, CancellationToken cancellationToken)

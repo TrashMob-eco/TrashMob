@@ -9,20 +9,12 @@ namespace TrashMob.Shared.Managers.Prospects
     using TrashMob.Models;
     using TrashMob.Shared.Persistence.Interfaces;
 
-    public class ProspectActivityManager : KeyedManager<ProspectActivity>, IProspectActivityManager
+    public class ProspectActivityManager(
+        IKeyedRepository<ProspectActivity> repository,
+        IKeyedRepository<CommunityProspect> prospectRepository,
+        ISentimentAnalysisService sentimentAnalysisService)
+        : KeyedManager<ProspectActivity>(repository), IProspectActivityManager
     {
-        private readonly IKeyedRepository<CommunityProspect> prospectRepository;
-        private readonly ISentimentAnalysisService sentimentAnalysisService;
-
-        public ProspectActivityManager(
-            IKeyedRepository<ProspectActivity> repository,
-            IKeyedRepository<CommunityProspect> prospectRepository,
-            ISentimentAnalysisService sentimentAnalysisService)
-            : base(repository)
-        {
-            this.prospectRepository = prospectRepository;
-            this.sentimentAnalysisService = sentimentAnalysisService;
-        }
 
         public async Task<IEnumerable<ProspectActivity>> GetByProspectIdAsync(Guid prospectId, CancellationToken cancellationToken = default)
         {

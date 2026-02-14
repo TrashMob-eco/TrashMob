@@ -13,16 +13,9 @@ namespace TrashMob.Shared.Managers.Teams
     /// <summary>
     /// Manager for team membership operations.
     /// </summary>
-    public class TeamMemberManager : KeyedManager<TeamMember>, ITeamMemberManager
+    public class TeamMemberManager(IKeyedRepository<TeamMember> repository)
+        : KeyedManager<TeamMember>(repository), ITeamMemberManager
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TeamMemberManager"/> class.
-        /// </summary>
-        /// <param name="repository">The team member repository.</param>
-        public TeamMemberManager(IKeyedRepository<TeamMember> repository)
-            : base(repository)
-        {
-        }
 
         /// <inheritdoc />
         public async Task<IEnumerable<TeamMember>> GetByTeamIdAsync(Guid teamId, CancellationToken cancellationToken = default)

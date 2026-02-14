@@ -13,18 +13,10 @@
     /// <summary>
     /// Manages partner locations including CRUD operations and retrieving locations with their contacts.
     /// </summary>
-    public class PartnerLocationManager : KeyedManager<PartnerLocation>, IPartnerLocationManager
+    public class PartnerLocationManager(IKeyedRepository<PartnerLocation> partnerLocationRepository)
+        : KeyedManager<PartnerLocation>(partnerLocationRepository), IPartnerLocationManager
     {
         private const double EarthRadiusMiles = 3959.0;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartnerLocationManager"/> class.
-        /// </summary>
-        /// <param name="partnerLocationRepository">The repository for partner location data access.</param>
-        public PartnerLocationManager(IKeyedRepository<PartnerLocation> partnerLocationRepository) : base(
-            partnerLocationRepository)
-        {
-        }
 
         /// <inheritdoc />
         public async Task<Partner> GetPartnerForLocationAsync(Guid partnerLocationId,

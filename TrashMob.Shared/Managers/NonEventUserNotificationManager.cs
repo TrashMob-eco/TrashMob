@@ -13,17 +13,9 @@
     /// <summary>
     /// Manages non-event user notifications such as profile reminders and general announcements.
     /// </summary>
-    public class NonEventUserNotificationManager : KeyedManager<NonEventUserNotification>,
-        INonEventUserNotificationManager
+    public class NonEventUserNotificationManager(IKeyedRepository<NonEventUserNotification> repository)
+        : KeyedManager<NonEventUserNotification>(repository), INonEventUserNotificationManager
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NonEventUserNotificationManager"/> class.
-        /// </summary>
-        /// <param name="repository">The repository for non-event user notification data access.</param>
-        public NonEventUserNotificationManager(IKeyedRepository<NonEventUserNotification> repository)
-            : base(repository)
-        {
-        }
 
         /// <inheritdoc />
         public async Task<IEnumerable<NonEventUserNotification>> GetByUserIdAsync(Guid userId,

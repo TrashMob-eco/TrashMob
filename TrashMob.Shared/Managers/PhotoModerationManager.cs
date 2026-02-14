@@ -19,46 +19,38 @@ namespace TrashMob.Shared.Managers
     /// Manager for photo moderation operations.
     /// Handles moderation for LitterImage, TeamPhoto, EventPhoto, and PartnerPhoto entities.
     /// </summary>
-    public class PhotoModerationManager : IPhotoModerationManager
+    public class PhotoModerationManager(MobDbContext dbContext, IEmailManager emailManager)
+        : IPhotoModerationManager
     {
         private const string LitterImageType = "LitterImage";
         private const string TeamPhotoType = "TeamPhoto";
         private const string EventPhotoType = "EventPhoto";
         private const string PartnerPhotoType = "PartnerPhoto";
 
-        private readonly MobDbContext _dbContext;
-        private readonly IEmailManager _emailManager;
-
-        public PhotoModerationManager(MobDbContext dbContext, IEmailManager emailManager)
-        {
-            _dbContext = dbContext;
-            _emailManager = emailManager;
-        }
-
         public async Task<PaginatedList<PhotoModerationItem>> GetPendingPhotosAsync(int page, int pageSize, CancellationToken cancellationToken = default)
         {
-            var litterImages = await _dbContext.LitterImages
+            var litterImages = await dbContext.LitterImages
                 .Include(i => i.LitterReport)
                 .Include(i => i.CreatedByUser)
                 .Where(i => i.ModerationStatus == PhotoModerationStatus.Pending && !i.InReview && !i.IsCancelled)
                 .Select(i => MapLitterImage(i))
                 .ToListAsync(cancellationToken);
 
-            var teamPhotos = await _dbContext.TeamPhotos
+            var teamPhotos = await dbContext.TeamPhotos
                 .Include(p => p.Team)
                 .Include(p => p.UploadedByUser)
                 .Where(p => p.ModerationStatus == PhotoModerationStatus.Pending && !p.InReview)
                 .Select(p => MapTeamPhoto(p))
                 .ToListAsync(cancellationToken);
 
-            var eventPhotos = await _dbContext.EventPhotos
+            var eventPhotos = await dbContext.EventPhotos
                 .Include(p => p.Event)
                 .Include(p => p.UploadedByUser)
                 .Where(p => p.ModerationStatus == PhotoModerationStatus.Pending && !p.InReview)
                 .Select(p => MapEventPhoto(p))
                 .ToListAsync(cancellationToken);
 
-            var partnerPhotos = await _dbContext.PartnerPhotos
+            var partnerPhotos = await dbContext.PartnerPhotos
                 .Include(p => p.Partner)
                 .Include(p => p.UploadedByUser)
                 .Where(p => p.ModerationStatus == PhotoModerationStatus.Pending && !p.InReview)
@@ -74,7 +66,7 @@ namespace TrashMob.Shared.Managers
 
         public async Task<PaginatedList<PhotoModerationItem>> GetFlaggedPhotosAsync(int page, int pageSize, CancellationToken cancellationToken = default)
         {
-            var litterImages = await _dbContext.LitterImages
+            var litterImages = await dbContext.LitterImages
                 .Include(i => i.LitterReport)
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.ReviewRequestedByUser)
@@ -82,7 +74,7 @@ namespace TrashMob.Shared.Managers
                 .Select(i => MapLitterImage(i))
                 .ToListAsync(cancellationToken);
 
-            var teamPhotos = await _dbContext.TeamPhotos
+            var teamPhotos = await dbContext.TeamPhotos
                 .Include(p => p.Team)
                 .Include(p => p.UploadedByUser)
                 .Include(p => p.ReviewRequestedByUser)
@@ -90,7 +82,7 @@ namespace TrashMob.Shared.Managers
                 .Select(p => MapTeamPhoto(p))
                 .ToListAsync(cancellationToken);
 
-            var eventPhotos = await _dbContext.EventPhotos
+            var eventPhotos = await dbContext.EventPhotos
                 .Include(p => p.Event)
                 .Include(p => p.UploadedByUser)
                 .Include(p => p.ReviewRequestedByUser)
@@ -98,7 +90,7 @@ namespace TrashMob.Shared.Managers
                 .Select(p => MapEventPhoto(p))
                 .ToListAsync(cancellationToken);
 
-            var partnerPhotos = await _dbContext.PartnerPhotos
+            var partnerPhotos = await dbContext.PartnerPhotos
                 .Include(p => p.Partner)
                 .Include(p => p.UploadedByUser)
                 .Include(p => p.ReviewRequestedByUser)
@@ -117,7 +109,7 @@ namespace TrashMob.Shared.Managers
         {
             var cutoffDate = DateTimeOffset.UtcNow.AddDays(-30);
 
-            var litterImages = await _dbContext.LitterImages
+            var litterImages = await dbContext.LitterImages
                 .Include(i => i.LitterReport)
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.ModeratedByUser)
@@ -125,7 +117,7 @@ namespace TrashMob.Shared.Managers
                 .Select(i => MapLitterImage(i))
                 .ToListAsync(cancellationToken);
 
-            var teamPhotos = await _dbContext.TeamPhotos
+            var teamPhotos = await dbContext.TeamPhotos
                 .Include(p => p.Team)
                 .Include(p => p.UploadedByUser)
                 .Include(p => p.ModeratedByUser)
@@ -133,7 +125,7 @@ namespace TrashMob.Shared.Managers
                 .Select(p => MapTeamPhoto(p))
                 .ToListAsync(cancellationToken);
 
-            var eventPhotos = await _dbContext.EventPhotos
+            var eventPhotos = await dbContext.EventPhotos
                 .Include(p => p.Event)
                 .Include(p => p.UploadedByUser)
                 .Include(p => p.ModeratedByUser)
@@ -141,7 +133,7 @@ namespace TrashMob.Shared.Managers
                 .Select(p => MapEventPhoto(p))
                 .ToListAsync(cancellationToken);
 
-            var partnerPhotos = await _dbContext.PartnerPhotos
+            var partnerPhotos = await dbContext.PartnerPhotos
                 .Include(p => p.Partner)
                 .Include(p => p.UploadedByUser)
                 .Include(p => p.ModeratedByUser)
@@ -162,7 +154,7 @@ namespace TrashMob.Shared.Managers
 
             if (photoType == LitterImageType)
             {
-                var image = await _dbContext.LitterImages
+                var image = await dbContext.LitterImages
                     .Include(i => i.LitterReport)
                     .Include(i => i.CreatedByUser)
                     .FirstOrDefaultAsync(i => i.Id == photoId, cancellationToken)
@@ -179,7 +171,7 @@ namespace TrashMob.Shared.Managers
             }
             else if (photoType == TeamPhotoType)
             {
-                var photo = await _dbContext.TeamPhotos
+                var photo = await dbContext.TeamPhotos
                     .Include(p => p.Team)
                     .Include(p => p.UploadedByUser)
                     .FirstOrDefaultAsync(p => p.Id == photoId, cancellationToken)
@@ -196,7 +188,7 @@ namespace TrashMob.Shared.Managers
             }
             else if (photoType == EventPhotoType)
             {
-                var photo = await _dbContext.EventPhotos
+                var photo = await dbContext.EventPhotos
                     .Include(p => p.Event)
                     .Include(p => p.UploadedByUser)
                     .FirstOrDefaultAsync(p => p.Id == photoId, cancellationToken)
@@ -213,7 +205,7 @@ namespace TrashMob.Shared.Managers
             }
             else if (photoType == PartnerPhotoType)
             {
-                var photo = await _dbContext.PartnerPhotos
+                var photo = await dbContext.PartnerPhotos
                     .Include(p => p.Partner)
                     .Include(p => p.UploadedByUser)
                     .FirstOrDefaultAsync(p => p.Id == photoId, cancellationToken)
@@ -239,7 +231,7 @@ namespace TrashMob.Shared.Managers
             // Log the action
             await LogModerationActionAsync(photoType, photoId, PhotoModerationAction.Approved, null, adminUserId, cancellationToken);
 
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            await dbContext.SaveChangesAsync(cancellationToken);
 
             return result;
         }
@@ -250,7 +242,7 @@ namespace TrashMob.Shared.Managers
 
             if (photoType == LitterImageType)
             {
-                var image = await _dbContext.LitterImages
+                var image = await dbContext.LitterImages
                     .Include(i => i.LitterReport)
                     .Include(i => i.CreatedByUser)
                     .FirstOrDefaultAsync(i => i.Id == photoId, cancellationToken)
@@ -268,7 +260,7 @@ namespace TrashMob.Shared.Managers
             }
             else if (photoType == TeamPhotoType)
             {
-                var photo = await _dbContext.TeamPhotos
+                var photo = await dbContext.TeamPhotos
                     .Include(p => p.Team)
                     .Include(p => p.UploadedByUser)
                     .FirstOrDefaultAsync(p => p.Id == photoId, cancellationToken)
@@ -286,7 +278,7 @@ namespace TrashMob.Shared.Managers
             }
             else if (photoType == EventPhotoType)
             {
-                var photo = await _dbContext.EventPhotos
+                var photo = await dbContext.EventPhotos
                     .Include(p => p.Event)
                     .Include(p => p.UploadedByUser)
                     .FirstOrDefaultAsync(p => p.Id == photoId, cancellationToken)
@@ -304,7 +296,7 @@ namespace TrashMob.Shared.Managers
             }
             else if (photoType == PartnerPhotoType)
             {
-                var photo = await _dbContext.PartnerPhotos
+                var photo = await dbContext.PartnerPhotos
                     .Include(p => p.Partner)
                     .Include(p => p.UploadedByUser)
                     .FirstOrDefaultAsync(p => p.Id == photoId, cancellationToken)
@@ -331,7 +323,7 @@ namespace TrashMob.Shared.Managers
             // Log the action
             await LogModerationActionAsync(photoType, photoId, PhotoModerationAction.Rejected, reason, adminUserId, cancellationToken);
 
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            await dbContext.SaveChangesAsync(cancellationToken);
 
             // Send email notification to uploader about photo removal
             await SendPhotoRemovedNotificationAsync(result, reason, cancellationToken);
@@ -345,7 +337,7 @@ namespace TrashMob.Shared.Managers
 
             if (photoType == LitterImageType)
             {
-                var image = await _dbContext.LitterImages
+                var image = await dbContext.LitterImages
                     .Include(i => i.LitterReport)
                     .Include(i => i.CreatedByUser)
                     .FirstOrDefaultAsync(i => i.Id == photoId, cancellationToken)
@@ -359,7 +351,7 @@ namespace TrashMob.Shared.Managers
             }
             else if (photoType == TeamPhotoType)
             {
-                var photo = await _dbContext.TeamPhotos
+                var photo = await dbContext.TeamPhotos
                     .Include(p => p.Team)
                     .Include(p => p.UploadedByUser)
                     .FirstOrDefaultAsync(p => p.Id == photoId, cancellationToken)
@@ -373,7 +365,7 @@ namespace TrashMob.Shared.Managers
             }
             else if (photoType == EventPhotoType)
             {
-                var photo = await _dbContext.EventPhotos
+                var photo = await dbContext.EventPhotos
                     .Include(p => p.Event)
                     .Include(p => p.UploadedByUser)
                     .FirstOrDefaultAsync(p => p.Id == photoId, cancellationToken)
@@ -387,7 +379,7 @@ namespace TrashMob.Shared.Managers
             }
             else if (photoType == PartnerPhotoType)
             {
-                var photo = await _dbContext.PartnerPhotos
+                var photo = await dbContext.PartnerPhotos
                     .Include(p => p.Partner)
                     .Include(p => p.UploadedByUser)
                     .FirstOrDefaultAsync(p => p.Id == photoId, cancellationToken)
@@ -410,7 +402,7 @@ namespace TrashMob.Shared.Managers
             // Log the action
             await LogModerationActionAsync(photoType, photoId, "FlagDismissed", null, adminUserId, cancellationToken);
 
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            await dbContext.SaveChangesAsync(cancellationToken);
 
             return result;
         }
@@ -420,7 +412,7 @@ namespace TrashMob.Shared.Managers
             // Validate photo exists and set InReview
             if (photoType == LitterImageType)
             {
-                var image = await _dbContext.LitterImages.FindAsync(new object[] { photoId }, cancellationToken)
+                var image = await dbContext.LitterImages.FindAsync(new object[] { photoId }, cancellationToken)
                     ?? throw new InvalidOperationException($"LitterImage {photoId} not found");
 
                 image.InReview = true;
@@ -431,7 +423,7 @@ namespace TrashMob.Shared.Managers
             }
             else if (photoType == TeamPhotoType)
             {
-                var photo = await _dbContext.TeamPhotos.FindAsync(new object[] { photoId }, cancellationToken)
+                var photo = await dbContext.TeamPhotos.FindAsync(new object[] { photoId }, cancellationToken)
                     ?? throw new InvalidOperationException($"TeamPhoto {photoId} not found");
 
                 photo.InReview = true;
@@ -442,7 +434,7 @@ namespace TrashMob.Shared.Managers
             }
             else if (photoType == EventPhotoType)
             {
-                var photo = await _dbContext.EventPhotos.FindAsync(new object[] { photoId }, cancellationToken)
+                var photo = await dbContext.EventPhotos.FindAsync(new object[] { photoId }, cancellationToken)
                     ?? throw new InvalidOperationException($"EventPhoto {photoId} not found");
 
                 photo.InReview = true;
@@ -453,7 +445,7 @@ namespace TrashMob.Shared.Managers
             }
             else if (photoType == PartnerPhotoType)
             {
-                var photo = await _dbContext.PartnerPhotos.FindAsync(new object[] { photoId }, cancellationToken)
+                var photo = await dbContext.PartnerPhotos.FindAsync(new object[] { photoId }, cancellationToken)
                     ?? throw new InvalidOperationException($"PartnerPhoto {photoId} not found");
 
                 photo.InReview = true;
@@ -482,12 +474,12 @@ namespace TrashMob.Shared.Managers
                 LastUpdatedDate = DateTimeOffset.UtcNow
             };
 
-            _dbContext.PhotoFlags.Add(flag);
+            dbContext.PhotoFlags.Add(flag);
 
             // Log the action
             await LogModerationActionAsync(photoType, photoId, PhotoModerationAction.Flagged, reason, userId, cancellationToken);
 
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            await dbContext.SaveChangesAsync(cancellationToken);
 
             // Send email notification to admins about flagged photo
             await SendPhotoFlaggedNotificationAsync(photoType, photoId, reason, userId, cancellationToken);
@@ -497,7 +489,7 @@ namespace TrashMob.Shared.Managers
 
         private async Task ResolveFlagsAsync(string photoType, Guid photoId, Guid adminUserId, string resolution, CancellationToken cancellationToken)
         {
-            var pendingFlags = await _dbContext.PhotoFlags
+            var pendingFlags = await dbContext.PhotoFlags
                 .Where(f => f.PhotoId == photoId && f.PhotoType == photoType && f.ResolvedDate == null)
                 .ToListAsync(cancellationToken);
 
@@ -528,7 +520,7 @@ namespace TrashMob.Shared.Managers
                 LastUpdatedDate = DateTimeOffset.UtcNow
             };
 
-            _dbContext.PhotoModerationLogs.Add(log);
+            dbContext.PhotoModerationLogs.Add(log);
         }
 
         private async Task SendPhotoRemovedNotificationAsync(PhotoModerationItem photo, string reason, CancellationToken cancellationToken)
@@ -545,7 +537,7 @@ namespace TrashMob.Shared.Managers
 
             var subject = "Your photo has been removed from TrashMob";
 
-            var message = _emailManager.GetHtmlEmailCopy(NotificationTypeEnum.PhotoRemoved.ToString());
+            var message = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.PhotoRemoved.ToString());
             message = message.Replace("{PhotoType}", photoTypeDisplay);
             message = message.Replace("{Context}", context);
             message = message.Replace("{Reason}", reason);
@@ -562,14 +554,14 @@ namespace TrashMob.Shared.Managers
                 subject,
             };
 
-            await _emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.GenericEmail,
+            await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.GenericEmail,
                 SendGridEmailGroupId.General, dynamicTemplateData, recipients, cancellationToken);
         }
 
         private async Task SendPhotoFlaggedNotificationAsync(string photoType, Guid photoId, string reason, Guid flaggedByUserId, CancellationToken cancellationToken)
         {
             // Get admins to notify
-            var admins = await _dbContext.Users
+            var admins = await dbContext.Users
                 .Where(u => u.IsSiteAdmin)
                 .ToListAsync(cancellationToken);
 
@@ -585,7 +577,7 @@ namespace TrashMob.Shared.Managers
 
             if (photoType == LitterImageType)
             {
-                var image = await _dbContext.LitterImages
+                var image = await dbContext.LitterImages
                     .Include(i => i.LitterReport)
                     .Include(i => i.CreatedByUser)
                     .FirstOrDefaultAsync(i => i.Id == photoId, cancellationToken);
@@ -599,7 +591,7 @@ namespace TrashMob.Shared.Managers
             }
             else if (photoType == TeamPhotoType)
             {
-                var photo = await _dbContext.TeamPhotos
+                var photo = await dbContext.TeamPhotos
                     .Include(p => p.Team)
                     .Include(p => p.UploadedByUser)
                     .FirstOrDefaultAsync(p => p.Id == photoId, cancellationToken);
@@ -613,7 +605,7 @@ namespace TrashMob.Shared.Managers
             }
             else if (photoType == EventPhotoType)
             {
-                var photo = await _dbContext.EventPhotos
+                var photo = await dbContext.EventPhotos
                     .Include(p => p.Event)
                     .Include(p => p.UploadedByUser)
                     .FirstOrDefaultAsync(p => p.Id == photoId, cancellationToken);
@@ -627,7 +619,7 @@ namespace TrashMob.Shared.Managers
             }
             else if (photoType == PartnerPhotoType)
             {
-                var photo = await _dbContext.PartnerPhotos
+                var photo = await dbContext.PartnerPhotos
                     .Include(p => p.Partner)
                     .Include(p => p.UploadedByUser)
                     .FirstOrDefaultAsync(p => p.Id == photoId, cancellationToken);
@@ -641,7 +633,7 @@ namespace TrashMob.Shared.Managers
             }
 
             // Get flagger's name
-            var flagger = await _dbContext.Users.FindAsync(new object[] { flaggedByUserId }, cancellationToken);
+            var flagger = await dbContext.Users.FindAsync(new object[] { flaggedByUserId }, cancellationToken);
             var flaggedByName = flagger?.UserName ?? "Unknown";
 
             var photoTypeDisplay = photoType == LitterImageType ? "Litter Report Image" :
@@ -649,7 +641,7 @@ namespace TrashMob.Shared.Managers
                                    photoType == EventPhotoType ? "Event Photo" : "Community Photo";
             var subject = "Photo flagged for review on TrashMob";
 
-            var message = _emailManager.GetHtmlEmailCopy(NotificationTypeEnum.PhotoFlagged.ToString());
+            var message = emailManager.GetHtmlEmailCopy(NotificationTypeEnum.PhotoFlagged.ToString());
             message = message.Replace("{PhotoType}", photoTypeDisplay);
             message = message.Replace("{Context}", context);
             message = message.Replace("{UploaderName}", uploaderName);
@@ -672,7 +664,7 @@ namespace TrashMob.Shared.Managers
                     subject,
                 };
 
-                await _emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.GenericEmail,
+                await emailManager.SendTemplatedEmailAsync(subject, SendGridEmailTemplateId.GenericEmail,
                     SendGridEmailGroupId.General, dynamicTemplateData, recipients, cancellationToken);
             }
         }

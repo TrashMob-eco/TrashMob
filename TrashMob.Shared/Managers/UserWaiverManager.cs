@@ -14,7 +14,15 @@ namespace TrashMob.Shared.Managers
     /// <summary>
     /// Manager for user waiver operations.
     /// </summary>
-    public class UserWaiverManager : KeyedManager<UserWaiver>, IUserWaiverManager
+    public class UserWaiverManager(
+        IKeyedRepository<UserWaiver> repository,
+        IKeyedRepository<WaiverVersion> waiverVersionRepository,
+        IBaseRepository<CommunityWaiver> communityWaiverRepository,
+        IBaseRepository<EventPartnerLocationService> eventPartnerLocationServiceRepository,
+        IKeyedRepository<User> userRepository,
+        IBaseRepository<EventAttendee> eventAttendeeRepository,
+        IWaiverDocumentManager waiverDocumentManager)
+        : KeyedManager<UserWaiver>(repository), IUserWaiverManager
     {
         private static readonly HashSet<string> AllowedContentTypes = new(StringComparer.OrdinalIgnoreCase)
         {
@@ -25,41 +33,6 @@ namespace TrashMob.Shared.Managers
         };
 
         private const long MaxFileSizeBytes = 10 * 1024 * 1024; // 10MB
-
-        private readonly IKeyedRepository<WaiverVersion> waiverVersionRepository;
-        private readonly IBaseRepository<CommunityWaiver> communityWaiverRepository;
-        private readonly IBaseRepository<EventPartnerLocationService> eventPartnerLocationServiceRepository;
-        private readonly IKeyedRepository<User> userRepository;
-        private readonly IBaseRepository<EventAttendee> eventAttendeeRepository;
-        private readonly IWaiverDocumentManager waiverDocumentManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UserWaiverManager"/> class.
-        /// </summary>
-        /// <param name="repository">The user waiver repository.</param>
-        /// <param name="waiverVersionRepository">The waiver version repository.</param>
-        /// <param name="communityWaiverRepository">The community waiver repository.</param>
-        /// <param name="eventPartnerLocationServiceRepository">The event partner location service repository.</param>
-        /// <param name="userRepository">The user repository.</param>
-        /// <param name="eventAttendeeRepository">The event attendee repository.</param>
-        /// <param name="waiverDocumentManager">The waiver document manager.</param>
-        public UserWaiverManager(
-            IKeyedRepository<UserWaiver> repository,
-            IKeyedRepository<WaiverVersion> waiverVersionRepository,
-            IBaseRepository<CommunityWaiver> communityWaiverRepository,
-            IBaseRepository<EventPartnerLocationService> eventPartnerLocationServiceRepository,
-            IKeyedRepository<User> userRepository,
-            IBaseRepository<EventAttendee> eventAttendeeRepository,
-            IWaiverDocumentManager waiverDocumentManager)
-            : base(repository)
-        {
-            this.waiverVersionRepository = waiverVersionRepository;
-            this.communityWaiverRepository = communityWaiverRepository;
-            this.eventPartnerLocationServiceRepository = eventPartnerLocationServiceRepository;
-            this.userRepository = userRepository;
-            this.eventAttendeeRepository = eventAttendeeRepository;
-            this.waiverDocumentManager = waiverDocumentManager;
-        }
 
         /// <inheritdoc />
         public async Task<IEnumerable<WaiverVersion>> GetRequiredWaiversForEventAsync(Guid userId, Guid eventId, CancellationToken cancellationToken = default)

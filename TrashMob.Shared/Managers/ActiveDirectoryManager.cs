@@ -10,18 +10,8 @@ namespace TrashMob.Shared.Managers
     /// <summary>
     /// Manages Azure Active Directory B2C user lifecycle operations including creation, validation, and profile updates.
     /// </summary>
-    public class ActiveDirectoryManager : IActiveDirectoryManager
+    public class ActiveDirectoryManager(IUserManager userManager) : IActiveDirectoryManager
     {
-        private readonly IUserManager userManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ActiveDirectoryManager"/> class.
-        /// </summary>
-        /// <param name="userManager">The user manager for user data operations.</param>
-        public ActiveDirectoryManager(IUserManager userManager)
-        {
-            this.userManager = userManager;
-        }
 
         /// <inheritdoc />
         public async Task<ActiveDirectoryResponseBase> CreateUserAsync(

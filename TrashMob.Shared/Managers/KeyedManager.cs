@@ -11,16 +11,9 @@
     /// Manager class for entities with a GUID primary key, extending BaseManager with key-based operations.
     /// </summary>
     /// <typeparam name="T">The entity type derived from KeyedModel.</typeparam>
-    public class KeyedManager<T> : BaseManager<T>, IKeyedManager<T> where T : KeyedModel
+    public class KeyedManager<T>(IKeyedRepository<T> repository)
+        : BaseManager<T>(repository), IKeyedManager<T> where T : KeyedModel
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="KeyedManager{T}"/> class.
-        /// </summary>
-        /// <param name="repository">The keyed repository for data access operations.</param>
-        public KeyedManager(IKeyedRepository<T> repository) : base(repository)
-        {
-        }
-
         /// <summary>
         /// Gets the repository cast to the keyed repository interface.
         /// </summary>

@@ -14,15 +14,9 @@ namespace TrashMob.Shared.Managers.SponsoredAdoptions
     /// Manager for user assignments to professional cleanup companies.
     /// Uses composite key pattern (like PartnerAdminManager).
     /// </summary>
-    public class ProfessionalCompanyUserManager : BaseManager<ProfessionalCompanyUser>, IProfessionalCompanyUserManager
+    public class ProfessionalCompanyUserManager(IBaseRepository<ProfessionalCompanyUser> repository)
+        : BaseManager<ProfessionalCompanyUser>(repository), IProfessionalCompanyUserManager
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ProfessionalCompanyUserManager"/> class.
-        /// </summary>
-        /// <param name="repository">The professional company user repository.</param>
-        public ProfessionalCompanyUserManager(IBaseRepository<ProfessionalCompanyUser> repository) : base(repository)
-        {
-        }
 
         /// <inheritdoc />
         public async Task<IEnumerable<User>> GetUsersForCompanyAsync(

@@ -10,21 +10,13 @@ namespace TrashMob.Shared.Managers.Prospects
     using TrashMob.Models.Poco;
     using TrashMob.Shared.Persistence.Interfaces;
 
-    public class PipelineAnalyticsManager : IPipelineAnalyticsManager
+    public class PipelineAnalyticsManager(
+        IKeyedRepository<CommunityProspect> prospectRepository,
+        IKeyedRepository<ProspectOutreachEmail> outreachEmailRepository)
+        : IPipelineAnalyticsManager
     {
         private static readonly string[] StageLabels =
             ["New", "Contacted", "Responded", "Interested", "Onboarding", "Active", "Declined"];
-
-        private readonly IKeyedRepository<CommunityProspect> prospectRepository;
-        private readonly IKeyedRepository<ProspectOutreachEmail> outreachEmailRepository;
-
-        public PipelineAnalyticsManager(
-            IKeyedRepository<CommunityProspect> prospectRepository,
-            IKeyedRepository<ProspectOutreachEmail> outreachEmailRepository)
-        {
-            this.prospectRepository = prospectRepository;
-            this.outreachEmailRepository = outreachEmailRepository;
-        }
 
         public async Task<PipelineAnalytics> GetAnalyticsAsync(CancellationToken cancellationToken = default)
         {

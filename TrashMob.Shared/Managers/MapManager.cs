@@ -20,7 +20,7 @@ namespace TrashMob.Shared.Managers
     /// <summary>
     /// Provides map-related services including distance calculations, timezone lookups, and address resolution using Azure Maps.
     /// </summary>
-    public class MapManager : IMapManager
+    public class MapManager(IConfiguration configuration, ILogger<MapManager> logger) : IMapManager
     {
         private const string AzureMapKeyName = "AzureMapsKey";
         private const string AzureMapsClientIdName = "AzureMapsClientId";
@@ -29,21 +29,7 @@ namespace TrashMob.Shared.Managers
 
         private const int MetersPerKilometer = 1000;
         private const int MetersPerMile = 1609;
-        private readonly IConfiguration configuration;
-        private readonly ILogger<MapManager> logger;
-        private readonly TokenCredential tokenCredential;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MapManager"/> class.
-        /// </summary>
-        /// <param name="configuration">The configuration containing map API keys.</param>
-        /// <param name="logger">The logger instance.</param>
-        public MapManager(IConfiguration configuration, ILogger<MapManager> logger)
-        {
-            this.configuration = configuration;
-            this.logger = logger;
-            this.tokenCredential = new DefaultAzureCredential();
-        }
+        private readonly TokenCredential tokenCredential = new DefaultAzureCredential();
 
         /// <summary>
         /// Gets the Azure Maps Client ID for managed identity authentication.

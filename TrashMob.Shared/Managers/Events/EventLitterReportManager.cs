@@ -15,29 +15,13 @@ namespace TrashMob.Shared.Managers.Events
     /// <summary>
     /// Manages associations between events and litter reports, tracking which reports are being cleaned by which events.
     /// </summary>
-    public class EventLitterReportManager : BaseManager<EventLitterReport>, IBaseManager<EventLitterReport>, IEventLitterReportManager
+    public class EventLitterReportManager(
+        IBaseRepository<EventLitterReport> repository,
+        IKeyedRepository<Event> eventRepository,
+        IKeyedRepository<LitterReport> litterReportRepository,
+        ILogger<EventLitterReportManager> logger)
+        : BaseManager<EventLitterReport>(repository), IBaseManager<EventLitterReport>, IEventLitterReportManager
     {
-        private readonly IEmailManager emailManager;
-        private readonly ILogger<EventLitterReportManager> logger;
-        private readonly IKeyedRepository<Event> eventRepository;
-        private readonly IKeyedRepository<LitterReport> litterReportRepository;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EventLitterReportManager"/> class.
-        /// </summary>
-        /// <param name="repository">The repository for event litter report data access.</param>
-        /// <param name="eventRepository">The repository for event data access.</param>
-        /// <param name="litterReportRepository">The repository for litter report data access.</param>
-        /// <param name="emailManager">The email manager for sending notifications.</param>
-        /// <param name="logger">The logger instance.</param>
-        public EventLitterReportManager(IBaseRepository<EventLitterReport> repository, IKeyedRepository<Event> eventRepository, IKeyedRepository<LitterReport> litterReportRepository,
-            IEmailManager emailManager, ILogger<EventLitterReportManager> logger) : base(repository)
-        {
-            this.eventRepository = eventRepository;
-            this.litterReportRepository = litterReportRepository;
-            this.emailManager = emailManager;
-            this.logger = logger;
-        }
 
         /// <inheritdoc />
         public override async Task<IEnumerable<EventLitterReport>> GetByParentIdAsync(Guid parentId,

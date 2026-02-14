@@ -15,30 +15,15 @@ namespace TrashMob.Shared.Managers.Prospects
     /// <summary>
     /// Manages the conversion of community prospects to partner organizations.
     /// </summary>
-    public class ProspectConversionManager : IProspectConversionManager
+    public class ProspectConversionManager(
+        IKeyedRepository<CommunityProspect> prospectRepository,
+        IKeyedManager<Partner> partnerManager,
+        IBaseManager<PartnerAdmin> partnerAdminManager,
+        IKeyedRepository<ProspectActivity> activityRepository,
+        IEmailManager emailManager,
+        ILogger<ProspectConversionManager> logger)
+        : IProspectConversionManager
     {
-        private readonly IKeyedRepository<CommunityProspect> prospectRepository;
-        private readonly IKeyedManager<Partner> partnerManager;
-        private readonly IBaseManager<PartnerAdmin> partnerAdminManager;
-        private readonly IKeyedRepository<ProspectActivity> activityRepository;
-        private readonly IEmailManager emailManager;
-        private readonly ILogger<ProspectConversionManager> logger;
-
-        public ProspectConversionManager(
-            IKeyedRepository<CommunityProspect> prospectRepository,
-            IKeyedManager<Partner> partnerManager,
-            IBaseManager<PartnerAdmin> partnerAdminManager,
-            IKeyedRepository<ProspectActivity> activityRepository,
-            IEmailManager emailManager,
-            ILogger<ProspectConversionManager> logger)
-        {
-            this.prospectRepository = prospectRepository;
-            this.partnerManager = partnerManager;
-            this.partnerAdminManager = partnerAdminManager;
-            this.activityRepository = activityRepository;
-            this.emailManager = emailManager;
-            this.logger = logger;
-        }
 
         public async Task<ProspectConversionResult> ConvertToPartnerAsync(
             ProspectConversionRequest request, Guid userId,

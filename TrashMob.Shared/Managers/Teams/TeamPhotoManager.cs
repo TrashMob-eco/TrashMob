@@ -13,19 +13,9 @@ namespace TrashMob.Shared.Managers.Teams
     /// <summary>
     /// Manages team photos including CRUD operations and image storage integration.
     /// </summary>
-    public class TeamPhotoManager : KeyedManager<TeamPhoto>, ITeamPhotoManager
+    public class TeamPhotoManager(IKeyedRepository<TeamPhoto> repository, IImageManager imageManager)
+        : KeyedManager<TeamPhoto>(repository), ITeamPhotoManager
     {
-        private readonly IImageManager imageManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TeamPhotoManager"/> class.
-        /// </summary>
-        /// <param name="repository">The repository for team photo data access.</param>
-        /// <param name="imageManager">The image manager for blob storage operations.</param>
-        public TeamPhotoManager(IKeyedRepository<TeamPhoto> repository, IImageManager imageManager) : base(repository)
-        {
-            this.imageManager = imageManager;
-        }
 
         /// <inheritdoc />
         public async Task<IEnumerable<TeamPhoto>> GetByTeamIdAsync(Guid teamId, CancellationToken cancellationToken = default)

@@ -16,23 +16,12 @@ namespace TrashMob.Shared.Managers.Events
     /// <summary>
     /// Manages event attendee registrations and tracks which events users are attending.
     /// </summary>
-    public class EventAttendeeManager : BaseManager<EventAttendee>, IBaseManager<EventAttendee>, IEventAttendeeManager
+    public class EventAttendeeManager(
+        IBaseRepository<EventAttendee> repository,
+        IKeyedRepository<Event> eventRepository,
+        IEmailManager emailManager)
+        : BaseManager<EventAttendee>(repository), IBaseManager<EventAttendee>, IEventAttendeeManager
     {
-        private readonly IEmailManager emailManager;
-        private readonly IKeyedRepository<Event> eventRepository;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EventAttendeeManager"/> class.
-        /// </summary>
-        /// <param name="repository">The repository for event attendee data access.</param>
-        /// <param name="eventRepository">The repository for event data access.</param>
-        /// <param name="emailManager">The email manager for sending notifications.</param>
-        public EventAttendeeManager(IBaseRepository<EventAttendee> repository, IKeyedRepository<Event> eventRepository,
-            IEmailManager emailManager) : base(repository)
-        {
-            this.eventRepository = eventRepository;
-            this.emailManager = emailManager;
-        }
 
         /// <inheritdoc />
         public override async Task<IEnumerable<EventAttendee>> GetByParentIdAsync(Guid parentId,

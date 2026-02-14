@@ -14,25 +14,12 @@ namespace TrashMob.Shared.Managers.SponsoredAdoptions
     /// <summary>
     /// Manager for professional cleanup log operations.
     /// </summary>
-    public class ProfessionalCleanupLogManager : KeyedManager<ProfessionalCleanupLog>, IProfessionalCleanupLogManager
+    public class ProfessionalCleanupLogManager(
+        IKeyedRepository<ProfessionalCleanupLog> repository,
+        IKeyedRepository<SponsoredAdoption> sponsoredAdoptionRepository,
+        IProfessionalCompanyUserManager companyUserManager)
+        : KeyedManager<ProfessionalCleanupLog>(repository), IProfessionalCleanupLogManager
     {
-        private readonly IKeyedRepository<SponsoredAdoption> sponsoredAdoptionRepository;
-        private readonly IProfessionalCompanyUserManager companyUserManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ProfessionalCleanupLogManager"/> class.
-        /// </summary>
-        /// <param name="repository">The cleanup log repository.</param>
-        /// <param name="sponsoredAdoptionRepository">The sponsored adoption repository.</param>
-        /// <param name="companyUserManager">The company user manager for authorization checks.</param>
-        public ProfessionalCleanupLogManager(
-            IKeyedRepository<ProfessionalCleanupLog> repository,
-            IKeyedRepository<SponsoredAdoption> sponsoredAdoptionRepository,
-            IProfessionalCompanyUserManager companyUserManager) : base(repository)
-        {
-            this.sponsoredAdoptionRepository = sponsoredAdoptionRepository;
-            this.companyUserManager = companyUserManager;
-        }
 
         /// <inheritdoc />
         public async Task<IEnumerable<ProfessionalCleanupLog>> GetByCompanyIdAsync(

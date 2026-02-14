@@ -8,18 +8,8 @@
     /// <summary>
     /// Local development implementation of key vault manager that retrieves secrets from configuration.
     /// </summary>
-    public class LocalKeyVaultManager : IKeyVaultManager
+    public class LocalKeyVaultManager(IConfiguration configuration) : IKeyVaultManager
     {
-        private readonly IConfiguration configuration;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LocalKeyVaultManager"/> class.
-        /// </summary>
-        /// <param name="configuration">The configuration to retrieve secrets from.</param>
-        public LocalKeyVaultManager(IConfiguration configuration)
-        {
-            this.configuration = configuration;
-        }
 
         /// <inheritdoc />
         public Task<X509Certificate2> GetCertificateAsync(string certificateName)

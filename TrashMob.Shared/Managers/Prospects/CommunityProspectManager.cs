@@ -9,12 +9,9 @@ namespace TrashMob.Shared.Managers.Prospects
     using TrashMob.Models;
     using TrashMob.Shared.Persistence.Interfaces;
 
-    public class CommunityProspectManager : KeyedManager<CommunityProspect>, ICommunityProspectManager
+    public class CommunityProspectManager(IKeyedRepository<CommunityProspect> repository)
+        : KeyedManager<CommunityProspect>(repository), ICommunityProspectManager
     {
-        public CommunityProspectManager(IKeyedRepository<CommunityProspect> repository)
-            : base(repository)
-        {
-        }
 
         public async Task<IEnumerable<CommunityProspect>> GetByPipelineStageAsync(int stage, CancellationToken cancellationToken = default)
         {

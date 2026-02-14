@@ -13,22 +13,11 @@ namespace TrashMob.Shared.Managers
     /// <summary>
     /// Manager for waiver version operations and community waiver assignments.
     /// </summary>
-    public class WaiverVersionManager : KeyedManager<WaiverVersion>, IWaiverVersionManager
+    public class WaiverVersionManager(
+        IKeyedRepository<WaiverVersion> repository,
+        IBaseRepository<CommunityWaiver> communityWaiverRepository)
+        : KeyedManager<WaiverVersion>(repository), IWaiverVersionManager
     {
-        private readonly IBaseRepository<CommunityWaiver> communityWaiverRepository;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WaiverVersionManager"/> class.
-        /// </summary>
-        /// <param name="repository">The waiver version repository.</param>
-        /// <param name="communityWaiverRepository">The community waiver repository.</param>
-        public WaiverVersionManager(
-            IKeyedRepository<WaiverVersion> repository,
-            IBaseRepository<CommunityWaiver> communityWaiverRepository)
-            : base(repository)
-        {
-            this.communityWaiverRepository = communityWaiverRepository;
-        }
 
         /// <inheritdoc />
         public async Task<IEnumerable<WaiverVersion>> GetAllAsync(CancellationToken cancellationToken = default)

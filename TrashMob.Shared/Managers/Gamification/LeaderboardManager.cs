@@ -14,22 +14,11 @@ namespace TrashMob.Shared.Managers.Gamification
     /// <summary>
     /// Manager for retrieving leaderboard data from the pre-computed cache.
     /// </summary>
-    public class LeaderboardManager : ILeaderboardManager
+    public class LeaderboardManager(MobDbContext dbContext) : ILeaderboardManager
     {
         private static readonly string[] TimeRanges = { "Week", "Month", "Year", "AllTime" };
         private static readonly string[] LeaderboardTypes = { "Events", "Bags", "Weight", "Hours" };
         private static readonly string[] LocationScopes = { "Global", "Region", "City" };
-
-        private readonly MobDbContext dbContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LeaderboardManager"/> class.
-        /// </summary>
-        /// <param name="dbContext">The database context.</param>
-        public LeaderboardManager(MobDbContext dbContext)
-        {
-            this.dbContext = dbContext;
-        }
 
         /// <inheritdoc />
         public async Task<LeaderboardResponse> GetLeaderboardAsync(

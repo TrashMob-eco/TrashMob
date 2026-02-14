@@ -16,38 +16,16 @@ namespace TrashMob.Shared.Managers.Events
     /// <summary>
     /// Manages event partner location services including partnership requests and approvals.
     /// </summary>
-    public class EventPartnerLocationServiceManager : BaseManager<EventPartnerLocationService>,
-        IEventPartnerLocationServiceManager
+    public class EventPartnerLocationServiceManager(
+        IBaseRepository<EventPartnerLocationService> repository,
+        IKeyedRepository<Event> eventRepository,
+        IKeyedRepository<PartnerLocation> partnerLocationRepository,
+        IBaseRepository<PartnerLocationService> partnerLocationServiceRepository,
+        IKeyedRepository<User> userRepository,
+        IBaseRepository<PartnerAdmin> partnerAdminRepository,
+        IEmailManager emailManager)
+        : BaseManager<EventPartnerLocationService>(repository), IEventPartnerLocationServiceManager
     {
-        private readonly IEmailManager emailManager;
-        private readonly IKeyedRepository<Event> eventRepository;
-        private readonly IBaseRepository<PartnerAdmin> partnerAdminRepository;
-        private readonly IKeyedRepository<PartnerLocation> partnerLocationRepository;
-        private readonly IBaseRepository<PartnerLocationService> partnerLocationServiceRepository;
-        private readonly IKeyedRepository<Partner> partnerRepository;
-        private readonly IKeyedRepository<User> userRepository;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EventPartnerLocationServiceManager"/> class.
-        /// </summary>
-        public EventPartnerLocationServiceManager(IBaseRepository<EventPartnerLocationService> repository,
-            IKeyedRepository<Event> eventRepository,
-            IKeyedRepository<Partner> partnerRepository,
-            IKeyedRepository<PartnerLocation> partnerLocationRepository,
-            IBaseRepository<PartnerLocationService> partnerLocationServiceRepository,
-            IKeyedRepository<User> userRepository,
-            IBaseRepository<PartnerAdmin> partnerAdminRepository,
-            IEmailManager emailManager)
-            : base(repository)
-        {
-            this.eventRepository = eventRepository;
-            this.partnerRepository = partnerRepository;
-            this.partnerLocationRepository = partnerLocationRepository;
-            this.partnerLocationServiceRepository = partnerLocationServiceRepository;
-            this.userRepository = userRepository;
-            this.partnerAdminRepository = partnerAdminRepository;
-            this.emailManager = emailManager;
-        }
 
         /// <inheritdoc />
         public override async Task<EventPartnerLocationService> AddAsync(EventPartnerLocationService instance,

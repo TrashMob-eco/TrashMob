@@ -18,35 +18,17 @@ namespace TrashMob.Shared.Managers.Prospects
     /// <summary>
     /// Core business logic for prospect outreach emails including cadence management, send/preview, and follow-up processing.
     /// </summary>
-    public class ProspectOutreachManager : IProspectOutreachManager
+    public class ProspectOutreachManager(
+        IKeyedRepository<CommunityProspect> prospectRepository,
+        IKeyedRepository<ProspectOutreachEmail> outreachEmailRepository,
+        IKeyedRepository<ProspectActivity> activityRepository,
+        IOutreachContentService contentService,
+        IEmailManager emailManager,
+        IConfiguration configuration,
+        ILogger<ProspectOutreachManager> logger)
+        : IProspectOutreachManager
     {
-        private readonly IKeyedRepository<CommunityProspect> prospectRepository;
-        private readonly IKeyedRepository<ProspectOutreachEmail> outreachEmailRepository;
-        private readonly IKeyedRepository<ProspectActivity> activityRepository;
-        private readonly IOutreachContentService contentService;
-        private readonly IEmailManager emailManager;
-        private readonly IConfiguration configuration;
-        private readonly ILogger<ProspectOutreachManager> logger;
-
         private const int MaxBatchSize = 20;
-
-        public ProspectOutreachManager(
-            IKeyedRepository<CommunityProspect> prospectRepository,
-            IKeyedRepository<ProspectOutreachEmail> outreachEmailRepository,
-            IKeyedRepository<ProspectActivity> activityRepository,
-            IOutreachContentService contentService,
-            IEmailManager emailManager,
-            IConfiguration configuration,
-            ILogger<ProspectOutreachManager> logger)
-        {
-            this.prospectRepository = prospectRepository;
-            this.outreachEmailRepository = outreachEmailRepository;
-            this.activityRepository = activityRepository;
-            this.contentService = contentService;
-            this.emailManager = emailManager;
-            this.configuration = configuration;
-            this.logger = logger;
-        }
 
         /// <inheritdoc />
         public async Task<OutreachPreview> PreviewOutreachAsync(Guid prospectId,

@@ -16,32 +16,16 @@ namespace TrashMob.Shared.Managers.Events
     /// <summary>
     /// Manages event summaries including statistics, post-event reports, and impact metrics.
     /// </summary>
-    public class EventSummaryManager : BaseManager<EventSummary>, IEventSummaryManager
+    public class EventSummaryManager(
+        IBaseRepository<EventSummary> repository,
+        IKeyedRepository<Event> eventRepository,
+        IEventManager eventManager,
+        IEventAttendeeManager eventAttendeeManager,
+        ILitterReportManager litterReportManager,
+        IEventLitterReportManager eventLitterReportManager)
+        : BaseManager<EventSummary>(repository), IEventSummaryManager
     {
-        private readonly IEventAttendeeManager eventAttendeeManager;
-        private readonly ILitterReportManager litterReportManager;
-        private readonly IEventLitterReportManager eventLitterReportManager;
-        private readonly IEventManager eventManager;
-        private readonly IKeyedRepository<Event> eventRepository;
         private const int CancelledEventStatusId = 3;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EventSummaryManager"/> class.
-        /// </summary>
-        public EventSummaryManager(IBaseRepository<EventSummary> repository,
-            IKeyedRepository<Event> eventRepository,
-            IEventManager eventManager,
-            IEventAttendeeManager eventAttendeeManager,
-            ILitterReportManager litterReportManager,
-            IEventLitterReportManager eventLitterReportManager) 
-            : base(repository)
-        {
-            this.eventRepository = eventRepository;
-            this.eventManager = eventManager;
-            this.eventAttendeeManager = eventAttendeeManager;
-            this.litterReportManager = litterReportManager;
-            this.eventLitterReportManager = eventLitterReportManager;
-        }
 
         /// <inheritdoc />
         public async Task<Stats> GetStatsAsync(CancellationToken cancellationToken)
