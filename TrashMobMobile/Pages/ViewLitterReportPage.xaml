@@ -27,38 +27,6 @@
                     </VerticalStackLayout>
                 </Border>
 
-                <!-- Action Buttons -->
-                <Border Style="{StaticResource RoundBorder}" Margin="10,0">
-                    <VerticalStackLayout Spacing="8">
-                        <Label Text="Actions" Style="{StaticResource SectionHeader}" Margin="0" />
-                        <Button Command="{Binding EditLitterReportCommand}"
-                                Text="Edit Report"
-                                IsEnabled="{Binding CanEditLitterReport}"
-                                IsVisible="{Binding CanEditLitterReport}"
-                                Style="{StaticResource PrimaryLargeButton}" />
-                        <Button Command="{Binding MarkLitterReportCleanedCommand}"
-                                IsEnabled="{Binding CanMarkLitterReportCleaned}"
-                                IsVisible="{Binding CanMarkLitterReportCleaned}"
-                                Style="{StaticResource SecondaryLargeButton}"
-                                Text="Mark as Cleaned" />
-                        <Button Command="{Binding DeleteLitterReportCommand}"
-                                IsEnabled="{Binding CanDeleteLitterReport}"
-                                IsVisible="{Binding CanDeleteLitterReport}"
-                                Style="{StaticResource SecondaryLargeButton}"
-                                Text="Delete Report" />
-                        <Button Command="{Binding ViewEventCommand}"
-                                IsEnabled="{Binding IsAssignedToEvent}"
-                                IsVisible="{Binding IsAssignedToEvent}"
-                                Style="{StaticResource SecondaryLargeButton}"
-                                Text="View Event" />
-                        <Button Command="{Binding CreateEventCommand}"
-                                IsEnabled="{Binding IsNotAssignedToEvent}"
-                                IsVisible="{Binding IsNotAssignedToEvent}"
-                                Style="{StaticResource SecondaryLargeButton}"
-                                Text="Create Event" />
-                    </VerticalStackLayout>
-                </Border>
-
                 <!-- Locations -->
                 <Border Style="{StaticResource RoundBorder}" Margin="10,0">
                     <VerticalStackLayout Spacing="8">
@@ -90,6 +58,38 @@
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
                         </CollectionView>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Action Buttons -->
+                <Border Style="{StaticResource RoundBorder}" Margin="10,0">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Actions" Style="{StaticResource SectionHeader}" Margin="0" />
+                        <Button Command="{Binding EditLitterReportCommand}"
+                                Text="Edit Report"
+                                IsEnabled="{Binding CanEditLitterReport}"
+                                IsVisible="{Binding CanEditLitterReport}"
+                                Style="{StaticResource PrimaryLargeButton}" />
+                        <Button Command="{Binding MarkLitterReportCleanedCommand}"
+                                IsEnabled="{Binding CanMarkLitterReportCleaned}"
+                                IsVisible="{Binding CanMarkLitterReportCleaned}"
+                                Style="{StaticResource SecondaryLargeButton}"
+                                Text="Mark as Cleaned" />
+                        <Button Command="{Binding DeleteLitterReportCommand}"
+                                IsEnabled="{Binding CanDeleteLitterReport}"
+                                IsVisible="{Binding CanDeleteLitterReport}"
+                                Style="{StaticResource SecondaryLargeButton}"
+                                Text="Delete Report" />
+                        <Button Command="{Binding ViewEventCommand}"
+                                IsEnabled="{Binding IsAssignedToEvent}"
+                                IsVisible="{Binding IsAssignedToEvent}"
+                                Style="{StaticResource SecondaryLargeButton}"
+                                Text="View Event" />
+                        <Button Command="{Binding CreateEventCommand}"
+                                IsEnabled="{Binding IsNotAssignedToEvent}"
+                                IsVisible="{Binding IsNotAssignedToEvent}"
+                                Style="{StaticResource SecondaryLargeButton}"
+                                Text="Create Event" />
                     </VerticalStackLayout>
                 </Border>
             </VerticalStackLayout>
