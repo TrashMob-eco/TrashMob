@@ -19,7 +19,7 @@ import {
 
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Badge, EventVisibilityBadge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DataTable, DataTableColumnHeader } from '@/components/ui/data-table';
 import TeamData from '@/components/Models/TeamData';
@@ -181,9 +181,12 @@ export const TeamDetailPage = () => {
             accessorKey: 'name',
             header: ({ column }) => <DataTableColumnHeader column={column} title='Event' />,
             cell: ({ row }) => (
-                <Link to={`/eventdetails/${row.original.id}`} className='text-primary hover:underline font-medium'>
-                    {row.original.name}
-                </Link>
+                <div className='flex items-center gap-2'>
+                    <Link to={`/eventdetails/${row.original.id}`} className='text-primary hover:underline font-medium'>
+                        {row.original.name}
+                    </Link>
+                    <EventVisibilityBadge eventVisibilityId={row.original.eventVisibilityId} />
+                </div>
             ),
         },
         {

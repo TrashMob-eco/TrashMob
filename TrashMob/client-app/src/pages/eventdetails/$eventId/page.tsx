@@ -12,7 +12,7 @@ import { GetAllEventsBeingAttendedByUser, GetEventAttendees, GetEventLeads } fro
 import { useGetEvent } from '@/hooks/useGetEvent';
 import { useGetEventType } from '@/hooks/useGetEventType';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Badge, EventVisibilityBadge } from '@/components/ui/badge';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -175,7 +175,10 @@ export const EventDetails: FC<EventDetailsProps> = () => {
                                 </Button>
                             </div>
                         </div>
-                        <Badge>{eventType?.name}</Badge>
+                        <div className='flex gap-2'>
+                            <Badge>{eventType?.name}</Badge>
+                            {event ? <EventVisibilityBadge eventVisibilityId={event.eventVisibilityId} /> : null}
+                        </div>
                         <p className='mt-4 mb-8 text-foreground'>{description}</p>
                         <div className='mb-8!'>
                             <EventPlaceAndLocation {...event} />

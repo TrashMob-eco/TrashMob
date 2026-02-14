@@ -4,6 +4,7 @@ import type EventData from '@/components/Models/EventData';
 import type UserData from '@/components/Models/UserData';
 import moment from 'moment';
 import { DataTableColumnHeader } from '@/components/ui/data-table';
+import { EventVisibilityBadge } from '@/components/ui/badge';
 import { EventActions } from './actions';
 
 interface GetColumnsProps {
@@ -20,6 +21,11 @@ export const getColumns = ({
     {
         accessorKey: 'name',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />,
+    },
+    {
+        accessorKey: 'eventVisibilityId',
+        header: 'Visibility',
+        cell: ({ row }) => <EventVisibilityBadge eventVisibilityId={row.original.eventVisibilityId} />,
     },
     {
         accessorKey: 'role',

@@ -5,7 +5,7 @@ import compact from 'lodash/compact';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { AttendingBadge, Badge, HostingBadge } from '@/components/ui/badge';
+import { AttendingBadge, Badge, EventVisibilityBadge, HostingBadge } from '@/components/ui/badge';
 import EventData from '@/components/Models/EventData';
 import UserData from '@/components/Models/UserData';
 import { RegisterBtn } from '@/components/Customization/RegisterBtn';
@@ -57,6 +57,7 @@ export const EventListItem = (props: EventListItemProps) => {
                             <CalendarRange /> {eventType.name}
                         </Badge>
                     ) : null}
+                    <EventVisibilityBadge eventVisibilityId={event.eventVisibilityId} />
                     {event.isAttending ? <AttendingBadge /> : null}
                     {event.createdByUserId === currentUser.id ? <HostingBadge /> : null}
                 </div>
