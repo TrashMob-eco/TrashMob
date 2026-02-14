@@ -119,6 +119,11 @@ export const LocationPreference = () => {
             body.longitude = values.longitude;
             body.prefersMetric = values.prefersMetric;
             body.travelLimitForLocalEvents = values.travelLimitForLocalEvents;
+            body.givenName = currentUser.givenName ?? '';
+            body.surname = currentUser.surname ?? '';
+            body.dateOfBirth = currentUser.dateOfBirth;
+            body.isSiteAdmin = currentUser.isSiteAdmin;
+            body.profilePhotoUrl = currentUser.profilePhotoUrl ?? '';
 
             updateUser.mutateAsync(body);
         },
