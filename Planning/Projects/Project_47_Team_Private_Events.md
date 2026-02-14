@@ -65,7 +65,7 @@ The FAQ already mentions: *"Eventually, you will be able to send invitations to 
 - ❌ Inviting specific individuals to private events (separate future feature)
 - ❌ Multiple-team visibility (event visible to more than one team)
 - ❌ Community-visible events (visible to all members of a community)
-- ❌ Changing visibility after event creation (keep it simple for v1)
+- ❌ Handling attendee conflicts when visibility is narrowed (e.g., removing non-team-member attendees automatically — v1 will allow the change but leave existing registrations intact)
 
 ---
 
@@ -101,6 +101,7 @@ The FAQ already mentions: *"Eventually, you will be able to send invitations to 
 | **Query performance** | Low | Medium | Index on `TeamId`; team membership check is already indexed |
 | **Visibility confusion** | Medium | Low | Clear UX labels and tooltips; update FAQ |
 | **Breaking existing behavior** | Low | High | Migration preserves all existing events exactly; boolean → enum is additive |
+| **MCP server leaking private events** | Confirmed | Medium | Pre-existing bug: `GetFilteredEventsAsync` has no visibility filter. Fix as part of Phase 1b. |
 
 ---
 
@@ -194,27 +195,63 @@ public async Task<IEnumerable<Event>> GetActiveEventsAsync(
 - Update explore/search to include team events
 - Show team events on team detail page
 
+### MCP Server Changes (`TrashMobMCP`)
+
+The MCP server is an **unauthenticated** service that exposes TrashMob data to AI assistants via the Model Context Protocol. It must only return **public** data. The `IsEventPublic` → `EventVisibilityId` migration impacts several tools.
+
+**Pre-existing bug:** `GetFilteredEventsAsync` (used by `SearchEventsTool`) does **not** filter by `IsEventPublic` today, meaning private events are already being leaked to the unauthenticated MCP server. This must be fixed as part of this project.
+
+| Tool | Impact | Required Change |
+|------|--------|-----------------|
+| `SearchEventsTool` | **High** | Add `EventVisibilityId == Public` filter to event query. Fixes existing bug where private events are returned. |
+| `GetEventRouteStatsTool` | **Medium** | Add visibility check — verify event is `Public` before returning route stats for a given event ID. |
+| `GetStatsTool` | **Low** | Decide whether aggregate stats (bags, weight, hours) should include team-only events. Likely yes — all cleanup activity counts. |
+| `EventDto` | **None** | Does not expose visibility field. Since MCP only returns public events, no DTO change needed. |
+| `SearchTeamsTool` | **None** | Searches teams, not events. No visibility reference. |
+| Other tools | **None** | `SearchCommunitiesTool`, `SearchPartnerLocationsTool`, `SearchLitterReportsTool`, `GetAchievementTypesTool`, `GetLeaderboardTool` — no event visibility references. |
+
+**`SearchEventsTool` fix:**
+```csharp
+// After getting filtered events, ensure only public events are returned
+var sanitizedEvents = events
+    .Where(e => e.EventStatusId != (int)EventStatusEnum.Canceled)
+    .Where(e => e.EventVisibilityId == (int)EventVisibilityEnum.Public)
+    .Select(Sanitize)
+    .ToList();
+```
+
+**`GetEventRouteStatsTool` fix:**
+```csharp
+// Verify event is public before returning route stats
+var evt = await _eventManager.GetAsync(parsedEventId, cancellationToken);
+if (evt is null || evt.EventVisibilityId != (int)EventVisibilityEnum.Public)
+    return JsonSerializer.Serialize(new { error = "Event not found." }, JsonOptions);
+```
+
+**Alternative approach:** Add an `EventVisibilityId` filter to `EventFilter` and update `GetFilteredEventsAsync` to apply it, so all callers benefit from visibility filtering at the query level rather than in-memory.
+
 ---
 
 ## Rollout Plan
 
 1. **Phase 1 — Backend:** Deploy data model changes and API updates behind feature flag
-2. **Phase 2 — Web:** Update event creation and discovery UX
-3. **Phase 3 — Mobile:** Update mobile app to support team visibility
-4. **Phase 4 — Polish:** Update FAQ, tooltips, notifications; remove feature flag
+2. **Phase 1b — MCP Server:** Update `SearchEventsTool` and `GetEventRouteStatsTool` visibility filters (can deploy alongside Phase 1)
+3. **Phase 2 — Web:** Update event creation and discovery UX
+4. **Phase 3 — Mobile:** Update mobile app to support team visibility
+5. **Phase 4 — Polish:** Update FAQ, tooltips, notifications; remove feature flag
 
 ---
 
-## Open Questions
+## Resolved Questions
 
 1. **Should team-visible events allow backdating like private events?**
-   Status: Open — Private events allow past dates for logging purposes; should team events also allow this?
+   **Yes.** Team events can be created with past dates, same as private events. This supports teams logging cleanups that already happened.
 
-2. **Can a team event be converted to public after creation?**
-   Status: Open — v1 proposes no visibility changes after creation; revisit based on user feedback
+2. **Can a team event's visibility be changed after creation?**
+   **Yes.** The creator or team admin can change visibility after creation (e.g., TeamOnly → Public or Public → TeamOnly). Implementation note: if restricting visibility (Public → TeamOnly), consider how to handle non-team-member attendees who already registered.
 
-3. **Should team admins be able to create team events, or any team member?**
-   Status: Open — Likely any team member can create, but team admin can manage/delete
+3. **Who can create team-visible events?**
+   **Any team member.** Any member of a team can create a team-visible event for that team. Team admins can manage (edit/delete) any team event.
 
 ---
 
@@ -226,7 +263,7 @@ public async Task<IEnumerable<Event>> GetActiveEventsAsync(
 
 ---
 
-**Last Updated:** February 13, 2026
+**Last Updated:** February 14, 2026
 **Owner:** Product & Engineering
 **Status:** Not Started
 **Next Review:** When prioritized
