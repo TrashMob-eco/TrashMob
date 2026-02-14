@@ -30,11 +30,11 @@ namespace TrashMob.Controllers
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         public virtual async Task<IActionResult> Add(T instance, CancellationToken cancellationToken)
         {
-            await Manager.AddAsync(instance, UserId, cancellationToken);
+            var result = await Manager.AddAsync(instance, UserId, cancellationToken);
 
             TrackEvent("Add" + nameof(T));
 
-            return Ok();
+            return CreatedAtAction(nameof(Get), result);
         }
 
         /// <summary>

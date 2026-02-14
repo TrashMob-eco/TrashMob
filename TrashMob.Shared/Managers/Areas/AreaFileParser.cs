@@ -22,7 +22,6 @@ namespace TrashMob.Shared.Managers.Areas
     /// </summary>
     public class AreaFileParser(ILogger<AreaFileParser> logger) : IAreaFileParser
     {
-        private readonly ILogger<AreaFileParser> _logger = logger;
 
         private const int MaxFeatures = 500;
 
@@ -64,7 +63,7 @@ namespace TrashMob.Shared.Managers.Areas
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to parse area import file: {FileName}", fileName);
+                logger.LogError(ex, "Failed to parse area import file: {FileName}", fileName);
                 result.Error = $"Failed to parse file: {ex.Message}";
                 return result;
             }
@@ -457,7 +456,7 @@ namespace TrashMob.Shared.Managers.Areas
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogWarning(ex, "Failed to clean up temp directory: {TempDir}", tempDir);
+                    logger.LogWarning(ex, "Failed to clean up temp directory: {TempDir}", tempDir);
                 }
             }
         }
