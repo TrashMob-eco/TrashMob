@@ -22,12 +22,12 @@ export const AboutUs: React.FC = () => {
                             </h4>
                             <p className='font-light'>
                                 Whether the motivation is to better your local community, connect with like-minded
-                                individuals, or improve your own mental health and wellbeing, TrashMob provides an avenue
-                                for accomplishing these goals. To participate, all it takes is the willingness to get your
-                                hands a little dirty and a desire to leave the world better than how you found it. Whether
-                                it's your neighborhood, a park, a stream, a road, or even a parking lot of a big box
-                                store, all litter being cleaned up contributes to our goal of making this planet of ours a
-                                little better for the next generation.
+                                individuals, or improve your own mental health and wellbeing, TrashMob provides an
+                                avenue for accomplishing these goals. To participate, all it takes is the willingness to
+                                get your hands a little dirty and a desire to leave the world better than how you found
+                                it. Whether it's your neighborhood, a park, a stream, a road, or even a parking lot of a
+                                big box store, all litter being cleaned up contributes to our goal of making this planet
+                                of ours a little better for the next generation.
                             </p>
                             <Button className='mt-2' asChild>
                                 <Link to='/'>Find an event</Link>
