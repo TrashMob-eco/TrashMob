@@ -340,9 +340,7 @@ export const CreateEventPage = () => {
                                     <GoogleMap
                                         id='locationPicker'
                                         defaultCenter={
-                                            latitude && longitude
-                                                ? { lat: latitude, lng: longitude }
-                                                : undefined
+                                            latitude && longitude ? { lat: latitude, lng: longitude } : undefined
                                         }
                                         defaultZoom={latitude && longitude ? 16 : undefined}
                                         style={{ width: '100%', height: '300px' }}
