@@ -18,12 +18,24 @@
         </Grid>
 
         <!-- Empty state -->
-        <Label Grid.Row="1"
-               Text="No photos yet. Be the first to share!"
-               IsVisible="{Binding AreNoPhotosFound}"
-               FontSize="Small"
-               Margin="10,10"
-               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+        <VerticalStackLayout Grid.Row="1"
+                             VerticalOptions="Center" HorizontalOptions="Center"
+                             Spacing="8" Margin="20"
+                             IsVisible="{Binding AreNoPhotosFound}">
+            <Image MaximumWidthRequest="32" MaximumHeightRequest="32"
+                   HorizontalOptions="Center">
+                <Image.Source>
+                    <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                     Glyph="{StaticResource IconPlusCircle}"
+                                     Size="32"
+                                     Color="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                </Image.Source>
+            </Image>
+            <Label Text="No photos yet. Be the first to share!"
+                   FontSize="Small"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+        </VerticalStackLayout>
 
         <!-- Photo grid -->
         <CollectionView Grid.Row="2"

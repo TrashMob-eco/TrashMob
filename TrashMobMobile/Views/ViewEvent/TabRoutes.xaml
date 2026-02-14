@@ -54,12 +54,24 @@
                             Margin="10,4" />
 
         <!-- Empty state -->
-        <Label Grid.Row="3"
-               Text="No routes recorded yet."
-               IsVisible="{Binding AreNoRoutesFound}"
-               FontSize="Small"
-               Margin="10,10"
-               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+        <VerticalStackLayout Grid.Row="3"
+                             VerticalOptions="Center" HorizontalOptions="Center"
+                             Spacing="8" Margin="20"
+                             IsVisible="{Binding AreNoRoutesFound}">
+            <Image MaximumWidthRequest="32" MaximumHeightRequest="32"
+                   HorizontalOptions="Center">
+                <Image.Source>
+                    <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                     Glyph="{StaticResource IconCompass}"
+                                     Size="32"
+                                     Color="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                </Image.Source>
+            </Image>
+            <Label Text="No routes recorded yet."
+                   FontSize="Small"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+        </VerticalStackLayout>
 
         <!-- Route list -->
         <CollectionView Grid.Row="4"

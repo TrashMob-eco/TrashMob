@@ -5,23 +5,43 @@
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
              xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
              x:Class="TrashMobMobile.Views.ViewEvent.TabLitterReports">
-    <Grid RowDefinitions="*, *, *">
-        <Label Text="There are currently no litter reports assigned to this event." IsVisible="{Binding AreNoLitterReportsAvailable}" Margin="10" Grid.Row="1" />
+    <Grid RowDefinitions="*">
+        <!-- Empty state -->
+        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center"
+                             Spacing="8" Margin="20"
+                             IsVisible="{Binding AreNoLitterReportsAvailable}">
+            <Image MaximumWidthRequest="32" MaximumHeightRequest="32"
+                   HorizontalOptions="Center">
+                <Image.Source>
+                    <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                     Glyph="{StaticResource IconTrashCanOutline}"
+                                     Size="32"
+                                     Color="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                </Image.Source>
+            </Image>
+            <Label Text="No litter reports for this event"
+                   FontSize="Small"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+        </VerticalStackLayout>
 
-        <Grid RowDefinitions="*, *, *, *" IsVisible="{Binding AreLitterReportsAvailable}" Grid.Row="2">
+        <!-- Content when litter reports exist -->
+        <Grid RowDefinitions="Auto, *" IsVisible="{Binding AreLitterReportsAvailable}">
+            <!-- Map/List toggle toolbar -->
             <Grid Margin="5" Grid.Row="0"
-                      ColumnDefinitions="6*, *, *"
-                      RowDefinitions="Auto">
+                  ColumnDefinitions="6*, *, *"
+                  RowDefinitions="Auto">
                 <ImageButton Grid.Column="1"
                              HeightRequest="24"
-                             Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconMap}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" 
+                             Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconMap}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}"
                              Command="{Binding MapSelectedCommand}" />
-                <ImageButton Grid.Column="2" 
+                <ImageButton Grid.Column="2"
                              HeightRequest="24"
-                             Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconViewList}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" 
+                             Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconViewList}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}"
                              Command="{Binding ListSelectedCommand}" />
             </Grid>
 
+            <!-- Map view -->
             <controls:CustomMap x:Name="litterImagesMap"
                               Grid.Row="1"
                               ItemsSource="{Binding LitterImages}"
@@ -37,6 +57,7 @@
                 </maps:Map.ItemTemplate>
             </controls:CustomMap>
 
+            <!-- List view -->
             <CollectionView x:Name="LitterReportsCollection" Grid.Row="1"
                                     ItemsSource="{Binding EventLitterReports}"
                                     IsVisible="{Binding IsLitterReportListSelected}"
@@ -78,5 +99,4 @@
             </CollectionView>
         </Grid>
     </Grid>
-
 </ContentView>

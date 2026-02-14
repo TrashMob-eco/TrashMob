@@ -7,11 +7,13 @@ namespace TrashMob.Controllers
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.Identity.Web.Resource;
     using NetTopologySuite.Geometries;
     using TrashMob.Models;
     using TrashMob.Models.Extensions;
     using TrashMob.Models.Poco;
+    using TrashMob.Security;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Persistence.Interfaces;
@@ -19,6 +21,7 @@ namespace TrashMob.Controllers
     /// <summary>
     /// Generates simulated GPS routes for dev/QA testing. Not available in production.
     /// </summary>
+    [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
     [Route("api/routes/simulate")]
     public class RouteSimulationController(
         IHostEnvironment env,
