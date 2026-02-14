@@ -52,5 +52,11 @@
         {
             return Repo.GetAsync(id, cancellationToken);
         }
+
+        /// <inheritdoc />
+        public virtual Task<T> GetWithNoTrackingAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            return Repo.GetWithNoTrackingAsync(id, cancellationToken);
+        }
     }
 }
