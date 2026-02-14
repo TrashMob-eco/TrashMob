@@ -12,22 +12,8 @@
         <Grid>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}" Spacing="8">
 
-                <!-- Action Buttons -->
-                <Grid ColumnDefinitions="*, *" ColumnSpacing="8" Margin="10,8,10,0">
-                    <Button Text="Add Pickup Location"
-                            Command="{Binding AddPickupLocationCommand}"
-                            IsVisible="{Binding EnableAddPickupLocation}"
-                            Grid.Column="0"
-                            Style="{StaticResource PrimarySmallButton}" />
-                    <Button Text="Edit Event Summary"
-                            Command="{Binding EditEventSummaryCommand}"
-                            IsVisible="{Binding EnableEditEventSummary}"
-                            Grid.Column="1"
-                            Style="{StaticResource SecondarySmallButton}" />
-                </Grid>
-
                 <!-- Event Metrics -->
-                <Border Style="{StaticResource RoundBorder}" Margin="10,0">
+                <Border Style="{StaticResource RoundBorder}" Margin="10,8,10,0">
                     <VerticalStackLayout Spacing="8">
                         <Label Text="Event Metrics" Style="{StaticResource SectionHeader}" Margin="0" />
                         <Label Text="Here's what TrashMob volunteers accomplished at this event!"
@@ -135,6 +121,20 @@
                         </controls:CustomMap>
                     </VerticalStackLayout>
                 </Border>
+
+                <!-- Action Buttons -->
+                <Grid ColumnDefinitions="*, *" ColumnSpacing="8" Margin="10,0">
+                    <Button Text="Add Pickup Location"
+                            Command="{Binding AddPickupLocationCommand}"
+                            IsVisible="{Binding EnableAddPickupLocation}"
+                            Grid.Column="0"
+                            Style="{StaticResource PrimarySmallButton}" />
+                    <Button Text="Edit Event Summary"
+                            Command="{Binding EditEventSummaryCommand}"
+                            IsVisible="{Binding EnableEditEventSummary}"
+                            Grid.Column="1"
+                            Style="{StaticResource SecondarySmallButton}" />
+                </Grid>
             </VerticalStackLayout>
             <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
                      VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />
