@@ -39,13 +39,13 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetAdoptions(Guid sponsorId, CancellationToken cancellationToken)
         {
             var sponsor = await sponsorManager.GetAsync(sponsorId, cancellationToken);
-            if (sponsor == null)
+            if (sponsor is null)
             {
                 return NotFound();
             }
 
             var partner = await partnerManager.GetAsync(sponsor.PartnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -77,13 +77,13 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var sponsor = await sponsorManager.GetAsync(sponsorId, cancellationToken);
-            if (sponsor == null)
+            if (sponsor is null)
             {
                 return NotFound();
             }
 
             var partner = await partnerManager.GetAsync(sponsor.PartnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -94,7 +94,7 @@ namespace TrashMob.Controllers
             }
 
             var adoption = await adoptionManager.GetAsync(adoptionId, cancellationToken);
-            if (adoption == null || adoption.SponsorId != sponsorId)
+            if (adoption is null || adoption.SponsorId != sponsorId)
             {
                 return NotFound();
             }

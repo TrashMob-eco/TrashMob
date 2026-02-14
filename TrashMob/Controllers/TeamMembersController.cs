@@ -33,7 +33,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetMembers(Guid teamId, CancellationToken cancellationToken)
         {
             var team = await teamManager.GetAsync(teamId, cancellationToken);
-            if (team == null || !team.IsActive)
+            if (team is null || !team.IsActive)
             {
                 return NotFound();
             }
@@ -68,7 +68,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetLeads(Guid teamId, CancellationToken cancellationToken)
         {
             var team = await teamManager.GetAsync(teamId, cancellationToken);
-            if (team == null || !team.IsActive)
+            if (team is null || !team.IsActive)
             {
                 return NotFound();
             }
@@ -91,14 +91,14 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> JoinTeam(Guid teamId, CancellationToken cancellationToken)
         {
             var team = await teamManager.GetAsync(teamId, cancellationToken);
-            if (team == null || !team.IsActive)
+            if (team is null || !team.IsActive)
             {
                 return NotFound();
             }
 
             // Check if already a member
             var existingMember = await teamMemberManager.GetByTeamAndUserAsync(teamId, UserId, cancellationToken);
-            if (existingMember != null)
+            if (existingMember is not null)
             {
                 return BadRequest("You are already a member of this team.");
             }
@@ -138,7 +138,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> AddMember(Guid teamId, Guid userId, CancellationToken cancellationToken)
         {
             var team = await teamManager.GetAsync(teamId, cancellationToken);
-            if (team == null || !team.IsActive)
+            if (team is null || !team.IsActive)
             {
                 return NotFound();
             }
@@ -152,7 +152,7 @@ namespace TrashMob.Controllers
 
             // Check if user is already a member
             var existingMember = await teamMemberManager.GetByTeamAndUserAsync(teamId, userId, cancellationToken);
-            if (existingMember != null)
+            if (existingMember is not null)
             {
                 return BadRequest("User is already a member of this team.");
             }
@@ -177,13 +177,13 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> RemoveMember(Guid teamId, Guid userId, CancellationToken cancellationToken)
         {
             var team = await teamManager.GetAsync(teamId, cancellationToken);
-            if (team == null)
+            if (team is null)
             {
                 return NotFound();
             }
 
             var member = await teamMemberManager.GetByTeamAndUserAsync(teamId, userId, cancellationToken);
-            if (member == null)
+            if (member is null)
             {
                 return NotFound();
             }
@@ -225,7 +225,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> PromoteToLead(Guid teamId, Guid userId, CancellationToken cancellationToken)
         {
             var team = await teamManager.GetAsync(teamId, cancellationToken);
-            if (team == null || !team.IsActive)
+            if (team is null || !team.IsActive)
             {
                 return NotFound();
             }
@@ -238,7 +238,7 @@ namespace TrashMob.Controllers
             }
 
             var member = await teamMemberManager.GetByTeamAndUserAsync(teamId, userId, cancellationToken);
-            if (member == null)
+            if (member is null)
             {
                 return NotFound("User is not a member of this team.");
             }
@@ -268,7 +268,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> DemoteFromLead(Guid teamId, Guid userId, CancellationToken cancellationToken)
         {
             var team = await teamManager.GetAsync(teamId, cancellationToken);
-            if (team == null || !team.IsActive)
+            if (team is null || !team.IsActive)
             {
                 return NotFound();
             }
@@ -281,7 +281,7 @@ namespace TrashMob.Controllers
             }
 
             var member = await teamMemberManager.GetByTeamAndUserAsync(teamId, userId, cancellationToken);
-            if (member == null)
+            if (member is null)
             {
                 return NotFound("User is not a member of this team.");
             }

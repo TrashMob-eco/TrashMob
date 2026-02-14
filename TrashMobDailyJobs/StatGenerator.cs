@@ -28,13 +28,13 @@ namespace TrashMobDailyJobs
             var sendGridApiKey = Environment.GetEnvironmentVariable("SendGridApiKey");
             var instanceName = Environment.GetEnvironmentVariable("InstanceName");
 
-            if (sendGridApiKey == null)
+            if (sendGridApiKey is null)
             {
                 logger.LogError("SendGrid API Key is not configured. Cannot send summary report email.");
                 return;
             }
 
-            if (instanceName == null)
+            if (instanceName is null)
             {
                 logger.LogError("Instance Name is not configured. Cannot send summary report email.");
                 return;

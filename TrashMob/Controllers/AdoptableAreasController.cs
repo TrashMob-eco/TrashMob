@@ -39,7 +39,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetAreas(Guid partnerId, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -59,7 +59,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetAvailableAreas(Guid partnerId, CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -80,7 +80,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetArea(Guid partnerId, Guid areaId, CancellationToken cancellationToken)
         {
             var area = await areaManager.GetAsync(areaId, cancellationToken);
-            if (area == null || area.PartnerId != partnerId)
+            if (area is null || area.PartnerId != partnerId)
             {
                 return NotFound();
             }
@@ -131,7 +131,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -169,7 +169,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -226,7 +226,7 @@ namespace TrashMob.Controllers
             }
 
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -238,7 +238,7 @@ namespace TrashMob.Controllers
             }
 
             var existingArea = await areaManager.GetAsync(areaId, cancellationToken);
-            if (existingArea == null || existingArea.PartnerId != partnerId)
+            if (existingArea is null || existingArea.PartnerId != partnerId)
             {
                 return NotFound();
             }
@@ -295,7 +295,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -305,7 +305,7 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            if (file == null || file.Length == 0)
+            if (file is null || file.Length == 0)
             {
                 return BadRequest("A file is required.");
             }
@@ -342,7 +342,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -352,7 +352,7 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            if (areas == null || areas.Count == 0)
+            if (areas is null || areas.Count == 0)
             {
                 return BadRequest("At least one area is required.");
             }
@@ -384,7 +384,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -396,7 +396,7 @@ namespace TrashMob.Controllers
             }
 
             var existingArea = await areaManager.GetAsync(areaId, cancellationToken);
-            if (existingArea == null || existingArea.PartnerId != partnerId)
+            if (existingArea is null || existingArea.PartnerId != partnerId)
             {
                 return NotFound();
             }

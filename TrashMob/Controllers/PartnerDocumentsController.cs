@@ -117,7 +117,7 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            if (formFile == null || formFile.Length == 0)
+            if (formFile is null || formFile.Length == 0)
             {
                 return BadRequest("No file provided.");
             }

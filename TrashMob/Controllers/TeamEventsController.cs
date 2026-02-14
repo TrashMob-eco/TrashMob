@@ -38,7 +38,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetTeamEvents(Guid teamId, CancellationToken cancellationToken)
         {
             var team = await teamManager.GetAsync(teamId, cancellationToken);
-            if (team == null || !team.IsActive)
+            if (team is null || !team.IsActive)
             {
                 return NotFound();
             }
@@ -78,7 +78,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetUpcomingTeamEvents(Guid teamId, CancellationToken cancellationToken)
         {
             var team = await teamManager.GetAsync(teamId, cancellationToken);
-            if (team == null || !team.IsActive)
+            if (team is null || !team.IsActive)
             {
                 return NotFound();
             }
@@ -121,7 +121,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetPastTeamEvents(Guid teamId, CancellationToken cancellationToken)
         {
             var team = await teamManager.GetAsync(teamId, cancellationToken);
-            if (team == null || !team.IsActive)
+            if (team is null || !team.IsActive)
             {
                 return NotFound();
             }
@@ -169,7 +169,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> LinkEventToTeam(Guid teamId, Guid eventId, CancellationToken cancellationToken)
         {
             var team = await teamManager.GetAsync(teamId, cancellationToken);
-            if (team == null || !team.IsActive)
+            if (team is null || !team.IsActive)
             {
                 return NotFound("Team not found.");
             }
@@ -183,7 +183,7 @@ namespace TrashMob.Controllers
 
             // Check if event exists
             var eventEntity = await eventManager.GetAsync(eventId, cancellationToken);
-            if (eventEntity == null)
+            if (eventEntity is null)
             {
                 return NotFound("Event not found.");
             }
@@ -192,7 +192,7 @@ namespace TrashMob.Controllers
             var existingLink = await teamEventRepository.Get()
                 .FirstOrDefaultAsync(te => te.TeamId == teamId && te.EventId == eventId, cancellationToken);
 
-            if (existingLink != null)
+            if (existingLink is not null)
             {
                 return BadRequest("Event is already linked to this team.");
             }
@@ -227,7 +227,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> UnlinkEventFromTeam(Guid teamId, Guid eventId, CancellationToken cancellationToken)
         {
             var team = await teamManager.GetAsync(teamId, cancellationToken);
-            if (team == null)
+            if (team is null)
             {
                 return NotFound("Team not found.");
             }
@@ -242,7 +242,7 @@ namespace TrashMob.Controllers
             var teamEvent = await teamEventRepository.Get()
                 .FirstOrDefaultAsync(te => te.TeamId == teamId && te.EventId == eventId, cancellationToken);
 
-            if (teamEvent == null)
+            if (teamEvent is null)
             {
                 return NotFound("Event is not linked to this team.");
             }

@@ -44,7 +44,7 @@ namespace TrashMob.Controllers
         {
             var user = await userManager.GetUserByUserNameAsync(userName, cancellationToken);
 
-            if (user == null)
+            if (user is null)
             {
                 return NotFound();
             }
@@ -64,7 +64,7 @@ namespace TrashMob.Controllers
         {
             var user = await userManager.GetUserByEmailAsync(email, cancellationToken);
 
-            if (user == null)
+            if (user is null)
             {
                 return NotFound();
             }
@@ -85,7 +85,7 @@ namespace TrashMob.Controllers
         {
             var user = await userManager.GetUserByUserNameAsync(userName, cancellationToken);
 
-            if (user == null)
+            if (user is null)
             {
                 return Ok();
             }
@@ -110,7 +110,7 @@ namespace TrashMob.Controllers
         {
             var user = await userManager.GetUserByInternalIdAsync(id, cancellationToken);
 
-            if (user == null)
+            if (user is null)
             {
                 return NotFound();
             }
@@ -133,7 +133,7 @@ namespace TrashMob.Controllers
             // Users can only update themselves unless they are a site admin
             var currentUser = await userManager.GetUserByInternalIdAsync(UserId, cancellationToken);
 
-            if (currentUser == null)
+            if (currentUser is null)
             {
                 return NotFound();
             }
@@ -174,7 +174,7 @@ namespace TrashMob.Controllers
             // Users can only delete themselves unless they are a site admin
             var currentUser = await userManager.GetUserByInternalIdAsync(UserId, cancellationToken);
 
-            if (currentUser == null)
+            if (currentUser is null)
             {
                 return NotFound();
             }
@@ -203,7 +203,7 @@ namespace TrashMob.Controllers
         {
             var user = await userManager.GetUserByInternalIdAsync(userId, cancellationToken);
 
-            if (user == null)
+            if (user is null)
             {
                 return NotFound();
             }
@@ -226,7 +226,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var user = await userManager.GetUserByInternalIdAsync(UserId, cancellationToken);
-            if (user == null)
+            if (user is null)
             {
                 return NotFound();
             }

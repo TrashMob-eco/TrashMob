@@ -38,7 +38,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetLinkedEvents(Guid adoptionId, CancellationToken cancellationToken)
         {
             var adoption = await adoptionManager.GetAsync(adoptionId, cancellationToken);
-            if (adoption == null)
+            if (adoption is null)
             {
                 return NotFound();
             }
@@ -75,7 +75,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var adoption = await adoptionManager.GetAsync(adoptionId, cancellationToken);
-            if (adoption == null)
+            if (adoption is null)
             {
                 return NotFound();
             }
@@ -121,7 +121,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken)
         {
             var adoption = await adoptionManager.GetAsync(adoptionId, cancellationToken);
-            if (adoption == null)
+            if (adoption is null)
             {
                 return NotFound();
             }

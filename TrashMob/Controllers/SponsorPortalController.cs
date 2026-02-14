@@ -63,13 +63,13 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetSponsorCleanupLogs(Guid sponsorId, CancellationToken cancellationToken)
         {
             var sponsor = await sponsorManager.GetAsync(sponsorId, cancellationToken);
-            if (sponsor == null)
+            if (sponsor is null)
             {
                 return NotFound();
             }
 
             var partner = await partnerManager.GetAsync(sponsor.PartnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }
@@ -97,13 +97,13 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> ExportCleanupLogs(Guid sponsorId, CancellationToken cancellationToken)
         {
             var sponsor = await sponsorManager.GetAsync(sponsorId, cancellationToken);
-            if (sponsor == null)
+            if (sponsor is null)
             {
                 return NotFound();
             }
 
             var partner = await partnerManager.GetAsync(sponsor.PartnerId, cancellationToken);
-            if (partner == null)
+            if (partner is null)
             {
                 return NotFound();
             }

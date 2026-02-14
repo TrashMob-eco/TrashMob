@@ -104,7 +104,7 @@ namespace TrashMob.Controllers
             [FromBody] AcceptWaiverApiRequest request,
             CancellationToken cancellationToken = default)
         {
-            if (request == null)
+            if (request is null)
             {
                 return BadRequest("Request is required.");
             }
@@ -191,7 +191,7 @@ namespace TrashMob.Controllers
             var waiver = await userWaiverManager
                 .GetUserWaiverWithDetailsAsync(userWaiverId, cancellationToken);
 
-            if (waiver == null)
+            if (waiver is null)
             {
                 return NotFound();
             }
@@ -226,7 +226,7 @@ namespace TrashMob.Controllers
             var waiver = await userWaiverManager
                 .GetUserWaiverWithDetailsAsync(userWaiverId, cancellationToken);
 
-            if (waiver == null)
+            if (waiver is null)
             {
                 return NotFound();
             }
@@ -293,12 +293,12 @@ namespace TrashMob.Controllers
             [FromForm] PaperWaiverUploadApiRequest request,
             CancellationToken cancellationToken = default)
         {
-            if (request == null)
+            if (request is null)
             {
                 return BadRequest("Request is required.");
             }
 
-            if (request.FormFile == null || request.FormFile.Length == 0)
+            if (request.FormFile is null || request.FormFile.Length == 0)
             {
                 return BadRequest("File is required.");
             }

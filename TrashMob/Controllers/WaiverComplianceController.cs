@@ -136,7 +136,7 @@ namespace TrashMob.Controllers
         {
             var result = await userWaiverManager.GetUserWaiverWithDetailsAsync(userWaiverId, cancellationToken);
 
-            if (result == null)
+            if (result is null)
             {
                 return NotFound();
             }

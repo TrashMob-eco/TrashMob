@@ -46,7 +46,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> DeleteTeam(Guid teamId, CancellationToken cancellationToken)
         {
             var team = await teamManager.GetAsync(teamId, cancellationToken);
-            if (team == null)
+            if (team is null)
             {
                 return NotFound();
             }
@@ -67,7 +67,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> ReactivateTeam(Guid teamId, CancellationToken cancellationToken)
         {
             var team = await teamManager.GetAsync(teamId, cancellationToken);
-            if (team == null)
+            if (team is null)
             {
                 return NotFound();
             }

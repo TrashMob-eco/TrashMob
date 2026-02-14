@@ -163,7 +163,7 @@ namespace TrashMob.Controllers
         {
             var result = await litterReportManager.GetFilteredLitterReportsAsync(filter, cancellationToken);
 
-            if (filter.PageSize != null)
+            if (filter.PageSize is not null)
             {
                 var pagedResults = result.OrderByDescending(e => e.CreatedDate).Skip(filter.PageIndex.GetValueOrDefault(0) * filter.PageSize.GetValueOrDefault(10))
                     .Take(filter.PageSize.GetValueOrDefault(10)).ToList();
@@ -189,7 +189,7 @@ namespace TrashMob.Controllers
         {
             var result = await litterReportManager.GetFilteredLitterReportsAsync(filter, cancellationToken);
 
-            if (filter.PageSize != null)
+            if (filter.PageSize is not null)
             {
                 var pagedResults = PaginatedList<LitterReport>.Create(result.OrderByDescending(e => e.CreatedDate).AsQueryable(),
                     filter.PageIndex.GetValueOrDefault(0), filter.PageSize.GetValueOrDefault(10));
@@ -228,7 +228,7 @@ namespace TrashMob.Controllers
         [RequiredScope(Constants.TrashMobWriteScope)]
         public async Task<IActionResult> AddLitterReport(LitterReport litterReport, CancellationToken cancellationToken)
         {
-            if (litterReport == null)
+            if (litterReport is null)
             {
                 return BadRequest("Litter report cannot be null.");
             }
@@ -290,7 +290,7 @@ namespace TrashMob.Controllers
 
             var updatedLitterReport = await litterReportManager.UpdateAsync(litterReport, UserId, cancellationToken);
 
-            if (updatedLitterReport != null)
+            if (updatedLitterReport is not null)
             {
                 TrackEvent(nameof(UpdateLitterReport));
                 return Ok(updatedLitterReport);

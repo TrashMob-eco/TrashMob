@@ -87,7 +87,7 @@ namespace TrashMob.Controllers
             }
 
             var newsletter = await newsletterManager.GetAsync(id, cancellationToken);
-            if (newsletter == null)
+            if (newsletter is null)
             {
                 return NotFound();
             }
@@ -155,7 +155,7 @@ namespace TrashMob.Controllers
             }
 
             var newsletter = await newsletterManager.GetAsync(id, cancellationToken);
-            if (newsletter == null)
+            if (newsletter is null)
             {
                 return NotFound();
             }
@@ -259,7 +259,7 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            if (request.Emails == null || !request.Emails.Any())
+            if (request.Emails is null || !request.Emails.Any())
             {
                 return BadRequest("At least one email address is required.");
             }
@@ -295,7 +295,7 @@ namespace TrashMob.Controllers
             }
 
             var newsletter = await newsletterManager.GetAsync(id, cancellationToken);
-            if (newsletter == null)
+            if (newsletter is null)
             {
                 return NotFound();
             }

@@ -85,7 +85,7 @@ namespace TrashMob.Controllers
         {
             var result = await eventAttendeeRouteManager.GetAsync(x => x.Id == id, cancellationToken);
 
-            if (result == null || result.Count() == 0)
+            if (result is null || result.Count() == 0)
             {
                 return NotFound();
             }

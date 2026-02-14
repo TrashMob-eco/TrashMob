@@ -50,7 +50,7 @@ namespace TrashMob.Controllers
                 (await partnerLocationManager.GetAsync(pl => pl.Id == partnerLocationId, cancellationToken))
                 .FirstOrDefault();
 
-            if (partnerLocation == null)
+            if (partnerLocation is null)
             {
                 return NotFound();
             }
@@ -68,7 +68,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> AddPartnerLocation(PartnerLocation partnerLocation,
             CancellationToken cancellationToken)
         {
-            if (partnerLocation == null)
+            if (partnerLocation is null)
             {
                 return BadRequest("PartnerLocation cannot be null.");
             }

@@ -32,7 +32,7 @@ namespace TrashMob.Controllers
             var eventSummary =
                 (await eventSummaryManager.GetAsync(es => es.EventId == eventId, cancellationToken)).FirstOrDefault();
 
-            if (eventSummary != null)
+            if (eventSummary is not null)
             {
                 return Ok(eventSummary);
             }
@@ -52,7 +52,7 @@ namespace TrashMob.Controllers
             var eventSummary =
                 (await eventSummaryManager.GetAsync(es => es.EventId == eventId, cancellationToken)).FirstOrDefault();
 
-            if (eventSummary == null)
+            if (eventSummary is null)
             {
                 eventSummary = new EventSummary
                 {

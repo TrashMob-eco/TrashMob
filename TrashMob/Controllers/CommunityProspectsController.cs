@@ -75,7 +75,7 @@ namespace TrashMob.Controllers
         {
             var prospect = await communityProspectManager.GetAsync(id, cancellationToken);
 
-            if (prospect == null)
+            if (prospect is null)
             {
                 return NotFound();
             }
@@ -136,7 +136,7 @@ namespace TrashMob.Controllers
         {
             var result = await communityProspectManager.UpdatePipelineStageAsync(id, request.Stage, UserId, cancellationToken);
 
-            if (result == null)
+            if (result is null)
             {
                 return NotFound();
             }
@@ -197,7 +197,7 @@ namespace TrashMob.Controllers
         {
             var breakdown = await prospectScoringManager.CalculateFitScoreAsync(id, cancellationToken);
 
-            if (breakdown == null)
+            if (breakdown is null)
             {
                 return NotFound();
             }
@@ -239,7 +239,7 @@ namespace TrashMob.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ImportCsv(IFormFile file, CancellationToken cancellationToken)
         {
-            if (file == null || file.Length == 0)
+            if (file is null || file.Length == 0)
             {
                 return BadRequest("No file provided.");
             }

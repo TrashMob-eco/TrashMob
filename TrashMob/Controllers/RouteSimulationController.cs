@@ -56,7 +56,7 @@ namespace TrashMob.Controllers
             }
 
             var eventData = await eventRepository.GetAsync(eventId, cancellationToken);
-            if (eventData == null)
+            if (eventData is null)
             {
                 return NotFound($"Event {eventId} not found");
             }

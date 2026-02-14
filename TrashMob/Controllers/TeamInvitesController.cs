@@ -41,7 +41,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetBatches(Guid teamId, CancellationToken cancellationToken = default)
         {
             var team = await teamManager.GetAsync(teamId, cancellationToken);
-            if (team == null || !team.IsActive)
+            if (team is null || !team.IsActive)
             {
                 return NotFound();
             }
@@ -74,7 +74,7 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> GetBatch(Guid teamId, Guid id, CancellationToken cancellationToken = default)
         {
             var team = await teamManager.GetAsync(teamId, cancellationToken);
-            if (team == null || !team.IsActive)
+            if (team is null || !team.IsActive)
             {
                 return NotFound();
             }
@@ -88,7 +88,7 @@ namespace TrashMob.Controllers
 
             var result = await emailInviteManager.GetBatchDetailsAsync(id, cancellationToken);
 
-            if (result == null || result.TeamId != teamId)
+            if (result is null || result.TeamId != teamId)
             {
                 return NotFound();
             }
@@ -117,7 +117,7 @@ namespace TrashMob.Controllers
             CancellationToken cancellationToken = default)
         {
             var team = await teamManager.GetAsync(teamId, cancellationToken);
-            if (team == null || !team.IsActive)
+            if (team is null || !team.IsActive)
             {
                 return NotFound();
             }
@@ -129,7 +129,7 @@ namespace TrashMob.Controllers
                 return Forbid();
             }
 
-            if (request == null || request.Emails == null || !request.Emails.Any())
+            if (request is null || request.Emails is null || !request.Emails.Any())
             {
                 return BadRequest("Email list is required.");
             }
