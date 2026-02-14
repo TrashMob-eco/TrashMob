@@ -37,13 +37,13 @@
         /// <inheritdoc />
         public async Task GenerateNotificationsAsync(CancellationToken cancellationToken = default)
         {
-            Logger.LogInformation("Generating Notifications for {0}", NotificationType);
+            Logger.LogInformation("Generating Notifications for {NotificationType}", NotificationType);
 
             // Get list of users who have notifications turned on for locations
             var users = await UserManager.GetAsync(cancellationToken).ConfigureAwait(false);
             var notificationCounter = 0;
 
-            Logger.LogInformation("Generating {0} Notifications for {1} total users", NotificationType, users.Count());
+            Logger.LogInformation("Generating {NotificationType} Notifications for {UserCount} total users", NotificationType, users.Count());
 
             // for each user
             foreach (var user in users)
@@ -69,7 +69,7 @@
                     .ConfigureAwait(false);
             }
 
-            Logger.LogInformation("Generating {0} Total {1} Notifications", notificationCounter, NotificationType);
+            Logger.LogInformation("Generating {NotificationCount} Total {NotificationType} Notifications", notificationCounter, NotificationType);
         }
     }
 }

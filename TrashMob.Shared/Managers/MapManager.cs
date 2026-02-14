@@ -80,12 +80,12 @@ namespace TrashMob.Shared.Managers
                 End = new Coordinate { Lat = pointB.Lat, Lon = pointB.Lon },
             };
 
-            logger.LogInformation("Getting distance between two points: {0}",
+            logger.LogInformation("Getting distance between two points: {DistanceRequest}",
                 JsonSerializer.Serialize(distanceRequest));
 
             var response = await azureMaps.GetGreatCircleDistance(distanceRequest);
 
-            logger.LogInformation("Response from getting distance between two points: {0}",
+            logger.LogInformation("Response from getting distance between two points: {Response}",
                 JsonSerializer.Serialize(response));
 
             try
@@ -97,18 +97,18 @@ namespace TrashMob.Shared.Managers
 
                 var distanceInMeters = (long)response.Result.Result.DistanceInMeters;
 
-                logger.LogInformation("Distance in Meters: {0}", distanceInMeters);
+                logger.LogInformation("Distance in Meters: {DistanceInMeters}", distanceInMeters);
 
                 if (IsMetric)
                 {
                     var res = distanceInMeters / MetersPerKilometer;
-                    logger.LogInformation("Kilometers : {0}", res);
+                    logger.LogInformation("Kilometers : {Distance}", res);
                     return res;
                 }
                 else
                 {
                     var res = distanceInMeters / MetersPerMile;
-                    logger.LogInformation("Miles : {0}", res);
+                    logger.LogInformation("Miles : {Distance}", res);
                     return res;
                 }
             }
@@ -136,11 +136,11 @@ namespace TrashMob.Shared.Managers
                 TimeStamp = dateTimeOffset.UtcDateTime.ToString("O"),
             };
 
-            logger.LogInformation("Getting time for timezoneRequest: {0}", JsonSerializer.Serialize(timezoneRequest));
+            logger.LogInformation("Getting time for timezoneRequest: {TimezoneRequest}", JsonSerializer.Serialize(timezoneRequest));
 
             var response = await azureMaps.GetTimezoneByCoordinates(timezoneRequest);
 
-            logger.LogInformation("Response from getting time for timezoneRequest: {0}",
+            logger.LogInformation("Response from getting time for timezoneRequest: {Response}",
                 JsonSerializer.Serialize(response));
 
             if (response.HttpResponseCode != (int)HttpStatusCode.OK && response.HttpResponseCode != 0)
@@ -165,12 +165,12 @@ namespace TrashMob.Shared.Managers
             var searchAddressReverseRequest = new SearchAddressReverseRequest();
             searchAddressReverseRequest.Query = $"{latitude},{longitude}";
 
-            logger.LogInformation("Getting address for searchAddressReverseRequest: {0}",
+            logger.LogInformation("Getting address for searchAddressReverseRequest: {SearchRequest}",
                 JsonSerializer.Serialize(searchAddressReverseRequest));
 
             var response = await azureMaps.GetSearchAddressReverse(searchAddressReverseRequest);
 
-            logger.LogInformation("Response from getting address for searcAddressReverseRequest: {0}",
+            logger.LogInformation("Response from getting address for searchAddressReverseRequest: {Response}",
                 JsonSerializer.Serialize(response));
 
             if (response.HttpResponseCode != (int)HttpStatusCode.OK && response.HttpResponseCode != 0)

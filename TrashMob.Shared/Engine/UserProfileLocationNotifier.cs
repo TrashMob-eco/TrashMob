@@ -44,21 +44,21 @@
         /// <returns>A task representing the asynchronous operation.</returns>
         public async Task GenerateNotificationsAsync(CancellationToken cancellationToken = default)
         {
-            Logger.LogInformation("Generating Notifications for {0}", NotificationType);
+            Logger.LogInformation("Generating Notifications for {NotificationType}", NotificationType);
 
             // Get list of all users
             var users = await UserManager.GetAsync(cancellationToken).ConfigureAwait(false);
 
             var notificationCounter = 0;
 
-            Logger.LogInformation("Generating {0} Notifications for {1} total users", NotificationType, users.Count());
+            Logger.LogInformation("Generating {NotificationType} Notifications for {UserCount} total users", NotificationType, users.Count());
 
             // for each user
             foreach (var user in users)
             {
                 if (await UserHasAlreadyReceivedNotification(user, cancellationToken).ConfigureAwait(false))
                 {
-                    Logger.LogInformation("User {0} has already received notification {1}. Skipping.", user.Id,
+                    Logger.LogInformation("User {UserId} has already received notification {NotificationType}. Skipping.", user.Id,
                         NotificationType);
                     continue;
                 }
@@ -68,18 +68,18 @@
                 {
                     if (user.Id.ToString() == "2A648BA2-854C-4949-BB36-64D90E15B8CA")
                     {
-                        Logger.LogInformation("User {0} has not set their location. Notifying.", user.Id);
+                        Logger.LogInformation("User {UserId} has not set their location. Notifying.", user.Id);
                         notificationCounter += await SendNotification(user, cancellationToken).ConfigureAwait(false);
                     }
                     else
                     {
-                        Logger.LogInformation("User {0} has not set their location. We're in debug mode so skipping.",
+                        Logger.LogInformation("User {UserId} has not set their location. We're in debug mode so skipping.",
                             user.Id);
                     }
                 }
             }
 
-            Logger.LogInformation("Generating {0} Total {1} Notifications", notificationCounter, NotificationType);
+            Logger.LogInformation("Generating {NotificationCount} Total {NotificationType} Notifications", notificationCounter, NotificationType);
         }
     }
 }
