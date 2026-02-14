@@ -13,16 +13,9 @@ namespace TrashMob.Shared.Managers.Partners
     /// <summary>
     /// Manages partner location contacts including CRUD operations and retrieving the parent partner.
     /// </summary>
-    public class PartnerLocationContactManager : KeyedManager<PartnerLocationContact>, IPartnerLocationContactManager
+    public class PartnerLocationContactManager(IKeyedRepository<PartnerLocationContact> partnerLocationContactRepository)
+        : KeyedManager<PartnerLocationContact>(partnerLocationContactRepository), IPartnerLocationContactManager
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartnerLocationContactManager"/> class.
-        /// </summary>
-        /// <param name="partnerLocationContactRepository">The repository for partner location contact data access.</param>
-        public PartnerLocationContactManager(IKeyedRepository<PartnerLocationContact> partnerLocationContactRepository)
-            : base(partnerLocationContactRepository)
-        {
-        }
 
         /// <inheritdoc />
         public async Task<Partner> GetPartnerForLocationContact(Guid partnerLocationContactId,

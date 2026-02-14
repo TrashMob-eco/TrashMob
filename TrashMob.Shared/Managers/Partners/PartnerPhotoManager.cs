@@ -13,17 +13,11 @@ namespace TrashMob.Shared.Managers.Partners
     /// <summary>
     /// Manager for partner/community photo operations.
     /// </summary>
-    public class PartnerPhotoManager : KeyedManager<PartnerPhoto>, IPartnerPhotoManager
+    public class PartnerPhotoManager(
+        IKeyedRepository<PartnerPhoto> repository,
+        IImageManager imageManager)
+        : KeyedManager<PartnerPhoto>(repository), IPartnerPhotoManager
     {
-        private readonly IImageManager imageManager;
-
-        public PartnerPhotoManager(
-            IKeyedRepository<PartnerPhoto> repository,
-            IImageManager imageManager)
-            : base(repository)
-        {
-            this.imageManager = imageManager;
-        }
 
         /// <inheritdoc/>
         public async Task<IEnumerable<PartnerPhoto>> GetByPartnerIdAsync(Guid partnerId, CancellationToken cancellationToken = default)

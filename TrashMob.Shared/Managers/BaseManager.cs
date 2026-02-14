@@ -15,21 +15,13 @@
     /// Abstract base manager class providing common CRUD operations for entities derived from BaseModel.
     /// </summary>
     /// <typeparam name="T">The entity type derived from BaseModel.</typeparam>
-    public abstract class BaseManager<T> : IBaseManager<T> where T : BaseModel
+    public abstract class BaseManager<T>(IBaseRepository<T> repository)
+        : IBaseManager<T> where T : BaseModel
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BaseManager{T}"/> class.
-        /// </summary>
-        /// <param name="repository">The repository for data access operations.</param>
-        public BaseManager(IBaseRepository<T> repository)
-        {
-            Repository = repository;
-        }
-
         /// <summary>
         /// Gets the repository used for data access operations.
         /// </summary>
-        protected virtual IBaseRepository<T> Repository { get; }
+        protected virtual IBaseRepository<T> Repository { get; } = repository;
 
         /// <inheritdoc />
         public virtual Task<T> AddAsync(T instance, Guid userId, CancellationToken cancellationToken = default)

@@ -19,36 +19,15 @@ namespace TrashMob.Shared.Managers.LitterReport
     /// <summary>
     /// Manages litter reports including CRUD operations, status tracking, filtering, and email notifications.
     /// </summary>
-    public class LitterReportManager : KeyedManager<LitterReport>, ILitterReportManager
+    public class LitterReportManager(
+        IKeyedRepository<LitterReport> repository,
+        ILitterImageManager litterImageManager,
+        ILogger<LitterReportManager> logger,
+        IDbTransaction dbTransaction,
+        IEmailManager emailManager,
+        IUserManager userManager)
+        : KeyedManager<LitterReport>(repository), ILitterReportManager
     {
-        private readonly IDbTransaction dbTransaction;
-        private readonly IEmailManager emailManager;
-        private readonly ILitterImageManager litterImageManager;
-        private readonly ILogger<LitterReportManager> logger;
-        private readonly IUserManager userManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LitterReportManager"/> class.
-        /// </summary>
-        /// <param name="repository">The repository for litter report data access.</param>
-        /// <param name="litterImageManager">The manager for litter image operations.</param>
-        /// <param name="logger">The logger instance.</param>
-        /// <param name="dbTransaction">The database transaction manager.</param>
-        /// <param name="emailManager">The email manager for sending notifications.</param>
-        /// <param name="userManager">The user manager for looking up report creators.</param>
-        public LitterReportManager(IKeyedRepository<LitterReport> repository,
-            ILitterImageManager litterImageManager,
-            ILogger<LitterReportManager> logger,
-            IDbTransaction dbTransaction,
-            IEmailManager emailManager,
-            IUserManager userManager) : base(repository)
-        {
-            this.litterImageManager = litterImageManager;
-            this.logger = logger;
-            this.dbTransaction = dbTransaction;
-            this.emailManager = emailManager;
-            this.userManager = userManager;
-        }
 
         /// <inheritdoc />
         public override async Task<LitterReport> UpdateAsync(LitterReport litterReport, Guid userId,

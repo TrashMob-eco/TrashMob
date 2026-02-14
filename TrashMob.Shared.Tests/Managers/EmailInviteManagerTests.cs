@@ -24,7 +24,6 @@ namespace TrashMob.Shared.Tests.Managers
         private readonly Mock<IKeyedRepository<EmailInviteBatch>> _batchRepository;
         private readonly Mock<IKeyedRepository<EmailInvite>> _inviteRepository;
         private readonly Mock<IEmailManager> _emailManager;
-        private readonly Mock<IUserManager> _userManager;
         private readonly Mock<IKeyedManager<Partner>> _partnerManager;
         private readonly Mock<ITeamManager> _teamManager;
         private readonly EmailInviteManager _sut;
@@ -34,7 +33,6 @@ namespace TrashMob.Shared.Tests.Managers
             _batchRepository = new Mock<IKeyedRepository<EmailInviteBatch>>();
             _inviteRepository = new Mock<IKeyedRepository<EmailInvite>>();
             _emailManager = new Mock<IEmailManager>();
-            _userManager = new Mock<IUserManager>();
             _partnerManager = new Mock<IKeyedManager<Partner>>();
             _teamManager = new Mock<ITeamManager>();
 
@@ -58,7 +56,6 @@ namespace TrashMob.Shared.Tests.Managers
                 _batchRepository.Object,
                 _inviteRepository.Object,
                 _emailManager.Object,
-                _userManager.Object,
                 _partnerManager.Object,
                 _teamManager.Object);
         }

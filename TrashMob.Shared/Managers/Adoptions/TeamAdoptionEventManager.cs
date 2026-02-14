@@ -14,26 +14,13 @@ namespace TrashMob.Shared.Managers.Adoptions
     /// <summary>
     /// Manager for team adoption event linking operations.
     /// </summary>
-    public class TeamAdoptionEventManager : KeyedManager<TeamAdoptionEvent>, ITeamAdoptionEventManager
+    public class TeamAdoptionEventManager(
+        IKeyedRepository<TeamAdoptionEvent> repository,
+        ITeamAdoptionManager adoptionManager,
+        IKeyedManager<Event> eventManager,
+        IKeyedRepository<TeamAdoption> adoptionRepository)
+        : KeyedManager<TeamAdoptionEvent>(repository), ITeamAdoptionEventManager
     {
-        private readonly ITeamAdoptionManager adoptionManager;
-        private readonly IKeyedManager<Event> eventManager;
-        private readonly IKeyedRepository<TeamAdoption> adoptionRepository;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TeamAdoptionEventManager"/> class.
-        /// </summary>
-        public TeamAdoptionEventManager(
-            IKeyedRepository<TeamAdoptionEvent> repository,
-            ITeamAdoptionManager adoptionManager,
-            IKeyedManager<Event> eventManager,
-            IKeyedRepository<TeamAdoption> adoptionRepository)
-            : base(repository)
-        {
-            this.adoptionManager = adoptionManager;
-            this.eventManager = eventManager;
-            this.adoptionRepository = adoptionRepository;
-        }
 
         /// <inheritdoc />
         public async Task<ServiceResult<TeamAdoptionEvent>> LinkEventAsync(

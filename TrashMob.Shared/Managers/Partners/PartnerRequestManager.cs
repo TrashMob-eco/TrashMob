@@ -14,28 +14,13 @@ namespace TrashMob.Shared.Managers.Partners
     /// <summary>
     /// Manages partner requests including creation, approval, denial, and email notifications for partnership applications.
     /// </summary>
-    public class PartnerRequestManager : KeyedManager<PartnerRequest>, IPartnerRequestManager
+    public class PartnerRequestManager(
+        IKeyedRepository<PartnerRequest> partnerRequestRepository,
+        IKeyedManager<Partner> partnerManager,
+        IBaseManager<PartnerAdmin> partnerUserManager,
+        IEmailManager emailManager)
+        : KeyedManager<PartnerRequest>(partnerRequestRepository), IPartnerRequestManager
     {
-        private readonly IEmailManager emailManager;
-        private readonly IKeyedManager<Partner> partnerManager;
-        private readonly IBaseManager<PartnerAdmin> partnerUserManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartnerRequestManager"/> class.
-        /// </summary>
-        /// <param name="partnerRequestRepository">The repository for partner request data access.</param>
-        /// <param name="partnerManager">The manager for partner operations.</param>
-        /// <param name="partnerUserManager">The manager for partner admin operations.</param>
-        /// <param name="emailManager">The email manager for sending notifications.</param>
-        public PartnerRequestManager(IKeyedRepository<PartnerRequest> partnerRequestRepository,
-            IKeyedManager<Partner> partnerManager,
-            IBaseManager<PartnerAdmin> partnerUserManager,
-            IEmailManager emailManager) : base(partnerRequestRepository)
-        {
-            this.partnerManager = partnerManager;
-            this.partnerUserManager = partnerUserManager;
-            this.emailManager = emailManager;
-        }
 
         /// <inheritdoc />
         public override async Task<PartnerRequest> AddAsync(PartnerRequest instance, Guid userId,

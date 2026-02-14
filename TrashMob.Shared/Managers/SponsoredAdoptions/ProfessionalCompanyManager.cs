@@ -13,15 +13,9 @@ namespace TrashMob.Shared.Managers.SponsoredAdoptions
     /// <summary>
     /// Manager for professional cleanup company operations within a community.
     /// </summary>
-    public class ProfessionalCompanyManager : KeyedManager<ProfessionalCompany>, IProfessionalCompanyManager
+    public class ProfessionalCompanyManager(IKeyedRepository<ProfessionalCompany> repository)
+        : KeyedManager<ProfessionalCompany>(repository), IProfessionalCompanyManager
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ProfessionalCompanyManager"/> class.
-        /// </summary>
-        /// <param name="repository">The professional company repository.</param>
-        public ProfessionalCompanyManager(IKeyedRepository<ProfessionalCompany> repository) : base(repository)
-        {
-        }
 
         /// <inheritdoc />
         public async Task<IEnumerable<ProfessionalCompany>> GetByCommunityAsync(

@@ -13,15 +13,9 @@ namespace TrashMob.Shared.Managers.SponsoredAdoptions
     /// <summary>
     /// Manager for sponsor operations within a community's sponsored adoption program.
     /// </summary>
-    public class SponsorManager : KeyedManager<Sponsor>, ISponsorManager
+    public class SponsorManager(IKeyedRepository<Sponsor> repository)
+        : KeyedManager<Sponsor>(repository), ISponsorManager
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SponsorManager"/> class.
-        /// </summary>
-        /// <param name="repository">The sponsor repository.</param>
-        public SponsorManager(IKeyedRepository<Sponsor> repository) : base(repository)
-        {
-        }
 
         /// <inheritdoc />
         public async Task<IEnumerable<Sponsor>> GetByCommunityAsync(

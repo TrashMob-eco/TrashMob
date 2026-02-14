@@ -14,49 +14,22 @@ namespace TrashMob.Shared.Managers
     /// <summary>
     /// Manages user accounts including creation, updates, deletion, and related cascade operations.
     /// </summary>
-    public class UserManager : KeyedManager<User>, IUserManager
+    public class UserManager(
+        IKeyedRepository<User> repository,
+        IBaseRepository<EventAttendee> eventAttendeesRepository,
+        IKeyedRepository<UserNotification> userNotificationRepository,
+        IKeyedRepository<NonEventUserNotification> nonEventUserNotificationRepository,
+        IKeyedRepository<PartnerRequest> partnerRequestRepository,
+        IBaseRepository<EventSummary> eventSummaryRepository,
+        IBaseRepository<EventPartnerLocationService> eventPartnerRepository,
+        IKeyedRepository<Event> eventRepository,
+        IKeyedRepository<Partner> partnerRepository,
+        IBaseRepository<PartnerAdmin> partnerAdminRepository,
+        IKeyedRepository<PartnerLocation> partnerLocationRepository,
+        IEmailManager emailManager)
+        : KeyedManager<User>(repository), IUserManager
     {
-        private readonly IEmailManager emailManager;
-        private readonly IBaseRepository<EventAttendee> eventAttendeesRepository;
-        private readonly IBaseRepository<EventPartnerLocationService> eventPartnerRepository;
-        private readonly IKeyedRepository<Event> eventRepository;
-        private readonly IBaseRepository<EventSummary> eventSummaryRepository;
-        private readonly IKeyedRepository<NonEventUserNotification> nonEventUserNotificationRepository;
-        private readonly IBaseRepository<PartnerAdmin> partnerAdminRepository;
-        private readonly IKeyedRepository<PartnerLocation> partnerLocationRepository;
-        private readonly IKeyedRepository<Partner> partnerRepository;
-        private readonly IKeyedRepository<PartnerRequest> partnerRequestRepository;
         private readonly Guid TrashMobUserId = Guid.Empty;
-        private readonly IKeyedRepository<UserNotification> userNotificationRepository;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UserManager"/> class.
-        /// </summary>
-        public UserManager(IKeyedRepository<User> repository,
-            IBaseRepository<EventAttendee> eventAttendeesRepository,
-            IKeyedRepository<UserNotification> userNotificationRepository,
-            IKeyedRepository<NonEventUserNotification> nonEventUserNotificationRepository,
-            IKeyedRepository<PartnerRequest> partnerRequestRepository,
-            IBaseRepository<EventSummary> eventSummaryRepository,
-            IBaseRepository<EventPartnerLocationService> eventPartnerRepository,
-            IKeyedRepository<Event> eventRepository,
-            IKeyedRepository<Partner> partnerRepository,
-            IBaseRepository<PartnerAdmin> partnerUserRepository,
-            IKeyedRepository<PartnerLocation> partnerLocationRepository,
-            IEmailManager emailManager) : base(repository)
-        {
-            this.eventAttendeesRepository = eventAttendeesRepository;
-            this.userNotificationRepository = userNotificationRepository;
-            this.nonEventUserNotificationRepository = nonEventUserNotificationRepository;
-            this.partnerRequestRepository = partnerRequestRepository;
-            this.eventSummaryRepository = eventSummaryRepository;
-            this.eventPartnerRepository = eventPartnerRepository;
-            this.eventRepository = eventRepository;
-            this.partnerRepository = partnerRepository;
-            partnerAdminRepository = partnerUserRepository;
-            this.partnerLocationRepository = partnerLocationRepository;
-            this.emailManager = emailManager;
-        }
 
         /// <inheritdoc />
         public async Task<User> GetUserByNameIdentifierAsync(string nameIdentifier,

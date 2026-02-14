@@ -9,18 +9,8 @@ namespace TrashMob.Shared.Managers
     /// <summary>
     /// Azure Key Vault implementation for retrieving secrets and certificates.
     /// </summary>
-    public class KeyVaultManager : IKeyVaultManager
+    public class KeyVaultManager(SecretClient secretClient) : IKeyVaultManager
     {
-        private readonly SecretClient secretClient;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="KeyVaultManager"/> class.
-        /// </summary>
-        /// <param name="secretClient">The Azure Key Vault secret client.</param>
-        public KeyVaultManager(SecretClient secretClient)
-        {
-            this.secretClient = secretClient;
-        }
 
         /// <inheritdoc />
         public async Task<X509Certificate2> GetCertificateAsync(string certificateSecretName)

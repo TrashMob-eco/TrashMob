@@ -15,20 +15,9 @@ namespace TrashMob.Shared.Managers
     /// <summary>
     /// Manages user feedback submissions, including email notifications to administrators.
     /// </summary>
-    public class UserFeedbackManager : KeyedManager<UserFeedback>, IUserFeedbackManager
+    public class UserFeedbackManager(IKeyedRepository<UserFeedback> repository, IEmailManager emailManager)
+        : KeyedManager<UserFeedback>(repository), IUserFeedbackManager
     {
-        private readonly IEmailManager emailManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UserFeedbackManager"/> class.
-        /// </summary>
-        /// <param name="repository">The repository for user feedback data access.</param>
-        /// <param name="emailManager">The email manager for sending notifications.</param>
-        public UserFeedbackManager(IKeyedRepository<UserFeedback> repository, IEmailManager emailManager)
-            : base(repository)
-        {
-            this.emailManager = emailManager;
-        }
 
         /// <inheritdoc />
         public override async Task<UserFeedback> AddAsync(UserFeedback feedback, CancellationToken cancellationToken = default)

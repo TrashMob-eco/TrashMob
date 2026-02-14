@@ -15,20 +15,9 @@ namespace TrashMob.Shared.Managers.Adoptions
     /// <summary>
     /// Manager for adoptable area operations.
     /// </summary>
-    public class AdoptableAreaManager : KeyedManager<AdoptableArea>, IAdoptableAreaManager
+    public class AdoptableAreaManager(IKeyedRepository<AdoptableArea> repository, ILogger<AdoptableAreaManager> logger)
+        : KeyedManager<AdoptableArea>(repository), IAdoptableAreaManager
     {
-        private readonly ILogger<AdoptableAreaManager> logger;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AdoptableAreaManager"/> class.
-        /// </summary>
-        /// <param name="repository">The adoptable area repository.</param>
-        /// <param name="logger">The logger.</param>
-        public AdoptableAreaManager(IKeyedRepository<AdoptableArea> repository, ILogger<AdoptableAreaManager> logger)
-            : base(repository)
-        {
-            this.logger = logger;
-        }
 
         /// <inheritdoc />
         public async Task<IEnumerable<AdoptableArea>> GetByCommunityAsync(

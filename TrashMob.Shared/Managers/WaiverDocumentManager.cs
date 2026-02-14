@@ -20,30 +20,17 @@ namespace TrashMob.Shared.Managers
     /// <summary>
     /// Manages waiver PDF document generation and storage.
     /// </summary>
-    public class WaiverDocumentManager : IWaiverDocumentManager
+    public class WaiverDocumentManager(
+        ILogger<WaiverDocumentManager> logger,
+        BlobServiceClient blobServiceClient) : IWaiverDocumentManager
     {
         private const string WaiversContainerName = "waivers";
-        private readonly ILogger<WaiverDocumentManager> logger;
-        private readonly BlobServiceClient blobServiceClient;
         private static readonly MarkdownPipeline MarkdownPipeline = new MarkdownPipelineBuilder().Build();
 
         static WaiverDocumentManager()
         {
             // Configure QuestPDF for Community license (free for open source)
             QuestPDF.Settings.License = LicenseType.Community;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WaiverDocumentManager"/> class.
-        /// </summary>
-        /// <param name="logger">The logger.</param>
-        /// <param name="blobServiceClient">The blob service client.</param>
-        public WaiverDocumentManager(
-            ILogger<WaiverDocumentManager> logger,
-            BlobServiceClient blobServiceClient)
-        {
-            this.logger = logger;
-            this.blobServiceClient = blobServiceClient;
         }
 
         /// <inheritdoc />

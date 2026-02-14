@@ -14,24 +14,12 @@ namespace TrashMob.Shared.Managers.Partners
     /// <summary>
     /// Manages partner document file storage in Azure Blob Storage.
     /// </summary>
-    public class PartnerDocumentStorageManager : IPartnerDocumentStorageManager
+    public class PartnerDocumentStorageManager(
+        ILogger<PartnerDocumentStorageManager> logger,
+        BlobServiceClient blobServiceClient)
+        : IPartnerDocumentStorageManager
     {
         private const string ContainerName = "partner-documents";
-        private readonly ILogger<PartnerDocumentStorageManager> logger;
-        private readonly BlobServiceClient blobServiceClient;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartnerDocumentStorageManager"/> class.
-        /// </summary>
-        /// <param name="logger">The logger.</param>
-        /// <param name="blobServiceClient">The blob service client.</param>
-        public PartnerDocumentStorageManager(
-            ILogger<PartnerDocumentStorageManager> logger,
-            BlobServiceClient blobServiceClient)
-        {
-            this.logger = logger;
-            this.blobServiceClient = blobServiceClient;
-        }
 
         /// <inheritdoc />
         public async Task<string> UploadDocumentAsync(Guid partnerId, Guid documentId, IFormFile file, CancellationToken cancellationToken)

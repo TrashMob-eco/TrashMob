@@ -15,38 +15,14 @@ namespace TrashMob.Shared.Managers
     /// <summary>
     /// Manages bulk email invitation operations including creating batches and sending emails.
     /// </summary>
-    public class EmailInviteManager : KeyedManager<EmailInviteBatch>, IEmailInviteManager
+    public class EmailInviteManager(
+        IKeyedRepository<EmailInviteBatch> emailInviteBatchRepository,
+        IKeyedRepository<EmailInvite> emailInviteRepository,
+        IEmailManager emailManager,
+        IKeyedManager<Partner> partnerManager,
+        ITeamManager teamManager)
+        : KeyedManager<EmailInviteBatch>(emailInviteBatchRepository), IEmailInviteManager
     {
-        private readonly IKeyedRepository<EmailInvite> emailInviteRepository;
-        private readonly IEmailManager emailManager;
-        private readonly IUserManager userManager;
-        private readonly IKeyedManager<Partner> partnerManager;
-        private readonly ITeamManager teamManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EmailInviteManager"/> class.
-        /// </summary>
-        /// <param name="emailInviteBatchRepository">The repository for email invite batch data access.</param>
-        /// <param name="emailInviteRepository">The repository for individual email invite data access.</param>
-        /// <param name="emailManager">The email manager for sending notifications.</param>
-        /// <param name="userManager">The manager for user operations.</param>
-        /// <param name="partnerManager">The manager for partner/community operations.</param>
-        /// <param name="teamManager">The manager for team operations.</param>
-        public EmailInviteManager(
-            IKeyedRepository<EmailInviteBatch> emailInviteBatchRepository,
-            IKeyedRepository<EmailInvite> emailInviteRepository,
-            IEmailManager emailManager,
-            IUserManager userManager,
-            IKeyedManager<Partner> partnerManager,
-            ITeamManager teamManager)
-            : base(emailInviteBatchRepository)
-        {
-            this.emailInviteRepository = emailInviteRepository;
-            this.emailManager = emailManager;
-            this.userManager = userManager;
-            this.partnerManager = partnerManager;
-            this.teamManager = teamManager;
-        }
 
         /// <inheritdoc />
         public async Task<EmailInviteBatch> CreateBatchAsync(

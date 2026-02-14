@@ -15,40 +15,16 @@ namespace TrashMob.Shared.Managers.Communities
     /// Manager for community page operations.
     /// Communities are partners with enabled home pages.
     /// </summary>
-    public class CommunityManager : ICommunityManager
+    public class CommunityManager(
+        IKeyedRepository<Partner> partnerRepository,
+        IKeyedRepository<Event> eventRepository,
+        IKeyedRepository<Team> teamRepository,
+        IKeyedRepository<LitterReport> litterReportRepository,
+        IKeyedRepository<LitterImage> litterImageRepository,
+        IBaseRepository<EventSummary> eventSummaryRepository)
+        : ICommunityManager
     {
-        private readonly IKeyedRepository<Partner> partnerRepository;
-        private readonly IKeyedRepository<Event> eventRepository;
-        private readonly IKeyedRepository<Team> teamRepository;
-        private readonly IKeyedRepository<LitterReport> litterReportRepository;
-        private readonly IKeyedRepository<LitterImage> litterImageRepository;
-        private readonly IBaseRepository<EventSummary> eventSummaryRepository;
         private const int CancelledEventStatusId = 3;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CommunityManager"/> class.
-        /// </summary>
-        /// <param name="partnerRepository">The partner repository.</param>
-        /// <param name="eventRepository">The event repository.</param>
-        /// <param name="teamRepository">The team repository.</param>
-        /// <param name="litterReportRepository">The litter report repository.</param>
-        /// <param name="litterImageRepository">The litter image repository.</param>
-        /// <param name="eventSummaryRepository">The event summary repository.</param>
-        public CommunityManager(
-            IKeyedRepository<Partner> partnerRepository,
-            IKeyedRepository<Event> eventRepository,
-            IKeyedRepository<Team> teamRepository,
-            IKeyedRepository<LitterReport> litterReportRepository,
-            IKeyedRepository<LitterImage> litterImageRepository,
-            IBaseRepository<EventSummary> eventSummaryRepository)
-        {
-            this.partnerRepository = partnerRepository;
-            this.eventRepository = eventRepository;
-            this.teamRepository = teamRepository;
-            this.litterReportRepository = litterReportRepository;
-            this.litterImageRepository = litterImageRepository;
-            this.eventSummaryRepository = eventSummaryRepository;
-        }
 
         /// <inheritdoc />
         public async Task<IEnumerable<Partner>> GetEnabledCommunitiesAsync(

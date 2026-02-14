@@ -14,27 +14,15 @@ namespace TrashMob.Shared.Managers.Events
     /// <summary>
     /// Manager for attendee-submitted event metrics operations.
     /// </summary>
-    public class EventAttendeeMetricsManager : KeyedManager<EventAttendeeMetrics>, IEventAttendeeMetricsManager
+    public class EventAttendeeMetricsManager(
+        IKeyedRepository<EventAttendeeMetrics> repository,
+        IEventAttendeeManager eventAttendeeManager,
+        IKeyedManager<Event> eventManager)
+        : KeyedManager<EventAttendeeMetrics>(repository), IEventAttendeeMetricsManager
     {
         private const decimal KgToLbsConversion = 2.20462m;
         private const int WeightUnitPounds = 1;
         private const int WeightUnitKilograms = 2;
-
-        private readonly IEventAttendeeManager eventAttendeeManager;
-        private readonly IKeyedManager<Event> eventManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EventAttendeeMetricsManager"/> class.
-        /// </summary>
-        public EventAttendeeMetricsManager(
-            IKeyedRepository<EventAttendeeMetrics> repository,
-            IEventAttendeeManager eventAttendeeManager,
-            IKeyedManager<Event> eventManager)
-            : base(repository)
-        {
-            this.eventAttendeeManager = eventAttendeeManager;
-            this.eventManager = eventManager;
-        }
 
         /// <inheritdoc />
         public async Task<ServiceResult<EventAttendeeMetrics>> SubmitMetricsAsync(

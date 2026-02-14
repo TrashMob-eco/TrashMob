@@ -17,22 +17,11 @@ namespace TrashMob.Shared.Managers.Events
     /// <summary>
     /// Manages event attendee GPS routes recorded during cleanup events.
     /// </summary>
-    public class EventAttendeeRouteManager : KeyedManager<EventAttendeeRoute>, IBaseManager<EventAttendeeRoute>,
-        IEventAttendeeRouteManager
+    public class EventAttendeeRouteManager(
+        IKeyedRepository<EventAttendeeRoute> eventAttendeeRouteRepository)
+        : KeyedManager<EventAttendeeRoute>(eventAttendeeRouteRepository), IBaseManager<EventAttendeeRoute>,
+            IEventAttendeeRouteManager
     {
-        private readonly IKeyedRepository<Event> eventRepository;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EventAttendeeRouteManager"/> class.
-        /// </summary>
-        /// <param name="eventAttendeeRouteRepository">The repository for event attendee route data access.</param>
-        /// <param name="eventRepository">The repository for event data access.</param>
-        public EventAttendeeRouteManager(
-            IKeyedRepository<EventAttendeeRoute> eventAttendeeRouteRepository,
-            IKeyedRepository<Event> eventRepository) : base(eventAttendeeRouteRepository)
-        {
-            this.eventRepository = eventRepository;
-        }
 
         /// <inheritdoc />
         public override async Task<IEnumerable<EventAttendeeRoute>> GetByParentIdAsync(Guid parentId,

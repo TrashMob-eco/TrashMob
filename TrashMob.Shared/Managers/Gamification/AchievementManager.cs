@@ -14,18 +14,8 @@ namespace TrashMob.Shared.Managers.Gamification
     /// <summary>
     /// Manager for handling user achievements.
     /// </summary>
-    public class AchievementManager : IAchievementManager
+    public class AchievementManager(MobDbContext dbContext) : IAchievementManager
     {
-        private readonly MobDbContext dbContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AchievementManager"/> class.
-        /// </summary>
-        /// <param name="dbContext">The database context.</param>
-        public AchievementManager(MobDbContext dbContext)
-        {
-            this.dbContext = dbContext;
-        }
 
         /// <inheritdoc />
         public async Task<UserAchievementsResponse> GetUserAchievementsAsync(

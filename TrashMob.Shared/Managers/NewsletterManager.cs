@@ -17,39 +17,15 @@ namespace TrashMob.Shared.Managers
     /// <summary>
     /// Manages newsletter creation, scheduling, and sending operations.
     /// </summary>
-    public class NewsletterManager : KeyedManager<Newsletter>, INewsletterManager
+    public class NewsletterManager(
+        IKeyedRepository<Newsletter> repository,
+        MobDbContext dbContext,
+        IUserNewsletterPreferenceManager preferenceManager,
+        IEmailManager emailManager,
+        ILogger<NewsletterManager> logger)
+        : KeyedManager<Newsletter>(repository), INewsletterManager
     {
-        private readonly MobDbContext dbContext;
-        private readonly IUserNewsletterPreferenceManager preferenceManager;
-        private readonly IEmailManager emailManager;
-        private readonly ILogger<NewsletterManager> logger;
-
-        /// <summary>
-        /// Batch size for sending emails.
-        /// </summary>
         private const int BatchSize = 100;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NewsletterManager"/> class.
-        /// </summary>
-        /// <param name="repository">The newsletter repository.</param>
-        /// <param name="dbContext">The database context.</param>
-        /// <param name="preferenceManager">The user preference manager.</param>
-        /// <param name="emailManager">The email manager.</param>
-        /// <param name="logger">The logger.</param>
-        public NewsletterManager(
-            IKeyedRepository<Newsletter> repository,
-            MobDbContext dbContext,
-            IUserNewsletterPreferenceManager preferenceManager,
-            IEmailManager emailManager,
-            ILogger<NewsletterManager> logger)
-            : base(repository)
-        {
-            this.dbContext = dbContext;
-            this.preferenceManager = preferenceManager;
-            this.emailManager = emailManager;
-            this.logger = logger;
-        }
 
         /// <inheritdoc />
         public async Task<IEnumerable<Newsletter>> GetNewslettersAsync(string status = null, CancellationToken cancellationToken = default)

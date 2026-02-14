@@ -17,26 +17,12 @@ namespace TrashMob.Shared.Managers
     /// <summary>
     /// Manages event photos including CRUD operations and image storage integration.
     /// </summary>
-    public class EventPhotoManager : KeyedManager<EventPhoto>, IEventPhotoManager
+    public class EventPhotoManager(
+        IKeyedRepository<EventPhoto> repository,
+        IImageManager imageManager,
+        MobDbContext dbContext)
+        : KeyedManager<EventPhoto>(repository), IEventPhotoManager
     {
-        private readonly IImageManager imageManager;
-        private readonly MobDbContext dbContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EventPhotoManager"/> class.
-        /// </summary>
-        /// <param name="repository">The repository for event photo data access.</param>
-        /// <param name="imageManager">The image manager for blob storage operations.</param>
-        /// <param name="dbContext">The database context.</param>
-        public EventPhotoManager(
-            IKeyedRepository<EventPhoto> repository,
-            IImageManager imageManager,
-            MobDbContext dbContext)
-            : base(repository)
-        {
-            this.imageManager = imageManager;
-            this.dbContext = dbContext;
-        }
 
         /// <inheritdoc />
         public async Task<IEnumerable<EventPhoto>> GetByEventIdAsync(

@@ -16,33 +16,14 @@ namespace TrashMob.Shared.Managers.Partners
     /// <summary>
     /// Manages partner admin invitations including sending, accepting, declining, and resending invitations.
     /// </summary>
-    public class PartnerAdminInvitationManager : KeyedManager<PartnerAdminInvitation>, IPartnerAdminInvitationManager
+    public class PartnerAdminInvitationManager(
+        IKeyedRepository<PartnerAdminInvitation> partnerAdminInvitationRepository,
+        IPartnerAdminManager partnerAdminManager,
+        IUserManager userManager,
+        IKeyedManager<Partner> partnerManager,
+        IEmailManager emailManager)
+        : KeyedManager<PartnerAdminInvitation>(partnerAdminInvitationRepository), IPartnerAdminInvitationManager
     {
-        private readonly IEmailManager emailManager;
-        private readonly IPartnerAdminManager partnerAdminManager;
-        private readonly IKeyedManager<Partner> partnerManager;
-        private readonly IUserManager userManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartnerAdminInvitationManager"/> class.
-        /// </summary>
-        /// <param name="partnerAdminInvitationRepository">The repository for partner admin invitation data access.</param>
-        /// <param name="partnerAdminManager">The manager for partner admin operations.</param>
-        /// <param name="userManager">The manager for user operations.</param>
-        /// <param name="partnerManager">The manager for partner operations.</param>
-        /// <param name="emailManager">The email manager for sending notifications.</param>
-        public PartnerAdminInvitationManager(IKeyedRepository<PartnerAdminInvitation> partnerAdminInvitationRepository,
-            IPartnerAdminManager partnerAdminManager,
-            IUserManager userManager,
-            IKeyedManager<Partner> partnerManager,
-            IEmailManager emailManager)
-            : base(partnerAdminInvitationRepository)
-        {
-            this.partnerAdminManager = partnerAdminManager;
-            this.userManager = userManager;
-            this.partnerManager = partnerManager;
-            this.emailManager = emailManager;
-        }
 
         /// <inheritdoc />
         public override async Task<IEnumerable<PartnerAdminInvitation>> GetByParentIdAsync(Guid parentId,

@@ -15,35 +15,16 @@ namespace TrashMob.Shared.Managers.Adoptions
     /// <summary>
     /// Manager for team adoption application operations.
     /// </summary>
-    public class TeamAdoptionManager : KeyedManager<TeamAdoption>, ITeamAdoptionManager
+    public class TeamAdoptionManager(
+        IKeyedRepository<TeamAdoption> repository,
+        IEmailManager emailManager,
+        ITeamManager teamManager,
+        ITeamMemberManager teamMemberManager,
+        IAdoptableAreaManager adoptableAreaManager,
+        IKeyedManager<Partner> partnerManager,
+        IPartnerAdminManager partnerAdminManager)
+        : KeyedManager<TeamAdoption>(repository), ITeamAdoptionManager
     {
-        private readonly IEmailManager emailManager;
-        private readonly ITeamManager teamManager;
-        private readonly ITeamMemberManager teamMemberManager;
-        private readonly IAdoptableAreaManager adoptableAreaManager;
-        private readonly IKeyedManager<Partner> partnerManager;
-        private readonly IPartnerAdminManager partnerAdminManager;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TeamAdoptionManager"/> class.
-        /// </summary>
-        public TeamAdoptionManager(
-            IKeyedRepository<TeamAdoption> repository,
-            IEmailManager emailManager,
-            ITeamManager teamManager,
-            ITeamMemberManager teamMemberManager,
-            IAdoptableAreaManager adoptableAreaManager,
-            IKeyedManager<Partner> partnerManager,
-            IPartnerAdminManager partnerAdminManager)
-            : base(repository)
-        {
-            this.emailManager = emailManager;
-            this.teamManager = teamManager;
-            this.teamMemberManager = teamMemberManager;
-            this.adoptableAreaManager = adoptableAreaManager;
-            this.partnerManager = partnerManager;
-            this.partnerAdminManager = partnerAdminManager;
-        }
 
         /// <inheritdoc />
         public async Task<ServiceResult<TeamAdoption>> SubmitApplicationAsync(

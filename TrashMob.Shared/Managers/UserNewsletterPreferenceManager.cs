@@ -15,21 +15,9 @@ namespace TrashMob.Shared.Managers
     /// <summary>
     /// Manages user newsletter preferences including subscription status and initialization.
     /// </summary>
-    public class UserNewsletterPreferenceManager : IUserNewsletterPreferenceManager
+    public class UserNewsletterPreferenceManager(MobDbContext dbContext, ILogger<UserNewsletterPreferenceManager> logger)
+        : IUserNewsletterPreferenceManager
     {
-        private readonly MobDbContext dbContext;
-        private readonly ILogger<UserNewsletterPreferenceManager> logger;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UserNewsletterPreferenceManager"/> class.
-        /// </summary>
-        /// <param name="dbContext">The database context.</param>
-        /// <param name="logger">The logger.</param>
-        public UserNewsletterPreferenceManager(MobDbContext dbContext, ILogger<UserNewsletterPreferenceManager> logger)
-        {
-            this.dbContext = dbContext;
-            this.logger = logger;
-        }
 
         /// <inheritdoc />
         public async Task<IEnumerable<UserNewsletterPreference>> GetUserPreferencesAsync(Guid userId, CancellationToken cancellationToken = default)

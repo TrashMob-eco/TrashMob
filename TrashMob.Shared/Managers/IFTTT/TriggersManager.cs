@@ -16,20 +16,9 @@
     /// <summary>
     /// Manages IFTTT triggers for event notifications and validates trigger request fields.
     /// </summary>
-    internal class TriggersManager : BaseManager<IftttTrigger>, ITriggersManager
+    internal class TriggersManager(IBaseRepository<IftttTrigger> repository, IKeyedRepository<Event> eventRepository)
+        : BaseManager<IftttTrigger>(repository), ITriggersManager
     {
-        private readonly IKeyedRepository<Event> eventRepository;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TriggersManager"/> class.
-        /// </summary>
-        /// <param name="repository">The repository for IFTTT trigger data access.</param>
-        /// <param name="eventRepository">The repository for event data access.</param>
-        public TriggersManager(IBaseRepository<IftttTrigger> repository, IKeyedRepository<Event> eventRepository) :
-            base(repository)
-        {
-            this.eventRepository = eventRepository;
-        }
 
         /// <inheritdoc />
         public async Task<List<IftttEventResponse>> GetEventsTriggerDataAsync(TriggersRequest triggersRequest,

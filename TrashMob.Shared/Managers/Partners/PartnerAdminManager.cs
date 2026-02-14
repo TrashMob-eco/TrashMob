@@ -13,19 +13,11 @@ namespace TrashMob.Shared.Managers.Partners
     /// <summary>
     /// Manages partner administrator relationships, including retrieving admins for partners and partners for users.
     /// </summary>
-    public class PartnerAdminManager : BaseManager<PartnerAdmin>, IPartnerAdminManager
+    public class PartnerAdminManager(
+        IBaseRepository<PartnerAdmin> partnerAdminRepository,
+        IKeyedRepository<Partner> partnerRepository)
+        : BaseManager<PartnerAdmin>(partnerAdminRepository), IPartnerAdminManager
     {
-        private readonly IKeyedRepository<Partner> partnerRepository;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartnerAdminManager"/> class.
-        /// </summary>
-        /// <param name="partnerAdminRepository">The repository for partner admin data access.</param>
-        /// <param name="partnerRepository">The repository for partner data access.</param>
-        public PartnerAdminManager(IBaseRepository<PartnerAdmin> partnerAdminRepository, IKeyedRepository<Partner> partnerRepository) : base(partnerAdminRepository)
-        {
-            this.partnerRepository = partnerRepository;
-        }
 
         /// <inheritdoc />
         public async Task<IEnumerable<User>> GetAdminsForPartnerAsync(Guid partnerId,
