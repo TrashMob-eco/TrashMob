@@ -481,9 +481,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                                             </CardTitle>
                                             <RadioGroup
                                                 value={upcomingEventsMapView ? 'map' : 'list'}
-                                                onValueChange={(value) =>
-                                                    handleEventView(value, 'Upcoming events')
-                                                }
+                                                onValueChange={(value) => handleEventView(value, 'Upcoming events')}
                                                 className='grid-cols-2'
                                                 orientation='horizontal'
                                             >
@@ -524,9 +522,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                                             </CardTitle>
                                             <RadioGroup
                                                 value={pastEventsMapView ? 'map' : 'list'}
-                                                onValueChange={(value) =>
-                                                    handleEventView(value, 'Completed events')
-                                                }
+                                                onValueChange={(value) => handleEventView(value, 'Completed events')}
                                                 className='grid-cols-2'
                                                 orientation='horizontal'
                                             >
