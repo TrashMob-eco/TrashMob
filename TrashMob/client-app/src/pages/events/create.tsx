@@ -270,8 +270,8 @@ export const CreateEventPage = () => {
             if (allSigned) {
                 refetchWaivers();
             } else {
-                // User dismissed waivers without signing — navigate away since waivers are required
-                navigate(-1);
+                // User dismissed waivers without signing — navigate to home since waivers are required
+                navigate('/');
             }
         },
         [refetchWaivers, navigate],
