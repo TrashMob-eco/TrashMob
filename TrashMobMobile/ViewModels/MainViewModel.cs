@@ -17,7 +17,8 @@ public partial class MainViewModel(IAuthService authService,
     IMobEventManager mobEventManager,
     ILitterReportManager litterReportManager,
     INotificationService notificationService,
-    IUserManager userManager) : BaseViewModel(notificationService)
+    IUserManager userManager,
+    IWaiverManager waiverManager) : BaseViewModel(notificationService)
 {
     private readonly IAuthService authService = authService;
     private readonly IMobEventManager mobEventManager = mobEventManager;
@@ -26,6 +27,7 @@ public partial class MainViewModel(IAuthService authService,
     private readonly IUserRestService userRestService = userRestService;
     private readonly INotificationService notificationService = notificationService;
     private readonly IUserManager userManager = userManager;
+    private readonly IWaiverManager waiverManager = waiverManager;
 
 #nullable disable
     private EventViewModel selectedEvent;
@@ -240,6 +242,12 @@ public partial class MainViewModel(IAuthService authService,
     [RelayCommand]
     private async Task CreateEvent()
     {
+        if (!await waiverManager.HasUserSignedAllRequiredWaiversAsync())
+        {
+            await Shell.Current.GoToAsync(nameof(WaiverListPage));
+            return;
+        }
+
         await Shell.Current.GoToAsync($"{nameof(CreateEventPage)}?LitterReportId={Guid.Empty}");
     }
 

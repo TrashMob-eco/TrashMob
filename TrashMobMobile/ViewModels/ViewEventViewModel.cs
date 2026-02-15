@@ -435,9 +435,9 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     {
         await ExecuteAsync(async () =>
         {
-            if (!await waiverManager.HasUserSignedTrashMobWaiverAsync())
+            if (!await waiverManager.HasUserSignedAllRequiredWaiversAsync())
             {
-                await Shell.Current.GoToAsync($"{nameof(WaiverPage)}");
+                await Shell.Current.GoToAsync($"{nameof(WaiverListPage)}");
                 return;
             }
 

@@ -1,24 +1,28 @@
-﻿namespace TrashMobMobile.Services;
+namespace TrashMobMobile.Services;
 
-using TrashMobMobile.Config;
-using TrashMobMobile.Extensions;
+using TrashMob.Models;
+using TrashMobMobile.Models;
 
-public class WaiverManager : IWaiverManager
+public class WaiverManager(IWaiverRestService waiverRestService) : IWaiverManager
 {
-    private const string TrashMobWaiverName = "trashmob";
-
-    private readonly IWaiverRestService waiverRestService;
-    private readonly IUserManager userManager;
-
-    public WaiverManager(IWaiverRestService service, IUserManager userManager)
+    public async Task<bool> HasUserSignedAllRequiredWaiversAsync(CancellationToken cancellationToken = default)
     {
-        waiverRestService = service;
-        this.userManager = userManager;
+        var required = await waiverRestService.GetRequiredWaiversAsync(null, cancellationToken);
+        return required.Count == 0;
     }
 
-    public async Task<bool> HasUserSignedTrashMobWaiverAsync(CancellationToken cancellationToken = default)
+    public Task<List<WaiverVersion>> GetRequiredWaiversAsync(CancellationToken cancellationToken = default)
     {
-        var waiver = await waiverRestService.GetWaiver(TrashMobWaiverName, cancellationToken);
-        return userManager.CurrentUser.HasUserSignedWaiver(waiver, Settings.CurrentTrashMobWaiverVersion);
+        return waiverRestService.GetRequiredWaiversAsync(null, cancellationToken);
+    }
+
+    public Task<List<UserWaiver>> GetMyWaiversAsync(CancellationToken cancellationToken = default)
+    {
+        return waiverRestService.GetMyWaiversAsync(cancellationToken);
+    }
+
+    public Task<UserWaiver> AcceptWaiverAsync(AcceptWaiverApiRequest request, CancellationToken cancellationToken = default)
+    {
+        return waiverRestService.AcceptWaiverAsync(request, cancellationToken);
     }
 }

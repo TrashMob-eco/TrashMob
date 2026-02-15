@@ -41,6 +41,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(ViewPickupLocationPage), typeof(ViewPickupLocationPage));
         Routing.RegisterRoute(nameof(ViewCommunityPage), typeof(ViewCommunityPage));
         Routing.RegisterRoute(nameof(ViewTeamPage), typeof(ViewTeamPage));
+        Routing.RegisterRoute(nameof(WaiverListPage), typeof(WaiverListPage));
         Routing.RegisterRoute(nameof(WaiverPage), typeof(WaiverPage));
         Routing.RegisterRoute(nameof(WelcomePage), typeof(WelcomePage));
         Routing.RegisterRoute(nameof(AgeGatePage), typeof(AgeGatePage));

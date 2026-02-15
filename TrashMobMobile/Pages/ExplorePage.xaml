@@ -176,13 +176,25 @@
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="viewModels:LitterReportViewModel">
                                 <Border Style="{x:StaticResource RoundBorder}" Margin="5,3">
-                                    <VerticalStackLayout Padding="10,8" Spacing="2">
-                                        <Label Text="{Binding Name}" FontFamily="LexendSemibold" FontSize="Small" />
-                                        <Label Text="{Binding LitterReportStatus}" FontSize="Micro"
-                                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
-                                        <Label Text="{Binding Description}" FontSize="Micro" MaxLines="2"
-                                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
-                                    </VerticalStackLayout>
+                                    <Grid ColumnDefinitions="*, Auto" Padding="10,8">
+                                        <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                            <Label Text="{Binding Name}" FontFamily="LexendSemibold" FontSize="Small" />
+                                            <Label Text="{Binding LitterReportStatus}" FontSize="Micro"
+                                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                        </VerticalStackLayout>
+                                        <Border Grid.Column="1"
+                                                StrokeShape="RoundRectangle 6"
+                                                StrokeThickness="0"
+                                                IsVisible="{Binding HasThumbnail}"
+                                                WidthRequest="56"
+                                                HeightRequest="56"
+                                                VerticalOptions="Center">
+                                            <Image Source="{Binding ThumbnailUrl}"
+                                                   Aspect="AspectFill"
+                                                   WidthRequest="56"
+                                                   HeightRequest="56" />
+                                        </Border>
+                                    </Grid>
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ExploreViewModel}}, Path=ViewLitterReportCommand}"

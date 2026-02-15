@@ -326,7 +326,7 @@
     <!-- <x:String x:Key="IconChevronDoubleUp">&#xf013f;</x:String> -->
     <!-- <x:String x:Key="IconChevronDown">&#xf0140;</x:String> -->
     <!-- <x:String x:Key="IconChevronLeft">&#xf0141;</x:String> -->
-    <!-- <x:String x:Key="IconChevronRight">&#xf0142;</x:String> -->
+    <x:String x:Key="IconChevronRight">&#xf0142;</x:String>
     <!-- <x:String x:Key="IconChevronUp">&#xf0143;</x:String> -->
     <!-- <x:String x:Key="IconChurch">&#xf0144;</x:String> -->
     <!-- <x:String x:Key="IconRollerSkateOff">&#xf0145;</x:String> -->

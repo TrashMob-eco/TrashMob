@@ -22,17 +22,27 @@
                                 IsVisible="{Binding AreLitterReportsFound}">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="viewModels:LitterReportViewModel">
-                    <Border Style="{StaticResource RoundBorder}" Margin="5">
-                        <Grid ColumnDefinitions="*, *"
-                                      RowDefinitions="Auto, Auto, Auto, Auto"
-                                      x:Name="LitterReportItem" RowSpacing="3">
-
-                            <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Small" />
-                            <Label Text="{Binding LitterReportStatus}" Grid.Row="0" Grid.Column="1"
-                                           FontSize="Micro" />
-                            <Label Text="{Binding CreatedDate}" Grid.Row="1" Grid.Column="0"
-                                           Grid.ColumnSpan="1" FontSize="Micro" />
-                            <Label Text="{Binding Description}" Grid.Row="1" Grid.Column="1" FontSize="Micro" />
+                    <Border Style="{x:StaticResource RoundBorder}" Margin="0,3">
+                        <Grid ColumnDefinitions="*, Auto" Padding="10,8">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label Text="{Binding Name}" FontFamily="LexendSemibold" FontSize="Small" />
+                                <Label Text="{Binding LitterReportStatus}" FontSize="Micro"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                <Label Text="{Binding CreatedDate}" FontSize="Micro"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                            </VerticalStackLayout>
+                            <Border Grid.Column="1"
+                                    StrokeShape="RoundRectangle 6"
+                                    StrokeThickness="0"
+                                    IsVisible="{Binding HasThumbnail}"
+                                    WidthRequest="56"
+                                    HeightRequest="56"
+                                    VerticalOptions="Center">
+                                <Image Source="{Binding ThumbnailUrl}"
+                                       Aspect="AspectFill"
+                                       WidthRequest="56"
+                                       HeightRequest="56" />
+                            </Border>
                         </Grid>
                     </Border>
                 </DataTemplate>

@@ -21,7 +21,6 @@ public partial class CreateEventViewModel : BaseViewModel
     private readonly IMapRestService mapRestService;
 
     private readonly IMobEventManager mobEventManager;
-    private readonly IWaiverManager waiverManager;
     private readonly IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService;
     private readonly ILitterReportManager litterReportManager;
     private readonly IEventLitterReportManager eventLitterReportManager;
@@ -191,7 +190,6 @@ public partial class CreateEventViewModel : BaseViewModel
     public CreateEventViewModel(IMobEventManager mobEventManager,
         IEventTypeRestService eventTypeRestService,
         IMapRestService mapRestService,
-        IWaiverManager waiverManager,
         INotificationService notificationService,
         IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService,
         ILitterReportManager litterReportManager,
@@ -203,7 +201,6 @@ public partial class CreateEventViewModel : BaseViewModel
         this.mobEventManager = mobEventManager;
         this.eventTypeRestService = eventTypeRestService;
         this.mapRestService = mapRestService;
-        this.waiverManager = waiverManager;
         this.notificationService = notificationService;
         this.eventPartnerLocationServiceRestService = eventPartnerLocationServiceRestService;
         this.litterReportManager = litterReportManager;
@@ -482,7 +479,6 @@ public partial class CreateEventViewModel : BaseViewModel
     }
 
     private Guid? initialLitterReport = null;
-    private bool redirectedToWaiver;
 
     public async Task Init(Guid? litterReportId)
     {
@@ -506,41 +502,6 @@ public partial class CreateEventViewModel : BaseViewModel
         {
             return;
         }
-
-        // Waiver check — if we can't verify, send user to sign anyway
-        try
-        {
-            if (!await waiverManager.HasUserSignedTrashMobWaiverAsync())
-            {
-                if (redirectedToWaiver)
-                {
-                    // User returned without signing — go back instead of looping
-                    await Shell.Current.GoToAsync("..");
-                    return;
-                }
-
-                redirectedToWaiver = true;
-                await Shell.Current.GoToAsync($"{nameof(WaiverPage)}");
-                return;
-            }
-        }
-        catch (Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-
-            if (redirectedToWaiver)
-            {
-                await Shell.Current.GoToAsync("..");
-                return;
-            }
-
-            // Can't verify waiver status — require signing to be safe
-            redirectedToWaiver = true;
-            await Shell.Current.GoToAsync($"{nameof(WaiverPage)}");
-            return;
-        }
-
-        redirectedToWaiver = false;
 
         await ExecuteAsync(async () =>
         {

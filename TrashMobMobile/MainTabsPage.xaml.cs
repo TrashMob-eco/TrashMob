@@ -1,12 +1,18 @@
 namespace TrashMobMobile;
 
+using CommunityToolkit.Maui.Extensions;
+using TrashMobMobile.Controls;
 using TrashMobMobile.Pages;
+using TrashMobMobile.Services;
 
 public partial class MainTabsPage : Shell
 {
-    public MainTabsPage()
+    private readonly IWaiverManager waiverManager;
+
+    public MainTabsPage(IWaiverManager waiverManager)
     {
         InitializeComponent();
+        this.waiverManager = waiverManager;
 
         Navigating += OnNavigating;
     }
@@ -17,15 +23,32 @@ public partial class MainTabsPage : Shell
         {
             e.Cancel();
 
-            var action = await DisplayActionSheetAsync("Quick Actions", "Cancel", null, "Create Event", "Report Litter");
+            try
+            {
+                var popup = new QuickActionPopup();
+                var result = await this.ShowPopupAsync<string>(popup);
 
-            if (action == "Create Event")
-            {
-                await GoToAsync(nameof(CreateEventPage));
+                var action = result?.Result;
+
+                if (action == QuickActionPopup.CreateEvent)
+                {
+                    if (!await waiverManager.HasUserSignedAllRequiredWaiversAsync())
+                    {
+                        await GoToAsync(nameof(WaiverListPage));
+                        return;
+                    }
+
+                    await GoToAsync(nameof(CreateEventPage));
+                }
+                else if (action == QuickActionPopup.ReportLitter)
+                {
+                    await GoToAsync(nameof(CreateLitterReportPage));
+                }
             }
-            else if (action == "Report Litter")
+            catch (Exception ex)
             {
-                await GoToAsync(nameof(CreateLitterReportPage));
+                SentrySdk.CaptureException(ex);
+                await DisplayAlertAsync("Error", "An error occurred. Please try again.", "OK");
             }
         }
     }

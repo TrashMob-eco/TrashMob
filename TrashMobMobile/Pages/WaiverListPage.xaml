@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             xmlns:models="clr-namespace:TrashMob.Models;assembly=TrashMob.Models"
+             x:DataType="viewModels:WaiverListViewModel"
+             x:Class="TrashMobMobile.Pages.WaiverListPage"
+             Shell.BackButtonBehavior="{BackButtonBehavior IsVisible=False}"
+             Title="Required Waivers">
+    <ScrollView>
+        <Grid>
+            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}" Spacing="8">
+
+                <!-- Intro -->
+                <Border Style="{StaticResource RoundBorder}" Margin="10,8,10,0">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="The following waivers must be signed before you can create or participate in events."
+                               FontSize="Small" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Pending Waivers -->
+                <Label Text="Pending"
+                       FontFamily="LexendSemibold"
+                       FontSize="Small"
+                       Margin="14,8,14,0"
+                       IsVisible="{Binding HasPendingWaivers}" />
+
+                <CollectionView ItemsSource="{Binding PendingWaivers}"
+                                SelectionMode="None"
+                                IsVisible="{Binding HasPendingWaivers}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:WaiverVersion">
+                            <Border Style="{StaticResource RoundBorder}" Margin="10,3">
+                                <Grid ColumnDefinitions="Auto, *, Auto" Padding="12,10" ColumnSpacing="12">
+                                    <Image Grid.Column="0" WidthRequest="24" HeightRequest="24" VerticalOptions="Center">
+                                        <Image.Source>
+                                            <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                             Glyph="{StaticResource IconFileDocument}"
+                                                             Size="24"
+                                                             Color="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                        </Image.Source>
+                                    </Image>
+                                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                        <Label Text="{Binding Name}"
+                                               FontFamily="LexendSemibold"
+                                               FontSize="Small" />
+                                        <Label Text="Tap to review and sign"
+                                               FontSize="Micro"
+                                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                    </VerticalStackLayout>
+                                    <Image Grid.Column="2" WidthRequest="20" HeightRequest="20" VerticalOptions="Center">
+                                        <Image.Source>
+                                            <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                             Glyph="{StaticResource IconChevronRight}"
+                                                             Size="20"
+                                                             Color="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                        </Image.Source>
+                                    </Image>
+                                </Grid>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:WaiverListViewModel}}, Path=SelectWaiverCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- Signed Waivers -->
+                <Label Text="Signed"
+                       FontFamily="LexendSemibold"
+                       FontSize="Small"
+                       Margin="14,8,14,0"
+                       IsVisible="{Binding HasSignedWaivers}" />
+
+                <CollectionView ItemsSource="{Binding SignedWaivers}"
+                                SelectionMode="None"
+                                IsVisible="{Binding HasSignedWaivers}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:UserWaiver">
+                            <Border Style="{StaticResource RoundBorder}" Margin="10,3">
+                                <Grid ColumnDefinitions="Auto, *" Padding="12,10" ColumnSpacing="12">
+                                    <Image Grid.Column="0" WidthRequest="24" HeightRequest="24" VerticalOptions="Center">
+                                        <Image.Source>
+                                            <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                             Glyph="{StaticResource IconCheckCircle}"
+                                                             Size="24"
+                                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                        </Image.Source>
+                                    </Image>
+                                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                        <Label Text="{Binding WaiverVersion.Name}"
+                                               FontFamily="LexendSemibold"
+                                               FontSize="Small" />
+                                        <Label Text="{Binding AcceptedDate, StringFormat='Signed {0:MMM d, yyyy}'}"
+                                               FontSize="Micro"
+                                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- All Signed Message -->
+                <Border Style="{StaticResource RoundBorder}" Margin="10,4"
+                        IsVisible="{Binding AllWaiversSigned}">
+                    <HorizontalStackLayout Spacing="8" Padding="4">
+                        <Image WidthRequest="20" HeightRequest="20" VerticalOptions="Center">
+                            <Image.Source>
+                                <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                 Glyph="{StaticResource IconCheckCircle}"
+                                                 Size="20"
+                                                 Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </Image.Source>
+                        </Image>
+                        <Label Text="All waivers signed! You may continue."
+                               FontSize="Small"
+                               VerticalOptions="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                    </HorizontalStackLayout>
+                </Border>
+
+                <!-- Buttons -->
+                <VerticalStackLayout Spacing="8" Margin="10,8,10,10">
+                    <Button Text="Continue"
+                            Command="{Binding ContinueCommand}"
+                            Style="{StaticResource PrimaryLargeButton}" />
+                    <Button Text="Cancel"
+                            Clicked="OnCancelClicked"
+                            Style="{StaticResource SecondaryLargeButton}" />
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+            <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
+                     VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center"
+                               HorizontalOptions="Center" />
+        </Grid>
+    </ScrollView>
+</ContentPage>
