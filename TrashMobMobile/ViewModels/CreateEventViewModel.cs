@@ -482,6 +482,7 @@ public partial class CreateEventViewModel : BaseViewModel
     }
 
     private Guid? initialLitterReport = null;
+    private bool redirectedToWaiver;
 
     public async Task Init(Guid? litterReportId)
     {
@@ -511,6 +512,14 @@ public partial class CreateEventViewModel : BaseViewModel
         {
             if (!await waiverManager.HasUserSignedTrashMobWaiverAsync())
             {
+                if (redirectedToWaiver)
+                {
+                    // User returned without signing — go back instead of looping
+                    await Shell.Current.GoToAsync("..");
+                    return;
+                }
+
+                redirectedToWaiver = true;
                 await Shell.Current.GoToAsync($"{nameof(WaiverPage)}");
                 return;
             }
@@ -518,10 +527,20 @@ public partial class CreateEventViewModel : BaseViewModel
         catch (Exception ex)
         {
             SentrySdk.CaptureException(ex);
+
+            if (redirectedToWaiver)
+            {
+                await Shell.Current.GoToAsync("..");
+                return;
+            }
+
             // Can't verify waiver status — require signing to be safe
+            redirectedToWaiver = true;
             await Shell.Current.GoToAsync($"{nameof(WaiverPage)}");
             return;
         }
+
+        redirectedToWaiver = false;
 
         await ExecuteAsync(async () =>
         {
