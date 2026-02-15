@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phases 1, 1b, 2, 3 complete; Phase 4 PR #2734 pending) |
+| **Status** | Complete |
 | **Priority** | Medium |
 | **Risk** | Medium |
 | **Size** | Medium |
@@ -265,5 +265,5 @@ if (evt is null || evt.EventVisibilityId != (int)EventVisibilityEnum.Public)
 
 **Last Updated:** February 14, 2026
 **Owner:** Product & Engineering
-**Status:** In Progress — Phases 1, 1b, 2, 3 complete. Phase 4 (Notifications & Polish) in PR #2734.
+**Status:** Complete — All phases (1, 1b, 2, 3, 4) merged.
 **Next Review:** When prioritized
