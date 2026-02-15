@@ -1,8 +1,8 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
-import { Loader2, Plus, Pencil, Trash2, MapPin, Upload } from 'lucide-react';
+import { Loader2, Plus, Pencil, Trash2, MapPin, Upload, List, Map as MapIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -22,6 +22,9 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import AdoptableAreaData, { AdoptableAreaStatus } from '@/components/Models/AdoptableAreaData';
 import { GetAdoptableAreas, DeleteAdoptableArea } from '@/services/adoptable-areas';
+import { GoogleMapWithKey } from '@/components/Map/GoogleMap';
+import { ExistingAreasOverlay } from '@/components/Map/AreaMapEditor/ExistingAreasOverlay';
+import { AreaStatusLegend } from '@/components/Map/AreaMapEditor/AreaStatusLegend';
 
 const statusColors: Record<AdoptableAreaStatus, string> = {
     Available: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
@@ -29,11 +32,14 @@ const statusColors: Record<AdoptableAreaStatus, string> = {
     Unavailable: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200',
 };
 
+const OVERVIEW_MAP_ID = 'areasOverviewMap';
+
 export const PartnerCommunityAreas = () => {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const { partnerId } = useParams<{ partnerId: string }>() as { partnerId: string };
     const { toast } = useToast();
+    const [viewMode, setViewMode] = useState<'table' | 'map'>('table');
 
     const { data: areas, isLoading } = useQuery<AxiosResponse<AdoptableAreaData[]>, unknown, AdoptableAreaData[]>({
         queryKey: GetAdoptableAreas({ partnerId }).key,
@@ -80,6 +86,8 @@ export const PartnerCommunityAreas = () => {
         );
     }
 
+    const hasAreas = areas && areas.length > 0;
+
     return (
         <div className='py-8'>
             <Card>
@@ -94,6 +102,26 @@ export const PartnerCommunityAreas = () => {
                         </CardDescription>
                     </div>
                     <div className='flex gap-2'>
+                        {hasAreas ? (
+                            <div className='flex border rounded-md'>
+                                <Button
+                                    variant={viewMode === 'table' ? 'default' : 'ghost'}
+                                    size='sm'
+                                    className='rounded-r-none'
+                                    onClick={() => setViewMode('table')}
+                                >
+                                    <List className='h-4 w-4' />
+                                </Button>
+                                <Button
+                                    variant={viewMode === 'map' ? 'default' : 'ghost'}
+                                    size='sm'
+                                    className='rounded-l-none'
+                                    onClick={() => setViewMode('map')}
+                                >
+                                    <MapIcon className='h-4 w-4' />
+                                </Button>
+                            </div>
+                        ) : null}
                         <Button
                             variant='outline'
                             onClick={() => navigate(`/partnerdashboard/${partnerId}/community/areas/import`)}
@@ -108,65 +136,78 @@ export const PartnerCommunityAreas = () => {
                     </div>
                 </CardHeader>
                 <CardContent>
-                    {areas && areas.length > 0 ? (
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Name</TableHead>
-                                    <TableHead>Type</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead>Frequency</TableHead>
-                                    <TableHead>Min Events/Year</TableHead>
-                                    <TableHead className='text-right'>Actions</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {areas.map((area) => (
-                                    <TableRow key={area.id}>
-                                        <TableCell className='font-medium'>{area.name}</TableCell>
-                                        <TableCell>{area.areaType}</TableCell>
-                                        <TableCell>
-                                            <Badge className={statusColors[area.status]}>{area.status}</Badge>
-                                        </TableCell>
-                                        <TableCell>{area.cleanupFrequencyDays} days</TableCell>
-                                        <TableCell>{area.minEventsPerYear}</TableCell>
-                                        <TableCell className='text-right'>
-                                            <div className='flex justify-end gap-2'>
-                                                <Button variant='outline' size='sm' asChild>
-                                                    <Link
-                                                        to={`/partnerdashboard/${partnerId}/community/areas/${area.id}/edit`}
-                                                    >
-                                                        <Pencil className='h-4 w-4' />
-                                                    </Link>
-                                                </Button>
-                                                <AlertDialog>
-                                                    <AlertDialogTrigger asChild>
-                                                        <Button variant='outline' size='sm' disabled={isDeleting}>
-                                                            <Trash2 className='h-4 w-4' />
-                                                        </Button>
-                                                    </AlertDialogTrigger>
-                                                    <AlertDialogContent>
-                                                        <AlertDialogHeader>
-                                                            <AlertDialogTitle>Delete Area</AlertDialogTitle>
-                                                            <AlertDialogDescription>
-                                                                Are you sure you want to delete "{area.name}"? This
-                                                                action cannot be undone.
-                                                            </AlertDialogDescription>
-                                                        </AlertDialogHeader>
-                                                        <AlertDialogFooter>
-                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                            <AlertDialogAction onClick={() => handleDelete(area.id)}>
-                                                                Delete
-                                                            </AlertDialogAction>
-                                                        </AlertDialogFooter>
-                                                    </AlertDialogContent>
-                                                </AlertDialog>
-                                            </div>
-                                        </TableCell>
+                    {hasAreas ? (
+                        viewMode === 'map' ? (
+                            <div className='space-y-2'>
+                                <div className='h-[500px] rounded-md overflow-hidden border'>
+                                    <GoogleMapWithKey id={OVERVIEW_MAP_ID} style={{ width: '100%', height: '500px' }}>
+                                        <ExistingAreasOverlay mapId={OVERVIEW_MAP_ID} areas={areas} fitBounds />
+                                    </GoogleMapWithKey>
+                                </div>
+                                <AreaStatusLegend />
+                            </div>
+                        ) : (
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Name</TableHead>
+                                        <TableHead>Type</TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead>Frequency</TableHead>
+                                        <TableHead>Min Events/Year</TableHead>
+                                        <TableHead className='text-right'>Actions</TableHead>
                                     </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
+                                </TableHeader>
+                                <TableBody>
+                                    {areas.map((area) => (
+                                        <TableRow key={area.id}>
+                                            <TableCell className='font-medium'>{area.name}</TableCell>
+                                            <TableCell>{area.areaType}</TableCell>
+                                            <TableCell>
+                                                <Badge className={statusColors[area.status]}>{area.status}</Badge>
+                                            </TableCell>
+                                            <TableCell>{area.cleanupFrequencyDays} days</TableCell>
+                                            <TableCell>{area.minEventsPerYear}</TableCell>
+                                            <TableCell className='text-right'>
+                                                <div className='flex justify-end gap-2'>
+                                                    <Button variant='outline' size='sm' asChild>
+                                                        <Link
+                                                            to={`/partnerdashboard/${partnerId}/community/areas/${area.id}/edit`}
+                                                        >
+                                                            <Pencil className='h-4 w-4' />
+                                                        </Link>
+                                                    </Button>
+                                                    <AlertDialog>
+                                                        <AlertDialogTrigger asChild>
+                                                            <Button variant='outline' size='sm' disabled={isDeleting}>
+                                                                <Trash2 className='h-4 w-4' />
+                                                            </Button>
+                                                        </AlertDialogTrigger>
+                                                        <AlertDialogContent>
+                                                            <AlertDialogHeader>
+                                                                <AlertDialogTitle>Delete Area</AlertDialogTitle>
+                                                                <AlertDialogDescription>
+                                                                    Are you sure you want to delete "{area.name}"? This
+                                                                    action cannot be undone.
+                                                                </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+                                                            <AlertDialogFooter>
+                                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                <AlertDialogAction
+                                                                    onClick={() => handleDelete(area.id)}
+                                                                >
+                                                                    Delete
+                                                                </AlertDialogAction>
+                                                            </AlertDialogFooter>
+                                                        </AlertDialogContent>
+                                                    </AlertDialog>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        )
                     ) : (
                         <div className='text-center py-12'>
                             <MapPin className='h-12 w-12 mx-auto text-muted-foreground mb-4' />
