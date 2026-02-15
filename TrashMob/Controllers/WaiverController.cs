@@ -10,7 +10,7 @@
     /// <summary>
     /// Controller for retrieving waiver documents.
     /// </summary>
-    [Route("api/waivers")]
+    [Route("api/waivers/by-name")]
     public class WaiverController(IWaiverManager waiverManager) : BaseController
     {
         /// <summary>

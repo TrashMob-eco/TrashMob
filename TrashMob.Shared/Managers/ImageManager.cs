@@ -119,6 +119,7 @@ namespace TrashMob.Shared.Managers
             }
 
             var blobContainer = blobServiceClient.GetBlobContainerClient(imageUpload.ImageType.ToString().ToLower());
+            await blobContainer.CreateIfNotExistsAsync(PublicAccessType.Blob);
 
             var fileTime = DateTimeOffset.UtcNow.ToString("ddHHmmss");
 
