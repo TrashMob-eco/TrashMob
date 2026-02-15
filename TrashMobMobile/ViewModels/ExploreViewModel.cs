@@ -477,7 +477,7 @@ public partial class ExploreViewModel(
             {
                 var vm = report.ToLitterReportViewModel(NotificationService);
                 LitterReports.Add(vm);
-                foreach (var image in vm.LitterImageViewModels)
+                foreach (var image in vm.LitterImageViewModels.Where(i => i.Address.Location != null))
                 {
                     Addresses.Add(image.Address);
                 }

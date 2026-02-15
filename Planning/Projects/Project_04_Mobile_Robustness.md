@@ -76,6 +76,7 @@ Mobile app quality directly impacts user retention and app store visibility. A c
 - [ ] Streamline event registration flow
 - [ ] Polish litter reporting flow (camera, location, submission)
 - [ ] Enhance dashboard/home screen with clear calls to action
+- [ ] Add lightweight API endpoint for litter report list views with first-image thumbnail URL (avoids N+1 image URL fetches per report; relates to #2340)
 - [x] Consistent loading states and feedback throughout app (PR #2588 — `IsBusy` state + user-friendly error messages)
 - [x] Add required field indicators to all forms (PR #2591)
 

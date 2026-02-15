@@ -168,7 +168,7 @@ public partial class MainViewModel(IAuthService authService,
             var vm = litterReport.ToLitterReportViewModel(notificationService);
             LitterReports.Add(vm);
 
-            foreach (var litterImageViewModel in vm.LitterImageViewModels)
+            foreach (var litterImageViewModel in vm.LitterImageViewModels.Where(i => i.Address.Location != null))
             {
                 Addresses.Add(litterImageViewModel.Address);
             }

@@ -305,6 +305,7 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
             StartDate = startDate,
             EndDate = endDate,
             CreatedByUserId = userManager.CurrentUser.Id,
+            IncludeLitterImages = true,
         };
 
         var litterReports = await litterReportManager.GetLitterReportsAsync(litterReportFilter, TrashMob.Models.ImageSizeEnum.Thumb, true);

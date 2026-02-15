@@ -26,7 +26,7 @@ public partial class EditLitterReportPage : ContentPage
 
         if (viewModel?.LitterImageViewModels?.FirstOrDefault()?.Address?.Location != null)
         {
-            var mapSpan = new MapSpan(viewModel!.LitterImageViewModels!.First().Address.Location, 0.05,
+            var mapSpan = new MapSpan(viewModel!.LitterImageViewModels!.First().Address.Location!, 0.05,
                 0.05);
             litterReportLocationMap.InitialMapSpanAndroid = mapSpan;
             litterReportLocationMap.MoveToRegion(mapSpan);

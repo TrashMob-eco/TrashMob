@@ -39,6 +39,8 @@ public partial class HomeFeedViewModel(
 
     public async Task Init()
     {
+        if (IsBusy) return;
+
         await ExecuteAsync(async () =>
         {
             var user = userManager.CurrentUser;
@@ -128,40 +130,37 @@ public partial class HomeFeedViewModel(
 
     private async Task RefreshNearbyLitterReports()
     {
+        // Fetch reports without images first (fast, reliable)
         var filter = new LitterReportFilter
         {
             StartDate = DateTimeOffset.UtcNow.AddDays(-7),
             EndDate = DateTimeOffset.UtcNow,
         };
 
-        var reports = await litterReportManager.GetLitterReportsAsync(filter, ImageSizeEnum.Thumb, true);
+        var reports = await litterReportManager.GetLitterReportsAsync(filter, ImageSizeEnum.Thumb, getImageUrls: false);
         var user = userManager.CurrentUser;
-        var maxDistanceKm = GetMaxDistanceKm(user);
 
         NearbyLitterReports.Clear();
 
-        var filteredReports = reports
+        var displayReports = reports
             .Where(r => r.LitterReportStatusId != (int)LitterReportStatusEnum.Cancelled)
             .OrderByDescending(r => r.CreatedDate)
-            .AsEnumerable();
+            .Take(3)
+            .ToList();
 
-        if (maxDistanceKm.HasValue && user.Latitude.HasValue && user.Longitude.HasValue)
+        // Fetch full details (with images) only for the reports we display
+        foreach (var report in displayReports)
         {
-            filteredReports = filteredReports.Where(r =>
+            try
             {
-                var firstImage = r.LitterImages?.FirstOrDefault();
-                if (firstImage?.Latitude == null || firstImage?.Longitude == null)
-                {
-                    return true; // Include reports without location data
-                }
-
-                return DistanceInKm(user.Latitude.Value, user.Longitude.Value, firstImage.Latitude.Value, firstImage.Longitude.Value) <= maxDistanceKm.Value;
-            });
-        }
-
-        foreach (var report in filteredReports.Take(3))
-        {
-            NearbyLitterReports.Add(report.ToLitterReportViewModel(NotificationService));
+                var fullReport = await litterReportManager.GetLitterReportAsync(report.Id, ImageSizeEnum.Thumb);
+                NearbyLitterReports.Add(fullReport.ToLitterReportViewModel(NotificationService));
+            }
+            catch
+            {
+                // Fall back to report without thumbnail
+                NearbyLitterReports.Add(report.ToLitterReportViewModel(NotificationService));
+            }
         }
 
         AreLitterReportsFound = NearbyLitterReports.Count > 0;

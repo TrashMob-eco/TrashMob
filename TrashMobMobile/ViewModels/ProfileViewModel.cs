@@ -254,6 +254,7 @@ public partial class ProfileViewModel(
             StartDate = DateTimeOffset.UtcNow.AddYears(-1),
             EndDate = DateTimeOffset.UtcNow,
             CreatedByUserId = userManager.CurrentUser.Id,
+            IncludeLitterImages = true,
         };
 
         var reports = await litterReportManager.GetLitterReportsAsync(filter, ImageSizeEnum.Thumb, true);

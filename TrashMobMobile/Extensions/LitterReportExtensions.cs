@@ -165,10 +165,12 @@
 
         public static LitterImageViewModel? ToLitterImageViewModel(this LitterImage litterImage, int litterReportStatusId, INotificationService notificationService)
         {
-            if (litterImage?.Latitude == null || litterImage.Longitude == null)
+            if (litterImage == null)
             {
                 return null;
             }
+
+            var hasLocation = litterImage.Latitude.HasValue && litterImage.Longitude.HasValue;
 
             return new LitterImageViewModel(notificationService)
             {
@@ -189,7 +191,9 @@
                     PostalCode = litterImage.PostalCode,
                     Region = litterImage.Region,
                     StreetAddress = litterImage.StreetAddress,
-                    Location = new Microsoft.Maui.Devices.Sensors.Location(litterImage.Latitude.Value, litterImage.Longitude.Value),
+                    Location = hasLocation
+                        ? new Microsoft.Maui.Devices.Sensors.Location(litterImage.Latitude!.Value, litterImage.Longitude!.Value)
+                        : null,
                     IconFile = GetMapIcon(litterReportStatusId),
                 },
             };
@@ -197,10 +201,12 @@
 
         public static LitterImageViewModel? ToLitterImageViewModel(this FullLitterImage litterImage, int litterReportStatusId, INotificationService notificationService)
         {
-            if (litterImage?.Latitude == null || litterImage.Longitude == null)
+            if (litterImage == null)
             {
                 return null;
             }
+
+            var hasLocation = litterImage.Latitude.HasValue && litterImage.Longitude.HasValue;
 
             return new LitterImageViewModel(notificationService)
             {
@@ -221,7 +227,9 @@
                     PostalCode = litterImage.PostalCode,
                     Region = litterImage.Region,
                     StreetAddress = litterImage.StreetAddress,
-                    Location = new Microsoft.Maui.Devices.Sensors.Location(litterImage.Latitude.Value, litterImage.Longitude.Value),
+                    Location = hasLocation
+                        ? new Microsoft.Maui.Devices.Sensors.Location(litterImage.Latitude!.Value, litterImage.Longitude!.Value)
+                        : null,
                     IconFile = GetMapIcon(litterReportStatusId),
                 },
             };
