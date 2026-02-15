@@ -14,8 +14,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { ImageCropUpload } from '@/components/ui/image-crop-upload';
 import CommunityData from '@/components/Models/CommunityData';
-import { GetCommunityForAdmin, UpdateCommunityContent } from '@/services/communities';
+import {
+    GetCommunityForAdmin,
+    UpdateCommunityContent,
+    UploadCommunityLogo,
+    UploadCommunityBanner,
+} from '@/services/communities';
 import { GetPartnerById } from '@/services/partners';
 import { getLocation, getRegionTypeLabel } from '@/lib/community-utils';
 
@@ -41,8 +47,8 @@ const formSchema = z.object({
     tagline: z.string().max(100, 'Tagline must be less than 100 characters'),
     brandingPrimaryColor: z.string().regex(hexColorRegex, 'Must be a valid hex color (e.g., #3B82F6)'),
     brandingSecondaryColor: z.string().regex(hexColorRegex, 'Must be a valid hex color (e.g., #1E40AF)'),
-    bannerImageUrl: z.string().regex(urlRegex, 'Must be a valid URL'),
-    logoUrl: z.string().regex(urlRegex, 'Must be a valid URL'),
+    bannerImageUrl: z.string(),
+    logoUrl: z.string(),
     contactEmail: z.string().regex(emailRegex, 'Must be a valid email'),
     contactPhone: z.string().max(50, 'Phone must be less than 50 characters'),
     physicalAddress: z.string().max(500, 'Address must be less than 500 characters'),
@@ -86,6 +92,37 @@ export const PartnerCommunityContent = () => {
                 title: 'Error',
                 description: 'Failed to save changes. Please try again.',
             });
+        },
+    });
+
+    const invalidateCommunity = useCallback(() => {
+        queryClient.invalidateQueries({
+            queryKey: GetCommunityForAdmin({ communityId: partnerId }).key,
+            refetchType: 'all',
+        });
+    }, [queryClient, partnerId]);
+
+    const uploadLogoMutation = useMutation({
+        mutationFn: (file: File) => UploadCommunityLogo().service({ communityId: partnerId }, file),
+        onSuccess: (res) => {
+            form.setValue('logoUrl', res.data.url);
+            invalidateCommunity();
+            toast({ variant: 'primary', title: 'Logo uploaded!' });
+        },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Error', description: 'Failed to upload logo.' });
+        },
+    });
+
+    const uploadBannerMutation = useMutation({
+        mutationFn: (file: File) => UploadCommunityBanner().service({ communityId: partnerId }, file),
+        onSuccess: (res) => {
+            form.setValue('bannerImageUrl', res.data.url);
+            invalidateCommunity();
+            toast({ variant: 'primary', title: 'Banner uploaded!' });
+        },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Error', description: 'Failed to upload banner.' });
         },
     });
 
@@ -245,35 +282,21 @@ export const PartnerCommunityContent = () => {
                         </CardHeader>
                         <CardContent className='space-y-4'>
                             <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                                <FormField
-                                    control={form.control}
-                                    name='logoUrl'
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Logo URL</FormLabel>
-                                            <FormControl>
-                                                <Input {...field} placeholder='https://example.com/logo.png' />
-                                            </FormControl>
-                                            <FormDescription>Square image, recommended 200x200px.</FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
+                                <ImageCropUpload
+                                    aspectRatio={1}
+                                    currentImageUrl={form.watch('logoUrl') || undefined}
+                                    onCropComplete={(file) => uploadLogoMutation.mutate(file)}
+                                    label='Logo'
+                                    recommendedSize='200×200px'
+                                    uploading={uploadLogoMutation.isPending}
                                 />
-                                <FormField
-                                    control={form.control}
-                                    name='bannerImageUrl'
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Banner Image URL</FormLabel>
-                                            <FormControl>
-                                                <Input {...field} placeholder='https://example.com/banner.jpg' />
-                                            </FormControl>
-                                            <FormDescription>
-                                                Wide image for the page header. Recommended size: 1200 x 300 pixels.
-                                            </FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
+                                <ImageCropUpload
+                                    aspectRatio={4}
+                                    currentImageUrl={form.watch('bannerImageUrl') || undefined}
+                                    onCropComplete={(file) => uploadBannerMutation.mutate(file)}
+                                    label='Banner Image'
+                                    recommendedSize='1200×300px'
+                                    uploading={uploadBannerMutation.isPending}
                                 />
                             </div>
                             <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>

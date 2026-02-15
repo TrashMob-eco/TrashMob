@@ -65,3 +65,23 @@ export const DeactivateSponsor = () => ({
             method: 'delete',
         }),
 });
+
+// ============================================================================
+// Sponsor Logo Upload
+// ============================================================================
+
+export type UploadSponsorLogo_Params = { partnerId: string; sponsorId: string };
+export type UploadSponsorLogo_Response = { url: string };
+export const UploadSponsorLogo = () => ({
+    key: ['/communities/sponsors/logo', 'upload'],
+    service: async (params: UploadSponsorLogo_Params, file: File) => {
+        const formData = new FormData();
+        formData.append('formFile', file);
+        return ApiService('protected').fetchData<UploadSponsorLogo_Response>({
+            url: `/communities/${params.partnerId}/sponsors/${params.sponsorId}/logo`,
+            method: 'post',
+            data: formData,
+            headers: { 'Content-Type': 'multipart/form-data' },
+        });
+    },
+});

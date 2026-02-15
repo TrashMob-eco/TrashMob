@@ -163,6 +163,7 @@ export const AchievementsPage = () => {
                 <p className='text-muted-foreground mt-2'>
                     Track your volunteer milestones and earn badges for your contributions.
                 </p>
+                <p className='text-sm text-muted-foreground mt-1'>Achievements are updated once daily.</p>
             </div>
 
             {isLoading ? (

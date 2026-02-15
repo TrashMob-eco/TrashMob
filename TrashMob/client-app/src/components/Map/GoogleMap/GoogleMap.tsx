@@ -39,7 +39,7 @@ export const GoogleMapWithKey = (props: PropsWithChildren<MapProps>) => {
     if (isLoading) return null;
 
     return (
-        <APIProvider apiKey={googleApiKey || ''}>
+        <APIProvider apiKey={googleApiKey || ''} libraries={['drawing', 'geometry']}>
             <GoogleMap {...props} />
         </APIProvider>
     );

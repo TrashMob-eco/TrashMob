@@ -121,9 +121,19 @@ const PartnerCommunityAreaEdit = lazy(() =>
         default: m.PartnerCommunityAreaEdit,
     })),
 );
+const PartnerCommunityAreasImport = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/community/areas/import').then((m) => ({
+        default: m.PartnerCommunityAreasImport,
+    })),
+);
 const PartnerCommunityAreaDefaults = lazy(() =>
     import('./pages/partnerdashboard/$partnerId/community/area-defaults').then((m) => ({
         default: m.PartnerCommunityAreaDefaults,
+    })),
+);
+const CommunityRegionalSettings = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/community/regional-settings').then((m) => ({
+        default: m.CommunityRegionalSettings,
     })),
 );
 const PartnerCommunityAdoptions = lazy(() =>
@@ -500,7 +510,9 @@ const AppContent: FC = () => {
                                     <Route path='community/areas' element={<PartnerCommunityAreas />} />
                                     <Route path='community/areas/create' element={<PartnerCommunityAreaCreate />} />
                                     <Route path='community/areas/:areaId/edit' element={<PartnerCommunityAreaEdit />} />
+                                    <Route path='community/areas/import' element={<PartnerCommunityAreasImport />} />
                                     <Route path='community/area-defaults' element={<PartnerCommunityAreaDefaults />} />
+                                    <Route path='community/regional-settings' element={<CommunityRegionalSettings />} />
                                     <Route path='community/adoptions' element={<PartnerCommunityAdoptions />} />
                                     <Route path='community/invites' element={<PartnerCommunityInvites />} />
                                     <Route

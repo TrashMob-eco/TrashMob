@@ -12,6 +12,7 @@ namespace TrashMob.Controllers
     using TrashMob.Security;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
+    using TrashMob.Shared.Poco;
 
     /// <summary>
     /// Controller for managing sponsors within a community's sponsored adoption program.
@@ -19,7 +20,8 @@ namespace TrashMob.Controllers
     [Route("api/communities/{partnerId}/sponsors")]
     public class CommunitySponsorsController(
         ISponsorManager sponsorManager,
-        IKeyedManager<Partner> partnerManager)
+        IKeyedManager<Partner> partnerManager,
+        IImageManager imageManager)
         : SecureController
     {
 
@@ -200,6 +202,54 @@ namespace TrashMob.Controllers
             await sponsorManager.UpdateAsync(existing, UserId, cancellationToken);
 
             return NoContent();
+        }
+
+        /// <summary>
+        /// Uploads a sponsor logo image (resized to 200x200).
+        /// </summary>
+        /// <param name="partnerId">The community (partner) ID.</param>
+        /// <param name="sponsorId">The sponsor ID.</param>
+        /// <param name="imageUpload">The image file.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpPost("{sponsorId}/logo")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UploadSponsorLogo(
+            Guid partnerId,
+            Guid sponsorId,
+            [FromForm] ImageUpload imageUpload,
+            CancellationToken cancellationToken)
+        {
+            var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
+            if (partner is null)
+            {
+                return NotFound();
+            }
+
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
+            {
+                return Forbid();
+            }
+
+            var sponsor = await sponsorManager.GetAsync(sponsorId, cancellationToken);
+            if (sponsor is null || sponsor.PartnerId != partnerId)
+            {
+                return NotFound();
+            }
+
+            imageUpload.ParentId = sponsorId;
+            imageUpload.ImageType = ImageTypeEnum.SponsorLogo;
+            var url = await imageManager.UploadImageWithSizeAsync(imageUpload, 200, 200);
+
+            sponsor.LogoUrl = url;
+            sponsor.LastUpdatedByUserId = UserId;
+            await sponsorManager.UpdateAsync(sponsor, UserId, cancellationToken);
+
+            TrackEvent(nameof(UploadSponsorLogo));
+            return Ok(new { url });
         }
     }
 }

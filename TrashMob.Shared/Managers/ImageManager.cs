@@ -111,6 +111,42 @@ namespace TrashMob.Shared.Managers
         }
 
         /// <inheritdoc />
+        public async Task<string> UploadImageWithSizeAsync(ImageUpload imageUpload, int width, int height)
+        {
+            if (imageUpload?.FormFile is null)
+            {
+                throw new ArgumentNullException(nameof(imageUpload));
+            }
+
+            var blobContainer = blobServiceClient.GetBlobContainerClient(imageUpload.ImageType.ToString().ToLower());
+
+            var fileTime = DateTimeOffset.UtcNow.ToString("ddHHmmss");
+
+            logger.LogInformation("UploadImageWithSize ParentId: {ParentId}, ImageType: {ImageType}, Size: {Width}x{Height}",
+                imageUpload.ParentId, imageUpload.ImageType, width, height);
+
+            // Delete any existing images for this parent/type so we replace rather than accumulate
+            await DeleteImageAsync(imageUpload.ParentId, imageUpload.ImageType);
+
+            using var memoryStream = new MemoryStream();
+            await imageUpload.FormFile.CopyToAsync(memoryStream);
+            memoryStream.Position = 0;
+
+            using var image = await Image.LoadAsync(memoryStream);
+            image.Mutate(x => x.Resize(width, height));
+
+            var fileName = $"{imageUpload.ParentId}-{imageUpload.ImageType}-{ImageSizeEnum.Reduced}-{fileTime}.jpg".ToLower();
+
+            using var outputStream = new MemoryStream();
+            await image.SaveAsync(outputStream, new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder());
+            outputStream.Position = 0;
+
+            await UploadBlob(outputStream, fileName, blobContainer);
+
+            return $"{blobContainer.Uri}/{fileName}";
+        }
+
+        /// <inheritdoc />
         public async Task<bool> DeleteImageAsync(Guid parentId, ImageTypeEnum imageType)
         {
             var imageName = await GetImageNameAsync(parentId, imageType);

@@ -309,6 +309,88 @@ namespace TrashMob.Controllers
         }
 
         // ============================================================================
+        // Community Branding Image Endpoints
+        // ============================================================================
+
+        /// <summary>
+        /// Uploads a community logo image (resized to 200x200).
+        /// </summary>
+        /// <param name="communityId">The community/partner ID.</param>
+        /// <param name="imageUpload">The image file.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpPost("admin/{communityId:guid}/logo")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UploadCommunityLogo(
+            Guid communityId,
+            [FromForm] ImageUpload imageUpload,
+            CancellationToken cancellationToken)
+        {
+            var community = await communityManager.GetByIdAsync(communityId, cancellationToken);
+            if (community is null)
+            {
+                return NotFound();
+            }
+
+            if (!await IsAuthorizedAsync(community, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
+            {
+                return Forbid();
+            }
+
+            imageUpload.ParentId = communityId;
+            imageUpload.ImageType = ImageTypeEnum.CommunityLogo;
+            var url = await imageManager.UploadImageWithSizeAsync(imageUpload, 200, 200);
+
+            community.LogoUrl = url;
+            await communityManager.UpdateCommunityContentAsync(community, UserId, cancellationToken);
+
+            TrackEvent(nameof(UploadCommunityLogo));
+            return Ok(new { url });
+        }
+
+        /// <summary>
+        /// Uploads a community banner image (resized to 1200x300).
+        /// </summary>
+        /// <param name="communityId">The community/partner ID.</param>
+        /// <param name="imageUpload">The image file.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpPost("admin/{communityId:guid}/banner")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UploadCommunityBanner(
+            Guid communityId,
+            [FromForm] ImageUpload imageUpload,
+            CancellationToken cancellationToken)
+        {
+            var community = await communityManager.GetByIdAsync(communityId, cancellationToken);
+            if (community is null)
+            {
+                return NotFound();
+            }
+
+            if (!await IsAuthorizedAsync(community, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
+            {
+                return Forbid();
+            }
+
+            imageUpload.ParentId = communityId;
+            imageUpload.ImageType = ImageTypeEnum.CommunityBanner;
+            var url = await imageManager.UploadImageWithSizeAsync(imageUpload, 1200, 300);
+
+            community.BannerImageUrl = url;
+            await communityManager.UpdateCommunityContentAsync(community, UserId, cancellationToken);
+
+            TrackEvent(nameof(UploadCommunityBanner));
+            return Ok(new { url });
+        }
+
+        // ============================================================================
         // Community Photo Gallery Endpoints
         // ============================================================================
 

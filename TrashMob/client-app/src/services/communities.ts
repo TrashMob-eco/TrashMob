@@ -193,3 +193,39 @@ export const UpdateCommunityContent = () => ({
             data: params,
         }),
 });
+
+// ============================================================================
+// Community Branding Image Uploads
+// ============================================================================
+
+export type UploadCommunityLogo_Params = { communityId: string };
+export type UploadCommunityLogo_Response = { url: string };
+export const UploadCommunityLogo = () => ({
+    key: ['/communities/admin/logo', 'upload'],
+    service: async (params: UploadCommunityLogo_Params, file: File) => {
+        const formData = new FormData();
+        formData.append('formFile', file);
+        return ApiService('protected').fetchData<UploadCommunityLogo_Response>({
+            url: `/communities/admin/${params.communityId}/logo`,
+            method: 'post',
+            data: formData,
+            headers: { 'Content-Type': 'multipart/form-data' },
+        });
+    },
+});
+
+export type UploadCommunityBanner_Params = { communityId: string };
+export type UploadCommunityBanner_Response = { url: string };
+export const UploadCommunityBanner = () => ({
+    key: ['/communities/admin/banner', 'upload'],
+    service: async (params: UploadCommunityBanner_Params, file: File) => {
+        const formData = new FormData();
+        formData.append('formFile', file);
+        return ApiService('protected').fetchData<UploadCommunityBanner_Response>({
+            url: `/communities/admin/${params.communityId}/banner`,
+            method: 'post',
+            data: formData,
+            headers: { 'Content-Type': 'multipart/form-data' },
+        });
+    },
+});
