@@ -402,9 +402,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                                         key={stat.name}
                                     >
                                         <div className='min-w-0'>
-                                            <p className='text-lg lg:text-sm font-medium mb-2 lg:mb-1'>
-                                                {stat.name}
-                                            </p>
+                                            <p className='text-lg lg:text-sm font-medium mb-2 lg:mb-1'>{stat.name}</p>
                                             <p className='text-primary text-4xl lg:text-2xl'>{stat.value}</p>
                                         </div>
                                         <img
