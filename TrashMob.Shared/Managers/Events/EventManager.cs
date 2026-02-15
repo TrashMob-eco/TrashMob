@@ -219,6 +219,7 @@ namespace TrashMob.Shared.Managers.Events
                 UserId = userId,
                 EventId = instance.Id,
                 SignUpDate = DateTime.UtcNow,
+                IsEventLead = true,
             };
 
             await eventAttendeeManager.AddAsync(newEventAttendee, userId, cancellationToken);
