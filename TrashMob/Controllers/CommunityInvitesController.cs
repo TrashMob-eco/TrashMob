@@ -18,7 +18,7 @@ namespace TrashMob.Controllers
     /// Controller for community email invitation operations.
     /// Endpoints require community admin privileges.
     /// </summary>
-    [Authorize]
+    [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
     [Route("api/communities/{communityId}/invites")]
     public class CommunityInvitesController(
         IEmailInviteManager emailInviteManager,
