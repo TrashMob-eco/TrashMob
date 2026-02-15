@@ -20,6 +20,7 @@ export const GoogleMap = (props: PropsWithChildren<MapProps>) => {
 
     return (
         <Map
+            id={id}
             mapId='6f295631d841c617'
             gestureHandling={props.gestureHandling ?? 'greedy'}
             disableDefaultUI
