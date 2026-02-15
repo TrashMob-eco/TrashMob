@@ -80,36 +80,33 @@ export function ImageCropUpload({
     const [error, setError] = useState<string | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const onFileSelect = useCallback(
-        (e: React.ChangeEvent<HTMLInputElement>) => {
-            setError(null);
-            const file = e.target.files?.[0];
-            if (!file) return;
+    const onFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setError(null);
+        const file = e.target.files?.[0];
+        if (!file) return;
 
-            if (!ACCEPTED_TYPES.includes(file.type)) {
-                setError('Please select a JPEG, PNG, or WebP image.');
-                return;
-            }
+        if (!ACCEPTED_TYPES.includes(file.type)) {
+            setError('Please select a JPEG, PNG, or WebP image.');
+            return;
+        }
 
-            if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
-                setError(`File must be under ${MAX_FILE_SIZE_MB}MB.`);
-                return;
-            }
+        if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+            setError(`File must be under ${MAX_FILE_SIZE_MB}MB.`);
+            return;
+        }
 
-            const reader = new FileReader();
-            reader.onload = () => {
-                setImageSrc(reader.result as string);
-                setCrop({ x: 0, y: 0 });
-                setZoom(1);
-                setDialogOpen(true);
-            };
-            reader.readAsDataURL(file);
+        const reader = new FileReader();
+        reader.onload = () => {
+            setImageSrc(reader.result as string);
+            setCrop({ x: 0, y: 0 });
+            setZoom(1);
+            setDialogOpen(true);
+        };
+        reader.readAsDataURL(file);
 
-            // Reset input so the same file can be re-selected
-            e.target.value = '';
-        },
-        [],
-    );
+        // Reset input so the same file can be re-selected
+        e.target.value = '';
+    }, []);
 
     const handleCropConfirm = useCallback(async () => {
         if (!imageSrc || !croppedAreaPixels) return;
@@ -147,11 +144,7 @@ export function ImageCropUpload({
                     </div>
                 ) : currentImageUrl ? (
                     <>
-                        <img
-                            src={currentImageUrl}
-                            alt={label}
-                            className='h-full w-full object-cover'
-                        />
+                        <img src={currentImageUrl} alt={label} className='h-full w-full object-cover' />
                         <div className='absolute inset-0 flex items-center justify-center bg-black/0 transition-colors hover:bg-black/40'>
                             <span className='text-sm font-medium text-white opacity-0 transition-opacity hover:opacity-100'>
                                 Click to replace
