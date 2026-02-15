@@ -31,7 +31,7 @@ public partial class AddressViewModel : ObservableObject
     private double? latitude;
 
     [ObservableProperty]
-    private Location location = null!;
+    private Location? location;
 
     [ObservableProperty]
     private double? longitude;

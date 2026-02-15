@@ -88,5 +88,11 @@
         {
             return litterReportRestService.GetLocationsByTimeRangeAsync(startDate, endDate, cancellationToken);
         }
+
+        public Task<string> GetLitterImageUrlAsync(Guid litterImageId, ImageSizeEnum imageSize,
+            CancellationToken cancellationToken = default)
+        {
+            return litterReportRestService.GetLitterImageUrlAsync(litterImageId, imageSize, cancellationToken);
+        }
     }
 }

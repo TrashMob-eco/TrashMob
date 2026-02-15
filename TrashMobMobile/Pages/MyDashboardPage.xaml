@@ -89,7 +89,7 @@
                             Style="{StaticResource SecondarySmallButton}"
                             Text="Report Litter"
                             ContentLayout="Left, 8"
-                            ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconClipboardText}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />
+                            ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconClipboardText}, Color={AppThemeBinding Light={StaticResource PrimaryReverseText}, Dark={StaticResource PrimaryDarkReverseText}}}" />
                 </Grid>
 
                 <tabs:TabHostView Padding="10" 

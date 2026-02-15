@@ -23,5 +23,8 @@
 
         Task<IEnumerable<TrashMob.Models.Poco.Location>> GetLocationsByTimeRangeAsync(DateTimeOffset startDate,
             DateTimeOffset endDate, CancellationToken cancellationToken = default);
+
+        Task<string> GetLitterImageUrlAsync(Guid litterImageId, ImageSizeEnum imageSize,
+            CancellationToken cancellationToken = default);
     }
 }
