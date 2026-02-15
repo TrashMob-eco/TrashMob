@@ -42,7 +42,7 @@ namespace TrashMob.Shared.Managers.LitterReport
 
                 logger.LogInformation("Updating litter report");
 
-                var existingInstance = Repo.Get().Where(l => l.Id == litterReport.Id)
+                var existingInstance = Repo.Get(l => l.Id == litterReport.Id, withNoTracking: false)
                     .Include(l => l.LitterImages)
                     .FirstOrDefault();
 
@@ -98,7 +98,7 @@ namespace TrashMob.Shared.Managers.LitterReport
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error adding litter report");
+                logger.LogError(ex, "Error updating litter report");
                 return null;
             }
         }

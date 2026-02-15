@@ -61,7 +61,9 @@
                                         <Grid ColumnDefinitions="Auto, *, Auto">
                                             <Image Grid.Column="0"
                                                    Margin="5"
-                                                   MaximumWidthRequest="100"
+                                                   WidthRequest="80" HeightRequest="80"
+                                                   MaximumWidthRequest="80" MaximumHeightRequest="80"
+                                                   Aspect="AspectFill"
                                                    Source="{Binding FilePath}" />
                                             <Label Grid.Column="1"
                                                    Margin="5"
