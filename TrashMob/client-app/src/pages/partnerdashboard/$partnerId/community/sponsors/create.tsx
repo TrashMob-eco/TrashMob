@@ -153,20 +153,11 @@ export const PartnerCommunitySponsorCreate = () => {
                                     )}
                                 />
                             </div>
-                            <FormField
-                                control={form.control}
-                                name='logoUrl'
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Logo URL</FormLabel>
-                                        <FormControl>
-                                            <Input {...field} placeholder='https://example.com/logo.png' />
-                                        </FormControl>
-                                        <FormDescription>URL to the sponsor&apos;s logo image.</FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                            <div className='rounded-lg border border-dashed p-4'>
+                                <p className='text-sm text-muted-foreground'>
+                                    A logo can be uploaded after the sponsor is created.
+                                </p>
+                            </div>
                             <FormField
                                 control={form.control}
                                 name='showOnPublicMap'

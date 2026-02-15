@@ -14,8 +14,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
+import { ImageCropUpload } from '@/components/ui/image-crop-upload';
 import SponsorData from '@/components/Models/SponsorData';
-import { GetSponsor, GetSponsors, UpdateSponsor } from '@/services/sponsors';
+import { GetSponsor, GetSponsors, UpdateSponsor, UploadSponsorLogo } from '@/services/sponsors';
 
 interface FormInputs {
     name: string;
@@ -70,6 +71,18 @@ export const PartnerCommunitySponsorEdit = () => {
                 title: 'Error',
                 description: 'Failed to update sponsor. Please try again.',
             });
+        },
+    });
+
+    const uploadLogoMutation = useMutation({
+        mutationFn: (file: File) => UploadSponsorLogo().service({ partnerId, sponsorId }, file),
+        onSuccess: (res) => {
+            form.setValue('logoUrl', res.data.url);
+            queryClient.invalidateQueries({ queryKey: GetSponsor({ partnerId, sponsorId }).key });
+            toast({ variant: 'primary', title: 'Logo uploaded!' });
+        },
+        onError: () => {
+            toast({ variant: 'destructive', title: 'Error', description: 'Failed to upload logo.' });
         },
     });
 
@@ -185,19 +198,13 @@ export const PartnerCommunitySponsorEdit = () => {
                                     )}
                                 />
                             </div>
-                            <FormField
-                                control={form.control}
-                                name='logoUrl'
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Logo URL</FormLabel>
-                                        <FormControl>
-                                            <Input {...field} placeholder='https://example.com/logo.png' />
-                                        </FormControl>
-                                        <FormDescription>URL to the sponsor&apos;s logo image.</FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
+                            <ImageCropUpload
+                                aspectRatio={1}
+                                currentImageUrl={form.watch('logoUrl') || undefined}
+                                onCropComplete={(file) => uploadLogoMutation.mutate(file)}
+                                label='Sponsor Logo'
+                                recommendedSize='200×200px'
+                                uploading={uploadLogoMutation.isPending}
                             />
                             <FormField
                                 control={form.control}

@@ -247,6 +247,21 @@ namespace TrashMob.Models
         /// User profile photo (uploaded or replaced from social IDP).
         /// </summary>
         UserProfilePhoto = 9,
+
+        /// <summary>
+        /// Logo image for a community.
+        /// </summary>
+        CommunityLogo = 10,
+
+        /// <summary>
+        /// Banner image for a community.
+        /// </summary>
+        CommunityBanner = 11,
+
+        /// <summary>
+        /// Logo image for a sponsor.
+        /// </summary>
+        SponsorLogo = 12,
     }
 
     /// <summary>
