@@ -1,6 +1,15 @@
+import { Link } from 'react-router';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTableColumnHeader } from '@/components/ui/data-table';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuTrigger,
+    DropdownMenuContent,
+    DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
+import { Download, Ellipsis, ExternalLink } from 'lucide-react';
 import { DocumentExpirationBadge } from '@/components/documents/document-expiration-badge';
 import { AdminPartnerDocumentData } from '@/services/documents';
 import { documentTypeLabels, formatFileSize } from '@/pages/partnerdashboard/$partnerId/documents-columns';
@@ -11,7 +20,11 @@ function formatDate(date: Date | string | null): string {
     return d.toLocaleDateString();
 }
 
-export const columns: ColumnDef<AdminPartnerDocumentData>[] = [
+interface GetColumnsProps {
+    onDownload: (documentId: string) => void;
+}
+
+export const getColumns = ({ onDownload }: GetColumnsProps): ColumnDef<AdminPartnerDocumentData>[] => [
     {
         id: 'partnerName',
         accessorFn: (row) => row.partner?.name ?? '',
@@ -50,5 +63,35 @@ export const columns: ColumnDef<AdminPartnerDocumentData>[] = [
         accessorKey: 'createdDate',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Created' />,
         cell: ({ row }) => formatDate(row.getValue('createdDate') as Date | null),
+    },
+    {
+        id: 'actions',
+        header: () => <div className='text-right'>Actions</div>,
+        cell: ({ row }) => {
+            const doc = row.original;
+            return (
+                <div className='text-right'>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant='ghost' size='icon'>
+                                <Ellipsis />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className='w-56'>
+                            <DropdownMenuItem onClick={() => onDownload(doc.id)}>
+                                <Download />
+                                Download
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link to={`/partnerdashboard/${doc.partnerId}/documents`}>
+                                    <ExternalLink />
+                                    View Partner Documents
+                                </Link>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+            );
+        },
     },
 ];

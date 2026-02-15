@@ -1,5 +1,6 @@
+import { Link } from 'react-router';
 import { ColumnDef } from '@tanstack/react-table';
-import { Ellipsis, SquareX } from 'lucide-react';
+import { Ellipsis, Eye, SquareX } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuTrigger,
@@ -52,6 +53,12 @@ export const getColumns = ({ onDelete }: GetColumnsProps): ColumnDef<UserData>[]
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className='w-56'>
+                        <DropdownMenuItem asChild>
+                            <Link to={`${user.id}`}>
+                                <Eye />
+                                View User
+                            </Link>
+                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => onDelete(user.id, user.userName)}>
                             <SquareX />
                             Delete User

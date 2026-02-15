@@ -545,7 +545,7 @@ const EditTeamForm = () => {
         );
     }
 
-    if (!isLead) {
+    if (!isLead && !currentUser.isSiteAdmin) {
         return (
             <div>
                 <HeroSection Title='Access Denied' Description='' />
