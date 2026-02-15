@@ -4,13 +4,14 @@ import { AxiosResponse } from 'axios';
 import { Link } from 'react-router';
 import { ColumnDef } from '@tanstack/react-table';
 import { AdvancedMarker, InfoWindow } from '@vis.gl/react-google-maps';
-import { MapPin, Calendar, Eye, Plus, List, Map } from 'lucide-react';
+import { MapPin, Calendar, Eye, Plus, List, Map, Search } from 'lucide-react';
 
 import { HeroSection } from '@/components/Customization/HeroSection';
 import { Card, CardContent } from '@/components/ui/card';
 import { DataTable, DataTableColumnHeader } from '@/components/ui/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItemAlt, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { GoogleMapWithKey as GoogleMap } from '@/components/Map/GoogleMap';
@@ -140,6 +141,7 @@ const columns: ColumnDef<LitterReportData>[] = [
 export const LitterReportsPage = () => {
     const [statusFilter, setStatusFilter] = useState<string>('all');
     const [dateFilter, setDateFilter] = useState<string>(getAllCompletedTimerange());
+    const [locationFilter, setLocationFilter] = useState<string>('');
     const [view, setView] = useState<string>('list');
 
     const { data: litterReports, isLoading } = useQuery<AxiosResponse<LitterReportData[]>, unknown, LitterReportData[]>(
@@ -154,15 +156,20 @@ export const LitterReportsPage = () => {
     const filteredReports = useMemo(() => {
         if (!litterReports) return [];
         const [startDate, endDate] = dateFilter.split('|');
+        const locationQuery = locationFilter.trim().toLowerCase();
         return litterReports.filter((report) => {
             if (statusFilter !== 'all' && report.litterReportStatusId !== Number(statusFilter)) return false;
             if (report.createdDate) {
                 const created = new Date(report.createdDate);
                 if (created < new Date(startDate) || created > new Date(endDate)) return false;
             }
+            if (locationQuery) {
+                const loc = getLocation(report).toLowerCase();
+                if (!loc.includes(locationQuery)) return false;
+            }
             return true;
         });
-    }, [litterReports, statusFilter, dateFilter]);
+    }, [litterReports, statusFilter, dateFilter, locationFilter]);
 
     // Map markers: only reports with lat/lng
     const reportsWithLocation = useMemo(
@@ -212,6 +219,15 @@ export const LitterReportsPage = () => {
                             ))}
                         </SelectContent>
                     </Select>
+                    <div className='relative w-52'>
+                        <Search className='absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground' />
+                        <Input
+                            placeholder='Filter by city or region'
+                            value={locationFilter}
+                            onChange={(e) => setLocationFilter(e.target.value)}
+                            className='pl-9'
+                        />
+                    </div>
                     <div className='flex-1' />
                     <ToggleGroup value={view} onValueChange={(v) => v && setView(v)} type='single' variant='outline'>
                         <ToggleGroupItem

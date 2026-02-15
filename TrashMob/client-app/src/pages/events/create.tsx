@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ManageEventDashboardLayout } from './_layout';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -101,8 +101,6 @@ export const CreateEventPage = () => {
         { key: 'review', label: 'Review' },
     ];
     const [step, setStep] = useState<string>(fromLitterReport ? 'edit-detail' : 'pick-location');
-    const [showWaiverFlow, setShowWaiverFlow] = useState(false);
-    const pendingSubmitRef = useRef<z.infer<typeof createEventSchema> | null>(null);
 
     // Fetch required waivers for the current user
     const { data: requiredWaivers, refetch: refetchWaivers } = useQuery({
@@ -111,6 +109,17 @@ export const CreateEventPage = () => {
         select: (res) => res.data,
         enabled: !!currentUser.id,
     });
+
+    // Show waiver flow immediately on page load if there are unsigned waivers
+    const hasPendingWaivers = requiredWaivers && requiredWaivers.length > 0;
+    const [showWaiverFlow, setShowWaiverFlow] = useState(false);
+    const [waiversDismissed, setWaiversDismissed] = useState(false);
+
+    useEffect(() => {
+        if (hasPendingWaivers && !waiversDismissed) {
+            setShowWaiverFlow(true);
+        }
+    }, [hasPendingWaivers, waiversDismissed]);
 
     const addEventLitterReport = useMutation({
         mutationKey: AddEventLitterReport().key,
@@ -253,29 +262,20 @@ export const CreateEventPage = () => {
     }
 
     function onSubmit(formValues: z.infer<typeof createEventSchema>) {
-        // Check if user has unsigned waivers — if so, show waiver flow before creating
-        if (requiredWaivers && requiredWaivers.length > 0) {
-            pendingSubmitRef.current = formValues;
-            setShowWaiverFlow(true);
-            return;
-        }
         createEvent.mutate(buildEventBody(formValues));
     }
 
     const handleWaiverFlowComplete = useCallback(
         (allSigned: boolean) => {
             setShowWaiverFlow(false);
-            if (allSigned && pendingSubmitRef.current) {
-                // Refetch to confirm waivers are signed, then create the event
-                refetchWaivers().then(() => {
-                    createEvent.mutate(buildEventBody(pendingSubmitRef.current!));
-                    pendingSubmitRef.current = null;
-                });
+            if (allSigned) {
+                refetchWaivers();
             } else {
-                pendingSubmitRef.current = null;
+                // User dismissed waivers without signing — mark as dismissed so we don't loop
+                setWaiversDismissed(true);
             }
         },
-        [refetchWaivers, createEvent],
+        [refetchWaivers],
     );
 
     const map = useMap('locationPicker');
