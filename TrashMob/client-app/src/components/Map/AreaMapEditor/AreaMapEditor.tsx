@@ -142,7 +142,9 @@ export const AreaMapEditor = ({
         const parsed = parseGeoJson(value);
         if (!parsed) return;
         const path =
-            parsed.type === 'Polygon' ? polygonCoordsToPath(parsed.coordinates) : lineStringCoordsToPath(parsed.coordinates);
+            parsed.type === 'Polygon'
+                ? polygonCoordsToPath(parsed.coordinates)
+                : lineStringCoordsToPath(parsed.coordinates);
         if (path.length === 0) return;
         window.dispatchEvent(new CustomEvent('areamap:fitbounds', { detail: { path } }));
     }, [value]);
