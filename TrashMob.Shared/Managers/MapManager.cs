@@ -192,7 +192,8 @@ namespace TrashMob.Shared.Managers
         }
 
         /// <inheritdoc />
-        public async Task<string> SearchAddressAsync(string query, string entityType = null)
+        public async Task<string> SearchAddressAsync(string query, string entityType = null,
+            (double North, double South, double East, double West)? boundingBox = null)
         {
             logger.LogInformation("Searching address with query: {Query}, UseManagedIdentity: {UseManagedIdentity}", query, UseManagedIdentity);
 
@@ -218,6 +219,13 @@ namespace TrashMob.Shared.Managers
             if (!string.IsNullOrWhiteSpace(entityType))
             {
                 url += $"&entityType={Uri.EscapeDataString(entityType)}";
+            }
+
+            if (boundingBox.HasValue)
+            {
+                var bb = boundingBox.Value;
+                url += $"&topLeft={bb.North.ToString(System.Globalization.CultureInfo.InvariantCulture)},{bb.West.ToString(System.Globalization.CultureInfo.InvariantCulture)}"
+                     + $"&btmRight={bb.South.ToString(System.Globalization.CultureInfo.InvariantCulture)},{bb.East.ToString(System.Globalization.CultureInfo.InvariantCulture)}";
             }
 
             var response = await httpClient.GetAsync(url);

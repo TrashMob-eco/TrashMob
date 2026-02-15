@@ -101,6 +101,10 @@ export type SuggestArea_Body = {
     centerLatitude?: number;
     centerLongitude?: number;
     communityName?: string;
+    boundsNorth?: number;
+    boundsSouth?: number;
+    boundsEast?: number;
+    boundsWest?: number;
 };
 export type SuggestArea_Response = {
     geoJson: string | null;

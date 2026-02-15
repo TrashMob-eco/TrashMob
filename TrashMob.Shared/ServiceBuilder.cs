@@ -104,6 +104,7 @@
             // Adoption managers
             services.AddScoped<IAdoptableAreaManager, AdoptableAreaManager>();
             services.AddScoped<IAreaSuggestionService, AreaSuggestionService>();
+            services.AddHttpClient<INominatimService, NominatimService>();
             services.AddScoped<IAreaFileParser, AreaFileParser>();
             services.AddScoped<ITeamAdoptionManager, TeamAdoptionManager>();
             services.AddScoped<ITeamAdoptionEventManager, TeamAdoptionEventManager>();

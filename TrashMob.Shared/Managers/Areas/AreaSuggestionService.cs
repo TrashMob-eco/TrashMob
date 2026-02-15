@@ -19,7 +19,8 @@ namespace TrashMob.Shared.Managers.Areas
     public class AreaSuggestionService(
         IConfiguration configuration,
         ILogger<AreaSuggestionService> logger,
-        IMapManager mapManager) : IAreaSuggestionService
+        IMapManager mapManager,
+        INominatimService nominatimService) : IAreaSuggestionService
     {
         private static readonly SemaphoreSlim RateLimiter = new(1, 1);
         private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
@@ -37,6 +38,8 @@ namespace TrashMob.Shared.Managers.Areas
             - "suggestedAreaType": string — one of: "Highway", "Park", "Trail", "Waterway", "Street", "Spot"
             - "geometryType": string — either "polygon" (for parks, lots, blocks) or "linestring" (for streets, trails, waterways)
             - "confidence": number — your confidence in the interpretation, from 0.0 to 1.0
+            - "isNamedFeature": boolean — true if the description refers to a specific named place
+              (park, school, building, lake, etc.) that likely has a well-defined boundary in OpenStreetMap
 
             Guidelines:
             - For street segments: provide start and end intersection addresses as two queries with type "street_segment"
@@ -74,8 +77,35 @@ namespace TrashMob.Shared.Managers.Areas
                     return new AreaSuggestionResult { Message = "Could not interpret the area description. Try being more specific." };
                 }
 
-                // Step 2: Geocode each query via Azure Maps
-                var coordinates = await GeocodeQueries(claudeResponse.Queries, cancellationToken);
+                // Build viewport bounds if provided
+                (double North, double South, double East, double West)? geoBounds = null;
+                if (request.BoundsNorth.HasValue && request.BoundsSouth.HasValue
+                    && request.BoundsEast.HasValue && request.BoundsWest.HasValue)
+                {
+                    geoBounds = (request.BoundsNorth.Value, request.BoundsSouth.Value,
+                        request.BoundsEast.Value, request.BoundsWest.Value);
+                }
+
+                // Step 2: For named features, try OSM Nominatim for real boundary polygons
+                if (claudeResponse.IsNamedFeature && claudeResponse.Queries?.Count > 0)
+                {
+                    var nominatimGeoJson = await TryNominatimLookup(
+                        claudeResponse.Queries[0].Address, geoBounds, cancellationToken);
+
+                    if (nominatimGeoJson is not null)
+                    {
+                        return new AreaSuggestionResult
+                        {
+                            GeoJson = nominatimGeoJson,
+                            SuggestedName = claudeResponse.SuggestedName,
+                            SuggestedAreaType = claudeResponse.SuggestedAreaType,
+                            Confidence = claudeResponse.Confidence,
+                        };
+                    }
+                }
+
+                // Step 3: Fall back to Azure Maps geocoding
+                var coordinates = await GeocodeQueries(claudeResponse.Queries, geoBounds, cancellationToken);
                 if (coordinates.Count == 0)
                 {
                     return new AreaSuggestionResult
@@ -87,7 +117,7 @@ namespace TrashMob.Shared.Managers.Areas
                     };
                 }
 
-                // Step 3: Build GeoJSON from coordinates
+                // Step 4: Build GeoJSON from coordinates
                 var geoJson = BuildGeoJson(coordinates, claudeResponse.GeometryType);
 
                 return new AreaSuggestionResult
@@ -183,11 +213,41 @@ namespace TrashMob.Shared.Managers.Areas
                 parts.Add($"Community center coordinates: {request.CenterLatitude.Value:F6}, {request.CenterLongitude.Value:F6}");
             }
 
+            if (request.BoundsNorth.HasValue && request.BoundsSouth.HasValue
+                && request.BoundsEast.HasValue && request.BoundsWest.HasValue)
+            {
+                parts.Add($"Viewport bounds: North={request.BoundsNorth.Value:F6}, South={request.BoundsSouth.Value:F6}, East={request.BoundsEast.Value:F6}, West={request.BoundsWest.Value:F6}. The user is looking at this area on the map, so results should be within or near these bounds.");
+            }
+
             return string.Join("\n", parts);
+        }
+
+        private async Task<string?> TryNominatimLookup(
+            string query,
+            (double North, double South, double East, double West)? viewBox,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                var result = await nominatimService.SearchWithPolygonAsync(query, viewBox, cancellationToken);
+                if (result is not null)
+                {
+                    logger.LogInformation("Nominatim returned polygon for '{Query}' (category: {Category}, type: {Type})",
+                        query, result.Category, result.Type);
+                    return result.GeoJson;
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Nominatim lookup failed for '{Query}', falling back to Azure Maps", query);
+            }
+
+            return null;
         }
 
         private async Task<List<(double Lat, double Lon)>> GeocodeQueries(
             List<GeocodingQuery>? queries,
+            (double North, double South, double East, double West)? boundingBox,
             CancellationToken cancellationToken)
         {
             List<(double Lat, double Lon)> coordinates = [];
@@ -201,7 +261,7 @@ namespace TrashMob.Shared.Managers.Areas
             {
                 try
                 {
-                    var rawJson = await mapManager.SearchAddressAsync(query.Address);
+                    var rawJson = await mapManager.SearchAddressAsync(query.Address, boundingBox: boundingBox);
                     var searchResult = JsonSerializer.Deserialize<AzureMapsSearchResponse>(rawJson, JsonOptions);
 
                     if (searchResult?.Results is not null && searchResult.Results.Count > 0)
@@ -279,6 +339,7 @@ namespace TrashMob.Shared.Managers.Areas
             public string? SuggestedAreaType { get; set; }
             public string? GeometryType { get; set; }
             public double Confidence { get; set; }
+            public bool IsNamedFeature { get; set; }
         }
 
         private sealed class GeocodingQuery

@@ -9,6 +9,7 @@ interface AiSuggestPanelProps {
     partnerId: string;
     communityCenter?: { lat: number; lng: number } | null;
     communityName?: string;
+    mapBounds?: { north: number; south: number; east: number; west: number } | null;
     onSuggestionAccepted: (geoJson: string, suggestedName?: string, suggestedAreaType?: string) => void;
     onSuggestionPreview: (geoJson: string | null) => void;
     onRequestEditMode?: () => void;
@@ -18,6 +19,7 @@ export const AiSuggestPanel = ({
     partnerId,
     communityCenter,
     communityName,
+    mapBounds,
     onSuggestionAccepted,
     onSuggestionPreview,
     onRequestEditMode,
@@ -36,6 +38,10 @@ export const AiSuggestPanel = ({
                     centerLatitude: communityCenter?.lat,
                     centerLongitude: communityCenter?.lng,
                     communityName,
+                    boundsNorth: mapBounds?.north,
+                    boundsSouth: mapBounds?.south,
+                    boundsEast: mapBounds?.east,
+                    boundsWest: mapBounds?.west,
                 },
             ),
         onSuccess: (response) => {
