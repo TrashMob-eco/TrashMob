@@ -140,10 +140,7 @@ export const PartnerCommunityAreas = () => {
                         viewMode === 'map' ? (
                             <div className='space-y-2'>
                                 <div className='h-[500px] rounded-md overflow-hidden border'>
-                                    <GoogleMapWithKey
-                                        id={OVERVIEW_MAP_ID}
-                                        style={{ width: '100%', height: '500px' }}
-                                    >
+                                    <GoogleMapWithKey id={OVERVIEW_MAP_ID} style={{ width: '100%', height: '500px' }}>
                                         <ExistingAreasOverlay mapId={OVERVIEW_MAP_ID} areas={areas} fitBounds />
                                     </GoogleMapWithKey>
                                 </div>
@@ -196,7 +193,9 @@ export const PartnerCommunityAreas = () => {
                                                             </AlertDialogHeader>
                                                             <AlertDialogFooter>
                                                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                                <AlertDialogAction onClick={() => handleDelete(area.id)}>
+                                                                <AlertDialogAction
+                                                                    onClick={() => handleDelete(area.id)}
+                                                                >
                                                                     Delete
                                                                 </AlertDialogAction>
                                                             </AlertDialogFooter>

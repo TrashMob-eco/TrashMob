@@ -5,11 +5,12 @@ import { parseGeoJson, polygonCoordsToPath, lineStringCoordsToPath, computeCentr
 import { getAreaColor } from '@/lib/area-colors';
 
 /** Status-based stroke/fill styling (weight and opacity only — color comes from getAreaColor). */
-const STATUS_STROKE: Record<AdoptableAreaStatus, { strokeWeight: number; strokeOpacity: number; fillOpacity: number }> = {
-    Available: { strokeWeight: 2, strokeOpacity: 0.7, fillOpacity: 0.15 },
-    Adopted: { strokeWeight: 4, strokeOpacity: 0.9, fillOpacity: 0.25 },
-    Unavailable: { strokeWeight: 1, strokeOpacity: 0.4, fillOpacity: 0.08 },
-};
+const STATUS_STROKE: Record<AdoptableAreaStatus, { strokeWeight: number; strokeOpacity: number; fillOpacity: number }> =
+    {
+        Available: { strokeWeight: 2, strokeOpacity: 0.7, fillOpacity: 0.15 },
+        Adopted: { strokeWeight: 4, strokeOpacity: 0.9, fillOpacity: 0.25 },
+        Unavailable: { strokeWeight: 1, strokeOpacity: 0.4, fillOpacity: 0.08 },
+    };
 
 /** Status-based centroid marker colors. */
 const STATUS_MARKER_COLOR: Record<AdoptableAreaStatus, string> = {
