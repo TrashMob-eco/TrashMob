@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import { ChevronDown, ChevronUp, MapPin, AlertTriangle } from 'lucide-react';
+import { ChevronDown, ChevronUp, MapPin, AlertTriangle, LocateFixed } from 'lucide-react';
 import { useMap } from '@vis.gl/react-google-maps';
 import { GoogleMapWithKey as GoogleMap } from '@/components/Map/GoogleMap';
 import { Button } from '@/components/ui/button';
@@ -10,7 +10,7 @@ import { CommunityBoundsOverlay } from './CommunityBoundsOverlay';
 import { ExistingAreasOverlay } from './ExistingAreasOverlay';
 import { AreaStatusLegend } from './AreaStatusLegend';
 import { AiSuggestPanel } from './AiSuggestPanel';
-import { AreaBoundingBox, parseGeoJson, polygonCoordsToPath } from '@/lib/geojson';
+import { AreaBoundingBox, parseGeoJson, polygonCoordsToPath, lineStringCoordsToPath } from '@/lib/geojson';
 import AdoptableAreaData from '@/components/Models/AdoptableAreaData';
 
 const MAP_ID = 'areaMapEditor';
@@ -137,6 +137,18 @@ export const AreaMapEditor = ({
         [onChange],
     );
 
+    const handleRecenter = useCallback(() => {
+        if (!value) return;
+        const parsed = parseGeoJson(value);
+        if (!parsed) return;
+        const path =
+            parsed.type === 'Polygon'
+                ? polygonCoordsToPath(parsed.coordinates)
+                : lineStringCoordsToPath(parsed.coordinates);
+        if (path.length === 0) return;
+        window.dispatchEvent(new CustomEvent('areamap:fitbounds', { detail: { path } }));
+    }, [value]);
+
     return (
         <div className='space-y-0'>
             {partnerId ? (
@@ -222,6 +234,12 @@ export const AreaMapEditor = ({
                           : 'No geometry — draw a shape above'}
                 </span>
                 <div className='flex items-center gap-3'>
+                    {hasShape ? (
+                        <Button type='button' variant='ghost' size='sm' className='text-xs' onClick={handleRecenter}>
+                            <LocateFixed className='h-3 w-3 mr-1' />
+                            Recenter
+                        </Button>
+                    ) : null}
                     {existingAreas.length > 0 ? <AreaStatusLegend /> : null}
                     <Button
                         type='button'
@@ -277,20 +295,32 @@ const MapBoundsTracker = ({
     return null;
 };
 
-/** Listens for custom pan-to events and moves the map */
+/** Listens for custom pan-to and fit-bounds events and moves the map */
 const MapPanHandler = ({ mapId }: { mapId: string }) => {
     const map = useMap(mapId);
 
     useEffect(() => {
-        const handler = (e: Event) => {
+        const panHandler = (e: Event) => {
             const { lat, lng } = (e as CustomEvent<{ lat: number; lng: number }>).detail;
             if (map) {
                 map.panTo({ lat, lng });
                 map.setZoom(17);
             }
         };
-        window.addEventListener('areamap:panto', handler);
-        return () => window.removeEventListener('areamap:panto', handler);
+        const fitHandler = (e: Event) => {
+            const { path } = (e as CustomEvent<{ path: google.maps.LatLngLiteral[] }>).detail;
+            if (map && path?.length > 0) {
+                const bounds = new google.maps.LatLngBounds();
+                path.forEach((p: google.maps.LatLngLiteral) => bounds.extend(p));
+                map.fitBounds(bounds, 40);
+            }
+        };
+        window.addEventListener('areamap:panto', panHandler);
+        window.addEventListener('areamap:fitbounds', fitHandler);
+        return () => {
+            window.removeEventListener('areamap:panto', panHandler);
+            window.removeEventListener('areamap:fitbounds', fitHandler);
+        };
     }, [map]);
 
     return null;

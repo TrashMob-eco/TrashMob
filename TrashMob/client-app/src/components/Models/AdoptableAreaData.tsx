@@ -1,6 +1,6 @@
 import { Guid } from 'guid-typescript';
 
-export type AdoptableAreaType = 'Highway' | 'Park' | 'Trail' | 'Waterway' | 'Street' | 'Spot';
+export type AdoptableAreaType = 'Highway' | 'Park' | 'School' | 'Trail' | 'Waterway' | 'Street' | 'Spot';
 export type AdoptableAreaStatus = 'Available' | 'Adopted' | 'Unavailable';
 
 class AdoptableAreaData {

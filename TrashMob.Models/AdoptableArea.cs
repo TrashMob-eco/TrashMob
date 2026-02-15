@@ -37,7 +37,7 @@ namespace TrashMob.Models
         public string Description { get; set; }
 
         /// <summary>
-        /// Gets or sets the type of area (Highway, Park, Trail, Waterway, Street, Spot).
+        /// Gets or sets the type of area (Highway, Park, School, Trail, Waterway, Street, Spot).
         /// </summary>
         public string AreaType { get; set; }
 

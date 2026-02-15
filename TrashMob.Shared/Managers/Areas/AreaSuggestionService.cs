@@ -35,7 +35,7 @@ namespace TrashMob.Shared.Managers.Areas
               - "address": string — a specific address or intersection to geocode
               - "type": string — either "point" (single location) or "street_segment" (a stretch of road)
             - "suggestedName": string — a concise, descriptive name for this area (e.g. "200 Block of Main St")
-            - "suggestedAreaType": string — one of: "Highway", "Park", "Trail", "Waterway", "Street", "Spot"
+            - "suggestedAreaType": string — one of: "Highway", "Park", "School", "Trail", "Waterway", "Street", "Spot"
             - "geometryType": string — either "polygon" (for parks, lots, blocks) or "linestring" (for streets, trails, waterways)
             - "confidence": number — your confidence in the interpretation, from 0.0 to 1.0
             - "isNamedFeature": boolean — true if the description refers to a specific named place
