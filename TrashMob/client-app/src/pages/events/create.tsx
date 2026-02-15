@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ManageEventDashboardLayout } from './_layout';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -40,6 +40,8 @@ import { useFeatureMetrics } from '@/hooks/useFeatureMetrics';
 import { useLocation, useNavigate } from 'react-router';
 import { Badge } from '@/components/ui/badge';
 import { Loader2 } from 'lucide-react';
+import { GetRequiredWaivers } from '@/services/user-waivers';
+import { WaiverSigningFlow } from '@/components/Waivers';
 
 const createMomentFromDateAndTime = (eventDate: Date, eventTimeStart: string) => {
     const eventDateMoment = moment(eventDate);
@@ -99,6 +101,16 @@ export const CreateEventPage = () => {
         { key: 'review', label: 'Review' },
     ];
     const [step, setStep] = useState<string>(fromLitterReport ? 'edit-detail' : 'pick-location');
+    const [showWaiverFlow, setShowWaiverFlow] = useState(false);
+    const pendingSubmitRef = useRef<z.infer<typeof createEventSchema> | null>(null);
+
+    // Fetch required waivers for the current user
+    const { data: requiredWaivers, refetch: refetchWaivers } = useQuery({
+        queryKey: GetRequiredWaivers().key,
+        queryFn: GetRequiredWaivers().service,
+        select: (res) => res.data,
+        enabled: !!currentUser.id,
+    });
 
     const addEventLitterReport = useMutation({
         mutationKey: AddEventLitterReport().key,
@@ -211,7 +223,7 @@ export const CreateEventPage = () => {
         }
     };
 
-    function onSubmit(formValues: z.infer<typeof createEventSchema>) {
+    function buildEventBody(formValues: z.infer<typeof createEventSchema>) {
         const body = new EventData();
 
         const start = createMomentFromDateAndTime(formValues.eventDate, formValues.eventTimeStart);
@@ -237,9 +249,34 @@ export const CreateEventPage = () => {
         body.teamId = formValues.eventVisibilityId === '2' ? (formValues.teamId ?? null) : null;
         body.createdByUserId = currentUser.id;
         body.eventStatusId = formValues.eventStatusId;
-
-        createEvent.mutate(body);
+        return body;
     }
+
+    function onSubmit(formValues: z.infer<typeof createEventSchema>) {
+        // Check if user has unsigned waivers — if so, show waiver flow before creating
+        if (requiredWaivers && requiredWaivers.length > 0) {
+            pendingSubmitRef.current = formValues;
+            setShowWaiverFlow(true);
+            return;
+        }
+        createEvent.mutate(buildEventBody(formValues));
+    }
+
+    const handleWaiverFlowComplete = useCallback(
+        (allSigned: boolean) => {
+            setShowWaiverFlow(false);
+            if (allSigned && pendingSubmitRef.current) {
+                // Refetch to confirm waivers are signed, then create the event
+                refetchWaivers().then(() => {
+                    createEvent.mutate(buildEventBody(pendingSubmitRef.current!));
+                    pendingSubmitRef.current = null;
+                });
+            } else {
+                pendingSubmitRef.current = null;
+            }
+        },
+        [refetchWaivers, createEvent],
+    );
 
     const map = useMap('locationPicker');
 
@@ -597,6 +634,14 @@ export const CreateEventPage = () => {
                     </Tabs>
                 </form>
             </Form>
+
+            {requiredWaivers ? (
+                <WaiverSigningFlow
+                    waivers={requiredWaivers}
+                    open={showWaiverFlow}
+                    onComplete={handleWaiverFlowComplete}
+                />
+            ) : null}
         </ManageEventDashboardLayout>
     );
 };
