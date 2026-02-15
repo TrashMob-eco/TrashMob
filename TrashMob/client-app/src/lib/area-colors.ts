@@ -20,7 +20,7 @@ const PALETTE = [
 export function getAreaColor(areaId: string): string {
     let hash = 0;
     for (let i = 0; i < areaId.length; i++) {
-        hash = ((hash << 5) - hash + areaId.charCodeAt(i)) | 0;
+        hash = (hash * 31 + areaId.charCodeAt(i)) % 1_000_000_007;
     }
     return PALETTE[Math.abs(hash) % PALETTE.length];
 }
