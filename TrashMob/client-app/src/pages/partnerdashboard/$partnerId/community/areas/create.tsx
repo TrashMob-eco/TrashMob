@@ -119,7 +119,7 @@ export const PartnerCommunityAreaCreate = () => {
             if (!partnerId) return;
 
             const area: AdoptableAreaData = {
-                id: '',
+                id: '00000000-0000-0000-0000-000000000000',
                 partnerId,
                 name: formValues.name,
                 description: formValues.description,
@@ -135,9 +135,9 @@ export const PartnerCommunityAreaCreate = () => {
                 safetyRequirements: formValues.safetyRequirements,
                 allowCoAdoption: formValues.allowCoAdoption,
                 isActive: true,
-                createdByUserId: '',
+                createdByUserId: '00000000-0000-0000-0000-000000000000',
                 createdDate: new Date(),
-                lastUpdatedByUserId: '',
+                lastUpdatedByUserId: '00000000-0000-0000-0000-000000000000',
                 lastUpdatedDate: new Date(),
             };
 
