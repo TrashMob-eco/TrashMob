@@ -7,7 +7,7 @@ using TrashMob.Models;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
-public partial class ViewLitterReportViewModel(ILitterReportManager litterReportManager, IEventLitterReportManager eventLitterReportManager, INotificationService notificationService, IUserManager userManager) : BaseViewModel(notificationService)
+public partial class ViewLitterReportViewModel(ILitterReportManager litterReportManager, IEventLitterReportManager eventLitterReportManager, INotificationService notificationService, IUserManager userManager, IWaiverManager waiverManager) : BaseViewModel(notificationService)
 {
     private const int NewLitterReportStatus = 1;
     private const int AssignedLitterReportStatus = 2;
@@ -16,6 +16,7 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
     private readonly ILitterReportManager litterReportManager = litterReportManager;
     private readonly IEventLitterReportManager eventLitterReportManager = eventLitterReportManager;
     private readonly IUserManager userManager = userManager;
+    private readonly IWaiverManager waiverManager = waiverManager;
     [ObservableProperty]
     private bool canDeleteLitterReport;
 
@@ -131,6 +132,12 @@ public partial class ViewLitterReportViewModel(ILitterReportManager litterReport
     [RelayCommand]
     private async Task CreateEvent()
     {
+        if (!await waiverManager.HasUserSignedTrashMobWaiverAsync())
+        {
+            await Shell.Current.GoToAsync(nameof(WaiverPage));
+            return;
+        }
+
         await Shell.Current.GoToAsync($"{nameof(CreateEventPage)}?LitterReportId={litterReportViewModel!.Id}");
     }
 

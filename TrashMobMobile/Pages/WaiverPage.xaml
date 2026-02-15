@@ -6,6 +6,7 @@
              xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
              x:DataType="viewModels:WaiverViewModel"
              x:Class="TrashMobMobile.Pages.WaiverPage"
+             Shell.BackButtonBehavior="{BackButtonBehavior IsVisible=False}"
              Title="TrashMob.eco Waiver">
     <ScrollView>
         <Grid>
@@ -75,6 +76,9 @@
                         <Button Text="Sign Waiver"
                                 Command="{Binding SignWaiverCommand}"
                                 Style="{StaticResource PrimaryLargeButton}" />
+                        <Button Text="Cancel"
+                                Command="{Binding CancelCommand}"
+                                Style="{StaticResource SecondaryLargeButton}" />
                     </VerticalStackLayout>
                 </Border>
 

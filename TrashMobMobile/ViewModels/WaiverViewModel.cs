@@ -38,4 +38,10 @@ public partial class WaiverViewModel(INotificationService notificationService, I
             await Navigation.PopAsync();
         }, "An error occurred while signing the waiver. Please try again.");
     }
+
+    [RelayCommand]
+    private async Task Cancel()
+    {
+        await Shell.Current.GoToAsync($"//{nameof(MainTabsPage)}");
+    }
 }

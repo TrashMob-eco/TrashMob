@@ -1,12 +1,16 @@
 namespace TrashMobMobile;
 
 using TrashMobMobile.Pages;
+using TrashMobMobile.Services;
 
 public partial class MainTabsPage : Shell
 {
-    public MainTabsPage()
+    private readonly IWaiverManager waiverManager;
+
+    public MainTabsPage(IWaiverManager waiverManager)
     {
         InitializeComponent();
+        this.waiverManager = waiverManager;
 
         Navigating += OnNavigating;
     }
@@ -21,6 +25,12 @@ public partial class MainTabsPage : Shell
 
             if (action == "Create Event")
             {
+                if (!await waiverManager.HasUserSignedTrashMobWaiverAsync())
+                {
+                    await GoToAsync(nameof(WaiverPage));
+                    return;
+                }
+
                 await GoToAsync(nameof(CreateEventPage));
             }
             else if (action == "Report Litter")

@@ -12,13 +12,15 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
                                           IStatsRestService statsRestService,
                                           ILitterReportManager litterReportManager,
                                           INotificationService notificationService,
-                                          IUserManager userManager)
+                                          IUserManager userManager,
+                                          IWaiverManager waiverManager)
     : BaseViewModel(notificationService)
 {
     private readonly ILitterReportManager litterReportManager = litterReportManager;
     private readonly IUserManager userManager = userManager;
     private readonly IMobEventManager mobEventManager = mobEventManager;
     private readonly IStatsRestService statsRestService = statsRestService;
+    private readonly IWaiverManager waiverManager = waiverManager;
     private EventViewModel? completedSelectedEvent;
     private LitterReportViewModel? selectedLitterReport;
 
@@ -326,6 +328,12 @@ public partial class MyDashboardViewModel(IMobEventManager mobEventManager,
     [RelayCommand]
     private async Task CreateEvent()
     {
+        if (!await waiverManager.HasUserSignedTrashMobWaiverAsync())
+        {
+            await Shell.Current.GoToAsync(nameof(WaiverPage));
+            return;
+        }
+
         await Shell.Current.GoToAsync($"{nameof(CreateEventPage)}?LitterReportId={Guid.Empty}");
     }
 
