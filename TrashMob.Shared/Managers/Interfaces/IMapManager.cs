@@ -52,8 +52,10 @@ namespace TrashMob.Shared.Managers.Interfaces
         /// </summary>
         /// <param name="query">The search query string.</param>
         /// <param name="entityType">Optional entity type filter (e.g., Municipality, PostalCodeArea).</param>
+        /// <param name="boundingBox">Optional bounding box to bias results (North, South, East, West).</param>
         /// <returns>The raw JSON response from Azure Maps Search API.</returns>
-        Task<string> SearchAddressAsync(string query, string entityType = null);
+        Task<string> SearchAddressAsync(string query, string entityType = null,
+            (double North, double South, double East, double West)? boundingBox = null);
 
         /// <summary>
         /// Gets the full address details for a geographic coordinate (reverse geocoding).

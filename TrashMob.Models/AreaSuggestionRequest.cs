@@ -9,5 +9,13 @@ namespace TrashMob.Models
         public double? CenterLongitude { get; set; }
 
         public string? CommunityName { get; set; }
+
+        public double? BoundsNorth { get; set; }
+
+        public double? BoundsSouth { get; set; }
+
+        public double? BoundsEast { get; set; }
+
+        public double? BoundsWest { get; set; }
     }
 }

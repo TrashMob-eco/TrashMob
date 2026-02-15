@@ -89,6 +89,12 @@ export const AreaMapEditor = ({
     const [showRawGeoJson, setShowRawGeoJson] = useState(false);
     const [measurement, setMeasurement] = useState<string | null>(null);
     const [aiPreviewGeoJson, setAiPreviewGeoJson] = useState<string | null>(null);
+    const [mapViewportBounds, setMapViewportBounds] = useState<{
+        north: number;
+        south: number;
+        east: number;
+        west: number;
+    } | null>(null);
 
     const hasCommunityBounds =
         communityBounds?.boundsNorth != null &&
@@ -138,6 +144,7 @@ export const AreaMapEditor = ({
                     partnerId={partnerId}
                     communityCenter={communityCenter}
                     communityName={communityName}
+                    mapBounds={mapViewportBounds}
                     onSuggestionPreview={setAiPreviewGeoJson}
                     onSuggestionAccepted={handleSuggestionAccepted}
                     onRequestEditMode={() => setDrawingMode('edit')}
@@ -194,6 +201,7 @@ export const AreaMapEditor = ({
                         injectGeoJson={aiPreviewGeoJson}
                     />
                     <MapPanHandler mapId={MAP_ID} />
+                    <MapBoundsTracker mapId={MAP_ID} onBoundsChange={setMapViewportBounds} />
                 </GoogleMap>
             </div>
             {overlappingNames.length > 0 ? (
@@ -241,6 +249,32 @@ export const AreaMapEditor = ({
             ) : null}
         </div>
     );
+};
+
+/** Tracks the current map viewport bounds and reports them to the parent */
+const MapBoundsTracker = ({
+    mapId,
+    onBoundsChange,
+}: {
+    mapId: string;
+    onBoundsChange: (bounds: { north: number; south: number; east: number; west: number } | null) => void;
+}) => {
+    const map = useMap(mapId);
+
+    useEffect(() => {
+        if (!map) return;
+        const listener = map.addListener('idle', () => {
+            const b = map.getBounds();
+            if (b) {
+                const ne = b.getNorthEast();
+                const sw = b.getSouthWest();
+                onBoundsChange({ north: ne.lat(), south: sw.lat(), east: ne.lng(), west: sw.lng() });
+            }
+        });
+        return () => listener.remove();
+    }, [map, onBoundsChange]);
+
+    return null;
 };
 
 /** Listens for custom pan-to events and moves the map */
