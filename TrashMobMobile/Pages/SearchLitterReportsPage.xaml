@@ -126,29 +126,29 @@
                                     MaximumHeightRequest="400">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="viewModels:LitterReportViewModel">
-                                <StackLayout Margin="5">
-                                    <Border Style="{StaticResource RoundBorder}">
-                                        <Grid ColumnDefinitions="*, *"
-                                              RowDefinitions="Auto, Auto, Auto"
-                                              x:Name="LitterReportItem">
-                                            <Label Text="{Binding Name}" Grid.Row="0" Grid.ColumnSpan="1"
-                                                   FontSize="Small" />
-                                            <Label Text="{Binding CreatedDate}" Grid.Row="0" Grid.ColumnSpan="1"
-                                                   Grid.Column="1" FontSize="Micro" />
-                                            <Label Text="{Binding Description}" Grid.Row="1" Grid.ColumnSpan="2"
-                                                   FontSize="Micro" />
-                                            <Label Text="Locations" Grid.Row="2" FontSize="Micro" FontAttributes="Bold" />
-                                            <CollectionView ItemsSource="{Binding LitterImageViewModels}" Grid.Row="2"
-                                                            Grid.Column="1">
-                                                <CollectionView.ItemTemplate>
-                                                    <DataTemplate x:DataType="viewModels:LitterImageViewModel">
-                                                        <Label Text="{Binding Address.DisplayAddress}" FontSize="Micro" />
-                                                    </DataTemplate>
-                                                </CollectionView.ItemTemplate>
-                                            </CollectionView>
-                                        </Grid>
-                                    </Border>
-                                </StackLayout>
+                                <Border Style="{x:StaticResource RoundBorder}" Margin="5,3">
+                                    <Grid ColumnDefinitions="*, Auto" Padding="10,8">
+                                        <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                            <Label Text="{Binding Name}" FontFamily="LexendSemibold" FontSize="Small" />
+                                            <Label Text="{Binding LitterReportStatus}" FontSize="Micro"
+                                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                            <Label Text="{Binding CreatedDate}" FontSize="Micro"
+                                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                        </VerticalStackLayout>
+                                        <Border Grid.Column="1"
+                                                StrokeShape="RoundRectangle 6"
+                                                StrokeThickness="0"
+                                                IsVisible="{Binding HasThumbnail}"
+                                                WidthRequest="56"
+                                                HeightRequest="56"
+                                                VerticalOptions="Center">
+                                            <Image Source="{Binding ThumbnailUrl}"
+                                                   Aspect="AspectFill"
+                                                   WidthRequest="56"
+                                                   HeightRequest="56" />
+                                        </Border>
+                                    </Grid>
+                                </Border>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>

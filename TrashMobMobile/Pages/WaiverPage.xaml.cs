@@ -1,8 +1,6 @@
 namespace TrashMobMobile.Pages;
 
-using CommunityToolkit.Maui.Alerts;
-using CommunityToolkit.Maui.Core;
-
+[QueryProperty(nameof(WaiverVersionId), nameof(WaiverVersionId))]
 public partial class WaiverPage : ContentPage
 {
     private readonly WaiverViewModel viewModel;
@@ -11,7 +9,18 @@ public partial class WaiverPage : ContentPage
     {
         InitializeComponent();
         this.viewModel = viewModel;
-        this.viewModel.Navigation = Navigation;
         BindingContext = this.viewModel;
+    }
+
+    public string WaiverVersionId { get; set; } = string.Empty;
+
+    protected override async void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+        base.OnNavigatedTo(args);
+
+        if (Guid.TryParse(WaiverVersionId, out var versionId) && versionId != Guid.Empty)
+        {
+            await viewModel.Init(versionId);
+        }
     }
 }

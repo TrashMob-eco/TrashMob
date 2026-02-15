@@ -202,12 +202,12 @@
                                 Command="{Binding ViewLeaderboardsCommand}"
                                 Style="{StaticResource SecondaryLargeButton}"
                                 ContentLayout="Left, 12"
-                                ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconTrophy}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" />
+                                        ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconTrophy}, Color={AppThemeBinding Light={StaticResource PrimaryReverseText}, Dark={StaticResource PrimaryDarkReverseText}}}" />
                         <Button Text="Achievements"
                                 Command="{Binding ViewAchievementsCommand}"
                                 Style="{StaticResource SecondaryLargeButton}"
                                 ContentLayout="Left, 12"
-                                ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconMedal}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" />
+                                ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconMedal}, Color={AppThemeBinding Light={StaticResource PrimaryReverseText}, Dark={StaticResource PrimaryDarkReverseText}}}" />
                     </VerticalStackLayout>
                 </Border>
 

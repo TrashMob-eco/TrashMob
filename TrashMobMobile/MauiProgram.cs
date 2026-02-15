@@ -93,6 +93,7 @@ public static class MauiProgram
         builder.Services.AddTransient<ViewPickupLocationPage>();
         builder.Services.AddTransient<ViewCommunityPage>();
         builder.Services.AddTransient<ViewTeamPage>();
+        builder.Services.AddTransient<WaiverListPage>();
         builder.Services.AddTransient<WaiverPage>();
         builder.Services.AddTransient<WelcomePage>();
         builder.Services.AddTransient<AgeGatePage>();
@@ -132,6 +133,7 @@ public static class MauiProgram
         builder.Services.AddTransient<ViewPickupLocationViewModel>();
         builder.Services.AddTransient<ViewCommunityViewModel>();
         builder.Services.AddTransient<ViewTeamViewModel>();
+        builder.Services.AddTransient<WaiverListViewModel>();
         builder.Services.AddTransient<WaiverViewModel>();
         builder.Services.AddTransient<WelcomeViewModel>();
         builder.Services.AddTransient<AgeGateViewModel>();

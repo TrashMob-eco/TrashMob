@@ -21,7 +21,6 @@ public partial class CreateEventViewModel : BaseViewModel
     private readonly IMapRestService mapRestService;
 
     private readonly IMobEventManager mobEventManager;
-    private readonly IWaiverManager waiverManager;
     private readonly IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService;
     private readonly ILitterReportManager litterReportManager;
     private readonly IEventLitterReportManager eventLitterReportManager;
@@ -191,7 +190,6 @@ public partial class CreateEventViewModel : BaseViewModel
     public CreateEventViewModel(IMobEventManager mobEventManager,
         IEventTypeRestService eventTypeRestService,
         IMapRestService mapRestService,
-        IWaiverManager waiverManager,
         INotificationService notificationService,
         IEventPartnerLocationServiceRestService eventPartnerLocationServiceRestService,
         ILitterReportManager litterReportManager,
@@ -203,7 +201,6 @@ public partial class CreateEventViewModel : BaseViewModel
         this.mobEventManager = mobEventManager;
         this.eventTypeRestService = eventTypeRestService;
         this.mapRestService = mapRestService;
-        this.waiverManager = waiverManager;
         this.notificationService = notificationService;
         this.eventPartnerLocationServiceRestService = eventPartnerLocationServiceRestService;
         this.litterReportManager = litterReportManager;

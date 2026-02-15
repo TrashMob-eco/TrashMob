@@ -2,12 +2,10 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
              x:DataType="viewModels:WaiverViewModel"
              x:Class="TrashMobMobile.Pages.WaiverPage"
-             Shell.BackButtonBehavior="{BackButtonBehavior IsVisible=False}"
-             Title="TrashMob.eco Waiver">
+             Title="{Binding WaiverName}">
     <ScrollView>
         <Grid>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}" Spacing="8">
@@ -15,48 +13,16 @@
                 <!-- Intro -->
                 <Border Style="{StaticResource RoundBorder}" Margin="10,8,10,0">
                     <VerticalStackLayout Spacing="8">
-                        <Label Text="In order to create or participate in TrashMob.eco events, you must agree to a liability waiver. Please click the Sign Waiver button below."
+                        <Label Text="Please review the waiver below, then check the box and enter your full legal name to sign."
                                FontSize="Small" />
-                        <Label Text="You will only need to sign this waiver once unless we have to change the legalese."
-                               FontSize="Micro"
-                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
                     </VerticalStackLayout>
                 </Border>
 
-                <!-- Waiver Text -->
+                <!-- Waiver Text (loaded from API) -->
                 <Border Style="{StaticResource RoundBorder}" Margin="10,0">
-                    <VerticalStackLayout Spacing="8">
-                        <Label Text="TrashMob.eco Volunteer Release"
-                               FontFamily="LexendSemibold"
-                               FontSize="Medium"
-                               HorizontalTextAlignment="Center"
-                               HorizontalOptions="Center" />
-                        <Label Text="and Waiver of Liability Form"
-                               FontFamily="LexendSemibold"
-                               FontSize="Medium"
-                               HorizontalTextAlignment="Center"
-                               HorizontalOptions="Center" />
-                        <Label Text="THE VOLUNTEER RELEASE AND WAIVER OF LIABILITY FORM (&quot;RELEASE&quot;)"
-                               FontSize="Small"
-                               FontAttributes="Bold" />
-                        <Label Text="(&quot;VOLUNTEER&quot;) HEREBY RELEASES TRASHMOB.ECO, ITS OFFICERS AND DIRECTORS, ANY LAND OWNERS AND MANAGERS, AND ALL RELATED SPONSORS (&quot;PARTIES&quot;) JOINTLY AND SEVERALLY, AND INDIVIDUALLY."
-                               FontSize="Small"
-                               FontAttributes="Bold" />
-                        <Label Text="The Volunteer desires to provide volunteer services and to participate in activities related to serving as a volunteer for events facilitated by TrashMob.eco.  Volunteer services (&quot;Services&quot;) will be broadly defined as picking up trash at TrashMob.eco facilitated events (&quot;Events&quot;). The above Volunteer hereby agrees as follows: "
-                               FontSize="Small" />
-                        <Label Text="1.	WAIVER AND RELEASE:  I, the Volunteer, release and forever discharge and hold harmless the Parties from any and all liability, claims, and demands of whatever kind or nature, either in law or in equity, which arise or may hereafter arise as result of my participation in such Events.  I understand and acknowledge that this Release discharges from any liability or claim that I may have with respect to bodily injury, personal injury, illness, death, or property damage that may result from the Services I am providing by participating in the Event."
-                               FontSize="Small" />
-                        <Label Text="2.	INSURANCE:  I, the Volunteer, understand that none of the Parties assume any responsibility for or obligation to provide me with financial or other assistance, including but not limited to medical, health, or disability benefits or insurance of any nature in the event of my injury, illness, death or damage to my property.  I expressly waive any such claim for compensation or liability from the Parties."
-                               FontSize="Small" />
-                        <Label Text="3.	MEDICAL TREATMENT:  I, the Volunteer, do hereby release and forever discharge the Parties from any claim whatsoever which arises or may hereafter arise on account of any first aid, treatment, or service rendered by any person in connection with an emergency during my tenure as a volunteer during the course of an Event."
-                               FontSize="Small" />
-                        <Label Text="4.	ASSUMPTION OF THE RISK:  I, the Volunteer, acknowledge that there are potential hazards (&quot;Hazards&quot;), known and unknown, involved in the Event. The term &quot;Hazards&quot; is intended to be used in its broadest sense and includes, but is not limited to natural hazards (land, weather, etc.) and man-made hazards (concrete, steel, etc.). I understand and acknowledge that participation may include Hazards that could harm me, and that such Hazards may or may not always be obvious.  I hereby expressly and specifically assume the risk of injury or harm for all such Hazards."
-                               FontSize="Small" />
-                        <Label Text="5.	PHOTOGRAPHIC RELEASE: I, the Volunteer, grant and convey to the Parties all right, title, and interest in any and all photographs, images, video, and audio in connection with my providing volunteer services at Events."
-                               FontSize="Small" />
-                        <Label Text="6.	OTHER:  I, the Volunteer, expressly agrees that this Release is intended to be as broad and inclusive as permitted by law. I agree that in the event that any clause or provision of this Release shall be held to be invalid by any court of competent jurisdiction, the validity of the remaining provisions of this Release shall continue to be enforceable."
-                               FontSize="Small" />
-                    </VerticalStackLayout>
+                    <Label Text="{Binding WaiverText}"
+                           TextType="Html"
+                           FontSize="Small" />
                 </Border>
 
                 <!-- Agreement -->

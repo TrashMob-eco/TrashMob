@@ -242,9 +242,9 @@ public partial class MainViewModel(IAuthService authService,
     [RelayCommand]
     private async Task CreateEvent()
     {
-        if (!await waiverManager.HasUserSignedTrashMobWaiverAsync())
+        if (!await waiverManager.HasUserSignedAllRequiredWaiversAsync())
         {
-            await Shell.Current.GoToAsync(nameof(WaiverPage));
+            await Shell.Current.GoToAsync(nameof(WaiverListPage));
             return;
         }
 

@@ -1,5 +1,7 @@
 namespace TrashMobMobile;
 
+using CommunityToolkit.Maui.Extensions;
+using TrashMobMobile.Controls;
 using TrashMobMobile.Pages;
 using TrashMobMobile.Services;
 
@@ -21,21 +23,32 @@ public partial class MainTabsPage : Shell
         {
             e.Cancel();
 
-            var action = await DisplayActionSheetAsync("Quick Actions", "Cancel", null, "Create Event", "Report Litter");
-
-            if (action == "Create Event")
+            try
             {
-                if (!await waiverManager.HasUserSignedTrashMobWaiverAsync())
+                var popup = new QuickActionPopup();
+                var result = await this.ShowPopupAsync<string>(popup);
+
+                var action = result?.Result;
+
+                if (action == QuickActionPopup.CreateEvent)
                 {
-                    await GoToAsync(nameof(WaiverPage));
-                    return;
-                }
+                    if (!await waiverManager.HasUserSignedAllRequiredWaiversAsync())
+                    {
+                        await GoToAsync(nameof(WaiverListPage));
+                        return;
+                    }
 
-                await GoToAsync(nameof(CreateEventPage));
+                    await GoToAsync(nameof(CreateEventPage));
+                }
+                else if (action == QuickActionPopup.ReportLitter)
+                {
+                    await GoToAsync(nameof(CreateLitterReportPage));
+                }
             }
-            else if (action == "Report Litter")
+            catch (Exception ex)
             {
-                await GoToAsync(nameof(CreateLitterReportPage));
+                SentrySdk.CaptureException(ex);
+                await DisplayAlertAsync("Error", "An error occurred. Please try again.", "OK");
             }
         }
     }
