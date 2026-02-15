@@ -52,7 +52,7 @@ export const PartnerLayout = () => {
             },
         ];
 
-        if (partner && partner.partnerTypeId === 1) {
+        if (partner && partner.partnerTypeId === 3) {
             groups.push({
                 title: 'Community',
                 items: [

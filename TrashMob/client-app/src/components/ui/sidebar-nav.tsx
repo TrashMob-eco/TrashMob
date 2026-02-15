@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Link, useLocation } from 'react-router';
 import { cn } from '@/lib/utils';
 import { LucideIcon } from 'lucide-react';
@@ -22,12 +22,19 @@ interface SidebarNavProps {
 export function SidebarNav({ groups, className }: SidebarNavProps) {
     const location = useLocation();
 
+    const hasExactMatch = useMemo(
+        () => groups.some((g) => g.items.some((i) => location.pathname === i.href)),
+        [groups, location.pathname],
+    );
+
     const isActive = useCallback(
         (href: string) => {
-            // Exact match for index routes, prefix match for nested routes
-            return location.pathname === href || location.pathname.startsWith(href + '/');
+            if (location.pathname === href) return true;
+            // Only use prefix matching when no other item is an exact match
+            if (hasExactMatch) return false;
+            return location.pathname.startsWith(href + '/');
         },
-        [location.pathname],
+        [location.pathname, hasExactMatch],
     );
 
     return (
