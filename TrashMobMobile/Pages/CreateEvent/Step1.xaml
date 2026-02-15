@@ -16,35 +16,34 @@
         </ResourceDictionary>
     </createEvent1:Step1.Resources>
     <ScrollView>
-        <Grid>
-            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
-                <Grid ColumnDefinitions="*, *"
-                      MaximumWidthRequest="400"
-                      RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto">
-                    <VerticalStackLayout Grid.Row="0"
-                                         Grid.ColumnSpan="2"
-                                         Margin="0,10"
-                                         Spacing="5">
+        <VerticalStackLayout Spacing="8" Margin="2">
+
+            <!-- Event Details Card -->
+            <Border Style="{StaticResource RoundBorder}" Margin="4,4">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Event Details" Style="{StaticResource SectionHeader}" Margin="0" />
+                    <VerticalStackLayout Spacing="4">
                         <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Name" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
                         <controls:TMEntry HeightRequest="40"
                             Text="{Binding EventViewModel.Name}" />
                     </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Row="1" Margin="0,10">
-                        <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Event Type" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
-                        <controls:TMPicker Title="Event Type"
-                                           HeightRequest="40"
-                                           Margin="0,0,10,0"
-                                           ItemsSource="{Binding ETypes}"
-                                           SelectedItem="{Binding SelectedEventType, Mode=TwoWay}" />
-                    </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Row="1" Grid.Column="1" Margin="0,10">
-                        <Label Text="Visibility" Style="{StaticResource FieldLabel}" />
-                        <controls:TMPicker Title="Visibility"
-                                           HeightRequest="40"
-                                           ItemsSource="{Binding VisibilityOptions}"
-                                           SelectedItem="{Binding SelectedVisibility, Mode=TwoWay}" />
-                    </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Row="2" Grid.ColumnSpan="2" Margin="0,5,0,10"
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                        <VerticalStackLayout Grid.Column="0" Spacing="4">
+                            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Event Type" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
+                            <controls:TMPicker Title="Event Type"
+                                               HeightRequest="40"
+                                               ItemsSource="{Binding ETypes}"
+                                               SelectedItem="{Binding SelectedEventType, Mode=TwoWay}" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="4">
+                            <Label Text="Visibility" Style="{StaticResource FieldLabel}" />
+                            <controls:TMPicker Title="Visibility"
+                                               HeightRequest="40"
+                                               ItemsSource="{Binding VisibilityOptions}"
+                                               SelectedItem="{Binding SelectedVisibility, Mode=TwoWay}" />
+                        </VerticalStackLayout>
+                    </Grid>
+                    <VerticalStackLayout Spacing="4"
                                          IsVisible="{Binding IsTeamPickerVisible}">
                         <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Team" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
                         <controls:TMPicker Title="Select Team"
@@ -52,63 +51,68 @@
                                            ItemsSource="{Binding TeamNames}"
                                            SelectedItem="{Binding SelectedTeam, Mode=TwoWay}" />
                     </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Row="3"
-                                         Grid.Column="0"
-                                         Margin="0,5,0,10"
-                                         Spacing="5">
-                        <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Event Date" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
-                        <controls:TMDatePicker HeightRequest="45" Margin="0,0,5,0"
-                                   Date="{Binding EventViewModel.EventDateOnly}" />
-                    </VerticalStackLayout>
-                    <Grid Grid.Row="3" Grid.Column="1"
-                          Margin="0,10"
-                          ColumnDefinitions="*,*"
-                          RowDefinitions="Auto,Auto,Auto">
-                        <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Start time" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
-                        <controls:TMTimePicker Grid.Row="1" Time="{Binding StartTime, Mode=TwoWay}" Margin="0,0,5,0" />
-                        <Label Grid.Column="1" Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="End time" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
-                        <controls:TMTimePicker Grid.Row="1" Grid.Column="1" Time="{Binding EndTime, Mode=TwoWay}" />
-                        <Label x:Name="DurationErrorLabel" Grid.Row="2" Grid.ColumnSpan="2"
-                               Style="{StaticResource ErrorLabel}"
-                               IsVisible="{Binding EventDurationError, Converter={StaticResource StringToBoolConverter}}"
-                               Text="{Binding EventDurationError}">
-                        </Label>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Date & Time Card -->
+            <Border Style="{StaticResource RoundBorder}" Margin="4,0">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Date &amp; Time" Style="{StaticResource SectionHeader}" Margin="0" />
+                    <Grid ColumnDefinitions="*, *, *" ColumnSpacing="8">
+                        <VerticalStackLayout Grid.Column="0" Spacing="4">
+                            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Date" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
+                            <controls:TMDatePicker HeightRequest="45"
+                                       Date="{Binding EventViewModel.EventDateOnly}" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="4">
+                            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Start" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
+                            <controls:TMTimePicker Time="{Binding StartTime, Mode=TwoWay}" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="2" Spacing="4">
+                            <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="End" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
+                            <controls:TMTimePicker Time="{Binding EndTime, Mode=TwoWay}" />
+                        </VerticalStackLayout>
                     </Grid>
-                    <VerticalStackLayout Grid.Row="5"
-                                         Grid.Column="0"
-                                         Margin="0,5,0,10"
-                                         Spacing="5">
-                        <Label Text="Max Attendees" Style="{StaticResource FieldLabel}" />
-                        <controls:TMEntry Keyboard="Numeric"
-                              WidthRequest="35"
-                              HeightRequest="40"
-                              Text="{Binding EventViewModel.MaxNumberOfParticipants}">
-                            <controls:TMEntry.Behaviors>
-                                <toolkit:NumericValidationBehavior Flags="ValidateOnValueChanged"
-                                                       x:Name="maxNumberOfParticipantsValidator"
-                                                       MinimumValue="0"
-                                                       MaximumDecimalPlaces="0" />
-                            </controls:TMEntry.Behaviors>
-                        </controls:TMEntry>
-                    </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Row="5" Grid.Column="1" Margin="0,10">
-                        <Label Text="Duration" Style="{StaticResource FieldLabel}"></Label>
-                        <Label Text="{Binding FormattedEventDuration}" FontSize="Small">
-                        </Label>
-                    </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Row="6" Grid.ColumnSpan="2" Margin="0,10">
-                        <Label Style="{StaticResource FieldLabel}"><Label.FormattedText><FormattedString><Span Text="Description" /><Span Text=" *" TextColor="{StaticResource Destructive}" /></FormattedString></Label.FormattedText></Label>
-                        <controls:TMEditor
-                            Placeholder="Describe your event here"
-                            MinimumHeightRequest="100"
-                            Text="{Binding EventViewModel.Description}" />
-                        <Label Style="{StaticResource ErrorLabel}"
-                               IsVisible="{Binding DescriptionRequiredError, Converter={StaticResource StringToBoolConverter}}"
-                               Text="{Binding DescriptionRequiredError}">
-                        </Label>
-                    </VerticalStackLayout>
-                </Grid>
-            </VerticalStackLayout>
-        </Grid>
+                    <Label Style="{StaticResource ErrorLabel}"
+                           IsVisible="{Binding EventDurationError, Converter={StaticResource StringToBoolConverter}}"
+                           Text="{Binding EventDurationError}" />
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                        <VerticalStackLayout Grid.Column="0" Spacing="4">
+                            <Label Text="Duration" Style="{StaticResource FieldLabel}" />
+                            <Label Text="{Binding FormattedEventDuration}" FontSize="Small"
+                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="4">
+                            <Label Text="Max Attendees" Style="{StaticResource FieldLabel}" />
+                            <controls:TMEntry Keyboard="Numeric"
+                                  HeightRequest="40"
+                                  Text="{Binding EventViewModel.MaxNumberOfParticipants}">
+                                <controls:TMEntry.Behaviors>
+                                    <toolkit:NumericValidationBehavior Flags="ValidateOnValueChanged"
+                                                           x:Name="maxNumberOfParticipantsValidator"
+                                                           MinimumValue="0"
+                                                           MaximumDecimalPlaces="0" />
+                                </controls:TMEntry.Behaviors>
+                            </controls:TMEntry>
+                        </VerticalStackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Description Card -->
+            <Border Style="{StaticResource RoundBorder}" Margin="4,0,4,4">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Description" Style="{StaticResource SectionHeader}" Margin="0" />
+                    <controls:TMEditor
+                        Placeholder="Describe your event here"
+                        MinimumHeightRequest="100"
+                        Text="{Binding EventViewModel.Description}" />
+                    <Label Style="{StaticResource ErrorLabel}"
+                           IsVisible="{Binding DescriptionRequiredError, Converter={StaticResource StringToBoolConverter}}"
+                           Text="{Binding DescriptionRequiredError}" />
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
     </ScrollView>
 </createEvent:BaseStepClass>

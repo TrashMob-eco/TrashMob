@@ -16,15 +16,18 @@
         public const string Tomorrow = "Tomorrow";
         public const string ThisWeek = "Next 7 Days";
         public const string ThisMonth = "Next 30 Days";
-        public const string ThisYear = "Next 12 Months";
+        public const string NextThreeMonths = "Next 3 Months";
+        public const string NextSixMonths = "Next 6 Months";
 
         public static readonly Dictionary<string, Tuple<int, int>> UpcomingRangeDictionary = new()
         {
             { Today, new Tuple<int, int>(0, 0) },
-            { Tomorrow, new Tuple<int, int>(1, 0) },
+            { Tomorrow, new Tuple<int, int>(1, 1) },
             { ThisWeek, new Tuple<int, int>(0, 7) },
             { ThisMonth, new Tuple<int, int>(0, 30) },
-            { ThisYear, new Tuple<int, int>(0, 365) }
+            { NextThreeMonths, new Tuple<int, int>(0, 90) },
+            { NextSixMonths, new Tuple<int, int>(0, 180) },
+            { AllTime, new Tuple<int, int>(0, 3650) },
         };
 
         public static readonly Dictionary<string, Tuple<int, int>> CompletedRangeDictionary = new()

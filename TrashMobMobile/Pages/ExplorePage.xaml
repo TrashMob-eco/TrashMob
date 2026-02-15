@@ -9,158 +9,83 @@
              x:Class="TrashMobMobile.Pages.ExplorePage"
              Title="Explore">
 
-    <Grid RowDefinitions="Auto, Auto, Auto, *">
+    <Grid RowDefinitions="Auto, Auto, Auto, Auto, *">
 
-        <!-- Layer Toggle Chips -->
-        <HorizontalStackLayout Grid.Row="0" Spacing="8" Margin="10,10,10,5">
-            <Button Text="Events"
-                    Command="{Binding ToggleEventsCommand}"
-                    Style="{StaticResource SecondarySmallButton}">
-                <Button.Triggers>
-                    <DataTrigger TargetType="Button" Binding="{Binding ShowEvents}" Value="true">
-                        <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
-                    </DataTrigger>
-                    <DataTrigger TargetType="Button" Binding="{Binding ShowEvents}" Value="false">
-                        <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
-                    </DataTrigger>
-                </Button.Triggers>
-            </Button>
-            <Button Text="Litter Reports"
-                    Command="{Binding ToggleLitterReportsCommand}"
-                    Style="{StaticResource SecondarySmallButton}">
-                <Button.Triggers>
-                    <DataTrigger TargetType="Button" Binding="{Binding ShowLitterReports}" Value="true">
-                        <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
-                    </DataTrigger>
-                    <DataTrigger TargetType="Button" Binding="{Binding ShowLitterReports}" Value="false">
-                        <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
-                    </DataTrigger>
-                </Button.Triggers>
-            </Button>
-        </HorizontalStackLayout>
+        <!-- Row 0: Layer checkboxes -->
+        <Grid Grid.Row="0" ColumnDefinitions="Auto, Auto, Auto, Auto, *" Margin="10,4,10,0">
+            <CheckBox Grid.Column="0" IsChecked="{Binding ShowEvents, Mode=TwoWay}"
+                      Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+            <Label Grid.Column="1" Text="Events" FontSize="Small" VerticalOptions="Center" Margin="-4,0,8,0"
+                   TextColor="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource ContentPrimaryDark}}" />
+            <CheckBox Grid.Column="2" IsChecked="{Binding ShowLitterReports, Mode=TwoWay}"
+                      Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+            <Label Grid.Column="3" Text="Litter Reports" FontSize="Small" VerticalOptions="Center" Margin="-4,0,0,0"
+                   TextColor="{AppThemeBinding Light={StaticResource ContentPrimary}, Dark={StaticResource ContentPrimaryDark}}" />
+        </Grid>
 
-        <!-- Filters -->
-        <VerticalStackLayout Grid.Row="1" Spacing="4">
+        <!-- Row 1: Location pickers -->
+        <Grid Grid.Row="1" ColumnDefinitions="*, *, *, Auto" Margin="5,0">
+            <controls:TMPicker Grid.Column="0" Title="Country"
+                               ItemsSource="{Binding CountryCollection}"
+                               SelectedItem="{Binding SelectedCountry, Mode=TwoWay}" />
+            <controls:TMPicker Grid.Column="1" Title="Region"
+                               ItemsSource="{Binding RegionCollection}"
+                               SelectedItem="{Binding SelectedRegion, Mode=TwoWay}" />
+            <controls:TMPicker Grid.Column="2" Title="City"
+                               ItemsSource="{Binding CityCollection}"
+                               SelectedItem="{Binding SelectedCity, Mode=TwoWay}" />
+            <ImageButton Grid.Column="3"
+                         HeightRequest="24"
+                         WidthRequest="24"
+                         Command="{Binding ClearSelectionsCommand}"
+                         Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconClose}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" />
+        </Grid>
 
-            <!-- Location Filter Bar -->
-            <Grid ColumnDefinitions="*, *, *, Auto" Margin="5,0">
-                <controls:TMPicker Grid.Column="0" Title="Country"
-                                   ItemsSource="{Binding CountryCollection}"
-                                   SelectedItem="{Binding SelectedCountry, Mode=TwoWay}" />
-                <controls:TMPicker Grid.Column="1" Title="Region"
-                                   ItemsSource="{Binding RegionCollection}"
-                                   SelectedItem="{Binding SelectedRegion, Mode=TwoWay}" />
-                <controls:TMPicker Grid.Column="2" Title="City"
-                                   ItemsSource="{Binding CityCollection}"
-                                   SelectedItem="{Binding SelectedCity, Mode=TwoWay}" />
-                <ImageButton Grid.Column="3"
-                             HeightRequest="24"
-                             WidthRequest="24"
-                             Command="{Binding ClearSelectionsCommand}"
-                             Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconClose}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}" />
-            </Grid>
+        <!-- Row 2: Status filters with RadioButtons -->
+        <VerticalStackLayout Grid.Row="2" Spacing="0">
 
-            <!-- Event Filters (visible when ShowEvents is true) -->
-            <Grid ColumnDefinitions="*, *, *, *" ColumnSpacing="4" Margin="10,0"
-                  IsVisible="{Binding ShowEvents}">
-                <Button Grid.Column="0"
-                        Style="{StaticResource SecondarySmallButton}"
-                        Command="{Binding ViewUpcomingCommand}"
-                        Text="Upcoming">
-                    <Button.Triggers>
-                        <DataTrigger TargetType="Button" Binding="{Binding IsUpcomingSelected}" Value="true">
-                            <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
-                        </DataTrigger>
-                        <DataTrigger TargetType="Button" Binding="{Binding IsUpcomingSelected}" Value="false">
-                            <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
-                        </DataTrigger>
-                    </Button.Triggers>
-                </Button>
-                <Button Grid.Column="1"
-                        Style="{StaticResource SecondarySmallButton}"
-                        Command="{Binding ViewCompletedCommand}"
-                        Text="Completed">
-                    <Button.Triggers>
-                        <DataTrigger TargetType="Button" Binding="{Binding IsCompletedSelected}" Value="true">
-                            <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
-                        </DataTrigger>
-                        <DataTrigger TargetType="Button" Binding="{Binding IsCompletedSelected}" Value="false">
-                            <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
-                        </DataTrigger>
-                    </Button.Triggers>
-                </Button>
-                <controls:TMPicker Grid.Column="2" Grid.ColumnSpan="2"
+            <!-- Event status filters -->
+            <VerticalStackLayout IsVisible="{Binding ShowEvents}" Spacing="0">
+                <Label Text="Events" FontFamily="LexendSemibold" FontSize="Micro" Margin="12,4,0,0"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                <HorizontalStackLayout Spacing="0" Margin="10,0"
+                      RadioButtonGroup.GroupName="EventFilter"
+                      RadioButtonGroup.SelectedValue="{Binding EventFilterSelection, Mode=TwoWay}">
+                    <RadioButton Content="Upcoming" Value="Upcoming" />
+                    <RadioButton Content="Completed" Value="Completed" />
+                </HorizontalStackLayout>
+                <controls:TMPicker Margin="10,0"
                                    IsVisible="{Binding IsUpcomingSelected}"
                                    Title="Date Range"
-                                   HeightRequest="40"
                                    ItemsSource="{Binding UpcomingDateRanges}"
                                    SelectedItem="{Binding SelectedUpcomingDateRange, Mode=TwoWay}" />
-                <controls:TMPicker Grid.Column="2" Grid.ColumnSpan="2"
+                <controls:TMPicker Margin="10,0"
                                    IsVisible="{Binding IsCompletedSelected}"
                                    Title="Date Range"
-                                   HeightRequest="40"
                                    ItemsSource="{Binding CompletedDateRanges}"
                                    SelectedItem="{Binding SelectedCompletedDateRange, Mode=TwoWay}" />
-            </Grid>
+            </VerticalStackLayout>
 
-            <!-- Litter Report Filters (visible when ShowLitterReports is true) -->
-            <VerticalStackLayout Spacing="4" Margin="10,0"
-                                 IsVisible="{Binding ShowLitterReports}">
-                <Grid ColumnDefinitions="*, *, *" ColumnSpacing="4">
-                    <Button Grid.Column="0"
-                            Style="{StaticResource SecondarySmallButton}"
-                            Command="{Binding ViewNewLitterReportsCommand}"
-                            Text="New">
-                        <Button.Triggers>
-                            <DataTrigger TargetType="Button" Binding="{Binding IsNewSelected}" Value="true">
-                                <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
-                            </DataTrigger>
-                            <DataTrigger TargetType="Button" Binding="{Binding IsNewSelected}" Value="false">
-                                <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
-                            </DataTrigger>
-                        </Button.Triggers>
-                    </Button>
-                    <Button Grid.Column="1"
-                            Style="{StaticResource SecondarySmallButton}"
-                            Command="{Binding ViewAssignedLitterReportsCommand}"
-                            Text="Assigned">
-                        <Button.Triggers>
-                            <DataTrigger TargetType="Button" Binding="{Binding IsAssignedSelected}" Value="true">
-                                <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
-                            </DataTrigger>
-                            <DataTrigger TargetType="Button" Binding="{Binding IsAssignedSelected}" Value="false">
-                                <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
-                            </DataTrigger>
-                        </Button.Triggers>
-                    </Button>
-                    <Button Grid.Column="2"
-                            Style="{StaticResource SecondarySmallButton}"
-                            Command="{Binding ViewCleanedLitterReportsCommand}"
-                            Text="Cleaned">
-                        <Button.Triggers>
-                            <DataTrigger TargetType="Button" Binding="{Binding IsCleanedSelected}" Value="true">
-                                <Setter Property="Style" Value="{StaticResource PrimarySmallButton}" />
-                            </DataTrigger>
-                            <DataTrigger TargetType="Button" Binding="{Binding IsCleanedSelected}" Value="false">
-                                <Setter Property="Style" Value="{StaticResource SecondarySmallButton}" />
-                            </DataTrigger>
-                        </Button.Triggers>
-                    </Button>
-                </Grid>
-                <Grid ColumnDefinitions="Auto, *" ColumnSpacing="8">
-                    <Label Text="Created" Grid.Column="0" Style="{StaticResource FieldLabel}" VerticalOptions="Center" />
-                    <controls:TMPicker Grid.Column="1"
-                                       Title="Date Range"
-                                       HeightRequest="40"
-                                       ItemsSource="{Binding CreatedDateRanges}"
-                                       SelectedItem="{Binding SelectedCreatedDateRange, Mode=TwoWay}" />
-                </Grid>
+            <!-- Litter report status filters -->
+            <VerticalStackLayout IsVisible="{Binding ShowLitterReports}" Spacing="0">
+                <Label Text="Litter Reports" FontFamily="LexendSemibold" FontSize="Micro" Margin="12,4,0,0"
+                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                <HorizontalStackLayout Spacing="0" Margin="10,0"
+                      RadioButtonGroup.GroupName="LitterFilter"
+                      RadioButtonGroup.SelectedValue="{Binding LitterFilterSelection, Mode=TwoWay}">
+                    <RadioButton Content="New" Value="New" />
+                    <RadioButton Content="Assigned" Value="Assigned" />
+                    <RadioButton Content="Cleaned" Value="Cleaned" />
+                </HorizontalStackLayout>
+                <controls:TMPicker Margin="10,0"
+                                   Title="Created Date Range"
+                                   ItemsSource="{Binding CreatedDateRanges}"
+                                   SelectedItem="{Binding SelectedCreatedDateRange, Mode=TwoWay}" />
             </VerticalStackLayout>
         </VerticalStackLayout>
 
-        <!-- Map/List Toggle -->
-        <Grid Grid.Row="2" ColumnDefinitions="6*, *, *" Margin="5">
-            <Label Grid.Column="0" />
+        <!-- Row 3: Map/List toggle bar right above content -->
+        <Grid Grid.Row="3" ColumnDefinitions="*, Auto, Auto" Margin="5,2">
             <ImageButton Grid.Column="1"
                          HeightRequest="24"
                          Source="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconMap}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkText}}}"
@@ -172,7 +97,7 @@
         </Grid>
 
         <!-- Map View -->
-        <controls:CustomMap Grid.Row="3"
+        <controls:CustomMap Grid.Row="4"
                             x:Name="exploreMap"
                             ItemsSource="{Binding Addresses}"
                             IsVisible="{Binding IsMapSelected}">
@@ -189,7 +114,7 @@
         </controls:CustomMap>
 
         <!-- List View -->
-        <ScrollView Grid.Row="3" IsVisible="{Binding IsListSelected}">
+        <ScrollView Grid.Row="4" IsVisible="{Binding IsListSelected}">
             <VerticalStackLayout>
                 <Label Text="No results found"
                        IsVisible="{Binding AreNoItemsFound}"
@@ -272,10 +197,10 @@
         </ScrollView>
 
         <!-- Loading Overlay -->
-        <BoxView Grid.Row="3"
+        <BoxView Grid.Row="4"
                  BackgroundColor="{StaticResource TransparentBlack}"
                  IsVisible="{Binding IsBusy}" />
-        <ActivityIndicator Grid.Row="3"
+        <ActivityIndicator Grid.Row="4"
                            IsRunning="{Binding IsBusy}"
                            IsVisible="{Binding IsBusy}"
                            VerticalOptions="Center"

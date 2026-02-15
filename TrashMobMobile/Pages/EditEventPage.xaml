@@ -61,7 +61,10 @@
                             Grid.Column="0"
                             Grid.ColumnSpan="2"
                             Command="{Binding SaveEventCommand}"
-                            Text="Save Event">
+                            Style="{StaticResource PrimaryLargeButton}"
+                            Text="Save Event"
+                            ContentLayout="Left, 12"
+                            ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconContentSave}, Color={AppThemeBinding Light={StaticResource PrimaryReverseText}, Dark={StaticResource PrimaryDarkReverseText}}}">
                 </Button>
             </Grid>
         </VerticalStackLayout>

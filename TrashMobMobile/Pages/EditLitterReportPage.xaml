@@ -37,12 +37,16 @@
                                     Clicked="TakePhoto_Clicked"
                                     Style="{StaticResource PrimarySmallButton}"
                                     IsEnabled="{Binding CanAddImages}"
-                                    Text="Add Litter Image" />
+                                    Text="Add Litter Image"
+                                    ContentLayout="Left, 8"
+                                    ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconCamera}, Color={AppThemeBinding Light={StaticResource PrimaryReverseText}, Dark={StaticResource PrimaryDarkReverseText}}}" />
                             <Button Grid.Column="1"
                                     Command="{Binding SaveLitterReportCommand}"
                                     Style="{StaticResource SecondarySmallButton}"
                                     IsEnabled="{Binding ReportIsValid}"
-                                    Text="Save Litter Report" />
+                                    Text="Save Litter Report"
+                                    ContentLayout="Left, 8"
+                                    ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconContentSave}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />
                         </Grid>
                     </VerticalStackLayout>
                 </Border>
@@ -87,12 +91,19 @@
                                                    FontSize="Small"
                                                    TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}"
                                                    Text="{Binding Address.DisplayAddress}" />
-                                            <Button Grid.Column="2"
-                                                    Margin="5"
-                                                    Clicked="DeleteLitterImage_Clicked"
-                                                    HeightRequest="40"
-                                                    Text="Delete Image"
-                                                    WidthRequest="80" />
+                                            <ImageButton Grid.Column="2"
+                                                       Margin="5"
+                                                       Clicked="DeleteLitterImage_Clicked"
+                                                       HeightRequest="40"
+                                                       WidthRequest="40"
+                                                       VerticalOptions="Center">
+                                                <ImageButton.Source>
+                                                    <FontImageSource FontFamily="GoogleMaterialIcons"
+                                                                     Glyph="{DynamicResource IconDelete}"
+                                                                     Color="{StaticResource Destructive}"
+                                                                     Size="24" />
+                                                </ImageButton.Source>
+                                            </ImageButton>
                                         </Grid>
                                     </Border>
                                 </DataTemplate>

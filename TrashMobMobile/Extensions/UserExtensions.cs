@@ -13,7 +13,9 @@
                 return true;
             }
 
-            if (waiver.IsWaiverEnabled && user.DateAgreedToTrashMobWaiver < DateTime.Parse(waiverVersion.VersionDate))
+            if (waiver.IsWaiverEnabled &&
+                (user.DateAgreedToTrashMobWaiver == null ||
+                 user.DateAgreedToTrashMobWaiver < DateTime.Parse(waiverVersion.VersionDate)))
             {
                 return false;
             }

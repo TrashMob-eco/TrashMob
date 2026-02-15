@@ -4,10 +4,9 @@ namespace TrashMob.Controllers
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Hosting;
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.Identity.Web.Resource;
     using NetTopologySuite.Geometries;
     using TrashMob.Models;
@@ -24,10 +23,14 @@ namespace TrashMob.Controllers
     [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
     [Route("api/routes/simulate")]
     public class RouteSimulationController(
-        IHostEnvironment env,
         IEventAttendeeRouteManager routeManager,
         IKeyedRepository<Event> eventRepository) : SecureController
     {
+        private static readonly HashSet<string> ProductionHosts = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "www.trashmob.eco",
+            "trashmob.eco",
+        };
         private const double EarthRadiusMeters = 6_371_000;
         private static readonly Random Rng = new();
 
@@ -53,7 +56,7 @@ namespace TrashMob.Controllers
             [FromQuery] int gpsJitterMeters = 3,
             CancellationToken cancellationToken = default)
         {
-            if (env.IsProduction())
+            if (ProductionHosts.Contains(Request.Host.Host))
             {
                 return NotFound();
             }

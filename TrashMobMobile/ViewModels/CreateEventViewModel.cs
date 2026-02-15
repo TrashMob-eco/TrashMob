@@ -377,12 +377,14 @@ public partial class CreateEventViewModel : BaseViewModel
         if (CurrentView is BaseStepClass current)
             current.OnNavigated();
 
-        // TODO: reference these colors from the app styles
-        StepOneColor = CurrentStep == 0 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
-        StepTwoColor = CurrentStep == 1 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
-        StepFourColor = CurrentStep == 2 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
-        StepFiveColor = CurrentStep == 3 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
-        StepSixColor = CurrentStep == 4 ? Color.Parse("#005C4B") : Color.Parse("#CCDEDA");
+        var activeColor = GetThemeColor("Primary", "PrimaryDark");
+        var inactiveColor = GetThemeColor("BorderLight", "BorderDark");
+
+        StepOneColor = CurrentStep == 0 ? activeColor : inactiveColor;
+        StepTwoColor = CurrentStep == 1 ? activeColor : inactiveColor;
+        StepFourColor = CurrentStep == 2 ? activeColor : inactiveColor;
+        StepFiveColor = CurrentStep == 3 ? activeColor : inactiveColor;
+        StepSixColor = CurrentStep == 4 ? activeColor : inactiveColor;
     }
 
     public async Task SetCurrentStep(StepType step)
@@ -493,21 +495,51 @@ public partial class CreateEventViewModel : BaseViewModel
                 step.ViewModel = this;
         }
 
+        // Load event types first (anonymous endpoint, no auth required)
         await ExecuteAsync(async () =>
+        {
+            EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
+        }, "Failed to load event types. Please check your connection and try again.");
+
+        if (EventTypes.Count == 0)
+        {
+            return;
+        }
+
+        // Waiver check — if we can't verify, send user to sign anyway
+        try
         {
             if (!await waiverManager.HasUserSignedTrashMobWaiverAsync())
             {
                 await Shell.Current.GoToAsync($"{nameof(WaiverPage)}");
+                return;
             }
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            // Can't verify waiver status — require signing to be safe
+            await Shell.Current.GoToAsync($"{nameof(WaiverPage)}");
+            return;
+        }
 
+        await ExecuteAsync(async () =>
+        {
             UserLocation = userManager.CurrentUser.GetAddress();
-            EventTypes = (await eventTypeRestService.GetEventTypesAsync()).ToList();
 
-            UserTeams = (await teamManager.GetMyTeamsAsync()).ToList();
-            TeamNames.Clear();
-            foreach (var team in UserTeams)
+            // Load teams (requires auth) — non-fatal if it fails
+            try
             {
-                TeamNames.Add(team.Name);
+                UserTeams = (await teamManager.GetMyTeamsAsync()).ToList();
+                TeamNames.Clear();
+                foreach (var team in UserTeams)
+                {
+                    TeamNames.Add(team.Name);
+                }
+            }
+            catch (Exception ex)
+            {
+                SentrySdk.CaptureException(ex);
             }
 
             // Set defaults
@@ -801,4 +833,12 @@ public partial class CreateEventViewModel : BaseViewModel
     [ObservableProperty] private string descriptionRequiredError = string.Empty;
 
     #endregion
+
+    private static Color GetThemeColor(string lightKey, string darkKey)
+    {
+        var key = Application.Current?.RequestedTheme == AppTheme.Dark ? darkKey : lightKey;
+        if (Application.Current?.Resources.TryGetValue(key, out var colorObj) == true && colorObj is Color color)
+            return color;
+        return Colors.Gray;
+    }
 }

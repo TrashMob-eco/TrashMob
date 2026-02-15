@@ -103,11 +103,23 @@ public partial class HomeFeedViewModel(
         };
 
         var events = await mobEventManager.GetFilteredEventsAsync(filter);
+        var user = userManager.CurrentUser;
+        var maxDistanceKm = GetMaxDistanceKm(user);
 
         UpcomingEvents.Clear();
-        foreach (var mobEvent in events.Where(e => !e.IsCompleted()).OrderBy(e => e.EventDate).Take(10))
+
+        var filteredEvents = events.Where(e => !e.IsCompleted());
+
+        if (maxDistanceKm.HasValue && user.Latitude.HasValue && user.Longitude.HasValue)
         {
-            UpcomingEvents.Add(mobEvent.ToEventViewModel(userManager.CurrentUser.Id));
+            filteredEvents = filteredEvents.Where(e =>
+                !e.Latitude.HasValue || !e.Longitude.HasValue ||
+                DistanceInKm(user.Latitude.Value, user.Longitude.Value, e.Latitude.Value, e.Longitude.Value) <= maxDistanceKm.Value);
+        }
+
+        foreach (var mobEvent in filteredEvents.OrderBy(e => e.EventDate).Take(10))
+        {
+            UpcomingEvents.Add(mobEvent.ToEventViewModel(user.Id));
         }
 
         AreEventsFound = UpcomingEvents.Count > 0;
@@ -118,14 +130,36 @@ public partial class HomeFeedViewModel(
     {
         var filter = new LitterReportFilter
         {
-            StartDate = DateTimeOffset.UtcNow.AddMonths(-3),
+            StartDate = DateTimeOffset.UtcNow.AddDays(-7),
             EndDate = DateTimeOffset.UtcNow,
         };
 
         var reports = await litterReportManager.GetLitterReportsAsync(filter, ImageSizeEnum.Thumb, true);
+        var user = userManager.CurrentUser;
+        var maxDistanceKm = GetMaxDistanceKm(user);
 
         NearbyLitterReports.Clear();
-        foreach (var report in reports.OrderByDescending(r => r.CreatedDate).Take(5))
+
+        var filteredReports = reports
+            .Where(r => r.LitterReportStatusId != (int)LitterReportStatusEnum.Cancelled)
+            .OrderByDescending(r => r.CreatedDate)
+            .AsEnumerable();
+
+        if (maxDistanceKm.HasValue && user.Latitude.HasValue && user.Longitude.HasValue)
+        {
+            filteredReports = filteredReports.Where(r =>
+            {
+                var firstImage = r.LitterImages?.FirstOrDefault();
+                if (firstImage?.Latitude == null || firstImage?.Longitude == null)
+                {
+                    return true; // Include reports without location data
+                }
+
+                return DistanceInKm(user.Latitude.Value, user.Longitude.Value, firstImage.Latitude.Value, firstImage.Longitude.Value) <= maxDistanceKm.Value;
+            });
+        }
+
+        foreach (var report in filteredReports.Take(3))
         {
             NearbyLitterReports.Add(report.ToLitterReportViewModel(NotificationService));
         }
@@ -133,4 +167,32 @@ public partial class HomeFeedViewModel(
         AreLitterReportsFound = NearbyLitterReports.Count > 0;
         AreNoLitterReportsFound = !AreLitterReportsFound;
     }
+
+    private static double? GetMaxDistanceKm(User user)
+    {
+        if (user.TravelLimitForLocalEvents <= 0 || !user.Latitude.HasValue || !user.Longitude.HasValue)
+        {
+            return null; // No filtering — show all
+        }
+
+        var distanceKm = user.PrefersMetric
+            ? user.TravelLimitForLocalEvents
+            : user.TravelLimitForLocalEvents * 1.60934;
+
+        return distanceKm;
+    }
+
+    private static double DistanceInKm(double lat1, double lon1, double lat2, double lon2)
+    {
+        const double R = 6371; // Earth radius in km
+        var dLat = ToRadians(lat2 - lat1);
+        var dLon = ToRadians(lon2 - lon1);
+        var a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                Math.Cos(ToRadians(lat1)) * Math.Cos(ToRadians(lat2)) *
+                Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+        var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+        return R * c;
+    }
+
+    private static double ToRadians(double degrees) => degrees * Math.PI / 180;
 }
