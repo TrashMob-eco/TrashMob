@@ -23,7 +23,7 @@ import { GetCommunityForAdmin } from '@/services/communities';
 import { AreaMapEditor } from '@/components/Map/AreaMapEditor';
 import { AreaBoundingBox } from '@/lib/geojson';
 
-const areaTypes: AdoptableAreaType[] = ['Highway', 'Park', 'Trail', 'Waterway', 'Street', 'Spot'];
+const areaTypes: AdoptableAreaType[] = ['Highway', 'Park', 'School', 'Trail', 'Waterway', 'Street', 'Spot'];
 
 interface FormInputs {
     name: string;
@@ -39,7 +39,7 @@ interface FormInputs {
 const formSchema = z.object({
     name: z.string().min(1, 'Name is required').max(200, 'Name must be less than 200 characters'),
     description: z.string().max(2048, 'Description must be less than 2048 characters'),
-    areaType: z.enum(['Highway', 'Park', 'Trail', 'Waterway', 'Street', 'Spot']),
+    areaType: z.enum(['Highway', 'Park', 'School', 'Trail', 'Waterway', 'Street', 'Spot']),
     cleanupFrequencyDays: z.coerce.number().min(1, 'Must be at least 1 day').max(365, 'Must be less than 365 days'),
     minEventsPerYear: z.coerce.number().min(1, 'Must be at least 1 event').max(52, 'Must be less than 52 events'),
     safetyRequirements: z.string().max(4000, 'Safety requirements must be less than 4000 characters'),

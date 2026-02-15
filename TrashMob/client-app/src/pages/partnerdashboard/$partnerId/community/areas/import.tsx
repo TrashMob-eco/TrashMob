@@ -64,7 +64,7 @@ const TRASHMOB_FIELD_LABELS: Record<TrashMobField, string> = {
     skip: '(Skip)',
 };
 
-const VALID_AREA_TYPES = new Set(['Highway', 'Park', 'Trail', 'Waterway', 'Street', 'Spot']);
+const VALID_AREA_TYPES = new Set(['Highway', 'Park', 'School', 'Trail', 'Waterway', 'Street', 'Spot']);
 
 const ACCEPTED_EXTENSIONS = '.geojson,.json,.kml,.kmz,.zip';
 
@@ -656,7 +656,7 @@ function MappingStep({
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                                {['Highway', 'Park', 'Trail', 'Waterway', 'Street', 'Spot'].map((t) => (
+                                {['Highway', 'Park', 'School', 'Trail', 'Waterway', 'Street', 'Spot'].map((t) => (
                                     <SelectItem key={t} value={t}>
                                         {t}
                                     </SelectItem>

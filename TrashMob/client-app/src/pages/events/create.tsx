@@ -113,13 +113,12 @@ export const CreateEventPage = () => {
     // Show waiver flow immediately on page load if there are unsigned waivers
     const hasPendingWaivers = requiredWaivers && requiredWaivers.length > 0;
     const [showWaiverFlow, setShowWaiverFlow] = useState(false);
-    const [waiversDismissed, setWaiversDismissed] = useState(false);
 
     useEffect(() => {
-        if (hasPendingWaivers && !waiversDismissed) {
+        if (hasPendingWaivers) {
             setShowWaiverFlow(true);
         }
-    }, [hasPendingWaivers, waiversDismissed]);
+    }, [hasPendingWaivers]);
 
     const addEventLitterReport = useMutation({
         mutationKey: AddEventLitterReport().key,
@@ -271,11 +270,11 @@ export const CreateEventPage = () => {
             if (allSigned) {
                 refetchWaivers();
             } else {
-                // User dismissed waivers without signing — mark as dismissed so we don't loop
-                setWaiversDismissed(true);
+                // User dismissed waivers without signing — navigate away since waivers are required
+                navigate(-1);
             }
         },
-        [refetchWaivers],
+        [refetchWaivers, navigate],
     );
 
     const map = useMap('locationPicker');
