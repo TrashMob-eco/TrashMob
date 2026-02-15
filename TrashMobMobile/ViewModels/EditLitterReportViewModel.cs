@@ -175,7 +175,7 @@ public partial class EditLitterReportViewModel(ILitterReportManager litterReport
             {
                 var litterImage = new LitterImage
                 {
-                    Id = Guid.NewGuid(),
+                    Id = litterImageViewModel.Id == Guid.Empty ? Guid.NewGuid() : litterImageViewModel.Id,
                     City = litterImageViewModel.Address.City,
                     Country = litterImageViewModel.Address.Country,
                     LitterReportId = litterImageViewModel.LitterReportId,

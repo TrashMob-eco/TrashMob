@@ -49,7 +49,10 @@
                                 <DataTemplate x:DataType="viewModels:LitterImageViewModel">
                                     <Border Style="{StaticResource RoundBorder}" Margin="0,3">
                                         <Grid ColumnDefinitions="Auto, *" Padding="8,6" ColumnSpacing="10">
-                                            <Image Source="{Binding AzureBlobUrl}" MaximumWidthRequest="80" Aspect="AspectFill" Grid.Column="0" />
+                                            <Image Source="{Binding AzureBlobUrl}"
+                                                   WidthRequest="80" HeightRequest="80"
+                                                   MaximumWidthRequest="80" MaximumHeightRequest="80"
+                                                   Aspect="AspectFill" Grid.Column="0" />
                                             <Label Text="{Binding Address.DisplayAddress}" Grid.Column="1"
                                                    LineBreakMode="WordWrap" FontSize="Small" VerticalOptions="Center"
                                                    TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />

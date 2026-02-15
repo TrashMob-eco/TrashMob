@@ -152,6 +152,7 @@ public partial class CreateLitterReportViewModel : BaseViewModel
             }
 
             var litterReport = LitterReportViewModel.ToLitterReport();
+            litterReport.Id = Guid.NewGuid();
             litterReport.Name = Name;
             litterReport.Description = Description;
 
@@ -162,7 +163,7 @@ public partial class CreateLitterReportViewModel : BaseViewModel
                     Id = Guid.NewGuid(),
                     City = litterImageViewModel.Address.City,
                     Country = litterImageViewModel.Address.Country,
-                    LitterReportId = litterImageViewModel.LitterReportId,
+                    LitterReportId = litterReport.Id,
                     Latitude = litterImageViewModel.Address.Latitude,
                     Longitude = litterImageViewModel.Address.Longitude,
                     PostalCode = litterImageViewModel.Address.PostalCode,

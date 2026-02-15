@@ -54,7 +54,13 @@
 
             using (var response = await AuthorizedHttpClient.PutAsync(Controller, content, cancellationToken))
             {
-                response.EnsureSuccessStatusCode();
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorBody = await response.Content.ReadAsStringAsync(cancellationToken);
+                    throw new HttpRequestException(
+                        $"Server returned {(int)response.StatusCode} ({response.StatusCode}): {errorBody}");
+                }
+
                 var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
                 var result = JsonConvert.DeserializeObject<LitterReport>(responseContent);
 
@@ -79,7 +85,12 @@
 
             using (var response = await AuthorizedHttpClient.PostAsync(Controller, content, cancellationToken))
             {
-                response.EnsureSuccessStatusCode();
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorBody = await response.Content.ReadAsStringAsync(cancellationToken);
+                    throw new HttpRequestException(
+                        $"Server returned {(int)response.StatusCode} ({response.StatusCode}): {errorBody}");
+                }
 
                 var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
                 var result = JsonConvert.DeserializeObject<LitterReport>(responseContent);
@@ -191,7 +202,12 @@
 
                     using (var response = await AuthorizedHttpClient.SendAsync(request, cancellationToken))
                     {
-                        response.EnsureSuccessStatusCode();
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            var errorBody = await response.Content.ReadAsStringAsync(cancellationToken);
+                            throw new HttpRequestException(
+                                $"Image upload failed with {(int)response.StatusCode} ({response.StatusCode}): {errorBody}");
+                        }
                     }
                 }
         }

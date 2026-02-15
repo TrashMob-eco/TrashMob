@@ -34,7 +34,7 @@ public abstract partial class BaseViewModel(INotificationService notificationSer
         {
             SentrySdk.CaptureException(ex);
             IsError = true;
-            await NotificationService.NotifyError(errorMessage);
+            await NotificationService.NotifyError(string.IsNullOrEmpty(ex.Message) ? errorMessage : ex.Message);
         }
         catch (TaskCanceledException ex)
         {
@@ -74,7 +74,7 @@ public abstract partial class BaseViewModel(INotificationService notificationSer
         {
             SentrySdk.CaptureException(ex);
             IsError = true;
-            await NotificationService.NotifyError(errorMessage);
+            await NotificationService.NotifyError(string.IsNullOrEmpty(ex.Message) ? errorMessage : ex.Message);
             return default;
         }
         catch (TaskCanceledException ex)

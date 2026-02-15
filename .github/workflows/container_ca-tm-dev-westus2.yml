@@ -121,7 +121,7 @@ jobs:
       # Note: Azure AD B2C configuration is now set via environment variables in containerApp.bicep
       # The B2C settings are public configuration values (not secrets) determined by the 'environment' parameter
 
-      - name: Grant Key Vault Access via RBAC
+      - name: Grant Key Vault and Storage Access via RBAC
         run: |
           echo "Getting Container App managed identity..."
           PRINCIPAL_ID=$(az containerapp show \
@@ -130,6 +130,7 @@ jobs:
             --query identity.principalId \
             -o tsv)
           echo "Principal ID: $PRINCIPAL_ID"
+          PERMISSIONS_ADDED=false
 
           # Get Key Vault resource ID for role assignment scope
           KEY_VAULT_ID=$(az keyvault show --name ${{ env.KEY_VAULT_NAME }} --query id -o tsv)
@@ -148,10 +149,32 @@ jobs:
               --assignee $PRINCIPAL_ID \
               --role "Key Vault Secrets User" \
               --scope $KEY_VAULT_ID
-            echo "Waiting 30 seconds for permissions to propagate..."
-            sleep 30
+            PERMISSIONS_ADDED=true
           else
             echo "Key Vault Secrets User role already assigned to principal $PRINCIPAL_ID"
+          fi
+
+          echo "Checking if Storage Blob Data Contributor role already assigned..."
+          EXISTING_STORAGE_ROLE=$(az role assignment list \
+            --assignee $PRINCIPAL_ID \
+            --scope /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ env.RESOURCE_GROUP }}/providers/Microsoft.Storage/storageAccounts/${{ env.STORAGE_ACCOUNT_NAME }} \
+            --query "[?roleDefinitionName=='Storage Blob Data Contributor'].roleDefinitionName" \
+            -o tsv)
+
+          if [ -z "$EXISTING_STORAGE_ROLE" ]; then
+            echo "Storage role assignment not found. Granting Storage Blob Data Contributor role..."
+            az role assignment create \
+              --assignee $PRINCIPAL_ID \
+              --role "Storage Blob Data Contributor" \
+              --scope /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ env.RESOURCE_GROUP }}/providers/Microsoft.Storage/storageAccounts/${{ env.STORAGE_ACCOUNT_NAME }}
+            PERMISSIONS_ADDED=true
+          else
+            echo "Storage Blob Data Contributor role already assigned"
+          fi
+
+          if [ "$PERMISSIONS_ADDED" = true ]; then
+            echo "Waiting 30 seconds for permissions to propagate..."
+            sleep 30
           fi
 
       - name: Grant Azure Maps Access via RBAC

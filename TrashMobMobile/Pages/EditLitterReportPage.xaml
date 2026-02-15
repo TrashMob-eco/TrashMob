@@ -78,7 +78,10 @@
                                     <Border Style="{StaticResource RoundBorder}" Margin="0,4">
                                         <Grid ColumnDefinitions="Auto, *, Auto"
                                               x:Name="LitterImageItem">
-                                            <Image Source="{Binding AzureBlobUrl}" MaximumWidthRequest="100"
+                                            <Image Source="{Binding DisplayImageSource}"
+                                                   WidthRequest="80" HeightRequest="80"
+                                                   MaximumWidthRequest="80" MaximumHeightRequest="80"
+                                                   Aspect="AspectFill"
                                                    Grid.Column="0" />
                                             <Label Grid.Column="1" Margin="5"
                                                    FontSize="Small"
