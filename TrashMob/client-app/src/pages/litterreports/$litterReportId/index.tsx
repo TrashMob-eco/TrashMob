@@ -23,6 +23,8 @@ import {
     LitterReportStatusColors,
 } from '@/components/Models/LitterReportStatus';
 import { GetLitterReport, DeleteLitterReport, GetUserLitterReports } from '@/services/litter-report';
+import { GetRequiredWaivers } from '@/services/user-waivers';
+import { WaiverSigningFlow } from '@/components/Waivers';
 import { useLogin } from '@/hooks/useLogin';
 import { useToast } from '@/hooks/use-toast';
 import { ReportPhotoButton } from '@/components/ReportPhotoButton';
@@ -51,6 +53,14 @@ export const LitterReportDetailPage = () => {
     const { currentUser, isUserLoaded } = useLogin();
     const { toast } = useToast();
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const [showWaiverFlow, setShowWaiverFlow] = useState(false);
+
+    const { data: requiredWaivers, refetch: refetchWaivers } = useQuery({
+        queryKey: GetRequiredWaivers().key,
+        queryFn: GetRequiredWaivers().service,
+        select: (res) => res.data,
+        enabled: isUserLoaded,
+    });
 
     const { data: litterReport, isLoading } = useQuery<AxiosResponse<LitterReportData>, unknown, LitterReportData>({
         queryKey: GetLitterReport({ litterReportId }).key,
@@ -87,6 +97,23 @@ export const LitterReportDetailPage = () => {
     const handleDelete = () => {
         deleteMutation.mutate();
         setShowDeleteDialog(false);
+    };
+
+    const handleCreateEvent = () => {
+        if (requiredWaivers && requiredWaivers.length > 0) {
+            setShowWaiverFlow(true);
+        } else {
+            navigate('/events/create', { state: { fromLitterReport: litterReport } });
+        }
+    };
+
+    const handleWaiverFlowComplete = (allSigned: boolean) => {
+        setShowWaiverFlow(false);
+        if (allSigned) {
+            refetchWaivers().then(() => {
+                navigate('/events/create', { state: { fromLitterReport: litterReport } });
+            });
+        }
     };
 
     if (isLoading) {
@@ -291,10 +318,8 @@ export const LitterReportDetailPage = () => {
                                     <CardTitle>Actions</CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                    <Button asChild className='w-full'>
-                                        <Link to='/events/create' state={{ fromLitterReport: litterReport }}>
-                                            <Plus className='h-4 w-4 mr-2' /> Create Event to Clean This
-                                        </Link>
+                                    <Button className='w-full' onClick={handleCreateEvent}>
+                                        <Plus className='h-4 w-4 mr-2' /> Create Event to Clean This
                                     </Button>
                                 </CardContent>
                             </Card>
@@ -344,6 +369,14 @@ export const LitterReportDetailPage = () => {
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
+
+                {requiredWaivers ? (
+                    <WaiverSigningFlow
+                        waivers={requiredWaivers}
+                        open={showWaiverFlow}
+                        onComplete={handleWaiverFlowComplete}
+                    />
+                ) : null}
             </div>
         </div>
     );
