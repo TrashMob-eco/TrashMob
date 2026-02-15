@@ -22,20 +22,23 @@ interface SidebarNavProps {
 export function SidebarNav({ groups, className }: SidebarNavProps) {
     const location = useLocation();
 
-    const hasExactMatch = useMemo(
-        () => groups.some((g) => g.items.some((i) => location.pathname === i.href)),
-        [groups, location.pathname],
-    );
+    // Find the single best matching nav item — the one with the longest href
+    // that is either an exact match or a prefix of the current path.
+    const activeHref = useMemo(() => {
+        let best: string | null = null;
+        for (const group of groups) {
+            for (const item of group.items) {
+                if (location.pathname === item.href || location.pathname.startsWith(item.href + '/')) {
+                    if (!best || item.href.length > best.length) {
+                        best = item.href;
+                    }
+                }
+            }
+        }
+        return best;
+    }, [groups, location.pathname]);
 
-    const isActive = useCallback(
-        (href: string) => {
-            if (location.pathname === href) return true;
-            // Only use prefix matching when no other item is an exact match
-            if (hasExactMatch) return false;
-            return location.pathname.startsWith(href + '/');
-        },
-        [location.pathname, hasExactMatch],
-    );
+    const isActive = useCallback((href: string) => href === activeHref, [activeHref]);
 
     return (
         <nav className={cn('space-y-6', className)}>
