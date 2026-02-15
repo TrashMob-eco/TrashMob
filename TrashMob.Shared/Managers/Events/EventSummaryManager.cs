@@ -32,7 +32,7 @@ namespace TrashMob.Shared.Managers.Events
         {
             var stats = new Stats();
             var events = eventRepository.Get();
-            stats.TotalEvents = await events.CountAsync(e => e.EventStatusId != CancelledEventStatusId, cancellationToken);
+            stats.TotalEvents = await events.CountAsync(e => e.EventStatusId != CancelledEventStatusId && e.EventDate < DateTimeOffset.UtcNow, cancellationToken);
 
             // Use database-side aggregation instead of loading all records into memory
             var aggregates = await Repository.Get()
@@ -73,8 +73,8 @@ namespace TrashMob.Shared.Managers.Events
 
             var allResults = result1.Union(result2, new EventComparer());
 
-            stats.TotalEvents = allResults.Where(e => e.EventStatusId != CancelledEventStatusId).Count();
-            var eventIds = allResults.Where(e => e.EventStatusId != CancelledEventStatusId).Select(e => e.Id);
+            stats.TotalEvents = allResults.Where(e => e.EventStatusId != CancelledEventStatusId && e.EventDate < DateTimeOffset.UtcNow).Count();
+            var eventIds = allResults.Where(e => e.EventStatusId != CancelledEventStatusId && e.EventDate < DateTimeOffset.UtcNow).Select(e => e.Id);
 
             var eventSummaries =
                 await Repository.Get(es => eventIds.Contains(es.EventId)).ToListAsync(cancellationToken);

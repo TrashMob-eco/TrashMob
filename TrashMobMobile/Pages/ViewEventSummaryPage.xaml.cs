@@ -36,7 +36,7 @@ public partial class ViewEventSummaryPage : ContentPage
         var p = (Pin)sender;
 
         var pickupLocationId = p.AutomationId;
-        await Shell.Current.GoToAsync($"{nameof(ViewPickupLocationPage)}?LitterReportId={pickupLocationId}");
+        await Shell.Current.GoToAsync($"{nameof(ViewPickupLocationPage)}?PickupLocationId={pickupLocationId}");
     }
 
     private void UpdateRoutes()

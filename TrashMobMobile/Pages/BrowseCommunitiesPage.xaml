@@ -11,17 +11,31 @@
         <ScrollView>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
 
-                <Label Text="Communities Near You"
-                       FontFamily="LexendSemibold"
-                       FontSize="Title"
-                       Margin="10,15,10,5" />
+                <!-- Empty State -->
+                <VerticalStackLayout IsVisible="{Binding AreNoCommunitiesFound}"
+                                     HorizontalOptions="Center"
+                                     Spacing="8"
+                                     Margin="20,60,20,20">
+                    <Image HorizontalOptions="Center" WidthRequest="48" HeightRequest="48">
+                        <Image.Source>
+                            <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconMapMarkerOutline}"
+                                             Size="48"
+                                             Color="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                        </Image.Source>
+                    </Image>
+                    <Label Text="No communities found nearby"
+                           FontFamily="LexendSemibold"
+                           FontSize="Small"
+                           HorizontalTextAlignment="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                    <Label Text="Communities organize local cleanup efforts. Check back later or pull down to refresh."
+                           FontSize="Micro"
+                           HorizontalTextAlignment="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                </VerticalStackLayout>
 
-                <Label Text="No communities found nearby"
-                       IsVisible="{Binding AreNoCommunitiesFound}"
-                       FontSize="Small"
-                       Margin="10,5"
-                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
-
+                <!-- Communities List -->
                 <CollectionView ItemsSource="{Binding Communities}"
                                 SelectionMode="None"
                                 IsVisible="{Binding AreCommunitiesFound}">

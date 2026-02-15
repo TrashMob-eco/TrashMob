@@ -30,6 +30,9 @@ public partial class CreateEventPage : ContentPage
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        await viewModel.Init(new Guid(LitterReportId));
+        Guid? litterReportGuid = Guid.TryParse(LitterReportId, out var parsed) && parsed != Guid.Empty
+            ? parsed
+            : null;
+        await viewModel.Init(litterReportGuid);
     }
 }

@@ -58,4 +58,10 @@ public partial class LitterReportViewModel : ObservableObject
     public string? ThumbnailUrl => LitterImageViewModels.FirstOrDefault()?.AzureBlobUrl;
 
     public bool HasThumbnail => !string.IsNullOrEmpty(ThumbnailUrl);
+
+    public string? FirstImageLocation => LitterImageViewModels.FirstOrDefault()?.Address?.DisplayAddress;
+
+    public double? FirstImageLatitude => LitterImageViewModels.FirstOrDefault()?.Address?.Latitude;
+
+    public double? FirstImageLongitude => LitterImageViewModels.FirstOrDefault()?.Address?.Longitude;
 }

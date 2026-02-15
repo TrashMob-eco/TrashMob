@@ -72,27 +72,37 @@
                                 Text="Edit Report"
                                 IsEnabled="{Binding CanEditLitterReport}"
                                 IsVisible="{Binding CanEditLitterReport}"
-                                Style="{StaticResource PrimaryLargeButton}" />
+                                Style="{StaticResource PrimaryLargeButton}"
+                                ContentLayout="Left, 12"
+                                ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconPencil}, Color={AppThemeBinding Light={StaticResource PrimaryReverseText}, Dark={StaticResource PrimaryDarkReverseText}}}" />
                         <Button Command="{Binding MarkLitterReportCleanedCommand}"
                                 IsEnabled="{Binding CanMarkLitterReportCleaned}"
                                 IsVisible="{Binding CanMarkLitterReportCleaned}"
                                 Style="{StaticResource SecondaryLargeButton}"
-                                Text="Mark as Cleaned" />
+                                Text="Mark as Cleaned"
+                                ContentLayout="Left, 12"
+                                ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconCheck}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />
                         <Button Command="{Binding DeleteLitterReportCommand}"
                                 IsEnabled="{Binding CanDeleteLitterReport}"
                                 IsVisible="{Binding CanDeleteLitterReport}"
                                 Style="{StaticResource SecondaryLargeButton}"
-                                Text="Delete Report" />
+                                Text="Delete Report"
+                                ContentLayout="Left, 12"
+                                ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconDelete}, Color={StaticResource Destructive}}" />
                         <Button Command="{Binding ViewEventCommand}"
                                 IsEnabled="{Binding IsAssignedToEvent}"
                                 IsVisible="{Binding IsAssignedToEvent}"
                                 Style="{StaticResource SecondaryLargeButton}"
-                                Text="View Event" />
+                                Text="View Event"
+                                ContentLayout="Left, 12"
+                                ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconEye}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />
                         <Button Command="{Binding CreateEventCommand}"
                                 IsEnabled="{Binding IsNotAssignedToEvent}"
                                 IsVisible="{Binding IsNotAssignedToEvent}"
                                 Style="{StaticResource SecondaryLargeButton}"
-                                Text="Create Event" />
+                                Text="Create Event"
+                                ContentLayout="Left, 12"
+                                ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconCalendarPlus}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />
                     </VerticalStackLayout>
                 </Border>
             </VerticalStackLayout>

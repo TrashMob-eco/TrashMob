@@ -78,14 +78,18 @@
                             Command="{Binding CreateEventCommand}"
                             HorizontalOptions="Center"
                             Style="{StaticResource PrimarySmallButton}"
-                            Text="Create an Event" />
+                            Text="Create an Event"
+                            ContentLayout="Left, 8"
+                            ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconCalendarPlus}, Color={AppThemeBinding Light={StaticResource PrimaryReverseText}, Dark={StaticResource PrimaryDarkReverseText}}}" />
                     <Button Grid.Row="0"
                             Grid.Column="2"
                             Grid.ColumnSpan="2"
                             Command="{Binding CreateLitterReportCommand}"
                             HorizontalOptions="Center"
                             Style="{StaticResource SecondarySmallButton}"
-                            Text="Report Litter" />
+                            Text="Report Litter"
+                            ContentLayout="Left, 8"
+                            ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconClipboardText}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />
                 </Grid>
 
                 <tabs:TabHostView Padding="10" 

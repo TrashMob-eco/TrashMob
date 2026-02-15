@@ -24,7 +24,7 @@
     <!-- <x:String x:Key="IconAccountNetwork">&#xf0011;</x:String> -->
     <!-- <x:String x:Key="IconAccountOff">&#xf0012;</x:String> -->
     <!-- <x:String x:Key="IconAccountOutline">&#xf0013;</x:String> -->
-    <!-- <x:String x:Key="IconAccountPlus">&#xf0014;</x:String> -->
+    <x:String x:Key="IconAccountPlus">&#xf0014;</x:String>
     <!-- <x:String x:Key="IconAccountRemove">&#xf0015;</x:String> -->
     <!-- <x:String x:Key="IconAccountSearch">&#xf0016;</x:String> -->
     <!-- <x:String x:Key="IconAccountStar">&#xf0017;</x:String> -->
@@ -81,14 +81,14 @@
     <!-- <x:String x:Key="IconArrowDownDropCircle">&#xf004a;</x:String> -->
     <!-- <x:String x:Key="IconArrowDownDropCircleOutline">&#xf004b;</x:String> -->
     <!-- <x:String x:Key="IconArrowExpandAll">&#xf004c;</x:String> -->
-    <!-- <x:String x:Key="IconArrowLeft">&#xf004d;</x:String> -->
+    <x:String x:Key="IconArrowLeft">&#xf004d;</x:String>
     <!-- <x:String x:Key="IconArrowLeftThick">&#xf004e;</x:String> -->
     <!-- <x:String x:Key="IconArrowLeftBoldCircle">&#xf004f;</x:String> -->
     <!-- <x:String x:Key="IconArrowLeftBoldCircleOutline">&#xf0050;</x:String> -->
     <!-- <x:String x:Key="IconArrowLeftBoldHexagonOutline">&#xf0051;</x:String> -->
     <!-- <x:String x:Key="IconArrowLeftDropCircle">&#xf0052;</x:String> -->
     <!-- <x:String x:Key="IconArrowLeftDropCircleOutline">&#xf0053;</x:String> -->
-    <!-- <x:String x:Key="IconArrowRight">&#xf0054;</x:String> -->
+    <x:String x:Key="IconArrowRight">&#xf0054;</x:String>
     <!-- <x:String x:Key="IconArrowRightThick">&#xf0055;</x:String> -->
     <!-- <x:String x:Key="IconArrowRightBoldCircle">&#xf0056;</x:String> -->
     <!-- <x:String x:Key="IconArrowRightBoldCircleOutline">&#xf0057;</x:String> -->
@@ -247,7 +247,7 @@
     <!-- <x:String x:Key="IconCalendarClock">&#xf00f0;</x:String> -->
     <!-- <x:String x:Key="IconCalendarMultiple">&#xf00f1;</x:String> -->
     <!-- <x:String x:Key="IconCalendarMultipleCheck">&#xf00f2;</x:String> -->
-    <!-- <x:String x:Key="IconCalendarPlus">&#xf00f3;</x:String> -->
+    <x:String x:Key="IconCalendarPlus">&#xf00f3;</x:String>
     <!-- <x:String x:Key="IconCalendarRemove">&#xf00f4;</x:String> -->
     <!-- <x:String x:Key="IconCalendarText">&#xf00f5;</x:String> -->
     <!-- <x:String x:Key="IconCalendarToday">&#xf00f6;</x:String> -->
@@ -260,7 +260,7 @@
     <!-- <x:String x:Key="IconVideoBox">&#xf00fd;</x:String> -->
     <!-- <x:String x:Key="IconVideoBoxOff">&#xf00fe;</x:String> -->
     <!-- <x:String x:Key="IconCamcorderOff">&#xf00ff;</x:String> -->
-    <!-- <x:String x:Key="IconCamera">&#xf0100;</x:String> -->
+    <x:String x:Key="IconCamera">&#xf0100;</x:String>
     <!-- <x:String x:Key="IconCameraEnhance">&#xf0101;</x:String> -->
     <!-- <x:String x:Key="IconCameraFront">&#xf0102;</x:String> -->
     <!-- <x:String x:Key="IconCameraFrontVariant">&#xf0103;</x:String> -->
@@ -304,7 +304,7 @@
     <!-- <x:String x:Key="IconChartHistogram">&#xf0129;</x:String> -->
     <!-- <x:String x:Key="IconChartLine">&#xf012a;</x:String> -->
     <!-- <x:String x:Key="IconChartPie">&#xf012b;</x:String> -->
-    <!-- <x:String x:Key="IconCheck">&#xf012c;</x:String> -->
+    <x:String x:Key="IconCheck">&#xf012c;</x:String>
     <!-- <x:String x:Key="IconCheckAll">&#xf012d;</x:String> -->
     <!-- <x:String x:Key="IconCheckboxBlank">&#xf012e;</x:String> -->
     <!-- <x:String x:Key="IconCheckboxBlankCircle">&#xf012f;</x:String> -->
@@ -407,7 +407,7 @@
     <!-- <x:String x:Key="IconContentCut">&#xf0190;</x:String> -->
     <!-- <x:String x:Key="IconContentDuplicate">&#xf0191;</x:String> -->
     <!-- <x:String x:Key="IconContentPaste">&#xf0192;</x:String> -->
-    <!-- <x:String x:Key="IconContentSave">&#xf0193;</x:String> -->
+    <x:String x:Key="IconContentSave">&#xf0193;</x:String>
     <!-- <x:String x:Key="IconContentSaveAll">&#xf0194;</x:String> -->
     <!-- <x:String x:Key="IconContrast">&#xf0195;</x:String> -->
     <!-- <x:String x:Key="IconContrastBox">&#xf0196;</x:String> -->
@@ -440,7 +440,7 @@
     <!-- <x:String x:Key="IconCurrencyRub">&#xf01b1;</x:String> -->
     <!-- <x:String x:Key="IconCurrencyTry">&#xf01b2;</x:String> -->
     <!-- <x:String x:Key="IconDeleteVariant">&#xf01b3;</x:String> -->
-    <!-- <x:String x:Key="IconDelete">&#xf01b4;</x:String> -->
+    <x:String x:Key="IconDelete">&#xf01b4;</x:String>
     <!-- <x:String x:Key="IconDecimalIncrease">&#xf01b5;</x:String> -->
     <!-- <x:String x:Key="IconDecimalDecrease">&#xf01b6;</x:String> -->
     <!-- <x:String x:Key="IconDebugStepOver">&#xf01b7;</x:String> -->
@@ -827,8 +827,8 @@
     <!-- <x:String x:Key="IconPlusBoxMultiple">&#xf0334;</x:String> -->
     <!-- <x:String x:Key="IconLightbulb">&#xf0335;</x:String> -->
     <!-- <x:String x:Key="IconLightbulbOutline">&#xf0336;</x:String> -->
-    <!-- <x:String x:Key="IconLink">&#xf0337;</x:String> -->
-    <!-- <x:String x:Key="IconLinkOff">&#xf0338;</x:String> -->
+    <x:String x:Key="IconLink">&#xf0337;</x:String>
+    <x:String x:Key="IconLinkOff">&#xf0338;</x:String>
     <!-- <x:String x:Key="IconLinkVariant">&#xf0339;</x:String> -->
     <!-- <x:String x:Key="IconLinkVariantOff">&#xf033a;</x:String> -->
     <!-- <x:String x:Key="IconLinkedin">&#xf033b;</x:String> -->
@@ -1006,7 +1006,7 @@
     <!-- <x:String x:Key="IconPauseOctagonOutline">&#xf03e8;</x:String> -->
     <!-- <x:String x:Key="IconPaw">&#xf03e9;</x:String> -->
     <!-- <x:String x:Key="IconPen">&#xf03ea;</x:String> -->
-    <!-- <x:String x:Key="IconPencil">&#xf03eb;</x:String> -->
+    <x:String x:Key="IconPencil">&#xf03eb;</x:String>
     <!-- <x:String x:Key="IconPencilBox">&#xf03ec;</x:String> -->
     <!-- <x:String x:Key="IconPencilBoxOutline">&#xf03ed;</x:String> -->
     <!-- <x:String x:Key="IconPencilLock">&#xf03ee;</x:String> -->
@@ -1505,7 +1505,7 @@
     <!-- <x:String x:Key="IconBullseye">&#xf05dd;</x:String> -->
     <!-- <x:String x:Key="IconCommentRemove">&#xf05de;</x:String> -->
     <!-- <x:String x:Key="IconCameraOff">&#xf05df;</x:String> -->
-    <!-- <x:String x:Key="IconCheckCircle">&#xf05e0;</x:String> -->
+    <x:String x:Key="IconCheckCircle">&#xf05e0;</x:String>
     <!-- <x:String x:Key="IconCheckCircleOutline">&#xf05e1;</x:String> -->
     <!-- <x:String x:Key="IconCandle">&#xf05e2;</x:String> -->
     <!-- <x:String x:Key="IconChartBubble">&#xf05e3;</x:String> -->

@@ -9,31 +9,39 @@
              xmlns:converters="clr-namespace:TrashMobMobile.Converters"
              xmlns:controls="clr-namespace:TrashMobMobile.Controls"
              Title="Set Your Location">
-    <ScrollView>
-        <Grid>
-            <VerticalStackLayout Style="{StaticResource OuterVerticalStack}" Spacing="8">
-                <Label
-                    Text="Tap the map to set your preferred location"
-                    FontSize="Small"
-                    VerticalOptions="Center"
-                    HorizontalOptions="Center"
-                    HorizontalTextAlignment="Center"
-                    TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}"
-                    Margin="5,8,5,0" />
+    <Grid RowDefinitions="Auto, *, Auto">
+        <Label Grid.Row="0"
+            Text="Tap the map to set your preferred location"
+            FontSize="Small"
+            VerticalOptions="Center"
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center"
+            TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}"
+            Margin="5,8,5,4" />
 
-                <controls:CustomMap x:Name="userLocationMap"
-                          ItemsSource="{Binding Addresses}"
-                          MapClicked="OnMapClicked">
-                    <maps:Map.ItemTemplate>
-                        <DataTemplate x:DataType="viewModels:AddressViewModel">
-                            <controls:CustomPin Location="{Binding Location}"
-                                      Address="{Binding StreetAddress}"
-                                      ImageSource="{Binding IconFile}"
-                                      Label="Your Preferred Location" />
-                        </DataTemplate>
-                    </maps:Map.ItemTemplate>
-                </controls:CustomMap>
+        <!-- Map outside ScrollView so touch gestures work -->
+        <Grid Grid.Row="1">
+            <controls:CustomMap x:Name="userLocationMap"
+                      ItemsSource="{Binding Addresses}"
+                      MapClicked="OnMapClicked">
+                <maps:Map.ItemTemplate>
+                    <DataTemplate x:DataType="viewModels:AddressViewModel">
+                        <controls:CustomPin Location="{Binding Location}"
+                                  Address="{Binding StreetAddress}"
+                                  ImageSource="{Binding IconFile}"
+                                  Label="Your Preferred Location" />
+                    </DataTemplate>
+                </maps:Map.ItemTemplate>
+            </controls:CustomMap>
+            <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
+                     VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center"
+                               HorizontalOptions="Center" />
+        </Grid>
 
+        <!-- Form content scrolls independently below the map -->
+        <ScrollView Grid.Row="2" MaximumHeightRequest="300">
+            <VerticalStackLayout Spacing="8" Padding="0,8,0,0">
                 <!-- Travel Preferences -->
                 <Border Style="{StaticResource RoundBorder}" Margin="10,0">
                     <VerticalStackLayout Spacing="8">
@@ -92,10 +100,6 @@
                         Style="{StaticResource PrimaryLargeButton}"
                         Margin="10,8,10,10" />
             </VerticalStackLayout>
-            <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
-                     VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center"
-                               HorizontalOptions="Center" />
-        </Grid>
-    </ScrollView>
+        </ScrollView>
+    </Grid>
 </ContentPage>

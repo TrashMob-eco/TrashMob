@@ -17,6 +17,13 @@ public partial class ViewTeamPage : ContentPage
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        await viewModel.Init(new Guid(TeamId));
+
+        if (!Guid.TryParse(TeamId, out var teamId) || teamId == Guid.Empty)
+        {
+            await Shell.Current.GoToAsync("..");
+            return;
+        }
+
+        await viewModel.Init(teamId);
     }
 }

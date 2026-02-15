@@ -41,7 +41,9 @@
                         <Button Grid.Column="1"
                                 Text="Edit"
                                 Command="{Binding EditLocationCommand}"
-                                Style="{StaticResource SecondarySmallButton}" />
+                                Style="{StaticResource SecondarySmallButton}"
+                                ContentLayout="Left, 8"
+                                ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconPencil}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />
                     </Grid>
                 </Border>
 
@@ -251,7 +253,9 @@
                     AutomationId="SignOutButton"
                     Command="{Binding SignOutCommand}"
                     Style="{StaticResource PrimaryLargeButton}"
-                    Margin="10,8,10,10" />
+                    Margin="10,8,10,10"
+                    ContentLayout="Left, 12"
+                    ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconLogout}, Color={AppThemeBinding Light={StaticResource PrimaryReverseText}, Dark={StaticResource PrimaryDarkReverseText}}}" />
 
             <!-- Version -->
             <Label x:Name="VersionLabel"

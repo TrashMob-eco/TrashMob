@@ -40,12 +40,26 @@ public partial class ExploreViewModel(
     [ObservableProperty]
     private bool areNoItemsFound;
 
-    // Event filter properties
-    [ObservableProperty]
-    private bool isUpcomingSelected = true;
+    // Event filter selection — bound via RadioButtonGroup.SelectedValue
+    private string eventFilterSelection = "Upcoming";
 
-    [ObservableProperty]
-    private bool isCompletedSelected;
+    public string EventFilterSelection
+    {
+        get => eventFilterSelection;
+        set
+        {
+            if (value == null || eventFilterSelection == value) return;
+            eventFilterSelection = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsUpcomingSelected));
+            OnPropertyChanged(nameof(IsCompletedSelected));
+            HandleEventFilterChanged();
+        }
+    }
+
+    public bool IsUpcomingSelected => EventFilterSelection == "Upcoming";
+
+    public bool IsCompletedSelected => EventFilterSelection == "Completed";
 
     public ObservableCollection<string> UpcomingDateRanges { get; } = [];
 
@@ -85,15 +99,20 @@ public partial class ExploreViewModel(
         }
     }
 
-    // Litter report filter properties
-    [ObservableProperty]
-    private bool isNewSelected = true;
+    // Litter report filter selection — bound via RadioButtonGroup.SelectedValue
+    private string litterFilterSelection = "New";
 
-    [ObservableProperty]
-    private bool isAssignedSelected;
-
-    [ObservableProperty]
-    private bool isCleanedSelected;
+    public string LitterFilterSelection
+    {
+        get => litterFilterSelection;
+        set
+        {
+            if (value == null || litterFilterSelection == value) return;
+            litterFilterSelection = value;
+            OnPropertyChanged();
+            HandleLitterFilterChanged();
+        }
+    }
 
     public ObservableCollection<string> CreatedDateRanges { get; } = [];
 
@@ -132,28 +151,37 @@ public partial class ExploreViewModel(
         {
             IsMapSelected = true;
             IsListSelected = false;
-            IsUpcomingSelected = true;
-            IsCompletedSelected = false;
-            IsNewSelected = true;
-            IsAssignedSelected = false;
-            IsCleanedSelected = false;
+            eventFilterSelection = "Upcoming";
+            OnPropertyChanged(nameof(EventFilterSelection));
+            OnPropertyChanged(nameof(IsUpcomingSelected));
+            litterFilterSelection = "New";
+            OnPropertyChanged(nameof(LitterFilterSelection));
 
             UserLocation = userManager.CurrentUser.GetAddress();
 
-            // Populate date range collections
-            foreach (var date in DateRanges.UpcomingRangeDictionary)
+            // Populate date range collections (clear first to avoid duplicates on re-navigation)
+            if (UpcomingDateRanges.Count == 0)
             {
-                UpcomingDateRanges.Add(date.Key);
+                foreach (var date in DateRanges.UpcomingRangeDictionary)
+                {
+                    UpcomingDateRanges.Add(date.Key);
+                }
             }
 
-            foreach (var date in DateRanges.CompletedRangeDictionary)
+            if (CompletedDateRanges.Count == 0)
             {
-                CompletedDateRanges.Add(date.Key);
+                foreach (var date in DateRanges.CompletedRangeDictionary)
+                {
+                    CompletedDateRanges.Add(date.Key);
+                }
             }
 
-            foreach (var date in DateRanges.CreatedDateRangeDictionary)
+            if (CreatedDateRanges.Count == 0)
             {
-                CreatedDateRanges.Add(date.Key);
+                foreach (var date in DateRanges.CreatedDateRangeDictionary)
+                {
+                    CreatedDateRanges.Add(date.Key);
+                }
             }
 
             // Compute user map span for centering
@@ -191,76 +219,14 @@ public partial class ExploreViewModel(
             : Distance.FromMiles(travelLimit);
     }
 
-    [RelayCommand]
-    private void ToggleEvents()
+    partial void OnShowEventsChanged(bool value)
     {
-        ShowEvents = !ShowEvents;
         RebuildAddresses();
     }
 
-    [RelayCommand]
-    private void ToggleLitterReports()
+    partial void OnShowLitterReportsChanged(bool value)
     {
-        ShowLitterReports = !ShowLitterReports;
         RebuildAddresses();
-    }
-
-    [RelayCommand]
-    private async Task ViewUpcoming()
-    {
-        IsBusy = true;
-        IsUpcomingSelected = true;
-        IsCompletedSelected = false;
-        await RefreshEvents();
-        RebuildAddresses();
-        IsBusy = false;
-    }
-
-    [RelayCommand]
-    private async Task ViewCompleted()
-    {
-        IsBusy = true;
-        IsUpcomingSelected = false;
-        IsCompletedSelected = true;
-        await RefreshEvents();
-        RebuildAddresses();
-        IsBusy = false;
-    }
-
-    [RelayCommand]
-    private async Task ViewNewLitterReports()
-    {
-        IsBusy = true;
-        IsNewSelected = true;
-        IsAssignedSelected = false;
-        IsCleanedSelected = false;
-        await RefreshLitterReports();
-        RebuildAddresses();
-        IsBusy = false;
-    }
-
-    [RelayCommand]
-    private async Task ViewAssignedLitterReports()
-    {
-        IsBusy = true;
-        IsNewSelected = false;
-        IsAssignedSelected = true;
-        IsCleanedSelected = false;
-        await RefreshLitterReports();
-        RebuildAddresses();
-        IsBusy = false;
-    }
-
-    [RelayCommand]
-    private async Task ViewCleanedLitterReports()
-    {
-        IsBusy = true;
-        IsNewSelected = false;
-        IsAssignedSelected = false;
-        IsCleanedSelected = true;
-        await RefreshLitterReports();
-        RebuildAddresses();
-        IsBusy = false;
     }
 
     [RelayCommand]
@@ -308,12 +274,48 @@ public partial class ExploreViewModel(
         RebuildAddresses();
     }
 
+    private async void HandleEventFilterChanged()
+    {
+        try
+        {
+            IsBusy = true;
+            await RefreshEvents();
+            RebuildAddresses();
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
     private async void HandleEventDateRangeChanged()
     {
         try
         {
             IsBusy = true;
             await RefreshEvents();
+            RebuildAddresses();
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private async void HandleLitterFilterChanged()
+    {
+        try
+        {
+            IsBusy = true;
+            await RefreshLitterReports();
             RebuildAddresses();
         }
         catch (Exception ex)
@@ -400,18 +402,12 @@ public partial class ExploreViewModel(
             IncludeLitterImages = true,
         };
 
-        if (IsNewSelected)
+        filter.LitterReportStatusId = LitterFilterSelection switch
         {
-            filter.LitterReportStatusId = (int)LitterReportStatusEnum.New;
-        }
-        else if (IsAssignedSelected)
-        {
-            filter.LitterReportStatusId = (int)LitterReportStatusEnum.Assigned;
-        }
-        else if (IsCleanedSelected)
-        {
-            filter.LitterReportStatusId = (int)LitterReportStatusEnum.Cleaned;
-        }
+            "Assigned" => (int)LitterReportStatusEnum.Assigned,
+            "Cleaned" => (int)LitterReportStatusEnum.Cleaned,
+            _ => (int)LitterReportStatusEnum.New,
+        };
 
         allLitterReports = (await litterReportManager.GetLitterReportsAsync(filter, ImageSizeEnum.Thumb, true)).ToList();
         rawLitterReports = allLitterReports;

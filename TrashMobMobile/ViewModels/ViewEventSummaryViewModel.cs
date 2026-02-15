@@ -38,7 +38,7 @@ public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager,
     [ObservableProperty]
     private bool isListSelected;
 
-    private PickupLocationViewModel selectedPickupLocationViewModel = new(pickupLocationManager, mobEventManager, notificationService, userManager);
+    private PickupLocationViewModel? selectedPickupLocationViewModel;
 
     public ObservableCollection<PickupLocationViewModel> PickupLocations { get; set; } = [];
 
@@ -46,11 +46,12 @@ public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager,
 
     private Action UpdateRoutes = null!;
 
-    public PickupLocationViewModel SelectedPickupLocation
+    public PickupLocationViewModel? SelectedPickupLocation
     {
         get => selectedPickupLocationViewModel;
         set
         {
+            if (value == selectedPickupLocationViewModel) return;
             selectedPickupLocationViewModel = value;
             OnPropertyChanged();
 
@@ -66,6 +67,8 @@ public partial class ViewEventSummaryViewModel(IMobEventManager mobEventManager,
         try
         {
             await Shell.Current.GoToAsync($"{nameof(ViewPickupLocationPage)}?PickupLocationId={pickupLocationId}");
+            selectedPickupLocationViewModel = null;
+            OnPropertyChanged(nameof(SelectedPickupLocation));
         }
         catch (Exception ex)
         {

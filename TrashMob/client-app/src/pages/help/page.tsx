@@ -62,23 +62,66 @@ const tabContents = [
             {
                 question: 'After the Event — Event Summary',
                 answer: `
-                    <p>After your cleanup, record what you accomplished on the <strong>Event Summary</strong> page:</p>
+                    <p>After a cleanup event, there are two ways impact data gets recorded: <strong>individual attendee metrics</strong> and the <strong>event summary</strong>. Here's what each person does and how the numbers roll up.</p>
+
+                    <h6>What Attendees Do — Submit Your Metrics</h6>
+                    <p>Every registered attendee can submit their own contribution after the event is completed. On the event page you'll see a <strong>"Your Event Metrics"</strong> card where you can report:</p>
+                    <ul class="list-disc pl-8">
+                        <li><strong>Bags Collected</strong> - How many bags <em>you personally</em> filled</li>
+                        <li><strong>Duration (minutes)</strong> - How long <em>you</em> participated</li>
+                        <li><strong>Weight Collected</strong> - How much litter <em>you</em> picked up</li>
+                        <li><strong>Weight Unit</strong> - Pounds or Kilograms (defaults to your profile preference)</li>
+                        <li><strong>Notes</strong> - Any additional context about your contribution</li>
+                    </ul>
+                    <p>After you submit, your metrics go into a <strong>Pending</strong> state until the event lead reviews them. You can update a pending submission, but once it's been approved or adjusted you can no longer change it.</p>
+
+                    <h6>What the Event Lead Does — Review Attendee Metrics</h6>
+                    <p>As the event lead, you can see all attendee submissions and take one of three actions on each:</p>
+                    <ul class="list-disc pl-8">
+                        <li><strong>Approve</strong> - Accept the attendee's numbers as-is</li>
+                        <li><strong>Adjust</strong> - Accept but modify the values (e.g. correct an obvious typo), with a reason</li>
+                        <li><strong>Reject</strong> - Decline the submission with a reason (the attendee can resubmit)</li>
+                    </ul>
+                    <p>You can also <strong>Approve All Pending</strong> to quickly accept all outstanding submissions at once.</p>
+
+                    <h6>How Individual Metrics Roll Up</h6>
+                    <p>Only <strong>Approved</strong> and <strong>Adjusted</strong> attendee submissions count toward the totals. The system automatically:</p>
+                    <ul class="list-disc pl-8">
+                        <li>Sums up bags collected across all approved attendees</li>
+                        <li>Converts all weight to a common unit (pounds) and sums the totals</li>
+                        <li>Sums duration minutes across all approved attendees</li>
+                        <li>Uses adjusted values (if the lead made corrections) instead of the original values</li>
+                    </ul>
+                    <p>These attendee-submitted totals are displayed alongside the event summary so both sets of numbers are visible.</p>
+
+                    <h6>What the Event Lead Does — Complete the Event Summary</h6>
+                    <p>In addition to reviewing attendee metrics, the event lead fills in the <strong>official event summary</strong>, which captures the overall event-level numbers:</p>
                     <ol class="list-decimal pl-8">
                         <li>Go to <strong>My Dashboard</strong> and find your completed event</li>
                         <li>Click <strong>"Add Summary"</strong> (or "Edit Summary" if one exists)</li>
                     </ol>
-                    <h6>Event Summary Information</h6>
-                    <p>Fill in the details of your cleanup:</p>
+                    <p>Fill in the event-level totals:</p>
                     <ul class="list-disc pl-8">
-                        <li><strong>Actual Number of Attendees</strong> - How many people showed up (pre-filled from event max)</li>
-                        <li><strong>Duration in Minutes</strong> - How long the cleanup actually took</li>
-                        <li><strong>Number of Bags</strong> - Total bags of litter collected</li>
-                        <li><strong>Number of Buckets</strong> - Total buckets used</li>
-                        <li><strong>Picked Weight</strong> - Total weight of litter collected</li>
-                        <li><strong>Weight Unit</strong> - Pounds or Kilograms (defaults to your profile preference)</li>
+                        <li><strong>Actual Number of Attendees</strong> - How many people actually showed up</li>
+                        <li><strong>Duration in Minutes</strong> - How long the cleanup actually lasted</li>
+                        <li><strong>Number of Bags</strong> - Total bags of litter collected across the whole event</li>
+                        <li><strong>Number of Buckets</strong> - Total buckets used (counted as roughly 1/3 of a bag each)</li>
+                        <li><strong>Picked Weight</strong> - Total weight of litter collected. <em>Tip: A full 33-gallon bag typically weighs 15–25 lbs</em></li>
+                        <li><strong>Weight Unit</strong> - Pounds or Kilograms</li>
                         <li><strong>Notes</strong> - Anything noteworthy about the cleanup</li>
                     </ul>
                     <p>Only the event lead can edit these fields. Click <strong>Save</strong> to record the summary.</p>
+
+                    <h6>How Event Summary Rolls Up to Platform Stats</h6>
+                    <p>The event summary numbers feed into TrashMob's platform-wide impact statistics:</p>
+                    <ul class="list-disc pl-8">
+                        <li><strong>Total Hours</strong> = Duration × Number of Attendees (so a 2-hour event with 10 people = 20 volunteer hours)</li>
+                        <li><strong>Total Bags</strong> = Bags + Buckets ÷ 3</li>
+                        <li><strong>Total Weight</strong> = All weights converted to a common unit and summed</li>
+                        <li><strong>Total Participants</strong> = Sum of attendee counts from all events</li>
+                    </ul>
+                    <p>These platform totals appear on the home page and on the Impact page, and they're also used for leaderboards and achievement badges.</p>
+
                     <h6>Pickup Locations</h6>
                     <p>If you requested hauling support from a partner, tell them exactly where to find the collected litter:</p>
                     <ol class="list-decimal pl-8">

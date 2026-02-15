@@ -62,14 +62,18 @@
                 <Border Style="{StaticResource RoundBorder}" Margin="10,0,10,10">
                     <VerticalStackLayout Spacing="8">
                         <HorizontalStackLayout Spacing="4">
-                            <CheckBox x:Name="Agreed" IsChecked="False" />
+                            <CheckBox IsChecked="{Binding HasAgreed}" />
                             <Label Text="I HAVE READ THIS RELEASE AND WAIVER FORM"
                                    Style="{StaticResource FieldLabel}"
                                    VerticalOptions="Center" />
                         </HorizontalStackLayout>
+                        <Label Text="Full Legal Name"
+                               Style="{StaticResource FieldLabel}" />
+                        <Entry Text="{Binding TypedLegalName}"
+                               Placeholder="Enter your full legal name"
+                               Keyboard="Text" />
                         <Button Text="Sign Waiver"
                                 Command="{Binding SignWaiverCommand}"
-                                IsEnabled="{Binding Source={x:Reference Agreed}, Path=IsChecked}"
                                 Style="{StaticResource PrimaryLargeButton}" />
                     </VerticalStackLayout>
                 </Border>

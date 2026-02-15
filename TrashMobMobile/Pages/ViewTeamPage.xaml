@@ -32,7 +32,9 @@
                                 Command="{Binding JoinTeamCommand}"
                                 IsVisible="{Binding CanJoin}"
                                 Style="{StaticResource PrimarySmallButton}"
-                                Margin="0,4,0,0" />
+                                Margin="0,4,0,0"
+                                ContentLayout="Left, 8"
+                                ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconAccountPlus}, Color={AppThemeBinding Light={StaticResource PrimaryReverseText}, Dark={StaticResource PrimaryDarkReverseText}}}" />
 
                         <HorizontalStackLayout IsVisible="{Binding IsUserMember}" Spacing="6" Margin="0,4,0,0">
                             <Image WidthRequest="18" HeightRequest="18">
@@ -101,7 +103,9 @@
                                     Style="{StaticResource SecondarySmallButton}"
                                     FontSize="Micro"
                                     HeightRequest="32"
-                                    Padding="10,0" />
+                                    Padding="10,0"
+                                    ContentLayout="Left, 4"
+                                    ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconLink}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />
                         </Grid>
                         <Label Text="No upcoming events"
                                IsVisible="{Binding AreNoUpcomingEventsFound}"
@@ -135,7 +139,9 @@
                                                     FontSize="Micro"
                                                     HeightRequest="30"
                                                     Padding="8,0"
-                                                    VerticalOptions="Center" />
+                                                    VerticalOptions="Center"
+                                                    ContentLayout="Left, 4"
+                                                    ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconLinkOff}, Color={AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}}" />
                                         </Grid>
                                         <Border.GestureRecognizers>
                                             <TapGestureRecognizer

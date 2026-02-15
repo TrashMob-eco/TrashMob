@@ -38,8 +38,7 @@ public partial class CreateLitterReportPage : ContentPage
 
     private void DeleteLitterImage_Clicked(object? sender, EventArgs e)
     {
-        var button = sender as Button;
-        var litterImageViewModel = button?.BindingContext as LitterImageViewModel;
+        var litterImageViewModel = (sender as BindableObject)?.BindingContext as LitterImageViewModel;
 
         if (litterImageViewModel != null)
         {

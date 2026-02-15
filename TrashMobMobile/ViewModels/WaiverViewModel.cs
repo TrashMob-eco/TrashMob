@@ -1,5 +1,6 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMobMobile.Config;
 using TrashMobMobile.Services;
@@ -8,7 +9,17 @@ public partial class WaiverViewModel(INotificationService notificationService, I
 {
     private readonly IUserManager userManager = userManager;
 
-    [RelayCommand]
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(SignWaiverCommand))]
+    private string typedLegalName = string.Empty;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(SignWaiverCommand))]
+    private bool hasAgreed;
+
+    private bool CanSignWaiver => HasAgreed && TypedLegalName.Trim().Length >= 2;
+
+    [RelayCommand(CanExecute = nameof(CanSignWaiver))]
     private async Task SignWaiver()
     {
         await ExecuteAsync(async () =>
