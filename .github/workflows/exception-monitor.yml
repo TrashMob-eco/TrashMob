@@ -13,11 +13,15 @@ jobs:
       matrix:
         include:
           - environment: DEV
+            github_environment: test
             app_insights: ai-tm-dev-westus2
             resource_group: rg-trashmob-dev-westus2
           - environment: PROD
+            github_environment: production
             app_insights: ai-tm-pr-westus2
             resource_group: rg-trashmob-pr-westus2
+
+    environment: ${{ matrix.github_environment }}
 
     permissions:
       id-token: write
@@ -35,10 +39,14 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
+      - name: Install App Insights extension
+        run: az extension add --name application-insights --yes
+
       - name: Query App Insights for exceptions
         id: query
         run: |
           # Query distinct exceptions from the last 24 hours
+          # Do not use 2>&1 — stderr warnings from az CLI would break jq parsing
           RESULT=$(az monitor app-insights query \
             --app "${{ matrix.app_insights }}" \
             --resource-group "${{ matrix.resource_group }}" \
@@ -53,16 +61,18 @@ jobs:
                 by type, outerMessage
               | order by Count desc
             " \
-            --output json 2>&1) || true
+            --output json) || true
 
           # Check if the query returned valid data
-          if echo "$RESULT" | jq -e '.tables[0].rows | length > 0' > /dev/null 2>&1; then
+          if [ -z "$RESULT" ]; then
+            echo "has_exceptions=false" >> "$GITHUB_OUTPUT"
+            echo "Query returned no data. Check workflow logs for errors."
+          elif echo "$RESULT" | jq -e '.tables[0].rows | length > 0' > /dev/null 2>&1; then
             echo "has_exceptions=true" >> "$GITHUB_OUTPUT"
             echo "$RESULT" > /tmp/exceptions.json
           else
             echo "has_exceptions=false" >> "$GITHUB_OUTPUT"
-            echo "No exceptions found or query failed."
-            echo "Query output: $RESULT"
+            echo "No exceptions found in the last 24 hours."
           fi
 
       - name: Create issues for new exceptions
