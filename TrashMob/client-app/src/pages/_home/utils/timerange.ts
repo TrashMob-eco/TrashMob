@@ -6,8 +6,8 @@ export const getTodayTimerange = (date: Date = new Date()) =>
 export const getTomorrowTimerange = (date: Date = new Date()) =>
     `${moment(date).add(1, 'd').format('YYYY-MM-DD')}|${moment(date).add(1, 'd').format('YYYY-MM-DD')}`;
 
-export const getThisweekendTimerange = (date: Date = new Date()) =>
-    `${moment(date).endOf('week').format('YYYY-MM-DD')}|${moment(date).endOf('week').add(1, 'd').format('YYYY-MM-DD')}`;
+export const getNextDaysTimerange = (n: number, date: Date = new Date()) =>
+    `${moment(date).format('YYYY-MM-DD')}|${moment(date).add(n, 'd').format('YYYY-MM-DD')}`;
 
 export const getAllUpcomingTimerange = (date: Date = new Date()) =>
     `${moment(date).format('YYYY-MM-DD')}|${moment(date).clone().add(10, 'y').format('YYYY-MM-DD')}`;
@@ -16,8 +16,10 @@ export const getUpcomingTimeranges = (date: Date = new Date()) => {
     return [
         { value: getTodayTimerange(date), label: 'Today' },
         { value: getTomorrowTimerange(date), label: 'Tomorrow' },
-        { value: getThisweekendTimerange(date), label: 'This weekend' },
-        { value: getAllUpcomingTimerange(date), label: 'All' },
+        { value: getNextDaysTimerange(7, date), label: 'Next 7 days' },
+        { value: getNextDaysTimerange(30, date), label: 'Next 30 days' },
+        { value: getNextDaysTimerange(90, date), label: 'Next 90 days' },
+        { value: getAllUpcomingTimerange(date), label: 'All time' },
     ];
 };
 
