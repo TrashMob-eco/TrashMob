@@ -14,6 +14,12 @@ on:
       - 'Deploy/containerAppJobHourly.bicep'
   workflow_dispatch:
 
+# Cancel in-progress deployments when a newer commit lands on main.
+# Only the latest code matters — earlier runs deploy stale commits.
+concurrency:
+  group: deploy-dev-hourly
+  cancel-in-progress: true
+
 env:
   AZURE_CONTAINER_REGISTRY: acrtmdevwestus2
   CONTAINER_APP_JOB_NAME: caj-tm-dev-westus2-hourly
