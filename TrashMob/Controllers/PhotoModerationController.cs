@@ -204,7 +204,7 @@ namespace TrashMob.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>The created photo flag.</returns>
         [HttpPost("{photoType}/{id}/flag")]
-        [Authorize]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobWriteScope)]
         [ProducesResponseType(typeof(PhotoFlag), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

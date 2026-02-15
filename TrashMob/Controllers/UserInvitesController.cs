@@ -9,6 +9,7 @@ namespace TrashMob.Controllers
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Identity.Web.Resource;
     using TrashMob.Models;
+    using TrashMob.Security;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers.Interfaces;
 
@@ -17,7 +18,7 @@ namespace TrashMob.Controllers
     /// Allows any authenticated user to invite friends with rate limits.
     /// </summary>
     [Route("api/invites")]
-    [Authorize]
+    [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
     public class UserInvitesController(IEmailInviteManager emailInviteManager)
         : SecureController
     {

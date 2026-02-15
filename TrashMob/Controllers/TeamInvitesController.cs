@@ -18,7 +18,7 @@ namespace TrashMob.Controllers
     /// Controller for team email invitation operations.
     /// Endpoints require team lead privileges.
     /// </summary>
-    [Authorize]
+    [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
     [Route("api/teams/{teamId}/invites")]
     public class TeamInvitesController(
         IEmailInviteManager emailInviteManager,
