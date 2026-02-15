@@ -178,7 +178,7 @@ namespace TrashMob.Controllers
         /// <param name="userWaiverId">The user waiver ID.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>The user waiver details.</returns>
-        [HttpGet("{userWaiverId}")]
+        [HttpGet("{userWaiverId:guid}")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobReadScope)]
         [ProducesResponseType(typeof(UserWaiver), StatusCodes.Status200OK)]
@@ -213,7 +213,7 @@ namespace TrashMob.Controllers
         /// <param name="userWaiverId">The user waiver ID.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>The waiver PDF file.</returns>
-        [HttpGet("{userWaiverId}/download")]
+        [HttpGet("{userWaiverId:guid}/download")]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
         [RequiredScope(Constants.TrashMobReadScope)]
         [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
