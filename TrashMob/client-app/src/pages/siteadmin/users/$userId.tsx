@@ -32,7 +32,12 @@ export const SiteAdminUserDetail = () => {
                             </Link>
                         </Button>
                         <CardTitle>{user.userName}</CardTitle>
-                        {user.isSiteAdmin ? <Badge variant='destructive'><Shield className='mr-1 h-3 w-3' />Site Admin</Badge> : null}
+                        {user.isSiteAdmin ? (
+                            <Badge variant='destructive'>
+                                <Shield className='mr-1 h-3 w-3' />
+                                Site Admin
+                            </Badge>
+                        ) : null}
                     </div>
                 </CardHeader>
                 <CardContent>
@@ -60,9 +65,7 @@ export const SiteAdminUserDetail = () => {
                         <div className='col-span-12 md:col-span-6 space-y-3'>
                             <div className='flex items-center gap-2'>
                                 <MapPin className='h-4 w-4 text-muted-foreground' />
-                                <span>
-                                    {[user.city, user.region, user.country].filter(Boolean).join(', ') || '—'}
-                                </span>
+                                <span>{[user.city, user.region, user.country].filter(Boolean).join(', ') || '—'}</span>
                             </div>
                             {user.postalCode ? (
                                 <div>
@@ -73,7 +76,8 @@ export const SiteAdminUserDetail = () => {
                             <div>
                                 <h4 className='text-sm font-medium text-muted-foreground'>Preferences</h4>
                                 <p className='text-sm'>
-                                    {user.prefersMetric ? 'Metric' : 'Imperial'} · Travel limit: {user.travelLimitForLocalEvents} mi
+                                    {user.prefersMetric ? 'Metric' : 'Imperial'} · Travel limit:{' '}
+                                    {user.travelLimitForLocalEvents} mi
                                 </p>
                             </div>
                         </div>

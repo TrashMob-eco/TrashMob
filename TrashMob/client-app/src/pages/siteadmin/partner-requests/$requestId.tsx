@@ -6,7 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { ApprovePartnerRequest, DenyPartnerRequest, GetPartnerRequestById, GetPartnerRequests } from '@/services/partners';
+import {
+    ApprovePartnerRequest,
+    DenyPartnerRequest,
+    GetPartnerRequestById,
+    GetPartnerRequests,
+} from '@/services/partners';
 import { PartnerRequestStatusBadge } from '@/components/partner-requests/partner-request-status-badge';
 
 export const SiteAdminPartnerRequestDetail = () => {
@@ -27,7 +32,10 @@ export const SiteAdminPartnerRequestDetail = () => {
         mutationFn: ApprovePartnerRequest().service,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: GetPartnerRequests().key, refetchType: 'all' });
-            queryClient.invalidateQueries({ queryKey: GetPartnerRequestById({ id: requestId }).key, refetchType: 'all' });
+            queryClient.invalidateQueries({
+                queryKey: GetPartnerRequestById({ id: requestId }).key,
+                refetchType: 'all',
+            });
             toast({ variant: 'primary', title: 'Partner request approved' });
             navigate('/siteadmin/partner-requests');
         },
@@ -38,7 +46,10 @@ export const SiteAdminPartnerRequestDetail = () => {
         mutationFn: DenyPartnerRequest().service,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: GetPartnerRequests().key, refetchType: 'all' });
-            queryClient.invalidateQueries({ queryKey: GetPartnerRequestById({ id: requestId }).key, refetchType: 'all' });
+            queryClient.invalidateQueries({
+                queryKey: GetPartnerRequestById({ id: requestId }).key,
+                refetchType: 'all',
+            });
             toast({ variant: 'primary', title: 'Partner request denied' });
             navigate('/siteadmin/partner-requests');
         },
@@ -96,7 +107,12 @@ export const SiteAdminPartnerRequestDetail = () => {
                             {request.website ? (
                                 <div className='flex items-center gap-2'>
                                     <Globe className='h-4 w-4 text-muted-foreground' />
-                                    <a href={request.website} target='_blank' rel='noopener noreferrer' className='hover:underline'>
+                                    <a
+                                        href={request.website}
+                                        target='_blank'
+                                        rel='noopener noreferrer'
+                                        className='hover:underline'
+                                    >
                                         {request.website}
                                     </a>
                                 </div>

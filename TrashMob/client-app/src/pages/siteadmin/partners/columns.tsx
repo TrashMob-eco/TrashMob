@@ -22,7 +22,10 @@ const partnerTypeLabels: Record<number, string> = {
     3: 'Community',
 };
 
-const partnerStatusLabels: Record<number, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' | 'success' }> = {
+const partnerStatusLabels: Record<
+    number,
+    { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' | 'success' }
+> = {
     1: { label: 'Active', variant: 'success' },
     2: { label: 'Inactive', variant: 'secondary' },
     3: { label: 'Pending', variant: 'outline' },

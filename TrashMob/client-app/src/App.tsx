@@ -331,7 +331,9 @@ const SiteAdminEmailTemplates = lazy(() =>
     import('./pages/siteadmin/email-templates/page').then((m) => ({ default: m.SiteAdminEmailTemplates })),
 );
 const SiteAdminEmailTemplateDetail = lazy(() =>
-    import('./pages/siteadmin/email-templates/$templateName').then((m) => ({ default: m.SiteAdminEmailTemplateDetail })),
+    import('./pages/siteadmin/email-templates/$templateName').then((m) => ({
+        default: m.SiteAdminEmailTemplateDetail,
+    })),
 );
 const SiteAdminSendNotification = lazy(() =>
     import('./pages/siteadmin/send-notification').then((m) => ({ default: m.SiteAdminSendNotification })),
@@ -626,7 +628,10 @@ const AppContent: FC = () => {
                                     <Route path='create' element={<SiteAdminJobOpportunityCreate />} />
                                 </Route>
                                 <Route path='email-templates' element={<SiteAdminEmailTemplates />} />
-                                <Route path='email-templates/:templateName' element={<SiteAdminEmailTemplateDetail />} />
+                                <Route
+                                    path='email-templates/:templateName'
+                                    element={<SiteAdminEmailTemplateDetail />}
+                                />
                                 <Route path='send-notifications' element={<SiteAdminSendNotification />} />
                                 <Route path='content' element={<SiteAdminContent />} />
                                 <Route path='feedback' element={<SiteAdminFeedback />} />

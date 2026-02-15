@@ -49,10 +49,7 @@ export const SiteAdminEmailTemplateDetail = () => {
                     <CardTitle>{template.name}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div
-                        className='border rounded-md p-4'
-                        dangerouslySetInnerHTML={{ __html: template.content }}
-                    />
+                    <div className='border rounded-md p-4' dangerouslySetInnerHTML={{ __html: template.content }} />
                 </CardContent>
             </Card>
         </div>
