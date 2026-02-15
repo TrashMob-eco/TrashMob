@@ -10,13 +10,15 @@ export const GoogleMap = (props: PropsWithChildren<MapProps>) => {
 
     const defaultCenter = defaultCenterProps || userDefaultCenter;
 
-    // Move Map when receiving new defaultCenterProps
+    // Move Map when the center coordinates actually change (not just the object reference)
     const map = useMap(id);
+    const centerLat = defaultCenter?.lat;
+    const centerLng = defaultCenter?.lng;
     useEffect(() => {
-        if (map && defaultCenter) {
-            map.panTo(defaultCenter);
+        if (map && centerLat != null && centerLng != null) {
+            map.panTo({ lat: centerLat, lng: centerLng });
         }
-    }, [map, defaultCenter]);
+    }, [map, centerLat, centerLng]);
 
     return (
         <Map
