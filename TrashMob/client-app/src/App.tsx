@@ -300,6 +300,9 @@ const PartnerAdminInvite = lazy(() =>
 /** SiteAdmin - Lazy loaded (admin-only pages) */
 const SiteAdminLayout = lazy(() => import('./pages/siteadmin/_layout').then((m) => ({ default: m.SiteAdminLayout })));
 const SiteAdminUsers = lazy(() => import('./pages/siteadmin/users/page').then((m) => ({ default: m.SiteAdminUsers })));
+const SiteAdminUserDetail = lazy(() =>
+    import('./pages/siteadmin/users/$userId').then((m) => ({ default: m.SiteAdminUserDetail })),
+);
 const SiteAdminEvents = lazy(() =>
     import('./pages/siteadmin/events/page').then((m) => ({ default: m.SiteAdminEvents })),
 );
@@ -309,6 +312,11 @@ const SiteAdminPartners = lazy(() =>
 const SiteAdminTeams = lazy(() => import('./pages/siteadmin/teams/page').then((m) => ({ default: m.SiteAdminTeams })));
 const SiteAdminPartnerRequests = lazy(() =>
     import('./pages/siteadmin/partner-requests/page').then((m) => ({ default: m.SiteAdminPartnerRequests })),
+);
+const SiteAdminPartnerRequestDetail = lazy(() =>
+    import('./pages/siteadmin/partner-requests/$requestId').then((m) => ({
+        default: m.SiteAdminPartnerRequestDetail,
+    })),
 );
 const SiteAdminJobOpportunities = lazy(() =>
     import('./pages/siteadmin/job-opportunities/page').then((m) => ({ default: m.SiteAdminJobOpportunities })),
@@ -320,7 +328,10 @@ const SiteAdminJobOpportunityEdit = lazy(() =>
     import('./pages/siteadmin/job-opportunities/$jobId.edit').then((m) => ({ default: m.SiteAdminJobOpportunityEdit })),
 );
 const SiteAdminEmailTemplates = lazy(() =>
-    import('./pages/siteadmin/email-templates').then((m) => ({ default: m.SiteAdminEmailTemplates })),
+    import('./pages/siteadmin/email-templates/page').then((m) => ({ default: m.SiteAdminEmailTemplates })),
+);
+const SiteAdminEmailTemplateDetail = lazy(() =>
+    import('./pages/siteadmin/email-templates/$templateName').then((m) => ({ default: m.SiteAdminEmailTemplateDetail })),
 );
 const SiteAdminSendNotification = lazy(() =>
     import('./pages/siteadmin/send-notification').then((m) => ({ default: m.SiteAdminSendNotification })),
@@ -602,17 +613,20 @@ const AppContent: FC = () => {
                                 }
                             >
                                 <Route path='users' element={<SiteAdminUsers />} />
+                                <Route path='users/:userId' element={<SiteAdminUserDetail />} />
                                 <Route path='events' element={<SiteAdminEvents />} />
                                 <Route path='partners' element={<SiteAdminPartners />} />
                                 <Route path='documents' element={<SiteAdminDocuments />} />
                                 <Route path='teams' element={<SiteAdminTeams />} />
                                 <Route path='litter-reports' element={<SiteAdminLitterReports />} />
                                 <Route path='partner-requests' element={<SiteAdminPartnerRequests />} />
+                                <Route path='partner-requests/:requestId' element={<SiteAdminPartnerRequestDetail />} />
                                 <Route path='job-opportunities' element={<SiteAdminJobOpportunities />}>
                                     <Route path=':jobId/edit' element={<SiteAdminJobOpportunityEdit />} />
                                     <Route path='create' element={<SiteAdminJobOpportunityCreate />} />
                                 </Route>
                                 <Route path='email-templates' element={<SiteAdminEmailTemplates />} />
+                                <Route path='email-templates/:templateName' element={<SiteAdminEmailTemplateDetail />} />
                                 <Route path='send-notifications' element={<SiteAdminSendNotification />} />
                                 <Route path='content' element={<SiteAdminContent />} />
                                 <Route path='feedback' element={<SiteAdminFeedback />} />
