@@ -7,7 +7,6 @@ import { useQuery } from '@tanstack/react-query';
 import {
     Plus,
     Users,
-    BarChart3,
     FileText,
     Mail,
     Trophy,
@@ -72,7 +71,6 @@ import { GetMySponsors } from '@/services/sponsor-portal';
 import { useGetGoogleMapApiKey } from '@/hooks/useGetGoogleMapApiKey';
 import { useGetUserEvents } from '@/hooks/useGetUserEvents';
 import { useLogin } from '@/hooks/useLogin';
-import { useActiveSection } from '@/hooks/useActiveSection';
 
 import { MyPartnersTable } from '@/pages/MyDashboard/MyPartnersTable';
 import { MyPickupRequestsTable } from '@/pages/MyDashboard/MyPickupRequestsTable';
@@ -99,32 +97,16 @@ const isPastEvent = (event: EventData) => isCompletedEvent(event);
 type EventFilterType = 'all' | 'created' | 'attending';
 type LitterReportFilterType = 'all' | 'new' | 'assigned' | 'cleaned' | 'cancelled';
 
-const SECTION_IDS = [
-    'stats',
-    'waivers',
-    'newsletters',
-    'impact',
-    'invite-friends',
-    'upcoming-events',
-    'completed-events',
-    'teams',
-    'routes',
-    'litter-reports',
-    'nearby-litter-reports',
+const EVENTS_SECTIONS = new Set(['upcoming-events', 'completed-events']);
+const PARTNERSHIP_SECTIONS = new Set([
     'my-partners',
     'partner-requests',
     'partner-event-requests',
     'pickup-requests',
     'partner-admin-invitations',
-    'my-companies',
-    'my-sponsors',
-];
+]);
 
 const navGroups: DashboardNavGroup[] = [
-    {
-        title: 'Overview',
-        items: [{ id: 'stats', label: 'Stats', icon: BarChart3 }],
-    },
     {
         title: 'Account',
         items: [
@@ -194,8 +176,14 @@ const MyDashboard: FC<MyDashboardProps> = () => {
     const state = location.state as { newEventCreated: boolean };
     const [eventToShare, setEventToShare] = useState<EventData>();
     const [showModal, setShowSocialsModal] = useState<boolean>(false);
+    const [activeSection, setActiveSection] = useState<string | null>(null);
 
-    const activeId = useActiveSection({ sectionIds: SECTION_IDS });
+    const isSectionVisible = useCallback(
+        (sectionId: string) => activeSection === null || activeSection === sectionId,
+        [activeSection],
+    );
+    const isEventsVisible = activeSection === null || EVENTS_SECTIONS.has(activeSection);
+    const isPartnershipsVisible = activeSection === null || PARTNERSHIP_SECTIONS.has(activeSection);
 
     const { data: userEvents } = useGetUserEvents(userId);
     const myEventList = userEvents || [];
@@ -364,7 +352,11 @@ const MyDashboard: FC<MyDashboardProps> = () => {
 
             {/* Mobile nav - visible below lg */}
             <div className='lg:hidden'>
-                <DashboardMobileNav items={flatNavItems} activeId={activeId} />
+                <DashboardMobileNav
+                    items={flatNavItems}
+                    activeSection={activeSection}
+                    onSectionChange={setActiveSection}
+                />
             </div>
 
             <div className='container mt-6! pb-12!'>
@@ -381,7 +373,11 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                     {/* Desktop sidebar - hidden below lg */}
                     <aside className='hidden shrink-0 lg:block lg:w-56'>
                         <div className='sticky top-4 rounded-lg border bg-card p-4'>
-                            <DashboardScrollNav groups={navGroups} activeId={activeId} />
+                            <DashboardScrollNav
+                                groups={navGroups}
+                                activeSection={activeSection}
+                                onSectionChange={setActiveSection}
+                            />
                         </div>
                     </aside>
 
@@ -389,7 +385,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                     <main className='min-w-0 flex-1 space-y-8'>
                         {/* Stats */}
                         <section id='stats' className='scroll-mt-20'>
-                            <div className='flex flex-row flex-wrap gap-4 justify-center'>
+                            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4'>
                                 {[
                                     { name: 'Events', value: totalEvents, img: twofigure },
                                     { name: 'Hours', value: totalHours, img: calendarclock },
@@ -402,15 +398,17 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                                     },
                                 ].map((stat) => (
                                     <div
-                                        className='basis-full sm:basis-[calc(50%-8px)] lg:basis-0 lg:grow bg-card pl-4! pr-[90px]! relative rounded-lg'
+                                        className='bg-card rounded-lg overflow-hidden min-w-0 flex items-end justify-between p-4 lg:p-2.5 xl:p-3'
                                         key={stat.name}
                                     >
-                                        <p className='text-lg font-medium mt-4! mb-2!'>{stat.name}</p>
-                                        <p className='text-primary mt-0! text-4xl'>{stat.value}</p>
+                                        <div className='min-w-0'>
+                                            <p className='text-lg lg:text-sm font-medium mb-2 lg:mb-1'>{stat.name}</p>
+                                            <p className='text-primary text-4xl lg:text-2xl'>{stat.value}</p>
+                                        </div>
                                         <img
                                             src={stat.img}
                                             alt={stat.name}
-                                            className='absolute right-4 bottom-0 w-[70px] h-[70px]'
+                                            className='w-[70px] h-[70px] lg:w-10 lg:h-10 xl:w-12 xl:h-12 shrink-0'
                                         />
                                     </div>
                                 ))}
@@ -418,192 +416,214 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                         </section>
 
                         {/* Account sections */}
-                        <section id='waivers' className='scroll-mt-20'>
-                            <MyWaiversCard userId={userId} />
-                        </section>
+                        {isSectionVisible('waivers') ? (
+                            <section id='waivers'>
+                                <MyWaiversCard userId={userId} />
+                            </section>
+                        ) : null}
 
-                        <section id='newsletters' className='scroll-mt-20'>
-                            <MyNewsletterPreferencesCard />
-                        </section>
+                        {isSectionVisible('newsletters') ? (
+                            <section id='newsletters'>
+                                <MyNewsletterPreferencesCard />
+                            </section>
+                        ) : null}
 
-                        <section id='impact' className='scroll-mt-20'>
-                            <MyImpactCard userId={userId} prefersMetric={currentUser?.prefersMetric ?? false} />
-                        </section>
+                        {isSectionVisible('impact') ? (
+                            <section id='impact'>
+                                <MyImpactCard userId={userId} prefersMetric={currentUser?.prefersMetric ?? false} />
+                            </section>
+                        ) : null}
 
-                        <section id='invite-friends' className='scroll-mt-20'>
-                            <InviteFriendsCard />
-                        </section>
+                        {isSectionVisible('invite-friends') ? (
+                            <section id='invite-friends'>
+                                <InviteFriendsCard />
+                            </section>
+                        ) : null}
 
-                        {/* Events header */}
-                        <div>
-                            <div className='flex justify-between'>
-                                <h4 className='font-bold text-3xl mr-2 pb-2 mt-0 border-b-[3px] border-primary flex items-center w-full'>
-                                    <div className='grow'>My Events ({filteredEvents.length})</div>
-                                    <Select
-                                        value={eventFilter}
-                                        onValueChange={(v) => setEventFilter(v as EventFilterType)}
-                                    >
-                                        <SelectTrigger className='w-[180px] mr-4'>
-                                            <SelectValue placeholder='Filter events' />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value='all'>All events</SelectItem>
-                                            <SelectItem value='created'>Events I created</SelectItem>
-                                            <SelectItem value='attending'>Events I joined</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <Button asChild>
-                                        <Link to='/events/create'>
-                                            <Plus /> Create Event
-                                        </Link>
-                                    </Button>
-                                </h4>
-                            </div>
-                        </div>
-
-                        <section id='upcoming-events' className='scroll-mt-20'>
-                            <Card>
-                                <CardHeader>
-                                    <div className='flex flex-row'>
-                                        <CardTitle className='grow text-primary'>
-                                            Upcoming events ({upcomingEvents.length})
-                                        </CardTitle>
-                                        <RadioGroup
-                                            value={upcomingEventsMapView ? 'map' : 'list'}
-                                            onValueChange={(value) => handleEventView(value, 'Upcoming events')}
-                                            className='grid-cols-2'
-                                            orientation='horizontal'
-                                        >
-                                            <div className='flex items-center space-x-2'>
-                                                <RadioGroupItem value='list' id='upcomingevents-list' />
-                                                <Label htmlFor='upcomingevents-list'>List view</Label>
-                                            </div>
-                                            <div className='flex items-center space-x-2'>
-                                                <RadioGroupItem value='map' id='upcomingevents-map' />
-                                                <Label htmlFor='upcomingevents-map'>Map view</Label>
-                                            </div>
-                                        </RadioGroup>
-                                    </div>
-                                </CardHeader>
-                                <CardContent>
-                                    {upcomingEventsMapView ? (
-                                        <EventsMap
-                                            events={upcomingEvents}
-                                            isUserLoaded={isUserLoaded}
-                                            currentUser={currentUser}
-                                            defaultCenter={userPreferredLocation}
-                                        />
-                                    ) : (
-                                        <EventsTable events={upcomingEvents} currentUser={currentUser} />
-                                    )}
-                                </CardContent>
-                            </Card>
-                        </section>
-
-                        <section id='completed-events' className='scroll-mt-20'>
-                            <Card>
-                                <CardHeader>
-                                    <div className='flex flex-row'>
-                                        <CardTitle className='grow text-primary'>
-                                            Completed events ({pastEvents.length})
-                                        </CardTitle>
-                                        <RadioGroup
-                                            value={pastEventsMapView ? 'map' : 'list'}
-                                            onValueChange={(value) => handleEventView(value, 'Completed events')}
-                                            className='grid-cols-2'
-                                            orientation='horizontal'
-                                        >
-                                            <div className='flex items-center space-x-2'>
-                                                <RadioGroupItem value='list' id='pastevents-list' />
-                                                <Label htmlFor='pastevents-list'>List view</Label>
-                                            </div>
-                                            <div className='flex items-center space-x-2'>
-                                                <RadioGroupItem value='map' id='pastevents-map' />
-                                                <Label htmlFor='pastevents-map'>Map view</Label>
-                                            </div>
-                                        </RadioGroup>
-                                    </div>
-                                </CardHeader>
-                                <CardContent>
-                                    {pastEventsMapView ? (
-                                        <EventsMap
-                                            events={pastEvents}
-                                            isUserLoaded={isUserLoaded}
-                                            currentUser={currentUser}
-                                            defaultCenter={userPreferredLocation}
-                                        />
-                                    ) : (
-                                        <EventsTable events={pastEvents} currentUser={currentUser} />
-                                    )}
-                                </CardContent>
-                            </Card>
-                        </section>
-
-                        {/* Teams */}
-                        <section id='teams' className='scroll-mt-20'>
-                            <Card>
-                                <CardHeader>
-                                    <div className='flex flex-row'>
-                                        <CardTitle className='grow text-primary'>
-                                            <Users className='inline-block h-5 w-5 mr-2' />
-                                            My Teams ({(myTeams || []).length})
-                                        </CardTitle>
-                                        <Button variant='outline' size='sm' asChild>
-                                            <Link to='/teams'>Browse Teams</Link>
-                                        </Button>
-                                    </div>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className='overflow-auto'>
-                                        <MyTeamsTable items={myTeams || []} teamsILead={teamsILead || []} />
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </section>
-
-                        {/* Routes */}
-                        <section id='routes' className='scroll-mt-20'>
-                            <MyRoutesCard />
-                        </section>
-
-                        {/* Litter Reports */}
-                        <section id='litter-reports' className='scroll-mt-20'>
-                            <Card>
-                                <CardHeader>
-                                    <div className='flex flex-row flex-wrap gap-2'>
-                                        <CardTitle className='grow text-primary'>
-                                            My Litter Reports ({filteredLitterReports.length})
-                                        </CardTitle>
+                        {/* Events */}
+                        {isEventsVisible ? (
+                            <div>
+                                <div className='flex justify-between'>
+                                    <h4 className='font-bold text-3xl mr-2 pb-2 mt-0 border-b-[3px] border-primary flex items-center w-full'>
+                                        <div className='grow'>My Events ({filteredEvents.length})</div>
                                         <Select
-                                            value={litterReportFilter}
-                                            onValueChange={(v) => setLitterReportFilter(v as LitterReportFilterType)}
+                                            value={eventFilter}
+                                            onValueChange={(v) => setEventFilter(v as EventFilterType)}
                                         >
-                                            <SelectTrigger className='w-[140px]'>
-                                                <SelectValue placeholder='Filter' />
+                                            <SelectTrigger className='w-[180px] mr-4'>
+                                                <SelectValue placeholder='Filter events' />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value='all'>All</SelectItem>
-                                                <SelectItem value='new'>New</SelectItem>
-                                                <SelectItem value='assigned'>Assigned</SelectItem>
-                                                <SelectItem value='cleaned'>Cleaned</SelectItem>
-                                                <SelectItem value='cancelled'>Cancelled</SelectItem>
+                                                <SelectItem value='all'>All events</SelectItem>
+                                                <SelectItem value='created'>Events I created</SelectItem>
+                                                <SelectItem value='attending'>Events I joined</SelectItem>
                                             </SelectContent>
                                         </Select>
-                                        <Button variant='outline' size='sm' asChild>
-                                            <Link to='/litterreports'>View All Reports</Link>
+                                        <Button asChild>
+                                            <Link to='/events/create'>
+                                                <Plus /> Create Event
+                                            </Link>
                                         </Button>
-                                    </div>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className='overflow-auto'>
-                                        <MyLitterReportsTable items={filteredLitterReports} />
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </section>
+                                    </h4>
+                                </div>
+                            </div>
+                        ) : null}
 
-                        {currentUser.latitude && currentUser.longitude ? (
-                            <section id='nearby-litter-reports' className='scroll-mt-20'>
+                        {isSectionVisible('upcoming-events') ? (
+                            <section id='upcoming-events'>
+                                <Card>
+                                    <CardHeader>
+                                        <div className='flex flex-row'>
+                                            <CardTitle className='grow text-primary'>
+                                                Upcoming events ({upcomingEvents.length})
+                                            </CardTitle>
+                                            <RadioGroup
+                                                value={upcomingEventsMapView ? 'map' : 'list'}
+                                                onValueChange={(value) => handleEventView(value, 'Upcoming events')}
+                                                className='grid-cols-2'
+                                                orientation='horizontal'
+                                            >
+                                                <div className='flex items-center space-x-2'>
+                                                    <RadioGroupItem value='list' id='upcomingevents-list' />
+                                                    <Label htmlFor='upcomingevents-list'>List view</Label>
+                                                </div>
+                                                <div className='flex items-center space-x-2'>
+                                                    <RadioGroupItem value='map' id='upcomingevents-map' />
+                                                    <Label htmlFor='upcomingevents-map'>Map view</Label>
+                                                </div>
+                                            </RadioGroup>
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent>
+                                        {upcomingEventsMapView ? (
+                                            <EventsMap
+                                                events={upcomingEvents}
+                                                isUserLoaded={isUserLoaded}
+                                                currentUser={currentUser}
+                                                defaultCenter={userPreferredLocation}
+                                            />
+                                        ) : (
+                                            <EventsTable events={upcomingEvents} currentUser={currentUser} />
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            </section>
+                        ) : null}
+
+                        {isSectionVisible('completed-events') ? (
+                            <section id='completed-events'>
+                                <Card>
+                                    <CardHeader>
+                                        <div className='flex flex-row'>
+                                            <CardTitle className='grow text-primary'>
+                                                Completed events ({pastEvents.length})
+                                            </CardTitle>
+                                            <RadioGroup
+                                                value={pastEventsMapView ? 'map' : 'list'}
+                                                onValueChange={(value) => handleEventView(value, 'Completed events')}
+                                                className='grid-cols-2'
+                                                orientation='horizontal'
+                                            >
+                                                <div className='flex items-center space-x-2'>
+                                                    <RadioGroupItem value='list' id='pastevents-list' />
+                                                    <Label htmlFor='pastevents-list'>List view</Label>
+                                                </div>
+                                                <div className='flex items-center space-x-2'>
+                                                    <RadioGroupItem value='map' id='pastevents-map' />
+                                                    <Label htmlFor='pastevents-map'>Map view</Label>
+                                                </div>
+                                            </RadioGroup>
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent>
+                                        {pastEventsMapView ? (
+                                            <EventsMap
+                                                events={pastEvents}
+                                                isUserLoaded={isUserLoaded}
+                                                currentUser={currentUser}
+                                                defaultCenter={userPreferredLocation}
+                                            />
+                                        ) : (
+                                            <EventsTable events={pastEvents} currentUser={currentUser} />
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            </section>
+                        ) : null}
+
+                        {/* Teams */}
+                        {isSectionVisible('teams') ? (
+                            <section id='teams'>
+                                <Card>
+                                    <CardHeader>
+                                        <div className='flex flex-row'>
+                                            <CardTitle className='grow text-primary'>
+                                                <Users className='inline-block h-5 w-5 mr-2' />
+                                                My Teams ({(myTeams || []).length})
+                                            </CardTitle>
+                                            <Button variant='outline' size='sm' asChild>
+                                                <Link to='/teams'>Browse Teams</Link>
+                                            </Button>
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className='overflow-auto'>
+                                            <MyTeamsTable items={myTeams || []} teamsILead={teamsILead || []} />
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </section>
+                        ) : null}
+
+                        {/* Routes */}
+                        {isSectionVisible('routes') ? (
+                            <section id='routes'>
+                                <MyRoutesCard />
+                            </section>
+                        ) : null}
+
+                        {/* Litter Reports */}
+                        {isSectionVisible('litter-reports') ? (
+                            <section id='litter-reports'>
+                                <Card>
+                                    <CardHeader>
+                                        <div className='flex flex-row flex-wrap gap-2'>
+                                            <CardTitle className='grow text-primary'>
+                                                My Litter Reports ({filteredLitterReports.length})
+                                            </CardTitle>
+                                            <Select
+                                                value={litterReportFilter}
+                                                onValueChange={(v) =>
+                                                    setLitterReportFilter(v as LitterReportFilterType)
+                                                }
+                                            >
+                                                <SelectTrigger className='w-[140px]'>
+                                                    <SelectValue placeholder='Filter' />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value='all'>All</SelectItem>
+                                                    <SelectItem value='new'>New</SelectItem>
+                                                    <SelectItem value='assigned'>Assigned</SelectItem>
+                                                    <SelectItem value='cleaned'>Cleaned</SelectItem>
+                                                    <SelectItem value='cancelled'>Cancelled</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                            <Button variant='outline' size='sm' asChild>
+                                                <Link to='/litterreports'>View All Reports</Link>
+                                            </Button>
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className='overflow-auto'>
+                                            <MyLitterReportsTable items={filteredLitterReports} />
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </section>
+                        ) : null}
+
+                        {isSectionVisible('nearby-litter-reports') && currentUser.latitude && currentUser.longitude ? (
+                            <section id='nearby-litter-reports'>
                                 <Card>
                                     <CardHeader>
                                         <CardTitle className='text-primary'>Nearby Litter Reports</CardTitle>
@@ -622,104 +642,120 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                         ) : null}
 
                         {/* Partnerships */}
-                        <div>
-                            <div className='flex flex-col'>
-                                <h4 className='font-semibold text-3xl mr-2 mt-0 pb-2 border-b-[3px] border-primary'>
-                                    My Partnerships ({(myPartnerRequests || []).length + (myPartners || []).length})
-                                </h4>
-                                <div className='flex flex-row flex-wrap gap-4 my-4!'>
-                                    <Button variant='outline' asChild>
-                                        <Link to='/inviteapartner'>
-                                            Send invitation to join TrashMob.eco as a partner
-                                        </Link>
-                                    </Button>
-                                    <Button variant='outline' asChild>
-                                        <Link to='/becomeapartner'>Apply to become a partner</Link>
-                                    </Button>
+                        {isPartnershipsVisible ? (
+                            <div>
+                                <div className='flex flex-col'>
+                                    <h4 className='font-semibold text-3xl mr-2 mt-0 pb-2 border-b-[3px] border-primary'>
+                                        My Partnerships ({(myPartnerRequests || []).length + (myPartners || []).length})
+                                    </h4>
+                                    <div className='flex flex-row flex-wrap gap-4 my-4!'>
+                                        <Button variant='outline' asChild>
+                                            <Link to='/inviteapartner'>
+                                                Send invitation to join TrashMob.eco as a partner
+                                            </Link>
+                                        </Button>
+                                        <Button variant='outline' asChild>
+                                            <Link to='/becomeapartner'>Apply to become a partner</Link>
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        ) : null}
 
-                        <section id='my-partners' className='scroll-mt-20'>
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className='text-primary'>
-                                        My Partners ({(myPartners || []).length})
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className='overflow-auto'>
-                                        <MyPartnersTable items={myPartners || []} />
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </section>
+                        {isSectionVisible('my-partners') ? (
+                            <section id='my-partners'>
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className='text-primary'>
+                                            My Partners ({(myPartners || []).length})
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className='overflow-auto'>
+                                            <MyPartnersTable items={myPartners || []} />
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </section>
+                        ) : null}
 
-                        <section id='partner-requests' className='scroll-mt-20'>
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className='text-primary'>
-                                        Partner Requests and Invitations Sent ({(myPartnerRequests || []).length})
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className='overflow-auto'>
-                                        <MyPartnersRequestTable items={myPartnerRequests || []} />
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </section>
+                        {isSectionVisible('partner-requests') ? (
+                            <section id='partner-requests'>
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className='text-primary'>
+                                            Partner Requests and Invitations Sent ({(myPartnerRequests || []).length})
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className='overflow-auto'>
+                                            <MyPartnersRequestTable items={myPartnerRequests || []} />
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </section>
+                        ) : null}
 
-                        <section id='partner-event-requests' className='scroll-mt-20'>
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className='text-primary'>Partner Event Requests</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <PartnerEventRequestTable
-                                        isLoading={isPartnerEventServicesLoading}
-                                        data={partnerEventServices}
-                                    />
-                                </CardContent>
-                            </Card>
-                        </section>
-
-                        <section id='pickup-requests' className='scroll-mt-20'>
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className='text-primary'>
-                                        Pickup Requests Pending ({(myPickupRequests || []).length})
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className='overflow-auto'>
-                                        <MyPickupRequestsTable userId={currentUser.id} items={myPickupRequests || []} />
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </section>
-
-                        <section id='partner-admin-invitations' className='scroll-mt-20'>
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className='text-primary'>
-                                        Partner Admin Invitations Pending ({(myPartnerAdminInvitations || []).length})
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className='overflow-auto'>
-                                        <PartnerAdminInvitationsTable
-                                            userId={currentUser.id}
-                                            items={myPartnerAdminInvitations || []}
+                        {isSectionVisible('partner-event-requests') ? (
+                            <section id='partner-event-requests'>
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className='text-primary'>Partner Event Requests</CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <PartnerEventRequestTable
+                                            isLoading={isPartnerEventServicesLoading}
+                                            data={partnerEventServices}
                                         />
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </section>
+                                    </CardContent>
+                                </Card>
+                            </section>
+                        ) : null}
+
+                        {isSectionVisible('pickup-requests') ? (
+                            <section id='pickup-requests'>
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className='text-primary'>
+                                            Pickup Requests Pending ({(myPickupRequests || []).length})
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className='overflow-auto'>
+                                            <MyPickupRequestsTable
+                                                userId={currentUser.id}
+                                                items={myPickupRequests || []}
+                                            />
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </section>
+                        ) : null}
+
+                        {isSectionVisible('partner-admin-invitations') ? (
+                            <section id='partner-admin-invitations'>
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className='text-primary'>
+                                            Partner Admin Invitations Pending (
+                                            {(myPartnerAdminInvitations || []).length})
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className='overflow-auto'>
+                                            <PartnerAdminInvitationsTable
+                                                userId={currentUser.id}
+                                                items={myPartnerAdminInvitations || []}
+                                            />
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </section>
+                        ) : null}
 
                         {/* Professional Companies */}
-                        {myCompanies && myCompanies.length > 0 ? (
-                            <section id='my-companies' className='scroll-mt-20'>
+                        {isSectionVisible('my-companies') && myCompanies && myCompanies.length > 0 ? (
+                            <section id='my-companies'>
                                 <Card>
                                     <CardHeader>
                                         <CardTitle className='text-primary'>
@@ -737,8 +773,8 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                         ) : null}
 
                         {/* Sponsors */}
-                        {mySponsors && mySponsors.length > 0 ? (
-                            <section id='my-sponsors' className='scroll-mt-20'>
+                        {isSectionVisible('my-sponsors') && mySponsors && mySponsors.length > 0 ? (
+                            <section id='my-sponsors'>
                                 <Card>
                                     <CardHeader>
                                         <CardTitle className='text-primary'>
