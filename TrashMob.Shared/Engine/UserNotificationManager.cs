@@ -20,6 +20,7 @@
         IBaseManager<EventSummary> eventSummaryManager,
         ILitterReportManager litterReportManager,
         IUserWaiverManager userWaiverManager,
+        ITeamMemberManager teamMemberManager,
         ILogger<UserNotificationManager> logger) : IUserNotificationManager
     {
 
@@ -72,6 +73,16 @@
                 userManager, eventAttendeeManager, userNotificationManager, nonEventUserNotificationManager,
                 emailSender, emailManager, mapRepository, logger);
             await upcomingEventsInYourAreaSoonNotifier.GenerateNotificationsAsync().ConfigureAwait(false);
+
+            var upcomingTeamEventsThisWeekNotifier = new UpcomingTeamEventsThisWeekNotifier(eventManager,
+                userManager, eventAttendeeManager, userNotificationManager, nonEventUserNotificationManager,
+                emailSender, emailManager, mapRepository, teamMemberManager, logger);
+            await upcomingTeamEventsThisWeekNotifier.GenerateNotificationsAsync().ConfigureAwait(false);
+
+            var upcomingTeamEventsSoonNotifier = new UpcomingTeamEventsSoonNotifier(eventManager,
+                userManager, eventAttendeeManager, userNotificationManager, nonEventUserNotificationManager,
+                emailSender, emailManager, mapRepository, teamMemberManager, logger);
+            await upcomingTeamEventsSoonNotifier.GenerateNotificationsAsync().ConfigureAwait(false);
 
             var userProfileLocationNotifier = new UserProfileLocationNotifier(eventManager, userManager,
                 eventAttendeeManager, userNotificationManager, nonEventUserNotificationManager, emailSender,

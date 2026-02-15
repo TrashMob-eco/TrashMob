@@ -41,8 +41,8 @@ const faqs = [
                 answer: '<p>There are 2 ways to set the location for your event:</p><ul class="list-decimal pl-8"><li>Find the map pin that notes your starting location. Click and drag that to the location you want to start your pickup at.</li><li>If you don’t see a pin on the map, type in the name of the city closest to your desired event location in the search box and select the city. Then drag the pin to the exact meetup location for your event.</li></ul>',
             },
             {
-                question: 'What is the difference between a Private and Public Event?',
-                answer: 'When you create a public event, anyone can see it and register for it on the site, and the date/time of the event must be in the future. When you create a private event, only you can see it, and the date may be in the past or in the future. This is sometimes useful when you have done some unplanned picking on your own and want to track your effort after the fact. Eventually, you will be able to send invitations to specific people for a private event.',
+                question: 'What are the event visibility options?',
+                answer: '<p>Events have three visibility levels:</p><ul class="list-disc pl-8"><li><b>Public</b> — Anyone can see and register for the event. The date/time must be in the future. Public events appear in search results and area-based notifications.</li><li><b>Team Only</b> — Only members of the selected team can see and register for the event. Team members receive notifications about upcoming team events.</li><li><b>Private</b> — Only you can see the event. The date may be in the past or future. This is useful for tracking unplanned pickups or personal cleanup efforts.</li></ul>',
             },
         ],
     },

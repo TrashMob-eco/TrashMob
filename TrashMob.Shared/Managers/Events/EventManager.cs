@@ -59,6 +59,19 @@ namespace TrashMob.Shared.Managers.Events
         }
 
         /// <inheritdoc />
+        public async Task<IEnumerable<Event>> GetActiveTeamEventsAsync(CancellationToken cancellationToken = default)
+        {
+            return await Repo.Get(e =>
+                    (e.EventStatusId == (int)EventStatusEnum.Active || e.EventStatusId == (int)EventStatusEnum.Full)
+                    && e.EventDate >= DateTimeOffset.UtcNow.AddMinutes(-1 * StandardEventWindowInMinutes)
+                    && e.EventVisibilityId == (int)EventVisibilityEnum.TeamOnly
+                    && e.TeamId != null)
+                .Include(e => e.CreatedByUser)
+                .Include(e => e.Team)
+                .ToListAsync(cancellationToken);
+        }
+
+        /// <inheritdoc />
         public async Task<IEnumerable<Event>> GetCompletedEventsAsync(CancellationToken cancellationToken = default)
         {
             return await Repo.Get(e => e.EventDate < DateTimeOffset.UtcNow
