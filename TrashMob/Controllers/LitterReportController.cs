@@ -268,6 +268,11 @@ namespace TrashMob.Controllers
 
             await imageManager.UploadImageAsync(imageUpload);
 
+            // Update the LitterImage record with the blob URL so the detail page can display it
+            var imageUrl = await imageManager.GetImageUrlAsync(litterImageId, ImageTypeEnum.LitterImage, ImageSizeEnum.Reduced, cancellationToken);
+            litterImage.AzureBlobURL = imageUrl;
+            await litterImageManager.UpdateAsync(litterImage, UserId, cancellationToken);
+
             return Ok();
         }
 
