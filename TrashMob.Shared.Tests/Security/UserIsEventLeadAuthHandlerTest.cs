@@ -46,7 +46,7 @@ namespace TrashMob.Shared.Tests.Security
 
             _mockUserManager.Setup(m => m.GetUserByEmailAsync("lead@test.com", It.IsAny<CancellationToken>()))
                 .ReturnsAsync(user);
-            _mockEventManager.Setup(m => m.GetAsync(eventId, It.IsAny<CancellationToken>()))
+            _mockEventManager.Setup(m => m.GetWithNoTrackingAsync(eventId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(evt);
 
             var resource = new Event { Id = eventId };
@@ -70,7 +70,7 @@ namespace TrashMob.Shared.Tests.Security
 
             _mockUserManager.Setup(m => m.GetUserByEmailAsync("colead@test.com", It.IsAny<CancellationToken>()))
                 .ReturnsAsync(user);
-            _mockEventManager.Setup(m => m.GetAsync(eventId, It.IsAny<CancellationToken>()))
+            _mockEventManager.Setup(m => m.GetWithNoTrackingAsync(eventId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(evt);
             _mockEventAttendeeManager.Setup(m => m.IsEventLeadAsync(eventId, userId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
@@ -96,7 +96,7 @@ namespace TrashMob.Shared.Tests.Security
 
             _mockUserManager.Setup(m => m.GetUserByEmailAsync("user@test.com", It.IsAny<CancellationToken>()))
                 .ReturnsAsync(user);
-            _mockEventManager.Setup(m => m.GetAsync(eventId, It.IsAny<CancellationToken>()))
+            _mockEventManager.Setup(m => m.GetWithNoTrackingAsync(eventId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(evt);
             _mockEventAttendeeManager.Setup(m => m.IsEventLeadAsync(eventId, userId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(false);
@@ -120,7 +120,7 @@ namespace TrashMob.Shared.Tests.Security
 
             _mockUserManager.Setup(m => m.GetUserByEmailAsync("lead@test.com", It.IsAny<CancellationToken>()))
                 .ReturnsAsync(user);
-            _mockEventManager.Setup(m => m.GetAsync(eventId, It.IsAny<CancellationToken>()))
+            _mockEventManager.Setup(m => m.GetWithNoTrackingAsync(eventId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Event)null);
 
             var resource = new Event { Id = eventId };
@@ -159,7 +159,7 @@ namespace TrashMob.Shared.Tests.Security
 
             _mockUserManager.Setup(m => m.GetUserByEmailAsync("lead@test.com", It.IsAny<CancellationToken>()))
                 .ReturnsAsync(user);
-            _mockEventManager.Setup(m => m.GetAsync(eventId, It.IsAny<CancellationToken>()))
+            _mockEventManager.Setup(m => m.GetWithNoTrackingAsync(eventId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(evt);
 
             var resource = new EventSummary { EventId = eventId };

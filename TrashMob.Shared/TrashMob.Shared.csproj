@@ -50,6 +50,8 @@
     <None Remove="Engine\EmailCopy\ProspectOutreachFollowUp.html" />
     <None Remove="Engine\EmailCopy\ProspectOutreachValueAdd.html" />
     <None Remove="Engine\EmailCopy\ProspectOutreachFinal.html" />
+    <None Remove="Engine\EmailCopy\UpcomingTeamEventsThisWeek.html" />
+    <None Remove="Engine\EmailCopy\UpcomingTeamEventsSoon.html" />
   </ItemGroup>
 
   <ItemGroup>
@@ -97,6 +99,8 @@
     <EmbeddedResource Include="Engine\EmailCopy\ProspectOutreachValueAdd.html" />
     <EmbeddedResource Include="Engine\EmailCopy\ProspectOutreachFinal.html" />
     <EmbeddedResource Include="Engine\EmailCopy\CommunityWelcome.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\UpcomingTeamEventsThisWeek.html" />
+    <EmbeddedResource Include="Engine\EmailCopy\UpcomingTeamEventsSoon.html" />
   </ItemGroup>
 
   <ItemGroup>

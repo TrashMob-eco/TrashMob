@@ -22,6 +22,14 @@ namespace TrashMob.Shared.Managers.Interfaces
         Task<IEnumerable<Event>> GetActiveEventsAsync(Guid? userId = null, CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Gets all active team-only events (for notification engine use).
+        /// Returns events with EventVisibilityId == TeamOnly, including Team navigation property.
+        /// </summary>
+        /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+        /// <returns>A collection of active team-only events.</returns>
+        Task<IEnumerable<Event>> GetActiveTeamEventsAsync(CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Gets all completed events.
         /// </summary>
         /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>

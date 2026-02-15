@@ -224,5 +224,15 @@
         /// Welcome email sent to a community partner after prospect-to-partner conversion.
         /// </summary>
         CommunityWelcome = 44,
+
+        /// <summary>
+        /// Notification sent to team members about upcoming team events this week.
+        /// </summary>
+        UpcomingTeamEventsThisWeek = 45,
+
+        /// <summary>
+        /// Notification sent to team members about upcoming team events soon (within 24 hours).
+        /// </summary>
+        UpcomingTeamEventsSoon = 46,
     }
 }

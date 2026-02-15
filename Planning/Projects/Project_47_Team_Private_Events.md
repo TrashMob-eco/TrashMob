@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phase 1 + 1b complete) |
+| **Status** | In Progress (Phases 1, 1b, 2, 3 complete) |
 | **Priority** | Medium |
 | **Risk** | Medium |
 | **Size** | Medium |
@@ -265,5 +265,5 @@ if (evt is null || evt.EventVisibilityId != (int)EventVisibilityEnum.Public)
 
 **Last Updated:** February 14, 2026
 **Owner:** Product & Engineering
-**Status:** In Progress — Phase 1 (data model, API, web create/edit) and Phase 1b (MCP security fixes) complete. Phases 2-4 remaining.
+**Status:** In Progress — Phases 1, 1b, 2, 3 complete. Phase 4 (Notifications & Polish) remaining.
 **Next Review:** When prioritized
