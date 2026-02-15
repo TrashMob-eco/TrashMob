@@ -628,9 +628,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                             </section>
                         ) : null}
 
-                        {isSectionVisible('nearby-litter-reports') &&
-                        currentUser.latitude &&
-                        currentUser.longitude ? (
+                        {isSectionVisible('nearby-litter-reports') && currentUser.latitude && currentUser.longitude ? (
                             <section id='nearby-litter-reports'>
                                 <Card>
                                     <CardHeader>
@@ -654,8 +652,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                             <div>
                                 <div className='flex flex-col'>
                                     <h4 className='font-semibold text-3xl mr-2 mt-0 pb-2 border-b-[3px] border-primary'>
-                                        My Partnerships (
-                                        {(myPartnerRequests || []).length + (myPartners || []).length})
+                                        My Partnerships ({(myPartnerRequests || []).length + (myPartners || []).length})
                                     </h4>
                                     <div className='flex flex-row flex-wrap gap-4 my-4!'>
                                         <Button variant='outline' asChild>
@@ -693,8 +690,7 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                                 <Card>
                                     <CardHeader>
                                         <CardTitle className='text-primary'>
-                                            Partner Requests and Invitations Sent (
-                                            {(myPartnerRequests || []).length})
+                                            Partner Requests and Invitations Sent ({(myPartnerRequests || []).length})
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent>
