@@ -27,6 +27,7 @@ namespace TrashMob.Shared.Managers.SponsoredAdoptions
                 .Include(sa => sa.AdoptableArea)
                 .Include(sa => sa.Sponsor)
                 .Include(sa => sa.ProfessionalCompany)
+                .Include(sa => sa.CleanupLogs)
                 .Where(sa => sa.AdoptableArea.PartnerId == partnerId)
                 .OrderByDescending(sa => sa.StartDate)
                 .ToListAsync(cancellationToken);

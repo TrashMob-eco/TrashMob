@@ -36,6 +36,10 @@ class SponsoredAdoptionData {
         name: string;
     };
 
+    cleanupLogs?: {
+        cleanupDate: string;
+    }[];
+
     createdByUserId: string = Guid.EMPTY;
 
     createdDate: Date = new Date();
