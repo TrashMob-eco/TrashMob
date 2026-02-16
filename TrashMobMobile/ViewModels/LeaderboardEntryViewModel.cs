@@ -11,4 +11,8 @@ public class LeaderboardEntryViewModel
     public bool IsCurrentUser { get; set; }
 
     public string RankDisplay => $"#{Rank}";
+
+    public Color AccentColor => IsCurrentUser
+        ? Color.FromArgb("#005B4C")
+        : Colors.Transparent;
 }

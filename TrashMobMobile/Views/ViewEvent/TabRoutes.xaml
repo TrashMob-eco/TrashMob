@@ -56,19 +56,24 @@
         <!-- Empty state -->
         <VerticalStackLayout Grid.Row="3"
                              VerticalOptions="Center" HorizontalOptions="Center"
-                             Spacing="8" Margin="20"
+                             Spacing="8" Margin="40,20"
                              IsVisible="{Binding AreNoRoutesFound}">
-            <Image MaximumWidthRequest="32" MaximumHeightRequest="32"
+            <Image MaximumWidthRequest="48" MaximumHeightRequest="48"
                    HorizontalOptions="Center">
                 <Image.Source>
                     <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
                                      Glyph="{StaticResource IconCompass}"
-                                     Size="32"
+                                     Size="48"
                                      Color="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
                 </Image.Source>
             </Image>
-            <Label Text="No routes recorded yet."
+            <Label Text="No routes recorded yet"
+                   FontFamily="LexendSemibold"
                    FontSize="Small"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+            <Label Text="Start tracking your cleanup route to see distance, duration, and your path on the map."
+                   FontSize="Micro"
                    HorizontalTextAlignment="Center"
                    TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
         </VerticalStackLayout>

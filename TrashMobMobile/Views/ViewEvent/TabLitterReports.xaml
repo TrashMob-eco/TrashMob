@@ -5,22 +5,28 @@
              xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
              xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
              x:Class="TrashMobMobile.Views.ViewEvent.TabLitterReports">
-    <Grid RowDefinitions="*">
+    <Grid RowDefinitions="Auto, *">
         <!-- Empty state -->
-        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center"
-                             Spacing="8" Margin="20"
+        <VerticalStackLayout Grid.RowSpan="2"
+                             VerticalOptions="Center" HorizontalOptions="Center"
+                             Spacing="8" Margin="40,20"
                              IsVisible="{Binding AreNoLitterReportsAvailable}">
-            <Image MaximumWidthRequest="32" MaximumHeightRequest="32"
+            <Image MaximumWidthRequest="48" MaximumHeightRequest="48"
                    HorizontalOptions="Center">
                 <Image.Source>
                     <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
                                      Glyph="{StaticResource IconTrashCanOutline}"
-                                     Size="32"
+                                     Size="48"
                                      Color="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
                 </Image.Source>
             </Image>
-            <Label Text="No litter reports for this event"
+            <Label Text="No litter reports yet"
+                   FontFamily="LexendSemibold"
                    FontSize="Small"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+            <Label Text="Litter reports help identify areas that need cleanup during this event."
+                   FontSize="Micro"
                    HorizontalTextAlignment="Center"
                    TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
         </VerticalStackLayout>

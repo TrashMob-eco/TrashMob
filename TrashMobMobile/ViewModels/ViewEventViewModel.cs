@@ -3,6 +3,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Text.Json;
+using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TrashMob.Models;
@@ -309,7 +310,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             attendeeVm.IsEventLead = isLead;
             attendeeVm.IsEventCreator = isCreator;
             attendeeVm.Role = isLead ? (isCreator ? "Creator" : "Co-lead") : "Attendee";
-            attendeeVm.CanPromote = CanManageCoLeads && !isLead && CoLeadCount < MaxCoLeads;
+            attendeeVm.CanPromote = CanManageCoLeads && !isLead && !isCreator && CoLeadCount < MaxCoLeads;
             attendeeVm.CanDemote = CanManageCoLeads && isLead && !isCreator && CoLeadCount > 1;
 
             EventAttendees.Add(attendeeVm);
@@ -557,29 +558,51 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     {
         await ExecuteAsync(async () =>
         {
-            var results = await MediaPicker.Default.PickPhotosAsync(new MediaPickerOptions
+            var sourcePopup = new Controls.PhotoSourcePopup();
+            var sourceResult = await Shell.Current.CurrentPage.ShowPopupAsync<string>(sourcePopup);
+            var source = sourceResult?.Result;
+
+            if (string.IsNullOrEmpty(source))
             {
-                Title = "Select a photo",
-            });
-            var result = results?.FirstOrDefault();
+                return;
+            }
+
+            FileResult? result;
+
+            if (source == Controls.PhotoSourcePopup.TakePhoto)
+            {
+                result = await MediaPicker.Default.CapturePhotoAsync(new MediaPickerOptions
+                {
+                    Title = "Take a photo",
+                });
+            }
+            else
+            {
+                var results = await MediaPicker.Default.PickPhotosAsync(new MediaPickerOptions
+                {
+                    Title = "Select a photo",
+                });
+                result = results?.FirstOrDefault();
+            }
 
             if (result == null)
             {
                 return;
             }
 
-            var photoType = await Shell.Current.DisplayActionSheetAsync(
-                "When was this photo taken?", "Cancel", null, "Before", "During", "After");
+            var typePopup = new Controls.PhotoTypePopup();
+            var typeResult = await Shell.Current.CurrentPage.ShowPopupAsync<string>(typePopup);
+            var photoType = typeResult?.Result;
 
-            if (photoType == null || photoType == "Cancel")
+            if (string.IsNullOrEmpty(photoType))
             {
                 return;
             }
 
             var eventPhotoType = photoType switch
             {
-                "Before" => EventPhotoType.Before,
-                "After" => EventPhotoType.After,
+                Controls.PhotoTypePopup.Before => EventPhotoType.Before,
+                Controls.PhotoTypePopup.After => EventPhotoType.After,
                 _ => EventPhotoType.During,
             };
 

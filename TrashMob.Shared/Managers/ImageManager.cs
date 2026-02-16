@@ -56,6 +56,7 @@ namespace TrashMob.Shared.Managers
             const int reducedHeight = 400;
 
             var blobContainer = blobServiceClient.GetBlobContainerClient(imageUpload.ImageType.ToString().ToLower());
+            await blobContainer.CreateIfNotExistsAsync(PublicAccessType.Blob);
 
             var fileTime = DateTimeOffset.UtcNow.ToString("ddHHmmss");
 

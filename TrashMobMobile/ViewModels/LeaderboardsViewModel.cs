@@ -35,6 +35,12 @@ public partial class LeaderboardsViewModel(
     private bool isMyRankVisible;
 
     [ObservableProperty]
+    private string ineligibleReason = string.Empty;
+
+    [ObservableProperty]
+    private bool isNotEligible;
+
+    [ObservableProperty]
     private bool areEntriesFound;
 
     [ObservableProperty]
@@ -120,6 +126,8 @@ public partial class LeaderboardsViewModel(
             else
             {
                 IsMyRankVisible = false;
+                IsNotEligible = false;
+                IneligibleReason = string.Empty;
             }
         }, "Failed to load leaderboard. Please try again.");
     }
@@ -133,12 +141,26 @@ public partial class LeaderboardsViewModel(
             MyRankDisplay = $"Your rank: #{rank.Rank.Value} of {rank.TotalRanked}";
             MyScoreDisplay = rank.FormattedScore;
             IsMyRankVisible = true;
+            IsNotEligible = false;
+            IneligibleReason = string.Empty;
+        }
+        else if (!rank.IsEligible)
+        {
+            MyRankDisplay = "Not yet eligible";
+            MyScoreDisplay = string.Empty;
+            IneligibleReason = !string.IsNullOrEmpty(rank.IneligibleReason)
+                ? rank.IneligibleReason
+                : "Attend events to appear on the leaderboard.";
+            IsMyRankVisible = true;
+            IsNotEligible = true;
         }
         else
         {
-            MyRankDisplay = rank.IsEligible ? "Not yet ranked" : "Not eligible";
-            MyScoreDisplay = string.Empty;
+            MyRankDisplay = "Not yet ranked";
+            MyScoreDisplay = "Keep participating to earn your spot!";
             IsMyRankVisible = true;
+            IsNotEligible = false;
+            IneligibleReason = string.Empty;
         }
     }
 }

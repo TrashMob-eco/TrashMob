@@ -3,60 +3,116 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:TrashMobMobile.ViewModels"
+             xmlns:converters="clr-namespace:TrashMobMobile.Converters"
              x:DataType="viewModels:LeaderboardsViewModel"
              x:Class="TrashMobMobile.Pages.LeaderboardsPage"
              Title="Leaderboards">
+    <ContentPage.Resources>
+        <converters:StringToBoolConverter x:Key="StringToBoolConverter" />
+    </ContentPage.Resources>
 
     <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
         <ScrollView>
             <VerticalStackLayout Style="{StaticResource OuterVerticalStack}">
 
                 <!-- Users/Teams Toggle -->
-                <HorizontalStackLayout Spacing="8" Margin="5,10,5,5">
-                    <Button Text="Users"
-                            Command="{Binding ShowUserLeaderboardCommand}"
-                            Style="{StaticResource PrimarySmallButton}" />
-                    <Button Text="Teams"
-                            Command="{Binding ShowTeamLeaderboardCommand}"
-                            Style="{StaticResource SecondarySmallButton}" />
-                </HorizontalStackLayout>
+                <Border Style="{x:StaticResource RoundBorder}" Margin="10,10,10,0" Padding="4">
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="4">
+                        <Button Grid.Column="0"
+                                Text="Users"
+                                Command="{Binding ShowUserLeaderboardCommand}"
+                                HeightRequest="40"
+                                CornerRadius="8"
+                                FontSize="Micro"
+                                Margin="0">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray600}}" />
+                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray200}}" />
+                                </Style>
+                            </Button.Style>
+                            <Button.Triggers>
+                                <DataTrigger TargetType="Button" Binding="{Binding ShowUsers}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryReverseText}, Dark={StaticResource PrimaryDarkReverseText}}" />
+                                </DataTrigger>
+                            </Button.Triggers>
+                        </Button>
+                        <Button Grid.Column="1"
+                                Text="Teams"
+                                Command="{Binding ShowTeamLeaderboardCommand}"
+                                HeightRequest="40"
+                                CornerRadius="8"
+                                FontSize="Micro"
+                                Margin="0">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray600}}" />
+                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray200}}" />
+                                </Style>
+                            </Button.Style>
+                            <Button.Triggers>
+                                <DataTrigger TargetType="Button" Binding="{Binding ShowTeams}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryReverseText}, Dark={StaticResource PrimaryDarkReverseText}}" />
+                                </DataTrigger>
+                            </Button.Triggers>
+                        </Button>
+                    </Grid>
+                </Border>
 
                 <!-- Filters -->
-                <Grid ColumnDefinitions="*, *" Margin="5,5">
-                    <Picker Grid.Column="0"
-                            Title="Type"
-                            ItemsSource="{Binding LeaderboardTypes}"
-                            SelectedItem="{Binding SelectedType}" />
-                    <Picker Grid.Column="1"
-                            Title="Time Range"
-                            ItemsSource="{Binding TimeRanges}"
-                            SelectedItem="{Binding SelectedTimeRange}" />
-                </Grid>
+                <Border Style="{x:StaticResource RoundBorder}" Margin="10,8,10,0" Padding="12,8">
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+                        <VerticalStackLayout Grid.Column="0" Spacing="2">
+                            <Label Text="Category" FontSize="Micro"
+                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                            <Picker ItemsSource="{Binding LeaderboardTypes}"
+                                    SelectedItem="{Binding SelectedType}" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="2">
+                            <Label Text="Time Range" FontSize="Micro"
+                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                            <Picker ItemsSource="{Binding TimeRanges}"
+                                    SelectedItem="{Binding SelectedTimeRange}" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
 
                 <!-- My Rank Card -->
-                <Border Style="{x:StaticResource RoundBorder}" Margin="5,5"
+                <Border Style="{x:StaticResource RoundBorder}" Margin="10,8,10,0"
                         IsVisible="{Binding IsMyRankVisible}">
-                    <VerticalStackLayout Padding="10,8" Spacing="2">
-                        <Label Text="{Binding MyRankDisplay}"
-                               FontFamily="LexendSemibold"
-                               FontSize="Small" />
-                        <Label Text="{Binding MyScoreDisplay}"
-                               FontSize="Micro"
-                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
-                    </VerticalStackLayout>
+                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12" Padding="4">
+                        <Image Grid.Column="0" WidthRequest="32" HeightRequest="32" VerticalOptions="Center">
+                            <Image.Source>
+                                <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                 Glyph="{StaticResource IconTrophy}"
+                                                 Size="32"
+                                                 Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </Image.Source>
+                        </Image>
+                        <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                            <Label Text="{Binding MyRankDisplay}"
+                                   FontFamily="LexendSemibold"
+                                   FontSize="Small" />
+                            <Label Text="{Binding MyScoreDisplay}"
+                                   FontSize="Micro"
+                                   IsVisible="{Binding MyScoreDisplay, Converter={StaticResource StringToBoolConverter}}"
+                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                            <Label Text="{Binding IneligibleReason}"
+                                   FontSize="Micro"
+                                   IsVisible="{Binding IsNotEligible}"
+                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}"
+                                   LineBreakMode="WordWrap" />
+                        </VerticalStackLayout>
+                    </Grid>
                 </Border>
 
                 <!-- Total count -->
                 <Label Text="{Binding TotalEntriesDisplay}"
                        FontSize="Micro"
-                       Margin="10,5,10,0"
-                       TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
-
-                <!-- Empty state -->
-                <Label Text="No leaderboard entries found"
-                       IsVisible="{Binding AreNoEntriesFound}"
-                       FontSize="Small"
-                       Margin="10,10"
+                       Margin="15,10,15,0"
+                       IsVisible="{Binding AreEntriesFound}"
                        TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
 
                 <!-- Leaderboard entries -->
@@ -65,27 +121,59 @@
                                 IsVisible="{Binding AreEntriesFound}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="viewModels:LeaderboardEntryViewModel">
-                            <Border Style="{x:StaticResource RoundBorder}" Margin="5,3">
-                                <Grid ColumnDefinitions="60, *, Auto" Padding="10,8">
-                                    <Label Grid.Column="0"
+                            <Border Style="{x:StaticResource RoundBorder}" Margin="10,3,10,3" Padding="0">
+                                <Grid ColumnDefinitions="4, 48, *, Auto" Padding="0">
+                                    <!-- Accent strip for current user -->
+                                    <BoxView Grid.Column="0" WidthRequest="4"
+                                             VerticalOptions="Fill"
+                                             Color="{Binding AccentColor}" />
+                                    <Label Grid.Column="1"
                                            Text="{Binding RankDisplay}"
                                            FontFamily="LexendSemibold"
                                            FontSize="Medium"
-                                           VerticalOptions="Center" />
-                                    <Label Grid.Column="1"
+                                           HorizontalTextAlignment="Center"
+                                           VerticalOptions="Center"
+                                           Margin="4,10" />
+                                    <Label Grid.Column="2"
                                            Text="{Binding EntityName}"
                                            FontSize="Small"
-                                           VerticalOptions="Center" />
-                                    <Label Grid.Column="2"
+                                           VerticalOptions="Center"
+                                           Margin="4,10" />
+                                    <Label Grid.Column="3"
                                            Text="{Binding FormattedScore}"
                                            FontSize="Small"
                                            VerticalOptions="Center"
+                                           Margin="4,10,12,10"
                                            TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
                                 </Grid>
                             </Border>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+
+                <!-- Empty state -->
+                <VerticalStackLayout IsVisible="{Binding AreNoEntriesFound}"
+                                     Spacing="12"
+                                     Margin="20,40"
+                                     HorizontalOptions="Center">
+                    <Image WidthRequest="64" HeightRequest="64" HorizontalOptions="Center" Opacity="0.4">
+                        <Image.Source>
+                            <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconTrophy}"
+                                             Size="64"
+                                             Color="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                        </Image.Source>
+                    </Image>
+                    <Label Text="No leaderboard entries yet"
+                           FontFamily="LexendSemibold"
+                           FontSize="Medium"
+                           HorizontalTextAlignment="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                    <Label Text="Attend events and log your impact to climb the ranks!"
+                           FontSize="Small"
+                           HorizontalTextAlignment="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                </VerticalStackLayout>
 
                 <!-- Loading -->
                 <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />

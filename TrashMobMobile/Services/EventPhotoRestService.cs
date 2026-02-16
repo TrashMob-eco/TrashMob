@@ -29,7 +29,7 @@ public class EventPhotoRestService(IHttpClientFactory httpClientFactory)
     public async Task<EventPhoto> UploadPhotoAsync(Guid eventId, string localFilePath,
         EventPhotoType photoType, string caption, CancellationToken cancellationToken = default)
     {
-        var requestUri = Controller + "/" + eventId + "/photos";
+        var requestUri = Controller + "/" + eventId + "/photos?photoType=" + (int)photoType;
         var photoId = Guid.NewGuid();
 
         using var stream = File.OpenRead(localFilePath);

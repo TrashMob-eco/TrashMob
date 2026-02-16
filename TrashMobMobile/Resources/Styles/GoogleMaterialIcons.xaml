@@ -749,7 +749,7 @@
     <!-- <x:String x:Key="IconHuman">&#xf02e6;</x:String> -->
     <!-- <x:String x:Key="IconHumanChild">&#xf02e7;</x:String> -->
     <!-- <x:String x:Key="IconHumanMaleFemale">&#xf02e8;</x:String> -->
-    <!-- <x:String x:Key="IconImage">&#xf02e9;</x:String> -->
+    <x:String x:Key="IconImage">&#xf02e9;</x:String>
     <!-- <x:String x:Key="IconImageAlbum">&#xf02ea;</x:String> -->
     <!-- <x:String x:Key="IconImageArea">&#xf02eb;</x:String> -->
     <!-- <x:String x:Key="IconImageAreaClose">&#xf02ec;</x:String> -->
@@ -2436,7 +2436,7 @@
     <!-- <x:String x:Key="IconMapSearch">&#xf0984;</x:String> -->
     <!-- <x:String x:Key="IconMapSearchOutline">&#xf0985;</x:String> -->
     <!-- <x:String x:Key="IconMaterialDesign">&#xf0986;</x:String> -->
-    <!-- <x:String x:Key="IconMedal">&#xf0987;</x:String> -->
+    <x:String x:Key="IconMedal">&#xf0987;</x:String>
     <!-- <x:String x:Key="IconMicrosoftDynamics365">&#xf0988;</x:String> -->
     <!-- <x:String x:Key="IconMonitorCellphone">&#xf0989;</x:String> -->
     <!-- <x:String x:Key="IconMonitorCellphoneStar">&#xf098a;</x:String> -->

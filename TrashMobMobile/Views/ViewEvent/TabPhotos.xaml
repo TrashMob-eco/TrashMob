@@ -14,25 +14,32 @@
                     Text="Add Photo"
                     Command="{Binding PickPhotoCommand}"
                     IsVisible="{Binding CanUploadPhoto}"
-                    Style="{StaticResource PrimarySmallButton}" />
+                    Style="{StaticResource PrimarySmallButton}"
+                    ContentLayout="Left, 8"
+                    ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconCamera}, Size=18, Color={AppThemeBinding Light={StaticResource PrimaryReverseText}, Dark={StaticResource PrimaryDarkReverseText}}}" />
         </Grid>
 
         <!-- Empty state -->
-        <VerticalStackLayout Grid.Row="1"
+        <VerticalStackLayout Grid.Row="1" Grid.RowSpan="2"
                              VerticalOptions="Center" HorizontalOptions="Center"
-                             Spacing="8" Margin="20"
+                             Spacing="8" Margin="40,20"
                              IsVisible="{Binding AreNoPhotosFound}">
-            <Image MaximumWidthRequest="32" MaximumHeightRequest="32"
+            <Image MaximumWidthRequest="48" MaximumHeightRequest="48"
                    HorizontalOptions="Center">
                 <Image.Source>
                     <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
-                                     Glyph="{StaticResource IconPlusCircle}"
-                                     Size="32"
+                                     Glyph="{StaticResource IconCamera}"
+                                     Size="48"
                                      Color="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
                 </Image.Source>
             </Image>
-            <Label Text="No photos yet. Be the first to share!"
+            <Label Text="No photos yet"
+                   FontFamily="LexendSemibold"
                    FontSize="Small"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+            <Label Text="Share before, during, and after photos to capture the impact of this cleanup."
+                   FontSize="Micro"
                    HorizontalTextAlignment="Center"
                    TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
         </VerticalStackLayout>

@@ -94,7 +94,8 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> UploadPhoto(
             Guid eventId,
             [FromForm] ImageUpload imageUpload,
-            CancellationToken cancellationToken)
+            [FromQuery] EventPhotoType photoType = EventPhotoType.During,
+            CancellationToken cancellationToken = default)
         {
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
             if (mobEvent is null)
@@ -117,7 +118,7 @@ namespace TrashMob.Controllers
             {
                 Id = photoId,
                 EventId = eventId,
-                PhotoType = EventPhotoType.During,
+                PhotoType = photoType,
                 Caption = string.Empty,
                 UploadedByUserId = UserId,
                 UploadedDate = DateTimeOffset.UtcNow,
