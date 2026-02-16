@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phases 1-4 Complete) |
+| **Status** | In Progress (Phases 1-4 Complete, Phase 6 Planned) |
 | **Priority** | High |
 | **Risk** | Medium |
 | **Size** | Large |
@@ -75,6 +75,39 @@ This project replaces the GeoJSON textarea with an interactive map editor, adds 
 - [ ] Export to KML for Google Earth/Maps compatibility
 - [ ] Include area metadata in exports (name, type, status, adoption info)
 
+### Phase 6 — AI Bulk Area Generation
+Generate adoptable areas in bulk for an entire community using AI + public geodata (OSM Nominatim, Overpass API). Targets common feature categories:
+
+**Feature Categories:**
+- [ ] All schools (public/private elementary, middle, high schools)
+- [ ] All parks (city parks, pocket parks, dog parks, nature preserves)
+- [ ] All interchanges (highway on/off ramps, freeway interchanges)
+- [ ] All blocks (street segments between intersections)
+
+**Deduplication & Naming:**
+- [ ] Check existing areas by name similarity and geographic overlap before creating
+- [ ] Naming convention per category (e.g., "Roosevelt Elementary School", "Maple Leaf Park", "I-90/Rainier Ave Interchange", "Main St — 200 Block")
+- [ ] Flag potential duplicates for human review rather than silently skipping
+
+**Approval Workflow:**
+- [ ] Generate candidate areas into a staging/review table (not directly into adoptable areas)
+- [ ] Review UI: map showing all candidates, checkbox to approve/reject each
+- [ ] Bulk approve/reject with filters (approve all schools, reject specific entries)
+- [ ] Only approved candidates get created as actual adoptable areas
+
+**Execution Model:**
+- [ ] Long-running job (could be hundreds or thousands of areas for a large city)
+- [ ] Background processing via triggered Azure Container App Job or similar
+- [ ] Progress tracking: areas discovered, areas processed, areas pending review
+- [ ] Resumable: if job is interrupted, pick up where it left off
+- [ ] Rate limiting for external APIs (Nominatim requires 1 req/sec)
+
+**Quality Controls:**
+- [ ] Minimum polygon size filter (skip tiny features that aren't meaningful areas)
+- [ ] Maximum polygon size filter (skip features that are too large to adopt)
+- [ ] Geographic bounds: only generate areas within community boundary
+- [ ] Confidence scoring: flag low-confidence areas for closer review
+
 ---
 
 ## Out-of-Scope
@@ -121,6 +154,10 @@ This project replaces the GeoJSON textarea with an interactive map editor, adds 
 | **Shapefile conversion on server** | Low | Medium | Use proven library (e.g., NetTopologySuite or ogr2ogr); validate output before import |
 | **Large imports overwhelming the system** | Low | High | Limit batch size (500 areas per import); background processing with progress updates |
 | **Invalid/corrupt GeoJSON from imports** | Medium | Low | Validate geometry before saving; reject invalid features with clear error messages |
+| **AI bulk generation creates nonsense areas** | High | High | Mandatory human approval workflow — nothing auto-created. Confidence scoring flags questionable results. Small pilot (single category) before full city generation |
+| **OSM data quality varies by region** | Medium | Medium | Some cities have sparse OSM coverage. Show "X areas found" before processing; warn if count seems low. Allow manual additions alongside generated areas |
+| **Rate limiting / API quota for Nominatim/Overpass** | Medium | Medium | Respect Nominatim 1 req/sec limit; use Overpass batch queries. Background job with built-in delays. Resumable if interrupted |
+| **Large cities produce thousands of candidates** | Medium | Medium | Process by category (schools first, then parks, etc.). Paginated review UI. Cap at configurable limit per batch (e.g., 1000) |
 
 ---
 
@@ -204,6 +241,13 @@ GET    /api/communities/{partnerId}/areas/export            — Export all areas
 GET    /api/communities/{partnerId}/areas/export?format=kml — Export as KML
 POST   /api/communities/{partnerId}/areas/suggest           — AI area suggestion from text
 GET    /api/communities/{partnerId}/areas/nearby?lat=&lng=&radius= — Get nearby areas for map context
+POST   /api/communities/{partnerId}/areas/generate          — Trigger AI bulk generation job
+GET    /api/communities/{partnerId}/areas/generate/status    — Get generation job progress
+GET    /api/communities/{partnerId}/areas/staged             — Get staged areas pending review
+PUT    /api/communities/{partnerId}/areas/staged/{id}/approve — Approve a staged area
+PUT    /api/communities/{partnerId}/areas/staged/{id}/reject  — Reject a staged area
+POST   /api/communities/{partnerId}/areas/staged/approve-batch — Bulk approve staged areas
+POST   /api/communities/{partnerId}/areas/staged/create-approved — Create adoptable areas from approved staged areas
 ```
 
 ### Web UX Changes
@@ -275,31 +319,182 @@ GET    /api/communities/{partnerId}/areas/nearby?lat=&lng=&radius= — Get nearb
 - KML export endpoint
 - Download buttons on area list page
 
+### Phase 6: AI Bulk Area Generation
+- **Data Source:** OSM Nominatim search + Overpass API for polygon boundaries
+  - Nominatim: search by category within community bounding box (e.g., `amenity=school`, `leisure=park`)
+  - Overpass: fetch actual polygon/multipolygon geometry for each result
+  - Fallback: if no polygon exists, create approximate rectangle from Nominatim bounding box
+- **Naming Engine:** AI (Claude) generates standardized names from OSM tags
+  - Schools: `{name}` (e.g., "Roosevelt Elementary School")
+  - Parks: `{name}` (e.g., "Maple Leaf Park"), fall back to `{leisure} near {street}` if unnamed
+  - Interchanges: `{highway} / {cross_street} Interchange`
+  - Blocks: `{street} — {block_number} Block`
+- **Staging Table:** New `StagedAdoptableArea` entity with `ReviewStatus` (Pending/Approved/Rejected) and `GenerationBatchId` to group results from a single run
+- **Background Job:** Triggered Container App Job (similar to existing daily/hourly jobs pattern)
+  - Input: partnerId, feature category, optional sub-filters
+  - Output: staged areas with polygons, names, suggested area types
+  - Job status tracked in database for progress UI
+- **Review UI:** New page under community admin
+  - Map showing all staged areas for a batch
+  - Table with name, category, area type, confidence, approve/reject toggle
+  - Bulk actions: approve all, reject all, approve by category
+  - "Create Approved Areas" button to promote staged areas to real adoptable areas
+- **Deduplication:**
+  - Name fuzzy matching (Levenshtein distance or similar)
+  - Geographic overlap check (reuse existing `useOverlapDetection` pattern)
+  - Existing areas shown as dimmed overlay on review map
+
 **Note:** Phases are sequential but not time-bound. Volunteers pick up work as available.
+
+---
+
+## Phase 6 UX Flow
+
+### Trigger: "Generate Areas" Page
+
+Located under **Community Admin → Adoptable Areas → Generate Areas** (new tab/page alongside the existing area list and import pages).
+
+**Step 1 — Configure Generation**
+
+The admin sees a configuration form:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| **Feature Category** | Dropdown (single-select) | Schools, Parks (Interchanges, Blocks in future) |
+| **Geographic Scope** | Map + auto-populated | Defaults to community boundary; admin can optionally draw a sub-region to limit scope |
+| **Preview Count** | Read-only estimate | After selecting category, a quick Nominatim count query shows "~47 schools found in this area" so the admin knows what to expect before committing |
+
+**Step 2 — Start Generation**
+
+- Admin clicks **"Start Generation"** button
+- Confirmation dialog: *"This will search for all [Schools] within [Community Name] and create candidate areas for your review. This may take several minutes for large areas. Continue?"*
+- On confirm, frontend calls `POST /api/communities/{partnerId}/areas/generate` with category + optional sub-region bounds
+- Backend creates a `GenerationBatch` record (status: `Queued`) and triggers the Container App Job
+- Frontend navigates to the **Generation Status** view
+
+**Step 3 — Monitor Progress**
+
+The Generation Status view shows a progress card that polls `GET /api/communities/{partnerId}/areas/generate/status` every 5 seconds:
+
+```
+┌─────────────────────────────────────────────────────┐
+│  🔍 Generating: Schools in Seattle                   │
+│                                                      │
+│  ████████████░░░░░░░░░░░░  47%                      │
+│                                                      │
+│  ✅ Discovered: 47 features                          │
+│  ✅ Processed: 22 / 47                               │
+│  ⏳ Pending: 25                                      │
+│  ⚠️  Skipped: 2 (too small / outside bounds)         │
+│                                                      │
+│  Started: 2:34 PM  •  Elapsed: 3m 12s               │
+│                                                      │
+│  [ Cancel ]                                          │
+└─────────────────────────────────────────────────────┘
+```
+
+**Status states:**
+- **Queued** — Job submitted, waiting for Container App to start
+- **Discovering** — Querying Nominatim/Overpass for features (shows spinner + "Searching for schools...")
+- **Processing** — Fetching polygons + generating names (shows progress bar with count)
+- **Complete** — All features processed, ready for review
+- **Failed** — Job encountered an error (show error message + retry button)
+- **Cancelled** — Admin cancelled the job
+
+**Polling behavior:**
+- Poll every 5 seconds while Queued/Discovering/Processing
+- Stop polling on Complete/Failed/Cancelled
+- If the admin navigates away and comes back, the status page picks up where it left off (status is persisted in DB)
+
+**Step 4 — Review & Approve**
+
+When the job completes, the status card updates to show a summary and a prominent **"Review Results"** button:
+
+```
+┌─────────────────────────────────────────────────────┐
+│  ✅ Generation Complete: Schools in Seattle          │
+│                                                      │
+│  45 candidate areas ready for review                 │
+│  2 skipped (below minimum size)                      │
+│                                                      │
+│  [ Review Results → ]                                │
+└─────────────────────────────────────────────────────┘
+```
+
+Clicking "Review Results" navigates to `GET /api/communities/{partnerId}/areas/staged` — the **Review UI**:
+
+- **Map view**: All 45 candidates shown as polygons, color-coded by confidence (green = high, yellow = medium, red = low)
+- **Existing areas**: Shown as dimmed/hatched overlay so admin can spot overlaps
+- **Table below map**: Sortable/filterable list with columns:
+  - Checkbox (for bulk actions)
+  - Name (editable inline)
+  - Category (School, Park, etc.)
+  - Confidence (High/Medium/Low)
+  - Potential Duplicate? (flag icon if name or location matches existing area)
+  - Action: Approve / Reject toggle
+
+- **Bulk actions toolbar**:
+  - "Select All" / "Deselect All"
+  - "Approve Selected" / "Reject Selected"
+  - Filter: show only High confidence / show flagged duplicates / show all
+
+- **Final step**: After reviewing, admin clicks **"Create Approved Areas"** (`POST /api/communities/{partnerId}/areas/staged/create-approved`)
+  - Shows count: "Create 42 adoptable areas? (3 rejected)"
+  - Progress bar as areas are created
+  - On complete: "42 areas created! View in area list →"
+
+### Generation History
+
+The Generate Areas page also shows a **history table** of past generation batches:
+
+| Date | Category | Discovered | Approved | Created | Status |
+|------|----------|------------|----------|---------|--------|
+| Feb 15, 2026 | Schools | 47 | 42 | 42 | Complete |
+| Feb 10, 2026 | Parks | 83 | 78 | 78 | Complete |
+| Feb 8, 2026 | Schools | 47 | - | - | Cancelled |
+
+Each row links to its review page (read-only for completed batches).
+
+### Edge Cases
+
+- **Job takes too long**: After 30 minutes, job auto-completes with whatever it has processed so far. Remaining items marked as "unprocessed" with option to resume.
+- **Admin closes browser**: Job continues running. Next time admin visits the page, they see the status/results.
+- **Duplicate batch**: If admin tries to generate the same category while a job is already running, show warning: "A generation job for Schools is already in progress."
+- **Zero results**: If Nominatim returns no features, show friendly message: "No [schools] found within [Community Name]. This may mean OSM data is sparse for this area. You can still create areas manually."
+- **Concurrent generation**: Only one generation job per community at a time. Button disabled with tooltip explaining why.
 
 ---
 
 ## Open Questions
 
-1. **Should we use Google Maps Drawing Manager or a third-party library like Leaflet Draw?**
-   **Recommendation:** Google Maps Drawing Manager — already using `@vis.gl/react-google-maps`, consistent UX with existing map components, and better integration with Google's geocoding/places APIs.
-   **Owner:** Engineering
-   **Due:** Before Phase 1 development
+1. ~~**Should we use Google Maps Drawing Manager or a third-party library like Leaflet Draw?**~~
+   **Resolved:** Google Maps Drawing Manager. ✅
 
-2. **What LLM should power AI area suggestions?**
-   **Recommendation:** Claude API — already integrated for Project 40 (AI Community Sales Agent). Use structured output to generate geocoding queries from natural language.
-   **Owner:** Engineering
-   **Due:** Before Phase 3 development
+2. ~~**What LLM should power AI area suggestions?**~~
+   **Resolved:** Claude API. ✅
 
-3. **Should Shapefile conversion happen client-side or server-side?**
-   **Recommendation:** Server-side — Shapefiles are binary multi-file archives; server-side conversion via NetTopologySuite is more reliable and handles coordinate system transformations.
-   **Owner:** Engineering
-   **Due:** Before Phase 4 development
+3. ~~**Should Shapefile conversion happen client-side or server-side?**~~
+   **Resolved:** Server-side. ✅
 
-4. **What is the maximum import batch size?**
-   **Recommendation:** 500 areas per import. Larger datasets should be split into multiple files. Background processing with progress indicator for > 50 areas.
-   **Owner:** Product
-   **Due:** Before Phase 4 development
+4. ~~**What is the maximum import batch size?**~~
+   **Resolved:** 500 areas per import. ✅
+
+5. ~~**Should bulk generation run as a Container App Job or inline background task?**~~
+   **Resolved:** Container App Job (triggered). Costs nothing when not running. ✅
+
+6. ~~**What OSM feature categories should we support initially?**~~
+   **Resolved:** Schools and parks first. Interchanges and blocks in a follow-up iteration. ✅
+
+7. ~~**How long should staged (pending review) areas persist?**~~
+   **Resolved:** 90 days, auto-delete after expiration. ✅
+
+8. ~~**Should we use OSM Nominatim directly or a self-hosted instance?**~~
+   **Resolved:** Public Nominatim to start. Extend existing NominatimService. ✅
+
+9. **What is the UX for triggering generation and monitoring job progress?**
+   See Phase 6 UX Flow section below for proposed design.
+   **Owner:** Product & Engineering
+   **Due:** Before Phase 6 development
 
 ---
 
@@ -312,7 +507,7 @@ GET    /api/communities/{partnerId}/areas/nearby?lat=&lng=&radius= — Get nearb
 
 ---
 
-**Last Updated:** February 9, 2026
+**Last Updated:** February 15, 2026
 **Owner:** Product & Engineering Team
-**Status:** In Progress (Phases 1-4 Complete)
+**Status:** In Progress (Phases 1-4 Complete, Phase 6 Planned)
 **Next Review:** When volunteer picks up work
