@@ -3,6 +3,7 @@ namespace TrashMobMobile.Views.ViewEvent;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using Microsoft.Maui.Controls.Maps;
+using Microsoft.Maui.Maps;
 using TrashMob.Models.Poco;
 using TrashMobMobile.ViewModels;
 
@@ -65,6 +66,8 @@ public partial class TabRoutes : ContentView
     {
         routeMap.MapElements.Clear();
 
+        var allPoints = new List<Microsoft.Maui.Devices.Sensors.Location>();
+
         foreach (var route in routes)
         {
             var polyline = new Polyline
@@ -75,10 +78,32 @@ public partial class TabRoutes : ContentView
 
             foreach (var location in route.Locations)
             {
-                polyline.Geopath.Add(new Microsoft.Maui.Devices.Sensors.Location(location.Latitude, location.Longitude));
+                var point = new Microsoft.Maui.Devices.Sensors.Location(location.Latitude, location.Longitude);
+                polyline.Geopath.Add(point);
+                allPoints.Add(point);
             }
 
             routeMap.MapElements.Add(polyline);
+        }
+
+        if (allPoints.Count > 0)
+        {
+            var minLat = allPoints.Min(p => p.Latitude);
+            var maxLat = allPoints.Max(p => p.Latitude);
+            var minLon = allPoints.Min(p => p.Longitude);
+            var maxLon = allPoints.Max(p => p.Longitude);
+
+            var centerLat = (minLat + maxLat) / 2;
+            var centerLon = (minLon + maxLon) / 2;
+
+            // Add padding so the route doesn't touch the map edges
+            var latDelta = Math.Max((maxLat - minLat) * 1.3, 0.002);
+            var lonDelta = Math.Max((maxLon - minLon) * 1.3, 0.002);
+
+            var center = new Microsoft.Maui.Devices.Sensors.Location(centerLat, centerLon);
+            var mapSpan = new MapSpan(center, latDelta, lonDelta);
+            routeMap.InitialMapSpanAndroid = mapSpan;
+            routeMap.MoveToRegion(mapSpan);
         }
     }
 }

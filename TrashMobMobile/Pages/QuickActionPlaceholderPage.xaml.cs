@@ -1,5 +1,8 @@
 namespace TrashMobMobile.Pages;
 
+using CommunityToolkit.Maui.Extensions;
+using TrashMobMobile.Controls;
+
 public partial class QuickActionPlaceholderPage : ContentPage
 {
     public QuickActionPlaceholderPage()
@@ -11,14 +14,16 @@ public partial class QuickActionPlaceholderPage : ContentPage
     {
         base.OnNavigatedTo(args);
 
-        // Fallback: if the Navigating interception didn't work, show action sheet here
-        var action = await DisplayActionSheetAsync("Quick Actions", "Cancel", null, "Create Event", "Report Litter");
+        // Fallback: if the Navigating interception didn't work, show styled popup here
+        var popup = new QuickActionPopup();
+        var result = await this.ShowPopupAsync<string>(popup);
+        var action = result?.Result;
 
-        if (action == "Create Event")
+        if (action == QuickActionPopup.CreateEvent)
         {
             await Shell.Current.GoToAsync($"../{nameof(CreateEventPage)}");
         }
-        else if (action == "Report Litter")
+        else if (action == QuickActionPopup.ReportLitter)
         {
             await Shell.Current.GoToAsync($"../{nameof(CreateLitterReportPage)}");
         }
