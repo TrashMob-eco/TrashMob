@@ -189,7 +189,14 @@ In Azure Portal → prod Entra tenant → External Identities → All identity p
 
 - [ ] **Google:** Create OAuth 2.0 credentials in Google Cloud Console, add redirect URI `https://trashmobeco.ciamlogin.com/trashmobeco.onmicrosoft.com/federation/oauth2`, enter Client ID + secret in Azure
 - [ ] **Facebook:** Add OAuth redirect URI in Facebook Developer Console, enter App ID + secret in Azure
-- [ ] **Apple:** Create Services ID in Apple Developer, configure return URL, enter credentials in Azure
+- [ ] **Apple:**
+  1. Go to [Apple Developer](https://developer.apple.com/account/resources/identifiers/list/serviceId) → Certificates, Identifiers & Profiles → Identifiers → **+** → **Services IDs**
+  2. Register a new Service ID (e.g., `eco.trashmob.entra`) with **Sign In with Apple** enabled
+  3. Configure return URL: `https://trashmobeco.ciamlogin.com/trashmobeco.onmicrosoft.com/federation/oidc/apple`
+  4. If you don't have a `.p8` key file, create a new key under **Keys** → **+** → check **Sign in with Apple** → download the `.p8` file immediately (one-time download)
+  5. Generate the Apple client secret JWT using `d:/tools/Apple/generate-apple-secret.js` — update `KEY_ID`, `SERVICE_ID`, and `KEY_FILE` for prod values, then run `node generate-apple-secret.js`
+  6. Enter the Service ID (as Client ID) and generated JWT (as Client Secret) in the Entra Apple IDP configuration
+  7. **Note:** The client secret expires after 6 months — set a calendar reminder to regenerate it
 - [ ] **Microsoft:** Enabled by default in Entra External ID — just verify it's active
 
 #### 4.5 Create User Flow with dateOfBirth
