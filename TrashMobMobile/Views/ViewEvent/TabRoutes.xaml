@@ -99,7 +99,7 @@
                             <!-- Privacy badge -->
                             <Border Grid.Row="0" Grid.Column="1"
                                     Padding="6,2" StrokeShape="RoundRectangle 8"
-                                    BackgroundColor="{AppThemeBinding Light={StaticResource LightGray}, Dark={StaticResource DarkGray}}">
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray600}}">
                                 <Label Text="{Binding PrivacyDisplay}" FontSize="Micro" />
                             </Border>
 
@@ -115,13 +115,7 @@
                             <!-- Actions row (own routes only) -->
                             <HorizontalStackLayout Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
                                                    Spacing="8" IsVisible="{Binding IsOwnRoute}" Margin="0,4,0,0">
-                                <Picker Title="Privacy"
-                                        ItemsSource="{Binding Source={x:Reference TabRoutesView}, Path=BindingContext.PrivacyOptions}"
-                                        SelectedItem="{Binding PrivacyLevel}"
-                                        IsVisible="{Binding CanChangePrivacy}"
-                                        WidthRequest="120"
-                                        FontSize="Micro" />
-                                <Button Text="Save"
+                                <Button Text="{Binding PrivacyDisplay, StringFormat='Privacy: {0}'}"
                                         Command="{Binding Source={x:Reference TabRoutesView}, Path=BindingContext.ChangeRoutePrivacyCommand}"
                                         CommandParameter="{Binding .}"
                                         IsVisible="{Binding CanChangePrivacy}"
