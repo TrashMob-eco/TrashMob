@@ -183,7 +183,13 @@ public class PartnerDocument : KeyedModel
 
 ---
 
-**Last Updated:** February 8, 2026
+## Post-Completion Bug Fixes
+
+- **PR #2762** (Feb 16, 2026): Fixed partner logo upload functionality
+
+---
+
+**Last Updated:** February 15, 2026
 **Owner:** Product & Engineering Team
 **Status:** ✅ Complete
 **Completed:** February 8, 2026 (Phase 1: PR #2605, Phase 3: PR #2610)
