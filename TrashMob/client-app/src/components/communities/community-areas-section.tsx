@@ -60,9 +60,7 @@ export const CommunityAreasSection = ({ areas, isLoading, communityId }: Communi
                                     <div className='flex items-center gap-2 min-w-0'>
                                         <h4 className='font-medium text-sm truncate'>{area.name}</h4>
                                         <Badge variant='outline'>{area.areaType}</Badge>
-                                        <Badge variant={statusVariant[area.status] ?? 'secondary'}>
-                                            {area.status}
-                                        </Badge>
+                                        <Badge variant={statusVariant[area.status] ?? 'secondary'}>{area.status}</Badge>
                                     </div>
                                     {canAdopt(area) ? (
                                         <Button size='sm' variant='outline' onClick={() => setSelectedArea(area)}>
@@ -86,9 +84,7 @@ export const CommunityAreasSection = ({ areas, isLoading, communityId }: Communi
                             </div>
                         ))}
                         {areas.length > 6 ? (
-                            <p className='text-xs text-muted-foreground text-center'>
-                                + {areas.length - 6} more areas
-                            </p>
+                            <p className='text-xs text-muted-foreground text-center'>+ {areas.length - 6} more areas</p>
                         ) : null}
                     </div>
                 </CardContent>

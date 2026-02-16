@@ -180,13 +180,8 @@ export const AdoptAreaDialog = ({ area, communityId, open, onOpenChange }: Adopt
                             Cancel
                         </Button>
                         {isLoggedIn && teams.length > 0 ? (
-                            <Button
-                                onClick={handleSubmit}
-                                disabled={!selectedTeamId || submitAdoption.isPending}
-                            >
-                                {submitAdoption.isPending ? (
-                                    <Loader2 className='h-4 w-4 animate-spin mr-2' />
-                                ) : null}
+                            <Button onClick={handleSubmit} disabled={!selectedTeamId || submitAdoption.isPending}>
+                                {submitAdoption.isPending ? <Loader2 className='h-4 w-4 animate-spin mr-2' /> : null}
                                 Submit Application
                             </Button>
                         ) : null}
