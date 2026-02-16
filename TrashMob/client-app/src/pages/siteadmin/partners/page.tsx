@@ -114,9 +114,7 @@ export const SiteAdminPartners = () => {
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Community Page Settings</DialogTitle>
-                        <DialogDescription>
-                            Configure the community page for {editingPartner?.name}.
-                        </DialogDescription>
+                        <DialogDescription>Configure the community page for {editingPartner?.name}.</DialogDescription>
                     </DialogHeader>
                     <div className='space-y-4 py-4'>
                         <div className='space-y-2'>
@@ -139,9 +137,9 @@ export const SiteAdminPartners = () => {
                             />
                             <Label htmlFor='homePageEnabled'>Enable Community Page</Label>
                         </div>
-                        {editHomePageEnabled && !editSlug && (
+                        {editHomePageEnabled && !editSlug ? (
                             <p className='text-sm text-destructive'>A slug is required to enable the community page.</p>
-                        )}
+                        ) : null}
                     </div>
                     <DialogFooter>
                         <Button variant='outline' onClick={() => setEditingPartner(null)}>
