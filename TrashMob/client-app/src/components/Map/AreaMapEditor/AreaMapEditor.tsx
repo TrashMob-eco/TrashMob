@@ -22,10 +22,17 @@ interface CommunityBounds {
     boundsWest: number | null;
 }
 
+export interface SuggestionMetadata {
+    suggestedName?: string;
+    suggestedAreaType?: string;
+    description?: string;
+}
+
 interface AreaMapEditorProps {
     value: string;
     onChange: (geoJson: string) => void;
     onBoundsChange?: (bbox: AreaBoundingBox | null) => void;
+    onSuggestionMetadata?: (meta: SuggestionMetadata) => void;
     communityBounds?: CommunityBounds;
     communityCenter?: { lat: number; lng: number } | null;
     existingAreas?: AdoptableAreaData[];
@@ -77,6 +84,7 @@ export const AreaMapEditor = ({
     value,
     onChange,
     onBoundsChange,
+    onSuggestionMetadata,
     communityBounds,
     communityCenter,
     existingAreas = EMPTY_AREAS,
@@ -130,11 +138,12 @@ export const AreaMapEditor = ({
     }, []);
 
     const handleSuggestionAccepted = useCallback(
-        (geoJson: string) => {
+        (geoJson: string, suggestedName?: string, suggestedAreaType?: string, userDescription?: string) => {
             setAiPreviewGeoJson(null);
             onChange(geoJson);
+            onSuggestionMetadata?.({ suggestedName, suggestedAreaType, description: userDescription });
         },
-        [onChange],
+        [onChange, onSuggestionMetadata],
     );
 
     const handleRecenter = useCallback(() => {
