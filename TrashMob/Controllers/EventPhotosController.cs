@@ -83,6 +83,7 @@ namespace TrashMob.Controllers
         /// </summary>
         /// <param name="eventId">The event ID.</param>
         /// <param name="imageUpload">The image upload data.</param>
+        /// <param name="photoType">The type of photo (Before, During, After).</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         [HttpPost]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
