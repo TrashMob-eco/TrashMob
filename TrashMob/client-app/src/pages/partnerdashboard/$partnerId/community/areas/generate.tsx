@@ -253,8 +253,9 @@ export const PartnerCommunityAreasGenerate = () => {
                                 </Button>
                             </div>
                             <p className='text-sm text-muted-foreground'>
-                                This will search OpenStreetMap for all {category ? category.toLowerCase() + 's' : 'locations'}{' '}
-                                within your community boundaries and stage them for review before creating adoptable areas.
+                                This will search OpenStreetMap for all{' '}
+                                {category ? category.toLowerCase() + 's' : 'locations'} within your community boundaries
+                                and stage them for review before creating adoptable areas.
                             </p>
                         </div>
                     )}
@@ -262,7 +263,8 @@ export const PartnerCommunityAreasGenerate = () => {
             </Card>
 
             {/* Batch History */}
-            {batches && batches.length > 0 ? <Card>
+            {batches && batches.length > 0 ? (
+                <Card>
                     <CardHeader>
                         <CardTitle>Generation History</CardTitle>
                     </CardHeader>
@@ -292,9 +294,7 @@ export const PartnerCommunityAreasGenerate = () => {
                                         <TableCell>{batch.discoveredCount}</TableCell>
                                         <TableCell>{batch.stagedCount}</TableCell>
                                         <TableCell>{batch.createdCount}</TableCell>
-                                        <TableCell>
-                                            {new Date(batch.createdDate).toLocaleDateString()}
-                                        </TableCell>
+                                        <TableCell>{new Date(batch.createdDate).toLocaleDateString()}</TableCell>
                                         <TableCell className='text-right'>
                                             {batch.status === 'Complete' && batch.stagedCount > 0 && (
                                                 <Button
@@ -315,7 +315,8 @@ export const PartnerCommunityAreasGenerate = () => {
                             </TableBody>
                         </Table>
                     </CardContent>
-                </Card> : null}
+                </Card>
+            ) : null}
         </div>
     );
 };

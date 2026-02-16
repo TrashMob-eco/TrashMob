@@ -2,17 +2,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
-import {
-    Loader2,
-    ArrowLeft,
-    Check,
-    X,
-    CheckCircle2,
-    XCircle,
-    AlertTriangle,
-    Pencil,
-    Save,
-} from 'lucide-react';
+import { Loader2, ArrowLeft, Check, X, CheckCircle2, XCircle, AlertTriangle, Pencil, Save } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -151,17 +141,14 @@ export const PartnerCommunityAreasReview = () => {
     const approvedAreas = useMemo(() => areas?.filter((a) => a.reviewStatus === 'Approved') ?? [], [areas]);
     const rejectedAreas = useMemo(() => areas?.filter((a) => a.reviewStatus === 'Rejected') ?? [], [areas]);
 
-    const toggleSelect = useCallback(
-        (id: string) => {
-            setSelectedIds((prev) => {
-                const next = new Set(prev);
-                if (next.has(id)) next.delete(id);
-                else next.add(id);
-                return next;
-            });
-        },
-        [],
-    );
+    const toggleSelect = useCallback((id: string) => {
+        setSelectedIds((prev) => {
+            const next = new Set(prev);
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
+            return next;
+        });
+    }, []);
 
     const toggleSelectAll = useCallback(() => {
         if (!pendingAreas) return;
@@ -352,10 +339,12 @@ export const PartnerCommunityAreasReview = () => {
                                             </Badge>
                                         </TableCell>
                                         <TableCell>
-                                            {area.isPotentialDuplicate ? <div className='flex items-center gap-1 text-yellow-600'>
+                                            {area.isPotentialDuplicate ? (
+                                                <div className='flex items-center gap-1 text-yellow-600'>
                                                     <AlertTriangle className='h-3 w-3' />
                                                     <span className='text-xs'>{area.duplicateOfName}</span>
-                                                </div> : null}
+                                                </div>
+                                            ) : null}
                                         </TableCell>
                                         <TableCell>
                                             <Badge className={reviewStatusColors[area.reviewStatus]}>
@@ -368,18 +357,14 @@ export const PartnerCommunityAreasReview = () => {
                                                     <Button
                                                         variant='outline'
                                                         size='sm'
-                                                        onClick={() =>
-                                                            approveSingle({ partnerId, id: area.id })
-                                                        }
+                                                        onClick={() => approveSingle({ partnerId, id: area.id })}
                                                     >
                                                         <Check className='h-3 w-3' />
                                                     </Button>
                                                     <Button
                                                         variant='outline'
                                                         size='sm'
-                                                        onClick={() =>
-                                                            rejectSingle({ partnerId, id: area.id })
-                                                        }
+                                                        onClick={() => rejectSingle({ partnerId, id: area.id })}
                                                     >
                                                         <XCircle className='h-3 w-3' />
                                                     </Button>
@@ -391,7 +376,9 @@ export const PartnerCommunityAreasReview = () => {
                             </TableBody>
                         </Table>
                     ) : (
-                        <div className='text-center py-8 text-muted-foreground'>No staged areas found for this batch.</div>
+                        <div className='text-center py-8 text-muted-foreground'>
+                            No staged areas found for this batch.
+                        </div>
                     )}
                 </CardContent>
             </Card>
