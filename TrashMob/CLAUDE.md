@@ -16,10 +16,14 @@ TrashMob/
 ├── client-app/               # React TypeScript SPA
 │   ├── src/
 │   │   ├── components/       # Reusable React components
-│   │   ├── pages/            # Page components
+│   │   │   ├── ui/           # Radix UI primitives (shadcn/ui)
+│   │   │   │   └── custom/   # Extended UI components (EnhancedFormLabel, etc.)
+│   │   │   └── Models/       # TypeScript model classes with defaults
+│   │   ├── pages/            # Page components (file-based routing convention)
+│   │   │   └── siteadmin/    # Admin pages (DataTable + columns pattern)
 │   │   ├── lib/              # Utilities and helpers
 │   │   ├── hooks/            # Custom React hooks
-│   │   └── services/         # API client services
+│   │   └── services/         # API client service factories
 │   ├── package.json
 │   └── vite.config.ts
 ├── wwwroot/                  # Static assets
@@ -29,124 +33,281 @@ TrashMob/
 
 ## Controller Patterns
 
+### Controller Hierarchy
+
+- `BaseController` — Provides `Logger` property (lazy-loaded)
+- `SecureController : BaseController` — Adds `UserId`, `AuthorizationService`, `IsAuthorizedAsync()`
+- `KeyedController<T> : SecureController` — Generic CRUD for entities with GUID keys (provides `Manager` property)
+
 ### Standard REST Controller Template
 
 ```csharp
-[ApiController]
-[Route("api/[controller]")]
-[Authorize]
-public class ExampleController : SecureController
+// Use primary constructors — this is the current standard pattern
+public class ThingsController(
+    IThingManager thingManager,
+    IOtherManager otherManager)
+    : KeyedController<Thing>(thingManager)
 {
-    private readonly IExampleManager _manager;
-
-    public ExampleController(IExampleManager manager)
-    {
-        _manager = manager;
-    }
-
     /// <summary>
-    /// Gets an item by ID
+    /// Gets a thing by ID.
     /// </summary>
-    [HttpGet("{id:guid}")]
-    [ProducesResponseType(typeof(ExampleDto), StatusCodes.Status200OK)]
+    [HttpGet("{id}")]
+    [ProducesResponseType(typeof(Thing), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ExampleDto>> Get(Guid id)
+    public async Task<IActionResult> Get(Guid id, CancellationToken cancellationToken)
     {
-        var result = await _manager.GetAsync(id);
-        return result == null ? NotFound() : Ok(result);
+        return Ok(await Manager.GetAsync(id, cancellationToken));
     }
 
     /// <summary>
-    /// Creates a new item
+    /// Creates a new thing.
     /// </summary>
     [HttpPost]
-    [ProducesResponseType(typeof(ExampleDto), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ExampleDto>> Create([FromBody] CreateRequest request)
+    [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+    [RequiredScope(Constants.TrashMobWriteScope)]
+    [ProducesResponseType(typeof(Thing), StatusCodes.Status200OK)]
+    public async Task<IActionResult> Add(Thing instance, CancellationToken cancellationToken)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
+        // Authorization check (if entity-level access control needed)
+        var parent = await otherManager.GetAsync(instance.ParentId, cancellationToken);
+        if (!await IsAuthorizedAsync(parent, AuthorizationPolicyConstants.UserIsEventLead))
+        {
+            return Forbid();
+        }
 
-        var result = await _manager.CreateAsync(request, UserId);
-        return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
+        var result = await Manager.AddAsync(instance, UserId, cancellationToken);
+        TrackEvent("AddThing");
+        return Ok(result);
     }
 }
 ```
 
-### Controller Guidelines
+### Controller Checklist (New Endpoints)
 
-- Use XML comments for Swagger documentation
-- Include `ProducesResponseType` attributes for all responses
-- Use proper HTTP status codes (200, 201, 204, 400, 401, 403, 404, 500)
-- Inherit from `SecureController` to access `UserId` property
-- Use async/await throughout
+- [ ] Use **primary constructor** (not field injection)
+- [ ] Add **`CancellationToken cancellationToken`** as last parameter on all async methods
+- [ ] Add **XML doc comments** on all public methods (Swagger requires them)
+- [ ] Add **`[ProducesResponseType]`** attributes for every possible response
+- [ ] Add **`[Authorize]`** + **`[RequiredScope]`** on write operations
+- [ ] Call **`TrackEvent()`** on mutations for telemetry
+- [ ] Use **`IsAuthorizedAsync()`** for entity-level authorization (not manual `UserId` comparison)
 
 ## React Frontend Patterns
 
-### Component Example
+### Service Factory Pattern (API Calls)
+
+All API calls use a factory pattern returning `{ key, service }` for TanStack React Query:
+
+```typescript
+// src/services/things.ts
+export type GetThing_Params = { id: string };
+
+export const GetThing = (params: GetThing_Params) => ({
+    key: ['/things', params.id],
+    service: async () =>
+        ApiService('protected').fetchData<ThingData>({
+            url: `/things/${params.id}`,
+            method: 'get',
+        }),
+});
+
+export const CreateThing = () => ({
+    key: ['/things/create'],
+    service: async (body: ThingData) =>
+        ApiService('protected').fetchData<ThingData>({
+            url: '/things',
+            method: 'post',
+            data: body,
+        }),
+});
+```
+
+### List Page Pattern (DataTable)
+
+Admin and list pages use a DataTable + columns factory pattern:
 
 ```tsx
-import { useParams } from 'react-router';
-import { useQuery } from '@tanstack/react-query';
-import { GetEvent } from '@/services/events';
+// pages/siteadmin/things/columns.tsx
+interface GetColumnsProps {
+    onDelete: (id: string, name: string) => void;
+}
 
-export const EventDetails = () => {
-    const { eventId } = useParams<{ eventId: string }>();
+export const getColumns = ({ onDelete }: GetColumnsProps): ColumnDef<ThingData>[] => [
+    {
+        accessorKey: 'name',
+        header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />,
+        cell: ({ row }) => (
+            <Link to={`/siteadmin/things/${row.original.id}`} className='font-medium hover:underline'>
+                {row.getValue('name')}
+            </Link>
+        ),
+    },
+    {
+        accessorKey: 'status',
+        header: 'Status',
+        cell: ({ row }) => <StatusBadge status={row.getValue('status')} />,
+    },
+    // Actions column with dropdown menu...
+];
 
-    const { data: event, isLoading, error } = useQuery({
-        queryKey: GetEvent({ id: eventId! }).key,
-        queryFn: GetEvent({ id: eventId! }).service,
-        enabled: !!eventId,
+// pages/siteadmin/things/page.tsx
+export const SiteAdminThings = () => {
+    const { data: things } = useQuery({
+        queryKey: GetThings().key,
+        queryFn: GetThings().service,
+        select: (res) => res.data,
     });
 
-    if (isLoading) return <LoadingSpinner />;
-    if (error || !event) return <NotFound />;
+    const columns = getColumns({ onDelete: handleDelete });
 
     return (
-        <div className="event-details">
-            <h1>{event.name}</h1>
-            <p>{event.description}</p>
+        <Card>
+            <CardHeader><CardTitle>Things</CardTitle></CardHeader>
+            <CardContent>
+                <DataTable columns={columns} data={things || []} enableSearch searchPlaceholder='Search...' />
+            </CardContent>
+        </Card>
+    );
+};
+```
+
+### Detail Page Pattern
+
+```tsx
+// pages/siteadmin/things/$thingId.tsx
+export const SiteAdminThingDetail = () => {
+    const { thingId } = useParams<{ thingId: string }>() as { thingId: string };
+
+    const { data: thing } = useQuery({
+        queryKey: GetThing({ id: thingId }).key,
+        queryFn: GetThing({ id: thingId }).service,
+        select: (res) => res.data,
+        enabled: !!thingId,
+    });
+
+    if (!thing) return null;
+
+    return (
+        <div className='space-y-6'>
+            <div className='flex items-center gap-2'>
+                <Button variant='ghost' size='sm' asChild>
+                    <Link to='/siteadmin/things'><ArrowLeft className='mr-2 h-4 w-4' /> Back</Link>
+                </Button>
+            </div>
+            <Card>
+                <CardHeader><CardTitle>{thing.name}</CardTitle></CardHeader>
+                <CardContent>
+                    <dl className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+                        <div><dt className='text-sm font-medium text-muted-foreground'>Field</dt>
+                             <dd className='mt-1'>{thing.field}</dd></div>
+                    </dl>
+                </CardContent>
+            </Card>
         </div>
     );
 };
 ```
 
-### Frontend Guidelines
+### Form Pattern (Zod + React Hook Form)
 
-- Use TypeScript for all new code
-- Use functional components with hooks
-- Use TanStack Query for server state management
-- Handle loading/error states explicitly
-- Use Radix UI for accessible components
-- Style with Tailwind CSS utility classes
+```tsx
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { EnhancedFormLabel as FormLabel } from '@/components/ui/custom/form';
 
-### Service Pattern
+const schema = z.object({
+    name: z.string().min(3, 'Name must be at least 3 characters.').max(100),
+    description: z.string().max(500).optional(),
+    isPublic: z.boolean(),
+});
+
+type FormValues = z.infer<typeof schema>;
+
+export const CreateThing = () => {
+    const form = useForm<FormValues>({
+        resolver: zodResolver(schema),
+        defaultValues: { name: '', description: '', isPublic: true },
+    });
+
+    const createThing = useMutation({
+        mutationKey: CreateThing().key,
+        mutationFn: CreateThing().service,
+        onSuccess: () => { toast({ variant: 'primary', title: 'Created!' }); navigate('/things'); },
+    });
+
+    const onSubmit = (values: FormValues) => {
+        const model = new ThingData();
+        model.name = values.name;
+        // ... map form values to model
+        createThing.mutate(model);
+    };
+
+    return (
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+                <FormField control={form.control} name='name' render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Name *</FormLabel>
+                        <FormControl><Input {...field} /></FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )} />
+                <Button type='submit' disabled={createThing.isPending}>Create</Button>
+            </form>
+        </Form>
+    );
+};
+```
+
+### TypeScript Model Pattern
 
 ```typescript
-// src/services/example.ts
-export type GetExample_Params = { id: string };
-export type GetExample_Response = ExampleDto;
-
-export const GetExample = (params: GetExample_Params) => ({
-    key: ['/example', params.id],
-    service: async () =>
-        ApiService('protected').fetchData<GetExample_Response>({
-            url: `/example/${params.id}`,
-            method: 'get',
-        }),
-});
+// components/Models/ThingData.ts — classes with defaults, not interfaces
+class ThingData {
+    id: string = Guid.createEmpty().toString();
+    name: string = '';
+    description: string = '';
+    isPublic: boolean = true;
+    createdDate: Date = new Date();
+    latitude?: number;  // Optional fields use ?
+    longitude?: number;
+}
 ```
+
+### Frontend Checklist (New Pages)
+
+- [ ] Use **`@/` path alias** for imports (not relative `../../../`)
+- [ ] Use **service factory pattern** (`{ key, service }`) for API calls
+- [ ] Use **Zod** for form validation, **React Hook Form** with `zodResolver`
+- [ ] Use **Radix UI** components from `@/components/ui/` (Card, Button, Input, etc.)
+- [ ] Use **Tailwind CSS** utility classes for styling
+- [ ] Use **DataTable** + **columns factory** for list pages
+- [ ] Use **`useMutation`** with `onSuccess` for toast notifications and query invalidation
+- [ ] Add route in `App.tsx` with lazy import
+- [ ] Handle loading and error states
 
 ## Authentication
 
-### Getting User Context
+### Getting User Context (Backend)
 
 ```csharp
 // In SecureController-derived classes
-var userId = UserId;  // From SecureController base class
+var userId = UserId;  // From SecureController base class (extracted from JWT claims)
 
-// Check ownership
-if (entity.CreatedByUserId != UserId)
+// Use authorization handler (preferred over manual comparison)
+if (!await IsAuthorizedAsync(entity, AuthorizationPolicyConstants.UserOwnsEntity))
     return Forbid();
+```
+
+### Getting User Context (Frontend)
+
+```tsx
+import { useGetCurrentUser } from '@/hooks/useGetCurrentUser';
+
+const { currentUser } = useGetCurrentUser();
+// currentUser.id, currentUser.isSiteAdmin, currentUser.userName, etc.
 ```
 
 ## Quick Reference
@@ -173,4 +334,4 @@ npm start
 - [Planning/README.md](../Planning/README.md) — 2026 roadmap
 - [TrashMob.prd](./TrashMob.prd) — Product requirements
 
-**Last Updated:** February 4, 2026
+**Last Updated:** February 15, 2026

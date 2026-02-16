@@ -108,7 +108,7 @@ Custom CSS is **not available** — Entra External ID restricted custom CSS to t
   3. **Add to token claims:** App registrations → [TrashMob API Dev] → Token configuration → Add optional claim → Directory schema extension source → map custom attributes
   4. **Enable mapped claims:** App registration → Manifest → set `"acceptMappedClaims": true`
 - [x] Configure social identity provider: Microsoft account — **not needed**; Entra External ID supports Microsoft accounts natively (no longer an external IDP like in B2C)
-- [ ] Configure social identity provider: Apple (requires Apple Developer setup)
+- [x] Configure social identity provider: Apple (Apple Developer setup complete, configured in dev tenant)
 - [x] Improve banner logo for sign-in page — created 245x36 version without tagline for better readability
 - [x] Custom CSS branding for sign-in page (`Deploy/entra-signin-branding.css`) — TrashMob teal buttons/links, rounded inputs, light gray background
 - [x] Fill in `AzureAdEntra` config values for deployed dev environment — added to `Deploy/containerApp.bicep` as environment variables (same pattern as B2C; not secrets)

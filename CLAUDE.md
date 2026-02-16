@@ -159,9 +159,9 @@ npm start
 
 ## Technology Stack
 
-- **Backend:** .NET 10, EF Core 10, Azure SQL, Azure B2C (→ Entra External ID), SendGrid, Azure Maps
-- **Frontend:** React 18, TypeScript 5.8, Vite 7, Tailwind CSS 4, React Query
-- **Mobile:** .NET MAUI (MVVM pattern)
+- **Backend:** .NET 10, EF Core 10, Azure SQL, Entra External ID (migrating from Azure B2C), SendGrid, Azure Maps
+- **Frontend:** React 18, TypeScript 5.8, Vite 7, Tailwind CSS 4, TanStack React Query, Radix UI, Zod, React Hook Form
+- **Mobile:** .NET MAUI with CommunityToolkit.Mvvm (MVVM + source generators), Sentry.io for crash reporting
 - **Infrastructure:** Azure Container Apps, GitHub Actions, Bicep IaC
 
 ## Branching Strategy
@@ -180,19 +180,23 @@ npm start
 
 ## Coding Standards & Patterns
 
-### General Principles
-- Follow **.NET coding conventions** and C# style guidelines
-- Use **async/await** for all I/O operations
-- Implement proper **error handling** with meaningful messages
+### C# Conventions (Backend + Mobile)
+- Use **primary constructors** (C# 12) for all new classes — controllers, managers, ViewModels, repositories
+- Use **async/await** with **`CancellationToken`** on all async method signatures
+- Use **collection expressions** (`[item1, item2]`) instead of `new List<T> { }` or `.ToList()` where appropriate
+- Use **structured logging** with `LoggerMessage` source generators or message templates (not string interpolation)
+- Use `== null` / `!= null` in EF Core LINQ expressions (not `is null` / `is not null` — causes CS8122)
 - Add **XML documentation** for public APIs (required for Swagger)
-- Write **unit tests** for business logic (xUnit preferred)
+- Write **unit tests** for business logic (xUnit, 450+ tests)
 
 ### API Design
 - RESTful endpoints with proper HTTP verbs (GET, POST, PUT, DELETE)
 - Return appropriate HTTP status codes (200, 201, 400, 401, 403, 404, 500)
-- Use **DTOs** for request/response to decouple from database models
-- Implement **pagination** for list endpoints
-- Add **authentication/authorization** attributes where needed
+- Use **DTOs** (in `TrashMob.Models/Poco/`) for request/response to decouple from database models
+- Add **`[ProducesResponseType]`** attributes for all responses (required for Swagger)
+- Add **authentication/authorization** attributes: `[Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]`
+- Use **`[RequiredScope(Constants.TrashMobWriteScope)]`** on write endpoints
+- Call **`TrackEvent()`** for telemetry on mutation operations
 
 ### Database & EF Core
 - Use **migrations** for schema changes (never manual SQL)
@@ -208,9 +212,13 @@ npm start
 - Implement **retry logic** for transient failures
 
 ### Mobile (MAUI)
-- Follow **MVVM pattern** (Model-View-ViewModel)
+- Follow **MVVM pattern** using **CommunityToolkit.Mvvm** source generators
+- Use **`[ObservableProperty]`** for bindable properties, **`[RelayCommand]`** for commands
+- Use **primary constructors** for ViewModels: `public partial class XxxViewModel(...) : BaseViewModel(notificationService)`
+- Use **`[QueryProperty]`** on Pages for navigation parameters
+- Initialize ViewModel data in **`OnNavigatedTo`**, not in the constructor
+- Error handling via `BaseViewModel.ExecuteAsync()` which wraps Sentry capture
 - Use **platform-specific** code only when necessary
-- Implement **offline support** where feasible
 - Handle **network connectivity** gracefully
 - Target **crash-free sessions ≥ 99.5%**
 
@@ -244,22 +252,59 @@ npm start
 
 ## Key 2026 Initiatives
 
-Refer to `Planning/README.md` for detailed roadmap (46 projects). Active priority areas:
+Refer to `Planning/README.md` for detailed roadmap (47 projects, 25 complete). Active priority areas:
 
-1. **Project 1:** Auth migration (Azure B2C → Entra External ID) — code complete, portal setup remaining
-2. **Project 4:** Mobile stabilization and error handling
-3. **Project 8:** Waivers V3 — community waivers, minors coverage
-4. **Project 44:** Area Map Editor — interactive map editor, AI area suggestions, bulk import
-5. **Project 45:** Community Showcase — landing page, enrollment funnel
+1. **Project 1:** Auth migration (Azure B2C → Entra External ID) — Phases 0-3 code complete, prod cutover remaining
+2. **Project 4:** Mobile stabilization — Phases 1-4 substantial progress, ViewModel tests + UX improvements
+3. **Project 8:** Waivers V3 — Phases 1-4, 6 complete, community waivers and minors coverage
+4. **Project 44:** Area Map Editor — Phases 1-4 complete, Phase 6 (AI bulk generation) planned
+5. **Project 45:** Community Showcase — Phases 1-4 complete, landing page and enrollment funnel
 
 ## Common Patterns
 
 ### Adding a new API endpoint
-1. Create/update model in `TrashMob.Models/`
-2. Add interface method to `IXxxManager` in `TrashMob.Shared/Managers/Interfaces/`
-3. Implement in manager class in `TrashMob.Shared/Managers/`
-4. Add controller method in `TrashMob/Controllers/`
-5. Add React Query service in `TrashMob/client-app/src/services/`
+1. Create/update model in `TrashMob.Models/` (inherit `KeyedModel` for entities with GUID Id)
+2. Add interface in `TrashMob.Shared/Managers/Interfaces/` (extend `IKeyedManager<T>`)
+3. Implement manager in `TrashMob.Shared/Managers/` (extend `KeyedManager<T>`, use primary constructor)
+4. Register in `TrashMob.Shared/ServiceBuilder.cs` (repositories are auto-resolved)
+5. Add controller in `TrashMob/Controllers/` (extend `KeyedController<T>` or `SecureController`, use primary constructor)
+6. Add React Query service in `TrashMob/client-app/src/services/` (factory returning `{ key, service }`)
+
+### Controller Template (Current Pattern)
+```csharp
+public class ThingsController(
+    IThingManager thingManager,
+    IOtherManager otherManager)
+    : KeyedController<Thing>(thingManager)
+{
+    [HttpGet("{id}")]
+    public async Task<IActionResult> Get(Guid id, CancellationToken cancellationToken)
+    {
+        return Ok(await Manager.GetAsync(id, cancellationToken));
+    }
+
+    [HttpPost]
+    [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+    [RequiredScope(Constants.TrashMobWriteScope)]
+    public async Task<IActionResult> Add(Thing instance, CancellationToken cancellationToken)
+    {
+        var result = await Manager.AddAsync(instance, UserId, cancellationToken);
+        TrackEvent("AddThing");
+        return Ok(result);
+    }
+}
+```
+
+### Authorization Checks
+```csharp
+// Check entity ownership
+if (!await IsAuthorizedAsync(entity, AuthorizationPolicyConstants.UserOwnsEntity))
+    return Forbid();
+
+// Check event lead role
+if (!await IsAuthorizedAsync(mobEvent, AuthorizationPolicyConstants.UserIsEventLead))
+    return Forbid();
+```
 
 ### ServiceResult Pattern
 For operations needing specific error messages:
@@ -269,6 +314,20 @@ public async Task<ServiceResult<T>> DoSomethingAsync(...) {
     return ServiceResult<T>.Success(result);
 }
 ```
+
+### Adding a new frontend page
+1. Create page component in `TrashMob/client-app/src/pages/`
+2. Add lazy import and route in `App.tsx`
+3. Use React Query hooks with service factories from `services/`
+4. Use Zod + React Hook Form for forms, DataTable for lists
+5. See `TrashMob/CLAUDE.md` for detailed frontend patterns
+
+### Adding a new mobile screen
+1. Create ViewModel in `TrashMobMobile/ViewModels/` (extend `BaseViewModel`, use `partial class` + primary constructor)
+2. Create Page in `TrashMobMobile/Pages/` (XAML + code-behind with `[QueryProperty]`)
+3. Register both in `TrashMobMobile/MauiProgram.cs` DI container
+4. Add Shell route in `AppShell.xaml.cs`
+5. See `TrashMobMobile/CLAUDE.md` for detailed mobile patterns
 
 ## Troubleshooting
 
