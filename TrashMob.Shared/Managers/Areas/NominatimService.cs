@@ -13,7 +13,11 @@ namespace TrashMob.Shared.Managers.Areas
 
     public class NominatimService(HttpClient httpClient, ILogger<NominatimService> logger) : INominatimService
     {
-        private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
+        private static readonly JsonSerializerOptions JsonOptions = new()
+        {
+            PropertyNameCaseInsensitive = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        };
 
         public async Task<NominatimResult?> SearchWithPolygonAsync(
             string query,
