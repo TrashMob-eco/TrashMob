@@ -125,7 +125,7 @@
     </PackageReference>
     <PackageReference Include="Markdig" Version="0.44.0" />
     <PackageReference Include="NetTopologySuite.IO.Esri.Shapefile" Version="1.2.0" />
-    <PackageReference Include="QuestPDF" Version="2025.1.0" />
+    <PackageReference Include="QuestPDF" Version="2025.12.3" />
     <PackageReference Include="SendGrid" Version="9.29.3" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
   </ItemGroup>
