@@ -1,11 +1,12 @@
 import { Link } from 'react-router';
 import { ColumnDef } from '@tanstack/react-table';
-import { Ellipsis, ExternalLink, SquareX } from 'lucide-react';
+import { Ellipsis, ExternalLink, SquareX, Check, X } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuTrigger,
     DropdownMenuContent,
     DropdownMenuItem,
+    DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -14,6 +15,7 @@ import PartnerData from '@/components/Models/PartnerData';
 
 interface GetColumnsProps {
     onDelete: (id: string, name: string) => void;
+    onToggleHomePage: (partner: PartnerData) => void;
 }
 
 const partnerTypeLabels: Record<number, string> = {
@@ -31,7 +33,7 @@ const partnerStatusLabels: Record<
     3: { label: 'Pending', variant: 'outline' },
 };
 
-export const getColumns = ({ onDelete }: GetColumnsProps): ColumnDef<PartnerData>[] => [
+export const getColumns = ({ onDelete, onToggleHomePage }: GetColumnsProps): ColumnDef<PartnerData>[] => [
     {
         accessorKey: 'name',
         header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />,
@@ -49,6 +51,34 @@ export const getColumns = ({ onDelete }: GetColumnsProps): ColumnDef<PartnerData
         cell: ({ row }) => {
             const status = partnerStatusLabels[row.getValue('partnerStatusId') as number];
             return <Badge variant={status?.variant ?? 'outline'}>{status?.label ?? 'Unknown'}</Badge>;
+        },
+    },
+    {
+        accessorKey: 'slug',
+        header: ({ column }) => <DataTableColumnHeader column={column} title='Slug' />,
+        cell: ({ row }) => {
+            const slug = row.original.slug;
+            return slug ? (
+                <code className='text-xs bg-muted px-1.5 py-0.5 rounded'>{slug}</code>
+            ) : (
+                <span className='text-xs text-muted-foreground'>—</span>
+            );
+        },
+    },
+    {
+        accessorKey: 'homePageEnabled',
+        header: 'Community Page',
+        cell: ({ row }) => {
+            const enabled = row.original.homePageEnabled;
+            return enabled ? (
+                <Badge variant='success'>
+                    <Check className='h-3 w-3 mr-1' /> Enabled
+                </Badge>
+            ) : (
+                <Badge variant='secondary'>
+                    <X className='h-3 w-3 mr-1' /> Disabled
+                </Badge>
+            );
         },
     },
     {
@@ -71,6 +101,12 @@ export const getColumns = ({ onDelete }: GetColumnsProps): ColumnDef<PartnerData
                                     View Dashboard
                                 </Link>
                             </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => onToggleHomePage(partner)}>
+                                {partner.homePageEnabled ? <X /> : <Check />}
+                                {partner.homePageEnabled ? 'Disable Community Page' : 'Enable Community Page'}
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={() => onDelete(partner.id, partner.name)}>
                                 <SquareX />
                                 Delete partner
