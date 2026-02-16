@@ -125,16 +125,15 @@ export const PartnerEdit = () => {
         (formValues) => {
             if (!currentValues) return;
 
-            const body = new PartnerData();
-            body.id = partnerId;
-            body.name = formValues.name ?? '';
-            body.website = formValues.website ?? '';
-            body.partnerStatusId = formValues.partnerStatusId ?? 2;
-            body.publicNotes = formValues.publicNotes;
-            body.privateNotes = formValues.privateNotes;
-            body.partnerTypeId = formValues.partnerTypeId;
-            body.createdByUserId = currentValues.createdByUserId;
-            body.createdDate = currentValues.createdDate;
+            const body: PartnerData = {
+                ...currentValues,
+                name: formValues.name ?? '',
+                website: formValues.website ?? '',
+                partnerStatusId: formValues.partnerStatusId ?? 2,
+                publicNotes: formValues.publicNotes ?? '',
+                privateNotes: formValues.privateNotes ?? '',
+                partnerTypeId: formValues.partnerTypeId,
+            };
 
             mutate(body);
         },
