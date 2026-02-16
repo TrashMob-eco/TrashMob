@@ -21,12 +21,15 @@ export type ParsedGeoJson = GeoJsonPolygon | GeoJsonLineString;
 export function parseGeoJson(raw: string): ParsedGeoJson | null {
     if (!raw.trim()) return null;
     try {
-        const parsed = JSON.parse(raw) as GeoJsonGeometry;
-        if (parsed.type === 'Polygon' && Array.isArray(parsed.coordinates)) {
-            return parsed as GeoJsonPolygon;
+        const parsed = JSON.parse(raw);
+        // Normalize PascalCase keys (e.g. from .NET serialization) to standard GeoJSON camelCase
+        const type = parsed.type ?? parsed.Type;
+        const coordinates = parsed.coordinates ?? parsed.Coordinates;
+        if (type === 'Polygon' && Array.isArray(coordinates)) {
+            return { type: 'Polygon', coordinates } as GeoJsonPolygon;
         }
-        if (parsed.type === 'LineString' && Array.isArray(parsed.coordinates)) {
-            return parsed as GeoJsonLineString;
+        if (type === 'LineString' && Array.isArray(coordinates)) {
+            return { type: 'LineString', coordinates } as GeoJsonLineString;
         }
         return null;
     } catch {

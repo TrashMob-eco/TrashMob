@@ -754,19 +754,25 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                         ) : null}
 
                         {/* Professional Companies */}
-                        {isSectionVisible('my-companies') && myCompanies && myCompanies.length > 0 ? (
+                        {isSectionVisible('my-companies') ? (
                             <section id='my-companies'>
                                 <Card>
                                     <CardHeader>
                                         <CardTitle className='text-primary'>
                                             <Briefcase className='inline-block h-5 w-5 mr-2' />
-                                            My Professional Companies ({myCompanies.length})
+                                            My Professional Companies ({(myCompanies || []).length})
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent>
-                                        <div className='overflow-auto'>
-                                            <MyCompaniesTable items={myCompanies} />
-                                        </div>
+                                        {myCompanies && myCompanies.length > 0 ? (
+                                            <div className='overflow-auto'>
+                                                <MyCompaniesTable items={myCompanies} />
+                                            </div>
+                                        ) : (
+                                            <p className='text-muted-foreground text-center py-4'>
+                                                You don't have any professional companies yet.
+                                            </p>
+                                        )}
                                     </CardContent>
                                 </Card>
                             </section>
