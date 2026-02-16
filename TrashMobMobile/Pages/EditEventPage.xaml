@@ -51,22 +51,13 @@
                         UseActivityIndicator="True" />
             </tabs:ViewSwitcher>
 
-            <Grid ColumnDefinitions="*, *, *, *"
-                      RowDefinitions="Auto"
-                      VerticalOptions="End"
-                      Margin="0,0,0,20">
-
-                <Button Margin="10"
-                            Grid.Row="0"
-                            Grid.Column="0"
-                            Grid.ColumnSpan="2"
-                            Command="{Binding SaveEventCommand}"
-                            Style="{StaticResource PrimaryLargeButton}"
-                            Text="Save Event"
-                            ContentLayout="Left, 12"
-                            ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconContentSave}, Color={AppThemeBinding Light={StaticResource PrimaryReverseText}, Dark={StaticResource PrimaryDarkReverseText}}}">
-                </Button>
-            </Grid>
+            <Button Margin="16,8,16,20"
+                    Command="{Binding SaveEventCommand}"
+                    Style="{StaticResource PrimaryLargeButton}"
+                    Text="Save Event"
+                    HorizontalOptions="Fill"
+                    ContentLayout="Left, 12"
+                    ImageSource="{FontImageSource FontFamily=GoogleMaterialIcons, Glyph={DynamicResource IconContentSave}, Color={AppThemeBinding Light={StaticResource PrimaryReverseText}, Dark={StaticResource PrimaryDarkReverseText}}}" />
         </VerticalStackLayout>
         <BoxView BackgroundColor="{StaticResource TransparentBlack}" HorizontalOptions="Fill"
                      VerticalOptions="Fill" IsVisible="{Binding IsBusy}" />
