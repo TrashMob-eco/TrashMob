@@ -226,7 +226,13 @@ The following GitHub issues are tracked as part of this project:
 
 ---
 
-**Last Updated:** February 1, 2026
+## Post-Completion Bug Fixes
+
+- **PR #2758** (Feb 15, 2026): Fixed bug where event creator was not automatically set as event lead (`IsEventLead = true`) when creating a new event. The `EventAttendee` record was created but `IsEventLead` defaulted to `false`, causing `GetEventLeadsAsync()` to miss the creator.
+
+---
+
+**Last Updated:** February 15, 2026
 **Owner:** Engineering Team
 **Status:** Complete
 **Completed:** February 1, 2026

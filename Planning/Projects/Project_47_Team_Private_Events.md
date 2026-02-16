@@ -263,7 +263,13 @@ if (evt is null || evt.EventVisibilityId != (int)EventVisibilityEnum.Public)
 
 ---
 
-**Last Updated:** February 14, 2026
+## Post-Completion Bug Fixes
+
+- **PR #2724** (Feb 14, 2026): Fixed MCP server leaking non-public events to unauthenticated clients. Added visibility filtering so team-visible and private events are excluded from MCP search results.
+
+---
+
+**Last Updated:** February 15, 2026
 **Owner:** Product & Engineering
 **Status:** Complete — All phases (1, 1b, 2, 3, 4) merged.
 **Next Review:** When prioritized

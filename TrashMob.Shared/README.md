@@ -34,9 +34,10 @@ TrashMob.Shared/
 
 ## Key Patterns
 
-- **Manager Pattern**: `BaseManager<T>` → `KeyedManager<T>` hierarchy
+- **Manager Pattern**: `BaseManager<T>` → `KeyedManager<T>` hierarchy (primary constructors, `CancellationToken` on all async methods)
 - **Repository Pattern**: `BaseRepository<T>` → `KeyedRepository<T>` hierarchy
 - **ServiceResult Pattern**: For operations returning detailed success/error info
+- **Primary Constructors**: All managers and repositories use C# 12 primary constructor syntax
 
 ## Related Documentation
 

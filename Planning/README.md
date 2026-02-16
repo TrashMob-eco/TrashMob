@@ -1,7 +1,7 @@
 # TrashMob.eco — 2026 Planning Documentation
 
-**Version:** 1.1
-**Date:** February 1, 2026
+**Version:** 1.2
+**Date:** February 15, 2026
 **Owner:** Director of Product & Engineering
 
 ---
@@ -21,8 +21,8 @@
 
 | Project | Description | Status |
 |---------|-------------|--------|
-| [Project 1 - Auth Revamp](./Projects/Project_01_Auth_Revamp.md) | Azure B2C → Entra External ID migration | In Progress (Phase 2 Complete, Phase 3 next) |
-| [Project 4 - Mobile Robustness](./Projects/Project_04_Mobile_Robustness.md) | Stabilize MAUI apps, error handling | In Progress (Phases 1-2 Complete) |
+| [Project 1 - Auth Revamp](./Projects/Project_01_Auth_Revamp.md) | Azure B2C → Entra External ID migration | In Progress (Phases 0-3 Partial, 5-6 Partial) |
+| [Project 4 - Mobile Robustness](./Projects/Project_04_Mobile_Robustness.md) | Stabilize MAUI apps, error handling | In Progress (Phases 1-4 Substantial) |
 | [Project 5 - Deployment Pipelines](./Projects/Project_05_Deployment_Pipelines.md) | CI/CD modernization, Docker | Ready for Dev Review |
 
 #### High Priority (Core Features)
@@ -32,20 +32,20 @@
 | [Project 2 - Home Page Improvements](./Projects/Project_02_Home_Page.md) | Dynamic content, ads, sponsors | Ready for Design Review |
 | [Project 3 - Litter Reporting Web](./Projects/Project_03_Litter_Reporting_Web.md) | Complete web parity for litter reports | ✅ Complete |
 | [Project 7 - Event Weights](./Projects/Project_07_Event_Weights.md) | Track weight metrics | ✅ Complete |
-| [Project 8 - Waivers V3](./Projects/Project_08_Waivers_V3.md) | Community waivers, minors coverage | In Progress (Phase 1-4 Complete) |
+| [Project 8 - Waivers V3](./Projects/Project_08_Waivers_V3.md) | Community waivers, minors coverage | In Progress (Phases 1-4, 6 Complete) |
 | [Project 9 - Teams](./Projects/Project_09_Teams.md) | User-created teams MVP | ✅ Complete |
 | [Project 10 - Community Pages](./Projects/Project_10_Community_Pages.md) | Branded partner community pages | ✅ Complete |
 | [Project 13 - Bulk Email Invites](./Projects/Project_13_Bulk_Email_Invites.md) | Scale email invitations | ✅ Complete |
 | [Project 23 - Parental Consent](./Projects/Project_23_Parental_Consent.md) | Privo.com integration for minors (combined with Project 1) | Planning (combined with Project 1) |
 | [Project 24 - API v2 Modernization](./Projects/Project_24_API_v2_Modernization.md) | Pagination, error handling, auto-generated clients | Not Started |
 | [Project 38 - Mobile Feature Parity](./Projects/Project_38_Mobile_Feature_Parity.md) | Teams, leaderboards, photos for mobile volunteers | In Progress (Phases 1-4, 6-7 Complete) |
-| [Project 44 - Area Map Editor](./Projects/Project_44_Area_Map_Editor.md) | Interactive map editor, AI area suggestions, bulk import | In Progress (Phases 1-4 Complete) |
+| [Project 44 - Area Map Editor](./Projects/Project_44_Area_Map_Editor.md) | Interactive map editor, AI area suggestions, bulk import | In Progress (Phases 1-4 Complete, Phase 6 Planned) |
 
 #### Medium Priority (Enhancements)
 
 | Project | Description | Status |
 |---------|-------------|--------|
-| [Project 6 - Backend Standards](./Projects/Project_06_Backend_Standards.md) | Code standards, .NET 10 upgrades | In Progress |
+| [Project 6 - Backend Standards](./Projects/Project_06_Backend_Standards.md) | Code standards, .NET 10 upgrades | In Progress (Phases 1, 2.5, 3 Substantial) |
 | [Project 11 - Adopt-A-Location](./Projects/Project_11_Adopt_A_Location.md) | Location adoption program | ✅ Complete |
 | [Project 14 - Social Media Integration](./Projects/Project_14_Social_Media.md) | Modernize social sharing | ✅ Complete |
 | [Project 15 - Route Tracing](./Projects/Project_15_Route_Tracing.md) | Map route tracing with privacy | In Progress (Phases 1-5 Complete, Mobile Device Testing Remaining) |
@@ -150,7 +150,7 @@
 | Status | Count | Projects |
 |--------|-------|----------|
 | ✅ **Complete** | 25 | Projects 3, 7, 9, 10, 11, 13, 14, 16, 17, 18, 19, 20, 21, 26, 27, 28, 29, 32, 34, 35, 37, 39, 40, 42, 47 |
-| **In Progress** | 12 | Projects 1 (Phase 2 Complete, Phase 3 next), 4 (Phases 1-2 Complete), 6, 8 (Phase 1-4 Complete), 15 (Backend & Website Complete), 22 (Phase 1-3 Complete), 25 (Phase 1 Complete), 30, 38 (Phases 1-4, 6-7 Complete), 41 (Phases 1-4 Complete), 44 (Phases 1-4 Complete), 45 (Phases 1-4 Complete) |
+| **In Progress** | 12 | Projects 1 (Phases 0-3 Partial, 5-6 Partial), 4 (Phases 1-4 Substantial), 6 (Phases 1, 2.5, 3 Substantial), 8 (Phases 1-4, 6 Complete), 15 (Backend & Website Complete), 22 (Phase 1-3 Complete), 25 (Phase 1 Complete), 30, 38 (Phases 1-4, 6-7 Complete), 41 (Phases 1-4 Complete), 44 (Phases 1-4 Complete, Phase 6 Planned), 45 (Phases 1-4 Complete) |
 | **Ready for Review** | 2 | Projects 2, 5 |
 | **Planning** | 1 | Project 23 (combined with Project 1) |
 | **Not Started** | 6 | Projects 12, 24, 31, 36, 43, 46 |
@@ -229,6 +229,6 @@ All new features should consider adding feature usage tracking. See [Project 29 
 
 ---
 
-**Last Updated:** February 10, 2026
+**Last Updated:** February 15, 2026
 **Maintained By:** Product & Engineering Team
 **Next Review:** End of Q1 2026

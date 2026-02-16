@@ -479,7 +479,17 @@ The following GitHub issues are tracked as part of this project:
 
 ---
 
-**Last Updated:** February 3, 2026
+## Post-Completion Bug Fixes
+
+- **PR #2725** (Feb 14, 2026): Fixed litter report DB error and aligned image upload limit with project specs
+- **PR #2743** (Feb 15, 2026): Fixed litter report images not displaying after upload
+- **PR #2755** (Feb 15, 2026): Fixed litter report thumbnails not loading and button icon visibility
+- **PR #2761** (Feb 16, 2026): Added camera capture support and improved photo upload popups with better styling
+- **PR #2763** (Feb 16, 2026): Fixed 500 error in photo upload when attendee check called unimplemented method
+
+---
+
+**Last Updated:** February 15, 2026
 **Owner:** Web Team
 **Status:** Phase 4 Complete
 **Next Review:** Project complete - no further phases planned

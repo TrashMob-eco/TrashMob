@@ -49,6 +49,7 @@ This project replaces the GeoJSON textarea with an interactive map editor, adds 
 ### Phase 2 — Nearby Areas & Context ✅
 - [x] Display existing adoptable areas on map during create/edit (different colors by status)
 - [x] Show adoption status overlay (Available = green, Adopted = blue, Unavailable = gray)
+- [x] Random area colors and map overview for adoptable areas (PR #2746)
 - [x] Overlap detection warning when new area intersects existing area
 - [x] Area measurement display (square footage / acreage for polygons, length for linestrings)
 - [x] Search/geocode to navigate map to a specific address or location
@@ -56,6 +57,7 @@ This project replaces the GeoJSON textarea with an interactive map editor, adds 
 ### Phase 3 — AI-Assisted Area Definition ✅
 - [x] Natural language input: "The 200 block of Main Street from Oak Ave to Elm Ave"
 - [x] AI generates suggested polygon/linestring using geocoding + street network data
+- [x] Improved AI suggestions with viewport bounds and Nominatim polygons (PR #2751)
 - [x] User reviews and adjusts suggestion on map before saving
 - [x] AI can suggest area names based on geography
 - [ ] Batch AI suggestions: "All blocks along Main Street between 1st and 10th"

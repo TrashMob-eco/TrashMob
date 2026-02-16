@@ -127,12 +127,13 @@ Users must be able to download their signed waivers as PDF documents containing:
 
 ### Phase 2 - User Workflows (E-Signature) ✅ Complete
 - ✅ Website click-to-accept flow (checkbox + typed legal name)
-- ☐ Mobile app click-to-accept flow (deferred)
+- ✅ Mobile app multi-waiver flow with styled popup (PR #2752)
 - ✅ Multi-waiver signing (TrashMob + community in one flow)
 - ✅ Waiver text snapshot storage at signing time
 - ✅ Server-side PDF generation with waiver text, signature, audit trail
 - ✅ PDF download for signed waivers
 - ✅ Waiver viewing and printing (My Dashboard)
+- ✅ Redesign waiver signing flow with hub/list view (PR #2745)
 - ✅ Re-consent when waiver updates
 - ✅ Email notifications for expiring waivers
 
@@ -147,6 +148,11 @@ Users must be able to download their signed waivers as PDF documents containing:
 - ✅ Event registration waiver checks
 - ✅ Determine which waivers required (TrashMob + community)
 - ✅ Block registration if waiver missing/expired
+- ✅ Add waiver signing check before event creation (PR #2748)
+- ✅ Add waiver check before creating event from litter report (PR #2744)
+- ✅ Fix waiver bypass on create event flow (PR #2756)
+- ✅ Navigate to home when waiver is dismissed on create event (PR #2757)
+- ✅ Fix waiver timing and display issues (PR #2753)
 - ✅ Event lead view of attendee waiver status
 - ✅ Day-of check-in waiver verification
 
@@ -710,9 +716,9 @@ The following GitHub issues are tracked as part of this project:
 
 ---
 
-**Last Updated:** February 2, 2026
+**Last Updated:** February 15, 2026
 **Owner:** Product Lead + Legal Counsel
-**Status:** In Progress (Phase 1-4, 6 Complete; Phase 5 Blocked on Project 23)
+**Status:** In Progress (Phases 1-4, 6 Complete; Phase 4 extended with pre-event-create checks, waiver bypass fixes, mobile multi-waiver flow; Phase 2 extended with hub/list redesign; Phase 5 Blocked on Project 23)
 **Next Review:** When Project 23 (Parental Consent) completes Phases 1-2 (Privo.com integration)
 
 **?? CRITICAL:** No development work begins until legal team provides written approval of approach.
