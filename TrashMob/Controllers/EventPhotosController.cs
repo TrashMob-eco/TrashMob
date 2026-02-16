@@ -2,6 +2,7 @@ namespace TrashMob.Controllers
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
@@ -106,7 +107,8 @@ namespace TrashMob.Controllers
 
             // Check if user is event lead or attendee
             var isLead = mobEvent.CreatedByUserId == UserId;
-            var isAttendee = await eventAttendeeManager.GetAsync(eventId, UserId, cancellationToken) is not null;
+            var attendees = await eventAttendeeManager.GetAsync(ea => ea.EventId == eventId && ea.UserId == UserId, cancellationToken);
+            var isAttendee = attendees.Any();
 
             if (!isLead && !isAttendee)
             {
