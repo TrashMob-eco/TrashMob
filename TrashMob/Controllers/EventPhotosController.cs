@@ -83,6 +83,7 @@ namespace TrashMob.Controllers
         /// </summary>
         /// <param name="eventId">The event ID.</param>
         /// <param name="imageUpload">The image upload data.</param>
+        /// <param name="photoType">The type of photo (Before, During, After).</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         [HttpPost]
         [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
@@ -94,7 +95,8 @@ namespace TrashMob.Controllers
         public async Task<IActionResult> UploadPhoto(
             Guid eventId,
             [FromForm] ImageUpload imageUpload,
-            CancellationToken cancellationToken)
+            [FromQuery] EventPhotoType photoType = EventPhotoType.During,
+            CancellationToken cancellationToken = default)
         {
             var mobEvent = await eventManager.GetAsync(eventId, cancellationToken);
             if (mobEvent is null)
@@ -117,7 +119,7 @@ namespace TrashMob.Controllers
             {
                 Id = photoId,
                 EventId = eventId,
-                PhotoType = EventPhotoType.During,
+                PhotoType = photoType,
                 Caption = string.Empty,
                 UploadedByUserId = UserId,
                 UploadedDate = DateTimeOffset.UtcNow,

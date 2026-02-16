@@ -15,18 +15,23 @@
                                     SelectionMode="None">
             <CollectionView.EmptyView>
                 <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center"
-                                     Spacing="8" Margin="20">
-                    <Image MaximumWidthRequest="32" MaximumHeightRequest="32"
+                                     Spacing="8" Margin="40,20">
+                    <Image MaximumWidthRequest="48" MaximumHeightRequest="48"
                            HorizontalOptions="Center">
                         <Image.Source>
                             <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
                                              Glyph="{StaticResource IconAccountMultiple}"
-                                             Size="32"
+                                             Size="48"
                                              Color="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
                         </Image.Source>
                     </Image>
                     <Label Text="No attendees yet"
+                           FontFamily="LexendSemibold"
                            FontSize="Small"
+                           HorizontalTextAlignment="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                    <Label Text="Be the first to register for this cleanup event."
+                           FontSize="Micro"
                            HorizontalTextAlignment="Center"
                            TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
                 </VerticalStackLayout>
