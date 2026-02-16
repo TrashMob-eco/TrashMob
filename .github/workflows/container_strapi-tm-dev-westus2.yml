@@ -92,10 +92,11 @@ jobs:
         run: |
           export PATH="$PATH:/opt/mssql-tools18/bin"
 
-          # Get admin credentials
+          # Get admin credentials from the main app connection string (format: Server=...;User ID=dbadmin;Password=<pw>;...)
           SQL_SERVER="sql-tm-dev-${{ env.REGION }}"
-          SQL_ADMIN=$(az keyvault secret show --name sql-admin-username --vault-name ${{ env.KEY_VAULT_NAME }} --query value -o tsv)
-          SQL_ADMIN_PASSWORD=$(az keyvault secret show --name sql-admin-password --vault-name ${{ env.KEY_VAULT_NAME }} --query value -o tsv)
+          CONN_STR=$(az keyvault secret show --name TMDBServerConnectionString --vault-name ${{ env.KEY_VAULT_NAME }} --query value -o tsv)
+          SQL_ADMIN=$(echo "$CONN_STR" | grep -oP '(?<=User ID=)[^;]+')
+          SQL_ADMIN_PASSWORD=$(echo "$CONN_STR" | grep -oP '(?<=Password=)[^;]+')
           STRAPI_PASSWORD=$(az keyvault secret show --name strapi-db-password --vault-name ${{ env.KEY_VAULT_NAME }} --query value -o tsv)
 
           # Create user if not exists (idempotent)
