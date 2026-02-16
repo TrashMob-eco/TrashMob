@@ -52,7 +52,7 @@ namespace TrashMob.Shared.Managers.Partners
                 .ToList();
 
             results.AddRange(partners);
-            results = results.Distinct().ToList();
+            results = results.DistinctBy(p => p.Id).ToList();
 
             return results;
         }
