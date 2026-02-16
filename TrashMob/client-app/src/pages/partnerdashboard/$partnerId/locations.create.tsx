@@ -46,7 +46,7 @@ const formSchema = z.object({
     name: z.string({ required_error: 'Location Name cannot be empty.' }),
     isActive: z.boolean(),
     publicNotes: z.string().optional(),
-    privateNotes: z.string(),
+    privateNotes: z.string().optional(),
     location: z.object({
         lat: z.number().optional(),
         lng: z.number().optional(),
