@@ -10,7 +10,12 @@ interface AiSuggestPanelProps {
     communityCenter?: { lat: number; lng: number } | null;
     communityName?: string;
     mapBounds?: { north: number; south: number; east: number; west: number } | null;
-    onSuggestionAccepted: (geoJson: string, suggestedName?: string, suggestedAreaType?: string) => void;
+    onSuggestionAccepted: (
+        geoJson: string,
+        suggestedName?: string,
+        suggestedAreaType?: string,
+        userDescription?: string,
+    ) => void;
     onSuggestionPreview: (geoJson: string | null) => void;
     onRequestEditMode?: () => void;
 }
@@ -66,6 +71,7 @@ export const AiSuggestPanel = ({
             suggestion.geoJson,
             suggestion.suggestedName ?? undefined,
             suggestion.suggestedAreaType ?? undefined,
+            description || undefined,
         );
         setSuggestion(null);
         setDescription('');
@@ -78,6 +84,7 @@ export const AiSuggestPanel = ({
             suggestion.geoJson,
             suggestion.suggestedName ?? undefined,
             suggestion.suggestedAreaType ?? undefined,
+            description || undefined,
         );
         onRequestEditMode?.();
         setSuggestion(null);

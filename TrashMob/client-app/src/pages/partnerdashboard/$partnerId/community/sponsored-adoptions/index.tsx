@@ -19,6 +19,33 @@ const statusColors: Record<SponsoredAdoptionStatus, string> = {
     Terminated: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
 };
 
+function getCleanupStatus(adoption: SponsoredAdoptionData): {
+    lastCleanupDate: string | null;
+    daysUntilDue: number | null;
+} {
+    const logs = adoption.cleanupLogs;
+    if (!logs || logs.length === 0) {
+        // No cleanups yet — due date is based on start date + frequency
+        if (adoption.startDate) {
+            const start = new Date(adoption.startDate);
+            const dueDate = new Date(start);
+            dueDate.setDate(dueDate.getDate() + adoption.cleanupFrequencyDays);
+            const daysUntilDue = Math.ceil((dueDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+            return { lastCleanupDate: null, daysUntilDue };
+        }
+        return { lastCleanupDate: null, daysUntilDue: null };
+    }
+
+    const sorted = [...logs].sort((a, b) => new Date(b.cleanupDate).getTime() - new Date(a.cleanupDate).getTime());
+    const lastDate = sorted[0].cleanupDate;
+    const last = new Date(lastDate);
+    const dueDate = new Date(last);
+    dueDate.setDate(dueDate.getDate() + adoption.cleanupFrequencyDays);
+    const daysUntilDue = Math.ceil((dueDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+
+    return { lastCleanupDate: lastDate, daysUntilDue };
+}
+
 export const PartnerCommunitySponsoredAdoptions = () => {
     const navigate = useNavigate();
     const { partnerId } = useParams<{ partnerId: string }>() as { partnerId: string };
@@ -47,7 +74,14 @@ export const PartnerCommunitySponsoredAdoptions = () => {
 
     const activeAdoptions = useMemo(() => adoptions?.filter((a) => a.status === 'Active') ?? [], [adoptions]);
 
-    const overdueCount = complianceStats?.adoptionsOverdue ?? 0;
+    const overdueAdoptions = useMemo(
+        () =>
+            activeAdoptions.filter((a) => {
+                const { daysUntilDue } = getCleanupStatus(a);
+                return daysUntilDue !== null && daysUntilDue < 0;
+            }),
+        [activeAdoptions],
+    );
 
     const formatDate = (dateStr: string | null | undefined) => {
         if (!dateStr) return '-';
@@ -139,8 +173,8 @@ export const PartnerCommunitySponsoredAdoptions = () => {
                     <Tabs defaultValue='active'>
                         <TabsList className='mb-4'>
                             <TabsTrigger value='active'>Active ({activeAdoptions.length})</TabsTrigger>
-                            <TabsTrigger value='overdue' className={overdueCount > 0 ? 'text-red-600' : ''}>
-                                Overdue ({overdueCount})
+                            <TabsTrigger value='overdue' className={overdueAdoptions.length > 0 ? 'text-red-600' : ''}>
+                                Overdue ({overdueAdoptions.length})
                             </TabsTrigger>
                             <TabsTrigger value='all'>All ({adoptions?.length || 0})</TabsTrigger>
                         </TabsList>
@@ -157,7 +191,7 @@ export const PartnerCommunitySponsoredAdoptions = () => {
 
                         <TabsContent value='overdue'>
                             <AdoptionTable
-                                adoptions={activeAdoptions.filter(() => overdueCount > 0)}
+                                adoptions={overdueAdoptions}
                                 partnerId={partnerId}
                                 formatDate={formatDate}
                                 emptyMessage='No overdue adoptions!'
@@ -217,34 +251,53 @@ const AdoptionTable = ({
                     <TableHead>Area</TableHead>
                     <TableHead>Sponsor</TableHead>
                     <TableHead>Company</TableHead>
-                    <TableHead>Start Date</TableHead>
-                    <TableHead>Frequency</TableHead>
+                    <TableHead>Last Cleanup</TableHead>
+                    <TableHead>Next Due</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className='text-right'>Actions</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {adoptions.map((adoption) => (
-                    <TableRow key={adoption.id}>
-                        <TableCell className='font-medium'>{adoption.adoptableArea?.name || 'Unknown Area'}</TableCell>
-                        <TableCell>{adoption.sponsor?.name || 'Unknown Sponsor'}</TableCell>
-                        <TableCell>{adoption.professionalCompany?.name || 'Unknown Company'}</TableCell>
-                        <TableCell>{formatDate(adoption.startDate)}</TableCell>
-                        <TableCell>{adoption.cleanupFrequencyDays} days</TableCell>
-                        <TableCell>
-                            <Badge className={statusColors[adoption.status]}>{adoption.status}</Badge>
-                        </TableCell>
-                        <TableCell className='text-right'>
-                            <Button variant='outline' size='sm' asChild>
-                                <Link
-                                    to={`/partnerdashboard/${partnerId}/community/sponsored-adoptions/${adoption.id}/edit`}
-                                >
-                                    <Pencil className='h-4 w-4' />
-                                </Link>
-                            </Button>
-                        </TableCell>
-                    </TableRow>
-                ))}
+                {adoptions.map((adoption) => {
+                    const { lastCleanupDate, daysUntilDue } = getCleanupStatus(adoption);
+                    const isOverdue = daysUntilDue !== null && daysUntilDue < 0;
+
+                    return (
+                        <TableRow key={adoption.id}>
+                            <TableCell className='font-medium'>
+                                {adoption.adoptableArea?.name || 'Unknown Area'}
+                            </TableCell>
+                            <TableCell>{adoption.sponsor?.name || 'Unknown Sponsor'}</TableCell>
+                            <TableCell>{adoption.professionalCompany?.name || 'Unknown Company'}</TableCell>
+                            <TableCell>{lastCleanupDate ? formatDate(lastCleanupDate) : 'Never'}</TableCell>
+                            <TableCell>
+                                {daysUntilDue !== null ? (
+                                    <span className={isOverdue ? 'font-semibold text-red-600' : ''}>
+                                        {isOverdue
+                                            ? `${Math.abs(daysUntilDue)} days overdue`
+                                            : daysUntilDue === 0
+                                              ? 'Due today'
+                                              : `${daysUntilDue} days`}
+                                    </span>
+                                ) : (
+                                    '-'
+                                )}
+                            </TableCell>
+                            <TableCell>
+                                <Badge className={statusColors[adoption.status]}>{adoption.status}</Badge>
+                            </TableCell>
+                            <TableCell className='text-right'>
+                                <Button variant='outline' size='sm' asChild>
+                                    <Link
+                                        to={`/partnerdashboard/${partnerId}/community/sponsored-adoptions/${adoption.id}/edit`}
+                                    >
+                                        <Pencil className='h-4 w-4' />
+                                    </Link>
+                                </Button>
+                            </TableCell>
+                        </TableRow>
+                    );
+                })}
             </TableBody>
         </Table>
     );

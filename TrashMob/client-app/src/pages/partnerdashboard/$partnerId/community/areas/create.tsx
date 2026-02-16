@@ -20,7 +20,7 @@ import AdoptableAreaData, { AdoptableAreaType } from '@/components/Models/Adopta
 import CommunityData from '@/components/Models/CommunityData';
 import { CreateAdoptableArea, GetAdoptableAreas, GetAdoptableAreas_Response } from '@/services/adoptable-areas';
 import { GetCommunityForAdmin } from '@/services/communities';
-import { AreaMapEditor } from '@/components/Map/AreaMapEditor';
+import { AreaMapEditor, SuggestionMetadata } from '@/components/Map/AreaMapEditor';
 import { AreaBoundingBox } from '@/lib/geojson';
 
 const areaTypes: AdoptableAreaType[] = ['Highway', 'Park', 'School', 'Trail', 'Waterway', 'Street', 'Spot'];
@@ -113,6 +113,21 @@ export const PartnerCommunityAreaCreate = () => {
             geoJson: '',
         },
     });
+
+    const handleSuggestionMetadata = useCallback(
+        (meta: SuggestionMetadata) => {
+            if (meta.suggestedName && !form.getValues('name')) {
+                form.setValue('name', meta.suggestedName);
+            }
+            if (meta.description && !form.getValues('description')) {
+                form.setValue('description', meta.description);
+            }
+            if (meta.suggestedAreaType && areaTypes.includes(meta.suggestedAreaType as AdoptableAreaType)) {
+                form.setValue('areaType', meta.suggestedAreaType as AdoptableAreaType);
+            }
+        },
+        [form],
+    );
 
     const onSubmit: SubmitHandler<FormInputs> = useCallback(
         (formValues) => {
@@ -341,6 +356,7 @@ export const PartnerCommunityAreaCreate = () => {
                                                 value={field.value}
                                                 onChange={field.onChange}
                                                 onBoundsChange={setAreaBbox}
+                                                onSuggestionMetadata={handleSuggestionMetadata}
                                                 communityBounds={
                                                     community
                                                         ? {

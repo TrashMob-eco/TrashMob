@@ -153,7 +153,7 @@ namespace TrashMob.Shared.Managers
         {
             var imageName = await GetImageNameAsync(parentId, imageType);
 
-            if (imageName is null)
+            if (string.IsNullOrEmpty(imageName))
             {
                 return false;
             }
