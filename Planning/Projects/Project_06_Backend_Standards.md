@@ -40,14 +40,35 @@ Unify coding patterns across the backend codebase, upgrade to .NET 10, secure al
 - ✓ Test all projects compile and run
 - ✓ Update GitHub Actions workflows
 
-### Phase 2 - Dependency Updates
-- ? Update all NuGet packages
-- ? Address breaking changes
+### Phase 2 - Dependency Updates (Partial)
+- ✓ Renovate bot keeps NuGet and npm packages updated (8 Renovate PRs merged Feb 2026)
+- ? Address breaking changes (handled per Renovate PR)
 - ? Test thoroughly
 - ? Update package documentation
 
-### Phase 3 - Security Audit
-- ? Review all API endpoints for authorization
+### Phase 2.5 - Code Modernization ✅ (22 PRs — Feb 2026)
+
+Comprehensive code quality sweep across the entire backend:
+
+| Category | PRs | Changes |
+|----------|-----|---------|
+| **Primary Constructors** | #2705, #2706, #2708, #2709 | Converted all controllers, managers, repositories, engines, and services to C# 12 primary constructors |
+| **Collection Expressions** | #2711, #2712 | Replaced `new List<T>()` with `[]`, `Tuple` with value tuples, `string.Format` with interpolation |
+| **Structured Logging** | #2713 | Converted logger format placeholders to structured logging patterns |
+| **Null Pattern Matching** | #2715, #2717 | Replaced `== null` / `!= null` with `is null` / `is not null` across controllers, security handlers, and jobs |
+| **Magic String Elimination** | #2701 | Extracted magic strings into constants, standardized Delete endpoints |
+| **N+1 Query Fixes** | #2697 | Eliminated N+1 queries and unbounded table loads |
+| **Dead Code Removal** | #2696 | Removed dead reCAPTCHA code, added user ownership checks |
+| **Auth Boilerplate** | #2698 | Extracted `IsAuthorizedAsync` helper to reduce authorization boilerplate |
+| **ConfigureAwait Cleanup** | #2699 | Removed `ConfigureAwait(false)` and standardized string validation |
+| **Async Naming** | #2703 | Fixed async method naming, removed redundant `[ApiController]` |
+| **Exception Logging** | #2702 | Added exception logging, removed redundant `.AsEnumerable()` calls |
+| **HTTP Status Codes** | #2707 | Fixed HTTP status codes, redundant fields, and code style issues |
+
+### Phase 3 - Security Audit (Partial)
+- ✓ User ownership checks added (PR #2696)
+- ✓ Auth handler tests added — 45 tests for all 8 authorization handlers (PR #2687)
+- ? Review all remaining API endpoints for authorization
 - ? Add `[Authorize]` attributes where missing
 - ? Validate input on all endpoints
 - ? Add rate limiting where appropriate
@@ -296,7 +317,7 @@ The following GitHub issues are tracked as part of this project:
 
 ---
 
-**Last Updated:** February 4, 2026
+**Last Updated:** February 15, 2026
 **Owner:** Engineering Lead
-**Status:** In Progress (Phase 1, 4, 5 & 6 complete)
-**Next Review:** When Phase 2 or 3 starts
+**Status:** In Progress (Phase 1, 2.5, 4, 5 & 6 complete; Phase 2 ongoing via Renovate; Phase 3 partial with auth handler tests and ownership checks)
+**Next Review:** When Phase 3 security audit continues

@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phases 1-2 Complete, Phases 3-5 Partial) |
+| **Status** | In Progress (Phases 1-2 Complete, Phases 3-5 Substantial Progress) |
 | **Priority** | Critical |
 | **Risk** | Low |
 | **Size** | Medium |
@@ -59,22 +59,32 @@ Mobile app quality directly impacts user retention and app store visibility. A c
 - [ ] Create alerts for crash rate spikes (Sentry project ops task)
 - [ ] Build Grafana dashboards for mobile metrics (ops task)
 
-### Phase 3 - Testing (Partial)
+### Phase 3 - Testing (Substantial)
 
 - [x] Add unit tests for ViewModels and critical business logic (PR #2593 — 33 ViewModel tests)
+- [x] Add comprehensive mobile ViewModel unit tests — 170 new tests (PR #2686)
+- [x] Add Appium UI test project for mobile app (PR #2691)
 - [ ] Create manual test matrix for devices and OS versions
 - [ ] Perform regression testing on physical devices
 - [ ] Load test API integrations
 - [ ] Accessibility audit (TalkBack, VoiceOver)
 
-### Phase 4 - UX Improvements (Partial)
+### Phase 4 - UX Improvements (Substantial)
 
 - [ ] UX audit of current app (identify pain points and friction)
 - [x] Redesign navigation structure (PR #2606 — 5-tab layout; PR #2496 — bottom tab navigation)
 - [x] Refresh visual design (PR #2586 — align mobile styling with web design system)
-- [ ] Improve event discovery and browsing experience
+- [x] Standardize mobile page layouts with card styling (PR #2700)
+- [x] Refine mobile Explore page with filters and user location (PR #2729)
+- [x] Move action buttons below content on mobile detail pages (PR #2728)
+- [x] Fix navigation bugs, route simulation, and mobile UI improvements (PR #2741)
+- [x] Fix async void crashes, static coupling, and code duplication (PR #2689)
+- [x] Multi-waiver flow, styled popup, thumbnails, and UI fixes (PR #2752)
+- [x] Fix litter report create/update and improve mobile error handling (PR #2737)
+- [x] Add event visibility support to mobile app (PR #2732)
+- [x] Fix mobile auth token refresh, UI consistency, and server-side auth bugs (PR #2714)
+- [x] Add map circle, user location pin, and litter report filters (PR #2716)
 - [ ] Streamline event registration flow
-- [ ] Polish litter reporting flow (camera, location, submission)
 - [ ] Enhance dashboard/home screen with clear calls to action
 - [ ] Add lightweight API endpoint for litter report list views with first-image thumbnail URL (avoids N+1 image URL fetches per report; relates to #2340)
 - [x] Consistent loading states and feedback throughout app (PR #2588 — `IsBusy` state + user-friendly error messages)
@@ -460,7 +470,7 @@ The following GitHub issues are tracked as part of this project:
 
 ---
 
-**Last Updated:** February 9, 2026
+**Last Updated:** February 15, 2026
 **Owner:** Mobile Product Lead + MAUI Developers
-**Status:** In Progress (Phases 1-2 Complete, Phases 3-5 Partial, Phase 6 Not Started)
+**Status:** In Progress (Phases 1-2 Complete, Phases 3-4 Substantial Progress — 203 ViewModel tests, Appium UI tests, extensive UX improvements across 15+ PRs, Entra auth switch, Phase 5 Partial, Phase 6 Not Started)
 **Next Review:** After remaining iOS bugs are triaged

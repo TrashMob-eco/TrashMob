@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phase 2 Complete, Phase 3 next) |
+| **Status** | In Progress (Phases 0-3 Partial Complete, Phase 4 next) |
 | **Priority** | Critical |
 | **Risk** | High |
 | **Size** | Large |
@@ -143,22 +143,23 @@ Custom CSS is **not available** — Entra External ID restricted custom CSS to t
 **Architecture: Hybrid Age Gate (Option C)**
 Two-layer age verification — in-app pre-screen for fast UX + server-side Custom Authentication Extension for defense-in-depth.
 
-#### Layer 1: In-App Pre-Screen (before Entra redirect)
+#### Layer 1: In-App Pre-Screen (before Entra redirect) ✅
+
 Age check logic is the same on both platforms — show DOB input, calculate age, block/flag/continue.
 
-**Web (React):**
-- [ ] Build DOB input component shown when user clicks "Sign Up" (before `loginRedirect()`)
-- [ ] Calculate age from DOB:
+**Web (React) — PR #2693:**
+- [x] Build DOB input component shown when user clicks "Sign Up" (before `loginRedirect()`)
+- [x] Calculate age from DOB:
   - **Under 13** → block immediately with friendly message ("You must be 13 or older to join TrashMob"), no PII collected
   - **13-17** → store DOB in session/state, redirect to Entra sign-up with minor flag
   - **18+** → redirect to standard Entra sign-up
-- [ ] Pass age context to Entra via MSAL `extraQueryParameters` or `state` parameter
+- [x] Pass age context to Entra via MSAL `extraQueryParameters` or `state` parameter
 
-**Mobile (MAUI):**
-- [ ] Build DOB input page/modal shown before `AcquireTokenInteractive()` in `AuthService`
-- [ ] Same age calculation and block/flag/continue logic as web
-- [ ] Pass age context to Entra via MSAL `extraQueryParameters` or `B2CAuthority` state
-- [ ] Handle "blocked" state with a friendly in-app page (no navigation to Entra)
+**Mobile (MAUI) — PR #2694:**
+- [x] Build DOB input page/modal shown before `AcquireTokenInteractive()` in `AuthService`
+- [x] Same age calculation and block/flag/continue logic as web
+- [x] Pass age context to Entra via MSAL `extraQueryParameters` or `B2CAuthority` state
+- [x] Handle "blocked" state with a friendly in-app page (no navigation to Entra)
 
 #### Investigation: Verify Token Claims & User Profile Completeness
 - [ ] Confirm optional claims (`given_name`, `family_name`) are actually configured in Entra portal under App registrations > Token configuration (not just in the `configure-entra-apps.ps1` script)
@@ -167,12 +168,12 @@ Age check logic is the same on both platforms — show DOB input, calculate age,
 - [ ] Decide: should the profile page prompt users to fill in `GivenName`/`Surname` if missing? (Not blocking, but improves data quality and audit trail)
 - [ ] Decide: for existing users without `DateOfBirth`, grandfather as adults or prompt to add? (Current plan: grandfather as adults, since they registered before age gate existed)
 
-#### Layer 2: Custom Authentication Extension (Azure Function, server-side enforcement)
-- [ ] Build Custom Authentication Extension (Azure Function) for `OnAttributeCollectionSubmit`
-- [ ] Re-verify DOB submitted in Entra sign-up form (defense-in-depth — can't bypass by skipping in-app check)
-- [ ] Under-13 → return `showBlockPage` action
-- [ ] 13-17 → return `modifyAttributeValues` to set `isMinor` flag, continue with registration
-- [ ] 18+ → return `continueWithDefaultBehavior`
+#### Layer 2: Custom Authentication Extension (Azure Function, server-side enforcement) ✅ PR #2695
+- [x] Build Custom Authentication Extension (Azure Function) for `OnAttributeCollectionSubmit`
+- [x] Re-verify DOB submitted in Entra sign-up form (defense-in-depth — can't bypass by skipping in-app check)
+- [x] Under-13 → return `showBlockPage` action
+- [x] 13-17 → return `modifyAttributeValues` to set `isMinor` flag, continue with registration
+- [x] 18+ → return `continueWithDefaultBehavior`
 - [ ] Integrate with Privo API for age verification (13-17 triggers Privo flow)
 
 #### Post-Registration (13-17 minor flow)
@@ -187,7 +188,8 @@ Age check logic is the same on both platforms — show DOB input, calculate age,
 - [ ] Document Custom Authentication Extension + Privo integration (sponsorship deliverable)
 
 ### Phase 4 — User Migration + Testing
-- [ ] Run MS migration tool to export B2C users → import to Entra External ID
+- [x] Build B2C → Entra user migration script for dev (PR #2690)
+- [ ] Run MS migration tool to export B2C users → import to Entra External ID (production)
 - [ ] Configure JIT (Just-In-Time) password migration for first-login
 - [ ] Run both systems in parallel (coexistence period)
 - [ ] Smoke test with real accounts on dev
@@ -199,13 +201,16 @@ Age check logic is the same on both platforms — show DOB input, calculate age,
 - [ ] Register production app registrations
 - [ ] Run production user migration
 - [ ] Update production MSAL config + backend JWT validation
-- [ ] Switch all web traffic to new system
+- [x] Switch default auth from B2C to Entra External ID (PR #2692)
+- [x] Fix env var config override for deployed dev environment (PR #2688)
+- [ ] Switch all web traffic to new system (production)
 - [ ] Monitor for auth failures, have hot rollback to B2C
 - [ ] 24/7 monitoring during migration window
 
-### Phase 6 — Mobile App Update
-- [ ] Update MAUI MSAL config (AuthConstants.cs) for new tenant
-- [ ] Test sign-in/sign-up on iOS and Android
+### Phase 6 — Mobile App Update (Partial)
+- [x] Update MAUI MSAL config (AuthConstants.cs) for new Entra tenant (PR #2694)
+- [x] Switch mobile from B2C to Entra External ID (PR #2694)
+- [ ] Test sign-in/sign-up on iOS and Android (physical devices)
 - [ ] Push app update to stores
 - [ ] Force update flow for users on old version
 - [ ] Monitor crash-free rate
@@ -528,7 +533,7 @@ For each provider (Google, Microsoft, Apple, Facebook):
 
 ---
 
-**Last Updated:** February 11, 2026
+**Last Updated:** February 15, 2026
 **Owner:** Security Engineer + Product Lead
-**Status:** In Progress (Phase 2 Complete, auto-create user fix merged PR #2683 — Phase 3 next: Privo age verification)
-**Next Review:** After Phase 3 planning with Privo
+**Status:** In Progress (Phases 0-2 Complete; Phase 3 age gate Layers 1+2 implemented (PRs #2693, #2694, #2695); Phase 4 migration script for dev done (PR #2690); Phase 5-6 default auth switched + mobile Entra switch (PRs #2692, #2694); Privo API integration and production cutover remaining)
+**Next Review:** After Privo API integration planning
