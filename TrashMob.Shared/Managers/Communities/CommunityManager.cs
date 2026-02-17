@@ -115,14 +115,14 @@ namespace TrashMob.Shared.Managers.Communities
         }
 
         /// <summary>
-        /// Determines whether a community uses bounding-box filtering instead of exact city/region match.
-        /// County, state, and regional communities with defined bounds use bounding-box filtering.
+        /// Determines whether a community uses bounding-box filtering.
+        /// Any community with all four bounds defined uses bounding-box filtering,
+        /// including City communities. Falls back to city/region string matching only
+        /// when bounds are not configured.
         /// </summary>
         private static bool UsesBoundingBoxFilter(Partner community)
         {
-            return community.RegionType.HasValue
-                && community.RegionType.Value != (int)RegionTypeEnum.City
-                && community.BoundsNorth.HasValue && community.BoundsSouth.HasValue
+            return community.BoundsNorth.HasValue && community.BoundsSouth.HasValue
                 && community.BoundsEast.HasValue && community.BoundsWest.HasValue;
         }
 

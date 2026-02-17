@@ -12,6 +12,7 @@ namespace TrashMob.Controllers
     using TrashMob.Models.Poco;
     using TrashMob.Security;
     using TrashMob.Shared;
+    using TrashMob.Shared.Managers.Areas;
     using TrashMob.Shared.Managers.Interfaces;
     using TrashMob.Shared.Poco;
 
@@ -23,7 +24,8 @@ namespace TrashMob.Controllers
     public class CommunitiesController(
         ICommunityManager communityManager,
         IPartnerPhotoManager partnerPhotoManager,
-        IImageManager imageManager) : SecureController
+        IImageManager imageManager,
+        INominatimService nominatimService) : SecureController
     {
         /// <summary>
         /// Gets all communities with enabled home pages.
@@ -306,6 +308,85 @@ namespace TrashMob.Controllers
             TrackEvent(nameof(UpdateCommunityContent));
 
             return Ok(updated);
+        }
+
+        /// <summary>
+        /// Suggests geographic bounds for a community based on its location fields.
+        /// Queries the Nominatim geocoding service to derive a bounding box.
+        /// </summary>
+        /// <param name="communityId">The community/partner ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpGet("admin/{communityId:guid}/suggest-bounds")]
+        [Authorize]
+        [ProducesResponseType(typeof(SuggestedBounds), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> SuggestBounds(
+            Guid communityId,
+            CancellationToken cancellationToken)
+        {
+            var community = await communityManager.GetByIdAsync(communityId, cancellationToken);
+            if (community is null)
+            {
+                return NotFound();
+            }
+
+            if (!await IsAuthorizedAsync(community, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
+            {
+                return Forbid();
+            }
+
+            // Build query from community location fields
+            var queryParts = new List<string>();
+
+            if (community.RegionType.HasValue
+                && community.RegionType.Value == (int)RegionTypeEnum.County
+                && !string.IsNullOrWhiteSpace(community.CountyName))
+            {
+                queryParts.Add(community.CountyName);
+            }
+            else if (!string.IsNullOrWhiteSpace(community.City))
+            {
+                queryParts.Add(community.City);
+            }
+
+            if (!string.IsNullOrWhiteSpace(community.Region))
+            {
+                queryParts.Add(community.Region);
+            }
+
+            if (!string.IsNullOrWhiteSpace(community.Country))
+            {
+                queryParts.Add(community.Country);
+            }
+
+            if (queryParts.Count == 0)
+            {
+                return BadRequest("Community has no location information (city, region, or country) to look up bounds.");
+            }
+
+            var query = string.Join(", ", queryParts);
+            var bounds = await nominatimService.LookupBoundsAsync(query, cancellationToken);
+
+            if (bounds is null)
+            {
+                return BadRequest($"Could not find geographic bounds for \"{query}\". Try adjusting the community's location fields.");
+            }
+
+            var result = new SuggestedBounds
+            {
+                North = bounds.Value.North,
+                South = bounds.Value.South,
+                East = bounds.Value.East,
+                West = bounds.Value.West,
+                CenterLatitude = (bounds.Value.North + bounds.Value.South) / 2.0,
+                CenterLongitude = (bounds.Value.East + bounds.Value.West) / 2.0,
+                Query = query,
+            };
+
+            TrackEvent(nameof(SuggestBounds));
+            return Ok(result);
         }
 
         // ============================================================================
