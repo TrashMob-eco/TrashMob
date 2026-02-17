@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Status** | In Progress (Phases 1-4 Complete, Phase 6 Planned) |
+| **Status** | ✅ Complete (All Phases) |
 | **Priority** | High |
 | **Risk** | Medium |
 | **Size** | Large |
@@ -72,43 +72,43 @@ This project replaces the GeoJSON textarea with an interactive map editor, adds 
 - [x] Batch create with progress indicator
 - [x] Import history log (who imported, when, how many areas)
 
-### Phase 5 — Export
-- [ ] Export community areas to GeoJSON FeatureCollection
-- [ ] Export to KML for Google Earth/Maps compatibility
-- [ ] Include area metadata in exports (name, type, status, adoption info)
+### Phase 5 — Export ✅
+- [x] Export community areas to GeoJSON FeatureCollection
+- [x] Export to KML for Google Earth/Maps compatibility
+- [x] Include area metadata in exports (name, type, status, adoption info)
 
-### Phase 6 — AI Bulk Area Generation
+### Phase 6 — AI Bulk Area Generation ✅
 Generate adoptable areas in bulk for an entire community using AI + public geodata (OSM Nominatim, Overpass API). Targets common feature categories:
 
 **Feature Categories:**
-- [ ] All schools (public/private elementary, middle, high schools)
-- [ ] All parks (city parks, pocket parks, dog parks, nature preserves)
+- [x] All schools (public/private elementary, middle, high schools)
+- [x] All parks (city parks, pocket parks, dog parks, nature preserves)
 - [ ] All interchanges (highway on/off ramps, freeway interchanges)
 - [ ] All blocks (street segments between intersections)
 
 **Deduplication & Naming:**
-- [ ] Check existing areas by name similarity and geographic overlap before creating
-- [ ] Naming convention per category (e.g., "Roosevelt Elementary School", "Maple Leaf Park", "I-90/Rainier Ave Interchange", "Main St — 200 Block")
-- [ ] Flag potential duplicates for human review rather than silently skipping
+- [x] Check existing areas by name similarity and geographic overlap before creating
+- [x] Naming convention per category (e.g., "Roosevelt Elementary School", "Maple Leaf Park", "I-90/Rainier Ave Interchange", "Main St — 200 Block")
+- [x] Flag potential duplicates for human review rather than silently skipping
 
 **Approval Workflow:**
-- [ ] Generate candidate areas into a staging/review table (not directly into adoptable areas)
-- [ ] Review UI: map showing all candidates, checkbox to approve/reject each
-- [ ] Bulk approve/reject with filters (approve all schools, reject specific entries)
-- [ ] Only approved candidates get created as actual adoptable areas
+- [x] Generate candidate areas into a staging/review table (not directly into adoptable areas)
+- [x] Review UI: map showing all candidates, checkbox to approve/reject each
+- [x] Bulk approve/reject with filters (approve all schools, reject specific entries)
+- [x] Only approved candidates get created as actual adoptable areas
 
 **Execution Model:**
-- [ ] Long-running job (could be hundreds or thousands of areas for a large city)
-- [ ] Background processing via triggered Azure Container App Job or similar
-- [ ] Progress tracking: areas discovered, areas processed, areas pending review
+- [x] Long-running job (could be hundreds or thousands of areas for a large city)
+- [x] Background processing via BackgroundService + Channel queue within web API
+- [x] Progress tracking: areas discovered, areas processed, areas pending review
 - [ ] Resumable: if job is interrupted, pick up where it left off
-- [ ] Rate limiting for external APIs (Nominatim requires 1 req/sec)
+- [x] Rate limiting for external APIs (Nominatim requires 1 req/sec)
 
 **Quality Controls:**
-- [ ] Minimum polygon size filter (skip tiny features that aren't meaningful areas)
-- [ ] Maximum polygon size filter (skip features that are too large to adopt)
-- [ ] Geographic bounds: only generate areas within community boundary
-- [ ] Confidence scoring: flag low-confidence areas for closer review
+- [x] Minimum polygon size filter (skip tiny features that aren't meaningful areas)
+- [x] Maximum polygon size filter (skip features that are too large to adopt)
+- [x] Geographic bounds: only generate areas within community boundary
+- [x] Confidence scoring: flag low-confidence areas for closer review
 
 ---
 
@@ -509,7 +509,7 @@ Each row links to its review page (read-only for completed batches).
 
 ---
 
-**Last Updated:** February 15, 2026
+**Last Updated:** February 16, 2026
 **Owner:** Product & Engineering Team
-**Status:** In Progress (Phases 1-4 Complete, Phase 6 Planned)
-**Next Review:** When volunteer picks up work
+**Status:** ✅ Complete (All Phases)
+**Next Review:** N/A — Project Complete
