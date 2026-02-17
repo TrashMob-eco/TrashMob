@@ -140,53 +140,6 @@ public partial class CreateEventViewModel : BaseViewModel
 
     private bool validating;
 
-    private TimeSpan startTime;
-    private TimeSpan endTime;
-
-    public TimeSpan StartTime
-    {
-        get => startTime;
-        set
-        {
-            if (startTime != value)
-            {
-                startTime = value;
-                UpdateDates(value, EndTime);
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(FormattedEventDuration));
-            }
-        }
-    }
-
-    public TimeSpan EndTime
-    {
-        get => endTime;
-        set
-        {
-            if (endTime != value)
-            {
-                endTime = value;
-                UpdateDates(StartTime, value);
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(FormattedEventDuration));
-            }
-        }
-    }
-
-    public string FormattedEventDuration
-    {
-        get
-        {
-            if (EventViewModel != null)
-            {
-                var duration = EndTime - StartTime;
-                return $"{duration.Hours} Hours and {duration.Minutes} Minutes";
-            }
-
-            return string.Empty;
-        }
-    }
-
     public CreateEventViewModel(IMobEventManager mobEventManager,
         IEventTypeRestService eventTypeRestService,
         IMapRestService mapRestService,
@@ -234,7 +187,7 @@ public partial class CreateEventViewModel : BaseViewModel
             IsBusy = false;
         });
 
-        CloseCommand = new Command(() => { Shell.Current.GoToAsync(".."); });
+        CloseCommand = new Command(async () => { await Navigation.PopAsync(); });
     }
 
     public string DefaultEventName { get; } = "New Event";
@@ -284,12 +237,14 @@ public partial class CreateEventViewModel : BaseViewModel
         EventDurationError = string.Empty;
         DescriptionRequiredError = string.Empty;
 
-        if ((EndTime - StartTime).TotalHours > 10)
+        var totalHours = EventViewModel.DurationHours + (EventViewModel.DurationMinutes / 60.0);
+
+        if (totalHours > 10)
         {
             EventDurationError = "Event maximum duration can only be 10 hours";
         }
 
-        if ((EndTime - StartTime).TotalHours < 1)
+        if (totalHours < 1)
         {
             EventDurationError = "Event minimum duration must be at least 1 hour";
         }
@@ -566,9 +521,7 @@ public partial class CreateEventViewModel : BaseViewModel
 
             await LoadPartners();
 
-            StartTime = TimeSpan.FromHours(9);
-
-            EndTime = TimeSpan.FromHours(11);
+            EventViewModel.EventTime = TimeSpan.FromHours(9);
 
             foreach (var eventType in EventTypes)
             {
@@ -583,17 +536,6 @@ public partial class CreateEventViewModel : BaseViewModel
             EventViewModel.PropertyChanged += ValidateCurrentStep;
             PropertyChanged += ValidateCurrentStep;
         }, "An error has occurred while loading the page. Please wait and try again in a moment.");
-    }
-
-    private void UpdateDates(TimeSpan eventStartTime, TimeSpan eventEndTime)
-    {
-        var durationHours = (eventEndTime - eventStartTime).Hours;
-        var durationMinutes = (eventEndTime - eventStartTime).Minutes % 60;
-
-        EventViewModel.DurationHours = durationHours;
-        EventViewModel.DurationMinutes = durationMinutes;
-        var eventDate = EventViewModel.EventDateOnly.Date.Add(eventStartTime);
-        EventViewModel.EventDate = eventDate;
     }
 
     [RelayCommand]

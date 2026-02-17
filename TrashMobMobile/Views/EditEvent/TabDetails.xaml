@@ -166,8 +166,23 @@
                                 </FormattedString>
                             </Label.FormattedText>
                         </Label>
-                        <controls:TMPicker Title="Event Type" ItemsSource="{Binding ETypes}"
-                                           SelectedItem="{Binding SelectedEventType, Mode=TwoWay}" />
+                        <Border Padding="12,10" Style="{StaticResource InputStyle}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SelectEventTypeCommand}" />
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="*, Auto">
+                                <Label Text="{Binding SelectedEventType, TargetNullValue='Select Event Type'}"
+                                       FontSize="14" VerticalOptions="Center" />
+                                <Image Grid.Column="1" MaximumWidthRequest="16" MaximumHeightRequest="16" VerticalOptions="Center">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                         Glyph="{StaticResource IconChevronDown}"
+                                                         Size="16"
+                                                         Color="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                    </Image.Source>
+                                </Image>
+                            </Grid>
+                        </Border>
                     </VerticalStackLayout>
 
                     <Grid ColumnDefinitions="*, *" ColumnSpacing="12" RowDefinitions="Auto" Margin="0">
@@ -178,9 +193,23 @@
 
                         <VerticalStackLayout Grid.Column="1" Spacing="4" Margin="0">
                             <Label Text="Visibility" Style="{StaticResource FieldLabel}" />
-                            <controls:TMPicker Title="Visibility"
-                                               ItemsSource="{Binding VisibilityOptions}"
-                                               SelectedItem="{Binding SelectedVisibility, Mode=TwoWay}" />
+                            <Border Padding="12,10" Style="{StaticResource InputStyle}">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding SelectVisibilityCommand}" />
+                                </Border.GestureRecognizers>
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <Label Text="{Binding SelectedVisibility}"
+                                           FontSize="14" VerticalOptions="Center" />
+                                    <Image Grid.Column="1" MaximumWidthRequest="16" MaximumHeightRequest="16" VerticalOptions="Center">
+                                        <Image.Source>
+                                            <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                             Glyph="{StaticResource IconChevronDown}"
+                                                             Size="16"
+                                                             Color="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                        </Image.Source>
+                                    </Image>
+                                </Grid>
+                            </Border>
                         </VerticalStackLayout>
                     </Grid>
                 </VerticalStackLayout>
@@ -208,9 +237,23 @@
                             </Label.FormattedText>
                         </Label>
                     </HorizontalStackLayout>
-                    <controls:TMPicker Title="Select Team"
-                                       ItemsSource="{Binding TeamNames}"
-                                       SelectedItem="{Binding SelectedTeam, Mode=TwoWay}" />
+                    <Border Padding="12,10" Style="{StaticResource InputStyle}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding SelectTeamCommand}" />
+                        </Border.GestureRecognizers>
+                        <Grid ColumnDefinitions="*, Auto">
+                            <Label Text="{Binding SelectedTeam, TargetNullValue='Select Team'}"
+                                   FontSize="14" VerticalOptions="Center" />
+                            <Image Grid.Column="1" MaximumWidthRequest="16" MaximumHeightRequest="16" VerticalOptions="Center">
+                                <Image.Source>
+                                    <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                     Glyph="{StaticResource IconChevronDown}"
+                                                     Size="16"
+                                                     Color="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                                </Image.Source>
+                            </Image>
+                        </Grid>
+                    </Border>
                 </VerticalStackLayout>
             </Border>
 
