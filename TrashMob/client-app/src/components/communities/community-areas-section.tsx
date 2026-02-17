@@ -1,10 +1,15 @@
 import { useState } from 'react';
-import { Calendar, ClipboardCheck, MapPin } from 'lucide-react';
+import { Calendar, ClipboardCheck, List, Map as MapIcon, MapPin } from 'lucide-react';
 import AdoptableAreaData from '@/components/Models/AdoptableAreaData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { GoogleMapWithKey } from '@/components/Map/GoogleMap';
+import { ExistingAreasOverlay } from '@/components/Map/AreaMapEditor/ExistingAreasOverlay';
+import { AreaStatusLegend } from '@/components/Map/AreaMapEditor/AreaStatusLegend';
 import { AdoptAreaDialog } from './adopt-area-dialog';
+
+const COMMUNITY_AREAS_MAP_ID = 'communityAreasMap';
 
 const statusVariant: Record<string, 'success' | 'default' | 'secondary'> = {
     Available: 'success',
@@ -20,6 +25,7 @@ interface CommunityAreasSectionProps {
 
 export const CommunityAreasSection = ({ areas, isLoading, communityId }: CommunityAreasSectionProps) => {
     const [selectedArea, setSelectedArea] = useState<AdoptableAreaData | null>(null);
+    const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
 
     if (isLoading) {
         return (
@@ -49,44 +55,80 @@ export const CommunityAreasSection = ({ areas, isLoading, communityId }: Communi
     return (
         <>
             <Card>
-                <CardHeader>
+                <CardHeader className='flex flex-row items-center justify-between'>
                     <CardTitle className='text-lg'>Adoptable Areas</CardTitle>
+                    <div className='flex border rounded-md'>
+                        <Button
+                            variant={viewMode === 'list' ? 'default' : 'ghost'}
+                            size='sm'
+                            className='rounded-r-none'
+                            onClick={() => setViewMode('list')}
+                        >
+                            <List className='h-4 w-4' />
+                        </Button>
+                        <Button
+                            variant={viewMode === 'map' ? 'default' : 'ghost'}
+                            size='sm'
+                            className='rounded-l-none'
+                            onClick={() => setViewMode('map')}
+                        >
+                            <MapIcon className='h-4 w-4' />
+                        </Button>
+                    </div>
                 </CardHeader>
                 <CardContent>
-                    <div className='space-y-4'>
-                        {areas.slice(0, 6).map((area) => (
-                            <div key={area.id} className='p-3 rounded-lg border space-y-2'>
-                                <div className='flex items-center justify-between gap-2'>
-                                    <div className='flex items-center gap-2 min-w-0'>
-                                        <h4 className='font-medium text-sm truncate'>{area.name}</h4>
-                                        <Badge variant='outline'>{area.areaType}</Badge>
-                                        <Badge variant={statusVariant[area.status] ?? 'secondary'}>{area.status}</Badge>
-                                    </div>
-                                    {canAdopt(area) ? (
-                                        <Button size='sm' variant='outline' onClick={() => setSelectedArea(area)}>
-                                            <MapPin className='h-3 w-3 mr-1' /> Adopt
-                                        </Button>
-                                    ) : null}
-                                </div>
-                                {area.description ? (
-                                    <p className='text-xs text-muted-foreground line-clamp-2'>{area.description}</p>
-                                ) : null}
-                                <div className='flex gap-4 text-xs text-muted-foreground'>
-                                    <div className='flex items-center gap-1'>
-                                        <Calendar className='h-3 w-3' />
-                                        <span>Every {area.cleanupFrequencyDays} days</span>
-                                    </div>
-                                    <div className='flex items-center gap-1'>
-                                        <ClipboardCheck className='h-3 w-3' />
-                                        <span>Min {area.minEventsPerYear} events/year</span>
-                                    </div>
-                                </div>
+                    {viewMode === 'map' ? (
+                        <div className='space-y-2'>
+                            <div className='rounded-md overflow-hidden border'>
+                                <GoogleMapWithKey
+                                    id={COMMUNITY_AREAS_MAP_ID}
+                                    style={{ width: '100%', height: '400px' }}
+                                >
+                                    <ExistingAreasOverlay mapId={COMMUNITY_AREAS_MAP_ID} areas={areas} fitBounds />
+                                </GoogleMapWithKey>
                             </div>
-                        ))}
-                        {areas.length > 6 ? (
-                            <p className='text-xs text-muted-foreground text-center'>+ {areas.length - 6} more areas</p>
-                        ) : null}
-                    </div>
+                            <AreaStatusLegend />
+                        </div>
+                    ) : (
+                        <div className='space-y-4'>
+                            {areas.slice(0, 6).map((area) => (
+                                <div key={area.id} className='p-3 rounded-lg border space-y-2'>
+                                    <div className='flex items-center justify-between gap-2'>
+                                        <div className='flex items-center gap-2 min-w-0'>
+                                            <h4 className='font-medium text-sm truncate'>{area.name}</h4>
+                                            <Badge variant='outline'>{area.areaType}</Badge>
+                                            <Badge variant={statusVariant[area.status] ?? 'secondary'}>
+                                                {area.status}
+                                            </Badge>
+                                        </div>
+                                        {canAdopt(area) ? (
+                                            <Button size='sm' variant='outline' onClick={() => setSelectedArea(area)}>
+                                                <MapPin className='h-3 w-3 mr-1' /> Adopt
+                                            </Button>
+                                        ) : null}
+                                    </div>
+                                    {area.description ? (
+                                        <p className='text-xs text-muted-foreground line-clamp-2'>{area.description}</p>
+                                    ) : null}
+                                    <div className='flex gap-4 text-xs text-muted-foreground'>
+                                        <div className='flex items-center gap-1'>
+                                            <Calendar className='h-3 w-3' />
+                                            <span>Every {area.cleanupFrequencyDays} days</span>
+                                        </div>
+                                        <div className='flex items-center gap-1'>
+                                            <ClipboardCheck className='h-3 w-3' />
+                                            <span>Min {area.minEventsPerYear} events/year</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                            {areas.length > 6 ? (
+                                <p className='text-xs text-muted-foreground text-center'>
+                                    + {areas.length - 6} more areas
+                                </p>
+                            ) : null}
+                        </div>
+                    )}
                 </CardContent>
             </Card>
 
