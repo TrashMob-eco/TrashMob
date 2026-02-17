@@ -5,7 +5,7 @@ import { AxiosResponse } from 'axios';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2 } from 'lucide-react';
+import { Loader2, MapPin } from 'lucide-react';
 
 import { Form, FormControl, FormField, FormItem, FormMessage, FormDescription } from '@/components/ui/form';
 import { EnhancedFormLabel as FormLabel } from '@/components/ui/custom/form';
@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import CommunityData from '@/components/Models/CommunityData';
-import { GetCommunityForAdmin, UpdateCommunityContent } from '@/services/communities';
+import { GetCommunityForAdmin, UpdateCommunityContent, SuggestCommunityBounds } from '@/services/communities';
 import { GetPartnerById } from '@/services/partners';
 import { RegionType } from '@/lib/community-utils';
 import { BoundsPreviewMap } from '@/components/communities/bounds-preview-map';
@@ -93,6 +93,34 @@ export const CommunityRegionalSettings = () => {
         },
     });
 
+    const { mutate: suggestBounds, isPending: isSuggestingBounds } = useMutation({
+        mutationFn: async () => {
+            const result = await SuggestCommunityBounds({ communityId: partnerId }).service();
+            return result.data;
+        },
+        onSuccess: (data) => {
+            form.setValue('boundsNorth', String(data.north), { shouldDirty: true });
+            form.setValue('boundsSouth', String(data.south), { shouldDirty: true });
+            form.setValue('boundsEast', String(data.east), { shouldDirty: true });
+            form.setValue('boundsWest', String(data.west), { shouldDirty: true });
+            form.setValue('latitude', String(data.centerLatitude), { shouldDirty: true });
+            form.setValue('longitude', String(data.centerLongitude), { shouldDirty: true });
+            toast({
+                variant: 'primary',
+                title: 'Bounds detected',
+                description: `Geographic bounds derived from "${data.query}". Review and save.`,
+            });
+        },
+        onError: (error: any) => {
+            const message = error?.response?.data || 'Could not detect bounds. Check the community location fields.';
+            toast({
+                variant: 'destructive',
+                title: 'Auto-detect failed',
+                description: String(message),
+            });
+        },
+    });
+
     const form = useForm<FormInputs>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -144,7 +172,6 @@ export const CommunityRegionalSettings = () => {
     );
 
     const watchedRegionType = form.watch('regionType');
-    const isNonCity = watchedRegionType !== String(RegionType.City);
     const isCounty = watchedRegionType === String(RegionType.County);
 
     const watchedNorth = form.watch('boundsNorth');
@@ -171,9 +198,8 @@ export const CommunityRegionalSettings = () => {
                         <CardHeader>
                             <CardTitle>Community Type</CardTitle>
                             <CardDescription>
-                                Define the geographic scope of your community. City communities match events by
-                                city/region. County, state, and other regional types use a bounding box to find events
-                                within their geographic area.
+                                Define the geographic scope of your community. All community types can use geographic
+                                bounds for event matching and area generation.
                             </CardDescription>
                         </CardHeader>
                         <CardContent className='space-y-4'>
@@ -198,8 +224,8 @@ export const CommunityRegionalSettings = () => {
                                             </SelectContent>
                                         </Select>
                                         <FormDescription>
-                                            City communities use exact city/region matching. All other types use
-                                            geographic bounds.
+                                            Defines the geographic scope. Use Auto-detect below to set bounds
+                                            automatically.
                                         </FormDescription>
                                         <FormMessage />
                                     </FormItem>
@@ -249,119 +275,131 @@ export const CommunityRegionalSettings = () => {
                     </Card>
 
                     {/* Center Point */}
-                    {isNonCity ? (
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Center Point</CardTitle>
-                                <CardDescription>
-                                    The center coordinates for the community map. This is used when no bounding box is
-                                    configured.
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                                    <FormField
-                                        control={form.control}
-                                        name='latitude'
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Latitude</FormLabel>
-                                                <FormControl>
-                                                    <Input {...field} placeholder='e.g., 47.6062' />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name='longitude'
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Longitude</FormLabel>
-                                                <FormControl>
-                                                    <Input {...field} placeholder='e.g., -122.3321' />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ) : null}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Center Point</CardTitle>
+                            <CardDescription>
+                                The center coordinates for the community map. This is used when no bounding box is
+                                configured.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                                <FormField
+                                    control={form.control}
+                                    name='latitude'
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Latitude</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} placeholder='e.g., 47.6062' />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name='longitude'
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Longitude</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} placeholder='e.g., -122.3321' />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+                        </CardContent>
+                    </Card>
 
                     {/* Geographic Bounds */}
-                    {isNonCity ? (
-                        <Card>
-                            <CardHeader>
+                    <Card>
+                        <CardHeader className='flex flex-row items-start justify-between'>
+                            <div>
                                 <CardTitle>Geographic Bounds</CardTitle>
                                 <CardDescription>
-                                    Define the bounding box for your community. Events, stats, and litter reports within
-                                    these bounds will appear on your community page.
+                                    Define the bounding box for your community. Use &ldquo;Auto-detect&rdquo; to derive
+                                    bounds from your community&rsquo;s location, then adjust as needed.
                                 </CardDescription>
-                            </CardHeader>
-                            <CardContent className='space-y-4'>
-                                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                                    <FormField
-                                        control={form.control}
-                                        name='boundsNorth'
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>North Latitude</FormLabel>
-                                                <FormControl>
-                                                    <Input {...field} placeholder='e.g., 47.78' />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name='boundsSouth'
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>South Latitude</FormLabel>
-                                                <FormControl>
-                                                    <Input {...field} placeholder='e.g., 47.34' />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name='boundsEast'
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>East Longitude</FormLabel>
-                                                <FormControl>
-                                                    <Input {...field} placeholder='e.g., -121.83' />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name='boundsWest'
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>West Longitude</FormLabel>
-                                                <FormControl>
-                                                    <Input {...field} placeholder='e.g., -122.54' />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ) : null}
+                            </div>
+                            <Button
+                                type='button'
+                                variant='outline'
+                                size='sm'
+                                disabled={isSuggestingBounds}
+                                onClick={() => suggestBounds()}
+                            >
+                                {isSuggestingBounds ? (
+                                    <Loader2 className='h-4 w-4 animate-spin mr-2' />
+                                ) : (
+                                    <MapPin className='h-4 w-4 mr-2' />
+                                )}
+                                Auto-detect
+                            </Button>
+                        </CardHeader>
+                        <CardContent className='space-y-4'>
+                            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                                <FormField
+                                    control={form.control}
+                                    name='boundsNorth'
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>North Latitude</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} placeholder='e.g., 47.78' />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name='boundsSouth'
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>South Latitude</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} placeholder='e.g., 47.34' />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name='boundsEast'
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>East Longitude</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} placeholder='e.g., -121.83' />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name='boundsWest'
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>West Longitude</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} placeholder='e.g., -122.54' />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+                        </CardContent>
+                    </Card>
 
                     {/* Map Preview */}
-                    {isNonCity && watchedLat && watchedLng ? (
+                    {watchedLat && watchedLng ? (
                         <BoundsPreviewMap
                             centerLat={Number(watchedLat) || 0}
                             centerLng={Number(watchedLng) || 0}

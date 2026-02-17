@@ -32,6 +32,16 @@ namespace TrashMob.Shared.Managers.Areas
             string category,
             (double North, double South, double East, double West) bounds,
             CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Looks up geographic bounding box for a location query using Nominatim search API.
+        /// </summary>
+        /// <param name="query">Location query string (e.g., "Issaquah, Washington, United States").</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Bounding box tuple (North, South, East, West) or null if not found.</returns>
+        Task<(double North, double South, double East, double West)?> LookupBoundsAsync(
+            string query,
+            CancellationToken cancellationToken = default);
     }
 
     public class NominatimResult

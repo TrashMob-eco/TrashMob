@@ -195,6 +195,31 @@ export const UpdateCommunityContent = () => ({
 });
 
 // ============================================================================
+// Community Bounds Auto-Detection
+// ============================================================================
+
+export interface SuggestedBoundsData {
+    north: number;
+    south: number;
+    east: number;
+    west: number;
+    centerLatitude: number;
+    centerLongitude: number;
+    query: string;
+}
+
+export type SuggestCommunityBounds_Params = { communityId: string };
+export type SuggestCommunityBounds_Response = SuggestedBoundsData;
+export const SuggestCommunityBounds = (params: SuggestCommunityBounds_Params) => ({
+    key: ['/communities/admin/', params.communityId, '/suggest-bounds'],
+    service: async () =>
+        ApiService('protected').fetchData<SuggestCommunityBounds_Response>({
+            url: `/communities/admin/${params.communityId}/suggest-bounds`,
+            method: 'get',
+        }),
+});
+
+// ============================================================================
 // Community Branding Image Uploads
 // ============================================================================
 

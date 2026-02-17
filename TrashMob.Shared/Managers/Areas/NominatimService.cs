@@ -260,6 +260,50 @@ namespace TrashMob.Shared.Managers.Areas
             return allResults;
         }
 
+        /// <inheritdoc />
+        public async Task<(double North, double South, double East, double West)?> LookupBoundsAsync(
+            string query,
+            CancellationToken cancellationToken = default)
+        {
+            var url = $"https://nominatim.openstreetmap.org/search?q={Uri.EscapeDataString(query)}&format=jsonv2&limit=1";
+
+            httpClient.DefaultRequestHeaders.UserAgent.Clear();
+            httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("TrashMob.eco/1.0");
+
+            logger.LogInformation("Nominatim bounds lookup: {Query}", query);
+
+            var response = await httpClient.GetAsync(url, cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                logger.LogWarning("Nominatim bounds lookup failed with status {StatusCode}", response.StatusCode);
+                return null;
+            }
+
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+            var results = JsonSerializer.Deserialize<List<NominatimApiResult>>(content, JsonOptions);
+
+            var bb = results is not null && results.Count > 0 ? results[0].Boundingbox : null;
+
+            if (bb is null || bb.Length < 4)
+            {
+                logger.LogInformation("Nominatim returned no bounding box for: {Query}", query);
+                return null;
+            }
+
+            // Nominatim boundingbox format: [south_lat, north_lat, west_lon, east_lon]
+            if (double.TryParse(bb[0], CultureInfo.InvariantCulture, out var south)
+                && double.TryParse(bb[1], CultureInfo.InvariantCulture, out var north)
+                && double.TryParse(bb[2], CultureInfo.InvariantCulture, out var west)
+                && double.TryParse(bb[3], CultureInfo.InvariantCulture, out var east))
+            {
+                return (north, south, east, west);
+            }
+
+            logger.LogWarning("Failed to parse Nominatim bounding box values for: {Query}", query);
+            return null;
+        }
+
         // Internal DTOs for Nominatim API response parsing
 
         private sealed class NominatimApiResult
@@ -268,6 +312,7 @@ namespace TrashMob.Shared.Managers.Areas
             public string? Category { get; set; }
             public string? Type { get; set; }
             public NominatimGeoJson? Geojson { get; set; }
+            public string[]? Boundingbox { get; set; }
         }
 
         private sealed class NominatimCategoryApiResult
