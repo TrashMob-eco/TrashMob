@@ -74,7 +74,7 @@ export const PartnerCommunityAreasGenerate = () => {
     // Start generation
     const { mutate: startGeneration, isPending: isStarting } = useMutation({
         mutationKey: StartAreaGeneration().key,
-        mutationFn: StartAreaGeneration().service,
+        mutationFn: (body: { category: string }) => StartAreaGeneration().service({ partnerId }, body),
         onSuccess: (res) => {
             setActiveBatchId(res.data.id);
             setIsRunning(true);
@@ -111,8 +111,8 @@ export const PartnerCommunityAreasGenerate = () => {
 
     const handleStart = useCallback(() => {
         if (!category) return;
-        startGeneration({ partnerId }, { category });
-    }, [category, partnerId, startGeneration]);
+        startGeneration({ category });
+    }, [category, startGeneration]);
 
     const handleCancel = useCallback(() => {
         if (!activeBatchId) return;

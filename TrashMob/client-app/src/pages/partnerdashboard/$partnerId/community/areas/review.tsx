@@ -90,7 +90,8 @@ export const PartnerCommunityAreasReview = () => {
     // Bulk approve
     const { mutate: bulkApprove, isPending: isBulkApproving } = useMutation({
         mutationKey: BulkApproveStagedAreas().key,
-        mutationFn: BulkApproveStagedAreas().service,
+        mutationFn: (body: { batchId: string; ids?: string[] }) =>
+            BulkApproveStagedAreas().service({ partnerId }, body),
         onSuccess: (res) => {
             refetchAreas();
             setSelectedIds(new Set());
@@ -101,7 +102,7 @@ export const PartnerCommunityAreasReview = () => {
     // Bulk reject
     const { mutate: bulkReject, isPending: isBulkRejecting } = useMutation({
         mutationKey: BulkRejectStagedAreas().key,
-        mutationFn: BulkRejectStagedAreas().service,
+        mutationFn: (body: { batchId: string; ids?: string[] }) => BulkRejectStagedAreas().service({ partnerId }, body),
         onSuccess: (res) => {
             refetchAreas();
             setSelectedIds(new Set());
@@ -112,7 +113,8 @@ export const PartnerCommunityAreasReview = () => {
     // Update name
     const { mutate: updateName } = useMutation({
         mutationKey: UpdateStagedAreaName().key,
-        mutationFn: UpdateStagedAreaName().service,
+        mutationFn: ({ id, name }: { id: string; name: string }) =>
+            UpdateStagedAreaName().service({ partnerId, id }, { name }),
         onSuccess: () => {
             setEditingId(null);
             refetchAreas();
@@ -122,7 +124,7 @@ export const PartnerCommunityAreasReview = () => {
     // Create approved areas
     const { mutate: createApproved, isPending: isCreating } = useMutation({
         mutationKey: CreateApprovedAreas().key,
-        mutationFn: CreateApprovedAreas().service,
+        mutationFn: (body: { batchId: string }) => CreateApprovedAreas().service({ partnerId }, body),
         onSuccess: (res) => {
             queryClient.invalidateQueries({ queryKey: GetAdoptableAreas({ partnerId }).key });
             toast({
@@ -161,13 +163,13 @@ export const PartnerCommunityAreasReview = () => {
 
     const handleBulkApprove = useCallback(() => {
         const ids = selectedIds.size > 0 ? Array.from(selectedIds) : undefined;
-        bulkApprove({ partnerId }, { batchId, ids });
-    }, [selectedIds, partnerId, batchId, bulkApprove]);
+        bulkApprove({ batchId, ids });
+    }, [selectedIds, batchId, bulkApprove]);
 
     const handleBulkReject = useCallback(() => {
         const ids = selectedIds.size > 0 ? Array.from(selectedIds) : undefined;
-        bulkReject({ partnerId }, { batchId, ids });
-    }, [selectedIds, partnerId, batchId, bulkReject]);
+        bulkReject({ batchId, ids });
+    }, [selectedIds, batchId, bulkReject]);
 
     const handleStartEdit = useCallback((area: StagedAdoptableAreaData) => {
         setEditingId(area.id);
@@ -176,9 +178,9 @@ export const PartnerCommunityAreasReview = () => {
 
     const handleSaveName = useCallback(
         (id: string) => {
-            updateName({ partnerId, id }, { name: editName });
+            updateName({ id, name: editName });
         },
-        [partnerId, editName, updateName],
+        [editName, updateName],
     );
 
     if (isLoading) {
@@ -249,7 +251,7 @@ export const PartnerCommunityAreasReview = () => {
                         {approvedAreas.length > 0 && (
                             <Button
                                 className='ml-auto'
-                                onClick={() => createApproved({ partnerId }, { batchId })}
+                                onClick={() => createApproved({ batchId })}
                                 disabled={isCreating}
                             >
                                 {isCreating ? (
