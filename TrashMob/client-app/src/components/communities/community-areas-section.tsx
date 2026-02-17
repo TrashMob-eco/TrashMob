@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { GoogleMapWithKey } from '@/components/Map/GoogleMap';
 import { ExistingAreasOverlay } from '@/components/Map/AreaMapEditor/ExistingAreasOverlay';
+import { CommunityBoundsOverlay } from '@/components/Map/CommunityBoundsOverlay';
 import { AreaStatusLegend } from '@/components/Map/AreaMapEditor/AreaStatusLegend';
 import { AdoptAreaDialog } from './adopt-area-dialog';
 
@@ -21,9 +22,15 @@ interface CommunityAreasSectionProps {
     areas: AdoptableAreaData[];
     isLoading?: boolean;
     communityId: string;
+    boundaryGeoJson?: string;
 }
 
-export const CommunityAreasSection = ({ areas, isLoading, communityId }: CommunityAreasSectionProps) => {
+export const CommunityAreasSection = ({
+    areas,
+    isLoading,
+    communityId,
+    boundaryGeoJson,
+}: CommunityAreasSectionProps) => {
     const [selectedArea, setSelectedArea] = useState<AdoptableAreaData | null>(null);
     const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
 
@@ -84,6 +91,12 @@ export const CommunityAreasSection = ({ areas, isLoading, communityId }: Communi
                                     id={COMMUNITY_AREAS_MAP_ID}
                                     style={{ width: '100%', height: '400px' }}
                                 >
+                                    {boundaryGeoJson ? (
+                                        <CommunityBoundsOverlay
+                                            mapId={COMMUNITY_AREAS_MAP_ID}
+                                            geoJson={boundaryGeoJson}
+                                        />
+                                    ) : null}
                                     <ExistingAreasOverlay mapId={COMMUNITY_AREAS_MAP_ID} areas={areas} fitBounds />
                                 </GoogleMapWithKey>
                             </div>

@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useMap } from '@vis.gl/react-google-maps';
 import { GoogleMapWithKey as GoogleMap } from '../Map/GoogleMap';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CommunityBoundsOverlay } from '@/components/Map/CommunityBoundsOverlay';
 
 interface BoundsPreviewMapProps {
     centerLat: number;
@@ -10,10 +11,13 @@ interface BoundsPreviewMapProps {
     boundsSouth?: number | null;
     boundsEast?: number | null;
     boundsWest?: number | null;
+    /** GeoJSON polygon of the actual geographic boundary. */
+    boundaryGeoJson?: string;
 }
 
 const MAP_ID = 'boundsPreviewMap';
 
+/** Fallback: draws a simple rectangle when no GeoJSON polygon is available. */
 const BoundsRectangle = ({
     boundsNorth,
     boundsSouth,
@@ -61,9 +65,10 @@ const BoundsRectangle = ({
 };
 
 export const BoundsPreviewMap = (props: BoundsPreviewMapProps) => {
-    const { centerLat, centerLng, boundsNorth, boundsSouth, boundsEast, boundsWest } = props;
+    const { centerLat, centerLng, boundsNorth, boundsSouth, boundsEast, boundsWest, boundaryGeoJson } = props;
 
     const hasBounds = boundsNorth != null && boundsSouth != null && boundsEast != null && boundsWest != null;
+    const hasGeoJson = !!boundaryGeoJson;
 
     return (
         <Card>
@@ -88,7 +93,9 @@ export const BoundsPreviewMap = (props: BoundsPreviewMapProps) => {
                               }
                             : { defaultZoom: 11 })}
                     >
-                        {hasBounds ? (
+                        {hasGeoJson ? (
+                            <CommunityBoundsOverlay mapId={MAP_ID} geoJson={boundaryGeoJson!} />
+                        ) : hasBounds ? (
                             <BoundsRectangle
                                 boundsNorth={boundsNorth!}
                                 boundsSouth={boundsSouth!}
@@ -98,9 +105,9 @@ export const BoundsPreviewMap = (props: BoundsPreviewMapProps) => {
                         ) : null}
                     </GoogleMap>
                 </div>
-                {!hasBounds ? (
+                {!hasBounds && !hasGeoJson ? (
                     <p className='text-sm text-muted-foreground mt-2'>
-                        Enter bounding box coordinates above to see a preview.
+                        Enter bounding box coordinates above or use Auto-detect to see a preview.
                     </p>
                 ) : null}
             </CardContent>

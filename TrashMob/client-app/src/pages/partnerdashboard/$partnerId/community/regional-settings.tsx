@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
@@ -59,6 +59,8 @@ export const CommunityRegionalSettings = () => {
     const { partnerId } = useParams<{ partnerId: string }>() as { partnerId: string };
     const { toast } = useToast();
 
+    const [boundaryGeoJson, setBoundaryGeoJson] = useState<string>('');
+
     const { data: currentValues, isLoading } = useQuery<AxiosResponse<CommunityData>, unknown, CommunityData>({
         queryKey: GetCommunityForAdmin({ communityId: partnerId }).key,
         queryFn: GetCommunityForAdmin({ communityId: partnerId }).service,
@@ -105,6 +107,9 @@ export const CommunityRegionalSettings = () => {
             form.setValue('boundsWest', String(data.west), { shouldDirty: true });
             form.setValue('latitude', String(data.centerLatitude), { shouldDirty: true });
             form.setValue('longitude', String(data.centerLongitude), { shouldDirty: true });
+            if (data.boundaryGeoJson) {
+                setBoundaryGeoJson(data.boundaryGeoJson);
+            }
             toast({
                 variant: 'primary',
                 title: 'Bounds detected',
@@ -147,6 +152,7 @@ export const CommunityRegionalSettings = () => {
                 boundsEast: toStr(currentValues.boundsEast),
                 boundsWest: toStr(currentValues.boundsWest),
             });
+            setBoundaryGeoJson(currentValues.boundaryGeoJson || '');
         }
     }, [currentValues, form]);
 
@@ -164,11 +170,12 @@ export const CommunityRegionalSettings = () => {
                 boundsSouth: toNumOrNull(formValues.boundsSouth),
                 boundsEast: toNumOrNull(formValues.boundsEast),
                 boundsWest: toNumOrNull(formValues.boundsWest),
+                boundaryGeoJson: boundaryGeoJson,
             };
 
             mutate(body);
         },
-        [currentValues, mutate],
+        [currentValues, mutate, boundaryGeoJson],
     );
 
     const watchedRegionType = form.watch('regionType');
@@ -407,6 +414,7 @@ export const CommunityRegionalSettings = () => {
                             boundsSouth={toNumOrNull(watchedSouth)}
                             boundsEast={toNumOrNull(watchedEast)}
                             boundsWest={toNumOrNull(watchedWest)}
+                            boundaryGeoJson={boundaryGeoJson}
                         />
                     ) : null}
 

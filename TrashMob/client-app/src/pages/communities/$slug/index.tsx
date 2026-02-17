@@ -236,6 +236,7 @@ export const CommunityDetailPage = () => {
                                 boundsSouth={community.boundsSouth}
                                 boundsEast={community.boundsEast}
                                 boundsWest={community.boundsWest}
+                                boundaryGeoJson={community.boundaryGeoJson}
                             />
                         ) : null}
 
@@ -246,7 +247,12 @@ export const CommunityDetailPage = () => {
                         <CommunityTeamsSection teams={teams} isLoading={teamsLoading} />
 
                         {/* Adoptable Areas Section */}
-                        <CommunityAreasSection areas={areas} isLoading={areasLoading} communityId={community.id} />
+                        <CommunityAreasSection
+                            areas={areas}
+                            isLoading={areasLoading}
+                            communityId={community.id}
+                            boundaryGeoJson={community.boundaryGeoJson}
+                        />
 
                         {/* Photo Gallery Section */}
                         <CommunityPhotoGallery

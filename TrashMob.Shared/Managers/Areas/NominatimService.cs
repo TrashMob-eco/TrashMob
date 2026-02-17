@@ -304,6 +304,86 @@ namespace TrashMob.Shared.Managers.Areas
             return null;
         }
 
+        /// <inheritdoc />
+        public async Task<BoundsWithGeometry?> LookupBoundsWithGeometryAsync(
+            string query,
+            CancellationToken cancellationToken = default)
+        {
+            // Single call with polygon_geojson=1 to get both bounds and geometry
+            var url = $"https://nominatim.openstreetmap.org/search?q={Uri.EscapeDataString(query)}&format=jsonv2&polygon_geojson=1&limit=1";
+
+            httpClient.DefaultRequestHeaders.UserAgent.Clear();
+            httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("TrashMob.eco/1.0");
+
+            logger.LogInformation("Nominatim bounds+geometry lookup: {Query}", query);
+
+            var response = await httpClient.GetAsync(url, cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                logger.LogWarning("Nominatim bounds+geometry lookup failed with status {StatusCode}", response.StatusCode);
+                return null;
+            }
+
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+            var results = JsonSerializer.Deserialize<List<NominatimApiResult>>(content, JsonOptions);
+
+            if (results is null || results.Count == 0)
+            {
+                logger.LogInformation("Nominatim returned no results for: {Query}", query);
+                return null;
+            }
+
+            var top = results[0];
+
+            // Parse bounding box
+            var bb = top.Boundingbox;
+            if (bb is null || bb.Length < 4)
+            {
+                logger.LogInformation("Nominatim returned no bounding box for: {Query}", query);
+                return null;
+            }
+
+            if (!double.TryParse(bb[0], CultureInfo.InvariantCulture, out var south)
+                || !double.TryParse(bb[1], CultureInfo.InvariantCulture, out var north)
+                || !double.TryParse(bb[2], CultureInfo.InvariantCulture, out var west)
+                || !double.TryParse(bb[3], CultureInfo.InvariantCulture, out var east))
+            {
+                logger.LogWarning("Failed to parse Nominatim bounding box values for: {Query}", query);
+                return null;
+            }
+
+            // Extract GeoJSON polygon if available
+            string? geoJson = null;
+            if (top.Geojson is not null)
+            {
+                var geoType = top.Geojson.Type;
+
+                if (string.Equals(geoType, "MultiPolygon", StringComparison.OrdinalIgnoreCase))
+                {
+                    var converted = ConvertMultiPolygonToPolygon(top.Geojson);
+                    if (converted is not null)
+                    {
+                        geoJson = JsonSerializer.Serialize(converted, JsonOptions);
+                    }
+                }
+                else if (string.Equals(geoType, "Polygon", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(geoType, "LineString", StringComparison.OrdinalIgnoreCase))
+                {
+                    geoJson = JsonSerializer.Serialize(top.Geojson, JsonOptions);
+                }
+            }
+
+            return new BoundsWithGeometry
+            {
+                North = north,
+                South = south,
+                East = east,
+                West = west,
+                GeoJson = geoJson,
+            };
+        }
+
         // Internal DTOs for Nominatim API response parsing
 
         private sealed class NominatimApiResult

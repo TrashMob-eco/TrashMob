@@ -3,6 +3,7 @@ import { AdvancedMarker, InfoWindow, MapProps } from '@vis.gl/react-google-maps'
 import { GoogleMapWithKey as GoogleMap } from '../Map/GoogleMap';
 import { EventDetailInfoWindowHeader, EventDetailInfoWindowContent } from '../Map/EventInfoWindowContent';
 import { ExistingAreasOverlay } from '../Map/AreaMapEditor/ExistingAreasOverlay';
+import { CommunityBoundsOverlay } from '../Map/CommunityBoundsOverlay';
 import EventData from '../Models/EventData';
 import TeamData from '../Models/TeamData';
 import LitterReportData from '../Models/LitterReportData';
@@ -56,6 +57,7 @@ interface CommunityDetailMapProps extends MapProps {
     boundsSouth?: number | null;
     boundsEast?: number | null;
     boundsWest?: number | null;
+    boundaryGeoJson?: string;
 }
 
 export const CommunityDetailMap = (props: CommunityDetailMapProps) => {
@@ -71,6 +73,7 @@ export const CommunityDetailMap = (props: CommunityDetailMapProps) => {
         boundsSouth,
         boundsEast,
         boundsWest,
+        boundaryGeoJson,
         gestureHandling,
         ...rest
     } = props;
@@ -212,6 +215,9 @@ export const CommunityDetailMap = (props: CommunityDetailMapProps) => {
                             : { defaultZoom: 11 })}
                         {...rest}
                     >
+                        {/* Community Boundary */}
+                        {boundaryGeoJson ? <CommunityBoundsOverlay mapId={mapId} geoJson={boundaryGeoJson} /> : null}
+
                         {/* Event Markers */}
                         {showEvents
                             ? eventsWithLocation.map((event) => (
