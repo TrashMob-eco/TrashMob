@@ -94,6 +94,21 @@ export const DeleteAdoptableArea = () => ({
 });
 
 // ============================================================================
+// Export
+// ============================================================================
+
+export type ExportAreas_Params = { partnerId: string; format: 'geojson' | 'kml' };
+export const ExportAreas = (params: ExportAreas_Params) => ({
+    key: ['/communities/', params.partnerId, '/areas/export', params.format],
+    service: async () =>
+        ApiService('protected').fetchData<Blob>({
+            url: `/communities/${params.partnerId}/areas/export?format=${params.format}`,
+            method: 'get',
+            responseType: 'blob',
+        }),
+});
+
+// ============================================================================
 // AI Area Suggestion
 // ============================================================================
 

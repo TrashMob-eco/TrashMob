@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
-import { Loader2, Plus, Pencil, Trash2, MapPin, Upload, List, Map as MapIcon, Sparkles } from 'lucide-react';
+import { Loader2, Plus, Pencil, Trash2, MapPin, Upload, Download, List, Map as MapIcon, Sparkles } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -19,9 +19,15 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 import AdoptableAreaData, { AdoptableAreaStatus } from '@/components/Models/AdoptableAreaData';
-import { GetAdoptableAreas, DeleteAdoptableArea } from '@/services/adoptable-areas';
+import { GetAdoptableAreas, DeleteAdoptableArea, ExportAreas } from '@/services/adoptable-areas';
 import { GoogleMapWithKey } from '@/components/Map/GoogleMap';
 import { ExistingAreasOverlay } from '@/components/Map/AreaMapEditor/ExistingAreasOverlay';
 import { AreaStatusLegend } from '@/components/Map/AreaMapEditor/AreaStatusLegend';
@@ -76,6 +82,28 @@ export const PartnerCommunityAreas = () => {
             deleteArea({ partnerId, areaId });
         },
         [partnerId, deleteArea],
+    );
+
+    const handleExport = useCallback(
+        async (format: 'geojson' | 'kml') => {
+            if (!partnerId) return;
+            try {
+                const response = await ExportAreas({ partnerId, format }).service();
+                const blob = response.data;
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `Areas_${new Date().toISOString().split('T')[0]}.${format}`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+                toast({ variant: 'primary', title: 'Export successful' });
+            } catch {
+                toast({ variant: 'destructive', title: 'Export failed', description: 'Please try again.' });
+            }
+        },
+        [partnerId, toast],
     );
 
     if (isLoading) {
@@ -136,6 +164,24 @@ export const PartnerCommunityAreas = () => {
                             <Upload className='h-4 w-4 mr-2' />
                             Import
                         </Button>
+                        {hasAreas ? (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant='outline'>
+                                        <Download className='h-4 w-4 mr-2' />
+                                        Export
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                    <DropdownMenuItem onClick={() => handleExport('geojson')}>
+                                        Export as GeoJSON
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => handleExport('kml')}>
+                                        Export as KML
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        ) : null}
                         <Button onClick={() => navigate(`/partnerdashboard/${partnerId}/community/areas/create`)}>
                             <Plus className='h-4 w-4 mr-2' />
                             Add Area
