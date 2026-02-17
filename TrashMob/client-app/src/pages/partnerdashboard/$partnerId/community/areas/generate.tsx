@@ -2,19 +2,23 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
-import { Loader2, Sparkles, ArrowLeft, X, Clock, CheckCircle2, AlertCircle, XCircle } from 'lucide-react';
+import { Loader2, Sparkles, ArrowLeft, X, Clock, CheckCircle2, AlertCircle, XCircle, MapPin } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
 import AreaGenerationBatchData, { BatchStatus } from '@/components/Models/AreaGenerationBatchData';
+import CommunityData from '@/components/Models/CommunityData';
+import { GetCommunityForAdmin } from '@/services/communities';
 import {
     StartAreaGeneration,
     GetGenerationStatus,
+    GetGenerationBatch,
     GetGenerationBatches,
     CancelGeneration,
 } from '@/services/adoptable-areas';
@@ -53,14 +57,40 @@ export const PartnerCommunityAreasGenerate = () => {
     const [isRunning, setIsRunning] = useState(false);
     const [activeBatchId, setActiveBatchId] = useState<string | null>(null);
 
+    // Fetch community data to check bounds
+    const { data: community } = useQuery<AxiosResponse<CommunityData>, unknown, CommunityData>({
+        queryKey: GetCommunityForAdmin({ communityId: partnerId }).key,
+        queryFn: GetCommunityForAdmin({ communityId: partnerId }).service,
+        select: (res) => res.data,
+        enabled: !!partnerId,
+    });
+
+    const hasBounds =
+        community?.boundsNorth != null &&
+        community?.boundsSouth != null &&
+        community?.boundsEast != null &&
+        community?.boundsWest != null;
+
     // Poll for active batch status
-    const { data: activeStatus } = useQuery<AxiosResponse<AreaGenerationBatchData>, unknown, AreaGenerationBatchData>({
+    const { data: activeStatus, error: statusError } = useQuery<
+        AxiosResponse<AreaGenerationBatchData>,
+        unknown,
+        AreaGenerationBatchData
+    >({
         queryKey: GetGenerationStatus({ partnerId }).key,
         queryFn: GetGenerationStatus({ partnerId }).service,
         select: (res) => res.data,
         enabled: !!partnerId && isRunning,
         refetchInterval: isRunning ? 3000 : false,
         retry: false,
+    });
+
+    // When status returns 404 (batch already finished), fetch the specific batch to get final status
+    const { data: finishedBatch } = useQuery<AxiosResponse<AreaGenerationBatchData>, unknown, AreaGenerationBatchData>({
+        queryKey: GetGenerationBatch({ partnerId, batchId: activeBatchId ?? '' }).key,
+        queryFn: GetGenerationBatch({ partnerId, batchId: activeBatchId ?? '' }).service,
+        select: (res) => res.data,
+        enabled: !!activeBatchId && isRunning && !!statusError,
     });
 
     // Fetch batch history
@@ -103,11 +133,19 @@ export const PartnerCommunityAreasGenerate = () => {
 
     // Monitor active status for completion
     useEffect(() => {
-        if (activeStatus && ['Complete', 'Failed', 'Cancelled'].includes(activeStatus.status)) {
+        const status = activeStatus ?? finishedBatch;
+        if (status && ['Complete', 'Failed', 'Cancelled'].includes(status.status)) {
             setIsRunning(false);
             queryClient.invalidateQueries({ queryKey: GetGenerationBatches({ partnerId }).key });
+            if (status.status === 'Failed') {
+                toast({
+                    variant: 'destructive',
+                    title: 'Generation failed',
+                    description: status.errorMessage || 'An unexpected error occurred.',
+                });
+            }
         }
-    }, [activeStatus, partnerId, queryClient]);
+    }, [activeStatus, finishedBatch, partnerId, queryClient, toast]);
 
     const handleStart = useCallback(() => {
         if (!category) return;
@@ -227,10 +265,27 @@ export const PartnerCommunityAreasGenerate = () => {
                     ) : (
                         // Configuration view
                         <div className='space-y-4'>
+                            {!hasBounds && (
+                                <Alert>
+                                    <MapPin className='h-4 w-4' />
+                                    <AlertDescription>
+                                        Community geographic bounds must be configured before generating areas.{' '}
+                                        <Button
+                                            variant='link'
+                                            className='h-auto p-0'
+                                            onClick={() =>
+                                                navigate(`/partnerdashboard/${partnerId}/community/regional-settings`)
+                                            }
+                                        >
+                                            Set bounds in Regional Settings
+                                        </Button>
+                                    </AlertDescription>
+                                </Alert>
+                            )}
                             <div className='flex items-end gap-4'>
                                 <div className='flex-1'>
                                     <label className='text-sm font-medium mb-2 block'>Category</label>
-                                    <Select value={category} onValueChange={setCategory}>
+                                    <Select value={category} onValueChange={setCategory} disabled={!hasBounds}>
                                         <SelectTrigger>
                                             <SelectValue placeholder='Select a category...' />
                                         </SelectTrigger>
@@ -243,7 +298,7 @@ export const PartnerCommunityAreasGenerate = () => {
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                <Button onClick={handleStart} disabled={!category || isStarting}>
+                                <Button onClick={handleStart} disabled={!category || isStarting || !hasBounds}>
                                     {isStarting ? (
                                         <Loader2 className='h-4 w-4 mr-2 animate-spin' />
                                     ) : (
