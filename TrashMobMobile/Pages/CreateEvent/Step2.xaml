@@ -8,59 +8,107 @@
                            x:DataType="viewModels:CreateEventViewModel"
                            xmlns:controls="clr-namespace:TrashMobMobile.Controls"
                            x:Class="TrashMobMobile.Pages.CreateEvent.Step2">
-    <VerticalStackLayout Margin="0,10">
-        <Label
-                Margin="5"
-                FontSize="Micro"
-                HorizontalOptions="Center"
-                HorizontalTextAlignment="Center"
-                Text="Click on the map to set the event location."
-                VerticalOptions="Center" />
-        <controls:CustomMap x:Name="eventLocationMap"
-                      ItemsSource="{Binding Events}"
-                      MapClicked="OnMapClicked">
-            <maps:Map.ItemTemplate>
-                <DataTemplate x:DataType="viewModels:EventViewModel">
-                    <controls:CustomPin Address="{Binding Address.StreetAddress}"
-                                  Label="{Binding Name}"
-                                  ImageSource="{Binding Address.IconFile}"
-                                  Location="{Binding Address.Location}" />
-                </DataTemplate>
-            </maps:Map.ItemTemplate>
-        </controls:CustomMap>
-        <Grid ColumnDefinitions="*, *"
-                  RowDefinitions="Auto, Auto, Auto">
-            <VerticalStackLayout Grid.Row="0" Grid.ColumnSpan="2">
-                <Label Text="Address" Style="{StaticResource FieldLabel}" />
-                
-                    <Label FontSize="Micro"
-                               Text="{Binding EventViewModel.Address.StreetAddress}" />
+    <ScrollView>
+        <VerticalStackLayout Spacing="0" Padding="0,4">
 
-            </VerticalStackLayout>
-            <VerticalStackLayout Grid.Row="1" Grid.Column="0">
-                <Label Text="City" Style="{StaticResource FieldLabel}" />
-                
-                    <Label FontSize="Micro"
-                               Text="{Binding EventViewModel.Address.City}" />
+            <!-- Instruction -->
+            <Border Style="{StaticResource RoundBorder}" Margin="4,4"
+                    BackgroundColor="{AppThemeBinding Light=#EEF7F5, Dark=#1A2F2C}">
+                <HorizontalStackLayout Spacing="10">
+                    <Image MaximumWidthRequest="20" MaximumHeightRequest="20" VerticalOptions="Center">
+                        <Image.Source>
+                            <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                             Glyph="{StaticResource IconInformationOutline}"
+                                             Size="20"
+                                             Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                        </Image.Source>
+                    </Image>
+                    <Label Text="Tap on the map to set the event location."
+                           FontSize="Small"
+                           VerticalOptions="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                </HorizontalStackLayout>
+            </Border>
 
-            </VerticalStackLayout>
-            <VerticalStackLayout Grid.Row="1" Grid.Column="1">
-                <Label Text="State/Region" Style="{StaticResource FieldLabel}" />
-                
-                    <Label FontSize="Micro"
-                               Text="{Binding EventViewModel.Address.Region}" />
+            <!-- Map -->
+            <Border StrokeShape="RoundRectangle 10"
+                    StrokeThickness="0"
+                    Padding="0"
+                    Margin="4,4">
+                <controls:CustomMap x:Name="eventLocationMap"
+                                    ItemsSource="{Binding Events}"
+                                    HeightRequest="320"
+                                    MapClicked="OnMapClicked">
+                    <maps:Map.ItemTemplate>
+                        <DataTemplate x:DataType="viewModels:EventViewModel">
+                            <controls:CustomPin Address="{Binding Address.StreetAddress}"
+                                                Label="{Binding Name}"
+                                                ImageSource="{Binding Address.IconFile}"
+                                                Location="{Binding Address.Location}" />
+                        </DataTemplate>
+                    </maps:Map.ItemTemplate>
+                </controls:CustomMap>
+            </Border>
 
-            </VerticalStackLayout>
-            <VerticalStackLayout Grid.Row="2" Grid.Column="0">
-                <Label Text="Country" Style="{StaticResource FieldLabel}" />
-                    <Label FontSize="Micro"
-                               Text="{Binding EventViewModel.Address.Country}" />
-            </VerticalStackLayout>
-            <VerticalStackLayout Grid.Row="2" Grid.Column="1">
-                <Label Text="Postal Code" Style="{StaticResource FieldLabel}" />
-                    <Label FontSize="Micro"
-                               Text="{Binding EventViewModel.Address.PostalCode}" />
-            </VerticalStackLayout>
-        </Grid>
-    </VerticalStackLayout>
+            <!-- Address Details Card -->
+            <Border Style="{StaticResource RoundBorder}" Margin="4,4">
+                <VerticalStackLayout Spacing="10">
+                    <HorizontalStackLayout Spacing="8">
+                        <Image MaximumWidthRequest="20" MaximumHeightRequest="20" VerticalOptions="Center">
+                            <Image.Source>
+                                <FontImageSource FontFamily="{StaticResource GoogleMaterialIcons}"
+                                                 Glyph="{StaticResource IconMapMarkerOutline}"
+                                                 Size="20"
+                                                 Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </Image.Source>
+                        </Image>
+                        <Label Text="Location Details"
+                               FontFamily="LexendSemibold"
+                               FontSize="Small"
+                               VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                    <!-- Street Address -->
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="Street Address" Style="{StaticResource FieldLabel}"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                        <Label Text="{Binding EventViewModel.Address.StreetAddress}" FontSize="Small" />
+                    </VerticalStackLayout>
+
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="12" RowDefinitions="Auto, Auto" RowSpacing="10">
+                        <!-- City -->
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="2">
+                            <Label Text="City" Style="{StaticResource FieldLabel}"
+                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                            <Label Text="{Binding EventViewModel.Address.City}" FontSize="Small" />
+                        </VerticalStackLayout>
+
+                        <!-- State/Region -->
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="2">
+                            <Label Text="State/Region" Style="{StaticResource FieldLabel}"
+                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                            <Label Text="{Binding EventViewModel.Address.Region}" FontSize="Small" />
+                        </VerticalStackLayout>
+
+                        <!-- Country -->
+                        <VerticalStackLayout Grid.Row="1" Grid.Column="0" Spacing="2">
+                            <Label Text="Country" Style="{StaticResource FieldLabel}"
+                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                            <Label Text="{Binding EventViewModel.Address.Country}" FontSize="Small" />
+                        </VerticalStackLayout>
+
+                        <!-- Postal Code -->
+                        <VerticalStackLayout Grid.Row="1" Grid.Column="1" Spacing="2">
+                            <Label Text="Postal Code" Style="{StaticResource FieldLabel}"
+                                   TextColor="{AppThemeBinding Light={StaticResource MutedForegroundLight}, Dark={StaticResource MutedForegroundDark}}" />
+                            <Label Text="{Binding EventViewModel.Address.PostalCode}" FontSize="Small" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <BoxView HeightRequest="12" BackgroundColor="Transparent" />
+
+        </VerticalStackLayout>
+    </ScrollView>
 </createEvent:BaseStepClass>

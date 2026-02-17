@@ -1,11 +1,13 @@
 ﻿namespace TrashMobMobile.ViewModels;
 
 using System.Collections.ObjectModel;
+using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Sentry;
 using TrashMob.Models;
 using TrashMob.Models.Extensions;
+using TrashMobMobile.Controls;
 using TrashMobMobile.Extensions;
 using TrashMobMobile.Services;
 
@@ -232,6 +234,42 @@ public partial class EditEventViewModel(IMobEventManager mobEventManager,
         }
 
         await LoadLitterReports();
+    }
+
+    [RelayCommand]
+    private async Task SelectEventType()
+    {
+        var popup = new ListSelectorPopup("Event Type", ETypes);
+        var popupResult = await Shell.Current.CurrentPage.ShowPopupAsync<string>(popup);
+        var selected = popupResult?.Result;
+        if (!string.IsNullOrEmpty(selected))
+        {
+            SelectedEventType = selected;
+        }
+    }
+
+    [RelayCommand]
+    private async Task SelectVisibility()
+    {
+        var popup = new ListSelectorPopup("Visibility", VisibilityOptions);
+        var popupResult = await Shell.Current.CurrentPage.ShowPopupAsync<string>(popup);
+        var selected = popupResult?.Result;
+        if (!string.IsNullOrEmpty(selected))
+        {
+            SelectedVisibility = selected;
+        }
+    }
+
+    [RelayCommand]
+    private async Task SelectTeam()
+    {
+        var popup = new ListSelectorPopup("Select Team", TeamNames);
+        var popupResult = await Shell.Current.CurrentPage.ShowPopupAsync<string>(popup);
+        var selected = popupResult?.Result;
+        if (!string.IsNullOrEmpty(selected))
+        {
+            SelectedTeam = selected;
+        }
     }
 
     [RelayCommand]
