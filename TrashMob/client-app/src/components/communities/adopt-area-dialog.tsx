@@ -51,10 +51,13 @@ export const AdoptAreaDialog = ({ area, communityId, open, onOpenChange }: Adopt
     const submitAdoption = useMutation({
         mutationKey: SubmitAdoption().key,
         mutationFn: (vars: { teamId: string; adoptableAreaId: string; applicationNotes?: string }) =>
-            SubmitAdoption().service({ teamId: vars.teamId }, {
-                adoptableAreaId: vars.adoptableAreaId,
-                applicationNotes: vars.applicationNotes,
-            }),
+            SubmitAdoption().service(
+                { teamId: vars.teamId },
+                {
+                    adoptableAreaId: vars.adoptableAreaId,
+                    applicationNotes: vars.applicationNotes,
+                },
+            ),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: GetAvailableAreas({ partnerId: communityId }).key });
             toast({
@@ -127,9 +130,7 @@ export const AdoptAreaDialog = ({ area, communityId, open, onOpenChange }: Adopt
 
                     {!isLoggedIn ? (
                         <div className='py-4 text-center space-y-3'>
-                            <p className='text-sm text-muted-foreground'>
-                                You need to sign in to apply for adoption.
-                            </p>
+                            <p className='text-sm text-muted-foreground'>You need to sign in to apply for adoption.</p>
                             <Button onClick={handleSignIn}>Sign In</Button>
                         </div>
                     ) : teamsLoading ? (
