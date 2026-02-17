@@ -148,6 +148,118 @@ namespace TrashMob.Shared.Managers.Areas
             };
         }
 
+        /// <inheritdoc />
+        public async Task<IEnumerable<NominatimResult>> SearchByCategoryAsync(
+            string category,
+            (double North, double South, double East, double West) bounds,
+            CancellationToken cancellationToken = default)
+        {
+            var allResults = new List<NominatimResult>();
+            var excludePlaceIds = new List<string>();
+            const int maxPages = 10; // Safety limit: 10 pages × 50 = 500 max features
+
+            httpClient.DefaultRequestHeaders.UserAgent.Clear();
+            httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("TrashMob.eco/1.0");
+
+            for (var page = 0; page < maxPages; page++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                var url = $"https://nominatim.openstreetmap.org/search" +
+                    $"?q={Uri.EscapeDataString(category)}" +
+                    $"&format=jsonv2" +
+                    $"&polygon_geojson=1" +
+                    $"&addressdetails=1" +
+                    $"&limit=50" +
+                    $"&viewbox={bounds.West.ToString(CultureInfo.InvariantCulture)},{bounds.North.ToString(CultureInfo.InvariantCulture)},{bounds.East.ToString(CultureInfo.InvariantCulture)},{bounds.South.ToString(CultureInfo.InvariantCulture)}" +
+                    $"&bounded=1";
+
+                if (excludePlaceIds.Count > 0)
+                {
+                    url += $"&exclude_place_ids={string.Join(",", excludePlaceIds)}";
+                }
+
+                logger.LogInformation("Nominatim category search page {Page}: {Category} ({Count} excluded)", page, category, excludePlaceIds.Count);
+
+                // Rate limit: 1 request per second
+                if (page > 0)
+                {
+                    await Task.Delay(1000, cancellationToken);
+                }
+
+                var response = await httpClient.GetAsync(url, cancellationToken);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    logger.LogWarning("Nominatim category search failed with status {StatusCode}", response.StatusCode);
+                    break;
+                }
+
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                var results = JsonSerializer.Deserialize<List<NominatimCategoryApiResult>>(content, JsonOptions);
+
+                if (results is null || results.Count == 0)
+                {
+                    logger.LogInformation("Nominatim returned no more results for category: {Category}", category);
+                    break;
+                }
+
+                foreach (var item in results)
+                {
+                    if (item.PlaceId is not null)
+                    {
+                        excludePlaceIds.Add(item.PlaceId);
+                    }
+
+                    string? geoJson = null;
+
+                    if (item.Geojson is not null)
+                    {
+                        var geoType = item.Geojson.Type;
+
+                        if (string.Equals(geoType, "MultiPolygon", StringComparison.OrdinalIgnoreCase))
+                        {
+                            var converted = ConvertMultiPolygonToPolygon(item.Geojson);
+                            if (converted is not null)
+                            {
+                                geoJson = JsonSerializer.Serialize(converted, JsonOptions);
+                            }
+                        }
+                        else if (string.Equals(geoType, "Polygon", StringComparison.OrdinalIgnoreCase)
+                            || string.Equals(geoType, "LineString", StringComparison.OrdinalIgnoreCase))
+                        {
+                            geoJson = JsonSerializer.Serialize(item.Geojson, JsonOptions);
+                        }
+                    }
+
+                    _ = double.TryParse(item.Lat, CultureInfo.InvariantCulture, out var lat);
+                    _ = double.TryParse(item.Lon, CultureInfo.InvariantCulture, out var lon);
+
+                    allResults.Add(new NominatimResult
+                    {
+                        GeoJson = geoJson ?? string.Empty,
+                        DisplayName = item.DisplayName ?? string.Empty,
+                        Category = item.Category ?? string.Empty,
+                        Type = item.Type ?? string.Empty,
+                        OsmId = $"{item.OsmType ?? ""}:{item.OsmId ?? ""}",
+                        Name = item.Name ?? item.DisplayName ?? string.Empty,
+                        Latitude = lat,
+                        Longitude = lon,
+                        BoundingBox = item.Boundingbox is not null ? JsonSerializer.Serialize(item.Boundingbox, JsonOptions) : null,
+                    });
+                }
+
+                // If fewer than 50 results, we've exhausted the search
+                if (results.Count < 50)
+                {
+                    break;
+                }
+            }
+
+            logger.LogInformation("Nominatim category search complete: {Category}, {Count} results", category, allResults.Count);
+            return allResults;
+        }
+
         // Internal DTOs for Nominatim API response parsing
 
         private sealed class NominatimApiResult
@@ -155,6 +267,21 @@ namespace TrashMob.Shared.Managers.Areas
             public string? DisplayName { get; set; }
             public string? Category { get; set; }
             public string? Type { get; set; }
+            public NominatimGeoJson? Geojson { get; set; }
+        }
+
+        private sealed class NominatimCategoryApiResult
+        {
+            public string? PlaceId { get; set; }
+            public string? OsmType { get; set; }
+            public string? OsmId { get; set; }
+            public string? DisplayName { get; set; }
+            public string? Name { get; set; }
+            public string? Category { get; set; }
+            public string? Type { get; set; }
+            public string? Lat { get; set; }
+            public string? Lon { get; set; }
+            public string[]? Boundingbox { get; set; }
             public NominatimGeoJson? Geojson { get; set; }
         }
 

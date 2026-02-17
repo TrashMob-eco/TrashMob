@@ -35,6 +35,7 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using TrashMob.Common;
 using TrashMob.Security;
+using TrashMob.Services;
 using TrashMob.Shared;
 using TrashMob.Shared.Managers;
 using TrashMob.Shared.Managers.Interfaces;
@@ -268,6 +269,10 @@ public class Program
             }
             client.DefaultRequestHeaders.Add("Accept", "application/json");
         });
+
+        // Area generation background service
+        builder.Services.AddSingleton<IAreaGenerationQueue, AreaGenerationQueue>();
+        builder.Services.AddHostedService<AreaGenerationBackgroundService>();
 
         builder.Services.AddHealthChecks()
             .AddSqlServer(

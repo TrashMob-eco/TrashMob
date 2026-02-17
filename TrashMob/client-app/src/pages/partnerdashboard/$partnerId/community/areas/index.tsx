@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
-import { Loader2, Plus, Pencil, Trash2, MapPin, Upload, List, Map as MapIcon } from 'lucide-react';
+import { Loader2, Plus, Pencil, Trash2, MapPin, Upload, List, Map as MapIcon, Sparkles } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -122,6 +122,13 @@ export const PartnerCommunityAreas = () => {
                                 </Button>
                             </div>
                         ) : null}
+                        <Button
+                            variant='outline'
+                            onClick={() => navigate(`/partnerdashboard/${partnerId}/community/areas/generate`)}
+                        >
+                            <Sparkles className='h-4 w-4 mr-2' />
+                            Generate
+                        </Button>
                         <Button
                             variant='outline'
                             onClick={() => navigate(`/partnerdashboard/${partnerId}/community/areas/import`)}

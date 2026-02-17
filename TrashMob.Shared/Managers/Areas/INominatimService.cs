@@ -2,6 +2,7 @@
 
 namespace TrashMob.Shared.Managers.Areas
 {
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -18,6 +19,19 @@ namespace TrashMob.Shared.Managers.Areas
             string query,
             (double North, double South, double East, double West)? viewBox = null,
             CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Searches Nominatim for all features of a category within a bounding box.
+        /// Uses pagination via exclude_place_ids to retrieve all results.
+        /// </summary>
+        /// <param name="category">The category to search for (e.g. "school", "park").</param>
+        /// <param name="bounds">The bounding box (North, South, East, West).</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A list of results with polygon geometry and metadata.</returns>
+        Task<IEnumerable<NominatimResult>> SearchByCategoryAsync(
+            string category,
+            (double North, double South, double East, double West) bounds,
+            CancellationToken cancellationToken = default);
     }
 
     public class NominatimResult
@@ -29,5 +43,15 @@ namespace TrashMob.Shared.Managers.Areas
         public string Category { get; set; } = string.Empty;
 
         public string Type { get; set; } = string.Empty;
+
+        public string OsmId { get; set; } = string.Empty;
+
+        public string Name { get; set; } = string.Empty;
+
+        public double Latitude { get; set; }
+
+        public double Longitude { get; set; }
+
+        public string? BoundingBox { get; set; }
     }
 }

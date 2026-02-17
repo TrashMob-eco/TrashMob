@@ -126,6 +126,16 @@ const PartnerCommunityAreasImport = lazy(() =>
         default: m.PartnerCommunityAreasImport,
     })),
 );
+const PartnerCommunityAreasGenerate = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/community/areas/generate').then((m) => ({
+        default: m.PartnerCommunityAreasGenerate,
+    })),
+);
+const PartnerCommunityAreasReview = lazy(() =>
+    import('./pages/partnerdashboard/$partnerId/community/areas/review').then((m) => ({
+        default: m.PartnerCommunityAreasReview,
+    })),
+);
 const PartnerCommunityAreaDefaults = lazy(() =>
     import('./pages/partnerdashboard/$partnerId/community/area-defaults').then((m) => ({
         default: m.PartnerCommunityAreaDefaults,
@@ -524,6 +534,11 @@ const AppContent: FC = () => {
                                     <Route path='community/areas/create' element={<PartnerCommunityAreaCreate />} />
                                     <Route path='community/areas/:areaId/edit' element={<PartnerCommunityAreaEdit />} />
                                     <Route path='community/areas/import' element={<PartnerCommunityAreasImport />} />
+                                    <Route
+                                        path='community/areas/generate'
+                                        element={<PartnerCommunityAreasGenerate />}
+                                    />
+                                    <Route path='community/areas/review' element={<PartnerCommunityAreasReview />} />
                                     <Route path='community/area-defaults' element={<PartnerCommunityAreaDefaults />} />
                                     <Route path='community/regional-settings' element={<CommunityRegionalSettings />} />
                                     <Route path='community/adoptions' element={<PartnerCommunityAdoptions />} />

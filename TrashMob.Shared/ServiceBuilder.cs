@@ -109,6 +109,11 @@
             services.AddScoped<ITeamAdoptionManager, TeamAdoptionManager>();
             services.AddScoped<ITeamAdoptionEventManager, TeamAdoptionEventManager>();
 
+            // Area generation managers
+            services.AddScoped<IAreaGenerationBatchManager, AreaGenerationBatchManager>();
+            services.AddScoped<IStagedAdoptableAreaManager, StagedAdoptableAreaManager>();
+            services.AddScoped<IAreaGenerationOrchestrator, AreaGenerationOrchestrator>();
+
             // Sponsored adoption managers
             services.AddScoped<ISponsorManager, SponsorManager>();
             services.AddScoped<IProfessionalCompanyManager, ProfessionalCompanyManager>();
@@ -230,6 +235,10 @@
             services.AddScoped<IKeyedRepository<AdoptableArea>, KeyedRepository<AdoptableArea>>();
             services.AddScoped<IKeyedRepository<TeamAdoption>, KeyedRepository<TeamAdoption>>();
             services.AddScoped<IKeyedRepository<TeamAdoptionEvent>, KeyedRepository<TeamAdoptionEvent>>();
+
+            // Area generation repositories
+            services.AddScoped<IKeyedRepository<AreaGenerationBatch>, KeyedRepository<AreaGenerationBatch>>();
+            services.AddScoped<IKeyedRepository<StagedAdoptableArea>, KeyedRepository<StagedAdoptableArea>>();
 
             // Sponsored adoption repositories
             services.AddScoped<IKeyedRepository<Sponsor>, KeyedRepository<Sponsor>>();
