@@ -51,6 +51,16 @@
         public decimal? WeightCollected { get; set; }
 
         /// <summary>
+        /// Gets or sets the latitude of the event location.
+        /// </summary>
+        public double EventLatitude { get; set; }
+
+        /// <summary>
+        /// Gets or sets the longitude of the event location.
+        /// </summary>
+        public double EventLongitude { get; set; }
+
+        /// <summary>
         /// Gets or sets the start time of the route.
         /// </summary>
         public DateTimeOffset StartTime { get; set; }
