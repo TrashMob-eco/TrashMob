@@ -27,6 +27,9 @@ const CATEGORIES = [
     { value: 'School', label: 'Schools' },
     { value: 'Park', label: 'Parks' },
     { value: 'Trail', label: 'Trails' },
+    { value: 'Interchange', label: 'Interchanges' },
+    { value: 'CityBlock', label: 'City Blocks' },
+    { value: 'HighwaySection', label: 'Highway / Interstate Sections' },
 ];
 
 const statusIcons: Record<BatchStatus, React.ReactNode> = {

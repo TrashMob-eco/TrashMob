@@ -3,6 +3,7 @@ namespace TrashMob.Shared.Managers.Areas
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
@@ -26,6 +27,11 @@ namespace TrashMob.Shared.Managers.Areas
     {
         // Centroids within this distance (meters) of an existing area are flagged as potential duplicates
         private const double DuplicateDistanceMeters = 100.0;
+
+        // Length in meters for highway section splitting (~1 mile)
+        private const double HighwaySectionLengthMeters = 1609.34;
+
+        private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
         /// <inheritdoc />
         public async Task ExecuteAsync(Guid batchId, CancellationToken cancellationToken = default)
@@ -58,8 +64,26 @@ namespace TrashMob.Shared.Managers.Areas
                               partner.BoundsEast.Value, partner.BoundsWest.Value);
                 }
 
-                var discovered = (await nominatimService.SearchByCategoryAsync(
-                    batch.Category, bounds.Value, cancellationToken)).ToList();
+                // Map user-facing category to Nominatim search queries
+                var searchQueries = MapCategoryToSearchQueries(batch.Category);
+                var allDiscovered = new List<NominatimResult>();
+
+                foreach (var query in searchQueries)
+                {
+                    var results = await nominatimService.SearchByCategoryAsync(query, bounds.Value, cancellationToken);
+                    allDiscovered.AddRange(results);
+                }
+
+                // For highway sections, split LineString results into mile-length segments
+                List<NominatimResult> discovered;
+                if (batch.Category.Equals("HighwaySection", StringComparison.OrdinalIgnoreCase))
+                {
+                    discovered = SplitHighwaysIntoSections(allDiscovered);
+                }
+                else
+                {
+                    discovered = allDiscovered;
+                }
 
                 batch.DiscoveredCount = discovered.Count;
                 await UpdateBatchStatusAsync(batch, "Processing", cancellationToken);
@@ -89,7 +113,7 @@ namespace TrashMob.Shared.Managers.Areas
                         continue;
                     }
 
-                    // Skip features with no name
+                    // Skip features with no name (except city blocks which may have only display names)
                     var name = !string.IsNullOrWhiteSpace(feature.Name) ? feature.Name.Trim() : null;
                     if (name == null)
                     {
@@ -228,6 +252,21 @@ namespace TrashMob.Shared.Managers.Areas
             return "Low";
         }
 
+        /// <summary>
+        /// Maps a user-facing category to one or more Nominatim search queries.
+        /// Some categories require multiple queries to get comprehensive results.
+        /// </summary>
+        private static List<string> MapCategoryToSearchQueries(string category)
+        {
+            return category.ToLowerInvariant() switch
+            {
+                "interchange" => ["interchange", "motorway_junction"],
+                "cityblock" => ["neighbourhood", "city block"],
+                "highwaysection" => ["motorway", "trunk road", "interstate"],
+                _ => [category],
+            };
+        }
+
         private static string MapCategoryToAreaType(string category)
         {
             return category.ToLowerInvariant() switch
@@ -236,8 +275,145 @@ namespace TrashMob.Shared.Managers.Areas
                 "park" => "Park",
                 "trail" => "Trail",
                 "waterway" => "Waterway",
+                "interchange" => "Interchange",
+                "cityblock" => "CityBlock",
+                "highwaysection" => "HighwaySection",
                 _ => "Spot",
             };
+        }
+
+        /// <summary>
+        /// Splits highway/interstate LineString features into approximately 1-mile segments.
+        /// Each segment becomes a separate staged area named with mile markers.
+        /// </summary>
+        private List<NominatimResult> SplitHighwaysIntoSections(List<NominatimResult> highways)
+        {
+            var sections = new List<NominatimResult>();
+
+            foreach (var highway in highways)
+            {
+                if (string.IsNullOrEmpty(highway.GeoJson))
+                {
+                    continue;
+                }
+
+                var coords = ParseLineStringCoordinates(highway.GeoJson);
+                if (coords.Count < 2)
+                {
+                    // Not a LineString or too short — keep as-is
+                    sections.Add(highway);
+                    continue;
+                }
+
+                var totalDistance = CalculatePathDistance(coords);
+                if (totalDistance < HighwaySectionLengthMeters * 0.5)
+                {
+                    // Highway segment is less than half a mile — keep as single area
+                    sections.Add(highway);
+                    continue;
+                }
+
+                var sectionCount = (int)Math.Ceiling(totalDistance / HighwaySectionLengthMeters);
+                var currentDistance = 0.0;
+                var sectionStart = 0;
+                var sectionNumber = 1;
+
+                for (var i = 1; i < coords.Count; i++)
+                {
+                    currentDistance += HaversineDistance(coords[i - 1].Lat, coords[i - 1].Lon, coords[i].Lat, coords[i].Lon);
+
+                    if (currentDistance >= HighwaySectionLengthMeters || i == coords.Count - 1)
+                    {
+                        var sectionCoords = coords.GetRange(sectionStart, i - sectionStart + 1);
+                        if (sectionCoords.Count >= 2)
+                        {
+                            var midpoint = sectionCoords[sectionCoords.Count / 2];
+                            var sectionGeoJson = BuildLineStringGeoJson(sectionCoords);
+                            var baseName = !string.IsNullOrWhiteSpace(highway.Name) ? highway.Name : "Highway";
+                            var mileStart = sectionNumber - 1;
+
+                            sections.Add(new NominatimResult
+                            {
+                                GeoJson = sectionGeoJson,
+                                DisplayName = $"{baseName} - Mile {mileStart} to {sectionNumber}",
+                                Category = highway.Category,
+                                Type = highway.Type,
+                                OsmId = $"{highway.OsmId}:section{sectionNumber}",
+                                Name = $"{baseName} - Mile {mileStart}-{sectionNumber}",
+                                Latitude = midpoint.Lat,
+                                Longitude = midpoint.Lon,
+                                BoundingBox = null,
+                            });
+                        }
+
+                        sectionStart = i;
+                        currentDistance = 0;
+                        sectionNumber++;
+                    }
+                }
+
+                logger.LogInformation(
+                    "Split highway \"{HighwayName}\" ({Distance:F0}m) into {Sections} sections",
+                    highway.Name, totalDistance, sectionNumber - 1);
+            }
+
+            return sections;
+        }
+
+        private static List<(double Lat, double Lon)> ParseLineStringCoordinates(string geoJson)
+        {
+            try
+            {
+                using var doc = JsonDocument.Parse(geoJson);
+                var root = doc.RootElement;
+
+                if (!root.TryGetProperty("type", out var typeProp))
+                {
+                    return [];
+                }
+
+                var geoType = typeProp.GetString();
+                if (!string.Equals(geoType, "LineString", StringComparison.OrdinalIgnoreCase))
+                {
+                    return [];
+                }
+
+                if (!root.TryGetProperty("coordinates", out var coordsProp))
+                {
+                    return [];
+                }
+
+                var result = new List<(double Lat, double Lon)>();
+                foreach (var coord in coordsProp.EnumerateArray())
+                {
+                    var lon = coord[0].GetDouble();
+                    var lat = coord[1].GetDouble();
+                    result.Add((lat, lon));
+                }
+
+                return result;
+            }
+            catch
+            {
+                return [];
+            }
+        }
+
+        private static string BuildLineStringGeoJson(List<(double Lat, double Lon)> coords)
+        {
+            var coordsArray = coords.Select(c => new[] { c.Lon, c.Lat }).ToArray();
+            var geoJsonObj = new { type = "LineString", coordinates = coordsArray };
+            return JsonSerializer.Serialize(geoJsonObj, JsonOptions);
+        }
+
+        private static double CalculatePathDistance(List<(double Lat, double Lon)> coords)
+        {
+            var total = 0.0;
+            for (var i = 1; i < coords.Count; i++)
+            {
+                total += HaversineDistance(coords[i - 1].Lat, coords[i - 1].Lon, coords[i].Lat, coords[i].Lon);
+            }
+            return total;
         }
 
         private async Task UpdateBatchStatusAsync(AreaGenerationBatch batch, string status, CancellationToken cancellationToken)
