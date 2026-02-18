@@ -15,7 +15,13 @@ interface CommunityBoundsOverlayProps {
  */
 function parseGeoJsonPaths(geoJson: string): google.maps.LatLngLiteral[][] | null {
     try {
-        const geo = JSON.parse(geoJson) as { type: string; coordinates: number[][][] | number[][] };
+        const geo = JSON.parse(geoJson) as { type: string; coordinates: number[][][][] | number[][][] | number[][] };
+
+        if (geo.type === 'MultiPolygon') {
+            // MultiPolygon coordinates: number[][][][] (array of polygons, each with rings)
+            const coords = geo.coordinates as number[][][][];
+            return coords.flatMap((polygon) => polygon.map((ring) => ring.map(([lon, lat]) => ({ lat, lng: lon }))));
+        }
 
         if (geo.type === 'Polygon') {
             // Polygon coordinates: number[][][] (array of rings, each ring is array of [lon, lat])
@@ -53,11 +59,11 @@ export const CommunityBoundsOverlay = ({ mapId, geoJson, fitBounds }: CommunityB
             polygonRef.current = new google.maps.Polygon({
                 map,
                 paths,
-                strokeColor: '#6B7280',
-                strokeOpacity: 0.7,
-                strokeWeight: 2,
-                fillColor: '#6B7280',
-                fillOpacity: 0.06,
+                strokeColor: '#E11D48',
+                strokeOpacity: 0.9,
+                strokeWeight: 2.5,
+                fillColor: '#E11D48',
+                fillOpacity: 0.12,
                 clickable: false,
                 zIndex: 0,
             });
@@ -67,7 +73,7 @@ export const CommunityBoundsOverlay = ({ mapId, geoJson, fitBounds }: CommunityB
 
         if (fitBounds) {
             const bounds = new google.maps.LatLngBounds();
-            paths[0].forEach((pt) => bounds.extend(pt));
+            paths.forEach((ring) => ring.forEach((pt) => bounds.extend(pt)));
             map.fitBounds(bounds, 40);
         }
 
