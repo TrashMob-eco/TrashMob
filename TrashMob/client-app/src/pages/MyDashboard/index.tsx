@@ -23,6 +23,8 @@ import {
     Truck,
     Briefcase,
     Heart,
+    List,
+    Map as MapIcon,
 } from 'lucide-react';
 import { AxiosResponse } from 'axios';
 
@@ -51,8 +53,6 @@ import { HeroSection } from '@/components/Customization/HeroSection';
 import { EventsMap } from '@/components/events/event-map';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { EventsTable } from './events-table/table';
 
@@ -86,6 +86,9 @@ import { MyCompaniesTable } from '@/pages/MyDashboard/MyCompaniesTable';
 import { MySponsorsTable } from '@/pages/MyDashboard/MySponsorsTable';
 import { InviteFriendsCard } from '@/pages/MyDashboard/InviteFriendsCard';
 import { MyNewsletterPreferencesCard } from '@/pages/MyDashboard/MyNewsletterPreferencesCard';
+import { LitterReportsMapView } from './LitterReportsMapView';
+import { MyTeamsMapView } from './MyTeamsMapView';
+import { PickupRequestsMapView } from './PickupRequestsMapView';
 import { DashboardScrollNav, DashboardNavGroup } from './DashboardScrollNav';
 import { DashboardMobileNav } from './DashboardMobileNav';
 
@@ -96,6 +99,33 @@ const isPastEvent = (event: EventData) => isCompletedEvent(event);
 
 type EventFilterType = 'all' | 'created' | 'attending';
 type LitterReportFilterType = 'all' | 'new' | 'assigned' | 'cleaned' | 'cancelled';
+
+const ViewModeToggle = ({
+    viewMode,
+    onChange,
+}: {
+    viewMode: 'table' | 'map';
+    onChange: (mode: 'table' | 'map') => void;
+}) => (
+    <div className='flex border rounded-md'>
+        <Button
+            variant={viewMode === 'table' ? 'default' : 'ghost'}
+            size='sm'
+            className='rounded-r-none'
+            onClick={() => onChange('table')}
+        >
+            <List className='h-4 w-4' />
+        </Button>
+        <Button
+            variant={viewMode === 'map' ? 'default' : 'ghost'}
+            size='sm'
+            className='rounded-l-none'
+            onClick={() => onChange('map')}
+        >
+            <MapIcon className='h-4 w-4' />
+        </Button>
+    </div>
+);
 
 const EVENTS_SECTIONS = new Set(['upcoming-events', 'completed-events']);
 const PARTNERSHIP_SECTIONS = new Set([
@@ -169,10 +199,14 @@ const MyDashboard: FC<MyDashboardProps> = () => {
     const userId = currentUser.id;
     const userPreferredLocation = { lat: currentUser.latitude, lng: currentUser.longitude };
 
-    const [upcomingEventsMapView, setUpcomingEventsMapView] = useState<boolean>(false);
-    const [pastEventsMapView, setPastEventsMapView] = useState<boolean>(false);
+    const [upcomingEventsView, setUpcomingEventsView] = useState<'table' | 'map'>('table');
+    const [pastEventsView, setPastEventsView] = useState<'table' | 'map'>('table');
     const [eventFilter, setEventFilter] = useState<EventFilterType>('all');
     const [litterReportFilter, setLitterReportFilter] = useState<LitterReportFilterType>('all');
+    const [litterReportsView, setLitterReportsView] = useState<'table' | 'map'>('table');
+    const [nearbyLitterView, setNearbyLitterView] = useState<'table' | 'map'>('table');
+    const [teamsView, setTeamsView] = useState<'table' | 'map'>('table');
+    const [pickupRequestsView, setPickupRequestsView] = useState<'table' | 'map'>('table');
     const state = location.state as { newEventCreated: boolean };
     const [eventToShare, setEventToShare] = useState<EventData>();
     const [showModal, setShowSocialsModal] = useState<boolean>(false);
@@ -333,19 +367,6 @@ const MyDashboard: FC<MyDashboardProps> = () => {
         }
     }, [state, currentUser.id, navigate, myEventList, setSharingEvent]);
 
-    const handleEventView = (view: string, table: string) => {
-        if (table === 'Upcoming events') {
-            if (view === 'list') {
-                return setUpcomingEventsMapView(false);
-            }
-            return setUpcomingEventsMapView(true);
-        }
-        if (view === 'list') {
-            return setPastEventsMapView(false);
-        }
-        return setPastEventsMapView(true);
-    };
-
     return (
         <div>
             <HeroSection Title='Dashboard' Description="See how much you've done!" />
@@ -473,29 +494,18 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                             <section id='upcoming-events'>
                                 <Card>
                                     <CardHeader>
-                                        <div className='flex flex-row'>
+                                        <div className='flex flex-row items-center'>
                                             <CardTitle className='grow text-primary'>
                                                 Upcoming events ({upcomingEvents.length})
                                             </CardTitle>
-                                            <RadioGroup
-                                                value={upcomingEventsMapView ? 'map' : 'list'}
-                                                onValueChange={(value) => handleEventView(value, 'Upcoming events')}
-                                                className='grid-cols-2'
-                                                orientation='horizontal'
-                                            >
-                                                <div className='flex items-center space-x-2'>
-                                                    <RadioGroupItem value='list' id='upcomingevents-list' />
-                                                    <Label htmlFor='upcomingevents-list'>List view</Label>
-                                                </div>
-                                                <div className='flex items-center space-x-2'>
-                                                    <RadioGroupItem value='map' id='upcomingevents-map' />
-                                                    <Label htmlFor='upcomingevents-map'>Map view</Label>
-                                                </div>
-                                            </RadioGroup>
+                                            <ViewModeToggle
+                                                viewMode={upcomingEventsView}
+                                                onChange={setUpcomingEventsView}
+                                            />
                                         </div>
                                     </CardHeader>
                                     <CardContent>
-                                        {upcomingEventsMapView ? (
+                                        {upcomingEventsView === 'map' ? (
                                             <EventsMap
                                                 events={upcomingEvents}
                                                 isUserLoaded={isUserLoaded}
@@ -514,29 +524,15 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                             <section id='completed-events'>
                                 <Card>
                                     <CardHeader>
-                                        <div className='flex flex-row'>
+                                        <div className='flex flex-row items-center'>
                                             <CardTitle className='grow text-primary'>
                                                 Completed events ({pastEvents.length})
                                             </CardTitle>
-                                            <RadioGroup
-                                                value={pastEventsMapView ? 'map' : 'list'}
-                                                onValueChange={(value) => handleEventView(value, 'Completed events')}
-                                                className='grid-cols-2'
-                                                orientation='horizontal'
-                                            >
-                                                <div className='flex items-center space-x-2'>
-                                                    <RadioGroupItem value='list' id='pastevents-list' />
-                                                    <Label htmlFor='pastevents-list'>List view</Label>
-                                                </div>
-                                                <div className='flex items-center space-x-2'>
-                                                    <RadioGroupItem value='map' id='pastevents-map' />
-                                                    <Label htmlFor='pastevents-map'>Map view</Label>
-                                                </div>
-                                            </RadioGroup>
+                                            <ViewModeToggle viewMode={pastEventsView} onChange={setPastEventsView} />
                                         </div>
                                     </CardHeader>
                                     <CardContent>
-                                        {pastEventsMapView ? (
+                                        {pastEventsView === 'map' ? (
                                             <EventsMap
                                                 events={pastEvents}
                                                 isUserLoaded={isUserLoaded}
@@ -556,20 +552,27 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                             <section id='teams'>
                                 <Card>
                                     <CardHeader>
-                                        <div className='flex flex-row'>
+                                        <div className='flex flex-row items-center gap-2'>
                                             <CardTitle className='grow text-primary'>
                                                 <Users className='inline-block h-5 w-5 mr-2' />
                                                 My Teams ({(myTeams || []).length})
                                             </CardTitle>
+                                            {(myTeams || []).length > 0 ? (
+                                                <ViewModeToggle viewMode={teamsView} onChange={setTeamsView} />
+                                            ) : null}
                                             <Button variant='outline' size='sm' asChild>
                                                 <Link to='/teams'>Browse Teams</Link>
                                             </Button>
                                         </div>
                                     </CardHeader>
                                     <CardContent>
-                                        <div className='overflow-auto'>
-                                            <MyTeamsTable items={myTeams || []} teamsILead={teamsILead || []} />
-                                        </div>
+                                        {teamsView === 'map' && (myTeams || []).length > 0 ? (
+                                            <MyTeamsMapView teams={myTeams || []} teamsILead={teamsILead || []} />
+                                        ) : (
+                                            <div className='overflow-auto'>
+                                                <MyTeamsTable items={myTeams || []} teamsILead={teamsILead || []} />
+                                            </div>
+                                        )}
                                     </CardContent>
                                 </Card>
                             </section>
@@ -587,10 +590,16 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                             <section id='litter-reports'>
                                 <Card>
                                     <CardHeader>
-                                        <div className='flex flex-row flex-wrap gap-2'>
+                                        <div className='flex flex-row flex-wrap items-center gap-2'>
                                             <CardTitle className='grow text-primary'>
                                                 My Litter Reports ({filteredLitterReports.length})
                                             </CardTitle>
+                                            {filteredLitterReports.length > 0 ? (
+                                                <ViewModeToggle
+                                                    viewMode={litterReportsView}
+                                                    onChange={setLitterReportsView}
+                                                />
+                                            ) : null}
                                             <Select
                                                 value={litterReportFilter}
                                                 onValueChange={(v) =>
@@ -614,9 +623,13 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                                         </div>
                                     </CardHeader>
                                     <CardContent>
-                                        <div className='overflow-auto'>
-                                            <MyLitterReportsTable items={filteredLitterReports} />
-                                        </div>
+                                        {litterReportsView === 'map' && filteredLitterReports.length > 0 ? (
+                                            <LitterReportsMapView reports={filteredLitterReports} />
+                                        ) : (
+                                            <div className='overflow-auto'>
+                                                <MyLitterReportsTable items={filteredLitterReports} />
+                                            </div>
+                                        )}
                                     </CardContent>
                                 </Card>
                             </section>
@@ -626,10 +639,17 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                             <section id='nearby-litter-reports'>
                                 <Card>
                                     <CardHeader>
-                                        <CardTitle className='text-primary'>Nearby Litter Reports</CardTitle>
+                                        <div className='flex flex-row items-center'>
+                                            <CardTitle className='grow text-primary'>Nearby Litter Reports</CardTitle>
+                                            <ViewModeToggle
+                                                viewMode={nearbyLitterView}
+                                                onChange={setNearbyLitterView}
+                                            />
+                                        </div>
                                     </CardHeader>
                                     <CardContent>
                                         <NearbyLitterReportsWidget
+                                            viewMode={nearbyLitterView}
                                             userLocation={{
                                                 lat: currentUser.latitude,
                                                 lng: currentUser.longitude,
@@ -716,17 +736,29 @@ const MyDashboard: FC<MyDashboardProps> = () => {
                             <section id='pickup-requests'>
                                 <Card>
                                     <CardHeader>
-                                        <CardTitle className='text-primary'>
-                                            Pickup Requests Pending ({(myPickupRequests || []).length})
-                                        </CardTitle>
+                                        <div className='flex flex-row items-center'>
+                                            <CardTitle className='grow text-primary'>
+                                                Pickup Requests Pending ({(myPickupRequests || []).length})
+                                            </CardTitle>
+                                            {(myPickupRequests || []).length > 0 ? (
+                                                <ViewModeToggle
+                                                    viewMode={pickupRequestsView}
+                                                    onChange={setPickupRequestsView}
+                                                />
+                                            ) : null}
+                                        </div>
                                     </CardHeader>
                                     <CardContent>
-                                        <div className='overflow-auto'>
-                                            <MyPickupRequestsTable
-                                                userId={currentUser.id}
-                                                items={myPickupRequests || []}
-                                            />
-                                        </div>
+                                        {pickupRequestsView === 'map' && (myPickupRequests || []).length > 0 ? (
+                                            <PickupRequestsMapView pickups={myPickupRequests || []} />
+                                        ) : (
+                                            <div className='overflow-auto'>
+                                                <MyPickupRequestsTable
+                                                    userId={currentUser.id}
+                                                    items={myPickupRequests || []}
+                                                />
+                                            </div>
+                                        )}
                                     </CardContent>
                                 </Card>
                             </section>
