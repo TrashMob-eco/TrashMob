@@ -75,11 +75,11 @@ export const PartnerCommunityAreasGenerate = () => {
         community?.boundsWest != null;
 
     // Poll for active batch status
-    const { data: activeStatus, error: statusError } = useQuery<
-        AxiosResponse<AreaGenerationBatchData>,
-        unknown,
-        AreaGenerationBatchData
-    >({
+    const {
+        data: activeStatus,
+        error: statusError,
+        isError: isStatusError,
+    } = useQuery<AxiosResponse<AreaGenerationBatchData>, unknown, AreaGenerationBatchData>({
         queryKey: GetGenerationStatus({ partnerId }).key,
         queryFn: GetGenerationStatus({ partnerId }).service,
         select: (res) => res.data,
@@ -95,6 +95,9 @@ export const PartnerCommunityAreasGenerate = () => {
         select: (res) => res.data,
         enabled: !!activeBatchId && isRunning && !!statusError,
     });
+
+    // When status endpoint errors (404 = no active batch), prefer finishedBatch over stale activeStatus
+    const currentBatchStatus = isStatusError ? finishedBatch : activeStatus;
 
     // Fetch batch history
     const { data: batches } = useQuery<AxiosResponse<AreaGenerationBatchData[]>, unknown, AreaGenerationBatchData[]>({
@@ -136,19 +139,18 @@ export const PartnerCommunityAreasGenerate = () => {
 
     // Monitor active status for completion
     useEffect(() => {
-        const status = activeStatus ?? finishedBatch;
-        if (status && ['Complete', 'Failed', 'Cancelled'].includes(status.status)) {
+        if (currentBatchStatus && ['Complete', 'Failed', 'Cancelled'].includes(currentBatchStatus.status)) {
             setIsRunning(false);
             queryClient.invalidateQueries({ queryKey: GetGenerationBatches({ partnerId }).key });
-            if (status.status === 'Failed') {
+            if (currentBatchStatus.status === 'Failed') {
                 toast({
                     variant: 'destructive',
                     title: 'Generation failed',
-                    description: status.errorMessage || 'An unexpected error occurred.',
+                    description: currentBatchStatus.errorMessage || 'An unexpected error occurred.',
                 });
             }
         }
-    }, [activeStatus, finishedBatch, partnerId, queryClient, toast]);
+    }, [currentBatchStatus, partnerId, queryClient, toast]);
 
     const handleStart = useCallback(() => {
         if (!category) return;
@@ -161,8 +163,8 @@ export const PartnerCommunityAreasGenerate = () => {
     }, [activeBatchId, partnerId, cancelGeneration]);
 
     const progressPercent =
-        activeStatus && activeStatus.discoveredCount > 0
-            ? Math.round((activeStatus.processedCount / activeStatus.discoveredCount) * 100)
+        currentBatchStatus && currentBatchStatus.discoveredCount > 0
+            ? Math.round((currentBatchStatus.processedCount / currentBatchStatus.discoveredCount) * 100)
             : 0;
 
     return (
@@ -192,14 +194,16 @@ export const PartnerCommunityAreasGenerate = () => {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    {isRunning && activeStatus ? (
+                    {isRunning && currentBatchStatus ? (
                         // Progress view
                         <div className='space-y-6'>
                             <div className='flex items-center justify-between'>
                                 <div className='flex items-center gap-2'>
-                                    {statusIcons[activeStatus.status]}
-                                    <span className='font-medium capitalize'>{activeStatus.status}</span>
-                                    <Badge className={statusColors[activeStatus.status]}>{activeStatus.category}</Badge>
+                                    {statusIcons[currentBatchStatus.status]}
+                                    <span className='font-medium capitalize'>{currentBatchStatus.status}</span>
+                                    <Badge className={statusColors[currentBatchStatus.status]}>
+                                        {currentBatchStatus.category}
+                                    </Badge>
                                 </div>
                                 <Button variant='outline' size='sm' onClick={handleCancel}>
                                     <X className='h-4 w-4 mr-2' />
@@ -210,7 +214,8 @@ export const PartnerCommunityAreasGenerate = () => {
                             <div className='space-y-2'>
                                 <div className='flex justify-between text-sm text-muted-foreground'>
                                     <span>
-                                        {activeStatus.processedCount} of {activeStatus.discoveredCount} processed
+                                        {currentBatchStatus.processedCount} of {currentBatchStatus.discoveredCount}{' '}
+                                        processed
                                     </span>
                                     <span>{progressPercent}%</span>
                                 </div>
@@ -219,20 +224,20 @@ export const PartnerCommunityAreasGenerate = () => {
 
                             <div className='grid grid-cols-3 gap-4 text-center'>
                                 <div>
-                                    <div className='text-2xl font-bold'>{activeStatus.discoveredCount}</div>
+                                    <div className='text-2xl font-bold'>{currentBatchStatus.discoveredCount}</div>
                                     <div className='text-sm text-muted-foreground'>Discovered</div>
                                 </div>
                                 <div>
-                                    <div className='text-2xl font-bold'>{activeStatus.stagedCount}</div>
+                                    <div className='text-2xl font-bold'>{currentBatchStatus.stagedCount}</div>
                                     <div className='text-sm text-muted-foreground'>Staged</div>
                                 </div>
                                 <div>
-                                    <div className='text-2xl font-bold'>{activeStatus.skippedCount}</div>
+                                    <div className='text-2xl font-bold'>{currentBatchStatus.skippedCount}</div>
                                     <div className='text-sm text-muted-foreground'>Skipped</div>
                                 </div>
                             </div>
                         </div>
-                    ) : activeStatus && activeStatus.status === 'Complete' ? (
+                    ) : currentBatchStatus && currentBatchStatus.status === 'Complete' ? (
                         // Completed view
                         <div className='space-y-6'>
                             <div className='flex items-center gap-2 text-green-600'>
@@ -241,27 +246,27 @@ export const PartnerCommunityAreasGenerate = () => {
                             </div>
                             <div className='grid grid-cols-3 gap-4 text-center'>
                                 <div>
-                                    <div className='text-2xl font-bold'>{activeStatus.discoveredCount}</div>
+                                    <div className='text-2xl font-bold'>{currentBatchStatus.discoveredCount}</div>
                                     <div className='text-sm text-muted-foreground'>Discovered</div>
                                 </div>
                                 <div>
-                                    <div className='text-2xl font-bold'>{activeStatus.stagedCount}</div>
+                                    <div className='text-2xl font-bold'>{currentBatchStatus.stagedCount}</div>
                                     <div className='text-sm text-muted-foreground'>Staged for Review</div>
                                 </div>
                                 <div>
-                                    <div className='text-2xl font-bold'>{activeStatus.skippedCount}</div>
+                                    <div className='text-2xl font-bold'>{currentBatchStatus.skippedCount}</div>
                                     <div className='text-sm text-muted-foreground'>Skipped</div>
                                 </div>
                             </div>
-                            {activeStatus.stagedCount > 0 && (
+                            {currentBatchStatus.stagedCount > 0 && (
                                 <Button
                                     onClick={() =>
                                         navigate(
-                                            `/partnerdashboard/${partnerId}/community/areas/review?batchId=${activeStatus.id}`,
+                                            `/partnerdashboard/${partnerId}/community/areas/review?batchId=${currentBatchStatus.id}`,
                                         )
                                     }
                                 >
-                                    Review {activeStatus.stagedCount} Staged Areas
+                                    Review {currentBatchStatus.stagedCount} Staged Areas
                                 </Button>
                             )}
                         </div>

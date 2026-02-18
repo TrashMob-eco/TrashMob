@@ -226,7 +226,8 @@ namespace TrashMob.Shared.Managers.Areas
                             }
                         }
                         else if (string.Equals(geoType, "Polygon", StringComparison.OrdinalIgnoreCase)
-                            || string.Equals(geoType, "LineString", StringComparison.OrdinalIgnoreCase))
+                            || string.Equals(geoType, "LineString", StringComparison.OrdinalIgnoreCase)
+                            || string.Equals(geoType, "Point", StringComparison.OrdinalIgnoreCase))
                         {
                             geoJson = JsonSerializer.Serialize(item.Geojson, JsonOptions);
                         }
