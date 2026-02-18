@@ -94,7 +94,7 @@ export const BoundsPreviewMap = (props: BoundsPreviewMapProps) => {
                             : { defaultZoom: 11 })}
                     >
                         {hasGeoJson ? (
-                            <CommunityBoundsOverlay mapId={MAP_ID} geoJson={boundaryGeoJson!} />
+                            <CommunityBoundsOverlay mapId={MAP_ID} geoJson={boundaryGeoJson!} fitBounds />
                         ) : hasBounds ? (
                             <BoundsRectangle
                                 boundsNorth={boundsNorth!}
