@@ -113,6 +113,8 @@ namespace TrashMob.Shared.Managers.Events
                 PrivacyLevel = r.PrivacyLevel,
                 BagsCollected = r.BagsCollected,
                 WeightCollected = r.WeightCollected,
+                EventLatitude = r.Event?.Latitude ?? 0,
+                EventLongitude = r.Event?.Longitude ?? 0,
                 StartTime = r.StartTime,
                 EndTime = r.EndTime,
             });
