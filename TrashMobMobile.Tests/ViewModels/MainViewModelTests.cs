@@ -18,6 +18,7 @@ public class MainViewModelTests
     private readonly Mock<ILitterReportManager> mockLitterReportManager;
     private readonly Mock<INotificationService> mockNotificationService;
     private readonly Mock<IUserManager> mockUserManager;
+    private readonly Mock<IWaiverManager> mockWaiverManager;
     private readonly MainViewModel sut;
     private readonly User testUser;
 
@@ -30,6 +31,7 @@ public class MainViewModelTests
         mockLitterReportManager = new Mock<ILitterReportManager>();
         mockNotificationService = new Mock<INotificationService>();
         mockUserManager = new Mock<IUserManager>();
+        mockWaiverManager = new Mock<IWaiverManager>();
 
         testUser = TestHelpers.CreateTestUser();
         mockUserManager.Setup(m => m.CurrentUser).Returns(testUser);
@@ -41,7 +43,8 @@ public class MainViewModelTests
             mockEventManager.Object,
             mockLitterReportManager.Object,
             mockNotificationService.Object,
-            mockUserManager.Object);
+            mockUserManager.Object,
+            mockWaiverManager.Object);
     }
 
     [Fact]
@@ -119,7 +122,7 @@ public class MainViewModelTests
         mockAuthService.Setup(a => a.SignInSilentAsync(It.IsAny<bool>()))
             .ReturnsAsync(new SignInResult { Succeeded = true });
         mockAuthService.Setup(a => a.GetUserEmail()).Returns("test@example.com");
-        mockUserRestService.Setup(u => u.GetUserByEmailAsync(It.IsAny<string>(), It.IsAny<UserContext>(), It.IsAny<CancellationToken>()))
+        mockUserRestService.Setup(u => u.GetUserByEmailAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(userWithoutLocation);
         mockStatsRestService.Setup(s => s.GetStatsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(TestHelpers.CreateTestStats());
@@ -222,7 +225,7 @@ public class MainViewModelTests
         mockAuthService.Setup(a => a.SignInSilentAsync(It.IsAny<bool>()))
             .ReturnsAsync(new SignInResult { Succeeded = true });
         mockAuthService.Setup(a => a.GetUserEmail()).Returns("test@example.com");
-        mockUserRestService.Setup(u => u.GetUserByEmailAsync(It.IsAny<string>(), It.IsAny<UserContext>(), It.IsAny<CancellationToken>()))
+        mockUserRestService.Setup(u => u.GetUserByEmailAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(testUser);
         mockStatsRestService.Setup(s => s.GetStatsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(TestHelpers.CreateTestStats());

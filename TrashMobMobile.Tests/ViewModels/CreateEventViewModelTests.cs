@@ -13,12 +13,12 @@ public class CreateEventViewModelTests
     private readonly Mock<IMobEventManager> mockEventManager;
     private readonly Mock<IEventTypeRestService> mockEventTypeRestService;
     private readonly Mock<IMapRestService> mockMapRestService;
-    private readonly Mock<IWaiverManager> mockWaiverManager;
     private readonly Mock<INotificationService> mockNotificationService;
     private readonly Mock<IEventPartnerLocationServiceRestService> mockEventPartnerLocationServiceRestService;
     private readonly Mock<ILitterReportManager> mockLitterReportManager;
     private readonly Mock<IEventLitterReportManager> mockEventLitterReportManager;
     private readonly Mock<IUserManager> mockUserManager;
+    private readonly Mock<ITeamManager> mockTeamManager;
     private readonly CreateEventViewModel sut;
 
     private readonly List<EventType> defaultEventTypes =
@@ -32,12 +32,12 @@ public class CreateEventViewModelTests
         mockEventManager = new Mock<IMobEventManager>();
         mockEventTypeRestService = new Mock<IEventTypeRestService>();
         mockMapRestService = new Mock<IMapRestService>();
-        mockWaiverManager = new Mock<IWaiverManager>();
         mockNotificationService = new Mock<INotificationService>();
         mockEventPartnerLocationServiceRestService = new Mock<IEventPartnerLocationServiceRestService>();
         mockLitterReportManager = new Mock<ILitterReportManager>();
         mockEventLitterReportManager = new Mock<IEventLitterReportManager>();
         mockUserManager = new Mock<IUserManager>();
+        mockTeamManager = new Mock<ITeamManager>();
 
         var testUser = TestHelpers.CreateTestUser();
         mockUserManager.Setup(m => m.CurrentUser).Returns(testUser);
@@ -46,12 +46,12 @@ public class CreateEventViewModelTests
             mockEventManager.Object,
             mockEventTypeRestService.Object,
             mockMapRestService.Object,
-            mockWaiverManager.Object,
             mockNotificationService.Object,
             mockEventPartnerLocationServiceRestService.Object,
             mockLitterReportManager.Object,
             mockEventLitterReportManager.Object,
-            mockUserManager.Object);
+            mockUserManager.Object,
+            mockTeamManager.Object);
 
         // Set up Steps array with mock IContentView objects (5 steps in the wizard)
         var mockSteps = new IContentView[5];
@@ -65,15 +65,15 @@ public class CreateEventViewModelTests
 
     private void SetupDefaultMocks()
     {
-        mockWaiverManager.Setup(m => m.HasUserSignedTrashMobWaiverAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
-
         mockEventTypeRestService.Setup(m => m.GetEventTypesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(defaultEventTypes);
 
         mockEventPartnerLocationServiceRestService
             .Setup(m => m.GetEventPartnerLocationsAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<DisplayEventPartnerLocation>());
+
+        mockTeamManager.Setup(m => m.GetMyTeamsAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Team>());
     }
 
     [Fact]
@@ -90,7 +90,7 @@ public class CreateEventViewModelTests
     }
 
     [Fact]
-    public async Task Init_WithNoLitterReport_SetsDefaultTimes()
+    public async Task Init_WithNoLitterReport_SetsDefaultEventTime()
     {
         // Arrange
         SetupDefaultMocks();
@@ -99,8 +99,7 @@ public class CreateEventViewModelTests
         await sut.Init(null);
 
         // Assert
-        Assert.Equal(TimeSpan.FromHours(9), sut.StartTime);
-        Assert.Equal(TimeSpan.FromHours(11), sut.EndTime);
+        Assert.Equal(TimeSpan.FromHours(9), sut.EventViewModel.EventTime);
     }
 
     [Fact]
@@ -116,41 +115,6 @@ public class CreateEventViewModelTests
         Assert.Equal(2, sut.ETypes.Count);
         Assert.Contains("Cleanup", sut.ETypes);
         Assert.Contains("Beautification", sut.ETypes);
-    }
-
-    [Fact]
-    public async Task Init_ChecksWaiver()
-    {
-        // Arrange
-        SetupDefaultMocks();
-
-        // Act
-        await sut.Init(null);
-
-        // Assert
-        mockWaiverManager.Verify(m => m.HasUserSignedTrashMobWaiverAsync(It.IsAny<CancellationToken>()), Times.Once);
-    }
-
-    [Fact]
-    public async Task Init_WhenWaiverNotSigned_DoesNotThrow()
-    {
-        // Arrange
-        mockWaiverManager.Setup(m => m.HasUserSignedTrashMobWaiverAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
-
-        mockEventTypeRestService.Setup(m => m.GetEventTypesAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(defaultEventTypes);
-
-        mockEventPartnerLocationServiceRestService
-            .Setup(m => m.GetEventPartnerLocationsAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<DisplayEventPartnerLocation>());
-
-        // Act & Assert - Shell.Current is null in tests, so ExecuteAsync catches the exception
-        // We just verify the waiver check was called; the Shell navigation will fail silently
-        // via the BaseViewModel error handler
-        var exception = await Record.ExceptionAsync(() => sut.Init(null));
-
-        mockWaiverManager.Verify(m => m.HasUserSignedTrashMobWaiverAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -313,34 +277,34 @@ public class CreateEventViewModelTests
     }
 
     [Fact]
-    public async Task StartTime_EndTime_UpdatesDuration()
+    public async Task DurationHours_And_Minutes_SetCorrectly()
     {
         // Arrange
         SetupDefaultMocks();
         await sut.Init(null);
 
         // Act
-        sut.StartTime = TimeSpan.FromHours(8);
-        sut.EndTime = TimeSpan.FromHours(12);
+        sut.EventViewModel.DurationHours = 4;
+        sut.EventViewModel.DurationMinutes = 30;
 
         // Assert
         Assert.Equal(4, sut.EventViewModel.DurationHours);
-        Assert.Equal(0, sut.EventViewModel.DurationMinutes);
+        Assert.Equal(30, sut.EventViewModel.DurationMinutes);
     }
 
     [Fact]
-    public async Task FormattedEventDuration_ReturnsFormattedString()
+    public async Task DisplayDuration_ReturnsFormattedString()
     {
         // Arrange
         SetupDefaultMocks();
         await sut.Init(null);
 
         // Act
-        sut.StartTime = TimeSpan.FromHours(9);
-        sut.EndTime = new TimeSpan(11, 30, 0);
+        sut.EventViewModel.DurationHours = 2;
+        sut.EventViewModel.DurationMinutes = 30;
 
         // Assert
-        Assert.Equal("2 Hours and 30 Minutes", sut.FormattedEventDuration);
+        Assert.Equal("2h 30m", sut.EventViewModel.DisplayDuration);
     }
 
     [Fact]
@@ -351,8 +315,8 @@ public class CreateEventViewModelTests
         await sut.Init(null);
 
         // Act - set duration to 11 hours
-        sut.StartTime = TimeSpan.FromHours(0);
-        sut.EndTime = TimeSpan.FromHours(11);
+        sut.EventViewModel.DurationHours = 11;
+        sut.EventViewModel.DurationMinutes = 0;
 
         // Assert
         Assert.Equal("Event maximum duration can only be 10 hours", sut.EventDurationError);
@@ -366,8 +330,8 @@ public class CreateEventViewModelTests
         await sut.Init(null);
 
         // Act - set duration to 30 minutes
-        sut.StartTime = TimeSpan.FromHours(9);
-        sut.EndTime = new TimeSpan(9, 30, 0);
+        sut.EventViewModel.DurationHours = 0;
+        sut.EventViewModel.DurationMinutes = 30;
 
         // Assert
         Assert.Equal("Event minimum duration must be at least 1 hour", sut.EventDurationError);
@@ -438,7 +402,7 @@ public class CreateEventViewModelTests
         await sut.Init(null);
 
         // Assert
-        Assert.True(sut.EventViewModel.IsEventPublic);
+        Assert.Equal((int)EventVisibilityEnum.Public, sut.EventViewModel.EventVisibilityId);
         Assert.Equal(0, sut.EventViewModel.MaxNumberOfParticipants);
         Assert.Equal(2, sut.EventViewModel.DurationHours);
         Assert.Equal(0, sut.EventViewModel.DurationMinutes);
@@ -501,5 +465,92 @@ public class CreateEventViewModelTests
         // Assert
         Assert.Single(sut.Events);
         Assert.Same(sut.EventViewModel, sut.Events[0]);
+    }
+
+    [Fact]
+    public async Task SelectedVisibility_TeamOnly_ShowsTeamPicker()
+    {
+        // Arrange
+        SetupDefaultMocks();
+        await sut.Init(null);
+
+        // Act
+        sut.SelectedVisibility = "Team Only";
+
+        // Assert
+        Assert.True(sut.IsTeamPickerVisible);
+    }
+
+    [Fact]
+    public async Task SelectedVisibility_Public_HidesTeamPicker()
+    {
+        // Arrange
+        SetupDefaultMocks();
+        await sut.Init(null);
+
+        sut.SelectedVisibility = "Team Only";
+        Assert.True(sut.IsTeamPickerVisible);
+
+        // Act
+        sut.SelectedVisibility = "Public";
+
+        // Assert
+        Assert.False(sut.IsTeamPickerVisible);
+    }
+
+    [Fact]
+    public async Task SelectedVisibility_TeamOnly_SetsEventVisibilityId()
+    {
+        // Arrange
+        SetupDefaultMocks();
+        await sut.Init(null);
+
+        // Act
+        sut.SelectedVisibility = "Team Only";
+
+        // Assert
+        Assert.Equal((int)EventVisibilityEnum.TeamOnly, sut.EventViewModel.EventVisibilityId);
+    }
+
+    [Fact]
+    public async Task Init_SetsDefaultEventTime()
+    {
+        // Arrange
+        SetupDefaultMocks();
+
+        // Act
+        await sut.Init(null);
+
+        // Assert
+        Assert.Equal(TimeSpan.FromHours(9), sut.EventViewModel.EventTime);
+    }
+
+    [Fact]
+    public async Task Init_LoadsTeamNames()
+    {
+        // Arrange
+        var teams = new List<Team>
+        {
+            new Team { Id = Guid.NewGuid(), Name = "Green Warriors" },
+            new Team { Id = Guid.NewGuid(), Name = "Eco Squad" },
+        };
+
+        mockEventTypeRestService.Setup(m => m.GetEventTypesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(defaultEventTypes);
+
+        mockEventPartnerLocationServiceRestService
+            .Setup(m => m.GetEventPartnerLocationsAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<DisplayEventPartnerLocation>());
+
+        mockTeamManager.Setup(m => m.GetMyTeamsAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(teams);
+
+        // Act
+        await sut.Init(null);
+
+        // Assert
+        Assert.Equal(2, sut.TeamNames.Count);
+        Assert.Contains("Green Warriors", sut.TeamNames);
+        Assert.Contains("Eco Squad", sut.TeamNames);
     }
 }

@@ -8,17 +8,17 @@ using Xunit;
 public class WaiverViewModelTests
 {
     private readonly Mock<INotificationService> mockNotificationService;
-    private readonly Mock<IUserManager> mockUserManager;
+    private readonly Mock<IWaiverManager> mockWaiverManager;
     private readonly WaiverViewModel sut;
 
     public WaiverViewModelTests()
     {
         mockNotificationService = new Mock<INotificationService>();
-        mockUserManager = new Mock<IUserManager>();
+        mockWaiverManager = new Mock<IWaiverManager>();
 
         sut = new WaiverViewModel(
             mockNotificationService.Object,
-            mockUserManager.Object);
+            mockWaiverManager.Object);
     }
 
     [Fact]
