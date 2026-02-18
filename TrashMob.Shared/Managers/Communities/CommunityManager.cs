@@ -362,10 +362,13 @@ namespace TrashMob.Shared.Managers.Communities
             existing.Website = community.Website;
             existing.RegionType = community.RegionType;
             existing.CountyName = community.CountyName;
+            existing.Latitude = community.Latitude;
+            existing.Longitude = community.Longitude;
             existing.BoundsNorth = community.BoundsNorth;
             existing.BoundsSouth = community.BoundsSouth;
             existing.BoundsEast = community.BoundsEast;
             existing.BoundsWest = community.BoundsWest;
+            existing.BoundaryGeoJson = community.BoundaryGeoJson;
             existing.DefaultCleanupFrequencyDays = community.DefaultCleanupFrequencyDays;
             existing.DefaultMinEventsPerYear = community.DefaultMinEventsPerYear;
             existing.DefaultSafetyRequirements = community.DefaultSafetyRequirements;
