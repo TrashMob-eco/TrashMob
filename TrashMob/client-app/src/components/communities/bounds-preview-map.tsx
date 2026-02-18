@@ -73,7 +73,7 @@ export const BoundsPreviewMap = (props: BoundsPreviewMapProps) => {
     return (
         <Card>
             <CardHeader className='pb-3'>
-                <CardTitle className='text-lg'>Bounds Preview</CardTitle>
+                <CardTitle className='text-lg'>Boundary Preview</CardTitle>
             </CardHeader>
             <CardContent>
                 <div className='h-[300px] rounded-lg overflow-hidden'>
@@ -107,7 +107,7 @@ export const BoundsPreviewMap = (props: BoundsPreviewMapProps) => {
                 </div>
                 {!hasBounds && !hasGeoJson ? (
                     <p className='text-sm text-muted-foreground mt-2'>
-                        Enter bounding box coordinates above or use Auto-detect to see a preview.
+                        Use Detect Boundary to see a preview of your community&rsquo;s geographic area.
                     </p>
                 ) : null}
             </CardContent>
