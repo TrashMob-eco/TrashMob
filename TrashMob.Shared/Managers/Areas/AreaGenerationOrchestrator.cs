@@ -105,15 +105,7 @@ namespace TrashMob.Shared.Managers.Areas
 
                     batch.ProcessedCount++;
 
-                    // Skip features with no useful geometry
-                    if (string.IsNullOrEmpty(feature.GeoJson))
-                    {
-                        batch.SkippedCount++;
-                        await batchManager.UpdateAsync(batch, cancellationToken);
-                        continue;
-                    }
-
-                    // Skip features with no name (except city blocks which may have only display names)
+                    // Skip features with no name
                     var name = !string.IsNullOrWhiteSpace(feature.Name) ? feature.Name.Trim() : null;
                     if (name == null)
                     {
