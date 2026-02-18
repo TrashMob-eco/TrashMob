@@ -206,6 +206,7 @@ export interface SuggestedBoundsData {
     centerLatitude: number;
     centerLongitude: number;
     query: string;
+    boundaryGeoJson?: string;
 }
 
 export type SuggestCommunityBounds_Params = { communityId: string };

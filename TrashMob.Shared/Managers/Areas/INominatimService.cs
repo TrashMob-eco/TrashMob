@@ -42,6 +42,32 @@ namespace TrashMob.Shared.Managers.Areas
         Task<(double North, double South, double East, double West)?> LookupBoundsAsync(
             string query,
             CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Looks up geographic bounding box AND polygon geometry for a location query (single Nominatim call).
+        /// </summary>
+        /// <param name="query">Location query string (e.g., "Issaquah, Washington, United States").</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Bounds with optional GeoJSON polygon, or null if not found.</returns>
+        Task<BoundsWithGeometry?> LookupBoundsWithGeometryAsync(
+            string query,
+            CancellationToken cancellationToken = default);
+    }
+
+    /// <summary>
+    /// Bounding box with optional polygon geometry from Nominatim.
+    /// </summary>
+    public class BoundsWithGeometry
+    {
+        public double North { get; set; }
+        public double South { get; set; }
+        public double East { get; set; }
+        public double West { get; set; }
+
+        /// <summary>
+        /// Serialized GeoJSON geometry (Polygon or LineString), or null if no polygon was returned.
+        /// </summary>
+        public string? GeoJson { get; set; }
     }
 
     public class NominatimResult

@@ -166,6 +166,12 @@ namespace TrashMob.Models
         public double? BoundsWest { get; set; }
 
         /// <summary>
+        /// Gets or sets the GeoJSON polygon representing the actual geographic boundary of the community.
+        /// Derived from Nominatim and stored for rendering on maps.
+        /// </summary>
+        public string BoundaryGeoJson { get; set; }
+
+        /// <summary>
         /// Gets or sets the URL of the community logo (200x200).
         /// </summary>
         public string LogoUrl { get; set; }

@@ -367,7 +367,7 @@ namespace TrashMob.Controllers
             }
 
             var query = string.Join(", ", queryParts);
-            var bounds = await nominatimService.LookupBoundsAsync(query, cancellationToken);
+            var bounds = await nominatimService.LookupBoundsWithGeometryAsync(query, cancellationToken);
 
             if (bounds is null)
             {
@@ -376,13 +376,14 @@ namespace TrashMob.Controllers
 
             var result = new SuggestedBounds
             {
-                North = bounds.Value.North,
-                South = bounds.Value.South,
-                East = bounds.Value.East,
-                West = bounds.Value.West,
-                CenterLatitude = (bounds.Value.North + bounds.Value.South) / 2.0,
-                CenterLongitude = (bounds.Value.East + bounds.Value.West) / 2.0,
+                North = bounds.North,
+                South = bounds.South,
+                East = bounds.East,
+                West = bounds.West,
+                CenterLatitude = (bounds.North + bounds.South) / 2.0,
+                CenterLongitude = (bounds.East + bounds.West) / 2.0,
                 Query = query,
+                BoundaryGeoJson = bounds.GeoJson,
             };
 
             TrackEvent(nameof(SuggestBounds));

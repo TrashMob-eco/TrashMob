@@ -27,5 +27,8 @@ namespace TrashMob.Models.Poco
 
         /// <summary>The query string that was sent to Nominatim.</summary>
         public string Query { get; set; } = string.Empty;
+
+        /// <summary>GeoJSON polygon of the actual geographic boundary (if available).</summary>
+        public string? BoundaryGeoJson { get; set; }
     }
 }

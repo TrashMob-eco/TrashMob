@@ -898,6 +898,9 @@
                 entity.Property(e => e.ContactPhone).HasMaxLength(50);
                 entity.Property(e => e.PhysicalAddress).HasMaxLength(500);
 
+                // Boundary GeoJSON (can be large – use nvarchar(max))
+                entity.Property(e => e.BoundaryGeoJson).HasColumnType("nvarchar(max)");
+
                 // Adoptable Area Defaults
                 entity.Property(e => e.DefaultSafetyRequirements).HasMaxLength(4000);
 

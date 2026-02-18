@@ -27,9 +27,12 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 import AdoptableAreaData, { AdoptableAreaStatus } from '@/components/Models/AdoptableAreaData';
+import CommunityData from '@/components/Models/CommunityData';
 import { GetAdoptableAreas, DeleteAdoptableArea, ExportAreas } from '@/services/adoptable-areas';
+import { GetCommunityForAdmin } from '@/services/communities';
 import { GoogleMapWithKey } from '@/components/Map/GoogleMap';
 import { ExistingAreasOverlay } from '@/components/Map/AreaMapEditor/ExistingAreasOverlay';
+import { CommunityBoundsOverlay } from '@/components/Map/CommunityBoundsOverlay';
 import { AreaStatusLegend } from '@/components/Map/AreaMapEditor/AreaStatusLegend';
 
 const statusColors: Record<AdoptableAreaStatus, string> = {
@@ -46,6 +49,13 @@ export const PartnerCommunityAreas = () => {
     const { partnerId } = useParams<{ partnerId: string }>() as { partnerId: string };
     const { toast } = useToast();
     const [viewMode, setViewMode] = useState<'table' | 'map'>('table');
+
+    const { data: community } = useQuery<AxiosResponse<CommunityData>, unknown, CommunityData>({
+        queryKey: GetCommunityForAdmin({ communityId: partnerId }).key,
+        queryFn: GetCommunityForAdmin({ communityId: partnerId }).service,
+        select: (res) => res.data,
+        enabled: !!partnerId,
+    });
 
     const { data: areas, isLoading } = useQuery<AxiosResponse<AdoptableAreaData[]>, unknown, AdoptableAreaData[]>({
         queryKey: GetAdoptableAreas({ partnerId }).key,
@@ -194,6 +204,12 @@ export const PartnerCommunityAreas = () => {
                             <div className='space-y-2'>
                                 <div className='h-[500px] rounded-md overflow-hidden border'>
                                     <GoogleMapWithKey id={OVERVIEW_MAP_ID} style={{ width: '100%', height: '500px' }}>
+                                        {community?.boundaryGeoJson ? (
+                                            <CommunityBoundsOverlay
+                                                mapId={OVERVIEW_MAP_ID}
+                                                geoJson={community.boundaryGeoJson}
+                                            />
+                                        ) : null}
                                         <ExistingAreasOverlay mapId={OVERVIEW_MAP_ID} areas={areas} fitBounds />
                                     </GoogleMapWithKey>
                                 </div>
