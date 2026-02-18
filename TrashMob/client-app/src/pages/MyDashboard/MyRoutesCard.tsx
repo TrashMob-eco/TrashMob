@@ -47,7 +47,9 @@ const RoutesMapView = ({ routes }: { routes: DisplayUserRouteHistory[] }) => {
     const routesWithLocation = routes.filter((r) => r.eventLatitude !== 0 && r.eventLongitude !== 0);
 
     if (routesWithLocation.length === 0) {
-        return <p className='text-sm text-muted-foreground py-4 text-center'>No routes with location data available.</p>;
+        return (
+            <p className='text-sm text-muted-foreground py-4 text-center'>No routes with location data available.</p>
+        );
     }
 
     const avgLat = routesWithLocation.reduce((sum, r) => sum + r.eventLatitude, 0) / routesWithLocation.length;
