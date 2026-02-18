@@ -69,5 +69,10 @@
         /// Gets or sets the end time of the route.
         /// </summary>
         public DateTimeOffset EndTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the GPS path coordinates for map display.
+        /// </summary>
+        public List<SortableLocation> Locations { get; set; } = [];
     }
 }

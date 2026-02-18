@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router';
-import { AdvancedMarker, InfoWindow } from '@vis.gl/react-google-maps';
+import { useMap, InfoWindow } from '@vis.gl/react-google-maps';
 import { List, Map as MapIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -34,63 +34,125 @@ const privacyColors: Record<string, string> = {
     Private: 'bg-red-100 text-red-700',
 };
 
-const RouteMarkerPin = () => (
-    <svg width='28' height='36' viewBox='0 0 28 36' fill='none' xmlns='http://www.w3.org/2000/svg'>
-        <path d='M14 0C6.268 0 0 6.268 0 14c0 10.5 14 22 14 22s14-11.5 14-22C28 6.268 21.732 0 14 0z' fill='#7C3AED' />
-        <circle cx='14' cy='14' r='6' fill='white' />
-    </svg>
-);
+// Distinct colors for different routes
+const ROUTE_COLORS = ['#7C3AED', '#E11D48', '#F59E0B', '#10B981', '#3B82F6', '#EC4899', '#8B5CF6', '#14B8A6'];
+
+const RoutePolylines = ({
+    routes,
+    onRouteClick,
+}: {
+    routes: DisplayUserRouteHistory[];
+    onRouteClick: (route: DisplayUserRouteHistory, position: google.maps.LatLngLiteral) => void;
+}) => {
+    const map = useMap(MY_ROUTES_MAP_ID);
+    const polylinesRef = useRef<google.maps.Polyline[]>([]);
+
+    useEffect(() => {
+        if (!map) return;
+
+        // Clear previous polylines
+        polylinesRef.current.forEach((p) => p.setMap(null));
+        polylinesRef.current = [];
+
+        const routesWithPath = routes.filter((r) => r.locations && r.locations.length >= 2);
+
+        // Fit map to all route bounds
+        if (routesWithPath.length > 0) {
+            const bounds = new google.maps.LatLngBounds();
+            routesWithPath.forEach((route) => {
+                route.locations.forEach((loc) => bounds.extend({ lat: loc.latitude, lng: loc.longitude }));
+            });
+            map.fitBounds(bounds, 40);
+        }
+
+        routesWithPath.forEach((route, index) => {
+            const path = route.locations
+                .sort((a, b) => a.sortOrder - b.sortOrder)
+                .map((loc) => ({ lat: loc.latitude, lng: loc.longitude }));
+
+            const color = ROUTE_COLORS[index % ROUTE_COLORS.length];
+
+            const polyline = new google.maps.Polyline({
+                map,
+                path,
+                strokeColor: color,
+                strokeOpacity: 0.9,
+                strokeWeight: 4,
+                clickable: true,
+                zIndex: 1,
+            });
+
+            polyline.addListener('click', (e: google.maps.MapMouseEvent) => {
+                const position = e.latLng
+                    ? { lat: e.latLng.lat(), lng: e.latLng.lng() }
+                    : { lat: route.eventLatitude, lng: route.eventLongitude };
+                onRouteClick(route, position);
+            });
+
+            polylinesRef.current.push(polyline);
+        });
+
+        return () => {
+            polylinesRef.current.forEach((p) => p.setMap(null));
+            polylinesRef.current = [];
+        };
+    }, [map, routes, onRouteClick]);
+
+    return null;
+};
 
 const RoutesMapView = ({ routes }: { routes: DisplayUserRouteHistory[] }) => {
-    const [selectedRoute, setSelectedRoute] = useState<DisplayUserRouteHistory | null>(null);
+    const [selectedRoute, setSelectedRoute] = useState<{
+        route: DisplayUserRouteHistory;
+        position: google.maps.LatLngLiteral;
+    } | null>(null);
 
-    const routesWithLocation = routes.filter((r) => r.eventLatitude !== 0 && r.eventLongitude !== 0);
+    const routesWithPath = routes.filter((r) => r.locations && r.locations.length >= 2);
 
-    if (routesWithLocation.length === 0) {
+    // Fall back to event location for routes without GPS path data
+    const routesWithLocationOnly = routes.filter(
+        (r) => (!r.locations || r.locations.length < 2) && r.eventLatitude !== 0 && r.eventLongitude !== 0,
+    );
+
+    if (routesWithPath.length === 0 && routesWithLocationOnly.length === 0) {
         return (
             <p className='text-sm text-muted-foreground py-4 text-center'>No routes with location data available.</p>
         );
     }
 
-    const avgLat = routesWithLocation.reduce((sum, r) => sum + r.eventLatitude, 0) / routesWithLocation.length;
-    const avgLng = routesWithLocation.reduce((sum, r) => sum + r.eventLongitude, 0) / routesWithLocation.length;
+    const defaultCenter =
+        routesWithPath.length > 0
+            ? { lat: routesWithPath[0].locations[0].latitude, lng: routesWithPath[0].locations[0].longitude }
+            : { lat: routesWithLocationOnly[0].eventLatitude, lng: routesWithLocationOnly[0].eventLongitude };
 
     return (
         <div className='rounded-md overflow-hidden border'>
             <GoogleMapWithKey
                 id={MY_ROUTES_MAP_ID}
                 style={{ width: '100%', height: '400px' }}
-                defaultCenter={{ lat: avgLat, lng: avgLng }}
-                defaultZoom={10}
+                defaultCenter={defaultCenter}
+                defaultZoom={12}
             >
-                {routesWithLocation.map((route) => (
-                    <AdvancedMarker
-                        key={route.routeId}
-                        position={{ lat: route.eventLatitude, lng: route.eventLongitude }}
-                        onClick={() => setSelectedRoute(route)}
-                    >
-                        <RouteMarkerPin />
-                    </AdvancedMarker>
-                ))}
+                <RoutePolylines
+                    routes={routesWithPath}
+                    onRouteClick={(route, position) => setSelectedRoute({ route, position })}
+                />
 
                 {selectedRoute ? (
-                    <InfoWindow
-                        position={{ lat: selectedRoute.eventLatitude, lng: selectedRoute.eventLongitude }}
-                        onCloseClick={() => setSelectedRoute(null)}
-                    >
+                    <InfoWindow position={selectedRoute.position} onCloseClick={() => setSelectedRoute(null)}>
                         <div className='text-sm space-y-1 max-w-[200px]'>
                             <Link
-                                to={`/eventdetails/${selectedRoute.eventId}`}
+                                to={`/eventdetails/${selectedRoute.route.eventId}`}
                                 className='font-semibold text-primary hover:underline block'
                             >
-                                {selectedRoute.eventName || 'Unknown Event'}
+                                {selectedRoute.route.eventName || 'Unknown Event'}
                             </Link>
                             <p className='text-muted-foreground'>
-                                {moment(selectedRoute.eventDate).format('MM/DD/YYYY')}
+                                {moment(selectedRoute.route.eventDate).format('MM/DD/YYYY')}
                             </p>
                             <div className='flex gap-3'>
-                                <span>{formatDistance(selectedRoute.totalDistanceMeters)}</span>
-                                <span>{formatDuration(selectedRoute.durationMinutes)}</span>
+                                <span>{formatDistance(selectedRoute.route.totalDistanceMeters)}</span>
+                                <span>{formatDuration(selectedRoute.route.durationMinutes)}</span>
                             </div>
                         </div>
                     </InfoWindow>
