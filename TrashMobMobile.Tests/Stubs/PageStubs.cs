@@ -40,3 +40,5 @@ internal class NewsletterPreferencesPage { }
 internal class ViewTeamPage { }
 internal class BrowseCommunitiesPage { }
 internal class ViewCommunityPage { }
+internal class WaiverListPage { }
+internal class AgeGatePage { }

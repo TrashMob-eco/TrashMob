@@ -181,7 +181,7 @@ public class HomeFeedViewModelTests
     }
 
     [Fact]
-    public async Task Init_LimitsLitterReportsTo5()
+    public async Task Init_LimitsLitterReportsTo3()
     {
         // Arrange
         SetupDefaultEventMock();
@@ -199,7 +199,7 @@ public class HomeFeedViewModelTests
         await sut.Init();
 
         // Assert
-        Assert.Equal(5, sut.NearbyLitterReports.Count);
+        Assert.Equal(3, sut.NearbyLitterReports.Count);
     }
 
     [Fact]

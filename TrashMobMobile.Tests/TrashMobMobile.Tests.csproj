@@ -23,6 +23,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.31" />
+    <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.31" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="CommunityToolkit.Maui" Version="13.0.0" />
     <PackageReference Include="Sentry.Maui" Version="6.0.0" />
@@ -68,7 +69,8 @@
   <ItemGroup>
     <Compile Include="..\TrashMobMobile\Config\Settings.cs" Link="LinkedSource\Config\Settings.cs" />
     <Compile Include="..\TrashMobMobile\DateRanges.cs" Link="LinkedSource\DateRanges.cs" />
-    <Compile Include="..\TrashMobMobile\Models\WaiverVersion.cs" Link="LinkedSource\Models\WaiverVersion.cs" />
+
+    <Compile Include="..\TrashMobMobile\Models\AcceptWaiverApiRequest.cs" Link="LinkedSource\Models\AcceptWaiverApiRequest.cs" />
     <Compile Include="..\TrashMobMobile\Models\EventCancellationRequest.cs" Link="LinkedSource\Models\EventCancellationRequest.cs" />
     <Compile Include="..\TrashMobMobile\Models\ImageUpload.cs" Link="LinkedSource\Models\ImageUpload.cs" />
     <Compile Include="..\TrashMobMobile\Models\PickupLocationImage.cs" Link="LinkedSource\Models\PickupLocationImage.cs" />
