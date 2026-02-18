@@ -41,4 +41,5 @@ export interface DisplayUserRouteHistory {
     eventLongitude: number;
     startTime: string;
     endTime: string;
+    locations: SortableLocation[];
 }

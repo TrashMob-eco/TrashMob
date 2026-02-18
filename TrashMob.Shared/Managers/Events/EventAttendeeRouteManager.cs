@@ -117,6 +117,7 @@ namespace TrashMob.Shared.Managers.Events
                 EventLongitude = r.Event?.Longitude ?? 0,
                 StartTime = r.StartTime,
                 EndTime = r.EndTime,
+                Locations = ExtractLocations(r.UserPath),
             });
         }
 
@@ -166,6 +167,28 @@ namespace TrashMob.Shared.Managers.Events
 
             var updated = await Repository.UpdateAsync(route);
             return ServiceResult<EventAttendeeRoute>.Success(updated);
+        }
+
+        private static List<SortableLocation> ExtractLocations(Geometry userPath)
+        {
+            if (userPath is not LineString lineString || lineString.NumPoints < 2)
+            {
+                return [];
+            }
+
+            var locations = new List<SortableLocation>();
+            var order = 0;
+            foreach (var coordinate in lineString.Coordinates)
+            {
+                locations.Add(new SortableLocation
+                {
+                    Latitude = coordinate.Y,
+                    Longitude = coordinate.X,
+                    SortOrder = order++,
+                });
+            }
+
+            return locations;
         }
 
         private const double GridCellSizeMeters = 25.0;
