@@ -2,7 +2,19 @@ import { useCallback, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
-import { Loader2, Plus, Pencil, Trash2, MapPin, Upload, Download, List, Map as MapIcon, Sparkles } from 'lucide-react';
+import {
+    Loader2,
+    Plus,
+    Pencil,
+    Trash2,
+    MapPin,
+    Upload,
+    Download,
+    List,
+    Map as MapIcon,
+    Sparkles,
+    MoreHorizontal,
+} from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -23,6 +35,7 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
@@ -49,6 +62,7 @@ export const PartnerCommunityAreas = () => {
     const { partnerId } = useParams<{ partnerId: string }>() as { partnerId: string };
     const { toast } = useToast();
     const [viewMode, setViewMode] = useState<'table' | 'map'>('table');
+    const [clearAllDialogOpen, setClearAllDialogOpen] = useState(false);
 
     const { data: community } = useQuery<AxiosResponse<CommunityData>, unknown, CommunityData>({
         queryKey: GetCommunityForAdmin({ communityId: partnerId }).key,
@@ -105,7 +119,7 @@ export const PartnerCommunityAreas = () => {
             toast({
                 variant: 'primary',
                 title: 'All areas cleared',
-                description: `Removed ${data.areasDeactivated} areas, ${data.batchesDeleted} generation batches, and ${data.stagedAreasDeleted} staged areas.`,
+                description: `Removed ${data.areasRemoved} areas, ${data.batchesDeleted} generation batches, and ${data.stagedAreasDeleted} staged areas.`,
             });
         },
         onError: () => {
@@ -195,65 +209,68 @@ export const PartnerCommunityAreas = () => {
                             <Sparkles className='h-4 w-4 mr-2' />
                             Generate
                         </Button>
-                        <Button
-                            variant='outline'
-                            onClick={() => navigate(`/partnerdashboard/${partnerId}/community/areas/import`)}
-                        >
-                            <Upload className='h-4 w-4 mr-2' />
-                            Import
-                        </Button>
-                        {hasAreas ? (
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant='outline'>
-                                        <Download className='h-4 w-4 mr-2' />
-                                        Export
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent>
-                                    <DropdownMenuItem onClick={() => handleExport('geojson')}>
-                                        Export as GeoJSON
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => handleExport('kml')}>
-                                        Export as KML
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        ) : null}
-                        {hasAreas ? (
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <Button variant='destructive' disabled={isClearing}>
-                                        <Trash2 className='h-4 w-4 mr-2' />
-                                        Clear All
-                                    </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>Clear All Areas?</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            This will permanently remove ALL {areas.length} adoptable areas and delete
-                                            all AI generation history (batches and staged areas) for this community.
-                                            This action cannot be undone. Are you REALLY sure?
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction
-                                            className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
-                                            onClick={handleClearAll}
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant='outline'>
+                                    <MoreHorizontal className='h-4 w-4' />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align='end'>
+                                <DropdownMenuItem
+                                    onClick={() => navigate(`/partnerdashboard/${partnerId}/community/areas/import`)}
+                                >
+                                    <Upload className='h-4 w-4 mr-2' />
+                                    Import
+                                </DropdownMenuItem>
+                                {hasAreas ? (
+                                    <>
+                                        <DropdownMenuItem onClick={() => handleExport('geojson')}>
+                                            <Download className='h-4 w-4 mr-2' />
+                                            Export as GeoJSON
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => handleExport('kml')}>
+                                            <Download className='h-4 w-4 mr-2' />
+                                            Export as KML
+                                        </DropdownMenuItem>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem
+                                            className='text-destructive focus:text-destructive'
+                                            disabled={isClearing}
+                                            onClick={() => setClearAllDialogOpen(true)}
                                         >
-                                            Yes, Clear Everything
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                        ) : null}
+                                            <Trash2 className='h-4 w-4 mr-2' />
+                                            Clear All Areas
+                                        </DropdownMenuItem>
+                                    </>
+                                ) : null}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                         <Button onClick={() => navigate(`/partnerdashboard/${partnerId}/community/areas/create`)}>
                             <Plus className='h-4 w-4 mr-2' />
                             Add Area
                         </Button>
                     </div>
+                    <AlertDialog open={clearAllDialogOpen} onOpenChange={setClearAllDialogOpen}>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Clear All Areas?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This will permanently remove ALL {areas?.length ?? 0} adoptable areas and delete all
+                                    AI generation history (batches and staged areas) for this community. This action
+                                    cannot be undone. Are you REALLY sure?
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                    className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
+                                    onClick={handleClearAll}
+                                >
+                                    Yes, Clear Everything
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
                 </CardHeader>
                 <CardContent>
                     {hasAreas ? (

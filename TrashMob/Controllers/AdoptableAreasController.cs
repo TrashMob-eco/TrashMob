@@ -465,7 +465,8 @@ namespace TrashMob.Controllers
 
         /// <summary>
         /// Clears all adoptable areas, staged areas, and generation batches for a community.
-        /// Adoptable areas are soft-deleted (deactivated). Generation batches and staged areas are hard-deleted.
+        /// Areas without adoptions are hard-deleted; areas with adoptions are soft-deleted (deactivated).
+        /// Generation batches and staged areas are hard-deleted.
         /// </summary>
         /// <param name="partnerId">The community (partner) ID.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
@@ -497,7 +498,7 @@ namespace TrashMob.Controllers
 
             return Ok(new AreaBulkClearResult
             {
-                AreasDeactivated = areasDeactivated,
+                AreasRemoved = areasDeactivated,
                 StagedAreasDeleted = stagedAreasDeleted,
                 BatchesDeleted = batchesDeleted,
             });

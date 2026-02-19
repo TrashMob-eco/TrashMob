@@ -61,12 +61,13 @@ namespace TrashMob.Shared.Managers.Interfaces
             CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Deactivates all adoptable areas for a community (soft delete).
+        /// Deletes all adoptable areas for a community. Hard-deletes areas with no adoptions;
+        /// soft-deletes (deactivates) areas that have team or sponsored adoptions.
         /// </summary>
         /// <param name="partnerId">The community (partner) ID.</param>
         /// <param name="userId">The ID of the user performing the operation.</param>
         /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
-        /// <returns>The number of areas deactivated.</returns>
+        /// <returns>The number of areas removed.</returns>
         Task<int> ClearAllByPartnerAsync(
             Guid partnerId,
             Guid userId,

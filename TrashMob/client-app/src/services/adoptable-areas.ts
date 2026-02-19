@@ -94,7 +94,7 @@ export const DeleteAdoptableArea = () => ({
 });
 
 export type ClearAllAreas_Params = { partnerId: string };
-export type ClearAllAreas_Response = { areasDeactivated: number; stagedAreasDeleted: number; batchesDeleted: number };
+export type ClearAllAreas_Response = { areasRemoved: number; stagedAreasDeleted: number; batchesDeleted: number };
 export const ClearAllAreas = () => ({
     key: ['/communities/areas', 'clear-all'],
     service: async (params: ClearAllAreas_Params) =>
