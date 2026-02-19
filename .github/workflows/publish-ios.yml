@@ -45,6 +45,9 @@ jobs:
                 ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
                 PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
 
+            - name: Unlock keychain
+              run: security unlock-keychain -p "" ~/Library/Keychains/login.keychain-db || true
+
             - name: Upload signed IPA
               uses: apple-actions/upload-testflight-build@v4
               with:
