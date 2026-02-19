@@ -64,14 +64,23 @@ namespace TrashMob.Shared.Managers.Areas
                               partner.BoundsEast.Value, partner.BoundsWest.Value);
                 }
 
-                // Map user-facing category to Nominatim search queries
-                var searchQueries = MapCategoryToSearchQueries(batch.Category);
+                // Discover features: use Overpass for tag-based queries, Nominatim for text search
                 var allDiscovered = new List<NominatimResult>();
+                var overpassQuery = MapCategoryToOverpassQuery(batch.Category);
 
-                foreach (var query in searchQueries)
+                if (!string.IsNullOrEmpty(overpassQuery))
                 {
-                    var results = await nominatimService.SearchByCategoryAsync(query, bounds.Value, cancellationToken);
+                    var results = await nominatimService.SearchByOverpassAsync(overpassQuery, bounds.Value, cancellationToken);
                     allDiscovered.AddRange(results);
+                }
+                else
+                {
+                    var searchQueries = MapCategoryToSearchQueries(batch.Category);
+                    foreach (var query in searchQueries)
+                    {
+                        var results = await nominatimService.SearchByCategoryAsync(query, bounds.Value, cancellationToken);
+                        allDiscovered.AddRange(results);
+                    }
                 }
 
                 // For highway sections, split LineString results into mile-length segments
@@ -245,18 +254,28 @@ namespace TrashMob.Shared.Managers.Areas
         }
 
         /// <summary>
-        /// Maps a user-facing category to one or more Nominatim search queries.
-        /// Some categories require multiple queries to get comprehensive results.
+        /// Maps a user-facing category to an Overpass QL query for tag-based OSM search.
+        /// Returns empty string for categories that work better with Nominatim text search.
+        /// {{bbox}} is replaced with the actual bounding box at query time.
         /// </summary>
-        private static List<string> MapCategoryToSearchQueries(string category)
+        private static string MapCategoryToOverpassQuery(string category)
         {
             return category.ToLowerInvariant() switch
             {
-                "interchange" => ["interchange", "motorway_junction"],
-                "cityblock" => ["neighbourhood", "city block"],
-                "highwaysection" => ["motorway", "trunk road", "interstate"],
-                _ => [category],
+                "interchange" => "[out:json][timeout:60];(node[\"highway\"=\"motorway_junction\"]({{bbox}}););out body;",
+                "cityblock" => "[out:json][timeout:60];(way[\"place\"=\"neighbourhood\"]({{bbox}});relation[\"place\"=\"neighbourhood\"]({{bbox}});way[\"place\"=\"city_block\"]({{bbox}}););out body geom;",
+                "highwaysection" => "[out:json][timeout:60];(way[\"highway\"=\"motorway\"]({{bbox}});way[\"highway\"=\"trunk\"]({{bbox}}););out body geom;",
+                _ => "", // Use Nominatim text search for school, park, trail, etc.
             };
+        }
+
+        /// <summary>
+        /// Maps a user-facing category to one or more Nominatim search queries (text-based).
+        /// Used as fallback when no Overpass query is defined.
+        /// </summary>
+        private static List<string> MapCategoryToSearchQueries(string category)
+        {
+            return [category];
         }
 
         private static string MapCategoryToAreaType(string category)

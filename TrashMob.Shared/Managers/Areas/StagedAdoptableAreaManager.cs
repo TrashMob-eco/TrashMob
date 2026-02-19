@@ -80,6 +80,8 @@ namespace TrashMob.Shared.Managers.Areas
                 AreaType = staged.AreaType,
                 GeoJson = staged.GeoJson,
                 PartnerId = staged.PartnerId,
+                StartLatitude = staged.CenterLatitude,
+                StartLongitude = staged.CenterLongitude,
             });
 
             var batch = await batchManager.GetAsync(batchId, cancellationToken);
