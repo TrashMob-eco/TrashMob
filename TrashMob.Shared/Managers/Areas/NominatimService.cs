@@ -549,9 +549,18 @@ namespace TrashMob.Shared.Managers.Areas
                         lon = sumLon / count;
                     }
 
-                    if (coords.Count >= 2)
+                    if (coords.Count >= 4
+                        && coords[0][0] == coords[^1][0]
+                        && coords[0][1] == coords[^1][1])
                     {
-                        geoJson = JsonSerializer.Serialize(new { type = "LineString", coordinates = coords }, JsonOptions);
+                        // Closed way → Polygon (e.g., neighborhood boundary, school outline)
+                        geoJson = JsonSerializer.Serialize(
+                            new { type = "Polygon", coordinates = new[] { coords } }, JsonOptions);
+                    }
+                    else if (coords.Count >= 2)
+                    {
+                        geoJson = JsonSerializer.Serialize(
+                            new { type = "LineString", coordinates = coords }, JsonOptions);
                     }
                 }
 

@@ -102,6 +102,10 @@ export const ExistingAreasOverlay = ({ mapId, areas, excludeAreaId, fitBounds }:
 
                 line.addListener('click', (e: google.maps.MapMouseEvent) => showInfoWindow(area, e.latLng));
                 overlaysRef.current.push(line);
+            } else if (parsed.type === 'Point') {
+                // Point geometry: render as a pin marker (no polygon outline available)
+                const [lng, lat] = parsed.coordinates;
+                path = [{ lat, lng }];
             } else {
                 return;
             }
@@ -112,7 +116,7 @@ export const ExistingAreasOverlay = ({ mapId, areas, excludeAreaId, fitBounds }:
             }
 
             // Add centroid status marker
-            const centroid = computeCentroid(path);
+            const centroid = path.length === 1 ? path[0] : computeCentroid(path);
             const markerColor = STATUS_MARKER_COLOR[area.status] ?? STATUS_MARKER_COLOR.Available;
 
             const marker = new google.maps.Marker({
