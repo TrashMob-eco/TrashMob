@@ -217,9 +217,7 @@ export const PartnerCommunityAreas = () => {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align='end'>
                                 <DropdownMenuItem
-                                    onClick={() =>
-                                        navigate(`/partnerdashboard/${partnerId}/community/areas/import`)
-                                    }
+                                    onClick={() => navigate(`/partnerdashboard/${partnerId}/community/areas/import`)}
                                 >
                                     <Upload className='h-4 w-4 mr-2' />
                                     Import
@@ -257,9 +255,9 @@ export const PartnerCommunityAreas = () => {
                             <AlertDialogHeader>
                                 <AlertDialogTitle>Clear All Areas?</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                    This will permanently remove ALL {areas?.length ?? 0} adoptable areas and
-                                    delete all AI generation history (batches and staged areas) for this community.
-                                    This action cannot be undone. Are you REALLY sure?
+                                    This will permanently remove ALL {areas?.length ?? 0} adoptable areas and delete all
+                                    AI generation history (batches and staged areas) for this community. This action
+                                    cannot be undone. Are you REALLY sure?
                                 </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
