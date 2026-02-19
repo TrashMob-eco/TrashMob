@@ -83,11 +83,17 @@ namespace TrashMob.Shared.Managers.Areas
                     }
                 }
 
-                // For highway sections, split LineString results into mile-length segments
+                // Post-process discovered features based on category
                 List<NominatimResult> discovered;
                 if (batch.Category.Equals("HighwaySection", StringComparison.OrdinalIgnoreCase))
                 {
                     discovered = SplitHighwaysIntoSections(allDiscovered);
+                }
+                else if (batch.Category.Equals("Street", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Streets: OSM has many segments per street (one per block).
+                    // Deduplicate by name — keep only the first segment for each unique street name.
+                    discovered = DeduplicateByName(allDiscovered);
                 }
                 else
                 {
@@ -265,6 +271,7 @@ namespace TrashMob.Shared.Managers.Areas
                 "interchange" => "[out:json][timeout:60];(node[\"highway\"=\"motorway_junction\"]({{bbox}}););out body;",
                 "cityblock" => "[out:json][timeout:60];(way[\"place\"=\"neighbourhood\"]({{bbox}});relation[\"place\"=\"neighbourhood\"]({{bbox}});way[\"place\"=\"city_block\"]({{bbox}}););out body geom;",
                 "highwaysection" => "[out:json][timeout:60];(way[\"highway\"=\"motorway\"]({{bbox}});way[\"highway\"=\"trunk\"]({{bbox}}););out body geom;",
+                "street" => "[out:json][timeout:60];(way[\"highway\"=\"residential\"][\"name\"]({{bbox}});way[\"highway\"=\"secondary\"][\"name\"]({{bbox}});way[\"highway\"=\"tertiary\"][\"name\"]({{bbox}});way[\"highway\"=\"primary\"][\"name\"]({{bbox}}););out body geom;",
                 _ => "", // Use Nominatim text search for school, park, trail, etc.
             };
         }
@@ -289,8 +296,34 @@ namespace TrashMob.Shared.Managers.Areas
                 "interchange" => "Interchange",
                 "cityblock" => "CityBlock",
                 "highwaysection" => "HighwaySection",
+                "street" => "Street",
                 _ => "Spot",
             };
+        }
+
+        /// <summary>
+        /// Deduplicates features by name, keeping only the first occurrence of each unique name.
+        /// Used for streets where OSM returns many segments (one per block) for the same named road.
+        /// </summary>
+        private static List<NominatimResult> DeduplicateByName(List<NominatimResult> features)
+        {
+            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var deduplicated = new List<NominatimResult>();
+
+            foreach (var feature in features)
+            {
+                if (string.IsNullOrWhiteSpace(feature.Name))
+                {
+                    continue;
+                }
+
+                if (seen.Add(feature.Name))
+                {
+                    deduplicated.Add(feature);
+                }
+            }
+
+            return deduplicated;
         }
 
         /// <summary>
