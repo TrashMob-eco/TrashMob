@@ -31,6 +31,9 @@ namespace TrashMob.Shared.Managers.Areas
         // Length in meters for highway section splitting (~1 mile)
         private const double HighwaySectionLengthMeters = 1609.34;
 
+        // Length in meters for street section splitting (~0.25 miles)
+        private const double StreetSectionLengthMeters = 400.0;
+
         private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
         /// <inheritdoc />
@@ -92,7 +95,12 @@ namespace TrashMob.Shared.Managers.Areas
                 else if (batch.Category.Equals("Street", StringComparison.OrdinalIgnoreCase))
                 {
                     // Streets: OSM has many segments per street (one per block).
-                    // Deduplicate by name — keep only the first segment for each unique street name.
+                    // Merge all segments for the same street, then split long streets into sections.
+                    discovered = MergeAndSplitStreets(allDiscovered);
+                }
+                else if (batch.Category.Equals("Interchange", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Interchanges: OSM has separate nodes for EB/WB — same name after enrichment.
                     discovered = DeduplicateByName(allDiscovered);
                 }
                 else
@@ -268,7 +276,7 @@ namespace TrashMob.Shared.Managers.Areas
         {
             return category.ToLowerInvariant() switch
             {
-                "interchange" => "[out:json][timeout:60];(node[\"highway\"=\"motorway_junction\"]({{bbox}}););out body;",
+                "interchange" => "[out:json][timeout:60];node[\"highway\"=\"motorway_junction\"]({{bbox}})->.junctions;way(bn.junctions)[\"highway\"=\"motorway\"]->.motorways;(.junctions;.motorways;);out body;",
                 "cityblock" => "[out:json][timeout:60];(way[\"place\"=\"neighbourhood\"]({{bbox}});relation[\"place\"=\"neighbourhood\"]({{bbox}});way[\"place\"=\"city_block\"]({{bbox}}););out body geom;",
                 "highwaysection" => "[out:json][timeout:60];(way[\"highway\"=\"motorway\"]({{bbox}});way[\"highway\"=\"trunk\"]({{bbox}}););out body geom;",
                 "street" => "[out:json][timeout:60];(way[\"highway\"=\"residential\"][\"name\"]({{bbox}});way[\"highway\"=\"secondary\"][\"name\"]({{bbox}});way[\"highway\"=\"tertiary\"][\"name\"]({{bbox}});way[\"highway\"=\"primary\"][\"name\"]({{bbox}}););out body geom;",
@@ -324,6 +332,261 @@ namespace TrashMob.Shared.Managers.Areas
             }
 
             return deduplicated;
+        }
+
+        /// <summary>
+        /// Merges all OSM segments for the same street name into a continuous path,
+        /// then splits long streets into ~0.25-mile sections with compass-based names.
+        /// Short streets (less than ~0.4 miles) are kept as a single area.
+        /// </summary>
+        private List<NominatimResult> MergeAndSplitStreets(List<NominatimResult> allSegments)
+        {
+            var results = new List<NominatimResult>();
+
+            // Group segments by street name
+            var byName = allSegments
+                .Where(s => !string.IsNullOrWhiteSpace(s.Name))
+                .GroupBy(s => s.Name, StringComparer.OrdinalIgnoreCase);
+
+            foreach (var group in byName)
+            {
+                var segments = group.ToList();
+
+                // Parse coordinates from each segment's GeoJSON
+                var segmentCoords = segments
+                    .Select(s => ParseLineStringCoordinates(s.GeoJson))
+                    .Where(c => c.Count >= 2)
+                    .ToList();
+
+                if (segmentCoords.Count == 0)
+                {
+                    // No valid geometry — keep the first segment as-is
+                    results.Add(segments[0]);
+                    continue;
+                }
+
+                // Chain segments into a continuous path
+                var merged = ChainSegments(segmentCoords);
+
+                if (merged.Count < 2)
+                {
+                    results.Add(segments[0]);
+                    continue;
+                }
+
+                var totalDistance = CalculatePathDistance(merged);
+
+                // Short street: keep as a single area with merged geometry
+                if (totalDistance < StreetSectionLengthMeters * 1.5)
+                {
+                    var mid = merged[merged.Count / 2];
+                    results.Add(new NominatimResult
+                    {
+                        GeoJson = BuildLineStringGeoJson(merged),
+                        DisplayName = group.Key,
+                        Category = segments[0].Category,
+                        Type = segments[0].Type,
+                        OsmId = segments[0].OsmId,
+                        Name = group.Key,
+                        Latitude = mid.Lat,
+                        Longitude = mid.Lon,
+                    });
+                    continue;
+                }
+
+                // Determine dominant direction for compass labels
+                var first = merged[0];
+                var last = merged[^1];
+                var latSpan = Math.Abs(last.Lat - first.Lat);
+                var lonSpan = Math.Abs(last.Lon - first.Lon);
+                // Approximate: 1 degree latitude ≈ 111km, 1 degree longitude varies by latitude
+                var latDistKm = latSpan * 111.0;
+                var lonDistKm = lonSpan * 111.0 * Math.Cos(ToRadians((first.Lat + last.Lat) / 2));
+                var isNorthSouth = latDistKm > lonDistKm;
+
+                // Split into sections
+                var sectionCount = (int)Math.Ceiling(totalDistance / StreetSectionLengthMeters);
+                var labels = GetCompassLabels(sectionCount, isNorthSouth);
+
+                var currentDistance = 0.0;
+                var sectionStart = 0;
+                var sectionIdx = 0;
+
+                for (var i = 1; i < merged.Count; i++)
+                {
+                    currentDistance += HaversineDistance(
+                        merged[i - 1].Lat, merged[i - 1].Lon,
+                        merged[i].Lat, merged[i].Lon);
+
+                    if (currentDistance >= StreetSectionLengthMeters || i == merged.Count - 1)
+                    {
+                        var sectionCoords = merged.GetRange(sectionStart, i - sectionStart + 1);
+                        if (sectionCoords.Count >= 2 && sectionIdx < labels.Length)
+                        {
+                            var midpoint = sectionCoords[sectionCoords.Count / 2];
+                            var label = labels[sectionIdx];
+
+                            results.Add(new NominatimResult
+                            {
+                                GeoJson = BuildLineStringGeoJson(sectionCoords),
+                                DisplayName = $"{group.Key} ({label})",
+                                Category = segments[0].Category,
+                                Type = segments[0].Type,
+                                OsmId = $"{segments[0].OsmId}:section{sectionIdx + 1}",
+                                Name = $"{group.Key} ({label})",
+                                Latitude = midpoint.Lat,
+                                Longitude = midpoint.Lon,
+                            });
+                        }
+
+                        sectionStart = i;
+                        currentDistance = 0;
+                        sectionIdx++;
+                    }
+                }
+
+                logger.LogInformation(
+                    "Merged street \"{StreetName}\" ({Segments} segments, {Distance:F0}m) into {Sections} sections",
+                    group.Key, segments.Count, totalDistance, sectionIdx);
+            }
+
+            return results;
+        }
+
+        /// <summary>
+        /// Chains disjoint LineString segments into a single continuous path by matching endpoints.
+        /// Uses a greedy nearest-endpoint algorithm: start with the first segment, then repeatedly
+        /// attach the segment whose start or end is closest to the chain's current endpoints.
+        /// </summary>
+        private static List<(double Lat, double Lon)> ChainSegments(
+            List<List<(double Lat, double Lon)>> segments)
+        {
+            if (segments.Count == 0)
+            {
+                return [];
+            }
+
+            if (segments.Count == 1)
+            {
+                return segments[0];
+            }
+
+            var used = new bool[segments.Count];
+            var chain = new List<(double Lat, double Lon)>(segments[0]);
+            used[0] = true;
+
+            for (var round = 1; round < segments.Count; round++)
+            {
+                var chainStart = chain[0];
+                var chainEnd = chain[^1];
+                var bestIdx = -1;
+                var bestDist = double.MaxValue;
+                var bestReverse = false;
+                var bestAppend = true; // true = append to end, false = prepend to start
+
+                for (var i = 0; i < segments.Count; i++)
+                {
+                    if (used[i])
+                    {
+                        continue;
+                    }
+
+                    var seg = segments[i];
+                    var segStart = seg[0];
+                    var segEnd = seg[^1];
+
+                    // Try: segment start → chain end (append as-is)
+                    var d = HaversineDistance(chainEnd.Lat, chainEnd.Lon, segStart.Lat, segStart.Lon);
+                    if (d < bestDist)
+                    {
+                        bestDist = d;
+                        bestIdx = i;
+                        bestReverse = false;
+                        bestAppend = true;
+                    }
+
+                    // Try: segment end → chain end (append reversed)
+                    d = HaversineDistance(chainEnd.Lat, chainEnd.Lon, segEnd.Lat, segEnd.Lon);
+                    if (d < bestDist)
+                    {
+                        bestDist = d;
+                        bestIdx = i;
+                        bestReverse = true;
+                        bestAppend = true;
+                    }
+
+                    // Try: segment end → chain start (prepend as-is)
+                    d = HaversineDistance(chainStart.Lat, chainStart.Lon, segEnd.Lat, segEnd.Lon);
+                    if (d < bestDist)
+                    {
+                        bestDist = d;
+                        bestIdx = i;
+                        bestReverse = false;
+                        bestAppend = false;
+                    }
+
+                    // Try: segment start → chain start (prepend reversed)
+                    d = HaversineDistance(chainStart.Lat, chainStart.Lon, segStart.Lat, segStart.Lon);
+                    if (d < bestDist)
+                    {
+                        bestDist = d;
+                        bestIdx = i;
+                        bestReverse = true;
+                        bestAppend = false;
+                    }
+                }
+
+                if (bestIdx < 0)
+                {
+                    break;
+                }
+
+                used[bestIdx] = true;
+                var bestSeg = new List<(double Lat, double Lon)>(segments[bestIdx]);
+                if (bestReverse)
+                {
+                    bestSeg.Reverse();
+                }
+
+                if (bestAppend)
+                {
+                    chain.AddRange(bestSeg);
+                }
+                else
+                {
+                    chain.InsertRange(0, bestSeg);
+                }
+            }
+
+            return chain;
+        }
+
+        /// <summary>
+        /// Returns compass-based section labels (e.g., "West", "Central", "East") based on
+        /// the number of sections and the street's dominant direction.
+        /// </summary>
+        private static string[] GetCompassLabels(int sectionCount, bool isNorthSouth)
+        {
+            if (isNorthSouth)
+            {
+                return sectionCount switch
+                {
+                    2 => ["South", "North"],
+                    3 => ["South", "Central", "North"],
+                    4 => ["South", "South-Central", "North-Central", "North"],
+                    5 => ["South", "South-Central", "Central", "North-Central", "North"],
+                    _ => Enumerable.Range(1, sectionCount).Select(i => $"Section {i} (S\u2192N)").ToArray(),
+                };
+            }
+
+            return sectionCount switch
+            {
+                2 => ["West", "East"],
+                3 => ["West", "Central", "East"],
+                4 => ["West", "West-Central", "East-Central", "East"],
+                5 => ["West", "West-Central", "Central", "East-Central", "East"],
+                _ => Enumerable.Range(1, sectionCount).Select(i => $"Section {i} (W\u2192E)").ToArray(),
+            };
         }
 
         /// <summary>
