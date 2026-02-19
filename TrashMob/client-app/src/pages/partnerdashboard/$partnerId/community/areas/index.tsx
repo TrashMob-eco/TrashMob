@@ -28,7 +28,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import AdoptableAreaData, { AdoptableAreaStatus } from '@/components/Models/AdoptableAreaData';
 import CommunityData from '@/components/Models/CommunityData';
-import { GetAdoptableAreas, DeleteAdoptableArea, ExportAreas } from '@/services/adoptable-areas';
+import { GetAdoptableAreas, DeleteAdoptableArea, ClearAllAreas, ExportAreas } from '@/services/adoptable-areas';
 import { GetCommunityForAdmin } from '@/services/communities';
 import { GoogleMapWithKey } from '@/components/Map/GoogleMap';
 import { ExistingAreasOverlay } from '@/components/Map/AreaMapEditor/ExistingAreasOverlay';
@@ -93,6 +93,34 @@ export const PartnerCommunityAreas = () => {
         },
         [partnerId, deleteArea],
     );
+
+    const { mutate: clearAll, isPending: isClearing } = useMutation({
+        mutationKey: ClearAllAreas().key,
+        mutationFn: ClearAllAreas().service,
+        onSuccess: (response) => {
+            queryClient.invalidateQueries({
+                queryKey: GetAdoptableAreas({ partnerId }).key,
+            });
+            const data = response.data;
+            toast({
+                variant: 'primary',
+                title: 'All areas cleared',
+                description: `Removed ${data.areasDeactivated} areas, ${data.batchesDeleted} generation batches, and ${data.stagedAreasDeleted} staged areas.`,
+            });
+        },
+        onError: () => {
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: 'Failed to clear areas. Please try again.',
+            });
+        },
+    });
+
+    const handleClearAll = useCallback(() => {
+        if (!partnerId) return;
+        clearAll({ partnerId });
+    }, [partnerId, clearAll]);
 
     const handleExport = useCallback(
         async (format: 'geojson' | 'kml') => {
@@ -191,6 +219,35 @@ export const PartnerCommunityAreas = () => {
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
+                        ) : null}
+                        {hasAreas ? (
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button variant='destructive' disabled={isClearing}>
+                                        <Trash2 className='h-4 w-4 mr-2' />
+                                        Clear All
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Clear All Areas?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            This will permanently remove ALL {areas.length} adoptable areas and delete
+                                            all AI generation history (batches and staged areas) for this community.
+                                            This action cannot be undone. Are you REALLY sure?
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction
+                                            className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
+                                            onClick={handleClearAll}
+                                        >
+                                            Yes, Clear Everything
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
                         ) : null}
                         <Button onClick={() => navigate(`/partnerdashboard/${partnerId}/community/areas/create`)}>
                             <Plus className='h-4 w-4 mr-2' />

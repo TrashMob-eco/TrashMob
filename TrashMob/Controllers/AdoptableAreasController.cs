@@ -28,7 +28,8 @@ namespace TrashMob.Controllers
         IAdoptableAreaManager areaManager,
         IKeyedManager<Partner> partnerManager,
         IAreaSuggestionService areaSuggestionService,
-        IAreaFileParser areaFileParser)
+        IAreaFileParser areaFileParser,
+        IAreaGenerationBatchManager batchManager)
         : SecureController
     {
 
@@ -460,6 +461,46 @@ namespace TrashMob.Controllers
 
             await areaManager.UpdateAsync(existingArea, UserId, cancellationToken);
             return NoContent();
+        }
+
+        /// <summary>
+        /// Clears all adoptable areas, staged areas, and generation batches for a community.
+        /// Adoptable areas are soft-deleted (deactivated). Generation batches and staged areas are hard-deleted.
+        /// </summary>
+        /// <param name="partnerId">The community (partner) ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        [HttpDelete("clear-all")]
+        [Authorize(Policy = AuthorizationPolicyConstants.ValidUser)]
+        [RequiredScope(Constants.TrashMobWriteScope)]
+        [ProducesResponseType(typeof(AreaBulkClearResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ClearAll(
+            Guid partnerId,
+            CancellationToken cancellationToken)
+        {
+            var partner = await partnerManager.GetAsync(partnerId, cancellationToken);
+            if (partner is null)
+            {
+                return NotFound();
+            }
+
+            if (!await IsAuthorizedAsync(partner, AuthorizationPolicyConstants.UserIsPartnerUserOrIsAdmin))
+            {
+                return Forbid();
+            }
+
+            var areasDeactivated = await areaManager.ClearAllByPartnerAsync(partnerId, UserId, cancellationToken);
+            var (batchesDeleted, stagedAreasDeleted) = await batchManager.DeleteAllByPartnerAsync(partnerId, cancellationToken);
+
+            TrackEvent("ClearAllAreas");
+
+            return Ok(new AreaBulkClearResult
+            {
+                AreasDeactivated = areasDeactivated,
+                StagedAreasDeleted = stagedAreasDeleted,
+                BatchesDeleted = batchesDeleted,
+            });
         }
 
         #region Export Helpers
