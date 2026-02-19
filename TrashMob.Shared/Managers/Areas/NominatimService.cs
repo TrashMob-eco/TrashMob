@@ -427,11 +427,46 @@ namespace TrashMob.Shared.Managers.Areas
                 return allResults;
             }
 
+            // First pass: collect parent way refs for node enrichment.
+            // When the query returns both junction nodes and parent motorway ways,
+            // map each node ID to the parent way's ref tag (e.g., "I 90").
+            var parentWayRefs = new Dictionary<long, string>();
+            foreach (var element in elements.EnumerateArray())
+            {
+                if (!string.Equals(element.GetProperty("type").GetString(), "way", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                if (!element.TryGetProperty("tags", out var wayTags)
+                    || !wayTags.TryGetProperty("ref", out var wayRefProp))
+                    continue;
+
+                var wayRef = wayRefProp.GetString();
+                if (string.IsNullOrWhiteSpace(wayRef))
+                    continue;
+
+                // Only enrich from ways that have node lists (fetched with "out body", not "out body geom")
+                if (!element.TryGetProperty("nodes", out var wayNodes))
+                    continue;
+
+                foreach (var nodeId in wayNodes.EnumerateArray())
+                {
+                    parentWayRefs.TryAdd(nodeId.GetInt64(), wayRef!);
+                }
+            }
+
+            // Second pass: parse features
             foreach (var element in elements.EnumerateArray())
             {
                 var type = element.GetProperty("type").GetString();
-                var id = element.TryGetProperty("id", out var idProp) ? idProp.GetInt64().ToString() : "";
-                var osmId = $"{type}:{id}";
+                var numericId = element.TryGetProperty("id", out var idProp) ? idProp.GetInt64() : 0;
+                var osmId = $"{type}:{numericId}";
+
+                // Skip non-node elements that lack geometry — they're enrichment context (e.g., parent motorway ways)
+                if (!string.Equals(type, "node", StringComparison.OrdinalIgnoreCase)
+                    && !element.TryGetProperty("geometry", out _))
+                {
+                    continue;
+                }
 
                 // Get name from tags — try name, then build from ref/description
                 string name = "";
@@ -472,6 +507,14 @@ namespace TrashMob.Shared.Managers.Areas
                 if (string.IsNullOrWhiteSpace(name))
                 {
                     continue; // Skip truly unnamed features
+                }
+
+                // Enrich junction node names with parent highway ref (e.g., "Exit 17" → "I 90 Exit 17")
+                if (string.Equals(type, "node", StringComparison.OrdinalIgnoreCase)
+                    && parentWayRefs.TryGetValue(numericId, out var parentRef)
+                    && !name.Contains(parentRef, StringComparison.OrdinalIgnoreCase))
+                {
+                    name = $"{parentRef} {name}";
                 }
 
                 double lat = 0, lon = 0;
