@@ -34,6 +34,20 @@ namespace TrashMob.Shared.Managers.Areas
             CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Queries the Overpass API for all OSM features matching specific tags within a bounding box.
+        /// Use this instead of SearchByCategoryAsync when you need tag-based queries
+        /// (e.g., all highway=motorway_junction nodes) rather than text-based name searches.
+        /// </summary>
+        /// <param name="overpassQuery">The Overpass QL query body (the part inside the parentheses).</param>
+        /// <param name="bounds">The bounding box (North, South, East, West).</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A list of results with geometry and metadata.</returns>
+        Task<IEnumerable<NominatimResult>> SearchByOverpassAsync(
+            string overpassQuery,
+            (double North, double South, double East, double West) bounds,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Looks up geographic bounding box for a location query using Nominatim search API.
         /// </summary>
         /// <param name="query">Location query string (e.g., "Issaquah, Washington, United States").</param>

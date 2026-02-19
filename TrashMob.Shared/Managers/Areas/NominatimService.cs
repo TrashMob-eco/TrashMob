@@ -385,6 +385,124 @@ namespace TrashMob.Shared.Managers.Areas
             };
         }
 
+        /// <inheritdoc />
+        public async Task<IEnumerable<NominatimResult>> SearchByOverpassAsync(
+            string overpassQuery,
+            (double North, double South, double East, double West) bounds,
+            CancellationToken cancellationToken = default)
+        {
+            var allResults = new List<NominatimResult>();
+
+            var south = bounds.South.ToString(CultureInfo.InvariantCulture);
+            var west = bounds.West.ToString(CultureInfo.InvariantCulture);
+            var north = bounds.North.ToString(CultureInfo.InvariantCulture);
+            var east = bounds.East.ToString(CultureInfo.InvariantCulture);
+            var bbox = $"{south},{west},{north},{east}";
+
+            // Build the full Overpass QL query — caller provides the filter body with {{bbox}} placeholders
+            var fullQuery = overpassQuery.Replace("{{bbox}}", bbox, StringComparison.OrdinalIgnoreCase);
+
+            logger.LogInformation("Overpass query: {Query}", fullQuery);
+
+            httpClient.DefaultRequestHeaders.UserAgent.Clear();
+            httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("TrashMob.eco/1.0");
+
+            var requestContent = new FormUrlEncodedContent([
+                new KeyValuePair<string, string>("data", fullQuery),
+            ]);
+
+            var response = await httpClient.PostAsync("https://overpass-api.de/api/interpreter", requestContent, cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                logger.LogWarning("Overpass query failed with status {StatusCode}", response.StatusCode);
+                return allResults;
+            }
+
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+            using var doc = JsonDocument.Parse(content);
+
+            if (!doc.RootElement.TryGetProperty("elements", out var elements))
+            {
+                return allResults;
+            }
+
+            foreach (var element in elements.EnumerateArray())
+            {
+                var type = element.GetProperty("type").GetString();
+                var id = element.TryGetProperty("id", out var idProp) ? idProp.GetInt64().ToString() : "";
+                var osmId = $"{type}:{id}";
+
+                // Get name from tags
+                string name = "";
+                if (element.TryGetProperty("tags", out var tags))
+                {
+                    if (tags.TryGetProperty("name", out var nameProp))
+                    {
+                        name = nameProp.GetString() ?? "";
+                    }
+                }
+
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    continue; // Skip unnamed features
+                }
+
+                double lat = 0, lon = 0;
+                string geoJson = "";
+
+                if (string.Equals(type, "node", StringComparison.OrdinalIgnoreCase))
+                {
+                    lat = element.TryGetProperty("lat", out var latProp) ? latProp.GetDouble() : 0;
+                    lon = element.TryGetProperty("lon", out var lonProp) ? lonProp.GetDouble() : 0;
+                    geoJson = JsonSerializer.Serialize(new { type = "Point", coordinates = new[] { lon, lat } }, JsonOptions);
+                }
+                else if (element.TryGetProperty("geometry", out var geometry))
+                {
+                    // Ways/relations with out geom; have a geometry array
+                    var coords = new List<double[]>();
+                    double sumLat = 0, sumLon = 0;
+                    var count = 0;
+
+                    foreach (var point in geometry.EnumerateArray())
+                    {
+                        var pLat = point.TryGetProperty("lat", out var pLatProp) ? pLatProp.GetDouble() : 0;
+                        var pLon = point.TryGetProperty("lon", out var pLonProp) ? pLonProp.GetDouble() : 0;
+                        coords.Add([pLon, pLat]);
+                        sumLat += pLat;
+                        sumLon += pLon;
+                        count++;
+                    }
+
+                    if (count > 0)
+                    {
+                        lat = sumLat / count;
+                        lon = sumLon / count;
+                    }
+
+                    if (coords.Count >= 2)
+                    {
+                        geoJson = JsonSerializer.Serialize(new { type = "LineString", coordinates = coords }, JsonOptions);
+                    }
+                }
+
+                allResults.Add(new NominatimResult
+                {
+                    GeoJson = geoJson,
+                    DisplayName = name,
+                    Category = "",
+                    Type = type ?? "",
+                    OsmId = osmId,
+                    Name = name,
+                    Latitude = lat,
+                    Longitude = lon,
+                });
+            }
+
+            logger.LogInformation("Overpass search complete: {Count} results", allResults.Count);
+            return allResults;
+        }
+
         // Internal DTOs for Nominatim API response parsing
 
         private sealed class NominatimApiResult
