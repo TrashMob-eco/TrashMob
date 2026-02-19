@@ -32,26 +32,41 @@ jobs:
             - name: Get ipa filename
               run: echo "IPA_FILENAME=$(ls -R *.ipa)" > $GITHUB_ENV
 
-            - name: Debug key format
+            - name: Install API key and upload to TestFlight
               run: |
-                echo "Key ID length: ${#KEY_ID}"
-                echo "Issuer ID length: ${#ISSUER_ID}"
-                echo "Private key length: ${#PRIVATE_KEY}"
-                echo "Private key starts with BEGIN: $(echo "$PRIVATE_KEY" | head -1 | grep -c 'BEGIN')"
-                echo "Private key ends with END: $(echo "$PRIVATE_KEY" | tail -1 | grep -c 'END')"
-                echo "Private key line count: $(echo "$PRIVATE_KEY" | wc -l)"
+                # Write the private key to the expected location
+                mkdir -p ~/private_keys
+                echo "$API_PRIVATE_KEY" > ~/private_keys/AuthKey_${API_KEY_ID}.p8
+
+                # Verify the key file
+                echo "Key file size: $(wc -c < ~/private_keys/AuthKey_${API_KEY_ID}.p8)"
+                echo "Key file lines: $(wc -l < ~/private_keys/AuthKey_${API_KEY_ID}.p8)"
+                echo "Key file permissions: $(ls -la ~/private_keys/AuthKey_${API_KEY_ID}.p8)"
+
+                # Check iTMSTransporter version
+                xcrun iTMSTransporter -version || true
+
+                # Run the upload
+                xcrun iTMSTransporter \
+                  -m upload \
+                  -assetFile "$IPA_FILENAME" \
+                  -apiKey "$API_KEY_ID" \
+                  -apiIssuer "$API_ISSUER_ID" \
+                  -v eXtreme \
+                  -appPlatform ios 2>&1 || {
+                    echo "---"
+                    echo "iTMSTransporter failed. Checking key file content structure..."
+                    echo "First line: $(head -1 ~/private_keys/AuthKey_${API_KEY_ID}.p8)"
+                    echo "Last line: $(tail -1 ~/private_keys/AuthKey_${API_KEY_ID}.p8)"
+                    echo "File hex dump (first 100 bytes):"
+                    xxd -l 100 ~/private_keys/AuthKey_${API_KEY_ID}.p8
+                    exit 1
+                  }
+
+                # Cleanup
+                rm -rf ~/private_keys
               env:
-                KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
-                ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
-                PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
-
-            - name: Unlock keychain
-              run: security unlock-keychain -p "" ~/Library/Keychains/login.keychain-db || true
-
-            - name: Upload signed IPA
-              uses: apple-actions/upload-testflight-build@v4
-              with:
-                    app-path: ${{ env.IPA_FILENAME }}
-                    issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
-                    api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
-                    api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+                API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+                API_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
+                API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+                IPA_FILENAME: ${{ env.IPA_FILENAME }}
