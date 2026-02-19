@@ -145,5 +145,27 @@ namespace TrashMob.Shared.Managers.Adoptions
 
             return result;
         }
+
+        /// <inheritdoc />
+        public async Task<int> ClearAllByPartnerAsync(
+            Guid partnerId,
+            Guid userId,
+            CancellationToken cancellationToken = default)
+        {
+            var areas = await Repo.Get(a => a.PartnerId == partnerId && a.IsActive, withNoTracking: false)
+                .ToListAsync(cancellationToken);
+
+            var now = DateTimeOffset.UtcNow;
+
+            foreach (var area in areas)
+            {
+                area.IsActive = false;
+                area.LastUpdatedByUserId = userId;
+                area.LastUpdatedDate = now;
+                await Repo.UpdateAsync(area);
+            }
+
+            return areas.Count;
+        }
     }
 }
