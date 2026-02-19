@@ -252,9 +252,9 @@ namespace TrashMob.Shared.Managers.Areas
         {
             return category.ToLowerInvariant() switch
             {
-                "interchange" => ["interchange", "motorway_junction"],
+                "interchange" => ["interchange", "exit", "junction"],
                 "cityblock" => ["neighbourhood", "city block"],
-                "highwaysection" => ["motorway", "trunk road", "interstate"],
+                "highwaysection" => ["motorway", "trunk road", "interstate", "highway"],
                 _ => [category],
             };
         }
