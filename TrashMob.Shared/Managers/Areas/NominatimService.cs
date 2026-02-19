@@ -433,19 +433,45 @@ namespace TrashMob.Shared.Managers.Areas
                 var id = element.TryGetProperty("id", out var idProp) ? idProp.GetInt64().ToString() : "";
                 var osmId = $"{type}:{id}";
 
-                // Get name from tags
+                // Get name from tags — try name, then build from ref/description
                 string name = "";
+                string refTag = "";
                 if (element.TryGetProperty("tags", out var tags))
                 {
                     if (tags.TryGetProperty("name", out var nameProp))
                     {
                         name = nameProp.GetString() ?? "";
                     }
+
+                    if (tags.TryGetProperty("ref", out var refProp))
+                    {
+                        refTag = refProp.GetString() ?? "";
+                    }
+
+                    // For motorway junctions, build name from ref (e.g., "Exit 17")
+                    if (string.IsNullOrWhiteSpace(name) && !string.IsNullOrWhiteSpace(refTag))
+                    {
+                        var highway = tags.TryGetProperty("highway", out var hwProp) ? hwProp.GetString() : null;
+                        if (string.Equals(highway, "motorway_junction", StringComparison.OrdinalIgnoreCase))
+                        {
+                            name = $"Exit {refTag}";
+                        }
+                        else
+                        {
+                            name = refTag;
+                        }
+                    }
+
+                    // Last resort: try description
+                    if (string.IsNullOrWhiteSpace(name) && tags.TryGetProperty("description", out var descProp))
+                    {
+                        name = descProp.GetString() ?? "";
+                    }
                 }
 
                 if (string.IsNullOrWhiteSpace(name))
                 {
-                    continue; // Skip unnamed features
+                    continue; // Skip truly unnamed features
                 }
 
                 double lat = 0, lon = 0;
