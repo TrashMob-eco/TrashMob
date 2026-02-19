@@ -6,9 +6,9 @@ namespace TrashMob.Models.Poco
     public class AreaBulkClearResult
     {
         /// <summary>
-        /// Gets or sets the number of adoptable areas deactivated.
+        /// Gets or sets the number of adoptable areas removed.
         /// </summary>
-        public int AreasDeactivated { get; set; }
+        public int AreasRemoved { get; set; }
 
         /// <summary>
         /// Gets or sets the number of staged areas deleted.

@@ -119,7 +119,7 @@ export const PartnerCommunityAreas = () => {
             toast({
                 variant: 'primary',
                 title: 'All areas cleared',
-                description: `Removed ${data.areasDeactivated} areas, ${data.batchesDeleted} generation batches, and ${data.stagedAreasDeleted} staged areas.`,
+                description: `Removed ${data.areasRemoved} areas, ${data.batchesDeleted} generation batches, and ${data.stagedAreasDeleted} staged areas.`,
             });
         },
         onError: () => {

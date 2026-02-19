@@ -152,20 +152,35 @@ namespace TrashMob.Shared.Managers.Adoptions
             Guid userId,
             CancellationToken cancellationToken = default)
         {
-            var areas = await Repo.Get(a => a.PartnerId == partnerId && a.IsActive, withNoTracking: false)
+            var areas = await Repo.Get(a => a.PartnerId == partnerId, withNoTracking: false)
+                .Include(a => a.Adoptions)
+                .Include(a => a.SponsoredAdoptions)
                 .ToListAsync(cancellationToken);
 
-            var now = DateTimeOffset.UtcNow;
+            var deleted = 0;
 
             foreach (var area in areas)
             {
-                area.IsActive = false;
-                area.LastUpdatedByUserId = userId;
-                area.LastUpdatedDate = now;
-                await Repo.UpdateAsync(area);
+                if (area.Adoptions.Count > 0 || area.SponsoredAdoptions.Count > 0)
+                {
+                    // Cannot hard-delete areas with adoptions; soft-delete instead
+                    if (area.IsActive)
+                    {
+                        area.IsActive = false;
+                        area.LastUpdatedByUserId = userId;
+                        area.LastUpdatedDate = DateTimeOffset.UtcNow;
+                        await Repo.UpdateAsync(area);
+                        deleted++;
+                    }
+                }
+                else
+                {
+                    await Repo.DeleteAsync(area);
+                    deleted++;
+                }
             }
 
-            return areas.Count;
+            return deleted;
         }
     }
 }
