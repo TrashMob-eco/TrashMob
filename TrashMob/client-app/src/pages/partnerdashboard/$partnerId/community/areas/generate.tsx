@@ -28,7 +28,8 @@ const CATEGORIES = [
     { value: 'Park', label: 'Parks' },
     { value: 'Trail', label: 'Trails' },
     { value: 'Interchange', label: 'Interchanges' },
-    { value: 'CityBlock', label: 'City Blocks' },
+    { value: 'Street', label: 'Streets' },
+    { value: 'CityBlock', label: 'Neighborhoods' },
     { value: 'HighwaySection', label: 'Highway / Interstate Sections' },
 ];
 
