@@ -16,7 +16,12 @@ export interface GeoJsonLineString extends GeoJsonGeometry {
     coordinates: number[][];
 }
 
-export type ParsedGeoJson = GeoJsonPolygon | GeoJsonLineString;
+export interface GeoJsonPoint {
+    type: 'Point';
+    coordinates: number[];
+}
+
+export type ParsedGeoJson = GeoJsonPolygon | GeoJsonLineString | GeoJsonPoint;
 
 export function parseGeoJson(raw: string): ParsedGeoJson | null {
     if (!raw.trim()) return null;
@@ -30,6 +35,9 @@ export function parseGeoJson(raw: string): ParsedGeoJson | null {
         }
         if (type === 'LineString' && Array.isArray(coordinates)) {
             return { type: 'LineString', coordinates } as GeoJsonLineString;
+        }
+        if (type === 'Point' && Array.isArray(coordinates) && coordinates.length >= 2) {
+            return { type: 'Point', coordinates } as GeoJsonPoint;
         }
         return null;
     } catch {
