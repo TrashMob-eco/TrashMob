@@ -29,7 +29,7 @@ interface ExistingAreasOverlayProps {
 
 export const ExistingAreasOverlay = ({ mapId, areas, excludeAreaId, fitBounds }: ExistingAreasOverlayProps) => {
     const map = useMap(mapId);
-    const overlaysRef = useRef<(google.maps.Polygon | google.maps.Polyline | google.maps.Circle)[]>([]);
+    const overlaysRef = useRef<(google.maps.Polygon | google.maps.Polyline)[]>([]);
     const markersRef = useRef<google.maps.Marker[]>([]);
     const infoWindowRef = useRef<google.maps.InfoWindow | null>(null);
 
@@ -103,25 +103,9 @@ export const ExistingAreasOverlay = ({ mapId, areas, excludeAreaId, fitBounds }:
                 line.addListener('click', (e: google.maps.MapMouseEvent) => showInfoWindow(area, e.latLng));
                 overlaysRef.current.push(line);
             } else if (parsed.type === 'Point') {
-                // Point geometry: render as a circle overlay at the coordinate
+                // Point geometry: render as a pin marker (no polygon outline available)
                 const [lng, lat] = parsed.coordinates;
                 path = [{ lat, lng }];
-
-                const circle = new google.maps.Circle({
-                    map,
-                    center: { lat, lng },
-                    radius: 50, // 50 meters
-                    strokeColor: color,
-                    strokeOpacity: stroke.strokeOpacity,
-                    strokeWeight: stroke.strokeWeight,
-                    fillColor: color,
-                    fillOpacity: stroke.fillOpacity + 0.1,
-                    clickable: true,
-                    zIndex: 1,
-                });
-
-                circle.addListener('click', (e: google.maps.MapMouseEvent) => showInfoWindow(area, e.latLng));
-                overlaysRef.current.push(circle);
             } else {
                 return;
             }
