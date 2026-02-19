@@ -21,7 +21,7 @@ on:
 jobs:
     deploy-ios:
         name: Deploy iOS to TestFlight
-        runs-on: macos-14
+        runs-on: macos-15
         environment: ${{ inputs.environment }}
         steps:
             - name: Download artifact
@@ -38,15 +38,12 @@ jobs:
                 mkdir -p ~/private_keys
                 echo "$API_PRIVATE_KEY" > ~/private_keys/AuthKey_${API_KEY_ID}.p8
 
-                # Verify the key file
-                echo "Key file size: $(wc -c < ~/private_keys/AuthKey_${API_KEY_ID}.p8)"
-                echo "Key file lines: $(wc -l < ~/private_keys/AuthKey_${API_KEY_ID}.p8)"
-                echo "Key file permissions: $(ls -la ~/private_keys/AuthKey_${API_KEY_ID}.p8)"
+                # Debug info
+                echo "Runner: $(sw_vers -productVersion)"
+                echo "Xcode: $(xcodebuild -version | head -1)"
+                xcrun iTMSTransporter -version 2>&1 || echo "iTMSTransporter version check failed"
 
-                # Check iTMSTransporter version
-                xcrun iTMSTransporter -version || true
-
-                # Run the upload
+                # Try upload with Signiant transport (default)
                 xcrun iTMSTransporter \
                   -m upload \
                   -assetFile "$IPA_FILENAME" \
@@ -54,13 +51,18 @@ jobs:
                   -apiIssuer "$API_ISSUER_ID" \
                   -v eXtreme \
                   -appPlatform ios 2>&1 || {
-                    echo "---"
-                    echo "iTMSTransporter failed. Checking key file content structure..."
-                    echo "First line: $(head -1 ~/private_keys/AuthKey_${API_KEY_ID}.p8)"
-                    echo "Last line: $(tail -1 ~/private_keys/AuthKey_${API_KEY_ID}.p8)"
-                    echo "File hex dump (first 100 bytes):"
-                    xxd -l 100 ~/private_keys/AuthKey_${API_KEY_ID}.p8
-                    exit 1
+                    echo "--- Signiant transport failed, trying DAV transport ---"
+                    xcrun iTMSTransporter \
+                      -m upload \
+                      -assetFile "$IPA_FILENAME" \
+                      -apiKey "$API_KEY_ID" \
+                      -apiIssuer "$API_ISSUER_ID" \
+                      -v eXtreme \
+                      -transport DAV \
+                      -appPlatform ios 2>&1 || {
+                        echo "--- DAV transport also failed ---"
+                        exit 1
+                      }
                   }
 
                 # Cleanup
