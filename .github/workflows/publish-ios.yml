@@ -32,6 +32,19 @@ jobs:
             - name: Get ipa filename
               run: echo "IPA_FILENAME=$(ls -R *.ipa)" > $GITHUB_ENV
 
+            - name: Debug key format
+              run: |
+                echo "Key ID length: ${#KEY_ID}"
+                echo "Issuer ID length: ${#ISSUER_ID}"
+                echo "Private key length: ${#PRIVATE_KEY}"
+                echo "Private key starts with BEGIN: $(echo "$PRIVATE_KEY" | head -1 | grep -c 'BEGIN')"
+                echo "Private key ends with END: $(echo "$PRIVATE_KEY" | tail -1 | grep -c 'END')"
+                echo "Private key line count: $(echo "$PRIVATE_KEY" | wc -l)"
+              env:
+                KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+                ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
+                PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+
             - name: Upload signed IPA
               uses: apple-actions/upload-testflight-build@v4
               with:
