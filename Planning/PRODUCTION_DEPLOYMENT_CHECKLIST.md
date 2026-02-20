@@ -741,6 +741,136 @@ cleanup,litter,volunteer,community,environment,trash,recycle,pickup,green,eco,te
 - Test with no network — route tracking should work offline, sync later
 - Keep release notes user-friendly — no developer jargon
 
+### R10. Automated Database Migrations Workflow
+
+<a id="r10-automated-database-migrations"></a>
+
+**Workflow:** `.github/workflows/release_db-migrations.yml`
+
+#### How it works
+
+1. **Trigger:** Runs automatically on push to `release` when files in `TrashMob.Shared/Migrations/` or `MobDbContext.cs` change. Also supports `workflow_dispatch` for manual runs.
+2. **Environment:** Requires `production` environment approval in GitHub (same approval gate as the container app deployment).
+3. **Process:**
+   - Checks out code, installs .NET 10 SDK and `dotnet-ef` tool
+   - Logs into Azure via OIDC (same service principal as other prod workflows)
+   - Gets the GitHub runner's public IP and creates a temporary SQL firewall rule
+   - Retrieves the `TMDBServerConnectionString` secret from Key Vault (`kv-tm-pr-westus2`)
+   - Lists pending migrations, then applies them with `dotnet ef database update --verbose`
+   - **Always** removes the temporary firewall rule (even on failure)
+4. **Concurrency:** `cancel-in-progress: false` — migrations are never interrupted mid-run
+
+#### Prerequisites
+
+These GitHub secrets must exist in the `production` environment (already configured for other prod workflows):
+
+| Secret | Purpose |
+|--------|---------|
+| `AZURE_CLIENT_ID` | Service principal for OIDC login |
+| `AZURE_TENANT_ID` | Azure AD tenant |
+| `AZURE_SUBSCRIPTION_ID` | Azure subscription |
+
+The service principal needs these permissions:
+- `Key Vault Secrets User` on `kv-tm-pr-westus2` (to read `TMDBServerConnectionString`)
+- `SQL Server Contributor` or equivalent on `sql-tm-pr-westus2` (to create/delete firewall rules)
+- The connection string itself must include credentials with DDL permissions on the database
+
+#### Manual trigger
+
+```bash
+gh workflow run "TrashMobProd - Database Migrations"
+```
+
+#### Troubleshooting
+
+- **Firewall rule not cleaned up:** If the workflow crashes hard (GitHub outage), manually remove the rule:
+  ```bash
+  az sql server firewall-rule list --server sql-tm-pr-westus2 --resource-group rg-trashmob-pr-westus2 -o table
+  az sql server firewall-rule delete --server sql-tm-pr-westus2 --resource-group rg-trashmob-pr-westus2 --name "github-actions-runner-<run-id>" --yes
+  ```
+- **Migration fails:** The workflow will fail but the firewall rule is still cleaned up. Fix the migration code, push to release, and the workflow re-runs.
+- **No pending migrations:** The workflow detects this and skips the `database update` step (no-op).
+
+### R11. Icon Generation Script
+
+<a id="r11-icon-generation-script"></a>
+
+**Script:** `Planning/StoreAssets/generate-icons.ps1`
+
+Generates all required app store and platform icon sizes from the 2500x2500 source PNG using .NET `System.Drawing` (no external tools needed on Windows).
+
+#### Usage
+
+```powershell
+# Default: uses AppIcon_2500x2500.png, outputs to Planning/StoreAssets/Generated/
+.\Planning\StoreAssets\generate-icons.ps1
+
+# Custom source image
+.\Planning\StoreAssets\generate-icons.ps1 -SourceImage ".\path\to\icon.png"
+
+# Custom output directory
+.\Planning\StoreAssets\generate-icons.ps1 -OutputDir ".\my-output"
+```
+
+#### Generated files
+
+| File | Size | Use |
+|------|------|-----|
+| `AppStore_1024x1024.png` | 1024x1024 | Apple App Store icon (no transparency, no rounded corners — Apple adds those) |
+| `GooglePlay_512x512.png` | 512x512 | Google Play Store hi-res icon (32-bit PNG) |
+| `PWA_512x512.png` | 512x512 | Progressive Web App manifest icon (large) |
+| `PWA_192x192.png` | 192x192 | Progressive Web App manifest icon (small) |
+| `Favicon_32x32.png` | 32x32 | Browser favicon |
+| `EntraProfile_240x240.png` | 240x240 | Entra External ID / Azure AD profile image |
+
+#### Source asset
+
+The source icon is `Planning/StoreAssets/AppIcon_2500x2500.png` (v2 logo symbol, copied from `D:\data\images\v2\New TrashMob.eco files`). The SVG source is `AppIcon_Source.svg`.
+
+To update the icon: replace `AppIcon_2500x2500.png` with the new design at 2500x2500 or larger, then re-run the script.
+
+### R12. Feature Graphic Generation Script
+
+<a id="r12-feature-graphic-generation-script"></a>
+
+**Script:** `Planning/StoreAssets/generate-feature-graphic.ps1`
+
+Generates the Google Play Feature Graphic (1024x500) by compositing the horizontal logo onto a branded background with configurable tagline.
+
+#### Usage
+
+```powershell
+# Default: TrashMob brand green with "Clean Up Your Community" tagline
+.\Planning\StoreAssets\generate-feature-graphic.ps1
+
+# Custom tagline
+.\Planning\StoreAssets\generate-feature-graphic.ps1 -Tagline "Join the Movement"
+
+# Custom colors
+.\Planning\StoreAssets\generate-feature-graphic.ps1 -BackgroundColor "#005B4B" -TaglineColor "#96ba00"
+
+# No tagline
+.\Planning\StoreAssets\generate-feature-graphic.ps1 -Tagline ""
+```
+
+#### Parameters
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `-LogoImage` | `HorizontalLogo_2259x588.png` | Source logo (horizontal with tagline) |
+| `-OutputDir` | `Generated/` | Output directory |
+| `-BackgroundColor` | `#96ba00` | TrashMob brand green |
+| `-Tagline` | `Clean Up Your Community` | Text below logo |
+| `-TaglineColor` | `#FFFFFF` | Tagline text color |
+| `-Width` | `1024` | Output width (px) |
+| `-Height` | `500` | Output height (px) |
+
+#### Output
+
+`Planning/StoreAssets/Generated/GooglePlay_FeatureGraphic_1024x500.png`
+
+Upload to Google Play Console > Store listing > Feature graphic.
+
 ---
 
 ## New Features Summary
