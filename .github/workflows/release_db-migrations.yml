@@ -1,0 +1,134 @@
+# Runs EF Core database migrations against the production Azure SQL database.
+# Triggered automatically on push to release branch (when migration-related files change)
+# or manually via workflow_dispatch.
+#
+# Safety features:
+# - Requires 'production' environment approval in GitHub
+# - Temporarily opens SQL firewall for the GitHub runner IP, then removes it
+# - Logs all applied migrations
+# - Runs BEFORE the container app deployment (via path filtering)
+
+name: TrashMobProd - Database Migrations
+
+on:
+  push:
+    branches:
+      - release
+    paths:
+      - 'TrashMob.Shared/Migrations/**'
+      - 'TrashMob.Shared/Persistence/MobDbContext.cs'
+      - '.github/workflows/release_db-migrations.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: db-migrations-prod
+  cancel-in-progress: false  # Never cancel in-progress migrations
+
+env:
+  DOTNET_VERSION: '10.0.x'
+  SQL_SERVER_NAME: sql-tm-pr-westus2
+  SQL_DATABASE_NAME: db-tm-pr-westus2
+  RESOURCE_GROUP: rg-trashmob-pr-westus2
+  KEY_VAULT_NAME: kv-tm-pr-westus2
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Install EF Core tools
+        run: dotnet tool install --global dotnet-ef
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Get runner public IP
+        id: runner-ip
+        run: |
+          RUNNER_IP=$(curl -s https://api.ipify.org)
+          echo "ip=$RUNNER_IP" >> $GITHUB_OUTPUT
+          echo "Runner IP: $RUNNER_IP"
+
+      - name: Add runner IP to SQL firewall
+        run: |
+          echo "Adding temporary firewall rule for GitHub runner..."
+          az sql server firewall-rule create \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --server ${{ env.SQL_SERVER_NAME }} \
+            --name "github-actions-runner-${{ github.run_id }}" \
+            --start-ip-address ${{ steps.runner-ip.outputs.ip }} \
+            --end-ip-address ${{ steps.runner-ip.outputs.ip }}
+          echo "Firewall rule added. Waiting 10 seconds for propagation..."
+          sleep 10
+
+      - name: Get connection string from Key Vault
+        id: get-connection-string
+        run: |
+          CONNECTION_STRING=$(az keyvault secret show \
+            --vault-name ${{ env.KEY_VAULT_NAME }} \
+            --name TMDBServerConnectionString \
+            --query value \
+            -o tsv)
+          echo "::add-mask::$CONNECTION_STRING"
+          echo "connection_string=$CONNECTION_STRING" >> $GITHUB_OUTPUT
+
+      - name: List pending migrations
+        run: |
+          echo "Checking for pending migrations..."
+          dotnet ef migrations list \
+            --project TrashMob.Shared/TrashMob.Shared.csproj \
+            --startup-project TrashMob/TrashMob.csproj \
+            --connection "${{ steps.get-connection-string.outputs.connection_string }}" \
+            --no-build=false \
+            2>&1 | tee /tmp/migrations-list.txt
+
+          # Count pending (not yet applied) migrations
+          PENDING=$(grep -c "(Pending)" /tmp/migrations-list.txt || true)
+          echo "Pending migrations: $PENDING"
+          echo "pending_count=$PENDING" >> $GITHUB_OUTPUT
+        id: list-migrations
+
+      - name: Apply migrations
+        if: steps.list-migrations.outputs.pending_count != '0'
+        run: |
+          echo "Applying ${{ steps.list-migrations.outputs.pending_count }} pending migration(s)..."
+          dotnet ef database update \
+            --project TrashMob.Shared/TrashMob.Shared.csproj \
+            --startup-project TrashMob/TrashMob.csproj \
+            --connection "${{ steps.get-connection-string.outputs.connection_string }}" \
+            --verbose
+          echo "Migrations applied successfully."
+
+      - name: Skip message
+        if: steps.list-migrations.outputs.pending_count == '0'
+        run: echo "No pending migrations to apply."
+
+      - name: Remove runner IP from SQL firewall
+        if: always()
+        run: |
+          echo "Removing temporary firewall rule..."
+          az sql server firewall-rule delete \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --server ${{ env.SQL_SERVER_NAME }} \
+            --name "github-actions-runner-${{ github.run_id }}" \
+            --yes 2>/dev/null || echo "Firewall rule already removed or not found."
+
+      - name: Logout from Azure
+        if: always()
+        run: az logout

@@ -1,426 +1,528 @@
 # Production Deployment Checklist
 
-**Last Updated:** February 12, 2026
+**Last Updated:** February 20, 2026
 **Commits Since Last Release:** ~100+ commits from main
+
+> **Legend:**
+> - :gear: **AUTOMATED** — Handled by CI/CD pipeline (GitHub Actions). Verify it succeeds; no manual action needed.
+> - :hand: **MANUAL** — Requires a human to perform in a portal, CLI, or console.
+> - :test_tube: **VERIFY** — Manual verification / testing step.
 
 ---
 
-## Pre-Deployment Tasks
+## Part A — Pre-Deployment (Do These First)
 
-### 0. Key Vault Secrets (If Not Already Created)
+Everything in this section can and should be completed **before** merging to release.
 
-Ensure required secrets exist before deployments:
+---
 
-**Dev environment:**
-```bash
-# Strapi database password (required for Strapi Azure SQL)
-az keyvault secret show --vault-name kv-tm-dev-westus2 --name strapi-db-password || \
-  az keyvault secret set --vault-name kv-tm-dev-westus2 --name strapi-db-password --value "$(openssl rand -base64 32)"
+### A1. Key Vault Secrets :hand:
 
-# Anthropic API key (required for AI prospect discovery - Project 40 Phase 2)
-# Get key from https://console.anthropic.com/settings/keys
-az keyvault secret show --vault-name kv-tm-dev-westus2 --name AnthropicApiKey || \
-  az keyvault secret set --vault-name kv-tm-dev-westus2 --name AnthropicApiKey --value "<your-anthropic-api-key>"
-```
+Ensure required secrets exist in both environments. These are idempotent — safe to re-run.
 
-**Production environment:**
-```bash
-# Strapi database password (required for Strapi Azure SQL)
-az keyvault secret show --vault-name kv-tm-pr-westus2 --name strapi-db-password || \
-  az keyvault secret set --vault-name kv-tm-pr-westus2 --name strapi-db-password --value "$(openssl rand -base64 32)"
+- [ ] **1.** Verify/create Strapi DB password (dev):
+  ```bash
+  az keyvault secret show --vault-name kv-tm-dev-westus2 --name strapi-db-password || \
+    az keyvault secret set --vault-name kv-tm-dev-westus2 --name strapi-db-password --value "$(openssl rand -base64 32)"
+  ```
+- [ ] **2.** Verify/create Anthropic API key (dev):
+  ```bash
+  az keyvault secret show --vault-name kv-tm-dev-westus2 --name AnthropicApiKey || \
+    az keyvault secret set --vault-name kv-tm-dev-westus2 --name AnthropicApiKey --value "<your-anthropic-api-key>"
+  ```
+  Get key from https://console.anthropic.com/settings/keys
+- [ ] **3.** Verify/create Strapi DB password (prod):
+  ```bash
+  az keyvault secret show --vault-name kv-tm-pr-westus2 --name strapi-db-password || \
+    az keyvault secret set --vault-name kv-tm-pr-westus2 --name strapi-db-password --value "$(openssl rand -base64 32)"
+  ```
+- [ ] **4.** Verify/create Anthropic API key (prod):
+  ```bash
+  az keyvault secret show --vault-name kv-tm-pr-westus2 --name AnthropicApiKey || \
+    az keyvault secret set --vault-name kv-tm-pr-westus2 --name AnthropicApiKey --value "<your-anthropic-api-key>"
+  ```
 
-# Anthropic API key (required for AI prospect discovery - Project 40 Phase 2)
-# Get key from https://console.anthropic.com/settings/keys
-az keyvault secret show --vault-name kv-tm-pr-westus2 --name AnthropicApiKey || \
-  az keyvault secret set --vault-name kv-tm-pr-westus2 --name AnthropicApiKey --value "<your-anthropic-api-key>"
-```
+---
 
-### 1. Database Migrations (REQUIRED)
+### A2. Infrastructure Deployments :hand:
 
-Run all 4 pending migrations in order:
-
-```bash
-# From TrashMob folder, connected to production database
-dotnet ef database update
-```
-
-**Migrations to apply:**
-1. `20260131222334_AddEventCoLeads` - Adds IsEventLead column to EventAttendees, backfills event creators as leads
-2. `20260201013924_ChangePickedWeightToDecimal` - Changes EventSummaries.PickedWeight from int to decimal(10,1)
-3. `20260201030122_AddTeamsFeature` - Creates Teams, TeamMembers, TeamEvents, TeamJoinRequests, TeamPhotos tables
-4. `20260201164845_AddUserFeedback` - Creates UserFeedback table for in-app feedback
-5. `20260202000411_AddCommunityPhase2Fields` - Adds LogoUrl, ContactEmail, ContactPhone, PhysicalAddress to Partner (Community)
-
-**Note:** Migration #1 includes data backfill SQL that marks all event creators as event leads.
-
-### 2. Infrastructure Deployments
-
-#### 2.1 Application Insights Workbook (Recommended)
-```bash
-az account set --subscription "TrashMobProd"
-
-az deployment group create \
-  --resource-group rg-trashmob-pr-westus2 \
-  --template-file Deploy/appInsightsWorkbook.bicep \
-  --parameters environment=pr region=westus2 \
-    rgName=rg-trashmob-pr-westus2 \
-    appInsightsName=ai-tm-pr-westus2
-```
-
-#### 2.2 Backup Alerts (If not already deployed)
-```bash
-az deployment group create \
-  --resource-group rg-trashmob-pr-westus2 \
-  --template-file Deploy/backupAlerts.bicep \
-  --parameters environment=pr region=westus2
-```
-
-#### 2.3 Billing Alerts & Budget Caps (Project 30)
-
-**a. Deploy action group (Bicep):**
-```bash
-az deployment group create \
-  --resource-group rg-trashmob-pr-westus2 \
-  --template-file Deploy/billingAlerts.bicep \
-  --parameters environment=pr region=westus2
-```
-
-**b. Manual steps (one-time — budget APIs don't support sponsorship subscriptions):**
-
-- [ ] **Azure budgets:** Create budgets manually in Azure Portal > Cost Management > Budgets (see `Deploy/COST_ALERT_RUNBOOK.md` for step-by-step):
+- [ ] **5.** Deploy Application Insights Workbook (recommended):
+  ```bash
+  az account set --subscription "TrashMobProd"
+  az deployment group create \
+    --resource-group rg-trashmob-pr-westus2 \
+    --template-file Deploy/appInsightsWorkbook.bicep \
+    --parameters environment=pr region=westus2 \
+      rgName=rg-trashmob-pr-westus2 \
+      appInsightsName=ai-tm-pr-westus2
+  ```
+- [ ] **6.** Deploy Backup Alerts (if not already deployed):
+  ```bash
+  az deployment group create \
+    --resource-group rg-trashmob-pr-westus2 \
+    --template-file Deploy/backupAlerts.bicep \
+    --parameters environment=pr region=westus2
+  ```
+- [ ] **7.** Deploy Billing Alerts action group:
+  ```bash
+  az deployment group create \
+    --resource-group rg-trashmob-pr-westus2 \
+    --template-file Deploy/billingAlerts.bicep \
+    --parameters environment=pr region=westus2
+  ```
+- [ ] **8.** Create Azure budgets manually (budget APIs don't support sponsorship subscriptions):
+  - Azure Portal > Cost Management > Budgets — see `Deploy/COST_ALERT_RUNBOOK.md`
   - Monthly budget ($500) with alerts at 50%, 75%, 90%, 100%
   - Annual grant monitor ($1) to detect grant expiration
-- [ ] **SendGrid alerts:** Log into https://app.sendgrid.com > Settings > Billing > Add alerts at 75% and 90% of monthly email limit (recipient: joe@trashmob.eco)
-- [ ] **Google Maps API alerts:** Log into https://console.cloud.google.com > Billing > Budgets & alerts > Create budget "TrashMob Maps API" at $100/month with 50%, 90%, 100% thresholds
+- [ ] **9.** Create SendGrid alerts: https://app.sendgrid.com > Settings > Billing > alerts at 75% and 90% (recipient: joe@trashmob.eco)
+- [ ] **10.** Create Google Maps API alerts: https://console.cloud.google.com > Billing > Budgets & alerts > "TrashMob Maps API" at $100/month with 50%, 90%, 100%
+- [ ] **11.** Verify KeyVault RBAC is working (PR #2482 migrated from access policies to RBAC)
 
-See `Deploy/COST_ALERT_RUNBOOK.md` for full response procedures and monthly review checklist.
+---
 
-#### 2.4 KeyVault RBAC (Already Completed)
-PR #2482 migrated KeyVault from access policies to RBAC. Verify this is working correctly.
+### A3. Strapi CMS (Optional — only if deploying to prod for first time) :hand:
 
-### 3. Strapi CMS (Optional)
+- [ ] **12.** Create KeyVault secrets for Strapi:
+  ```bash
+  az keyvault secret set --vault-name kv-tm-pr-westus2 --name strapi-db-password --value "$(openssl rand -base64 32)"
+  az keyvault secret set --vault-name kv-tm-pr-westus2 --name strapi-admin-jwt-secret --value "$(openssl rand -base64 32)"
+  az keyvault secret set --vault-name kv-tm-pr-westus2 --name strapi-api-token-salt --value "$(openssl rand -base64 32)"
+  az keyvault secret set --vault-name kv-tm-pr-westus2 --name strapi-app-keys --value "$(openssl rand -base64 32),$(openssl rand -base64 32)"
+  az keyvault secret set --vault-name kv-tm-pr-westus2 --name strapi-transfer-token-salt --value "$(openssl rand -base64 32)"
+  ```
+- [ ] **13.** Deploy Strapi database:
+  ```bash
+  az deployment group create \
+    --resource-group rg-trashmob-pr-westus2 \
+    --template-file Deploy/sqlDatabaseStrapi.bicep \
+    --parameters environment=pr region=westus2
+  ```
+- [ ] **14.** Create production workflow (copy from dev, update environment variables). Workflow auto-creates SQL user and deploys container.
 
-If deploying Strapi to production for the first time:
+---
 
-**a. Create KeyVault secrets:**
-```bash
-az keyvault secret set --vault-name kv-tm-pr-westus2 --name strapi-db-password --value "$(openssl rand -base64 32)"
-az keyvault secret set --vault-name kv-tm-pr-westus2 --name strapi-admin-jwt-secret --value "$(openssl rand -base64 32)"
-az keyvault secret set --vault-name kv-tm-pr-westus2 --name strapi-api-token-salt --value "$(openssl rand -base64 32)"
-az keyvault secret set --vault-name kv-tm-pr-westus2 --name strapi-app-keys --value "$(openssl rand -base64 32),$(openssl rand -base64 32)"
-az keyvault secret set --vault-name kv-tm-pr-westus2 --name strapi-transfer-token-salt --value "$(openssl rand -base64 32)"
-```
+### A4. Entra External ID — Auth Migration (Project 1) :hand:
 
-**b. Deploy Strapi database:**
-```bash
-az deployment group create \
-  --resource-group rg-trashmob-pr-westus2 \
-  --template-file Deploy/sqlDatabaseStrapi.bicep \
-  --parameters environment=pr region=westus2
-```
+This is a **downtime deployment** — B2C is fully replaced by Entra External ID. Complete ALL steps below before merging to release.
 
-**c. Create production workflow** (copy from dev and update environment variables)
+**Reference:** `Planning/Projects/Project_01_Auth_Revamp.md` and `Planning/TechnicalDesigns/Auth_Migration.md`
 
-**Note:** The workflow automatically creates the SQL user and deploys the container.
+#### A4.1 Create Production Entra Tenant
 
-### 4. Entra External ID — Auth Migration (Project 1)
-
-This is a **downtime deployment** — B2C will be fully replaced by Entra External ID in one push. All steps below must be completed before merging to release.
-
-**Reference:** See `Planning/Projects/Project_01_Auth_Revamp.md` for full details and `Planning/TechnicalDesigns/Auth_Migration.md` for technical architecture.
-
-#### 4.1 Create Production Entra Tenant
-
-- [ ] Go to Azure Portal → Microsoft Entra External ID → Create a **Customer** tenant
+- [ ] **15.** Azure Portal > Microsoft Entra External ID > Create **Customer** tenant
   - Tenant name: `TrashMobEco`
   - Domain: `trashmobeco.onmicrosoft.com`
-  - CIAM domain will be: `trashmobeco.ciamlogin.com`
+  - CIAM domain: `trashmobeco.ciamlogin.com`
   - Location: United States
-- [ ] Record the **Tenant ID** (GUID from Overview page)
+- [ ] **16.** Record the **Tenant ID** (GUID from Overview page)
 
-#### 4.2 Register App Registrations (in the prod Entra tenant)
+#### A4.2 Register App Registrations
 
-Login to the prod tenant first:
-```bash
-az login --tenant <prod-entra-tenant-id> --allow-no-subscriptions
-```
+Login to the prod tenant first: `az login --tenant <prod-entra-tenant-id> --allow-no-subscriptions`
 
-**a. Web SPA (Frontend):**
-- [ ] Name: `TrashMob Web`
-- [ ] Redirect URIs (SPA): `https://www.trashmob.eco`, `https://trashmob.eco`
-- [ ] Authentication → check ID tokens, uncheck Access tokens
-- [ ] Record **Application (client) ID** → this is `FrontendClientId`
+- [ ] **17.** **Web SPA (Frontend):** Name: `TrashMob Web`, Redirect URIs (SPA): `https://www.trashmob.eco`, `https://trashmob.eco`, check ID tokens, uncheck Access tokens. Record **Application (client) ID** → `FrontendClientId`
+- [ ] **18.** **Backend API:** Name: `TrashMob API`, Expose an API → URI: `api://<client-id>`, Add scopes: `TrashMob.Read`, `TrashMob.Writes`. Record **Application (client) ID** → `ClientId`
+- [ ] **19.** **Mobile App:** Name: `TrashMob Mobile`, Redirect URI (Public client): `eco.trashmob.trashmobmobile://auth`. Record **Application (client) ID**
+- [ ] **20.** **Auth Extension (Layer 2):** Name: `TrashMob AuthExtension`. Record **Application (client) ID** → JWT audience validation
+- [ ] **21.** **Grant API Permissions:** Web SPA + Mobile App → add `TrashMob.Read` + `TrashMob.Writes` → Grant admin consent
 
-**b. Backend API:**
-- [ ] Name: `TrashMob API`
-- [ ] Expose an API → Application ID URI: `api://<client-id>`
-- [ ] Add scopes: `TrashMob.Read`, `TrashMob.Writes`
-- [ ] Record **Application (client) ID** → this is `ClientId` in appsettings
+#### A4.3 Configure Optional Claims
 
-**c. Mobile App:**
-- [ ] Name: `TrashMob Mobile`
-- [ ] Redirect URI (Public client): `eco.trashmob.trashmobmobile://auth`
-- [ ] Record **Application (client) ID**
+- [ ] **22.** Run configure script:
+  ```bash
+  az login --tenant <prod-entra-tenant-id> --allow-no-subscriptions
+  .\Deploy\configure-entra-apps.ps1 -Environment pr
+  ```
+  Sets: `email`, `given_name`, `family_name`, `preferred_username`, `acceptMappedClaims: true`, `isFallbackPublicClient: true` (mobile only)
 
-**d. Auth Extension (Layer 2):**
-- [ ] Name: `TrashMob AuthExtension`
-- [ ] Record **Application (client) ID** → used for JWT audience validation
+#### A4.4 Configure Social Identity Providers
 
-**e. Grant API Permissions:**
-- [ ] Web SPA → API permissions → add `TrashMob.Read` + `TrashMob.Writes` → Grant admin consent
-- [ ] Mobile App → API permissions → add `TrashMob.Read` + `TrashMob.Writes` → Grant admin consent
+In Azure Portal > prod Entra tenant > External Identities > All identity providers:
 
-#### 4.3 Configure Optional Claims
-
-Run the configure script (update `configure-entra-apps.ps1` with prod values first):
-```bash
-az login --tenant <prod-entra-tenant-id> --allow-no-subscriptions
-.\Deploy\configure-entra-apps.ps1 -Environment pr
-```
-
-This sets on all app registrations:
-- Optional claims: `email`, `given_name`, `family_name`, `preferred_username`
-- `acceptMappedClaims: true`
-- `isFallbackPublicClient: true` (mobile only)
-
-#### 4.4 Configure Social Identity Providers
-
-In Azure Portal → prod Entra tenant → External Identities → All identity providers:
-
-- [ ] **Google:** Create OAuth 2.0 credentials in Google Cloud Console, add redirect URI `https://trashmobeco.ciamlogin.com/trashmobeco.onmicrosoft.com/federation/oauth2`, enter Client ID + secret in Azure
-- [ ] **Facebook:** Add OAuth redirect URI in Facebook Developer Console, enter App ID + secret in Azure
-- [ ] **Apple:**
-  1. Go to [Apple Developer](https://developer.apple.com/account/resources/identifiers/list/serviceId) → Certificates, Identifiers & Profiles → Identifiers → **+** → **Services IDs**
-  2. Register a new Service ID (e.g., `eco.trashmob.entra`) with **Sign In with Apple** enabled
+- [ ] **23.** **Google:** Create OAuth 2.0 credentials in Google Cloud Console, add redirect URI `https://trashmobeco.ciamlogin.com/trashmobeco.onmicrosoft.com/federation/oauth2`, enter Client ID + secret in Azure
+- [ ] **24.** **Facebook:** Add OAuth redirect URI in Facebook Developer Console, enter App ID + secret in Azure
+- [ ] **25.** **Apple:**
+  1. Apple Developer > Certificates, Identifiers & Profiles > Identifiers > **+** > **Services IDs**
+  2. Register Service ID (e.g., `eco.trashmob.entra`) with **Sign In with Apple** enabled
   3. Configure return URL: `https://trashmobeco.ciamlogin.com/trashmobeco.onmicrosoft.com/federation/oidc/apple`
-  4. If you don't have a `.p8` key file, create a new key under **Keys** → **+** → check **Sign in with Apple** → download the `.p8` file immediately (one-time download)
-  5. Generate the Apple client secret JWT using `d:/tools/Apple/generate-apple-secret.js` — update `KEY_ID`, `SERVICE_ID`, and `KEY_FILE` for prod values, then run `node generate-apple-secret.js`
-  6. Enter the Service ID (as Client ID) and generated JWT (as Client Secret) in the Entra Apple IDP configuration
-  7. **Note:** The client secret expires after 6 months — set a calendar reminder to regenerate it
-- [ ] **Microsoft:** Enabled by default in Entra External ID — just verify it's active
+  4. If no `.p8` key file: create under Keys > **+** > check Sign in with Apple > download (one-time)
+  5. Generate Apple client secret JWT using `d:/tools/Apple/generate-apple-secret.js` (update KEY_ID, SERVICE_ID, KEY_FILE for prod)
+  6. Enter Service ID + generated JWT in Entra Apple IDP config
+  7. **Set calendar reminder:** Client secret expires in 6 months — must regenerate
+- [ ] **26.** **Microsoft:** Enabled by default — verify it's active
 
-#### 4.5 Create User Flow with dateOfBirth
+#### A4.5 Create User Flow
 
-- [ ] User flows → New user flow → "Sign up and sign in"
-  - Name: `SignUpSignIn`
+- [ ] **27.** User flows > New user flow > "Sign up and sign in" named `SignUpSignIn`
   - Identity providers: all configured (Google, Microsoft, Apple, Facebook, Email)
-  - Attributes to collect: Email (required), Given Name (required), Surname (required)
-- [ ] Create custom attribute: External Identities → Custom user attributes → Add `dateOfBirth` (String type)
-- [ ] Add `dateOfBirth` to the user flow's attribute collection page
+  - Attributes: Email (required), Given Name (required), Surname (required)
+- [ ] **28.** Create custom attribute: External Identities > Custom user attributes > Add `dateOfBirth` (String type)
+- [ ] **29.** Add `dateOfBirth` to the user flow's attribute collection page
 
-#### 4.6 Configure Token Claims
+#### A4.6 Configure Token Claims
 
-For each app registration (Web SPA, API, Mobile):
-- [ ] Token configuration → Add optional claims (ID + Access tokens):
-  - `given_name`, `family_name`, `email` (built-in)
-  - `dateOfBirth` (directory schema extension source)
-- [ ] Verify `acceptMappedClaims: true` in Manifest
-- [ ] Test: sign in and decode JWT at https://jwt.ms to verify claims
+- [ ] **30.** For each app registration (Web SPA, API, Mobile): Token configuration > Add optional claims (ID + Access tokens): `given_name`, `family_name`, `email` (built-in), `dateOfBirth` (directory schema extension)
+- [ ] **31.** Verify `acceptMappedClaims: true` in each app's Manifest
+- [ ] **32.** Test: sign in and decode JWT at https://jwt.ms to verify claims
 
-#### 4.7 Configure Branding
+#### A4.7 Configure Branding
 
-- [ ] Company branding → Default sign-in experience:
-  - Banner logo: TrashMob logo (260x36 px)
-  - Background image: TrashMob hero image (1920x1080 px)
+- [ ] **33.** Company branding > Default sign-in experience:
+  - Banner logo: TrashMob logo (260x36 px) — use `Planning/StoreAssets/HorizontalLogo_Source.svg` resized
+  - Background image: TrashMob hero image (1920x1080 px) — use `Images/v1/TME_SignInBackground_1920x1080.png`
   - Background color: `#96ba00`
   - Sign-in text: "Welcome to TrashMob.eco — Join the movement to clean up the planet!"
   - Layout: Full-screen background template
-- [ ] Test in incognito browser
+- [ ] **34.** Test in incognito browser
 
-#### 4.8 User Migration (B2C → Entra)
+#### A4.8 User Migration (B2C > Entra)
 
-- [ ] Run migration script to export B2C users → import to Entra External ID
-  - Reference: `Deploy/migrate-b2c-users.ps1` (dev version — update for prod)
-- [ ] Verify migrated user count matches B2C
-- [ ] Test sign-in with a few migrated accounts
-- [ ] Existing users without `DateOfBirth` are grandfathered as adults (no migration needed for DOB)
+- [ ] **35.** Run migration script to export B2C users > import to Entra External ID (see `Deploy/migrate-b2c-users.ps1`)
+- [ ] **36.** Verify migrated user count matches B2C
+- [ ] **37.** Test sign-in with a few migrated accounts
+- [ ] **38.** Confirm: existing users without DateOfBirth are grandfathered as adults
 
-#### 4.9 Update Production Configuration
+#### A4.9 Update Production Configuration
 
-**a. Backend config (Key Vault or environment variables):**
-```
-AzureAdEntra__Instance=https://trashmobeco.ciamlogin.com/
-AzureAdEntra__ClientId=<API app client ID>
-AzureAdEntra__FrontendClientId=<Web SPA client ID>
-AzureAdEntra__Domain=trashmobeco.onmicrosoft.com
-AzureAdEntra__TenantId=<prod tenant ID>
-UseEntraExternalId=true
-```
+- [ ] **39.** Set backend config (Key Vault or env vars):
+  ```
+  AzureAdEntra__Instance=https://trashmobeco.ciamlogin.com/
+  AzureAdEntra__ClientId=<API app client ID>
+  AzureAdEntra__FrontendClientId=<Web SPA client ID>
+  AzureAdEntra__Domain=trashmobeco.onmicrosoft.com
+  AzureAdEntra__TenantId=<prod tenant ID>
+  UseEntraExternalId=true
+  ```
+- [ ] **40.** Update `Deploy/containerApp.bicep` prod environment variables with prod Entra values
+- [ ] **41.** Update `Deploy/configure-entra-apps.ps1` with prod app registration IDs
 
-**b. Frontend config:** The `/api/config` endpoint returns auth config dynamically — verify it returns `authProvider: "entra"` with correct prod Entra values after deployment.
+#### A4.10 Deploy Auth Extension Container App (Layer 2)
 
-**c. Update `Deploy/containerApp.bicep`** prod environment variables with prod Entra values.
+- [ ] **42.** Set GitHub Actions secrets (in `production` environment): `ENTRA_TENANT_ID`, `AUTH_EXTENSION_CLIENT_ID`
+- [ ] **43.** Create production workflow: copy `.github/workflows/container_ca-authext-tm-dev-westus2.yml` > `release_ca-authext-tm-pr-westus2.yml`, update registry/container/RG, trigger on `release` branch
+- [ ] **44.** Register Custom Authentication Extension in Entra portal:
+  - External Identities > Custom authentication extensions > Create
+  - Type: `OnAttributeCollectionSubmit`
+  - Target URL: `https://ca-authext-tm-pr-westus2.<fqdn>/api/authext/attributecollectionsubmit`
+  - Link to auth extension app registration
+  - Assign to user flow's "When a user submits their information" event
 
-**d. Update `Deploy/configure-entra-apps.ps1`** with prod app registration IDs.
+#### A4.11 Mobile App Update
 
-#### 4.10 Deploy Auth Extension Container App (Layer 2)
+- [ ] **45.** Verify `AuthConstants.cs` has correct prod Entra values
+- [ ] **46.** Build and test on Android emulator + iOS simulator with prod tenant
+- [ ] **47.** Submit to Google Play Store and Apple App Store
+- [ ] **48.** Consider force-update flow for users on old B2C version
 
-**a. Set GitHub Actions secrets** (in the `production` environment):
-```
-ENTRA_TENANT_ID=<prod-entra-tenant-id>
-AUTH_EXTENSION_CLIENT_ID=<auth-extension-app-client-id>
-```
+#### A4.12 Pre-Cutover Verification (on dev.trashmob.eco) :test_tube:
 
-**b. Create production workflow:**
-- [ ] Copy `.github/workflows/container_ca-authext-tm-dev-westus2.yml` → `release_ca-authext-tm-pr-westus2.yml`
-- [ ] Update environment variables: registry `acrtmprwestus2`, container `ca-authext-tm-pr-westus2`, resource group `rg-trashmob-pr-westus2`
-- [ ] Trigger on push to `release` branch
-
-**c. Register Custom Authentication Extension in Entra portal:**
-- [ ] External Identities → Custom authentication extensions → Create
-- [ ] Type: `OnAttributeCollectionSubmit`
-- [ ] Target URL: `https://ca-authext-tm-pr-westus2.<fqdn>/api/authext/attributecollectionsubmit`
-- [ ] Link to auth extension app registration
-- [ ] Assign to user flow's "When a user submits their information" event
-
-#### 4.11 Mobile App Update
-
-- [ ] Verify `AuthConstants.cs` has correct prod Entra values (or uses config-driven approach)
-- [ ] Build and test on Android emulator + iOS simulator with prod tenant
-- [ ] Submit to Google Play Store and Apple App Store
-- [ ] Consider force-update flow for users on old B2C version
-
-#### 4.12 Pre-Cutover Verification (on dev.trashmob.eco)
-
-- [ ] **Web sign-in** via email/password → succeeds, JWT contains expected claims
-- [ ] **Web sign-in** via Google → succeeds, profile photo populated
-- [ ] **Web sign-in** via Facebook → succeeds
-- [ ] **Web "Create Account"** → shows age gate, blocks under-13, allows 13+
-- [ ] **Web "Sign In"** → goes directly to Entra (no age gate)
-- [ ] **Web "Attend" (unauthenticated)** → shows age gate before redirect
-- [ ] **Mobile sign-in** → Entra External ID (not B2C)
-- [ ] **Mobile "Create Account"** → AgeGatePage → blocks under-13
-- [ ] **Auth extension** → POST with under-13 DOB returns `showBlockPage`
-- [ ] **Profile edit** → in-app edit works (name, photo upload)
-- [ ] **Account deletion** → "Delete My Data" works with typed confirmation
-- [ ] **Auto-create user** → new sign-up creates DB user from token claims
-- [ ] **Migrated user sign-in** → existing B2C user signs in via Entra successfully
+- [ ] **49.** Web sign-in via email/password — succeeds, JWT contains expected claims
+- [ ] **50.** Web sign-in via Google — succeeds, profile photo populated
+- [ ] **51.** Web sign-in via Facebook — succeeds
+- [ ] **52.** Web "Create Account" — shows age gate, blocks under-13, allows 13+
+- [ ] **53.** Web "Sign In" — goes directly to Entra (no age gate)
+- [ ] **54.** Web "Attend" (unauthenticated) — shows age gate before redirect
+- [ ] **55.** Mobile sign-in — Entra External ID (not B2C)
+- [ ] **56.** Mobile "Create Account" — AgeGatePage blocks under-13
+- [ ] **57.** Auth extension — POST with under-13 DOB returns `showBlockPage`
+- [ ] **58.** Profile edit — in-app edit works (name, photo upload)
+- [ ] **59.** Account deletion — "Delete My Data" works with typed confirmation
+- [ ] **60.** Auto-create user — new sign-up creates DB user from token claims
+- [ ] **61.** Migrated user sign-in — existing B2C user signs in via Entra successfully
 
 ---
 
-## Deployment Steps
+### A5. Apple Signing & API Key Renewal :hand:
 
-### Auth Migration Cutover Window
+- [ ] **62.** :gear: **AUTOMATED:** `scheduled_cert-expiry-check.yml` runs weekly (Mondays 9am UTC) and creates a GitHub issue if any certificate expires within 30 days. Update `Deploy/cert-expiry-dates.json` when renewing certificates. (See [Section R14](#r14-certificate-expiry-monitoring))
+- [ ] **63.** :test_tube: Verify `Deploy/cert-expiry-dates.json` has current expiry dates for all certificates
+- [ ] **64.** Check iOS distribution certificate expiry at https://developer.apple.com/account/resources/certificates/list
+- [ ] **65.** Check App Store Connect API key status at https://appstoreconnect.apple.com/access/integrations/api — verify key used by `APPSTORE_KEY_ID` is "Active"
+- [ ] **66.** If certificate expired or expiring — regenerate (see [Section R1](#r1-regenerate-ios-distribution-certificate))
+- [ ] **67.** If API key expired or revoked — regenerate (see [Section R2](#r2-regenerate-app-store-connect-api-key))
+- [ ] **68.** Verify Android keystore — `ANDROID_KEYSTORE` and `ANDROID_KEYSTORE_PASSWORD` secrets are set (see [Section R3](#r3-android-keystore-rotation) if rotation needed)
+
+---
+
+### A6. App Store Logos & Icons Review :hand:
+
+Verify all store logos are current (v2 branding) and correctly sized. Source assets are in `Planning/StoreAssets/`.
+
+**Required icon sizes:**
+
+| Store | Asset | Required Size | Source File | Status |
+|-------|-------|---------------|-------------|--------|
+| Apple App Store | App Icon | 1024x1024 PNG (no transparency) | Resize from `AppIcon_2500x2500.png` | - [ ] Ready |
+| Google Play | Hi-res Icon | 512x512 PNG (32-bit) | Resize from `AppIcon_2500x2500.png` | - [ ] Ready |
+| Google Play | Feature Graphic | 1024x500 PNG/JPG | Generate with `generate-feature-graphic.ps1` → `Generated/GooglePlay_FeatureGraphic_1024x500.png` | - [ ] Reviewed |
+| Apple App Store | App Store Banner | 1024x1024 (same as icon) | Same as App Icon | - [ ] Ready |
+| Entra Sign-In | Banner Logo | 260x36 PNG | Resize from `HorizontalLogo_2259x588.png` | - [ ] Ready |
+| Entra Sign-In | Background | 1920x1080 PNG | `Images/v1/TME_SignInBackground_1920x1080.png` | - [ ] Ready |
+
+**Store assets folder:** `Planning/StoreAssets/`
+
+| File | Dimensions | Description |
+|------|------------|-------------|
+| `AppIcon_2500x2500.png` | 2500x2500 | V2 logo symbol — resize for Apple (1024x1024) and Google (512x512) |
+| `AppIcon_Source.svg` | Vector | Source SVG for logo symbol |
+| `HorizontalLogo_2259x588.png` | 2259x588 | V2 horizontal logo with tagline |
+| `HorizontalLogo_Source.svg` | Vector | Source SVG for horizontal logo |
+
+Additional source files at `D:\data\images\v2\New TrashMob.eco files\New TrashMob.eco files\` (Illustrator, PDF, JPG, PNG, SVG formats).
+
+- [ ] **69.** Generate all icon sizes — run `.\Planning\StoreAssets\generate-icons.ps1` (outputs to `Planning/StoreAssets/Generated/`):
+  - `AppStore_1024x1024.png` — Apple App Store (no transparency, no rounded corners)
+  - `GooglePlay_512x512.png` — Google Play (32-bit PNG)
+  - Plus PWA, favicon, and Entra profile sizes
+- [ ] **70.** Generate feature graphic — run `.\Planning\StoreAssets\generate-feature-graphic.ps1`:
+  - Outputs `GooglePlay_FeatureGraphic_1024x500.png` with v2 logo on brand green background
+  - Adjust `-Tagline`, `-BackgroundColor` parameters if needed
+- [ ] **71.** Review generated images visually before uploading to stores
+- [ ] **72.** Verify app icon in Apple App Store Connect matches v2 logo
+- [ ] **73.** Verify app icon in Google Play Console matches v2 logo
+
+---
+
+### A7. App Store Listing & Screenshots :hand:
+
+- [ ] **74.** Update app store listing copy (see [Section R4](#r4-app-store-listing-copy))
+- [ ] **75.** Update release notes (see [Section R5](#r5-release-notes-template))
+- [ ] **76.** Update keywords (Apple, see [Section R6](#r6-keywords))
+- [ ] **77.** Capture new screenshots if significant UI changes (see [Section R7](#r7-screenshot-guide))
+- [ ] **78.** Verify privacy policy URL is accessible: https://www.trashmob.eco/privacypolicy
+- [ ] **79.** Verify support URL is accessible: https://www.trashmob.eco/contactus
+- [ ] **80.** Update content rating if needed (user-generated content, location)
+- [ ] **81.** Update Data Safety (Google) if new data types collected — check `Planning/PRIVACY_MANIFEST.md` for current declarations (see [Section R16](#r16-privacy-manifest-ci-check))
+- [ ] **82.** Update App Privacy (Apple) if new data types collected — check `Planning/PRIVACY_MANIFEST.md` for current declarations (see [Section R16](#r16-privacy-manifest-ci-check))
+- [ ] **83.** :gear: **AUTOMATED:** `ci_privacy-manifest-check.yml` adds a PR comment when privacy-related files change, reminding to update store forms
+- [ ] **84.** Verify COPPA compliance — age gate blocks under-13
+- [ ] **85.** Verify location permission strings are accurate and specific
+
+---
+
+### A8. Dev Environment Smoke Test :test_tube:
+
+- [ ] **86.** Deploy to dev.trashmob.eco and verify all features work before proceeding to production
+- [ ] **87.** Run through feature testing checklist (Part C below) on dev first
+
+---
+
+## Part B — Deployment
+
+---
+
+### B1. Database Migrations :gear:
+
+Run all 31 pending migrations. EF Core applies only unapplied migrations automatically.
+
+- [ ] **88.** :gear: **AUTOMATED:** `release_db-migrations.yml` runs automatically when migration files change on `release` push. It:
+  - Temporarily adds the GitHub runner IP to the Azure SQL firewall
+  - Retrieves the connection string from Key Vault
+  - Lists pending migrations, then applies them via `dotnet ef database update`
+  - Removes the firewall rule (always, even on failure)
+  - Can also be triggered manually via `workflow_dispatch`
+
+<details>
+<summary><strong>Full migration list (31 migrations)</strong></summary>
+
+#### Weight & Event Basics
+1. `20260107022919_AddPickupWeightToEventSummary` - Adds PickedWeight (int) and PickedWeightUnitId to EventSummaries; creates WeightUnits table with None/lb/kg
+2. `20260131222334_AddEventCoLeads` - Adds IsEventLead column to EventAttendees; **backfills event creators as leads**
+3. `20260201013924_ChangePickedWeightToDecimal` - Converts EventSummaries.PickedWeight from int to decimal(10,1)
+
+#### Teams & Feedback
+4. `20260201030122_AddTeamsFeature` - Creates Teams, TeamMembers, TeamEvents, TeamJoinRequests, TeamPhotos tables
+5. `20260201164845_AddUserFeedback` - Creates UserFeedback table for in-app feedback with status, screenshots, GitHub issue linking
+
+#### Community Pages (Project 10)
+6. `20260201181911_AddCommunityHomePageFieldsToPartner` - Adds 12 columns to Partners: BannerImageUrl, BrandingColors, City, Country, Lat/Lng, Slug, Tagline, HomePage fields
+7. `20260202000411_AddCommunityPhase2Fields` - Adds ContactEmail, ContactPhone, LogoUrl, PhysicalAddress to Partners
+
+#### Photo Moderation & Adoptable Areas
+8. `20260202004834_AddPhotoModeration` - Adds moderation fields to TeamPhotos and LitterImages; creates PhotoFlags and PhotoModerationLogs tables
+9. `20260202030639_AddAdoptableArea` - Creates AdoptableAreas table with GeoJSON, cleanup frequency, and co-adoption settings
+10. `20260202042553_AddTeamAdoption` - Creates TeamAdoptions table linking teams to adoptable areas with application/review workflow
+
+#### Waivers V3 (Project 8)
+11. `20260202053435_AddWaiverVersioning` - Creates WaiverVersions, CommunityWaivers, UserWaivers tables with versioning, minor consent, guardian info
+
+#### Adoption Events & Attendee Metrics
+12. `20260202062028_AddTeamAdoptionEvent` - Adds adoption tracking columns to TeamAdoptions; creates TeamAdoptionEvents join table
+13. `20260203024754_AddEventAttendeeMetrics` - Creates EventAttendeeMetrics table for per-attendee bags, weight, duration tracking
+
+#### Engagement & Gamification
+14. `20260203042212_AddEmailInvites` - Creates EmailInviteBatches and EmailInvites tables for invite tracking and conversion
+15. `20260203050953_AddLeaderboardCacheAndGamificationPreferences` - Adds ShowOnLeaderboards and AchievementNotificationsEnabled to Users; creates LeaderboardCaches table
+16. `20260203150803_AddAchievements` - Creates AchievementTypes and UserAchievements tables; seeds 7 achievement types
+17. `20260203151205_AddNewsletterSupport` - Creates NewsletterCategories, NewsletterTemplates, Newsletters, UserNewsletterPreferences; seeds defaults
+
+#### Photos
+18. `20260204030038_AddEventPhotos` - Creates EventPhotos table with moderation support
+19. `20260204040000_AddPartnerPhoto` - Creates PartnerPhotos table with moderation support
+
+#### Route Tracking (Project 4)
+20. `20260206171539_AddRouteTracingProperties` - Adds 9 columns to EventAttendeeRoutes (BagsCollected, DurationMinutes, WeightCollected, PrivacyLevel, etc.); creates RoutePoints table for GPS coordinates
+
+#### Community Prospects (Project 40)
+21. `20260207140209_AddCommunityProspects` - Creates CommunityProspects and ProspectActivities tables with pipeline stage and fit scoring
+22. `20260207191850_AddProspectOutreachEmails` - Creates ProspectOutreachEmails table for outreach cadence with open/click tracking
+
+#### Regional Communities & Partner Docs
+23. `20260208181514_AddRegionalCommunityFields` - Adds BoundsNorth/South/East/West, CountyName, RegionType to Partners
+24. `20260208182003_AddPartnerDocumentStorage` - Adds BlobStoragePath, ContentType, DocumentTypeId, ExpirationDate, FileSizeBytes to PartnerDocuments
+25. `20260208222433_AddCommunityAreaDefaults` - Adds default adoptable area settings to Partners (co-adoption, frequency, min events, safety)
+
+#### Professional/Sponsored Adoptions
+26. `20260208233634_AddSponsoredAdoptions` - Creates ProfessionalCompanies, Sponsors, SponsoredAdoptions, ProfessionalCompanyUsers, ProfessionalCleanupLogs tables
+
+#### User Profile & Auth
+27. `20260209005001_AddUserProfileFields` - Adds DateOfBirth, GivenName, Surname, ProfilePhotoUrl to Users
+
+#### Community & Event Enhancements
+28. `20260210020832_AddCommunityPartnerTypeAndIsFeatured` - Adds IsFeatured boolean to Partners; inserts Community partner type
+29. `20260214204051_AddEventVisibility` - Replaces IsEventPublic with EventVisibilityId (Public/TeamOnly/Private); adds TeamId FK to Events
+
+#### AI Area Generation (Project 44)
+30. `20260216045129_AddAreaGeneration` - Creates AreaGenerationBatches and StagedAdoptableAreas tables for AI-powered area discovery
+31. `20260217150209_AddBoundaryGeoJson` - Adds BoundaryGeoJson column to Partners for storing GeoJSON boundary polygons
+
+**Notes:**
+- Migration #2 includes data backfill SQL that marks all event creators as event leads
+- Migration #29 converts the boolean IsEventPublic to an enum-style EventVisibilityId — existing events are migrated to Public
+
+</details>
+
+---
+
+### B2. Auth Migration Cutover Window :hand:
 
 **Timing:** Schedule a maintenance window (low-traffic period). Communicate to users in advance.
 
-**Cutover sequence:**
-1. Complete all pre-deployment tasks above (sections 0-4)
-2. Final B2C → Entra user migration (catch any new users since last migration)
-3. Merge main to release (triggers deployment)
-4. Verify Entra sign-in works on www.trashmob.eco
-5. Monitor Application Insights for auth errors for 24 hours
-6. If critical issues: rollback (see below)
-7. After 1-week coexistence: decommission B2C tenant
+- [ ] **89.** :gear: **AUTOMATED:** Final B2C > Entra user migration — run `manual_b2c-to-entra-migration.yml` with `mode=full-migration` to catch any new users since last migration (see [Section R15](#r15-b2c-to-entra-migration-workflow))
+- [ ] **90.** Verify frontend returns `authProvider: "entra"` from `/api/config` endpoint after deployment
 
 ---
 
-## Deployment Steps
+### B3. Merge and Deploy Web App :hand: :gear:
 
-### 1. Merge main to release
-```bash
-git checkout release
-git pull origin release
-git merge origin/main
-git push origin release
-```
-
-### 2. Wait for CI/CD Pipeline
-- Container builds will trigger automatically
-- Monitor GitHub Actions for success
-
-### 3. Verify Deployment
-- Check https://www.trashmob.eco is accessible
-- Test login/logout functionality
-- Verify Teams feature is working
-- Verify Feedback widget is visible
-- Check Application Insights for errors
+- [ ] **91.** Merge main to release:
+  ```bash
+  git checkout release
+  git pull origin release
+  git merge origin/main
+  git push origin release
+  ```
+- [ ] **92.** :gear: **AUTOMATED:** GitHub Actions builds and deploys web container to Azure Container Apps
+- [ ] **93.** :gear: **AUTOMATED:** GitHub Actions builds and deploys background jobs (daily + hourly)
+- [ ] **94.** Monitor GitHub Actions for success: https://github.com/TrashMob-eco/TrashMob/actions
 
 ---
 
-## Post-Deployment Verification
+### B4. Deploy Mobile Apps :hand: :gear:
 
-### Feature Testing Checklist
-
-- [ ] **Teams Feature (Project 9)**
-  - [ ] Create a new team
-  - [ ] Join an existing team
-  - [ ] View Teams map
-  - [ ] Upload team photo
-  - [ ] Upload team logo
-  - [ ] Associate event with team
-
-- [ ] **User Feedback (Project 34)**
-  - [ ] Feedback widget visible in bottom-right corner
-  - [ ] Submit test feedback
-  - [ ] Admin can view feedback at /siteadmin/feedback
-
-- [ ] **Event Co-Leads (Project 21)**
-  - [ ] Event creator marked as lead
-  - [ ] Can add co-leads to events
-
-- [ ] **Weight Tracking (Project 7)**
-  - [ ] Event summary accepts decimal weights
-  - [ ] Weight units dropdown works
-
-- [ ] **Litter Reports (Project 3)**
-  - [ ] Create litter report with photos
-  - [ ] Litter reports appear on home map
-  - [ ] Admin litter reports page works
-
-- [ ] **Feature Metrics (Project 29)**
-  - [ ] Login/logout events tracked
-  - [ ] Event creation tracked
-  - [ ] Attendance registration tracked
-
-- [ ] **Community Pages (Project 10)**
-  - [ ] Communities discovery page at /communities
-  - [ ] Community detail page at /communities/{slug}
-  - [ ] Community map shows events, teams, litter reports
-  - [ ] Stats widget shows community impact metrics
-  - [ ] Contact card displays email/phone/address
-  - [ ] Events and Teams sections display nearby data
-
-- [ ] **Job Opportunities Markdown Editor (Issue #2215)**
-  - [ ] Admin can create/edit job opportunities with markdown
-  - [ ] Preview toggle works in admin forms
-  - [ ] **Convert existing job listings to markdown format:**
-    - Go to /siteadmin/job-opportunities
-    - Edit each active job opportunity
-    - Convert HTML to markdown:
-      - `<strong>text</strong>` or `<b>text</b>` → `**text**`
-      - `<em>text</em>` or `<i>text</i>` → `*text*`
-      - `<ul><li>item</li></ul>` → `- item`
-      - `<ol><li>item</li></ol>` → `1. item`
-      - `<h2>heading</h2>` → `## heading`
-      - `<br>` or `<br/>` → blank line
-      - `<p>text</p>` → text with blank line before/after
-    - Use Preview toggle to verify formatting before saving
-  - [ ] Volunteer opportunities page renders markdown correctly
-
-- [ ] **Auth Migration — Entra External ID (Project 1)**
-  - [ ] Sign in via email/password works
-  - [ ] Sign in via Google works, profile photo auto-populated
-  - [ ] Sign in via Facebook works
-  - [ ] Sign in via Apple works
-  - [ ] "Create Account" shows age gate before Entra redirect
-  - [ ] Age gate blocks under-13 with friendly message
-  - [ ] "Sign In" goes directly to Entra (no age gate)
-  - [ ] Profile edit works in-app (name, photo upload)
-  - [ ] "Delete My Data" works with typed DELETE confirmation
-  - [ ] Migrated B2C user can sign in via Entra
-  - [ ] New user auto-created in DB on first sign-in
-  - [ ] Auth extension blocks under-13 sign-up server-side (test by navigating directly to Entra sign-up URL)
-  - [ ] JWT contains expected claims: email, given_name, family_name, dateOfBirth
-  - [ ] No auth errors in Application Insights after 1 hour
+- [ ] **95.** :gear: **AUTOMATED:** Push to `release` triggers `release_trashmobmobileapp.yml` which:
+  - Builds Android AAB, signs with keystore, uploads to Google Play via GCP service account
+  - Builds iOS IPA, signs with distribution cert, uploads to TestFlight via `xcrun altool`
+- [ ] **96.** Monitor mobile build workflow for success
+- [ ] **97.** :hand: **Apple:** Promote TestFlight build to App Store review in App Store Connect
+- [ ] **98.** :hand: **Google:** Promote internal track build to production in Google Play Console (recommend staged rollout: 10% > 50% > 100%)
 
 ---
 
-## Rollback Plan
+## Part C — Post-Deployment Verification :test_tube:
 
-If issues occur:
+---
 
-### Quick Rollback (< 5 min)
+### C1. Smoke Test
+
+- [ ] **99.** :gear: **AUTOMATED:** `release_smoke-tests.yml` runs automatically after the container app deployment completes. It checks: site HTTP status, `/health`, `/health/live`, `/api/config` (valid JSON), and Swagger endpoint. (See [Section R13](#r13-post-deployment-smoke-tests))
+- [ ] **100.** :test_tube: Verify smoke test workflow passed in GitHub Actions
+- [ ] **101.** :hand: Test login/logout functionality manually
+- [ ] **102.** Check Application Insights for errors (monitor for 1 hour)
+
+---
+
+### C2. Feature Testing Checklist
+
+#### Teams Feature (Project 9)
+- [ ] **103.** Create a new team
+- [ ] **104.** Join an existing team
+- [ ] **105.** View Teams map
+- [ ] **106.** Upload team photo
+- [ ] **107.** Upload team logo
+- [ ] **108.** Associate event with team
+
+#### User Feedback (Project 34)
+- [ ] **109.** Feedback widget visible in bottom-right corner
+- [ ] **110.** Submit test feedback
+- [ ] **111.** Admin can view feedback at /siteadmin/feedback
+
+#### Event Co-Leads (Project 21)
+- [ ] **112.** Event creator marked as lead
+- [ ] **113.** Can add co-leads to events
+
+#### Weight Tracking (Project 7)
+- [ ] **114.** Event summary accepts decimal weights
+- [ ] **115.** Weight units dropdown works
+
+#### Litter Reports (Project 3)
+- [ ] **116.** Create litter report with photos
+- [ ] **117.** Litter reports appear on home map
+- [ ] **118.** Admin litter reports page works
+
+#### Feature Metrics (Project 29)
+- [ ] **119.** Login/logout events tracked
+- [ ] **120.** Event creation tracked
+- [ ] **121.** Attendance registration tracked
+
+#### Community Pages (Project 10)
+- [ ] **122.** Communities discovery page at /communities
+- [ ] **123.** Community detail page at /communities/{slug}
+- [ ] **124.** Community map shows events, teams, litter reports
+- [ ] **125.** Stats widget shows community impact metrics
+- [ ] **126.** Contact card displays email/phone/address
+- [ ] **127.** Events and Teams sections display nearby data
+
+#### Job Opportunities Markdown Editor (Issue #2215)
+- [ ] **128.** Admin can create/edit job opportunities with markdown
+- [ ] **129.** Preview toggle works in admin forms
+- [ ] **130.** Convert existing job listings to markdown format:
+  - Go to /siteadmin/job-opportunities, edit each active listing
+  - `<strong>` > `**bold**`, `<em>` > `*italic*`, `<ul><li>` > `- item`, `<h2>` > `## heading`, `<br>` > blank line, `<p>` > text with blank lines
+  - Use Preview toggle to verify before saving
+- [ ] **131.** Volunteer opportunities page renders markdown correctly
+
+#### Auth Migration — Entra External ID (Project 1)
+- [ ] **132.** Sign in via email/password works
+- [ ] **133.** Sign in via Google works, profile photo auto-populated
+- [ ] **134.** Sign in via Facebook works
+- [ ] **135.** Sign in via Apple works
+- [ ] **136.** "Create Account" shows age gate before Entra redirect
+- [ ] **137.** Age gate blocks under-13 with friendly message
+- [ ] **138.** "Sign In" goes directly to Entra (no age gate)
+- [ ] **139.** Profile edit works in-app (name, photo upload)
+- [ ] **140.** "Delete My Data" works with typed DELETE confirmation
+- [ ] **141.** Migrated B2C user can sign in via Entra
+- [ ] **142.** New user auto-created in DB on first sign-in
+- [ ] **143.** Auth extension blocks under-13 sign-up server-side
+- [ ] **144.** JWT contains expected claims: email, given_name, family_name, dateOfBirth
+- [ ] **145.** No auth errors in Application Insights after 1 hour
+
+---
+
+### C3. Post-Launch Monitoring
+
+- [ ] **146.** Monitor Application Insights for auth errors for 24 hours
+- [ ] **147.** Monitor Sentry.io for mobile crashes
+- [ ] **148.** Monitor Google Play pre-launch report for crashes
+- [ ] **149.** After 1-week coexistence: decommission B2C tenant
+
+---
+
+## Part D — Rollback Plan
+
+### D1. Quick Rollback (< 5 min) :hand:
+
 ```bash
 # List available revisions
 az containerapp revision list \
@@ -441,202 +543,69 @@ az containerapp ingress traffic set \
   --revision-weight <previous-revision-name>=100
 ```
 
-### Auth Rollback (B2C Fallback)
-If Entra External ID has critical issues after cutover:
+### D2. Auth Rollback (B2C Fallback)
+
 1. Set `UseEntraExternalId=false` in Container App env vars (reverts to B2C)
 2. Redeploy Container App with B2C config
 3. Mobile users on old app version still use B2C — no action needed
 4. Mobile users on new app version cannot fallback — must wait for fix or app store update
 
-### Database Rollback (If needed)
+### D3. Database Rollback
+
 Database migrations do NOT have automatic rollback. If critical issues:
-1. Restore from backup (Azure SQL automatic backups)
-2. Or manually run Down() migration scripts
+1. Restore from backup (Azure SQL automatic backups — 14-day retention)
+2. Or manually run `Down()` migration scripts
 
 ---
 
-## Mobile App Store Deployment
+## Reference Sections
 
-### 5. Apple Signing & API Key Renewal
+---
 
-Apple App Store Connect API keys are used for two purposes: (1) downloading provisioning profiles during build, and (2) uploading IPA files to TestFlight. The iOS code signing certificate (`.p12`) expires annually.
+### R1. Regenerate iOS Distribution Certificate
 
-#### 5.1 Check Certificate & Key Status
+<a id="r1-regenerate-ios-distribution-certificate"></a>
 
-```bash
-# Check when your distribution certificate expires (requires Apple Developer portal)
-# Go to: https://developer.apple.com/account/resources/certificates/list
-# Look for "Apple Distribution" certificate — note expiry date
+1. Open Keychain Access on a Mac > Certificate Assistant > Request a Certificate from a CA
+   - Email: joe@trashmob.eco, Common Name: TrashMob Distribution, Save to disk
+2. Go to [Apple Developer Certificates](https://developer.apple.com/account/resources/certificates/add) > Type: **Apple Distribution** > Upload CSR > Download `.cer`
+3. Double-click `.cer` to install in Keychain Access
+4. In Keychain Access, find certificate > right-click > **Export** > save as `.p12` with a strong password
+5. Base64-encode: `base64 -i Certificates.p12 -o Certificates.p12.base64`
+6. Update GitHub secrets: `IOS_CERTIFICATES_P12` (base64 content), `IOS_CERTIFICATES_P12_PASSWORD` (password)
+7. Regenerate provisioning profile: [Provisioning Profiles](https://developer.apple.com/account/resources/profiles/list) > Edit App Store profile for `eco.trashmob` > Select new cert > Download
 
-# Check API key status
-# Go to: https://appstoreconnect.apple.com/access/integrations/api
-# Verify the key used by APPSTORE_KEY_ID is still "Active"
-```
+### R2. Regenerate App Store Connect API Key
 
-#### 5.2 Regenerate iOS Distribution Certificate (if expired or expiring)
+<a id="r2-regenerate-app-store-connect-api-key"></a>
 
-1. Open Keychain Access on a Mac → Certificate Assistant → Request a Certificate from a Certificate Authority
-   - User email: joe@trashmob.eco
-   - Common Name: TrashMob Distribution
-   - Save to disk → `CertificateSigningRequest.certSigningRequest`
-2. Go to [Apple Developer Certificates](https://developer.apple.com/account/resources/certificates/add)
-   - Type: **Apple Distribution**
-   - Upload the CSR file
-   - Download the `.cer` file
-3. Double-click the `.cer` to install in Keychain Access
-4. In Keychain Access, find the certificate → right-click → **Export** → save as `.p12` with a strong password
-5. Base64-encode the `.p12`:
-   ```bash
-   base64 -i Certificates.p12 -o Certificates.p12.base64
-   ```
-6. Update GitHub secrets:
-   - `IOS_CERTIFICATES_P12` → paste contents of `Certificates.p12.base64`
-   - `IOS_CERTIFICATES_P12_PASSWORD` → the password you set during export
-7. Regenerate the provisioning profile (it's bound to the certificate):
-   - Go to [Provisioning Profiles](https://developer.apple.com/account/resources/profiles/list)
-   - Edit the App Store profile for `eco.trashmob`
-   - Select the new distribution certificate
-   - Download and verify
-
-#### 5.3 Regenerate App Store Connect API Key (if expired or revoked)
-
-1. Go to [App Store Connect > Integrations > App Store Connect API](https://appstoreconnect.apple.com/access/integrations/api)
-2. Click **+** to generate a new key
-   - Name: `TrashMob CI/CD`
-   - Access: **App Manager** (minimum needed for TestFlight uploads)
-3. Download the `.p8` private key file immediately (one-time download)
-4. Note the **Key ID** and **Issuer ID** (shown at the top of the page)
+1. Go to [App Store Connect > Integrations > API](https://appstoreconnect.apple.com/access/integrations/api)
+2. Click **+** > Name: `TrashMob CI/CD` > Access: **App Manager**
+3. Download `.p8` private key immediately (one-time download)
+4. Note **Key ID** and **Issuer ID**
 5. Update GitHub secrets (in both `test` and `production` environments):
-   - `APPSTORE_ISSUER_ID` → Issuer ID from the API keys page
-   - `APPSTORE_KEY_ID` → Key ID of the new key
-   - `APPSTORE_PRIVATE_KEY` → entire contents of the `.p8` file
-6. The build workflow uses separate secrets that also need updating:
-   - `APPSTORE_ISSUER_ID` → same Issuer ID (shared)
-   - `APPSTORE_KEY_ID` → same Key ID
-   - `APPSTORE_PRIVATE_KEY` → same `.p8` contents
-7. Trigger a test build to verify: `gh workflow run "TrashMobMobileApp - Dev"`
+   - `APPSTORE_ISSUER_ID`, `APPSTORE_KEY_ID`, `APPSTORE_PRIVATE_KEY` (entire `.p8` contents)
+6. Trigger a test build to verify: `gh workflow run "TrashMobMobileApp - Dev"`
 
-#### 5.4 Android Keystore (rarely needs renewal)
+### R3. Android Keystore Rotation
 
-The Android upload keystore (`ANDROID_KEYSTORE`) is managed via Google Play App Signing. The upload key can be rotated if compromised:
-1. Generate new upload key: `keytool -genkeypair -v -keystore upload.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload`
-2. Export certificate: `keytool -export -rfc -keystore upload.jks -alias upload -file upload_certificate.pem`
-3. Go to [Google Play Console](https://play.google.com/console) → App → Setup → App signing → Request upload key reset
-4. Upload `upload_certificate.pem`
-5. Update GitHub secrets: `ANDROID_KEYSTORE` (base64-encoded jks), `ANDROID_KEYSTORE_PASSWORD`
+<a id="r3-android-keystore-rotation"></a>
 
-### 6. App Store Screenshots
+Rarely needed — only if compromised. Managed via Google Play App Signing:
+1. `keytool -genkeypair -v -keystore upload.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload`
+2. `keytool -export -rfc -keystore upload.jks -alias upload -file upload_certificate.pem`
+3. Google Play Console > App > Setup > App signing > Request upload key reset > Upload `upload_certificate.pem`
+4. Update secrets: `ANDROID_KEYSTORE` (base64-encoded jks), `ANDROID_KEYSTORE_PASSWORD`
 
-Good screenshots are critical for conversion. Regenerate screenshots whenever there are significant UI changes.
+### R4. App Store Listing Copy
 
-#### 6.1 Required Screenshot Sizes
+<a id="r4-app-store-listing-copy"></a>
 
-**Apple App Store (required for all supported devices):**
+**Name:** TrashMob
+**Subtitle (Apple, 30 chars max):** Clean Up Your Community
+**Short Description (Google, 80 chars max):** Join local cleanup events. Report litter. Track your environmental impact.
 
-| Device | Size (pixels) | Required |
-|--------|---------------|----------|
-| iPhone 6.9" (16 Pro Max) | 1320 x 2868 | Yes |
-| iPhone 6.7" (15 Plus/Pro Max) | 1290 x 2796 | Yes |
-| iPhone 6.5" (11 Pro Max) | 1284 x 2778 | Yes (if supporting older models) |
-| iPad Pro 13" | 2064 x 2752 | Yes (if iPad supported) |
-
-**Google Play Store:**
-
-| Type | Size (pixels) | Required |
-|------|---------------|----------|
-| Phone | Min 320px, max 3840px, 16:9 or 9:16 | Yes (2-8 screenshots) |
-| Tablet 7" | 1024 x 500 or similar | Recommended |
-| Tablet 10" | 1920 x 1200 or similar | Recommended |
-
-#### 6.2 Recommended Screenshots (in order)
-
-1. **Home/Map View** — Shows nearby events and litter reports on the map (demonstrates core value)
-2. **Event Details** — A well-populated event with date, location, attendees (shows community)
-3. **Litter Report** — Creating a litter report with photo (shows ease of reporting)
-4. **Route Tracking** — Active cleanup route on the map (shows the tracking feature)
-5. **Dashboard** — User stats, upcoming events, impact metrics (shows personal progress)
-6. **Teams** — Team page with members and collective impact (shows social features)
-
-#### 6.3 Screenshot Capture Tips
-
-**Android (best approach — use emulator with exact device profiles):**
-```bash
-# Use Android Studio emulator with specific device profiles
-# Phone: Pixel 8 Pro (matches Google Play feature graphic dimensions well)
-# Take screenshots via: adb exec-out screencap -p > screenshot.png
-
-# Or use Android Studio's built-in screenshot tool:
-# Emulator toolbar → Camera icon → Save
-```
-
-**iOS (best approach — use Xcode Simulator):**
-```bash
-# Launch specific simulator matching required sizes:
-xcrun simctl boot "iPhone 16 Pro Max"    # 6.9"
-xcrun simctl boot "iPhone 15 Pro Max"    # 6.7"
-
-# Take screenshot:
-xcrun simctl io booted screenshot screenshot.png
-
-# Or use Xcode: Window → Devices and Simulators → select device → screenshot button
-```
-
-**Professional polish (recommended):**
-- Use [screenshots.pro](https://screenshots.pro), [Previewed](https://previewed.app), or [AppMockUp](https://app-mockup.com) to add device frames and captions
-- Add a short headline above each screenshot (e.g., "Find cleanups near you", "Track your impact")
-- Use the TrashMob brand green (`#96ba00`) as background color
-- Keep captions to 3-5 words — the screenshot itself should tell the story
-
-### 7. App Store Review — Location Permission Justification
-
-Both Apple and Google require justification for location permissions. Our app uses **three levels** of location access that reviewers will ask about.
-
-#### 7.1 Location Permission Usage Summary
-
-| Permission | Platform | Why We Need It |
-|------------|----------|----------------|
-| When In Use | iOS + Android | Show nearby events/litter on the map, reverse-geocode pickup locations from photos |
-| Always (Background) | iOS + Android | Route tracking during active cleanup events — users see their walking path on the map |
-| Precise Location | Android | Accurate pin placement for litter reports and pickup locations |
-
-#### 7.2 Apple App Review Responses
-
-Apple will ask "Why does your app need background location?" — use this response:
-
-> **Background Location Usage:**
-> TrashMob uses background location exclusively for the "Route Tracking" feature during active cleanup events. When a user starts a cleanup, they can optionally enable route tracking to record their walking path. This path is displayed on the event map to show the area they covered. Background location is only active when the user explicitly enables route tracking, and it stops when the event ends or the user turns it off. A visible indicator is shown whenever background location is in use. The app never collects location data when the user is not actively using the route tracking feature.
-
-Apple may also ask about `NSLocationAlwaysUsageDescription` vs `NSLocationWhenInUseUsageDescription`. Both are set in [Info.plist](TrashMobMobile/Platforms/iOS/Info.plist) with specific, honest descriptions — do not use vague language like "to improve your experience."
-
-**Tips to avoid rejection:**
-- Include a demo account or clear instructions for the reviewer to test route tracking
-- Show a visible indicator (status bar icon or in-app banner) when background location is active
-- Ensure the app works without location (graceful degradation) — reviewer should be able to browse events without granting location
-
-#### 7.3 Google Play Data Safety Responses
-
-Google Play Console → App content → Data safety:
-
-| Category | Data type | Collected | Shared | Purpose |
-|----------|-----------|-----------|--------|---------|
-| Location | Approximate location | Yes | No | Show nearby events |
-| Location | Precise location | Yes | No | Litter report pins, pickup locations, route tracking |
-| Personal info | Name, Email | Yes | No | User profile, event registration |
-| Photos/Videos | Photos | Yes | No | Litter report photos, event photos |
-
-- **Encrypted in transit:** Yes (HTTPS only)
-- **Deletion mechanism:** Yes ("Delete My Data" in-app or contact info@trashmob.eco)
-- **Required for app to function:** Location is optional (can browse events without it)
-
-### 8. App Store Listing Copy
-
-#### 8.1 App Name and Subtitle
-
-- **Name:** TrashMob
-- **Subtitle (Apple, 30 chars max):** Clean Up Your Community
-- **Short Description (Google, 80 chars max):** Join local cleanup events. Report litter. Track your environmental impact.
-
-#### 8.2 Full Description
+**Full Description:**
 
 > **Make a real difference in your neighborhood.**
 >
@@ -668,7 +637,9 @@ Google Play Console → App content → Data safety:
 >
 > Join thousands of volunteers making their communities cleaner. Download TrashMob and start your first cleanup today.
 
-#### 8.3 What's New (Release Notes Template)
+### R5. Release Notes Template
+
+<a id="r5-release-notes-template"></a>
 
 > - Redesigned Create Event and Edit Event pages with improved date/time and duration controls
 > - Route tracking during cleanup events — see your walking path on the map
@@ -677,63 +648,411 @@ Google Play Console → App content → Data safety:
 > - Better form validation with inline error messages
 > - Performance and stability improvements
 
-#### 8.4 Keywords (Apple, 100 chars max)
+### R6. Keywords
 
+<a id="r6-keywords"></a>
+
+Apple (100 chars max):
 ```
 cleanup,litter,volunteer,community,environment,trash,recycle,pickup,green,eco,team,event,map,route
 ```
 
-### 9. Pre-Upload Checklist
+### R7. Screenshot Guide
 
-Before submitting to either store:
+<a id="r7-screenshot-guide"></a>
 
-- [ ] **Version bump:** Verify `ApplicationDisplayVersion` in `.csproj` is correct (managed by GitVersion)
-- [ ] **Build number:** Confirm build number is higher than the last uploaded build (auto-incremented)
-- [ ] **Signing:** iOS distribution certificate is valid (check expiry at developer.apple.com)
-- [ ] **API keys:** App Store Connect API key is active (check at appstoreconnect.apple.com)
-- [ ] **Google service account:** `GCP_SERVICE_ACCOUNT` secret is valid (check at console.cloud.google.com)
-- [ ] **Test on device:** Install from TestFlight (iOS) and internal track (Android) before promoting
-- [ ] **Screenshots:** Updated if there are significant UI changes
-- [ ] **Release notes:** Written and added to store listing
-- [ ] **Privacy policy URL:** https://www.trashmob.eco/privacypolicy is accessible
-- [ ] **Support URL:** https://www.trashmob.eco/contactus is accessible
-- [ ] **Content rating:** Updated if new features affect rating (e.g., user-generated content, location)
-- [ ] **Data safety (Google):** Updated if new data types are collected
-- [ ] **App privacy (Apple):** Updated if new data types are collected
-- [ ] **COPPA compliance:** Age gate is working, under-13 cannot create accounts
-- [ ] **Location permission strings:** Accurate and specific (not vague)
+#### Required Sizes
 
-### 10. Submission & Certification Tips
+**Apple App Store:**
 
-#### 10.1 Apple-Specific
+| Device | Size (pixels) | Required |
+|--------|---------------|----------|
+| iPhone 6.9" (16 Pro Max) | 1320 x 2868 | Yes |
+| iPhone 6.7" (15 Plus/Pro Max) | 1290 x 2796 | Yes |
+| iPhone 6.5" (11 Pro Max) | 1284 x 2778 | Yes (if supporting older models) |
+| iPad Pro 13" | 2064 x 2752 | Yes (if iPad supported) |
 
-- **Review time:** Typically 24-48 hours, can be expedited for critical fixes
-- **Demo account:** Provide a test account in App Review Information (the reviewer needs to sign in)
-- **App Review notes:** Explain route tracking, location usage, and any features requiring special permissions
-- **Rejection common causes:**
-  - Vague location permission strings (be specific about why)
-  - Background location without visible indicator
-  - Crashes on launch (test on oldest supported iOS version)
-  - Missing privacy policy URL
-  - Login required but no test account provided
-- **Expedited review:** If a critical bug fix, request expedited review at [reportaproblem.apple.com](https://reportaproblem.apple.com)
+**Google Play Store:**
 
-#### 10.2 Google-Specific
+| Type | Size (pixels) | Required |
+|------|---------------|----------|
+| Phone | Min 320px, max 3840px, 16:9 or 9:16 | Yes (2-8 screenshots) |
+| Tablet 7" | 1024 x 500 or similar | Recommended |
+| Tablet 10" | 1920 x 1200 or similar | Recommended |
 
-- **Review time:** Typically a few hours to 7 days for new apps, faster for updates
-- **Internal testing track:** Use this first — no review required
-- **Closed testing:** Requires review but limited audience — good for beta
-- **Production:** Full review, rolled out to all users
-- **Staged rollout:** Recommended — start at 10%, monitor crash rates, increase to 100%
-- **Pre-launch report:** Google automatically runs your app on Firebase Test Lab devices — check for crashes
-- **Data safety form:** Must be accurate — Google can flag discrepancies between declared and actual behavior
+#### Recommended Screenshots (in order)
 
-#### 10.3 Both Platforms
+1. **Home/Map View** — Shows nearby events and litter reports on the map
+2. **Event Details** — A well-populated event with date, location, attendees
+3. **Litter Report** — Creating a litter report with photo
+4. **Route Tracking** — Active cleanup route on the map
+5. **Dashboard** — User stats, upcoming events, impact metrics
+6. **Teams** — Team page with members and collective impact
 
-- Always test the **upgrade path** (install old version → update to new version) — not just fresh installs
-- Test with **location permission denied** — app should work in degraded mode (browse events, but no map centering)
-- Test with **no network** — route tracking should work offline, sync when back online
-- Keep release notes **user-friendly** — avoid developer jargon ("Improved event creation flow" not "Refactored CreateEventViewModel")
+#### Capture Tips
+
+**Android:** Use Android Studio emulator with Pixel 8 Pro profile. `adb exec-out screencap -p > screenshot.png`
+
+**iOS:** Use Xcode Simulator. `xcrun simctl boot "iPhone 16 Pro Max"` then `xcrun simctl io booted screenshot screenshot.png`
+
+**Professional polish:** Use [screenshots.pro](https://screenshots.pro), [Previewed](https://previewed.app), or [AppMockUp](https://app-mockup.com) to add device frames and captions. Use brand green `#96ba00` as background. Keep captions to 3-5 words.
+
+### R8. Location Permission Justification
+
+#### Apple App Review Response
+
+> **Background Location Usage:**
+> TrashMob uses background location exclusively for the "Route Tracking" feature during active cleanup events. When a user starts a cleanup, they can optionally enable route tracking to record their walking path. This path is displayed on the event map to show the area they covered. Background location is only active when the user explicitly enables route tracking, and it stops when the event ends or the user turns it off. A visible indicator is shown whenever background location is in use. The app never collects location data when the user is not actively using the route tracking feature.
+
+**Tips to avoid rejection:**
+- Include a demo account or clear instructions for the reviewer to test route tracking
+- Show a visible indicator when background location is active
+- Ensure the app works without location (graceful degradation)
+
+#### Google Play Data Safety
+
+| Category | Data type | Collected | Shared | Purpose |
+|----------|-----------|-----------|--------|---------|
+| Location | Approximate location | Yes | No | Show nearby events |
+| Location | Precise location | Yes | No | Litter report pins, pickup locations, route tracking |
+| Personal info | Name, Email | Yes | No | User profile, event registration |
+| Photos/Videos | Photos | Yes | No | Litter report photos, event photos |
+
+- **Encrypted in transit:** Yes (HTTPS only)
+- **Deletion mechanism:** Yes ("Delete My Data" in-app or contact info@trashmob.eco)
+- **Required for app to function:** Location is optional
+
+### R9. Submission & Certification Tips
+
+**Apple:**
+- Review time: 24-48 hours (expedited for critical fixes at [reportaproblem.apple.com](https://reportaproblem.apple.com))
+- Provide a demo account in App Review Information
+- Explain route tracking and location usage in App Review notes
+- Common rejections: vague location strings, no visible background location indicator, crashes on launch, missing privacy policy, no test account
+
+**Google:**
+- Review time: hours to 7 days (updates faster than new apps)
+- Use internal testing track first (no review), then closed testing (review + limited audience), then production
+- Staged rollout recommended: 10% > monitor crashes > 100%
+- Check Firebase Test Lab pre-launch report for crashes
+- Data safety form must be accurate — Google flags discrepancies
+
+**Both:**
+- Test the upgrade path (old version > new version), not just fresh installs
+- Test with location permission denied — app should degrade gracefully
+- Test with no network — route tracking should work offline, sync later
+- Keep release notes user-friendly — no developer jargon
+
+### R10. Automated Database Migrations Workflow
+
+<a id="r10-automated-database-migrations"></a>
+
+**Workflow:** `.github/workflows/release_db-migrations.yml`
+
+#### How it works
+
+1. **Trigger:** Runs automatically on push to `release` when files in `TrashMob.Shared/Migrations/` or `MobDbContext.cs` change. Also supports `workflow_dispatch` for manual runs.
+2. **Environment:** Requires `production` environment approval in GitHub (same approval gate as the container app deployment).
+3. **Process:**
+   - Checks out code, installs .NET 10 SDK and `dotnet-ef` tool
+   - Logs into Azure via OIDC (same service principal as other prod workflows)
+   - Gets the GitHub runner's public IP and creates a temporary SQL firewall rule
+   - Retrieves the `TMDBServerConnectionString` secret from Key Vault (`kv-tm-pr-westus2`)
+   - Lists pending migrations, then applies them with `dotnet ef database update --verbose`
+   - **Always** removes the temporary firewall rule (even on failure)
+4. **Concurrency:** `cancel-in-progress: false` — migrations are never interrupted mid-run
+
+#### Prerequisites
+
+These GitHub secrets must exist in the `production` environment (already configured for other prod workflows):
+
+| Secret | Purpose |
+|--------|---------|
+| `AZURE_CLIENT_ID` | Service principal for OIDC login |
+| `AZURE_TENANT_ID` | Azure AD tenant |
+| `AZURE_SUBSCRIPTION_ID` | Azure subscription |
+
+The service principal needs these permissions:
+- `Key Vault Secrets User` on `kv-tm-pr-westus2` (to read `TMDBServerConnectionString`)
+- `SQL Server Contributor` or equivalent on `sql-tm-pr-westus2` (to create/delete firewall rules)
+- The connection string itself must include credentials with DDL permissions on the database
+
+#### Manual trigger
+
+```bash
+gh workflow run "TrashMobProd - Database Migrations"
+```
+
+#### Troubleshooting
+
+- **Firewall rule not cleaned up:** If the workflow crashes hard (GitHub outage), manually remove the rule:
+  ```bash
+  az sql server firewall-rule list --server sql-tm-pr-westus2 --resource-group rg-trashmob-pr-westus2 -o table
+  az sql server firewall-rule delete --server sql-tm-pr-westus2 --resource-group rg-trashmob-pr-westus2 --name "github-actions-runner-<run-id>" --yes
+  ```
+- **Migration fails:** The workflow will fail but the firewall rule is still cleaned up. Fix the migration code, push to release, and the workflow re-runs.
+- **No pending migrations:** The workflow detects this and skips the `database update` step (no-op).
+
+### R11. Icon Generation Script
+
+<a id="r11-icon-generation-script"></a>
+
+**Script:** `Planning/StoreAssets/generate-icons.ps1`
+
+Generates all required app store and platform icon sizes from the 2500x2500 source PNG using .NET `System.Drawing` (no external tools needed on Windows).
+
+#### Usage
+
+```powershell
+# Default: uses AppIcon_2500x2500.png, outputs to Planning/StoreAssets/Generated/
+.\Planning\StoreAssets\generate-icons.ps1
+
+# Custom source image
+.\Planning\StoreAssets\generate-icons.ps1 -SourceImage ".\path\to\icon.png"
+
+# Custom output directory
+.\Planning\StoreAssets\generate-icons.ps1 -OutputDir ".\my-output"
+```
+
+#### Generated files
+
+| File | Size | Use |
+|------|------|-----|
+| `AppStore_1024x1024.png` | 1024x1024 | Apple App Store icon (no transparency, no rounded corners — Apple adds those) |
+| `GooglePlay_512x512.png` | 512x512 | Google Play Store hi-res icon (32-bit PNG) |
+| `PWA_512x512.png` | 512x512 | Progressive Web App manifest icon (large) |
+| `PWA_192x192.png` | 192x192 | Progressive Web App manifest icon (small) |
+| `Favicon_32x32.png` | 32x32 | Browser favicon |
+| `EntraProfile_240x240.png` | 240x240 | Entra External ID / Azure AD profile image |
+
+#### Source asset
+
+The source icon is `Planning/StoreAssets/AppIcon_2500x2500.png` (v2 logo symbol, copied from `D:\data\images\v2\New TrashMob.eco files`). The SVG source is `AppIcon_Source.svg`.
+
+To update the icon: replace `AppIcon_2500x2500.png` with the new design at 2500x2500 or larger, then re-run the script.
+
+### R12. Feature Graphic Generation Script
+
+<a id="r12-feature-graphic-generation-script"></a>
+
+**Script:** `Planning/StoreAssets/generate-feature-graphic.ps1`
+
+Generates the Google Play Feature Graphic (1024x500) by compositing the horizontal logo onto a branded background with configurable tagline.
+
+#### Usage
+
+```powershell
+# Default: TrashMob brand green with "Clean Up Your Community" tagline
+.\Planning\StoreAssets\generate-feature-graphic.ps1
+
+# Custom tagline
+.\Planning\StoreAssets\generate-feature-graphic.ps1 -Tagline "Join the Movement"
+
+# Custom colors
+.\Planning\StoreAssets\generate-feature-graphic.ps1 -BackgroundColor "#005B4B" -TaglineColor "#96ba00"
+
+# No tagline
+.\Planning\StoreAssets\generate-feature-graphic.ps1 -Tagline ""
+```
+
+#### Parameters
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `-LogoImage` | `HorizontalLogo_2259x588.png` | Source logo (horizontal with tagline) |
+| `-OutputDir` | `Generated/` | Output directory |
+| `-BackgroundColor` | `#96ba00` | TrashMob brand green |
+| `-Tagline` | `Clean Up Your Community` | Text below logo |
+| `-TaglineColor` | `#FFFFFF` | Tagline text color |
+| `-Width` | `1024` | Output width (px) |
+| `-Height` | `500` | Output height (px) |
+
+#### Output
+
+`Planning/StoreAssets/Generated/GooglePlay_FeatureGraphic_1024x500.png`
+
+Upload to Google Play Console > Store listing > Feature graphic.
+
+### R13. Post-Deployment Smoke Tests
+
+<a id="r13-post-deployment-smoke-tests"></a>
+
+**Workflow:** `.github/workflows/release_smoke-tests.yml`
+
+#### How it works
+
+1. **Trigger:** Runs automatically after `TrashMobProd - Container App` workflow completes successfully. Also supports `workflow_dispatch` with optional `base_url` input.
+2. **Wait:** Pauses 60 seconds for the deployment to stabilize.
+3. **Checks:**
+   - HTTP status code from the base URL (must be 2xx-3xx)
+   - `/health` endpoint returns "Healthy"
+   - `/health/live` endpoint returns "Healthy"
+   - `/api/config` returns valid JSON
+   - Swagger endpoint (informational — never fails, since Swagger may be disabled in prod)
+4. **Summary:** Reports pass/fail for each check.
+
+#### Manual trigger
+
+```bash
+# Test against production
+gh workflow run "TrashMobProd - Smoke Tests"
+
+# Test against a custom URL
+gh workflow run "TrashMobProd - Smoke Tests" -f base_url=https://dev.trashmob.eco
+```
+
+#### Troubleshooting
+
+- **Health check fails:** Check Application Insights for startup errors. Common causes: missing environment variables, database connection issues.
+- **Workflow doesn't trigger:** Verify the `workflow_run` trigger references the exact workflow name (`TrashMobProd - Container App`). Check that the deployment workflow completed (not just started).
+
+### R14. Certificate Expiry Monitoring
+
+<a id="r14-certificate-expiry-monitoring"></a>
+
+**Workflow:** `.github/workflows/scheduled_cert-expiry-check.yml`
+**Config:** `Deploy/cert-expiry-dates.json`
+
+#### How it works
+
+1. **Schedule:** Runs every Monday at 9:00 UTC via cron schedule.
+2. **Process:** Reads `Deploy/cert-expiry-dates.json` which contains certificate names, expiry dates, and renewal URLs.
+3. **Alerts:** If any certificate expires within 30 days, creates (or updates) a GitHub issue with:
+   - `cert-expiry` and `ops` labels
+   - List of expired and expiring certificates with renewal links
+   - Links to the deployment checklist renewal procedures (R1, R2)
+4. **Dedup:** If an open issue with the `cert-expiry` label already exists, it updates that issue instead of creating a new one.
+
+#### Config file format
+
+```json
+{
+  "certificates": [
+    {
+      "name": "iOS Distribution Certificate",
+      "expiryDate": "2027-01-15",
+      "renewUrl": "https://developer.apple.com/account/resources/certificates/list",
+      "notes": "Update this date after regenerating the .p12 certificate."
+    }
+  ]
+}
+```
+
+#### Maintaining the config
+
+**When you renew a certificate:** Update the `expiryDate` in `Deploy/cert-expiry-dates.json` and commit the change. The weekly check will use the new date.
+
+**Current certificates tracked:**
+
+| Certificate | Expiry | Notes |
+|-------------|--------|-------|
+| iOS Distribution Certificate | 2027-01-15 | Regenerate .p12 (see R1) |
+| App Store Connect API Key | 2099-12-31 | Doesn't expire unless revoked |
+| Apple Sign-In Client Secret | 2026-08-20 | Expires every 6 months |
+| Android Upload Keystore | 2036-01-15 | 10000-day validity |
+
+#### Manual trigger
+
+```bash
+gh workflow run "Check Certificate Expiry Dates"
+```
+
+### R15. B2C to Entra User Migration Workflow
+
+<a id="r15-b2c-to-entra-migration-workflow"></a>
+
+**Workflow:** `.github/workflows/manual_b2c-to-entra-migration.yml`
+**Script (interactive version):** `Deploy/migrate-b2c-users.ps1`
+
+#### How it works
+
+1. **Trigger:** `workflow_dispatch` only — never runs automatically.
+2. **Inputs:**
+   - `environment`: `dev` or `production` (determines which GitHub environment and secrets to use)
+   - `mode`: `dry-run`, `export-only`, or `full-migration`
+   - `export_file`: Path to save/load the export JSON
+3. **Phase 1 (Export):** Authenticates to B2C tenant via client credentials, exports all users via Graph API with pagination, classifies into email/password vs. social-only.
+4. **Phase 2 (Import):** Authenticates to Entra tenant, creates email/password users with random passwords. Social-only users are skipped (they self-migrate on first sign-in).
+5. **Artifacts:** The export JSON is uploaded as a GitHub Actions artifact (retained 30 days).
+
+#### Prerequisites
+
+The following secrets must be configured in the GitHub environment (`dev` or `production`):
+
+| Secret | Purpose |
+|--------|---------|
+| `B2C_TENANT_DOMAIN` | B2C tenant domain (e.g., `trashmobdev.onmicrosoft.com`) |
+| `B2C_CLIENT_ID` | App registration client ID in B2C tenant |
+| `B2C_CLIENT_SECRET` | App registration client secret in B2C tenant |
+| `ENTRA_TENANT_ID` | Target Entra External ID tenant GUID |
+| `ENTRA_TENANT_DOMAIN` | Entra tenant domain (e.g., `trashmobecodev.onmicrosoft.com`) |
+| `ENTRA_CLIENT_ID` | App registration client ID in Entra tenant |
+| `ENTRA_CLIENT_SECRET` | App registration client secret in Entra tenant |
+
+Both app registrations need `User.ReadWrite.All` application permission (not delegated) with admin consent.
+
+#### Usage
+
+```bash
+# Dry run (see what would happen)
+gh workflow run "B2C to Entra User Migration" -f environment=dev -f mode=dry-run
+
+# Export only (review the data)
+gh workflow run "B2C to Entra User Migration" -f environment=dev -f mode=export-only
+
+# Full migration
+gh workflow run "B2C to Entra User Migration" -f environment=production -f mode=full-migration
+```
+
+#### Post-migration steps
+
+1. Verify users in [Entra admin center](https://entra.microsoft.com)
+2. Confirm `/api/config` returns `authProvider: "entra"`
+3. Test email sign-in (user clicks "Forgot password" to set new password)
+4. Test social sign-in (Google/Facebook/Microsoft buttons)
+
+### R16. Privacy Manifest CI Check
+
+<a id="r16-privacy-manifest-ci-check"></a>
+
+**Workflow:** `.github/workflows/ci_privacy-manifest-check.yml`
+**Manifest:** `Planning/PRIVACY_MANIFEST.md`
+
+#### How it works
+
+1. **Trigger:** Runs on pull requests that modify any of these files:
+   - `TrashMobMobile/Platforms/iOS/PrivacyInfo.xcprivacy`
+   - `TrashMobMobile/Platforms/iOS/Info.plist`
+   - `TrashMobMobile/Platforms/MacCatalyst/PrivacyInfo.xcprivacy`
+   - `TrashMobMobile/Platforms/Android/AndroidManifest.xml`
+   - `Planning/PRIVACY_MANIFEST.md`
+   - `TrashMobMobile/TrashMobMobile.csproj` (new NuGet packages)
+2. **Detection:** Analyzes the diff to identify privacy-impacting changes (new permissions, API categories, NuGet packages).
+3. **Notification:** Adds a PR comment listing what changed and reminding to update App Store / Play Store privacy forms.
+4. **Dedup:** Updates existing comment instead of creating duplicates.
+
+#### Privacy Manifest document
+
+`Planning/PRIVACY_MANIFEST.md` is the single source of truth for what data the app collects. It includes:
+
+- iOS `PrivacyInfo.xcprivacy` API declarations with reason codes
+- Data collection inventory (personal info, location, usage data, UGC)
+- iOS and Android permission lists
+- Third-party SDK data flows
+- Apple App Privacy and Google Play Data Safety quick reference
+- Change log for tracking when data collection changes
+
+#### When to update
+
+Update `Planning/PRIVACY_MANIFEST.md` whenever you:
+- Add a new SDK that collects user data
+- Add new iOS/Android permissions
+- Start collecting a new type of user data
+- Change how existing data is shared with third parties
+
+After updating the manifest, update the corresponding store forms:
+- **Apple:** [App Store Connect > App Privacy](https://appstoreconnect.apple.com)
+- **Google:** [Play Console > Data Safety](https://play.google.com/console)
 
 ---
 
@@ -753,15 +1072,36 @@ Before submitting to either store:
 | Database Backups | Project 32 | Configured retention policies |
 | Billing Alerts | Project 30 | Azure budget caps, grant monitor, cost runbook |
 | Job Opportunities Markdown | Issue #2215 | Markdown editor for job listings admin |
-| Auth Migration (B2C → Entra) | Project 1 | Entra External ID sign-in, profile photos, social IDPs |
+| Auth Migration (B2C > Entra) | Project 1 | Entra External ID sign-in, profile photos, social IDPs |
 | Age Gate (COPPA) | Project 1/23 | Under-13 block (Layer 1 client + Layer 2 server), minor flagging |
 | Auth Extension | Project 1 | Server-side age verification Container App for Entra |
 
 ---
 
+## Automation Opportunities
+
+The following steps are currently manual but could be automated to reduce errors and speed up future deployments:
+
+| # | Current Manual Step | Automation Suggestion | Status |
+|---|--------------------|-----------------------|--------|
+| 1 | **Database migrations** (step 85) | `.github/workflows/release_db-migrations.yml` — auto-runs on release push when migration files change. Temporarily opens SQL firewall, retrieves connection string from Key Vault, applies migrations, cleans up. | **Done** |
+| 2 | **App Store icon resizing** (steps 67-68) | `Planning/StoreAssets/generate-icons.ps1` — generates all required sizes (1024x1024, 512x512, 192x192, 32x32, 240x240) from the 2500x2500 source PNG. | **Done** |
+| 3 | **Google Play Feature Graphic** (step 69) | `Planning/StoreAssets/generate-feature-graphic.ps1` — composites v2 logo onto brand green background at 1024x500 with configurable tagline. | **Done** |
+| 4 | **Screenshot capture** (step 75) — manual emulator/simulator screenshots | Use [Fastlane Snapshot](https://docs.fastlane.tools/actions/snapshot/) (iOS) and [Fastlane Screengrab](https://docs.fastlane.tools/actions/screengrab/) (Android) to automate screenshot capture across device sizes. Requires UI test setup. | High |
+| 5 | **Apple TestFlight > App Store promotion** (step 94) — manual click in App Store Connect | Use [Fastlane Deliver](https://docs.fastlane.tools/actions/deliver/) to automate App Store submission including metadata, screenshots, and build promotion. | Medium |
+| 6 | **Google Play staged rollout** (step 95) — manual in Google Play Console | Use [Fastlane Supply](https://docs.fastlane.tools/actions/supply/) to automate Google Play uploads and rollout percentage management from CI. | Medium |
+| 7 | **Post-deployment smoke tests** (step 99) — automated health checks | `.github/workflows/release_smoke-tests.yml` — runs automatically after container app deployment. Checks site HTTP status, `/health`, `/health/live`, `/api/config`, and Swagger. | **Done** |
+| 8 | **Apple signing cert expiry monitoring** (step 62) — weekly automated check | `.github/workflows/scheduled_cert-expiry-check.yml` — runs weekly (Monday 9am UTC), reads `Deploy/cert-expiry-dates.json`, creates GitHub issue if any cert expires within 30 days. | **Done** |
+| 9 | **B2C > Entra user migration** (step 89) — automated workflow | `.github/workflows/manual_b2c-to-entra-migration.yml` — `workflow_dispatch` with environment (dev/prod) and mode (dry-run/export-only/full-migration). Exports B2C users, imports to Entra via Graph API. | **Done** |
+| 10 | **Data Safety / App Privacy form updates** (steps 81-83) — CI check | `Planning/PRIVACY_MANIFEST.md` tracks all data collection; `.github/workflows/ci_privacy-manifest-check.yml` adds PR comment when privacy-related files change. | **Done** |
+
+All 10 automation opportunities have been implemented.
+
+---
+
 ## Contacts
 
-- **Engineering:** @JoeBergeron
+- **Engineering:** @JoeBeernink
 - **Emergency:** Check #engineering in Slack
 
 ---
