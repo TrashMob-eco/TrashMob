@@ -62,6 +62,35 @@ Get the dev key from the [Dev KeyVault](https://portal.azure.com/#@jobeedevids.o
 - [Root README](../README.md) - Main project documentation
 - [2026 Product Plan](../Planning/README.md) - Roadmap
 
+## CI/CD & App Store Deployment
+
+### Workflows
+
+| Workflow | Branch | Environment | Purpose |
+|----------|--------|-------------|---------|
+| `main_trashmobmobileapp.yml` | `main` | `test` | Dev builds → TestFlight & Google Play internal |
+| `release_trashmobmobileapp.yml` | `release` | `production` | Production releases |
+
+### iOS TestFlight Upload
+
+The iOS deploy uses `xcrun altool --upload-app` to upload IPA files to TestFlight. This replaced the `apple-actions/upload-testflight-build@v4` action because `iTMSTransporter` is broken on GitHub Actions macos runners (error -10814).
+
+**Note:** `altool` is deprecated by Apple but still functional. If Apple removes it in a future Xcode release, switch to `fastlane pilot upload` (available on the runners) or wait for an `iTMSTransporter` fix.
+
+### App Store Connect API Key
+
+The upload requires an App Store Connect API key with **Admin** or **App Manager** role.
+
+| GitHub Secret | Description |
+|---------------|-------------|
+| `APPSTORE_KEY_ID` | API key ID (10 chars, e.g. `X8J78CDY98`) |
+| `APPSTORE_ISSUER_ID` | Issuer ID (UUID, from App Store Connect API keys page) |
+| `APPSTORE_PRIVATE_KEY` | Full `.p8` file contents including BEGIN/END headers |
+
+Manage keys at [App Store Connect → Users and Access → Integrations → App Store Connect API](https://appstoreconnect.apple.com/access/integrations/api).
+
+**Important:** These are *App Store Connect API keys*, not Apple Sign In keys. The Sign In keys (for Entra External ID) are a separate key type managed under Services in the Apple Developer portal.
+
 ## Test Builds
 
 - **Android Internal Testing**: Request access at [info@trashmob.eco](mailto:info@trashmob.eco)
