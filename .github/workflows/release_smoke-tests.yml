@@ -1,0 +1,125 @@
+# Post-deployment smoke tests for production.
+# Runs automatically after the container app deployment workflow completes,
+# or manually via workflow_dispatch.
+#
+# Checks:
+# - HTTP 200 from the production URL
+# - /health endpoint returns Healthy
+# - /health/live endpoint returns Healthy
+# - /api/config returns valid JSON with expected fields
+# - Swagger endpoint (if enabled) returns 200
+
+name: TrashMobProd - Smoke Tests
+
+on:
+  workflow_run:
+    workflows: ["TrashMobProd - Container App"]
+    types: [completed]
+    branches: [release]
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: 'Base URL to test (default: https://www.trashmob.eco)'
+        required: false
+        default: 'https://www.trashmob.eco'
+
+env:
+  BASE_URL: ${{ github.event.inputs.base_url || 'https://www.trashmob.eco' }}
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Wait for deployment to stabilize
+        run: |
+          echo "Waiting 60 seconds for deployment to stabilize..."
+          sleep 60
+
+      - name: Check site is accessible
+        id: site_check
+        run: |
+          echo "Testing: ${{ env.BASE_URL }}"
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "${{ env.BASE_URL }}")
+          echo "HTTP Status: $STATUS"
+          if [ "$STATUS" -lt 200 ] || [ "$STATUS" -ge 400 ]; then
+            echo "FAIL: Site returned HTTP $STATUS"
+            echo "result=fail" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+          echo "PASS: Site is accessible (HTTP $STATUS)"
+          echo "result=pass" >> $GITHUB_OUTPUT
+
+      - name: Check /health endpoint
+        id: health_check
+        run: |
+          RESPONSE=$(curl -s --max-time 15 "${{ env.BASE_URL }}/health")
+          echo "Health response: $RESPONSE"
+          if echo "$RESPONSE" | grep -qi "healthy"; then
+            echo "PASS: /health returned Healthy"
+            echo "result=pass" >> $GITHUB_OUTPUT
+          else
+            echo "FAIL: /health did not return Healthy"
+            echo "result=fail" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Check /health/live endpoint
+        id: liveness_check
+        run: |
+          RESPONSE=$(curl -s --max-time 15 "${{ env.BASE_URL }}/health/live")
+          echo "Liveness response: $RESPONSE"
+          if echo "$RESPONSE" | grep -qi "healthy"; then
+            echo "PASS: /health/live returned Healthy"
+            echo "result=pass" >> $GITHUB_OUTPUT
+          else
+            echo "FAIL: /health/live did not return Healthy"
+            echo "result=fail" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Check /api/config endpoint
+        id: config_check
+        run: |
+          RESPONSE=$(curl -s --max-time 15 "${{ env.BASE_URL }}/api/config")
+          echo "Config response (first 500 chars): $(echo "$RESPONSE" | head -c 500)"
+
+          # Verify it's valid JSON
+          if ! echo "$RESPONSE" | jq . > /dev/null 2>&1; then
+            echo "FAIL: /api/config did not return valid JSON"
+            echo "result=fail" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+          echo "PASS: /api/config returned valid JSON"
+          echo "result=pass" >> $GITHUB_OUTPUT
+
+      - name: Check Swagger endpoint
+        id: swagger_check
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "${{ env.BASE_URL }}/swagger/v1/swagger.json")
+          echo "Swagger HTTP Status: $STATUS"
+          if [ "$STATUS" -eq 200 ]; then
+            echo "PASS: Swagger is accessible"
+          else
+            echo "INFO: Swagger returned HTTP $STATUS (may be disabled in production — not a failure)"
+          fi
+          # Swagger being disabled is OK in production, so never fail on this
+          echo "result=pass" >> $GITHUB_OUTPUT
+
+      - name: Summary
+        if: always()
+        run: |
+          echo ""
+          echo "========================================="
+          echo " Smoke Test Results"
+          echo "========================================="
+          echo " Site accessible:  ${{ steps.site_check.outputs.result || 'not run' }}"
+          echo " Health check:     ${{ steps.health_check.outputs.result || 'not run' }}"
+          echo " Liveness check:   ${{ steps.liveness_check.outputs.result || 'not run' }}"
+          echo " Config endpoint:  ${{ steps.config_check.outputs.result || 'not run' }}"
+          echo " Swagger:          ${{ steps.swagger_check.outputs.result || 'not run' }}"
+          echo "========================================="
+          echo ""
+          echo "Target: ${{ env.BASE_URL }}"

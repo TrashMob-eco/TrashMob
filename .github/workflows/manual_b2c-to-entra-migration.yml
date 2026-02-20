@@ -1,0 +1,359 @@
+# One-time user migration from Azure B2C to Entra External ID.
+# This is a manual workflow (workflow_dispatch only) — it will never run automatically.
+#
+# The migration script exports users from B2C via Graph API, then imports
+# email/password users into Entra External ID. Social-only users (Google,
+# Facebook, Microsoft) self-migrate when they next sign in.
+#
+# Prerequisites:
+#   1. Service principal with User.ReadWrite.All on BOTH tenants
+#   2. Secrets configured in the GitHub environment:
+#      - B2C_TENANT_DOMAIN (e.g., trashmobdev.onmicrosoft.com)
+#      - B2C_CLIENT_ID, B2C_CLIENT_SECRET (app reg in B2C tenant)
+#      - ENTRA_TENANT_ID (target Entra External ID tenant)
+#      - ENTRA_TENANT_DOMAIN (e.g., trashmobecodev.onmicrosoft.com)
+#      - ENTRA_CLIENT_ID, ENTRA_CLIENT_SECRET (app reg in Entra tenant)
+#
+# See R13 in the deployment checklist for full setup instructions.
+
+name: B2C to Entra User Migration
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options:
+          - dev
+          - production
+      mode:
+        description: 'Migration mode'
+        required: true
+        type: choice
+        options:
+          - dry-run
+          - export-only
+          - full-migration
+      export_file:
+        description: 'Export file path (relative to repo root)'
+        required: false
+        default: 'Deploy/b2c-users-export.json'
+
+permissions:
+  contents: read
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Validate inputs
+        run: |
+          echo "Environment: ${{ github.event.inputs.environment }}"
+          echo "Mode: ${{ github.event.inputs.mode }}"
+          echo "Export file: ${{ github.event.inputs.export_file }}"
+
+          if [ "${{ github.event.inputs.environment }}" = "production" ] && [ "${{ github.event.inputs.mode }}" = "full-migration" ]; then
+            echo ""
+            echo "⚠️  PRODUCTION FULL MIGRATION"
+            echo "This will create real users in the production Entra tenant."
+            echo "The GitHub environment protection rules will require approval."
+            echo ""
+          fi
+
+      # ── Phase 1: Export from B2C ──────────────────────────────
+      - name: 'Phase 1: Get B2C Graph API token'
+        if: github.event.inputs.mode != 'full-migration' || github.event.inputs.mode == 'full-migration'
+        id: b2c_token
+        run: |
+          # Get token using client credentials flow
+          RESPONSE=$(curl -s -X POST \
+            "https://login.microsoftonline.com/${{ secrets.B2C_TENANT_DOMAIN }}/oauth2/v2.0/token" \
+            -H "Content-Type: application/x-www-form-urlencoded" \
+            -d "client_id=${{ secrets.B2C_CLIENT_ID }}" \
+            -d "client_secret=${{ secrets.B2C_CLIENT_SECRET }}" \
+            -d "scope=https://graph.microsoft.com/.default" \
+            -d "grant_type=client_credentials")
+
+          TOKEN=$(echo "$RESPONSE" | jq -r '.access_token')
+          if [ "$TOKEN" = "null" ] || [ -z "$TOKEN" ]; then
+            echo "ERROR: Failed to get B2C Graph API token"
+            echo "$RESPONSE" | jq '.error_description // .error // "Unknown error"'
+            exit 1
+          fi
+
+          echo "::add-mask::$TOKEN"
+          echo "token=$TOKEN" >> $GITHUB_OUTPUT
+          echo "✅ Got B2C Graph API token"
+
+      - name: 'Phase 1: Export users from B2C'
+        id: export
+        run: |
+          EXPORT_FILE="${{ github.event.inputs.export_file }}"
+          TOKEN="${{ steps.b2c_token.outputs.token }}"
+          B2C_DOMAIN="${{ secrets.B2C_TENANT_DOMAIN }}"
+
+          echo "Fetching users from B2C tenant: $B2C_DOMAIN"
+
+          # Fetch all users with pagination
+          ALL_USERS="[]"
+          URL="https://graph.microsoft.com/v1.0/users?\$select=id,displayName,mail,givenName,surname,userPrincipalName,identities,createdDateTime,accountEnabled&\$top=100"
+
+          while [ -n "$URL" ] && [ "$URL" != "null" ]; do
+            RESPONSE=$(curl -s -H "Authorization: Bearer $TOKEN" \
+              -H "ConsistencyLevel: eventual" \
+              "$URL")
+
+            PAGE_USERS=$(echo "$RESPONSE" | jq '.value // []')
+            ALL_USERS=$(echo "$ALL_USERS $PAGE_USERS" | jq -s 'add')
+
+            URL=$(echo "$RESPONSE" | jq -r '."@odata.nextLink" // empty')
+          done
+
+          TOTAL=$(echo "$ALL_USERS" | jq length)
+          echo "Exported $TOTAL users from B2C"
+
+          # Classify users
+          CLASSIFIED=$(echo "$ALL_USERS" | jq --arg domain "$B2C_DOMAIN" '
+            [.[] | {
+              id: .id,
+              displayName: .displayName,
+              mail: .mail,
+              givenName: .givenName,
+              surname: .surname,
+              upn: .userPrincipalName,
+              identities: .identities,
+              createdDateTime: .createdDateTime,
+              accountEnabled: .accountEnabled,
+              email: (
+                (.identities // [] | map(select(.signInType == "emailAddress")) | .[0].issuerAssignedId)
+                // .mail
+              ),
+              socialProviders: [(.identities // [] | map(select(.signInType == "federated")) | .[].issuer)],
+              hasLocalAccount: ((.identities // [] | map(select(.signInType == "emailAddress")) | length) > 0),
+              migrationType: (
+                if ((.identities // [] | map(select(.signInType == "emailAddress")) | length) > 0) then "email_password"
+                elif ((.identities // [] | map(select(.signInType == "federated")) | length) > 0) then "social_only"
+                else "unknown"
+                end
+              )
+            }]
+          ')
+
+          # Count by type
+          EMAIL_COUNT=$(echo "$CLASSIFIED" | jq '[.[] | select(.migrationType == "email_password")] | length')
+          SOCIAL_COUNT=$(echo "$CLASSIFIED" | jq '[.[] | select(.migrationType == "social_only")] | length')
+          UNKNOWN_COUNT=$(echo "$CLASSIFIED" | jq '[.[] | select(.migrationType == "unknown")] | length')
+
+          echo ""
+          echo "=== Export Summary ==="
+          echo "  Total users:      $TOTAL"
+          echo "  Email/password:   $EMAIL_COUNT (will be migrated)"
+          echo "  Social-only:      $SOCIAL_COUNT (self-migrate on sign-in)"
+          echo "  Unknown/no email: $UNKNOWN_COUNT (skipped)"
+
+          # Save export
+          EXPORT_DATA=$(jq -n \
+            --arg date "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --arg source "$B2C_DOMAIN" \
+            --argjson total "$TOTAL" \
+            --argjson users "$CLASSIFIED" \
+            '{exportDate: $date, sourceTenant: $source, totalUsers: $total, users: $users}')
+
+          echo "$EXPORT_DATA" > "$EXPORT_FILE"
+          echo "Export saved to: $EXPORT_FILE"
+
+          # Set outputs
+          echo "email_count=$EMAIL_COUNT" >> $GITHUB_OUTPUT
+          echo "social_count=$SOCIAL_COUNT" >> $GITHUB_OUTPUT
+          echo "total_count=$TOTAL" >> $GITHUB_OUTPUT
+
+      - name: Upload export artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: b2c-users-export
+          path: ${{ github.event.inputs.export_file }}
+          retention-days: 30
+
+      # ── Phase 2: Import to Entra External ID ──────────────────
+      - name: 'Phase 2: Get Entra Graph API token'
+        if: github.event.inputs.mode != 'export-only'
+        id: entra_token
+        run: |
+          RESPONSE=$(curl -s -X POST \
+            "https://login.microsoftonline.com/${{ secrets.ENTRA_TENANT_ID }}/oauth2/v2.0/token" \
+            -H "Content-Type: application/x-www-form-urlencoded" \
+            -d "client_id=${{ secrets.ENTRA_CLIENT_ID }}" \
+            -d "client_secret=${{ secrets.ENTRA_CLIENT_SECRET }}" \
+            -d "scope=https://graph.microsoft.com/.default" \
+            -d "grant_type=client_credentials")
+
+          TOKEN=$(echo "$RESPONSE" | jq -r '.access_token')
+          if [ "$TOKEN" = "null" ] || [ -z "$TOKEN" ]; then
+            echo "ERROR: Failed to get Entra Graph API token"
+            echo "$RESPONSE" | jq '.error_description // .error // "Unknown error"'
+            exit 1
+          fi
+
+          echo "::add-mask::$TOKEN"
+          echo "token=$TOKEN" >> $GITHUB_OUTPUT
+          echo "✅ Got Entra Graph API token"
+
+      - name: 'Phase 2: Import users to Entra'
+        if: github.event.inputs.mode != 'export-only'
+        run: |
+          EXPORT_FILE="${{ github.event.inputs.export_file }}"
+          TOKEN="${{ steps.entra_token.outputs.token }}"
+          ENTRA_DOMAIN="${{ secrets.ENTRA_TENANT_DOMAIN }}"
+          MODE="${{ github.event.inputs.mode }}"
+
+          echo "Loading export from: $EXPORT_FILE"
+          USERS_TO_MIGRATE=$(jq '[.users[] | select(.migrationType == "email_password")]' "$EXPORT_FILE")
+          COUNT=$(echo "$USERS_TO_MIGRATE" | jq length)
+
+          echo "Users to import: $COUNT email/password users"
+
+          if [ "$COUNT" -eq 0 ]; then
+            echo "No email/password users to migrate."
+            exit 0
+          fi
+
+          if [ "$MODE" = "dry-run" ]; then
+            echo ""
+            echo "=== DRY RUN ==="
+            echo "The following users would be created in Entra External ID:"
+            echo ""
+            echo "$USERS_TO_MIGRATE" | jq -r '.[] | "  CREATE: \(.displayName) <\(.email)>"'
+            echo ""
+            echo "Re-run with mode=full-migration to create these users."
+            exit 0
+          fi
+
+          # Full migration
+          CREATED=0
+          SKIPPED=0
+          FAILED=0
+          ERRORS=""
+
+          for i in $(seq 0 $((COUNT - 1))); do
+            USER=$(echo "$USERS_TO_MIGRATE" | jq ".[$i]")
+            EMAIL=$(echo "$USER" | jq -r '.email')
+            DISPLAY_NAME=$(echo "$USER" | jq -r '.displayName // (.email | split("@") | .[0])')
+            GIVEN_NAME=$(echo "$USER" | jq -r '.givenName // empty')
+            SURNAME=$(echo "$USER" | jq -r '.surname // empty')
+
+            echo ""
+            echo "Processing: $DISPLAY_NAME <$EMAIL>..."
+
+            # Check if user already exists
+            EXISTING=$(curl -s -H "Authorization: Bearer $TOKEN" \
+              -H "ConsistencyLevel: eventual" \
+              "https://graph.microsoft.com/v1.0/users?\$filter=mail%20eq%20'$(python3 -c "import urllib.parse; print(urllib.parse.quote('$EMAIL'))")'" \
+              | jq '.value | length')
+
+            if [ "$EXISTING" -gt 0 ]; then
+              echo "  SKIP: User already exists in Entra"
+              SKIPPED=$((SKIPPED + 1))
+              continue
+            fi
+
+            # Generate random password
+            PASSWORD=$(openssl rand -base64 16 | tr -d '=' | head -c 16)
+            PASSWORD="${PASSWORD}A1!"  # Ensure complexity requirements
+
+            # Build user payload
+            PAYLOAD=$(jq -n \
+              --arg displayName "$DISPLAY_NAME" \
+              --arg email "$EMAIL" \
+              --arg domain "$ENTRA_DOMAIN" \
+              --arg password "$PASSWORD" \
+              --arg givenName "$GIVEN_NAME" \
+              --arg surname "$SURNAME" \
+              '{
+                displayName: $displayName,
+                mail: $email,
+                identities: [{
+                  signInType: "emailAddress",
+                  issuer: $domain,
+                  issuerAssignedId: $email
+                }],
+                passwordProfile: {
+                  password: $password,
+                  forceChangePasswordNextSignIn: false
+                },
+                passwordPolicies: "DisablePasswordExpiration"
+              }
+              | if $givenName != "" then . + {givenName: $givenName} else . end
+              | if $surname != "" then . + {surname: $surname} else . end')
+
+            # Create user
+            RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+              "https://graph.microsoft.com/v1.0/users" \
+              -H "Authorization: Bearer $TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "$PAYLOAD")
+
+            HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+            BODY=$(echo "$RESPONSE" | head -n -1)
+
+            if [ "$HTTP_CODE" = "201" ]; then
+              NEW_ID=$(echo "$BODY" | jq -r '.id')
+              echo "  CREATED: ID $NEW_ID"
+              CREATED=$((CREATED + 1))
+            else
+              ERROR_MSG=$(echo "$BODY" | jq -r '.error.message // "Unknown error"')
+              echo "  FAILED: $ERROR_MSG"
+              ERRORS="${ERRORS}\n  ${DISPLAY_NAME} <${EMAIL}>: ${ERROR_MSG}"
+              FAILED=$((FAILED + 1))
+            fi
+
+            # Rate limiting: wait 200ms between requests
+            sleep 0.2
+          done
+
+          echo ""
+          echo "========================================="
+          echo " Migration Summary"
+          echo "========================================="
+          echo "  Created in Entra:   $CREATED"
+          echo "  Skipped (exists):   $SKIPPED"
+          echo "  Failed:             $FAILED"
+          echo "========================================="
+
+          if [ -n "$ERRORS" ]; then
+            echo ""
+            echo "--- Errors ---"
+            echo -e "$ERRORS"
+          fi
+
+          if [ "$FAILED" -gt 0 ]; then
+            echo ""
+            echo "⚠️  Some users failed to migrate. Review errors above."
+            exit 1
+          fi
+
+      - name: Summary
+        if: always()
+        run: |
+          echo ""
+          echo "========================================="
+          echo " B2C to Entra Migration"
+          echo "========================================="
+          echo " Environment: ${{ github.event.inputs.environment }}"
+          echo " Mode:        ${{ github.event.inputs.mode }}"
+          echo " Exported:    ${{ steps.export.outputs.total_count || 'N/A' }} users"
+          echo "   Email/pwd: ${{ steps.export.outputs.email_count || 'N/A' }}"
+          echo "   Social:    ${{ steps.export.outputs.social_count || 'N/A' }}"
+          echo "========================================="
+          echo ""
+          echo "Next steps:"
+          echo "  1. Verify users in Entra admin center (https://entra.microsoft.com)"
+          echo "  2. Confirm authProvider is 'entra' at /api/config"
+          echo "  3. Test email sign-in (user clicks 'Forgot password')"
+          echo "  4. Test social sign-in (Google/Facebook/Microsoft buttons)"

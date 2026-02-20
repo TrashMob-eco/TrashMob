@@ -1,6 +1,6 @@
 # Production Deployment Checklist
 
-**Last Updated:** February 19, 2026
+**Last Updated:** February 20, 2026
 **Commits Since Last Release:** ~100+ commits from main
 
 > **Legend:**
@@ -234,11 +234,13 @@ In Azure Portal > prod Entra tenant > External Identities > All identity provide
 
 ### A5. Apple Signing & API Key Renewal :hand:
 
-- [ ] **62.** Check iOS distribution certificate expiry at https://developer.apple.com/account/resources/certificates/list
-- [ ] **63.** Check App Store Connect API key status at https://appstoreconnect.apple.com/access/integrations/api — verify key used by `APPSTORE_KEY_ID` is "Active"
-- [ ] **64.** If certificate expired or expiring — regenerate (see [Section R1](#r1-regenerate-ios-distribution-certificate))
-- [ ] **65.** If API key expired or revoked — regenerate (see [Section R2](#r2-regenerate-app-store-connect-api-key))
-- [ ] **66.** Verify Android keystore — `ANDROID_KEYSTORE` and `ANDROID_KEYSTORE_PASSWORD` secrets are set (see [Section R3](#r3-android-keystore-rotation) if rotation needed)
+- [ ] **62.** :gear: **AUTOMATED:** `scheduled_cert-expiry-check.yml` runs weekly (Mondays 9am UTC) and creates a GitHub issue if any certificate expires within 30 days. Update `Deploy/cert-expiry-dates.json` when renewing certificates. (See [Section R14](#r14-certificate-expiry-monitoring))
+- [ ] **63.** :test_tube: Verify `Deploy/cert-expiry-dates.json` has current expiry dates for all certificates
+- [ ] **64.** Check iOS distribution certificate expiry at https://developer.apple.com/account/resources/certificates/list
+- [ ] **65.** Check App Store Connect API key status at https://appstoreconnect.apple.com/access/integrations/api — verify key used by `APPSTORE_KEY_ID` is "Active"
+- [ ] **66.** If certificate expired or expiring — regenerate (see [Section R1](#r1-regenerate-ios-distribution-certificate))
+- [ ] **67.** If API key expired or revoked — regenerate (see [Section R2](#r2-regenerate-app-store-connect-api-key))
+- [ ] **68.** Verify Android keystore — `ANDROID_KEYSTORE` and `ANDROID_KEYSTORE_PASSWORD` secrets are set (see [Section R3](#r3-android-keystore-rotation) if rotation needed)
 
 ---
 
@@ -270,39 +272,40 @@ Verify all store logos are current (v2 branding) and correctly sized. Source ass
 
 Additional source files at `D:\data\images\v2\New TrashMob.eco files\New TrashMob.eco files\` (Illustrator, PDF, JPG, PNG, SVG formats).
 
-- [ ] **67.** Generate all icon sizes — run `.\Planning\StoreAssets\generate-icons.ps1` (outputs to `Planning/StoreAssets/Generated/`):
+- [ ] **69.** Generate all icon sizes — run `.\Planning\StoreAssets\generate-icons.ps1` (outputs to `Planning/StoreAssets/Generated/`):
   - `AppStore_1024x1024.png` — Apple App Store (no transparency, no rounded corners)
   - `GooglePlay_512x512.png` — Google Play (32-bit PNG)
   - Plus PWA, favicon, and Entra profile sizes
-- [ ] **68.** Generate feature graphic — run `.\Planning\StoreAssets\generate-feature-graphic.ps1`:
+- [ ] **70.** Generate feature graphic — run `.\Planning\StoreAssets\generate-feature-graphic.ps1`:
   - Outputs `GooglePlay_FeatureGraphic_1024x500.png` with v2 logo on brand green background
   - Adjust `-Tagline`, `-BackgroundColor` parameters if needed
-- [ ] **69.** Review generated images visually before uploading to stores
-- [ ] **70.** Verify app icon in Apple App Store Connect matches v2 logo
-- [ ] **71.** Verify app icon in Google Play Console matches v2 logo
+- [ ] **71.** Review generated images visually before uploading to stores
+- [ ] **72.** Verify app icon in Apple App Store Connect matches v2 logo
+- [ ] **73.** Verify app icon in Google Play Console matches v2 logo
 
 ---
 
 ### A7. App Store Listing & Screenshots :hand:
 
-- [ ] **72.** Update app store listing copy (see [Section R4](#r4-app-store-listing-copy))
-- [ ] **73.** Update release notes (see [Section R5](#r5-release-notes-template))
-- [ ] **74.** Update keywords (Apple, see [Section R6](#r6-keywords))
-- [ ] **75.** Capture new screenshots if significant UI changes (see [Section R7](#r7-screenshot-guide))
-- [ ] **76.** Verify privacy policy URL is accessible: https://www.trashmob.eco/privacypolicy
-- [ ] **77.** Verify support URL is accessible: https://www.trashmob.eco/contactus
-- [ ] **78.** Update content rating if needed (user-generated content, location)
-- [ ] **79.** Update Data Safety (Google) if new data types collected
-- [ ] **80.** Update App Privacy (Apple) if new data types collected
-- [ ] **81.** Verify COPPA compliance — age gate blocks under-13
-- [ ] **82.** Verify location permission strings are accurate and specific
+- [ ] **74.** Update app store listing copy (see [Section R4](#r4-app-store-listing-copy))
+- [ ] **75.** Update release notes (see [Section R5](#r5-release-notes-template))
+- [ ] **76.** Update keywords (Apple, see [Section R6](#r6-keywords))
+- [ ] **77.** Capture new screenshots if significant UI changes (see [Section R7](#r7-screenshot-guide))
+- [ ] **78.** Verify privacy policy URL is accessible: https://www.trashmob.eco/privacypolicy
+- [ ] **79.** Verify support URL is accessible: https://www.trashmob.eco/contactus
+- [ ] **80.** Update content rating if needed (user-generated content, location)
+- [ ] **81.** Update Data Safety (Google) if new data types collected — check `Planning/PRIVACY_MANIFEST.md` for current declarations (see [Section R16](#r16-privacy-manifest-ci-check))
+- [ ] **82.** Update App Privacy (Apple) if new data types collected — check `Planning/PRIVACY_MANIFEST.md` for current declarations (see [Section R16](#r16-privacy-manifest-ci-check))
+- [ ] **83.** :gear: **AUTOMATED:** `ci_privacy-manifest-check.yml` adds a PR comment when privacy-related files change, reminding to update store forms
+- [ ] **84.** Verify COPPA compliance — age gate blocks under-13
+- [ ] **85.** Verify location permission strings are accurate and specific
 
 ---
 
 ### A8. Dev Environment Smoke Test :test_tube:
 
-- [ ] **83.** Deploy to dev.trashmob.eco and verify all features work before proceeding to production
-- [ ] **84.** Run through feature testing checklist (Part C below) on dev first
+- [ ] **86.** Deploy to dev.trashmob.eco and verify all features work before proceeding to production
+- [ ] **87.** Run through feature testing checklist (Part C below) on dev first
 
 ---
 
@@ -314,7 +317,7 @@ Additional source files at `D:\data\images\v2\New TrashMob.eco files\New TrashMo
 
 Run all 31 pending migrations. EF Core applies only unapplied migrations automatically.
 
-- [ ] **85.** :gear: **AUTOMATED:** `release_db-migrations.yml` runs automatically when migration files change on `release` push. It:
+- [ ] **88.** :gear: **AUTOMATED:** `release_db-migrations.yml` runs automatically when migration files change on `release` push. It:
   - Temporarily adds the GitHub runner IP to the Azure SQL firewall
   - Retrieves the connection string from Key Vault
   - Lists pending migrations, then applies them via `dotnet ef database update`
@@ -397,34 +400,34 @@ Run all 31 pending migrations. EF Core applies only unapplied migrations automat
 
 **Timing:** Schedule a maintenance window (low-traffic period). Communicate to users in advance.
 
-- [ ] **86.** Final B2C > Entra user migration (catch any new users since last migration)
-- [ ] **87.** Verify frontend returns `authProvider: "entra"` from `/api/config` endpoint after deployment
+- [ ] **89.** :gear: **AUTOMATED:** Final B2C > Entra user migration — run `manual_b2c-to-entra-migration.yml` with `mode=full-migration` to catch any new users since last migration (see [Section R15](#r15-b2c-to-entra-migration-workflow))
+- [ ] **90.** Verify frontend returns `authProvider: "entra"` from `/api/config` endpoint after deployment
 
 ---
 
 ### B3. Merge and Deploy Web App :hand: :gear:
 
-- [ ] **88.** Merge main to release:
+- [ ] **91.** Merge main to release:
   ```bash
   git checkout release
   git pull origin release
   git merge origin/main
   git push origin release
   ```
-- [ ] **89.** :gear: **AUTOMATED:** GitHub Actions builds and deploys web container to Azure Container Apps
-- [ ] **90.** :gear: **AUTOMATED:** GitHub Actions builds and deploys background jobs (daily + hourly)
-- [ ] **91.** Monitor GitHub Actions for success: https://github.com/TrashMob-eco/TrashMob/actions
+- [ ] **92.** :gear: **AUTOMATED:** GitHub Actions builds and deploys web container to Azure Container Apps
+- [ ] **93.** :gear: **AUTOMATED:** GitHub Actions builds and deploys background jobs (daily + hourly)
+- [ ] **94.** Monitor GitHub Actions for success: https://github.com/TrashMob-eco/TrashMob/actions
 
 ---
 
 ### B4. Deploy Mobile Apps :hand: :gear:
 
-- [ ] **92.** :gear: **AUTOMATED:** Push to `release` triggers `release_trashmobmobileapp.yml` which:
+- [ ] **95.** :gear: **AUTOMATED:** Push to `release` triggers `release_trashmobmobileapp.yml` which:
   - Builds Android AAB, signs with keystore, uploads to Google Play via GCP service account
   - Builds iOS IPA, signs with distribution cert, uploads to TestFlight via `xcrun altool`
-- [ ] **93.** Monitor mobile build workflow for success
-- [ ] **94.** :hand: **Apple:** Promote TestFlight build to App Store review in App Store Connect
-- [ ] **95.** :hand: **Google:** Promote internal track build to production in Google Play Console (recommend staged rollout: 10% > 50% > 100%)
+- [ ] **96.** Monitor mobile build workflow for success
+- [ ] **97.** :hand: **Apple:** Promote TestFlight build to App Store review in App Store Connect
+- [ ] **98.** :hand: **Google:** Promote internal track build to production in Google Play Console (recommend staged rollout: 10% > 50% > 100%)
 
 ---
 
@@ -434,86 +437,87 @@ Run all 31 pending migrations. EF Core applies only unapplied migrations automat
 
 ### C1. Smoke Test
 
-- [ ] **96.** Check https://www.trashmob.eco is accessible
-- [ ] **97.** Test login/logout functionality
-- [ ] **98.** Check Application Insights for errors (monitor for 1 hour)
+- [ ] **99.** :gear: **AUTOMATED:** `release_smoke-tests.yml` runs automatically after the container app deployment completes. It checks: site HTTP status, `/health`, `/health/live`, `/api/config` (valid JSON), and Swagger endpoint. (See [Section R13](#r13-post-deployment-smoke-tests))
+- [ ] **100.** :test_tube: Verify smoke test workflow passed in GitHub Actions
+- [ ] **101.** :hand: Test login/logout functionality manually
+- [ ] **102.** Check Application Insights for errors (monitor for 1 hour)
 
 ---
 
 ### C2. Feature Testing Checklist
 
 #### Teams Feature (Project 9)
-- [ ] **99.** Create a new team
-- [ ] **100.** Join an existing team
-- [ ] **101.** View Teams map
-- [ ] **102.** Upload team photo
-- [ ] **103.** Upload team logo
-- [ ] **104.** Associate event with team
+- [ ] **103.** Create a new team
+- [ ] **104.** Join an existing team
+- [ ] **105.** View Teams map
+- [ ] **106.** Upload team photo
+- [ ] **107.** Upload team logo
+- [ ] **108.** Associate event with team
 
 #### User Feedback (Project 34)
-- [ ] **105.** Feedback widget visible in bottom-right corner
-- [ ] **106.** Submit test feedback
-- [ ] **107.** Admin can view feedback at /siteadmin/feedback
+- [ ] **109.** Feedback widget visible in bottom-right corner
+- [ ] **110.** Submit test feedback
+- [ ] **111.** Admin can view feedback at /siteadmin/feedback
 
 #### Event Co-Leads (Project 21)
-- [ ] **108.** Event creator marked as lead
-- [ ] **109.** Can add co-leads to events
+- [ ] **112.** Event creator marked as lead
+- [ ] **113.** Can add co-leads to events
 
 #### Weight Tracking (Project 7)
-- [ ] **110.** Event summary accepts decimal weights
-- [ ] **111.** Weight units dropdown works
+- [ ] **114.** Event summary accepts decimal weights
+- [ ] **115.** Weight units dropdown works
 
 #### Litter Reports (Project 3)
-- [ ] **112.** Create litter report with photos
-- [ ] **113.** Litter reports appear on home map
-- [ ] **114.** Admin litter reports page works
+- [ ] **116.** Create litter report with photos
+- [ ] **117.** Litter reports appear on home map
+- [ ] **118.** Admin litter reports page works
 
 #### Feature Metrics (Project 29)
-- [ ] **115.** Login/logout events tracked
-- [ ] **116.** Event creation tracked
-- [ ] **117.** Attendance registration tracked
+- [ ] **119.** Login/logout events tracked
+- [ ] **120.** Event creation tracked
+- [ ] **121.** Attendance registration tracked
 
 #### Community Pages (Project 10)
-- [ ] **118.** Communities discovery page at /communities
-- [ ] **119.** Community detail page at /communities/{slug}
-- [ ] **120.** Community map shows events, teams, litter reports
-- [ ] **121.** Stats widget shows community impact metrics
-- [ ] **122.** Contact card displays email/phone/address
-- [ ] **123.** Events and Teams sections display nearby data
+- [ ] **122.** Communities discovery page at /communities
+- [ ] **123.** Community detail page at /communities/{slug}
+- [ ] **124.** Community map shows events, teams, litter reports
+- [ ] **125.** Stats widget shows community impact metrics
+- [ ] **126.** Contact card displays email/phone/address
+- [ ] **127.** Events and Teams sections display nearby data
 
 #### Job Opportunities Markdown Editor (Issue #2215)
-- [ ] **124.** Admin can create/edit job opportunities with markdown
-- [ ] **125.** Preview toggle works in admin forms
-- [ ] **126.** Convert existing job listings to markdown format:
+- [ ] **128.** Admin can create/edit job opportunities with markdown
+- [ ] **129.** Preview toggle works in admin forms
+- [ ] **130.** Convert existing job listings to markdown format:
   - Go to /siteadmin/job-opportunities, edit each active listing
   - `<strong>` > `**bold**`, `<em>` > `*italic*`, `<ul><li>` > `- item`, `<h2>` > `## heading`, `<br>` > blank line, `<p>` > text with blank lines
   - Use Preview toggle to verify before saving
-- [ ] **127.** Volunteer opportunities page renders markdown correctly
+- [ ] **131.** Volunteer opportunities page renders markdown correctly
 
 #### Auth Migration — Entra External ID (Project 1)
-- [ ] **128.** Sign in via email/password works
-- [ ] **129.** Sign in via Google works, profile photo auto-populated
-- [ ] **130.** Sign in via Facebook works
-- [ ] **131.** Sign in via Apple works
-- [ ] **132.** "Create Account" shows age gate before Entra redirect
-- [ ] **133.** Age gate blocks under-13 with friendly message
-- [ ] **134.** "Sign In" goes directly to Entra (no age gate)
-- [ ] **135.** Profile edit works in-app (name, photo upload)
-- [ ] **136.** "Delete My Data" works with typed DELETE confirmation
-- [ ] **137.** Migrated B2C user can sign in via Entra
-- [ ] **138.** New user auto-created in DB on first sign-in
-- [ ] **139.** Auth extension blocks under-13 sign-up server-side
-- [ ] **140.** JWT contains expected claims: email, given_name, family_name, dateOfBirth
-- [ ] **141.** No auth errors in Application Insights after 1 hour
+- [ ] **132.** Sign in via email/password works
+- [ ] **133.** Sign in via Google works, profile photo auto-populated
+- [ ] **134.** Sign in via Facebook works
+- [ ] **135.** Sign in via Apple works
+- [ ] **136.** "Create Account" shows age gate before Entra redirect
+- [ ] **137.** Age gate blocks under-13 with friendly message
+- [ ] **138.** "Sign In" goes directly to Entra (no age gate)
+- [ ] **139.** Profile edit works in-app (name, photo upload)
+- [ ] **140.** "Delete My Data" works with typed DELETE confirmation
+- [ ] **141.** Migrated B2C user can sign in via Entra
+- [ ] **142.** New user auto-created in DB on first sign-in
+- [ ] **143.** Auth extension blocks under-13 sign-up server-side
+- [ ] **144.** JWT contains expected claims: email, given_name, family_name, dateOfBirth
+- [ ] **145.** No auth errors in Application Insights after 1 hour
 
 ---
 
 ### C3. Post-Launch Monitoring
 
-- [ ] **142.** Monitor Application Insights for auth errors for 24 hours
-- [ ] **143.** Monitor Sentry.io for mobile crashes
-- [ ] **144.** Monitor Google Play pre-launch report for crashes
-- [ ] **145.** After 1-week coexistence: decommission B2C tenant
+- [ ] **146.** Monitor Application Insights for auth errors for 24 hours
+- [ ] **147.** Monitor Sentry.io for mobile crashes
+- [ ] **148.** Monitor Google Play pre-launch report for crashes
+- [ ] **149.** After 1-week coexistence: decommission B2C tenant
 
 ---
 
@@ -871,6 +875,187 @@ Generates the Google Play Feature Graphic (1024x500) by compositing the horizont
 
 Upload to Google Play Console > Store listing > Feature graphic.
 
+### R13. Post-Deployment Smoke Tests
+
+<a id="r13-post-deployment-smoke-tests"></a>
+
+**Workflow:** `.github/workflows/release_smoke-tests.yml`
+
+#### How it works
+
+1. **Trigger:** Runs automatically after `TrashMobProd - Container App` workflow completes successfully. Also supports `workflow_dispatch` with optional `base_url` input.
+2. **Wait:** Pauses 60 seconds for the deployment to stabilize.
+3. **Checks:**
+   - HTTP status code from the base URL (must be 2xx-3xx)
+   - `/health` endpoint returns "Healthy"
+   - `/health/live` endpoint returns "Healthy"
+   - `/api/config` returns valid JSON
+   - Swagger endpoint (informational — never fails, since Swagger may be disabled in prod)
+4. **Summary:** Reports pass/fail for each check.
+
+#### Manual trigger
+
+```bash
+# Test against production
+gh workflow run "TrashMobProd - Smoke Tests"
+
+# Test against a custom URL
+gh workflow run "TrashMobProd - Smoke Tests" -f base_url=https://dev.trashmob.eco
+```
+
+#### Troubleshooting
+
+- **Health check fails:** Check Application Insights for startup errors. Common causes: missing environment variables, database connection issues.
+- **Workflow doesn't trigger:** Verify the `workflow_run` trigger references the exact workflow name (`TrashMobProd - Container App`). Check that the deployment workflow completed (not just started).
+
+### R14. Certificate Expiry Monitoring
+
+<a id="r14-certificate-expiry-monitoring"></a>
+
+**Workflow:** `.github/workflows/scheduled_cert-expiry-check.yml`
+**Config:** `Deploy/cert-expiry-dates.json`
+
+#### How it works
+
+1. **Schedule:** Runs every Monday at 9:00 UTC via cron schedule.
+2. **Process:** Reads `Deploy/cert-expiry-dates.json` which contains certificate names, expiry dates, and renewal URLs.
+3. **Alerts:** If any certificate expires within 30 days, creates (or updates) a GitHub issue with:
+   - `cert-expiry` and `ops` labels
+   - List of expired and expiring certificates with renewal links
+   - Links to the deployment checklist renewal procedures (R1, R2)
+4. **Dedup:** If an open issue with the `cert-expiry` label already exists, it updates that issue instead of creating a new one.
+
+#### Config file format
+
+```json
+{
+  "certificates": [
+    {
+      "name": "iOS Distribution Certificate",
+      "expiryDate": "2027-01-15",
+      "renewUrl": "https://developer.apple.com/account/resources/certificates/list",
+      "notes": "Update this date after regenerating the .p12 certificate."
+    }
+  ]
+}
+```
+
+#### Maintaining the config
+
+**When you renew a certificate:** Update the `expiryDate` in `Deploy/cert-expiry-dates.json` and commit the change. The weekly check will use the new date.
+
+**Current certificates tracked:**
+
+| Certificate | Expiry | Notes |
+|-------------|--------|-------|
+| iOS Distribution Certificate | 2027-01-15 | Regenerate .p12 (see R1) |
+| App Store Connect API Key | 2099-12-31 | Doesn't expire unless revoked |
+| Apple Sign-In Client Secret | 2026-08-20 | Expires every 6 months |
+| Android Upload Keystore | 2036-01-15 | 10000-day validity |
+
+#### Manual trigger
+
+```bash
+gh workflow run "Check Certificate Expiry Dates"
+```
+
+### R15. B2C to Entra User Migration Workflow
+
+<a id="r15-b2c-to-entra-migration-workflow"></a>
+
+**Workflow:** `.github/workflows/manual_b2c-to-entra-migration.yml`
+**Script (interactive version):** `Deploy/migrate-b2c-users.ps1`
+
+#### How it works
+
+1. **Trigger:** `workflow_dispatch` only — never runs automatically.
+2. **Inputs:**
+   - `environment`: `dev` or `production` (determines which GitHub environment and secrets to use)
+   - `mode`: `dry-run`, `export-only`, or `full-migration`
+   - `export_file`: Path to save/load the export JSON
+3. **Phase 1 (Export):** Authenticates to B2C tenant via client credentials, exports all users via Graph API with pagination, classifies into email/password vs. social-only.
+4. **Phase 2 (Import):** Authenticates to Entra tenant, creates email/password users with random passwords. Social-only users are skipped (they self-migrate on first sign-in).
+5. **Artifacts:** The export JSON is uploaded as a GitHub Actions artifact (retained 30 days).
+
+#### Prerequisites
+
+The following secrets must be configured in the GitHub environment (`dev` or `production`):
+
+| Secret | Purpose |
+|--------|---------|
+| `B2C_TENANT_DOMAIN` | B2C tenant domain (e.g., `trashmobdev.onmicrosoft.com`) |
+| `B2C_CLIENT_ID` | App registration client ID in B2C tenant |
+| `B2C_CLIENT_SECRET` | App registration client secret in B2C tenant |
+| `ENTRA_TENANT_ID` | Target Entra External ID tenant GUID |
+| `ENTRA_TENANT_DOMAIN` | Entra tenant domain (e.g., `trashmobecodev.onmicrosoft.com`) |
+| `ENTRA_CLIENT_ID` | App registration client ID in Entra tenant |
+| `ENTRA_CLIENT_SECRET` | App registration client secret in Entra tenant |
+
+Both app registrations need `User.ReadWrite.All` application permission (not delegated) with admin consent.
+
+#### Usage
+
+```bash
+# Dry run (see what would happen)
+gh workflow run "B2C to Entra User Migration" -f environment=dev -f mode=dry-run
+
+# Export only (review the data)
+gh workflow run "B2C to Entra User Migration" -f environment=dev -f mode=export-only
+
+# Full migration
+gh workflow run "B2C to Entra User Migration" -f environment=production -f mode=full-migration
+```
+
+#### Post-migration steps
+
+1. Verify users in [Entra admin center](https://entra.microsoft.com)
+2. Confirm `/api/config` returns `authProvider: "entra"`
+3. Test email sign-in (user clicks "Forgot password" to set new password)
+4. Test social sign-in (Google/Facebook/Microsoft buttons)
+
+### R16. Privacy Manifest CI Check
+
+<a id="r16-privacy-manifest-ci-check"></a>
+
+**Workflow:** `.github/workflows/ci_privacy-manifest-check.yml`
+**Manifest:** `Planning/PRIVACY_MANIFEST.md`
+
+#### How it works
+
+1. **Trigger:** Runs on pull requests that modify any of these files:
+   - `TrashMobMobile/Platforms/iOS/PrivacyInfo.xcprivacy`
+   - `TrashMobMobile/Platforms/iOS/Info.plist`
+   - `TrashMobMobile/Platforms/MacCatalyst/PrivacyInfo.xcprivacy`
+   - `TrashMobMobile/Platforms/Android/AndroidManifest.xml`
+   - `Planning/PRIVACY_MANIFEST.md`
+   - `TrashMobMobile/TrashMobMobile.csproj` (new NuGet packages)
+2. **Detection:** Analyzes the diff to identify privacy-impacting changes (new permissions, API categories, NuGet packages).
+3. **Notification:** Adds a PR comment listing what changed and reminding to update App Store / Play Store privacy forms.
+4. **Dedup:** Updates existing comment instead of creating duplicates.
+
+#### Privacy Manifest document
+
+`Planning/PRIVACY_MANIFEST.md` is the single source of truth for what data the app collects. It includes:
+
+- iOS `PrivacyInfo.xcprivacy` API declarations with reason codes
+- Data collection inventory (personal info, location, usage data, UGC)
+- iOS and Android permission lists
+- Third-party SDK data flows
+- Apple App Privacy and Google Play Data Safety quick reference
+- Change log for tracking when data collection changes
+
+#### When to update
+
+Update `Planning/PRIVACY_MANIFEST.md` whenever you:
+- Add a new SDK that collects user data
+- Add new iOS/Android permissions
+- Start collecting a new type of user data
+- Change how existing data is shared with third parties
+
+After updating the manifest, update the corresponding store forms:
+- **Apple:** [App Store Connect > App Privacy](https://appstoreconnect.apple.com)
+- **Google:** [Play Console > Data Safety](https://play.google.com/console)
+
 ---
 
 ## New Features Summary
@@ -907,12 +1092,12 @@ The following steps are currently manual but could be automated to reduce errors
 | 4 | **Screenshot capture** (step 75) — manual emulator/simulator screenshots | Use [Fastlane Snapshot](https://docs.fastlane.tools/actions/snapshot/) (iOS) and [Fastlane Screengrab](https://docs.fastlane.tools/actions/screengrab/) (Android) to automate screenshot capture across device sizes. Requires UI test setup. | High |
 | 5 | **Apple TestFlight > App Store promotion** (step 94) — manual click in App Store Connect | Use [Fastlane Deliver](https://docs.fastlane.tools/actions/deliver/) to automate App Store submission including metadata, screenshots, and build promotion. | Medium |
 | 6 | **Google Play staged rollout** (step 95) — manual in Google Play Console | Use [Fastlane Supply](https://docs.fastlane.tools/actions/supply/) to automate Google Play uploads and rollout percentage management from CI. | Medium |
-| 7 | **Post-deployment smoke tests** (steps 96-98) — manual browser checks | Add a GitHub Actions job that runs automated health checks (HTTP status, auth flow, key API endpoints) against www.trashmob.eco after deployment. | Medium |
-| 8 | **Apple signing cert expiry monitoring** (step 62) — manual check in Apple Developer portal | Add a scheduled GitHub Actions workflow that checks cert/key expiry dates and creates an issue or sends a Slack alert 30 days before expiration. | Low |
-| 9 | **B2C > Entra user migration** (step 86) — manual script run | Automate as a GitHub Actions workflow with manual trigger (`workflow_dispatch`) that runs the migration script with dry-run and confirm modes. | Medium |
-| 10 | **Data Safety / App Privacy form updates** (steps 79-80) — manual in both consoles | Maintain a single `PRIVACY_MANIFEST.md` in the repo; when it changes, a CI job flags that store privacy forms need updating. | Low |
+| 7 | **Post-deployment smoke tests** (step 99) — automated health checks | `.github/workflows/release_smoke-tests.yml` — runs automatically after container app deployment. Checks site HTTP status, `/health`, `/health/live`, `/api/config`, and Swagger. | **Done** |
+| 8 | **Apple signing cert expiry monitoring** (step 62) — weekly automated check | `.github/workflows/scheduled_cert-expiry-check.yml` — runs weekly (Monday 9am UTC), reads `Deploy/cert-expiry-dates.json`, creates GitHub issue if any cert expires within 30 days. | **Done** |
+| 9 | **B2C > Entra user migration** (step 89) — automated workflow | `.github/workflows/manual_b2c-to-entra-migration.yml` — `workflow_dispatch` with environment (dev/prod) and mode (dry-run/export-only/full-migration). Exports B2C users, imports to Entra via Graph API. | **Done** |
+| 10 | **Data Safety / App Privacy form updates** (steps 81-83) — CI check | `Planning/PRIVACY_MANIFEST.md` tracks all data collection; `.github/workflows/ci_privacy-manifest-check.yml` adds PR comment when privacy-related files change. | **Done** |
 
-**Recommended priority:** Start with #1 (DB migrations), #7 (smoke tests), and #8 (cert monitoring) — these give the highest risk reduction for moderate effort.
+All 10 automation opportunities have been implemented.
 
 ---
 
