@@ -280,7 +280,9 @@ namespace TrashMob.Shared.Managers.Areas
                 "cityblock" => "[out:json][timeout:60];(way[\"place\"=\"neighbourhood\"]({{bbox}});relation[\"place\"=\"neighbourhood\"]({{bbox}});way[\"place\"=\"city_block\"]({{bbox}}););out body geom;",
                 "highwaysection" => "[out:json][timeout:60];(way[\"highway\"=\"motorway\"]({{bbox}});way[\"highway\"=\"trunk\"]({{bbox}}););out body geom;",
                 "street" => "[out:json][timeout:60];(way[\"highway\"=\"residential\"][\"name\"]({{bbox}});way[\"highway\"=\"secondary\"][\"name\"]({{bbox}});way[\"highway\"=\"tertiary\"][\"name\"]({{bbox}});way[\"highway\"=\"primary\"][\"name\"]({{bbox}}););out body geom;",
-                _ => "", // Use Nominatim text search for school, park, trail, etc.
+                "school" => "[out:json][timeout:60];(way[\"amenity\"=\"school\"][\"name\"]({{bbox}});relation[\"amenity\"=\"school\"][\"name\"]({{bbox}}););out body geom;",
+                "park" => "[out:json][timeout:60];(way[\"leisure\"=\"park\"][\"name\"]({{bbox}});relation[\"leisure\"=\"park\"][\"name\"]({{bbox}}););out body geom;",
+                _ => "", // Use Nominatim text search for trail, waterway, etc.
             };
         }
 
