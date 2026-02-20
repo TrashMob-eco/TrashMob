@@ -5,25 +5,19 @@ namespace TrashMobDailyJobs
     using System.Text.Json;
     using System.Threading.Tasks;
     using Microsoft.Data.SqlClient;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Daily job that processes achievements for all users.
     /// Checks user stats against achievement criteria and awards achievements.
     /// </summary>
-    public class AchievementProcessor
+    public class AchievementProcessor(ILogger<AchievementProcessor> logger, IConfiguration configuration)
     {
-        private readonly ILogger<AchievementProcessor> logger;
-
-        public AchievementProcessor(ILogger<AchievementProcessor> logger)
-        {
-            this.logger = logger;
-        }
-
         public async Task RunAsync()
         {
             logger.LogInformation("AchievementProcessor job started at: {Time}", DateTime.UtcNow);
-            var connectionString = Environment.GetEnvironmentVariable("TMDBServerConnectionString");
+            var connectionString = configuration["TMDBServerConnectionString"];
 
             if (string.IsNullOrEmpty(connectionString))
             {
