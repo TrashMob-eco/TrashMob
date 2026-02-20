@@ -1,14 +1,17 @@
 import { useState } from 'react';
-import { Calendar, ClipboardCheck, List, Map as MapIcon, MapPin } from 'lucide-react';
+import { Calendar, ClipboardCheck, List, Map as MapIcon, MapPin, Search, X } from 'lucide-react';
 import AdoptableAreaData from '@/components/Models/AdoptableAreaData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { GoogleMapWithKey } from '@/components/Map/GoogleMap';
 import { ExistingAreasOverlay } from '@/components/Map/AreaMapEditor/ExistingAreasOverlay';
 import { CommunityBoundsOverlay } from '@/components/Map/CommunityBoundsOverlay';
 import { AreaStatusLegend } from '@/components/Map/AreaMapEditor/AreaStatusLegend';
 import { AdoptAreaDialog } from './adopt-area-dialog';
+import { useAreaFilters, AREA_TYPES, AREA_STATUSES } from '@/hooks/useAreaFilters';
 
 const COMMUNITY_AREAS_MAP_ID = 'communityAreasMap';
 
@@ -33,6 +36,8 @@ export const CommunityAreasSection = ({
 }: CommunityAreasSectionProps) => {
     const [selectedArea, setSelectedArea] = useState<AdoptableAreaData | null>(null);
     const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
+    const { search, setSearch, areaType, setAreaType, status, setStatus, filteredAreas, totalCount, hasActiveFilters } =
+        useAreaFilters(areas);
 
     if (isLoading) {
         return (
@@ -84,7 +89,64 @@ export const CommunityAreasSection = ({
                     </div>
                 </CardHeader>
                 <CardContent>
-                    {viewMode === 'map' ? (
+                    <div className='flex flex-wrap items-center gap-2 pb-4'>
+                        <div className='relative flex-1 min-w-[180px] max-w-xs'>
+                            <Search className='absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground' />
+                            <Input
+                                placeholder='Search areas...'
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className='pl-8 pr-8'
+                            />
+                            {search ? (
+                                <Button
+                                    variant='ghost'
+                                    size='sm'
+                                    className='absolute right-0 top-0 h-full px-2 hover:bg-transparent'
+                                    onClick={() => setSearch('')}
+                                >
+                                    <X className='h-4 w-4' />
+                                    <span className='sr-only'>Clear search</span>
+                                </Button>
+                            ) : null}
+                        </div>
+                        <Select value={areaType} onValueChange={setAreaType}>
+                            <SelectTrigger className='w-[150px]'>
+                                <SelectValue placeholder='Area type' />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value='all'>All Types</SelectItem>
+                                {AREA_TYPES.map((t) => (
+                                    <SelectItem key={t} value={t}>
+                                        {t}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <Select value={status} onValueChange={setStatus}>
+                            <SelectTrigger className='w-[150px]'>
+                                <SelectValue placeholder='Status' />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value='all'>All Statuses</SelectItem>
+                                {AREA_STATUSES.map((s) => (
+                                    <SelectItem key={s} value={s}>
+                                        {s}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        {hasActiveFilters ? (
+                            <span className='text-sm text-muted-foreground'>
+                                {filteredAreas.length} of {totalCount} areas
+                            </span>
+                        ) : null}
+                    </div>
+                    {filteredAreas.length === 0 && hasActiveFilters ? (
+                        <div className='text-center py-8 text-muted-foreground'>
+                            <p>No areas match your filters.</p>
+                        </div>
+                    ) : viewMode === 'map' ? (
                         <div className='space-y-2'>
                             <div className='rounded-md overflow-hidden border'>
                                 <GoogleMapWithKey
@@ -97,14 +159,18 @@ export const CommunityAreasSection = ({
                                             geoJson={boundaryGeoJson}
                                         />
                                     ) : null}
-                                    <ExistingAreasOverlay mapId={COMMUNITY_AREAS_MAP_ID} areas={areas} fitBounds />
+                                    <ExistingAreasOverlay
+                                        mapId={COMMUNITY_AREAS_MAP_ID}
+                                        areas={filteredAreas}
+                                        fitBounds
+                                    />
                                 </GoogleMapWithKey>
                             </div>
                             <AreaStatusLegend />
                         </div>
                     ) : (
                         <div className='space-y-4'>
-                            {areas.slice(0, 6).map((area) => (
+                            {filteredAreas.map((area) => (
                                 <div key={area.id} className='p-3 rounded-lg border space-y-2'>
                                     <div className='flex items-center justify-between gap-2'>
                                         <div className='flex items-center gap-2 min-w-0'>
@@ -135,11 +201,6 @@ export const CommunityAreasSection = ({
                                     </div>
                                 </div>
                             ))}
-                            {areas.length > 6 ? (
-                                <p className='text-xs text-muted-foreground text-center'>
-                                    + {areas.length - 6} more areas
-                                </p>
-                            ) : null}
                         </div>
                     )}
                 </CardContent>
