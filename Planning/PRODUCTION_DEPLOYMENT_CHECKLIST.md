@@ -270,9 +270,14 @@ Verify all store logos are current (v2 branding) and correctly sized. Source ass
 
 Additional source files at `D:\data\images\v2\New TrashMob.eco files\New TrashMob.eco files\` (Illustrator, PDF, JPG, PNG, SVG formats).
 
-- [ ] **67.** Generate 1024x1024 PNG from `AppIcon_2500x2500.png` for Apple App Store (no transparency, no rounded corners)
-- [ ] **68.** Generate 512x512 PNG from `AppIcon_2500x2500.png` for Google Play (32-bit PNG)
-- [ ] **69.** Review Google Play Feature Graphic — update if it uses v1 branding
+- [ ] **67.** Generate all icon sizes — run `.\Planning\StoreAssets\generate-icons.ps1` (outputs to `Planning/StoreAssets/Generated/`):
+  - `AppStore_1024x1024.png` — Apple App Store (no transparency, no rounded corners)
+  - `GooglePlay_512x512.png` — Google Play (32-bit PNG)
+  - Plus PWA, favicon, and Entra profile sizes
+- [ ] **68.** Generate feature graphic — run `.\Planning\StoreAssets\generate-feature-graphic.ps1`:
+  - Outputs `GooglePlay_FeatureGraphic_1024x500.png` with v2 logo on brand green background
+  - Adjust `-Tagline`, `-BackgroundColor` parameters if needed
+- [ ] **69.** Review generated images visually before uploading to stores
 - [ ] **70.** Verify app icon in Apple App Store Connect matches v2 logo
 - [ ] **71.** Verify app icon in Google Play Console matches v2 logo
 
@@ -305,15 +310,16 @@ Additional source files at `D:\data\images\v2\New TrashMob.eco files\New TrashMo
 
 ---
 
-### B1. Database Migrations :hand:
+### B1. Database Migrations :gear:
 
 Run all 31 pending migrations. EF Core applies only unapplied migrations automatically.
 
-- [ ] **85.** Connect to production database and run:
-  ```bash
-  # From TrashMob folder
-  dotnet ef database update
-  ```
+- [ ] **85.** :gear: **AUTOMATED:** `release_db-migrations.yml` runs automatically when migration files change on `release` push. It:
+  - Temporarily adds the GitHub runner IP to the Azure SQL firewall
+  - Retrieves the connection string from Key Vault
+  - Lists pending migrations, then applies them via `dotnet ef database update`
+  - Removes the firewall rule (always, even on failure)
+  - Can also be triggered manually via `workflow_dispatch`
 
 <details>
 <summary><strong>Full migration list (31 migrations)</strong></summary>
@@ -763,11 +769,11 @@ cleanup,litter,volunteer,community,environment,trash,recycle,pickup,green,eco,te
 
 The following steps are currently manual but could be automated to reduce errors and speed up future deployments:
 
-| # | Current Manual Step | Automation Suggestion | Effort |
+| # | Current Manual Step | Automation Suggestion | Status |
 |---|--------------------|-----------------------|--------|
-| 1 | **Database migrations** (step 85) — must SSH/connect to prod DB and run `dotnet ef database update` | Add a GitHub Actions job triggered on `release` push that runs migrations against prod DB using a connection string from Key Vault. Use a dedicated service principal with limited DB permissions. | Medium |
-| 2 | **App Store icon resizing** (steps 67-68) — manually resize 2500x2500 to 1024x1024 and 512x512 | Add a PowerShell/bash script in `Planning/StoreAssets/` that auto-generates all required sizes from the source SVG or PNG using ImageMagick or `sips` (macOS). | Low |
-| 3 | **Google Play Feature Graphic** (step 69) — manually check and update | Create a Figma or Canva template linked in this doc so updating is quick and consistent. | Low |
+| 1 | **Database migrations** (step 85) | `.github/workflows/release_db-migrations.yml` — auto-runs on release push when migration files change. Temporarily opens SQL firewall, retrieves connection string from Key Vault, applies migrations, cleans up. | **Done** |
+| 2 | **App Store icon resizing** (steps 67-68) | `Planning/StoreAssets/generate-icons.ps1` — generates all required sizes (1024x1024, 512x512, 192x192, 32x32, 240x240) from the 2500x2500 source PNG. | **Done** |
+| 3 | **Google Play Feature Graphic** (step 69) | `Planning/StoreAssets/generate-feature-graphic.ps1` — composites v2 logo onto brand green background at 1024x500 with configurable tagline. | **Done** |
 | 4 | **Screenshot capture** (step 75) — manual emulator/simulator screenshots | Use [Fastlane Snapshot](https://docs.fastlane.tools/actions/snapshot/) (iOS) and [Fastlane Screengrab](https://docs.fastlane.tools/actions/screengrab/) (Android) to automate screenshot capture across device sizes. Requires UI test setup. | High |
 | 5 | **Apple TestFlight > App Store promotion** (step 94) — manual click in App Store Connect | Use [Fastlane Deliver](https://docs.fastlane.tools/actions/deliver/) to automate App Store submission including metadata, screenshots, and build promotion. | Medium |
 | 6 | **Google Play staged rollout** (step 95) — manual in Google Play Console | Use [Fastlane Supply](https://docs.fastlane.tools/actions/supply/) to automate Google Play uploads and rollout percentage management from CI. | Medium |
