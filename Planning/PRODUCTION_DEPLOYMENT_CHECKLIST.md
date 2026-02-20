@@ -455,6 +455,288 @@ Database migrations do NOT have automatic rollback. If critical issues:
 
 ---
 
+## Mobile App Store Deployment
+
+### 5. Apple Signing & API Key Renewal
+
+Apple App Store Connect API keys are used for two purposes: (1) downloading provisioning profiles during build, and (2) uploading IPA files to TestFlight. The iOS code signing certificate (`.p12`) expires annually.
+
+#### 5.1 Check Certificate & Key Status
+
+```bash
+# Check when your distribution certificate expires (requires Apple Developer portal)
+# Go to: https://developer.apple.com/account/resources/certificates/list
+# Look for "Apple Distribution" certificate — note expiry date
+
+# Check API key status
+# Go to: https://appstoreconnect.apple.com/access/integrations/api
+# Verify the key used by APPSTORE_KEY_ID is still "Active"
+```
+
+#### 5.2 Regenerate iOS Distribution Certificate (if expired or expiring)
+
+1. Open Keychain Access on a Mac → Certificate Assistant → Request a Certificate from a Certificate Authority
+   - User email: joe@trashmob.eco
+   - Common Name: TrashMob Distribution
+   - Save to disk → `CertificateSigningRequest.certSigningRequest`
+2. Go to [Apple Developer Certificates](https://developer.apple.com/account/resources/certificates/add)
+   - Type: **Apple Distribution**
+   - Upload the CSR file
+   - Download the `.cer` file
+3. Double-click the `.cer` to install in Keychain Access
+4. In Keychain Access, find the certificate → right-click → **Export** → save as `.p12` with a strong password
+5. Base64-encode the `.p12`:
+   ```bash
+   base64 -i Certificates.p12 -o Certificates.p12.base64
+   ```
+6. Update GitHub secrets:
+   - `IOS_CERTIFICATES_P12` → paste contents of `Certificates.p12.base64`
+   - `IOS_CERTIFICATES_P12_PASSWORD` → the password you set during export
+7. Regenerate the provisioning profile (it's bound to the certificate):
+   - Go to [Provisioning Profiles](https://developer.apple.com/account/resources/profiles/list)
+   - Edit the App Store profile for `eco.trashmob`
+   - Select the new distribution certificate
+   - Download and verify
+
+#### 5.3 Regenerate App Store Connect API Key (if expired or revoked)
+
+1. Go to [App Store Connect > Integrations > App Store Connect API](https://appstoreconnect.apple.com/access/integrations/api)
+2. Click **+** to generate a new key
+   - Name: `TrashMob CI/CD`
+   - Access: **App Manager** (minimum needed for TestFlight uploads)
+3. Download the `.p8` private key file immediately (one-time download)
+4. Note the **Key ID** and **Issuer ID** (shown at the top of the page)
+5. Update GitHub secrets (in both `test` and `production` environments):
+   - `APPSTORE_ISSUER_ID` → Issuer ID from the API keys page
+   - `APPSTORE_KEY_ID` → Key ID of the new key
+   - `APPSTORE_PRIVATE_KEY` → entire contents of the `.p8` file
+6. The build workflow uses separate secrets that also need updating:
+   - `APPSTORE_ISSUER_ID` → same Issuer ID (shared)
+   - `APPSTORE_KEY_ID` → same Key ID
+   - `APPSTORE_PRIVATE_KEY` → same `.p8` contents
+7. Trigger a test build to verify: `gh workflow run "TrashMobMobileApp - Dev"`
+
+#### 5.4 Android Keystore (rarely needs renewal)
+
+The Android upload keystore (`ANDROID_KEYSTORE`) is managed via Google Play App Signing. The upload key can be rotated if compromised:
+1. Generate new upload key: `keytool -genkeypair -v -keystore upload.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload`
+2. Export certificate: `keytool -export -rfc -keystore upload.jks -alias upload -file upload_certificate.pem`
+3. Go to [Google Play Console](https://play.google.com/console) → App → Setup → App signing → Request upload key reset
+4. Upload `upload_certificate.pem`
+5. Update GitHub secrets: `ANDROID_KEYSTORE` (base64-encoded jks), `ANDROID_KEYSTORE_PASSWORD`
+
+### 6. App Store Screenshots
+
+Good screenshots are critical for conversion. Regenerate screenshots whenever there are significant UI changes.
+
+#### 6.1 Required Screenshot Sizes
+
+**Apple App Store (required for all supported devices):**
+
+| Device | Size (pixels) | Required |
+|--------|---------------|----------|
+| iPhone 6.9" (16 Pro Max) | 1320 x 2868 | Yes |
+| iPhone 6.7" (15 Plus/Pro Max) | 1290 x 2796 | Yes |
+| iPhone 6.5" (11 Pro Max) | 1284 x 2778 | Yes (if supporting older models) |
+| iPad Pro 13" | 2064 x 2752 | Yes (if iPad supported) |
+
+**Google Play Store:**
+
+| Type | Size (pixels) | Required |
+|------|---------------|----------|
+| Phone | Min 320px, max 3840px, 16:9 or 9:16 | Yes (2-8 screenshots) |
+| Tablet 7" | 1024 x 500 or similar | Recommended |
+| Tablet 10" | 1920 x 1200 or similar | Recommended |
+
+#### 6.2 Recommended Screenshots (in order)
+
+1. **Home/Map View** — Shows nearby events and litter reports on the map (demonstrates core value)
+2. **Event Details** — A well-populated event with date, location, attendees (shows community)
+3. **Litter Report** — Creating a litter report with photo (shows ease of reporting)
+4. **Route Tracking** — Active cleanup route on the map (shows the tracking feature)
+5. **Dashboard** — User stats, upcoming events, impact metrics (shows personal progress)
+6. **Teams** — Team page with members and collective impact (shows social features)
+
+#### 6.3 Screenshot Capture Tips
+
+**Android (best approach — use emulator with exact device profiles):**
+```bash
+# Use Android Studio emulator with specific device profiles
+# Phone: Pixel 8 Pro (matches Google Play feature graphic dimensions well)
+# Take screenshots via: adb exec-out screencap -p > screenshot.png
+
+# Or use Android Studio's built-in screenshot tool:
+# Emulator toolbar → Camera icon → Save
+```
+
+**iOS (best approach — use Xcode Simulator):**
+```bash
+# Launch specific simulator matching required sizes:
+xcrun simctl boot "iPhone 16 Pro Max"    # 6.9"
+xcrun simctl boot "iPhone 15 Pro Max"    # 6.7"
+
+# Take screenshot:
+xcrun simctl io booted screenshot screenshot.png
+
+# Or use Xcode: Window → Devices and Simulators → select device → screenshot button
+```
+
+**Professional polish (recommended):**
+- Use [screenshots.pro](https://screenshots.pro), [Previewed](https://previewed.app), or [AppMockUp](https://app-mockup.com) to add device frames and captions
+- Add a short headline above each screenshot (e.g., "Find cleanups near you", "Track your impact")
+- Use the TrashMob brand green (`#96ba00`) as background color
+- Keep captions to 3-5 words — the screenshot itself should tell the story
+
+### 7. App Store Review — Location Permission Justification
+
+Both Apple and Google require justification for location permissions. Our app uses **three levels** of location access that reviewers will ask about.
+
+#### 7.1 Location Permission Usage Summary
+
+| Permission | Platform | Why We Need It |
+|------------|----------|----------------|
+| When In Use | iOS + Android | Show nearby events/litter on the map, reverse-geocode pickup locations from photos |
+| Always (Background) | iOS + Android | Route tracking during active cleanup events — users see their walking path on the map |
+| Precise Location | Android | Accurate pin placement for litter reports and pickup locations |
+
+#### 7.2 Apple App Review Responses
+
+Apple will ask "Why does your app need background location?" — use this response:
+
+> **Background Location Usage:**
+> TrashMob uses background location exclusively for the "Route Tracking" feature during active cleanup events. When a user starts a cleanup, they can optionally enable route tracking to record their walking path. This path is displayed on the event map to show the area they covered. Background location is only active when the user explicitly enables route tracking, and it stops when the event ends or the user turns it off. A visible indicator is shown whenever background location is in use. The app never collects location data when the user is not actively using the route tracking feature.
+
+Apple may also ask about `NSLocationAlwaysUsageDescription` vs `NSLocationWhenInUseUsageDescription`. Both are set in [Info.plist](TrashMobMobile/Platforms/iOS/Info.plist) with specific, honest descriptions — do not use vague language like "to improve your experience."
+
+**Tips to avoid rejection:**
+- Include a demo account or clear instructions for the reviewer to test route tracking
+- Show a visible indicator (status bar icon or in-app banner) when background location is active
+- Ensure the app works without location (graceful degradation) — reviewer should be able to browse events without granting location
+
+#### 7.3 Google Play Data Safety Responses
+
+Google Play Console → App content → Data safety:
+
+| Category | Data type | Collected | Shared | Purpose |
+|----------|-----------|-----------|--------|---------|
+| Location | Approximate location | Yes | No | Show nearby events |
+| Location | Precise location | Yes | No | Litter report pins, pickup locations, route tracking |
+| Personal info | Name, Email | Yes | No | User profile, event registration |
+| Photos/Videos | Photos | Yes | No | Litter report photos, event photos |
+
+- **Encrypted in transit:** Yes (HTTPS only)
+- **Deletion mechanism:** Yes ("Delete My Data" in-app or contact info@trashmob.eco)
+- **Required for app to function:** Location is optional (can browse events without it)
+
+### 8. App Store Listing Copy
+
+#### 8.1 App Name and Subtitle
+
+- **Name:** TrashMob
+- **Subtitle (Apple, 30 chars max):** Clean Up Your Community
+- **Short Description (Google, 80 chars max):** Join local cleanup events. Report litter. Track your environmental impact.
+
+#### 8.2 Full Description
+
+> **Make a real difference in your neighborhood.**
+>
+> TrashMob connects you with community cleanup events happening near you. Whether you want to organize a cleanup or join one, TrashMob makes it easy to take action against litter and build a cleaner world.
+>
+> **Find and join events**
+> Browse cleanup events on an interactive map. See what's happening near you today, this week, or this month. One tap to RSVP and get directions.
+>
+> **Report litter**
+> Spot a mess? Snap a photo to create a litter report. Your report appears on the community map so others can see problem areas and organize cleanups where they're needed most.
+>
+> **Track your route**
+> Turn on route tracking during a cleanup to see exactly where you covered. Your path shows on the event map so the team can see the area cleaned.
+>
+> **See your impact**
+> Your personal dashboard shows your stats: events attended, hours volunteered, bags collected, and litter reports submitted. Watch your impact grow with every cleanup.
+>
+> **Build a team**
+> Create or join a team to track collective impact. Compete on leaderboards, coordinate events, and celebrate milestones together.
+>
+> **Pickup coordination**
+> After a cleanup, drop pins where bags of trash are waiting. Hauling partners can see pickup locations and collect them — no bags left behind.
+>
+> **Why TrashMob?**
+> - 100% free, no ads, open source
+> - Events in cities across the United States and Canada
+> - Works offline for route tracking
+> - Available on iOS and Android
+>
+> Join thousands of volunteers making their communities cleaner. Download TrashMob and start your first cleanup today.
+
+#### 8.3 What's New (Release Notes Template)
+
+> - Redesigned Create Event and Edit Event pages with improved date/time and duration controls
+> - Route tracking during cleanup events — see your walking path on the map
+> - Team support — create or join a team, track collective impact
+> - Improved litter report flow with photo support
+> - Better form validation with inline error messages
+> - Performance and stability improvements
+
+#### 8.4 Keywords (Apple, 100 chars max)
+
+```
+cleanup,litter,volunteer,community,environment,trash,recycle,pickup,green,eco,team,event,map,route
+```
+
+### 9. Pre-Upload Checklist
+
+Before submitting to either store:
+
+- [ ] **Version bump:** Verify `ApplicationDisplayVersion` in `.csproj` is correct (managed by GitVersion)
+- [ ] **Build number:** Confirm build number is higher than the last uploaded build (auto-incremented)
+- [ ] **Signing:** iOS distribution certificate is valid (check expiry at developer.apple.com)
+- [ ] **API keys:** App Store Connect API key is active (check at appstoreconnect.apple.com)
+- [ ] **Google service account:** `GCP_SERVICE_ACCOUNT` secret is valid (check at console.cloud.google.com)
+- [ ] **Test on device:** Install from TestFlight (iOS) and internal track (Android) before promoting
+- [ ] **Screenshots:** Updated if there are significant UI changes
+- [ ] **Release notes:** Written and added to store listing
+- [ ] **Privacy policy URL:** https://www.trashmob.eco/privacypolicy is accessible
+- [ ] **Support URL:** https://www.trashmob.eco/contactus is accessible
+- [ ] **Content rating:** Updated if new features affect rating (e.g., user-generated content, location)
+- [ ] **Data safety (Google):** Updated if new data types are collected
+- [ ] **App privacy (Apple):** Updated if new data types are collected
+- [ ] **COPPA compliance:** Age gate is working, under-13 cannot create accounts
+- [ ] **Location permission strings:** Accurate and specific (not vague)
+
+### 10. Submission & Certification Tips
+
+#### 10.1 Apple-Specific
+
+- **Review time:** Typically 24-48 hours, can be expedited for critical fixes
+- **Demo account:** Provide a test account in App Review Information (the reviewer needs to sign in)
+- **App Review notes:** Explain route tracking, location usage, and any features requiring special permissions
+- **Rejection common causes:**
+  - Vague location permission strings (be specific about why)
+  - Background location without visible indicator
+  - Crashes on launch (test on oldest supported iOS version)
+  - Missing privacy policy URL
+  - Login required but no test account provided
+- **Expedited review:** If a critical bug fix, request expedited review at [reportaproblem.apple.com](https://reportaproblem.apple.com)
+
+#### 10.2 Google-Specific
+
+- **Review time:** Typically a few hours to 7 days for new apps, faster for updates
+- **Internal testing track:** Use this first — no review required
+- **Closed testing:** Requires review but limited audience — good for beta
+- **Production:** Full review, rolled out to all users
+- **Staged rollout:** Recommended — start at 10%, monitor crash rates, increase to 100%
+- **Pre-launch report:** Google automatically runs your app on Firebase Test Lab devices — check for crashes
+- **Data safety form:** Must be accurate — Google can flag discrepancies between declared and actual behavior
+
+#### 10.3 Both Platforms
+
+- Always test the **upgrade path** (install old version → update to new version) — not just fresh installs
+- Test with **location permission denied** — app should work in degraded mode (browse events, but no map centering)
+- Test with **no network** — route tracking should work offline, sync when back online
+- Keep release notes **user-friendly** — avoid developer jargon ("Improved event creation flow" not "Refactored CreateEventViewModel")
+
+---
+
 ## New Features Summary
 
 | Feature | Project | Description |
