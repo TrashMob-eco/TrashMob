@@ -264,7 +264,6 @@ Verify all store logos are current (v2 branding) and correctly sized. Source ass
 | File | Dimensions | Description |
 |------|------------|-------------|
 | `AppIcon_2500x2500.png` | 2500x2500 | V2 logo symbol — resize for Apple (1024x1024) and Google (512x512) |
-| `AppIcon_v1_512x512.png` | 512x512 | V1 app icon — check if still used on stores |
 | `AppIcon_Source.svg` | Vector | Source SVG for logo symbol |
 | `HorizontalLogo_2259x588.png` | 2259x588 | V2 horizontal logo with tagline |
 | `HorizontalLogo_Source.svg` | Vector | Source SVG for horizontal logo |
