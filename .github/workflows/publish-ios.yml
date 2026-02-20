@@ -34,46 +34,19 @@ jobs:
 
             - name: Setup API key
               run: |
-                echo "Runner OS: $(sw_vers -productVersion)"
-                echo "Xcode: $(xcodebuild -version | head -1)"
                 mkdir -p ~/private_keys
                 echo "$API_PRIVATE_KEY" > ~/private_keys/AuthKey_${API_KEY_ID}.p8
-                mkdir -p /tmp/fastlane
-                printf '{"key_id":"%s","issuer_id":"%s","key":"%s","in_house":false}' "$API_KEY_ID" "$API_ISSUER_ID" "$API_PRIVATE_KEY" > /tmp/fastlane/api_key.json
               env:
                 API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
-                API_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
                 API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
-
-            - name: Check available upload tools
-              run: |
-                echo "--- altool ---"
-                xcrun altool --help 2>&1 | head -3 || echo "NOT AVAILABLE"
-                echo "--- iTMSTransporter ---"
-                xcrun iTMSTransporter -help 2>&1 | head -3 || echo "NOT AVAILABLE"
-                echo "--- fastlane ---"
-                which fastlane 2>/dev/null && fastlane --version 2>/dev/null || echo "NOT AVAILABLE"
 
             - name: Upload to TestFlight
               run: |
-                if which fastlane >/dev/null 2>&1; then
-                  echo "Uploading via fastlane pilot..."
-                  fastlane pilot upload \
-                    --ipa "$IPA_FILENAME" \
-                    --api_key_path /tmp/fastlane/api_key.json \
-                    --skip_waiting_for_build_processing true
-                elif xcrun altool --help >/dev/null 2>&1; then
-                  echo "Uploading via altool..."
-                  xcrun altool --upload-app \
-                    -f "$IPA_FILENAME" \
-                    -t ios \
-                    --apiKey "$API_KEY_ID" \
-                    --apiIssuer "$API_ISSUER_ID"
-                else
-                  echo "No upload tool available!"
-                  echo "Tried: fastlane, altool, iTMSTransporter (broken with -10814)"
-                  exit 1
-                fi
+                xcrun altool --upload-app \
+                  -f "$IPA_FILENAME" \
+                  -t ios \
+                  --apiKey "$API_KEY_ID" \
+                  --apiIssuer "$API_ISSUER_ID"
               env:
                 IPA_FILENAME: ${{ env.IPA_FILENAME }}
                 API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
@@ -81,6 +54,4 @@ jobs:
 
             - name: Cleanup
               if: always()
-              run: |
-                rm -rf ~/private_keys
-                rm -rf /tmp/fastlane
+              run: rm -rf ~/private_keys
