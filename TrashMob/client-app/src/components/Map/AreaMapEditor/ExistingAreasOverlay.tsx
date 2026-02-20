@@ -46,9 +46,7 @@ export const ExistingAreasOverlay = ({ mapId, areas, excludeAreaId, fitBounds }:
         }
 
         const filtered = areas.filter(
-            (a) =>
-                a.id !== excludeAreaId &&
-                (a.geoJson || (a.startLatitude != null && a.startLongitude != null)),
+            (a) => a.id !== excludeAreaId && (a.geoJson || (a.startLatitude != null && a.startLongitude != null)),
         );
         const bounds = fitBounds ? new google.maps.LatLngBounds() : null;
 
