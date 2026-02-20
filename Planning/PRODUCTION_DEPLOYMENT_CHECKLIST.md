@@ -254,7 +254,7 @@ Verify all store logos are current (v2 branding) and correctly sized. Source ass
 |-------|-------|---------------|-------------|--------|
 | Apple App Store | App Icon | 1024x1024 PNG (no transparency) | Resize from `AppIcon_2500x2500.png` | - [ ] Ready |
 | Google Play | Hi-res Icon | 512x512 PNG (32-bit) | Resize from `AppIcon_2500x2500.png` | - [ ] Ready |
-| Google Play | Feature Graphic | 1024x500 PNG/JPG | `GooglePlay_FeatureGraphic_1024x500.png` (v1 — may need refresh) | - [ ] Reviewed |
+| Google Play | Feature Graphic | 1024x500 PNG/JPG | Generate with `generate-feature-graphic.ps1` → `Generated/GooglePlay_FeatureGraphic_1024x500.png` | - [ ] Reviewed |
 | Apple App Store | App Store Banner | 1024x1024 (same as icon) | Same as App Icon | - [ ] Ready |
 | Entra Sign-In | Banner Logo | 260x36 PNG | Resize from `HorizontalLogo_2259x588.png` | - [ ] Ready |
 | Entra Sign-In | Background | 1920x1080 PNG | `Images/v1/TME_SignInBackground_1920x1080.png` | - [ ] Ready |
@@ -267,7 +267,6 @@ Verify all store logos are current (v2 branding) and correctly sized. Source ass
 | `AppIcon_Source.svg` | Vector | Source SVG for logo symbol |
 | `HorizontalLogo_2259x588.png` | 2259x588 | V2 horizontal logo with tagline |
 | `HorizontalLogo_Source.svg` | Vector | Source SVG for horizontal logo |
-| `GooglePlay_FeatureGraphic_1024x500.png` | 1024x500 | Google Play feature graphic (v1 — review for refresh) |
 
 Additional source files at `D:\data\images\v2\New TrashMob.eco files\New TrashMob.eco files\` (Illustrator, PDF, JPG, PNG, SVG formats).
 
