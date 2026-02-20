@@ -341,81 +341,92 @@ export const PartnerCommunityAreas = () => {
                                     <p>No areas match your filters.</p>
                                 </div>
                             ) : viewMode === 'map' ? (
-                            <div className='space-y-2'>
-                                <div className='h-[500px] rounded-md overflow-hidden border'>
-                                    <GoogleMapWithKey id={OVERVIEW_MAP_ID} style={{ width: '100%', height: '500px' }}>
-                                        {community?.boundaryGeoJson ? (
-                                            <CommunityBoundsOverlay
+                                <div className='space-y-2'>
+                                    <div className='h-[500px] rounded-md overflow-hidden border'>
+                                        <GoogleMapWithKey
+                                            id={OVERVIEW_MAP_ID}
+                                            style={{ width: '100%', height: '500px' }}
+                                        >
+                                            {community?.boundaryGeoJson ? (
+                                                <CommunityBoundsOverlay
+                                                    mapId={OVERVIEW_MAP_ID}
+                                                    geoJson={community.boundaryGeoJson}
+                                                />
+                                            ) : null}
+                                            <ExistingAreasOverlay
                                                 mapId={OVERVIEW_MAP_ID}
-                                                geoJson={community.boundaryGeoJson}
+                                                areas={filteredAreas}
+                                                fitBounds
                                             />
-                                        ) : null}
-                                        <ExistingAreasOverlay mapId={OVERVIEW_MAP_ID} areas={filteredAreas} fitBounds />
-                                    </GoogleMapWithKey>
+                                        </GoogleMapWithKey>
+                                    </div>
+                                    <AreaStatusLegend />
                                 </div>
-                                <AreaStatusLegend />
-                            </div>
-                        ) : (
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Name</TableHead>
-                                        <TableHead>Type</TableHead>
-                                        <TableHead>Status</TableHead>
-                                        <TableHead>Frequency</TableHead>
-                                        <TableHead>Min Events/Year</TableHead>
-                                        <TableHead className='text-right'>Actions</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {filteredAreas.map((area) => (
-                                        <TableRow key={area.id}>
-                                            <TableCell className='font-medium'>{area.name}</TableCell>
-                                            <TableCell>{area.areaType}</TableCell>
-                                            <TableCell>
-                                                <Badge className={statusColors[area.status]}>{area.status}</Badge>
-                                            </TableCell>
-                                            <TableCell>{area.cleanupFrequencyDays} days</TableCell>
-                                            <TableCell>{area.minEventsPerYear}</TableCell>
-                                            <TableCell className='text-right'>
-                                                <div className='flex justify-end gap-2'>
-                                                    <Button variant='outline' size='sm' asChild>
-                                                        <Link
-                                                            to={`/partnerdashboard/${partnerId}/community/areas/${area.id}/edit`}
-                                                        >
-                                                            <Pencil className='h-4 w-4' />
-                                                        </Link>
-                                                    </Button>
-                                                    <AlertDialog>
-                                                        <AlertDialogTrigger asChild>
-                                                            <Button variant='outline' size='sm' disabled={isDeleting}>
-                                                                <Trash2 className='h-4 w-4' />
-                                                            </Button>
-                                                        </AlertDialogTrigger>
-                                                        <AlertDialogContent>
-                                                            <AlertDialogHeader>
-                                                                <AlertDialogTitle>Delete Area</AlertDialogTitle>
-                                                                <AlertDialogDescription>
-                                                                    Are you sure you want to delete "{area.name}"? This
-                                                                    action cannot be undone.
-                                                                </AlertDialogDescription>
-                                                            </AlertDialogHeader>
-                                                            <AlertDialogFooter>
-                                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                                <AlertDialogAction
-                                                                    onClick={() => handleDelete(area.id)}
-                                                                >
-                                                                    Delete
-                                                                </AlertDialogAction>
-                                                            </AlertDialogFooter>
-                                                        </AlertDialogContent>
-                                                    </AlertDialog>
-                                                </div>
-                                            </TableCell>
+                            ) : (
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Name</TableHead>
+                                            <TableHead>Type</TableHead>
+                                            <TableHead>Status</TableHead>
+                                            <TableHead>Frequency</TableHead>
+                                            <TableHead>Min Events/Year</TableHead>
+                                            <TableHead className='text-right'>Actions</TableHead>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {filteredAreas.map((area) => (
+                                            <TableRow key={area.id}>
+                                                <TableCell className='font-medium'>{area.name}</TableCell>
+                                                <TableCell>{area.areaType}</TableCell>
+                                                <TableCell>
+                                                    <Badge className={statusColors[area.status]}>{area.status}</Badge>
+                                                </TableCell>
+                                                <TableCell>{area.cleanupFrequencyDays} days</TableCell>
+                                                <TableCell>{area.minEventsPerYear}</TableCell>
+                                                <TableCell className='text-right'>
+                                                    <div className='flex justify-end gap-2'>
+                                                        <Button variant='outline' size='sm' asChild>
+                                                            <Link
+                                                                to={`/partnerdashboard/${partnerId}/community/areas/${area.id}/edit`}
+                                                            >
+                                                                <Pencil className='h-4 w-4' />
+                                                            </Link>
+                                                        </Button>
+                                                        <AlertDialog>
+                                                            <AlertDialogTrigger asChild>
+                                                                <Button
+                                                                    variant='outline'
+                                                                    size='sm'
+                                                                    disabled={isDeleting}
+                                                                >
+                                                                    <Trash2 className='h-4 w-4' />
+                                                                </Button>
+                                                            </AlertDialogTrigger>
+                                                            <AlertDialogContent>
+                                                                <AlertDialogHeader>
+                                                                    <AlertDialogTitle>Delete Area</AlertDialogTitle>
+                                                                    <AlertDialogDescription>
+                                                                        Are you sure you want to delete "{area.name}"?
+                                                                        This action cannot be undone.
+                                                                    </AlertDialogDescription>
+                                                                </AlertDialogHeader>
+                                                                <AlertDialogFooter>
+                                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                    <AlertDialogAction
+                                                                        onClick={() => handleDelete(area.id)}
+                                                                    >
+                                                                        Delete
+                                                                    </AlertDialogAction>
+                                                                </AlertDialogFooter>
+                                                            </AlertDialogContent>
+                                                        </AlertDialog>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
                             )}
                         </>
                     ) : (

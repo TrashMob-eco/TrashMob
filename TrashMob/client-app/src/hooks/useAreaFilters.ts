@@ -1,8 +1,5 @@
 import { useMemo, useState } from 'react';
-import AdoptableAreaData, {
-    AdoptableAreaType,
-    AdoptableAreaStatus,
-} from '@/components/Models/AdoptableAreaData';
+import AdoptableAreaData, { AdoptableAreaType, AdoptableAreaStatus } from '@/components/Models/AdoptableAreaData';
 
 export const AREA_TYPES: AdoptableAreaType[] = [
     'Park',
