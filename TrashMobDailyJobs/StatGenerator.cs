@@ -4,29 +4,21 @@ namespace TrashMobDailyJobs
     using System.Text;
     using System.Threading.Tasks;
     using Microsoft.Data.SqlClient;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using TrashMob.Models;
     using TrashMob.Shared;
     using TrashMob.Shared.Managers;
     using TrashMob.Shared.Poco;
 
-    public class StatGenerator
+    public class StatGenerator(ILogger<StatGenerator> logger, ILoggerFactory loggerFactory, IConfiguration configuration)
     {
-        private readonly ILogger<StatGenerator> logger;
-        private readonly ILoggerFactory loggerFactory;
-
-        public StatGenerator(ILogger<StatGenerator> logger, ILoggerFactory loggerFactory)
-        {
-            this.logger = logger;
-            this.loggerFactory = loggerFactory;
-        }
-
         public async Task RunAsync()
         {
             logger.LogInformation("StatGenerator job started at: {Time}", DateTime.UtcNow);
-            var connectionString = Environment.GetEnvironmentVariable("TMDBServerConnectionString");
-            var sendGridApiKey = Environment.GetEnvironmentVariable("SendGridApiKey");
-            var instanceName = Environment.GetEnvironmentVariable("InstanceName");
+            var connectionString = configuration["TMDBServerConnectionString"];
+            var sendGridApiKey = configuration["SendGridApiKey"];
+            var instanceName = configuration["InstanceName"];
 
             if (sendGridApiKey is null)
             {

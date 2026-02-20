@@ -3,27 +3,22 @@ namespace TrashMobDailyJobs
     using System;
     using System.Threading.Tasks;
     using Microsoft.Data.SqlClient;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Daily job that computes and caches leaderboard rankings.
     /// </summary>
-    public class LeaderboardGenerator
+    public class LeaderboardGenerator(ILogger<LeaderboardGenerator> logger, IConfiguration configuration)
     {
-        private readonly ILogger<LeaderboardGenerator> logger;
         private static readonly string[] TimeRanges = { "Week", "Month", "Year", "AllTime" };
         private static readonly string[] LeaderboardTypes = { "Events", "Bags", "Weight", "Hours" };
         private const int MinimumEventsToQualify = 3;
 
-        public LeaderboardGenerator(ILogger<LeaderboardGenerator> logger)
-        {
-            this.logger = logger;
-        }
-
         public async Task RunAsync()
         {
             logger.LogInformation("LeaderboardGenerator job started at: {Time}", DateTime.UtcNow);
-            var connectionString = Environment.GetEnvironmentVariable("TMDBServerConnectionString");
+            var connectionString = configuration["TMDBServerConnectionString"];
 
             if (string.IsNullOrEmpty(connectionString))
             {
