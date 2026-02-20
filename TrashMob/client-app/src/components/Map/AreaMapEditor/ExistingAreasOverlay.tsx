@@ -45,7 +45,9 @@ export const ExistingAreasOverlay = ({ mapId, areas, excludeAreaId, fitBounds }:
             infoWindowRef.current.close();
         }
 
-        const filtered = areas.filter((a) => a.id !== excludeAreaId && a.geoJson);
+        const filtered = areas.filter(
+            (a) => a.id !== excludeAreaId && (a.geoJson || (a.startLatitude != null && a.startLongitude != null)),
+        );
         const bounds = fitBounds ? new google.maps.LatLngBounds() : null;
 
         const showInfoWindow = (area: AdoptableAreaData, position: google.maps.LatLng | null) => {
@@ -62,13 +64,21 @@ export const ExistingAreasOverlay = ({ mapId, areas, excludeAreaId, fitBounds }:
 
         filtered.forEach((area) => {
             const parsed = parseGeoJson(area.geoJson);
-            if (!parsed) return;
 
             const color = getAreaColor(area.id);
             const stroke = STATUS_STROKE[area.status] ?? STATUS_STROKE.Available;
             let path: google.maps.LatLngLiteral[];
+            let isFallback = false;
 
-            if (parsed.type === 'Polygon') {
+            if (!parsed) {
+                // Fallback: render marker at known coordinates when GeoJSON is missing
+                if (area.startLatitude != null && area.startLongitude != null) {
+                    path = [{ lat: area.startLatitude, lng: area.startLongitude }];
+                    isFallback = true;
+                } else {
+                    return;
+                }
+            } else if (parsed.type === 'Polygon') {
                 path = polygonCoordsToPath(parsed.coordinates);
                 if (path.length < 3) return;
 
@@ -124,11 +134,11 @@ export const ExistingAreasOverlay = ({ mapId, areas, excludeAreaId, fitBounds }:
                 position: centroid,
                 icon: {
                     path: google.maps.SymbolPath.CIRCLE,
-                    scale: 8,
+                    scale: isFallback ? 10 : 8,
                     fillColor: markerColor,
                     fillOpacity: 1,
-                    strokeColor: '#ffffff',
-                    strokeWeight: 2,
+                    strokeColor: isFallback ? markerColor : '#ffffff',
+                    strokeWeight: isFallback ? 3 : 2,
                 },
                 title: `${area.name} (${area.status})`,
                 zIndex: 2,
