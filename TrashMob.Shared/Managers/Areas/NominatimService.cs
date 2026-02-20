@@ -504,6 +504,15 @@ namespace TrashMob.Shared.Managers.Areas
                     }
                 }
 
+                // For unnamed junction nodes, generate a fallback name from the parent highway ref.
+                // Many junctions are tagged noref=yes (no exit number) but are still valid interchange locations.
+                if (string.IsNullOrWhiteSpace(name)
+                    && string.Equals(type, "node", StringComparison.OrdinalIgnoreCase)
+                    && parentWayRefs.TryGetValue(numericId, out var fallbackRef))
+                {
+                    name = $"{fallbackRef} Junction";
+                }
+
                 if (string.IsNullOrWhiteSpace(name))
                 {
                     continue; // Skip truly unnamed features

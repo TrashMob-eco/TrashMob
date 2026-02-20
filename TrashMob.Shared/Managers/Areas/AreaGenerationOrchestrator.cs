@@ -100,8 +100,10 @@ namespace TrashMob.Shared.Managers.Areas
                 }
                 else if (batch.Category.Equals("Interchange", StringComparison.OrdinalIgnoreCase))
                 {
-                    // Interchanges: OSM has separate nodes for EB/WB — same name after enrichment.
-                    discovered = DeduplicateByName(allDiscovered);
+                    // Interchanges: OSM returns separate nodes for EB/WB ramps at the same exit,
+                    // plus unnamed merge/diverge junctions (noref=yes). Use spatial clustering
+                    // to merge nearby junctions into single interchange areas.
+                    discovered = ClusterInterchanges(allDiscovered);
                 }
                 else
                 {
@@ -276,7 +278,7 @@ namespace TrashMob.Shared.Managers.Areas
         {
             return category.ToLowerInvariant() switch
             {
-                "interchange" => "[out:json][timeout:60];node[\"highway\"=\"motorway_junction\"]({{bbox}})->.junctions;way(bn.junctions)[\"highway\"=\"motorway\"]->.motorways;(.junctions;.motorways;);out body;",
+                "interchange" => "[out:json][timeout:60];node[\"highway\"=\"motorway_junction\"]({{bbox}})->.junctions;way(bn.junctions)[\"highway\"~\"^(motorway|trunk)$\"]->.parent_roads;(.junctions;.parent_roads;);out body;",
                 "cityblock" => "[out:json][timeout:60];(way[\"place\"=\"neighbourhood\"]({{bbox}});relation[\"place\"=\"neighbourhood\"]({{bbox}});way[\"place\"=\"city_block\"]({{bbox}}););out body geom;",
                 "highwaysection" => "[out:json][timeout:60];(way[\"highway\"=\"motorway\"]({{bbox}});way[\"highway\"=\"trunk\"]({{bbox}}););out body geom;",
                 "street" => "[out:json][timeout:60];(way[\"highway\"=\"residential\"][\"name\"]({{bbox}});way[\"highway\"=\"secondary\"][\"name\"]({{bbox}});way[\"highway\"=\"tertiary\"][\"name\"]({{bbox}});way[\"highway\"=\"primary\"][\"name\"]({{bbox}}););out body geom;",
@@ -307,6 +309,76 @@ namespace TrashMob.Shared.Managers.Areas
                 "street" => "Street",
                 _ => "Spot",
             };
+        }
+
+        /// <summary>
+        /// Clusters interchange junction nodes by spatial proximity, merging nearby junctions
+        /// (within ~500m) into single interchange areas. Named exits (e.g., "I 5 Exit 167")
+        /// take priority over unnamed junctions (e.g., "I 5 Junction") for cluster naming.
+        /// This handles: (1) EB/WB nodes at the same exit → merged, (2) unnamed merge/diverge
+        /// junctions near a named exit → absorbed, (3) isolated unnamed junctions → kept as-is.
+        /// </summary>
+        private static List<NominatimResult> ClusterInterchanges(List<NominatimResult> features)
+        {
+            const double clusterRadiusMeters = 500.0;
+            var clusters = new List<List<NominatimResult>>();
+
+            foreach (var feature in features)
+            {
+                if (string.IsNullOrWhiteSpace(feature.Name))
+                {
+                    continue;
+                }
+
+                // Find an existing cluster within range
+                List<NominatimResult> bestCluster = null;
+                var bestDistance = double.MaxValue;
+
+                foreach (var cluster in clusters)
+                {
+                    // Compare against the cluster centroid (average of all points)
+                    double sumLat = 0, sumLon = 0;
+                    foreach (var member in cluster)
+                    {
+                        sumLat += member.Latitude;
+                        sumLon += member.Longitude;
+                    }
+
+                    var centroidLat = sumLat / cluster.Count;
+                    var centroidLon = sumLon / cluster.Count;
+                    var distance = HaversineDistance(feature.Latitude, feature.Longitude, centroidLat, centroidLon);
+
+                    if (distance < clusterRadiusMeters && distance < bestDistance)
+                    {
+                        bestDistance = distance;
+                        bestCluster = cluster;
+                    }
+                }
+
+                if (bestCluster != null)
+                {
+                    bestCluster.Add(feature);
+                }
+                else
+                {
+                    clusters.Add([feature]);
+                }
+            }
+
+            // For each cluster, pick the best representative:
+            // Prefer named exits (contain "Exit") over generic junction names
+            var results = new List<NominatimResult>();
+            foreach (var cluster in clusters)
+            {
+                var best = cluster
+                    .OrderByDescending(f => f.Name.Contains("Exit", StringComparison.OrdinalIgnoreCase) ? 1 : 0)
+                    .ThenByDescending(f => f.Name.Length) // Longer names are usually more descriptive
+                    .First();
+
+                results.Add(best);
+            }
+
+            return results;
         }
 
         /// <summary>
