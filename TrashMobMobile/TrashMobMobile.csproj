@@ -56,7 +56,7 @@
 		<MauiIcon Include="Resources\AppIcon\appiconfg.svg" />
 
 		<!-- Splash Screen -->
-		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#FBFBFA" />
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#FBFBFA" BaseSize="256,67" />
 
 		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
@@ -369,6 +369,14 @@
              Value="$(GOOGLE_MAPS_API_KEY)" />
     <Message Condition="'$(GOOGLE_MAPS_API_KEY)' != ''" Text="Google Maps API key injected successfully" Importance="high" />
     <Warning Condition="'$(GOOGLE_MAPS_API_KEY)' == ''" Text="Google Maps API key not found. Maps will not work. Set GOOGLE_MAPS_API_KEY env var or run 'az login' with Key Vault access." />
+  </Target>
+
+  <!-- Allow keychain entitlements on iOS simulator without a provisioning profile -->
+  <Target Name="SkipProvisioningForSimulator" BeforeTargets="_DetectSigningIdentity"
+          Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
+    <PropertyGroup Condition="$(RuntimeIdentifier.Contains('simulator'))">
+      <CodesignRequireProvisioningProfile>false</CodesignRequireProvisioningProfile>
+    </PropertyGroup>
   </Target>
 
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
