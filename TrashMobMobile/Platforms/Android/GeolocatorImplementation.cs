@@ -1,5 +1,6 @@
 ﻿namespace TrashMobMobile;
 
+using Android.Content;
 using Android.Locations;
 using Android.OS;
 using Android.Runtime;
@@ -25,12 +26,21 @@ public class GeolocatorImplementation : IGeolocator
             }
         }
 
+        // Start foreground service so GPS continues when app is backgrounded
+        var context = Android.App.Application.Context;
+        var serviceIntent = new Intent(context, typeof(LocationForegroundService));
+        context.StartForegroundService(serviceIntent);
+
         locator = new GeolocationContinuousListener();
         var taskCompletionSource = new TaskCompletionSource();
         cancellationToken.Register(() =>
         {
             locator.Dispose();
             locator = null;
+
+            // Stop foreground service
+            context.StopService(serviceIntent);
+
             taskCompletionSource.TrySetResult();
         });
         locator.OnLocationChangedAction = location =>

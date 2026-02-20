@@ -7,16 +7,21 @@
              x:Class="TrashMobMobile.Views.ViewEvent.TabRoutes"
              x:Name="TabRoutesView">
     <Grid RowDefinitions="Auto, Auto, Auto, Auto, *" RowSpacing="4">
-        <!-- Header with count and Simulate button -->
+        <!-- Header with count, recording indicator, and Simulate button -->
         <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="10,5">
             <Label Text="{Binding RouteCountDisplay}"
                    Style="{StaticResource FieldLabel}"
                    VerticalOptions="Center" />
-            <Button Grid.Column="1"
-                    Text="Simulate Route"
-                    Command="{Binding SimulateRouteCommand}"
-                    IsVisible="{Binding EnableSimulateRoute}"
-                    Style="{StaticResource PrimarySmallButton}" />
+            <HorizontalStackLayout Grid.Column="1" Spacing="8" VerticalOptions="Center">
+                <HorizontalStackLayout Spacing="4" IsVisible="{Binding IsRecordingRoute}" VerticalOptions="Center">
+                    <Ellipse WidthRequest="10" HeightRequest="10" Fill="Red" VerticalOptions="Center" />
+                    <Label Text="Recording" FontSize="Micro" TextColor="Red" VerticalOptions="Center" />
+                </HorizontalStackLayout>
+                <Button Text="Simulate Route"
+                        Command="{Binding SimulateRouteCommand}"
+                        IsVisible="{Binding EnableSimulateRoute}"
+                        Style="{StaticResource PrimarySmallButton}" />
+            </HorizontalStackLayout>
         </Grid>
 
         <!-- Aggregate stats -->

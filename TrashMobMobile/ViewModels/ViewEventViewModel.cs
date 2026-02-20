@@ -124,6 +124,9 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
     private bool enableSimulateRoute;
 
     [ObservableProperty]
+    private bool isRecordingRoute;
+
+    [ObservableProperty]
     private bool areRoutesFound;
 
     [ObservableProperty]
@@ -194,9 +197,7 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             await LoadLitterReports();
             await LoadPhotos();
 
-#if USETEST
-            EnableSimulateRoute = true;
-#endif
+            EnableSimulateRoute = DeviceInfo.DeviceType == DeviceType.Virtual;
 
             var routes = await eventAttendeeRouteRestService.GetEventAttendeeRoutesForEventAsync(eventId);
             LoadRouteViewModels(routes);
@@ -359,10 +360,12 @@ public partial class ViewEventViewModel(IMobEventManager mobEventManager,
             RouteEndTime = DateTimeOffset.Now;
             EnableStopTrackEventRoute = true;
             EnableStartTrackEventRoute = false;
+            IsRecordingRoute = true;
         }
 
         cancellationToken.Register(async () =>
         {
+            IsRecordingRoute = false;
             RouteEndTime = DateTimeOffset.Now;
             await SaveRoute();
             Locations.Clear();
