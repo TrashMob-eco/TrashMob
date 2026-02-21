@@ -139,9 +139,31 @@ Login to the prod tenant first: `az login --tenant b5fc8717-29eb-496e-8e09-cf90d
 
 In Azure Portal > prod Entra tenant > External Identities > All identity providers:
 
-- [ ] **23.** **Google:** Create OAuth 2.0 credentials in Google Cloud Console, add redirect URI `https://trashmobecopr.ciamlogin.com/trashmobecopr.onmicrosoft.com/federation/oauth2`, enter Client ID + secret in Azure
-- [ ] **24.** **Facebook:** Add OAuth redirect URI in Facebook Developer Console, enter App ID + secret in Azure
-- [ ] **25.** **Apple:**
+- [x] **23.** **Google:**
+  1. Go to [Google Cloud Console](https://console.cloud.google.com) > select the TrashMob project
+  2. APIs & Services > Credentials > **+ Create Credentials** > **OAuth client ID**
+  3. Application type: **Web application**
+  4. Name: `TrashMob Entra Prod`
+  5. Authorized redirect URIs > **+ Add URI**:
+     ```
+     https://trashmobecopr.ciamlogin.com/trashmobecopr.onmicrosoft.com/federation/oauth2
+     ```
+  6. Click **Create** — copy the **Client ID** and **Client secret**
+  7. In Azure Portal > prod Entra tenant (`trashmobecopr.onmicrosoft.com`) > External Identities > All identity providers > **+ Google**
+  8. Paste the Client ID and Client secret > Save
+- [x] **24.** **Facebook:**
+  1. Go to [Facebook for Developers](https://developers.facebook.com) > My Apps > select the TrashMob app (or create one: Add New App > Consumer)
+  2. Settings > Basic — copy the **App ID** and **App Secret**
+  3. In the left nav: Use cases > Authentication and Account Creation > Customize > Settings
+  4. Under Valid OAuth Redirect URIs > **+** add:
+     ```
+     https://trashmobecopr.ciamlogin.com/trashmobecopr.onmicrosoft.com/federation/oauth2
+     ```
+  5. Save Changes
+  6. If the app is in Development mode: App Review > switch to **Live** mode (required for non-developer users to sign in)
+  7. In Azure Portal > prod Entra tenant > External Identities > All identity providers > **+ Facebook**
+  8. Paste the App ID and App Secret > Save
+- [x] **25.** **Apple:**
   1. Apple Developer > Certificates, Identifiers & Profiles > Identifiers > **+** > **Services IDs**
   2. Register Service ID (e.g., `eco.trashmob.entra`) with **Sign In with Apple** enabled
   3. Configure return URL: `https://trashmobecopr.ciamlogin.com/trashmobecopr.onmicrosoft.com/federation/oidc/apple`
@@ -149,52 +171,54 @@ In Azure Portal > prod Entra tenant > External Identities > All identity provide
   5. Generate Apple client secret JWT using `d:/tools/Apple/generate-apple-secret.js` (update KEY_ID, SERVICE_ID, KEY_FILE for prod)
   6. Enter Service ID + generated JWT in Entra Apple IDP config
   7. **Set calendar reminder:** Client secret expires in 6 months — must regenerate
-- [ ] **26.** **Microsoft:** Enabled by default — verify it's active
+- [x] **26.** **Microsoft:** Enabled by default — verify it's active
 
 #### A4.5 Create User Flow
 
-- [ ] **27.** User flows > New user flow > "Sign up and sign in" named `SignUpSignIn`
+- [x] **27.** User flows > New user flow > "Sign up and sign in" named `SignUpSignIn`
   - Identity providers: all configured (Google, Microsoft, Apple, Facebook, Email)
   - Attributes: Email (required), Given Name (required), Surname (required)
-- [ ] **28.** Create custom attribute: External Identities > Custom user attributes > Add `dateOfBirth` (String type)
-- [ ] **29.** Add `dateOfBirth` to the user flow's attribute collection page
+- [x] **28.** Create custom attribute: External Identities > Custom user attributes > Add `dateOfBirth` (String type)
+- [x] **29.** Add `dateOfBirth` to the user flow's attribute collection page
+- [x] **29a.** Add applications to the user flow: User flows > `SignUpSignIn` > Applications > Add application — select Web SPA, API, and Mobile app registrations so they use this flow for sign-in
 
 #### A4.6 Configure Token Claims
 
-- [ ] **30.** For each app registration (Web SPA, API, Mobile): Token configuration > Add optional claims (ID + Access tokens): `given_name`, `family_name`, `email` (built-in), `dateOfBirth` (directory schema extension)
-- [ ] **31.** Verify `acceptMappedClaims: true` in each app's Manifest
+- [x] **30.** For each app registration (Web SPA, API, Mobile): Token configuration > Add optional claims (ID + Access tokens): `given_name`, `family_name`, `email`, `preferred_username` — done via A4.3 `az rest` commands. Note: `dateOfBirth` is a custom attribute and must be added via user flow **Application claims**, not here.
+- [x] **31.** Verify `acceptMappedClaims: true` in each app's Manifest — done via A4.3
 - [ ] **32.** Test: sign in and decode JWT at https://jwt.ms to verify claims
 
 #### A4.7 Configure Branding
 
-- [ ] **33.** Company branding > Default sign-in experience:
+- [x] **33.** Company branding > Default sign-in experience:
   - Banner logo: TrashMob logo (260x36 px) — use `Planning/StoreAssets/HorizontalLogo_Source.svg` resized
   - Background image: TrashMob hero image (1920x1080 px) — use `Images/v1/TME_SignInBackground_1920x1080.png`
-  - Background color: `#96ba00`
+  - Background color: `#f3f4f6`
+  - Custom CSS: Upload `Deploy/entra-signin-branding.css`
   - Sign-in text: "Welcome to TrashMob.eco — Join the movement to clean up the planet!"
   - Layout: Full-screen background template
-- [ ] **34.** Test in incognito browser
+- [x] **34.** Test in incognito browser
 
 #### A4.8 User Migration (B2C > Entra)
 
-- [ ] **35.** Run migration script to export B2C users > import to Entra External ID (see `Deploy/migrate-b2c-users.ps1`)
+- [x] **35.** Run migration script to export B2C users > import to Entra External ID (see `Deploy/migrate-b2c-users-prod.ps1`)
 - [ ] **36.** Verify migrated user count matches B2C
 - [ ] **37.** Test sign-in with a few migrated accounts
 - [ ] **38.** Confirm: existing users without DateOfBirth are grandfathered as adults
 
 #### A4.9 Update Production Configuration
 
-- [ ] **39.** Set backend config (Key Vault or env vars):
+- [x] **39.** Set backend config (Key Vault or env vars):
   ```
   AzureAdEntra__Instance=https://trashmobecopr.ciamlogin.com/
   AzureAdEntra__ClientId=dc09e17b-bce4-4af9-82ab-f7b12af586b4
   AzureAdEntra__FrontendClientId=0604ef02-6b84-450f-b5d5-2196e96f3b48
   AzureAdEntra__Domain=trashmobecopr.onmicrosoft.com
   AzureAdEntra__TenantId=b5fc8717-29eb-496e-8e09-cf90d344ce9f
-  UseEntraExternalId=true
+  UseEntraExternalId=true  (flip during B2 auth cutover — currently false in containerApp.bicep for prod)
   ```
-- [ ] **40.** Update `Deploy/containerApp.bicep` prod environment variables with prod Entra values
-- [ ] **41.** Update `Deploy/configure-entra-apps.ps1` with prod app registration IDs
+- [x] **40.** Update `Deploy/containerApp.bicep` prod environment variables with prod Entra values
+- [x] **41.** Update `Deploy/configure-entra-apps.ps1` with prod app registration IDs
 
 #### A4.10 Deploy Auth Extension Container App (Layer 2)
 
@@ -1261,6 +1285,98 @@ The following steps are currently manual but could be automated to reduce errors
 | 10 | **Data Safety / App Privacy form updates** (steps 81-83) — CI check | `Planning/PRIVACY_MANIFEST.md` tracks all data collection; `.github/workflows/ci_privacy-manifest-check.yml` adds PR comment when privacy-related files change. | **Done** |
 
 All 10 automation opportunities have been implemented.
+
+---
+
+## Part E — Post-Cutover Cleanup :hand:
+
+After the production deployment is stable and the B2C coexistence window has ended (1 week post-launch), clean up old credentials and services that are no longer needed.
+
+---
+
+### E1. Google Cloud Console Cleanup
+
+- [ ] **165.** Go to [Google Cloud Console](https://console.cloud.google.com) > select the TrashMob project > APIs & Services > Credentials
+- [ ] **166.** Identify old OAuth client IDs that were used for Azure B2C (the redirect URI will point to `*.b2clogin.com`)
+- [ ] **167.** Delete old B2C OAuth client IDs — they are no longer needed since sign-in now goes through Entra External ID
+- [ ] **168.** Verify the new Entra prod OAuth client ID (`TrashMob Entra Prod`) still works — test Google sign-in on www.trashmob.eco
+- [ ] **169.** Review API key restrictions: ensure the Maps SDK key is restricted to the correct bundle IDs and referrer URLs
+- [ ] **170.** Review enabled APIs — disable any that are no longer used (e.g., if B2C required a specific API)
+
+---
+
+### E2. Facebook Developer Console Cleanup
+
+- [ ] **171.** Go to [Facebook for Developers](https://developers.facebook.com) > My Apps > select the TrashMob app
+- [ ] **172.** Settings > Basic — review the Valid OAuth Redirect URIs
+- [ ] **173.** Remove old B2C redirect URIs (any pointing to `*.b2clogin.com`) — these are no longer used
+- [ ] **174.** Verify only the Entra prod redirect URI remains:
+  ```
+  https://trashmobecopr.ciamlogin.com/trashmobecopr.onmicrosoft.com/federation/oauth2
+  ```
+- [ ] **175.** Also keep the Entra dev redirect URI if you want dev to keep working:
+  ```
+  https://trashmobecodev.ciamlogin.com/trashmobecodev.onmicrosoft.com/federation/oauth2
+  ```
+- [ ] **176.** Test Facebook sign-in on www.trashmob.eco after removing old URIs
+- [ ] **177.** Review App Roles — remove any test users that are no longer needed
+
+---
+
+### E3. Apple Developer Console Cleanup
+
+- [ ] **178.** Go to [Apple Developer](https://developer.apple.com/account/resources/identifiers/list/serviceId) > Certificates, Identifiers & Profiles > Identifiers > Service IDs
+- [ ] **179.** Identify old Service IDs that were used for Azure B2C sign-in (return URLs pointing to `*.b2clogin.com`)
+- [ ] **180.** Delete or disable old B2C Service IDs — they are no longer needed
+- [ ] **181.** Verify the new Entra prod Service ID (`eco.trashmob.entra` or similar) has the correct return URL:
+  ```
+  https://trashmobecopr.ciamlogin.com/trashmobecopr.onmicrosoft.com/federation/oidc/apple
+  ```
+- [ ] **182.** Keys: Go to [Keys](https://developer.apple.com/account/resources/authkeys/list) — if you created a new Sign in with Apple key for Entra, verify the old B2C key is no longer referenced anywhere, then revoke it
+  - **Caution:** Do NOT revoke the key if it's shared between B2C and Entra. Only revoke if separate keys were created.
+- [ ] **183.** Regenerate the Apple client secret JWT (expires every 6 months) and update the calendar reminder:
+  - Script: `d:/tools/Apple/generate-apple-secret.js`
+  - Update `Deploy/cert-expiry-dates.json` with the new expiry date
+- [ ] **184.** Test Apple sign-in on www.trashmob.eco after cleanup
+
+---
+
+### E4. Azure B2C Tenant Decommission
+
+- [ ] **185.** Confirm all users have been migrated to Entra (compare user counts)
+- [ ] **186.** Confirm no traffic is going to the B2C tenant (check B2C audit logs for 1 week)
+- [ ] **187.** Remove B2C-related secrets from Key Vault (`kv-tm-pr-westus2`):
+  - `AzureAdB2C--*` prefixed secrets (if any)
+  - Any B2C client secrets
+- [ ] **188.** Remove B2C configuration from `Deploy/containerApp.bicep` environment variables
+- [ ] **189.** Remove B2C-related code from the codebase (controllers, middleware, config classes)
+- [ ] **190.** Delete B2C app registrations in the B2C tenant
+- [ ] **191.** Schedule B2C tenant deletion (Azure Portal > Azure AD B2C > Overview > Delete tenant)
+  - **Warning:** Tenant deletion is irreversible. Ensure all user data is migrated and verified first.
+
+---
+
+### E5. GitHub Secrets Cleanup
+
+- [ ] **192.** Review GitHub Actions secrets in both `test` and `production` environments
+- [ ] **193.** Remove B2C-related secrets that are no longer needed:
+  - `B2C_TENANT_DOMAIN`, `B2C_CLIENT_ID`, `B2C_CLIENT_SECRET` (if the migration workflow is no longer needed)
+- [ ] **194.** Verify all Entra-related secrets are correctly set for production
+- [ ] **195.** Remove any temporary secrets created during the migration
+
+---
+
+### E6. Custom Auth Domain (Post-Launch Enhancement)
+
+Replace `trashmobecopr.ciamlogin.com` with a branded domain (e.g., `auth.trashmob.eco`) so users see your domain during sign-in instead of a Microsoft domain.
+
+- [ ] **196.** Add DNS CNAME record: `auth.trashmob.eco` → `trashmobecopr.ciamlogin.com`
+- [ ] **197.** Configure custom URL domain in Entra portal: External Identities > Custom URL domains > Add `auth.trashmob.eco`
+- [ ] **198.** Update redirect URIs in all 3 app registrations (Web SPA, API, Mobile) to use `auth.trashmob.eco`
+- [ ] **199.** Update social IDP redirect URIs (Google, Facebook, Apple) to use `auth.trashmob.eco`
+- [ ] **200.** Update `Deploy/containerApp.bicep` `entraInstance` to `https://auth.trashmob.eco/`
+- [ ] **201.** Update mobile `AuthConstants.cs` with new auth domain
+- [ ] **202.** Test sign-in on web and mobile with the new domain
 
 ---
 

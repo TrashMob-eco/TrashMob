@@ -33,14 +33,14 @@ var b2cFrontendClientId = environment == 'dev' ? 'e46d67ba-fe46-40f4-b222-2f982b
 
 // Azure AD Entra External ID configuration - these are public values, not secrets
 // Note: Microsoft accounts work natively in Entra External ID (no external IDP setup needed)
-var entraInstance = environment == 'dev' ? 'https://trashmobecodev.ciamlogin.com/' : 'https://trashmobeco.ciamlogin.com/'
-var entraDomain = environment == 'dev' ? 'TrashMobEcoDev.onmicrosoft.com' : 'TrashMobEco.onmicrosoft.com'
-var entraBackendClientId = environment == 'dev' ? '84df543d-6535-45f5-afab-4d38528b721a' : ''
-var entraTenantId = environment == 'dev' ? '8577fa31-4b86-4e4b-8b02-93fba708cb19' : ''
-var entraFrontendClientId = environment == 'dev' ? '1e6ae74d-0160-4a01-9d75-04048e03b17e' : ''
+var entraInstance = environment == 'dev' ? 'https://trashmobecodev.ciamlogin.com/' : 'https://trashmobecopr.ciamlogin.com/'
+var entraDomain = environment == 'dev' ? 'TrashMobEcoDev.onmicrosoft.com' : 'trashmobecopr.onmicrosoft.com'
+var entraBackendClientId = environment == 'dev' ? '84df543d-6535-45f5-afab-4d38528b721a' : 'dc09e17b-bce4-4af9-82ab-f7b12af586b4'
+var entraTenantId = environment == 'dev' ? '8577fa31-4b86-4e4b-8b02-93fba708cb19' : 'b5fc8717-29eb-496e-8e09-cf90d344ce9f'
+var entraFrontendClientId = environment == 'dev' ? '1e6ae74d-0160-4a01-9d75-04048e03b17e' : '0604ef02-6b84-450f-b5d5-2196e96f3b48'
 
-// Feature flag: use Entra External ID instead of B2C (enable for dev, not yet for prod)
-var useEntraExternalId = environment == 'dev' ? 'true' : 'false'
+// Feature flag: use Entra External ID instead of B2C
+var useEntraExternalId = 'true'
 
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' existing = {
   name: containerRegistryName
