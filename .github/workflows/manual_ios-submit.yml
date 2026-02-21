@@ -1,0 +1,65 @@
+# Submit the latest TestFlight build for App Store review.
+# Uses Fastlane Deliver to submit with metadata from fastlane/metadata/.
+#
+# Prerequisites:
+#   - A build already uploaded to TestFlight
+#   - App Store Connect API key secrets configured
+#   - Metadata files in fastlane/metadata/en-US/
+
+name: iOS - Submit for App Store Review
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_number:
+        description: 'Build number to submit (leave empty for latest)'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  submit:
+    name: Submit to App Store
+    runs-on: macos-15
+    environment: production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+
+      - name: Submit for review
+        env:
+          APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
+          APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APPSTORE_PRIVATE_KEY }}
+        run: |
+          BUILD_ARG=""
+          if [ -n "${{ github.event.inputs.build_number }}" ]; then
+            BUILD_ARG="build_number:${{ github.event.inputs.build_number }}"
+          fi
+
+          echo "Submitting TrashMob for App Store review..."
+          bundle exec fastlane ios ios_submit $BUILD_ARG
+
+      - name: Summary
+        run: |
+          echo ""
+          echo "========================================="
+          echo " App Store Submission"
+          echo "========================================="
+          echo " Build: ${{ github.event.inputs.build_number || 'latest' }}"
+          echo " Status: Submitted for review"
+          echo "========================================="
+          echo ""
+          echo "Monitor review status at:"
+          echo "  https://appstoreconnect.apple.com"
+          echo ""
+          echo "Apple review typically takes 24-48 hours."
